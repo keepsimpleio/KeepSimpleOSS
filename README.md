@@ -1,4 +1,4 @@
- <img src="public/keepsimple_/readme/cover_image.png" alt="warm welcome" width="1920" />
+ <img src="public/keepsimple_/assets/readme/cover_image.png" alt="warm welcome" width="1920" />
 
 KeepSimple was founded in 2019 by Wolf Alexanyan as a free, public initiative exploring the intersection of management, IT, and cognitive science. Since then, it has grown into a recognized open-source hub for practical frameworks, educational tools, and experiments in applied behavioral science. Today, KeepSimple hosts several major modules, including:
 
