@@ -1,0 +1,15 @@
+.userProfile {
+  display: flex !important;
+  align-items: center;
+  cursor: pointer;
+  gap: 11px;
+  padding-right: 24px;
+  padding-left: 24px;
+
+  .user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+}

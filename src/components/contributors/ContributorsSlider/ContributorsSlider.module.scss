@@ -1,0 +1,88 @@
+@import '@styles/animations';
+
+.slider {
+  padding-bottom: 65px;
+
+  .slick-slide .slick-cloned {
+    display: none !important;
+  }
+
+  .slide {
+    width: 1140px;
+    height: 267px;
+  }
+
+  .name {
+    font-size: 36px;
+    font-weight: 400;
+    margin: 0;
+    padding-bottom: 16px;
+  }
+
+  .coverImage {
+    position: absolute;
+  }
+
+  .imgAndRole,
+  .imgAndSocial {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 16px;
+  }
+
+  .imgAndSocial {
+    .socialLink {
+      text-decoration: none;
+      color: #000000d9;
+      position: relative;
+
+      &:after {
+        content: '';
+        background-image: url('/keepsimple_/assets/contributors/underline.svg');
+        position: absolute;
+        width: 100%;
+        height: 7px;
+        left: 0;
+        bottom: -5px;
+        background-size: inherit;
+        background-repeat: no-repeat;
+      }
+    }
+  }
+
+  .imgAndRole {
+    padding-bottom: 15px;
+  }
+
+  .content {
+    position: relative;
+    z-index: 4;
+    padding: 41px 0 0 104px;
+
+    .role {
+      width: 30%;
+    }
+  }
+
+  .slick-list {
+    width: 1140px;
+  }
+}
+
+.dark {
+  .slide {
+    .name {
+      color: #ffffffd9;
+    }
+
+    .socialLink {
+      color: #ffffffd9;
+    }
+
+    .imgAndSocial,
+    .imgAndRole {
+      color: #ffffffd9;
+    }
+  }
+}

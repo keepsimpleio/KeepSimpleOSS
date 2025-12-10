@@ -1,0 +1,188 @@
+@import '@styles/_animations.scss';
+
+.canves {
+  left: 50% !important;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  top: 100px !important;
+}
+
+.wrapper {
+  padding-top: 94px;
+  padding-bottom: 20px;
+  position: relative;
+  height: 170px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .pointsWrapper {
+    background: #fff;
+    border-radius: 50%;
+    width: 110px;
+    height: 110px;
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .emoji {
+      font-size: 48px;
+      position: absolute;
+      z-index: 40;
+      top: 70px;
+      padding-left: 30px;
+      animation: scaleEmoji 1s ease-out forwards;
+    }
+
+    .imgWrapper {
+      position: absolute;
+      z-index: 40;
+      top: 100px;
+      padding-left: 10px;
+    }
+
+    .points,
+    .pointsTxt {
+      color: #ff9900;
+      background: linear-gradient(
+          180deg,
+          #ff9900 0%,
+          #ffbf00 83.33%,
+          #ffc700 100%
+        ),
+        linear-gradient(0deg, #ffa001, #ffa001);
+      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      font-weight: bold;
+    }
+
+    .milestoneReached {
+      background: linear-gradient(
+        180deg,
+        #d253ff 25%,
+        #7c67ce 54.41%,
+        #246dc4 85.71%
+      );
+      background-clip: text;
+    }
+
+    .milestone {
+      color: #9f68ca;
+      background: unset;
+      -webkit-text-fill-color: unset;
+    }
+
+    .points {
+      font-size: 48px;
+      position: relative;
+    }
+
+    .pointsTxt {
+      font-size: 14px;
+      margin-top: 20px;
+    }
+  }
+
+  .finalTestPointsWrapper {
+    background-color: unset;
+    width: unset;
+  }
+
+  .title {
+    color: #617181;
+    font-size: 32px;
+    position: absolute;
+    bottom: 0;
+    z-index: 40;
+    @extend .animate-slowFadeIn;
+  }
+
+  .finalTestTitle,
+  .encouragement {
+    z-index: 1;
+  }
+
+  .encouragementMilestone {
+    z-index: 41;
+  }
+}
+
+.finalTestWrapper {
+  height: 342px;
+  padding-top: unset;
+
+  .points {
+    top: 70px;
+  }
+
+  .title {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.5);
+    animation: textFallAndGrow 1s ease-out forwards;
+    text-align: center;
+    bottom: -15px;
+  }
+}
+
+.finalTestCanvas {
+  top: 135px !important;
+}
+
+@media (max-width: 901px) {
+  .wrapper {
+    width: 100%;
+
+    .title {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: -10px;
+    }
+  }
+
+  .finalTestWrapper {
+    .title {
+      font-size: 20px;
+      bottom: 0;
+      margin-bottom: unset;
+    }
+
+    .pointsWrapper {
+      .points {
+        font-size: 40px;
+      }
+    }
+  }
+}
+
+@keyframes textFallAndGrow {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.5);
+  }
+
+  60% {
+    opacity: 0.5;
+    transform: translateY(20%) scale(1.1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes scaleEmoji {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

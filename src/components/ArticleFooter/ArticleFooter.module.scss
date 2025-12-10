@@ -1,0 +1,38 @@
+.articleFooter {
+  padding: 1rem 0.5rem;
+  width: 100%;
+  z-index: 1;
+  background-color: transparent;
+  transition: 0.3s;
+  box-sizing: border-box;
+
+  & .footerSection {
+    max-width: 61.5rem;
+    text-align: center;
+    margin: 0 auto;
+    font-family: 'Source-Serif-Regular', sans-serif;
+    font-size: 12px;
+    line-height: 20px;
+    color: #00000073;
+
+    & .footerSectionLink {
+      color: #00000073 !important;
+      text-decoration: none;
+    }
+  }
+
+  &.hidden {
+    display: none;
+  }
+
+  &.darkTheme {
+    .footerSection,
+    .footerSectionLink {
+      color: #ffffffd9;
+
+      &.footerSectionLink {
+        color: #ffffffd9 !important;
+      }
+    }
+  }
+}

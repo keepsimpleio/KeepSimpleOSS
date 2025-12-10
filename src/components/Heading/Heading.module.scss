@@ -1,0 +1,94 @@
+.headingAndUnderline {
+  .headingWrapper {
+    .heading {
+      font-size: 64px;
+      font-family: Aboreto-Regular, sans-serif;
+      font-weight: 400;
+      margin: 0;
+      color: #000000d9;
+    }
+
+    .small {
+      font-size: 24px;
+    }
+
+    .big {
+      font-size: 64px;
+    }
+
+    .h4 {
+      font-size: 20px;
+      font-family: Source-Serif-SemiBold, sans-serif;
+      line-height: 1.4;
+    }
+
+    .diamond {
+      width: 10px;
+      height: 10px;
+      background-color: #df382e;
+      transform: rotate(45deg);
+      display: inline-flex;
+    }
+
+    .smallDiamond {
+      width: 5px;
+      height: 5px;
+    }
+  }
+
+  .underline {
+    width: 100%;
+    padding: 16px 0 24px 0;
+  }
+
+  .left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.darkTheme {
+  .headingWrapper {
+    .heading {
+      color: #ffffffd9;
+    }
+  }
+}
+
+.russianVersion {
+  .headingWrapper {
+    .heading {
+      font-family: 'Cormorant_Garamond-Regular', sans-serif;
+    }
+  }
+}
+
+.right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 33px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 33px;
+}
+
+@media (max-width: 768px) {
+  .headingAndUnderline {
+    .headingWrapper {
+      .heading {
+        font-size: 48px;
+      }
+
+      .small {
+        font-size: 20px;
+      }
+    }
+  }
+}

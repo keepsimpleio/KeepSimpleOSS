@@ -1,0 +1,26 @@
+name: Pull request type and issue check
+
+on:
+  pull_request:
+    branches:
+      - dev # staging
+      - main # production
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Type Check
+        run: yarn tsc --noEmit

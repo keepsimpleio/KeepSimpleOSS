@@ -1,0 +1,47 @@
+name: CI Deployment
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'dev'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: 'Login to GitHub Container Registry'
+      run: echo ${{secrets.REGISTRY_PASSWORD}} | docker login ${{secrets.REGISTRY_HOST}} --username ${{secrets.REGISTRY_USERNAME}} --password-stdin
+
+
+    - name: Copy production env file
+      if: github.ref == 'refs/heads/main'
+      run: |
+          echo ${{ secrets.ENV_PRODUCTION }} | base64 -d > .env
+
+    - name: Copy staging env file
+      if: github.ref == 'refs/heads/dev'
+      run: |
+          echo ${{ secrets.ENV_STAGING }} | base64 -d > .env
+
+
+    - name: Production Deploy
+      if: github.ref == 'refs/heads/main'
+      run: |
+        docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod .
+        docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod
+ 
+    - name: Staging Deploy
+      if: github.ref == 'refs/heads/dev'
+      run: |
+        docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging .
+        docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging
+  

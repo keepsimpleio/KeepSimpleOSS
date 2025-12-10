@@ -1,0 +1,61 @@
+@use '@styles/_animations.scss' as *;
+
+.supporters {
+  display: flex;
+  padding: 64px 0;
+  flex-direction: column;
+  align-items: baseline !important;
+
+  .title {
+    font-size: 26px;
+    line-height: 1.5;
+    font-family: 'Source-Serif-SemiBold', sans-serif;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    opacity: 0;
+  }
+
+  .inViewTitle {
+    @extend .animate-fadeInRightToLeft;
+  }
+
+  .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    row-gap: 15px;
+    column-gap: 15px;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+.darkTheme {
+  .title {
+    color: #ffffffd9;
+  }
+}
+
+@media (max-width: 1170px) {
+  .supporters {
+    .wrapper {
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .supporters {
+    padding: 40px 0;
+
+    .title {
+      font-size: 20px;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+<svg  viewBox="0 0 390 522" fill="none"  preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <g filter="url(#filter0_d_358_26)">
+    <path d="M20.9574 17.8624L11.7531 27.1768C9.34851 29.6102 8 32.8933 8 36.3144V493C8 500.18 13.8203 506 21 506H352.477C355.892 506 359.17 504.656 361.602 502.259L378.125 485.976C380.604 483.533 382 480.197 382 476.716V27C382 19.8203 376.18 14 369 14H30.2043C26.7297 14 23.3997 15.3909 20.9574 17.8624Z" fill="url(#paint0_linear_358_26)" fill-opacity="0.08"/>
+    <path d="M20.9574 17.8624L11.7531 27.1768C9.34851 29.6102 8 32.8933 8 36.3144V493C8 500.18 13.8203 506 21 506H352.477C355.892 506 359.17 504.656 361.602 502.259L378.125 485.976C380.604 483.533 382 480.197 382 476.716V27C382 19.8203 376.18 14 369 14H30.2043C26.7297 14 23.3997 15.3909 20.9574 17.8624Z" stroke="url(#paint1_linear_358_26)" stroke-width="2"/>
+  </g>
+  <defs>
+    <filter id="filter0_d_358_26" x="-6.2" y="0.8" width="402.4" height="520.4" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="1"/>
+      <feGaussianBlur stdDeviation="6.6"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.338611 0 0 0 0 0.439175 0 0 0 0 0.883333 0 0 0 0.32 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_358_26"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_358_26" result="shape"/>
+    </filter>
+    <linearGradient id="paint0_linear_358_26" x1="143" y1="14" x2="143" y2="554.256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white"/>
+      <stop offset="1" stop-color="#999999"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear_358_26" x1="2.93545" y1="-63.179" x2="330.057" y2="-37.8664" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9085AF"/>
+      <stop offset="0.38" stop-color="#897EA7"/>
+      <stop offset="0.73" stop-color="#5E5870"/>
+      <stop offset="1" stop-color="#726B83"/>
+    </linearGradient>
+  </defs>
+</svg>

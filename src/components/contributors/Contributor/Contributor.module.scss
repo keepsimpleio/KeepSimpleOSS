@@ -1,0 +1,170 @@
+.contributorCard {
+  padding: 16px 20px;
+  width: 166px;
+  height: 164px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #c7c7c7;
+  background-image: url('/keepsimple_/assets/contributors/contributor-bg.png');
+  background-size: cover;
+  position: relative;
+
+  .socialMedia {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    background-image: url('/keepsimple_/assets/contributors/contributor-bg.png');
+    background-size: cover;
+    transition: height 0.3s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .linkIcon {
+      object-fit: none;
+    }
+  }
+  .inactiveSocialMedia {
+    background-image: url('/keepsimple_/assets/contributors/contributor-inactive-bg.png');
+  }
+
+  &:hover {
+    .socialMedia {
+      height: 100%;
+    }
+  }
+  .japaneseLetter,
+  .name,
+  .role {
+    margin: 0;
+  }
+
+  .japaneseLetter {
+    color: #ffa3a3;
+    font-size: 40px;
+    font-family: 'YujiSyuku-Regular', sans-serif;
+  }
+
+  .name {
+    font-size: 20px;
+  }
+
+  .role {
+    color: #535353;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .socialLinkWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    .socialLink {
+      position: relative;
+      color: #535353;
+      text-decoration: none;
+
+      &:after {
+        content: '';
+        background-image: url('/keepsimple_/assets/contributors/underline.svg');
+        position: absolute;
+        width: 100%;
+        height: 7px;
+        left: 0;
+        bottom: -5px;
+        background-size: inherit;
+        background-repeat: no-repeat;
+      }
+    }
+  }
+}
+
+.translators {
+  max-width: 100%;
+  width: 400px;
+}
+
+.inactive {
+  background-image: url('/keepsimple_/assets/contributors/contributor-inactive-bg.png');
+
+  .japaneseLetter {
+    color: #bdbdbd;
+  }
+
+  .name {
+    color: #00000073;
+  }
+
+  .role {
+    color: #535353a6;
+    text-align: center;
+  }
+}
+
+.dark {
+  background-image: url('/keepsimple_/assets/contributors/contributor-bg-dark.png');
+  border: 1px solid #454a55;
+
+  .socialMedia {
+    background-image: url('/keepsimple_/assets/contributors/active-hover-dark.png');
+  }
+  .name {
+    color: #ffffffe5;
+  }
+
+  .role {
+    color: #ffffffb2;
+  }
+
+  .socialLinkWrapper {
+    .socialLink {
+      color: #ffffffb2;
+    }
+  }
+
+  .japaneseLetter {
+    color: #ca4040;
+  }
+}
+
+.darkInactive {
+  background-image: url('/keepsimple_/assets/contributors/contributor-inactive-bg-dark.png');
+
+  .inactiveSocialMedia {
+    background-image: url('/keepsimple_/assets/contributors/inactive hover-dark.png');
+  }
+  .japaneseLetter {
+    color: #ffffff26;
+  }
+
+  .name {
+    color: #ffffff26;
+  }
+
+  .role {
+    color: #ffffff26;
+  }
+}
+
+@media (max-width: 500px) {
+  .contributorCard {
+    width: 100%;
+    margin-right: 30px;
+  }
+}
+
+@keyframes curtain-drop {
+  from {
+    height: 0;
+  }
+  to {
+    height: 164px;
+  }
+}

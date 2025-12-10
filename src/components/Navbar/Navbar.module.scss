@@ -1,0 +1,250 @@
+.aside {
+  color: #5d6063;
+  transition: 0.3s;
+  display: flex;
+  height: 100%;
+
+  * {
+    &::selection {
+      background: transparent;
+      /* WebKit/Blink Browsers */
+    }
+
+    &::-moz-selection {
+      background: transparent;
+      /* Gecko Browsers */
+    }
+  }
+
+  & .menu {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100%;
+    gap: 40px;
+
+    .contributors {
+      color: #000000d9;
+      text-decoration: none;
+      position: absolute;
+      right: 30px;
+      bottom: 70px;
+      cursor: pointer;
+
+      &::after {
+        content: '';
+        position: absolute;
+        background-image: url('/keepsimple_/assets/contributors/underline-landing.svg');
+        width: 100%;
+        height: 7px;
+        left: 0;
+        bottom: -3px;
+        background-size: inherit;
+        background-repeat: no-repeat;
+      }
+    }
+
+    .url {
+      position: relative;
+      font-size: 16px;
+      text-decoration: none;
+      color: #000000d9;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 6px;
+      font-family: Sarabun-Medium, sans-serif;
+
+      &:hover {
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #131313;
+        }
+      }
+    }
+
+    .uxcoreIcon,
+    .articlesIcon {
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    .companyManagementIcon {
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .active {
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #131313;
+      }
+    }
+  }
+}
+
+.darkTheme {
+  .menu {
+    .contributors {
+      color: #fafafa;
+    }
+    .uxcoreIcon,
+    .companyManagementIcon {
+      svg {
+        path {
+          fill: #dadada;
+        }
+      }
+    }
+    .url {
+      color: #dadada;
+
+      &:hover {
+        &:after {
+          background-color: #dadada;
+        }
+      }
+    }
+
+    .active {
+      &:after {
+        background-color: #dadada;
+      }
+    }
+  }
+}
+
+@media (max-width: 1365px) {
+  .aside {
+    & .menu {
+      .url {
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1140px) {
+  .aside {
+    position: fixed;
+    top: 4rem;
+    left: -100vw;
+    height: calc(100% - 4rem);
+    width: 100vw;
+    z-index: 1;
+    background-color: #fff;
+    overflow: auto;
+
+    .menu {
+      margin-top: 2.875rem;
+      margin-bottom: 6.5rem;
+      padding-left: 1.55rem;
+      position: static !important;
+      top: -3.75rem !important;
+      display: block;
+      height: auto;
+
+      &.authorized {
+        margin-top: 3.7rem;
+      }
+    }
+
+    .darkTheme {
+      color: #dadada;
+    }
+  }
+
+  .openedSidebar {
+    left: 0;
+  }
+
+  .darkTheme {
+    background-color: #151a26;
+  }
+}
+
+.aside.darkTheme {
+  color: #dadada;
+}
+
+@media (max-width: 1141px) {
+  .aside {
+    position: fixed;
+    top: 4rem;
+    left: -100vw;
+    height: calc(100% - 4rem);
+    width: 100vw;
+    z-index: 1;
+    background-color: #fff;
+    overflow: auto;
+  }
+
+  .aside .menu {
+    margin-top: 2.875rem;
+    margin-bottom: 6.5rem;
+    padding-left: 1.55rem;
+    position: static !important;
+    top: -3.75rem !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: 0;
+
+    .url {
+      justify-content: unset;
+      border-bottom: unset;
+      padding: 6px 0 6px 16px;
+      font-size: 20px;
+      font-weight: bold;
+
+      &:hover {
+        border-bottom: unset;
+      }
+    }
+
+    .active {
+      border-left: 1px solid #252626;
+    }
+
+    &.authorized {
+      margin-top: 3.7rem;
+    }
+  }
+  .aside.darkTheme {
+    color: #dadada;
+
+    .menu {
+      .active {
+        border-left: 1px solid #dadada;
+      }
+    }
+  }
+}
+
+@media (max-width: 1141px) {
+  .aside.darkTheme {
+    background-color: #151a26;
+  }
+
+  .aside.openedSidebar {
+    left: 0;
+  }
+
+  .aside .menu {
+    display: block;
+    height: auto;
+  }
+}

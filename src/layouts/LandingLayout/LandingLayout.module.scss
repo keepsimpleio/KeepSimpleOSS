@@ -1,0 +1,41 @@
+.main {
+  background-repeat: repeat;
+}
+
+.mainSections {
+  section {
+    display: flex;
+    width: 100%;
+    max-width: 1140px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+  }
+}
+
+.russianView {
+  > p,
+  span,
+  a {
+    // TODO Mary - what is it?
+    font-family: 'Lato', Arial, serif;
+  }
+}
+
+@media (max-width: 1200px) {
+  .mainSections {
+    section {
+      margin: 0 15px;
+      max-width: unset;
+      width: unset;
+      overflow: hidden;
+    }
+
+    section:first-child,
+    section:nth-child(3) {
+      margin: 0 auto;
+      width: 100%;
+      max-width: 1140px;
+    }
+  }
+}

@@ -1,0 +1,405 @@
+body,
+html {
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  overflow-y: overlay;
+  overflow-x: hidden;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 8px;
+    border-left: 1px solid #fafafa;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    //background: #262626;
+
+    border-radius: 5px;
+    border-left: 1px solid #fafafa;
+  }
+}
+
+html::-webkit-scrollbar-thumb {
+  background: rgba(40, 88, 123, 0.5);
+}
+
+html.scroll-style-home::-webkit-scrollbar-thumb {
+  background-color: #262626;
+}
+
+html.scroll-style-articles::-webkit-scrollbar-thumb {
+  background-color: #262626;
+}
+
+body {
+  background: linear-gradient(180deg, #f9fafb 0%, #e8e8e8 100%), #f9fafb;
+  color: #252626;
+  transition: 0.3s;
+
+  &.darkTheme {
+    background-color: #1b1e26;
+    color: #dadada;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      border-left: 1px solid;
+      border-image: linear-gradient(180deg, #1e2023 0%, #303338 100%) 1;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background-color: #262626;
+      border-radius: 5px;
+      border-left: 1px solid;
+      border-image: linear-gradient(180deg, #1e2023 0%, #303338 100%) 1;
+    }
+  }
+
+  ol {
+    & li {
+      font-size: 18px;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.keepsimplePages {
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.png') !important;
+  background: unset;
+}
+.keepsimplePagesDark {
+  background-image: url('/keepsimple_/assets/landingPage/landing-dark-bg.png') !important;
+  background-repeat: repeat;
+  background-size: 560px 420px;
+}
+
+//TODO - Mary Make separate component for this
+.videoWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+  background: transparent;
+}
+
+.mask {
+  width: 100%;
+  height: 100%;
+}
+
+.mask {
+  animation: revealMaskInAndOut 0.8s ease-in forwards;
+  mask-image: radial-gradient(
+    circle at right top,
+    rgba(0, 0, 0, 1) 68%,
+    rgba(255, 255, 255, 0.8) 72%,
+    transparent 78%
+  );
+  mask-size: 0% 0%;
+  mask-repeat: no-repeat;
+  mask-position: right top;
+
+  -webkit-mask-size: 0% 0%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: right top;
+}
+
+@keyframes revealMaskInAndOut {
+  0% {
+    mask-size: 0% 0%;
+    -webkit-mask-size: 0% 0%;
+    mask-image: radial-gradient(
+      circle at right top,
+      rgba(0, 0, 0, 1) 68%,
+      rgba(255, 255, 255, 0.8) 72%,
+      transparent 78%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle at right top,
+      rgba(0, 0, 0, 1) 68%,
+      rgba(255, 255, 255, 0.8) 72%,
+      transparent 78%
+    );
+  }
+
+  50% {
+    mask-size: 200% 300%;
+    -webkit-mask-size: 200% 307%;
+    mask-image: radial-gradient(
+      circle at right top,
+      rgba(0, 0, 0, 1) 68%,
+      rgba(255, 255, 255, 0.8) 72%,
+      transparent 78%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle at right top,
+      rgba(0, 0, 0, 1) 68%,
+      rgba(255, 255, 255, 0.8) 72%,
+      transparent 78%
+    );
+  }
+  100% {
+    mask-size: 300% 300%;
+    -webkit-mask-size: 300% 300%;
+    mask-image: radial-gradient(
+      circle at right top,
+      transparent 20%,
+      rgba(255, 255, 255, 0.6) 25%,
+      rgba(0, 0, 0, 1) 30%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle at right top,
+      transparent 20%,
+      rgba(255, 255, 255, 0.6) 25%,
+      rgba(0, 0, 0, 1) 30%
+    );
+  }
+}
+
+.loadingVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.articlePage {
+  &::-webkit-scrollbar-thumb {
+    background: #262626 !important;
+    border-radius: 5px;
+    border-left: 1px solid #fafafa;
+  }
+}
+
+.Toastify__toast-container {
+  width: unset !important;
+  cursor: default !important;
+}
+
+.Toastify__toast {
+  background: unset;
+  background-color: unset !important;
+  box-shadow: unset !important;
+  overflow: unset !important;
+  cursor: default !important;
+}
+
+.slick-list {
+  width: 1140px;
+}
+
+.contributors-next-arrow,
+.contributors-prev-arrow {
+  cursor: pointer;
+  position: absolute;
+  transform: translateY(-50%);
+}
+
+.contributors-next-arrow {
+  right: 19px;
+  top: 50%;
+}
+
+.contributors-prev-arrow {
+  z-index: 1;
+  left: 19px;
+  top: 50%;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url('/keepsimple_/fonts/Lato/Lato-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Sarabun  is being used in landing and article pages
+@font-face {
+  font-family: 'Sarabun-Regular';
+  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sarabun-Medium';
+  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sarabun-Bold';
+  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Aldrich is being used in Company Management(new)
+@font-face {
+  font-family: 'Aldrich';
+  src: url('/keepsimple_/fonts/Aldrich-Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Tomorrow-Regular';
+  src: url('/keepsimple_/fonts/Tomorrow/Tomorrow-Light.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// This is only for mobile
+@font-face {
+  font-family: 'Tomorrow';
+  src: url('/keepsimple_/fonts/Tomorrow/Tomorrow-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Tomorrow medium
+@font-face {
+  font-family: 'Tomorrow-Medium';
+  src: url('/keepsimple_/fonts/Tomorrow/Tomorrow-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Jost - for Russian company management
+
+@font-face {
+  font-family: 'Jost-Regular';
+  src: url('/keepsimple_/fonts/Jost/Jost-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jost-Medium';
+  src: url('/keepsimple_/fonts/Jost/Jost-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+// For UXCat certificate
+@font-face {
+  font-family: 'IBMPlexSans-SemiBold.ttf';
+  src: url('/keepsimple_/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Armenian
+@font-face {
+  font-family: 'NotoSansArmenian-Regular';
+  src: url('/keepsimple_/fonts/NotoSansArmenian/NotoSansArmenian-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Aboreto-Regular for Article titles
+@font-face {
+  font-family: 'Aboreto-Regular';
+  src: url('/keepsimple_/fonts/Aboreto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Cormorant_Garamond-Bold for ArticlesLayout [for russian version]
+@font-face {
+  font-family: 'Cormorant_Garamond-Regular';
+  src: url('/keepsimple_/fonts/Cormorant_Garamond/static/CormorantGaramond-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Cormorant_Garamond-Medium for ArticlesLayout [for russian version]
+@font-face {
+  font-family: 'Cormorant-Garamond-Medium';
+  src: url('/keepsimple_/fonts/Cormorant_Garamond/static/CormorantGaramond-Medium.ttf')
+    format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Source Serif 4 for ArticlesLayout
+@font-face {
+  font-family: 'Source-Serif-Regular';
+  src: url('/keepsimple_/fonts/Source-Serif-4/static/SourceSerif4-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Source Serif 4 for ArticlesLayout
+@font-face {
+  font-family: 'Source-Serif-Bold';
+  src: url('/keepsimple_/fonts/Source-Serif-4/static/SourceSerif4-Bold.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Source Serif 4 for ArticlesLayout
+@font-face {
+  font-family: 'Source-Serif-SemiBold';
+  src: url('/keepsimple_/fonts/Source-Serif-4/static/SourceSerif4-SemiBold.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// YujiSyuku-Regular for Japanese
+@font-face {
+  font-family: 'YujiSyuku-Regular';
+  src: url('/keepsimple_/fonts/YujiSyuku-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  font-family: 'Source-Serif-Regular', sans-serif;
+}
+
+@media (max-width: 961px) {
+  body {
+    background-size: contain;
+  }
+}

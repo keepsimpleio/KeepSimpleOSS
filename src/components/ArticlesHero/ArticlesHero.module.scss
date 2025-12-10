@@ -1,0 +1,59 @@
+.heroSection {
+  background: url('/keepsimple_/assets/articles-blog/hero.png');
+  height: 362px;
+  width: 100%;
+  background-size: cover;
+
+  .heroContent {
+    display: flex;
+    width: 100%;
+    max-width: 663px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    flex-direction: column;
+
+    .title {
+      text-transform: uppercase;
+      padding: 48px 0 16px 0;
+    }
+
+    .p {
+      font-size: 16px;
+      line-height: 28px;
+      font-family: 'Source-Serif-Regular', sans-serif;
+      text-align: center;
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+  }
+}
+
+.darkTheme {
+  background: url('/keepsimple_/assets/articles-blog/hero-dark.webp');
+  background-size: cover;
+}
+
+@media (max-width: 1140px) {
+  .heroSection {
+    padding-top: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    background-position: right;
+
+    .heroContent {
+      .p {
+        padding: 16px 17px 20px 17px;
+        margin: 0;
+      }
+    }
+  }
+}

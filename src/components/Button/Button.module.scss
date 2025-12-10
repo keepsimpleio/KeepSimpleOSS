@@ -1,0 +1,127 @@
+.button {
+  line-height: 2px;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  padding: 6px 16px;
+  height: 32px;
+  background-color: #fff;
+  cursor: pointer;
+  color: #000;
+  transition: 0.2s;
+  font-size: 14px;
+
+  &:not(.disabled):hover {
+    border-color: #28587b;
+    color: #28587b;
+  }
+
+  &.grey {
+    background-color: #2f2f2f;
+    border-radius: 0;
+    color: #ffffff;
+    padding: 16px;
+    font-size: 18px;
+    width: fit-content;
+    line-height: 1.4;
+    height: unset;
+
+    &:hover {
+      background-color: #4e4e4e;
+      color: #fafafa;
+      border-color: unset;
+    }
+
+    &.disabled {
+      background-color: #c5c5c5;
+      color: #9c9c9c;
+      border-color: #c5c5c5;
+    }
+  }
+
+  &.primary {
+    color: #fff;
+    background-color: #28587b;
+    border-color: #28587b;
+  }
+
+  &.secondary {
+    background-color: unset;
+    border: 1px solid #2f2f2f;
+    padding: 16px;
+    width: fit-content;
+    line-height: 1.4;
+    height: unset;
+
+    &:hover {
+      background-color: #2f2f2f;
+      color: #ffffff;
+    }
+
+    &.disabled {
+      border: 1px solid #c5c5c5;
+      color: #c5c5c5;
+
+      &:hover {
+        background-color: unset;
+        color: #c5c5c5;
+      }
+    }
+  }
+
+  .iconWrapper {
+    margin-right: 5px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &.Big {
+    height: 54px;
+    font-size: 16px;
+  }
+
+  &.primary:not(.disabled):hover {
+    background-color: #28587b;
+    border-color: #28587b;
+    color: #fff;
+  }
+
+  .Loader {
+    animation-name: spin;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    margin-right: 5px;
+    margin-bottom: -2px;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+@media (max-width: 901px) {
+  .Button {
+    &.Big {
+      height: 45px;
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

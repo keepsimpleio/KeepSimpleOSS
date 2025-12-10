@@ -1,0 +1,356 @@
+@import '@styles/_animations.scss';
+
+.headline {
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.png');
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  height: 84vh;
+  position: relative;
+  overflow: hidden;
+
+  .leaf {
+    width: 12px;
+    height: 24px;
+  }
+
+  .serenity {
+    position: absolute;
+    right: 32px;
+    top: 20px;
+    cursor: pointer;
+    display: flex;
+    line-height: 1.5;
+  }
+
+  .serenityBtn {
+    margin-left: 5px;
+    font-size: 16px;
+    font-family: 'Source-Serif-Regular', serif;
+  }
+
+  .headlineInfo {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 1440px;
+    height: auto;
+    max-height: 100%;
+
+    .videoContainer {
+      .video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background-color: unset;
+      }
+    }
+
+    .videoContainerMobile {
+      display: none;
+    }
+
+    .contributors {
+      color: #000000d9;
+      text-decoration: none;
+      position: absolute;
+      right: 1%;
+      bottom: 2%;
+      cursor: pointer;
+
+      &::after {
+        content: '';
+        position: absolute;
+        background-image: url('/keepsimple_/assets/contributors/underline-landing.svg');
+        width: 100%;
+        height: 7px;
+        left: 0;
+        bottom: -5px;
+        background-size: inherit;
+        background-repeat: no-repeat;
+      }
+    }
+  }
+
+  .contentWrapper {
+    width: 622px;
+    padding-left: 150px;
+
+    .headlineContent {
+      > * {
+        color: #000000;
+      }
+
+      h1 {
+        font-size: 21px;
+        line-height: 1;
+        margin: 0 0 8px 0;
+        font-family: 'Source-Serif-Bold', sans-serif;
+      }
+
+      p,
+      a,
+      span {
+        font-family: 'Source-Serif-Regular', sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        letter-spacing: -0.01em;
+      }
+
+      p {
+        font-size: 16px;
+      }
+
+      a {
+        color: #000000;
+      }
+    }
+
+    .section {
+      opacity: 0;
+    }
+
+    .defaultFadeIn {
+      animation-delay: 0.4s;
+      @extend .animate-fadeInLeft;
+    }
+
+    .defaultFadeIn2 {
+      animation-delay: 0.5s;
+      @extend .animate-fadeInLeft;
+    }
+
+    .defaultFadeIn3 {
+      animation-delay: 0.6s;
+      @extend .animate-fadeInLeft;
+    }
+
+    .defaultFadeIn4 {
+      animation-delay: 0.7s;
+      @extend .animate-fadeInLeft;
+    }
+
+    .defaultFadeIn5 {
+      animation-delay: 0.8s;
+      @extend .animate-fadeInLeft;
+    }
+
+    .startingPoint {
+      opacity: 1;
+    }
+
+    .defaultState {
+      opacity: 0;
+    }
+
+    .fadeOut {
+      opacity: 0;
+      @extend .animate-fadeOut;
+      pointer-events: none;
+    }
+
+    .fadeIn {
+      @extend .animate-fadeInLeft;
+    }
+  }
+
+  .socialMedia {
+    display: flex;
+    gap: 24px;
+    padding-top: 5px;
+    align-items: center;
+
+    .btn {
+      border-radius: 2px;
+      width: 100px;
+      height: 32px;
+      font-size: 16px;
+      margin-right: unset;
+      background-color: unset;
+      border: 1px solid #303030;
+      color: #303030;
+      transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border 0.3s ease;
+
+      &:hover {
+        background: #303030;
+        color: #ffffff;
+        border: 1px solid #303030;
+      }
+    }
+  }
+}
+
+.darkTheme {
+  .serenityBtn {
+    color: #252626;
+  }
+
+  .contentWrapper {
+    .headlineContent {
+      h1,
+      p,
+      a,
+      span {
+        color: rgb(0, 0, 0);
+      }
+    }
+  }
+
+  .socialMedia {
+    .btn {
+      background-color: unset;
+      color: rgb(0, 0, 0);
+    }
+  }
+}
+
+.russianView {
+  .serenity {
+    align-items: center;
+  }
+}
+
+@media (min-width: 1921px) {
+  .headline {
+    height: 800px;
+
+    .contentWrapper {
+      padding-left: 0;
+      padding-top: 0;
+    }
+
+    .headlineInfo {
+      justify-content: center;
+      align-items: center;
+
+      .videoContainer {
+        .video {
+          height: 800px;
+          object-fit: none;
+          background-color: #e7e7e7;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .headline {
+    height: 600px;
+  }
+}
+
+@media (max-width: 1140px) {
+  .headline {
+    .contentWrapper {
+      padding-left: 50px;
+    }
+    .contributors {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .headline {
+    height: 100%;
+    background-image: unset;
+
+    .leaf,
+    .serenityBtn {
+      display: none;
+    }
+
+    .headlineInfo {
+      flex-direction: column-reverse;
+      padding-bottom: 30px;
+      align-items: unset;
+
+      .videoContainer {
+        display: none;
+
+        .video {
+          display: none;
+        }
+      }
+
+      .videoContainerMobile {
+        display: block;
+        width: 786px;
+        max-width: 100%;
+        height: auto;
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 55vh;
+          background-image: url('/assets/landingPage/landing-bg.png');
+          background-repeat: repeat;
+        }
+
+        .video {
+          width: 100vw;
+          height: 55vh;
+          -o-object-fit: cover;
+          object-fit: cover;
+        }
+      }
+    }
+
+    .contentWrapper {
+      padding-left: 15px;
+      padding-top: unset;
+      width: unset;
+
+      .headlineContent {
+        padding-top: 20px;
+      }
+    }
+
+    .img {
+      display: none;
+    }
+  }
+  .darkTheme {
+    .serenityBtn {
+      display: none;
+    }
+
+    .contentWrapper {
+      .headlineContent {
+        h1,
+        p,
+        a,
+        span {
+          color: #ffffffd9;
+        }
+      }
+    }
+
+    .socialMedia {
+      .btn {
+        background-color: unset;
+        color: #ffffffd9;
+        border: 1px solid #ffffffd9;
+
+        &:hover {
+          background: #ffffffd9;
+          color: #000000;
+          border: 1px solid #ffffffd9;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+.defaultTooltip {
+  background: #fff;
+  color: #000;
+  z-index: 9999;
+  width: 300px;
+  opacity: 1;
+  text-align: center;
+  border: 1px solid #cbcbcb;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  max-width: 380px;
+
+  > div {
+    border: none;
+    filter: unset;
+    box-shadow: unset;
+    border-bottom: 1px solid #c7c7c7;
+    border-right: 1px solid #c7c7c7;
+    bottom: -5px !important;
+  }
+}
+
+.emaCard {
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.png');
+  display: flex;
+  flex-direction: column;
+  width: 562px;
+  border: 1px solid #00000040;
+  background-color: #fafafa;
+  padding: 41px 32px;
+}
+
+.section {
+  display: flex;
+  width: 100%;
+  max-width: 1140px;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.sectionTable {
+  display: flex;
+  width: 100%;
+  max-width: 1300px;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}

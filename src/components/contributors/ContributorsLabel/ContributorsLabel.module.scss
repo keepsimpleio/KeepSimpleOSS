@@ -1,0 +1,34 @@
+.labelWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.label {
+  background-image: url('/keepsimple_/assets/contributors/contributor-bg.png');
+  font-size: 16px;
+  text-transform: uppercase;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border: 1px solid #303030d9;
+  border-radius: 20px;
+}
+
+.labelDark {
+  color: #ffffff;
+  border: 1px solid #ffffffe5;
+  background-image: url('/keepsimple_/assets/contributors/contributor-bg-dark.png');
+}
+
+@media (max-width: 1140px) {
+  .labelWrapper {
+    position: relative;
+    right: 30px;
+  }
+}
+
+@media (max-width: 800px) {
+  .labelWrapper {
+    top: 30px;
+  }
+}

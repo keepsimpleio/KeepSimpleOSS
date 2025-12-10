@@ -1,0 +1,38 @@
+name: Run Cypress Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build app
+        run: yarn build:staging
+        env:
+          NODE_ENV: production
+          APP_ENV: staging
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: yarn start:staging
+          wait-on: 'http://localhost:3005'
+          wait-on-timeout: 300
+          command: yarn cypress run
+        env:
+          NODE_ENV: production
+          APP_ENV: staging
+          CYPRESS_BASE_URL: http://localhost:3005

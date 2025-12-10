@@ -1,0 +1,19 @@
+# Set to true to add reviewers to pull requests
+addReviewers: true
+
+# Set to true to add assignees to pull requests
+addAssignees: false
+
+# A list of reviewers to be added to pull requests (GitHub user name)
+# reviewers:
+
+#   - MaryWylde
+
+# - Allow to merge the pull request only if all the reviewers approved
+# - Set too false to allow the pull request to be merged if one of the reviewers approved
+# - Default: true
+requireReviewersApproval: true
+ 
+# A number of reviewers added to the pull request
+# Set 0 to add all the reviewers (default: 0)
+numberOfReviewers: 3

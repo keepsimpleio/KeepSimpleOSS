@@ -1,0 +1,131 @@
+@import '@styles/_variables.scss';
+
+.Input {
+  font-size: 16px;
+  color: #000;
+  margin-bottom: 20px;
+  width: 100%;
+
+  .Label {
+    margin-bottom: 10px;
+
+    .LabelHintIcon {
+      padding-left: 5px;
+    }
+
+    & img {
+      position: relative;
+      top: 2px;
+      cursor: help;
+    }
+
+    .tooltip {
+      @extend .defaultTooltip;
+    }
+  }
+
+  & .InputWrapper {
+    position: relative;
+
+    & input {
+      min-height: 32px;
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid #cbcbcb;
+      padding: 6px 10px;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+
+      &::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: #ababab;
+        opacity: 1; /* Firefox */
+      }
+
+      &:focus {
+        border-color: #6d6d6d;
+        outline: none;
+
+        & ~ .Icon svg path {
+          fill: #6d6d6d;
+        }
+      }
+    }
+
+    &.WithIcon input {
+      padding-right: 34px;
+    }
+
+    & .Message {
+      position: absolute;
+      bottom: 0;
+      left: 10px;
+      font-size: 12px;
+      z-index: 0;
+      transition: 0.2s;
+    }
+
+    & .Icon {
+      position: absolute;
+      z-index: 1;
+      right: 10px;
+      top: 8px;
+
+      &.WithCursor {
+        cursor: pointer;
+      }
+
+      & .ClearIcon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    & .CharLimit {
+      position: absolute;
+      top: 0;
+      font-size: 12px;
+      right: 5px;
+      z-index: 0;
+      color: #6a6a6a;
+      transition: 0.3s;
+
+      &.Visible {
+        top: -15px;
+      }
+
+      &.Highlighted {
+        color: #5b88bd;
+      }
+    }
+  }
+
+  &.Error {
+    & .InputWrapper {
+      & .Message {
+        color: red;
+      }
+    }
+  }
+
+  &.ShowMessage {
+    & .InputWrapper {
+      .Message {
+        bottom: -16px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .Input {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1440px) {
+  .Input {
+    font-size: 16px;
+  }
+}

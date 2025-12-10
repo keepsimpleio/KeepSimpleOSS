@@ -1,0 +1,83 @@
+.CompanyManagementNewPage {
+  overflow: hidden;
+  max-width: 1920px;
+  margin: 0 auto;
+  min-height: calc(100vh - 48px);
+  display: flex;
+  cursor: url(/keepsimple_/assets/company-management/cursor.svg), auto;
+
+  & * {
+    font-family: 'Tomorrow-Regular', sans-serif;
+  }
+
+  .infoSectionMobile {
+    display: none;
+  }
+
+  .LeftSide {
+    width: 100%;
+    background-image: url(/keepsimple_/assets/company-management/bg-grid.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 94%;
+  }
+
+  .RightSide {
+    min-width: 430px;
+    background-color: #060d28;
+    box-shadow: 0px 1px 13.2px 0px #5670e152;
+    box-sizing: border-box;
+    padding-left: 16px;
+    position: relative;
+  }
+}
+
+.ruView {
+  & * {
+    font-family: 'Jost-Regular', sans-serif !important;
+  }
+}
+
+@media (min-width: 2200px) {
+  .CompanyManagementNewPage {
+    .RightSide {
+      border-radius: 8px;
+      box-shadow: 0px 1px 13.2px 0px #5670e152;
+      height: 92vh;
+      margin-top: 30px;
+      margin-right: 3px;
+    }
+  }
+}
+
+@media (max-width: 1140px) {
+  .CompanyManagementNewPage {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    margin-top: 0;
+
+    .LeftSide {
+      background-image: none;
+    }
+
+    .RightSide {
+      padding-bottom: 16px;
+      margin: 0 8px 0;
+      box-shadow: none;
+      padding-left: unset;
+      min-width: unset;
+      background-color: transparent;
+    }
+
+    .infoSectionMobile {
+      display: block;
+    }
+
+    .RightSide {
+      > div:first-child {
+        display: none;
+      }
+    }
+  }
+}

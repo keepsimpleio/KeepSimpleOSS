@@ -1,0 +1,93 @@
+.pageNotFound {
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.png');
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #333333;
+
+    .image {
+      object-fit: none;
+      width: auto;
+      height: fit-content;
+    }
+
+    .title {
+      font-size: 32px;
+      line-height: 1.5;
+      font-family: 'Aboreto-Regular', sans-serif;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin: 0;
+      padding: 52px 0 32px 0;
+    }
+
+    .message {
+      font-family: 'Source-Serif-Regular', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0 0 32px 0;
+      text-align: center;
+    }
+
+    .buttonWrapper {
+      padding-top: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      .backButton {
+        all: unset;
+        font-size: 16px;
+        text-transform: uppercase;
+        font-family: 'Aboreto-Regular', sans-serif;
+        font-weight: 400;
+        cursor: pointer;
+        padding-bottom: 10px;
+      }
+
+      .buttonLine {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.ruPageNotFound {
+  .content {
+    .title {
+      font-family: 'Cormorant_Garamond-Regular', sans-serif;
+    }
+
+    .buttonWrapper {
+      .backButton {
+        font-family: 'Cormorant_Garamond-Regular', sans-serif;
+
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .pageNotFound {
+    padding: 0 10px;
+
+    .content {
+      .image {
+        max-width: 700px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+@import '@styles/_animations.scss';
+
+.tools {
+  display: flex;
+  padding: 64px 0;
+  flex-direction: column;
+  align-items: unset !important;
+
+  .title {
+    opacity: 0;
+    font-size: 24px;
+    font-family: 'Source-Serif-SemiBold', sans-serif;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+  }
+  .visibleTitle {
+    @extend .animate-fadeInRightToLeft;
+  }
+
+  .toolsWrapper {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+}
+
+.darkTheme {
+  .title {
+    color: #ffffffd9;
+  }
+}
+
+@media (max-width: 1000px) {
+  .tools {
+    padding: 0 0 40px 0;
+
+    .toolsWrapper {
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .tools {
+    .title {
+      font-size: 20px;
+    }
+  }
+}

@@ -1,0 +1,174 @@
+.container {
+  position: relative;
+
+  & h1 {
+    margin: 24px 0 16px 0;
+    font-size: 24px;
+    line-height: 24px;
+    text-align: center;
+    text-shadow: 0px 1px 8.3px #5670e1;
+    color: #ede3ff;
+    font-weight: normal;
+  }
+
+  .switchContainer {
+    display: flex;
+    justify-content: center;
+    //margin-top: 30px;
+  }
+
+  .switch {
+    display: inline-flex;
+
+    &>div {
+      padding: 8px 12px;
+      color: #fff;
+      box-sizing: border-box;
+      border: 1px solid #c9d9ff;
+      cursor: pointer;
+
+      &:nth-child(1) {
+        background: linear-gradient(180deg,
+            rgba(129, 179, 255, 0.1) 0%,
+            rgba(0, 26, 255, 0.1) 100%);
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+
+        &.active {
+          background: linear-gradient(45deg,
+              #12329e 0%,
+              #061238 47%,
+              #1f4186 100%);
+          box-shadow: 0px 1px 8.3px 0px #2218af;
+        }
+      }
+
+      &:nth-child(2) {
+        background: linear-gradient(180deg,
+            rgba(255, 189, 129, 0.1) 0%,
+            rgba(255, 122, 0, 0.1) 100%);
+        border: 1px solid;
+
+        border-image-source: linear-gradient(64.53deg);
+
+        &.active {
+          background: linear-gradient(180deg,
+              rgba(255, 255, 255, 0.12) 0%,
+              rgba(153, 153, 153, 0.12) 100%),
+            linear-gradient(272.09deg,
+              rgba(141, 101, 64, 0.82) 14.52%,
+              rgba(56, 36, 6, 0.82) 48.48%,
+              rgba(102, 74, 31, 0.82) 86.77%);
+          box-shadow: 0px 1px 8.3px 0px #8d5e27;
+        }
+      }
+
+      &:nth-child(3) {
+        background: linear-gradient(180deg,
+            rgba(245, 129, 255, 0.1) 0%,
+            rgba(255, 0, 122, 0.1) 100%);
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+
+        &.active {
+          background: linear-gradient(180deg,
+              rgba(255, 255, 255, 0.12) 0%,
+              rgba(153, 153, 153, 0.12) 100%),
+            linear-gradient(272.09deg,
+              rgba(107, 64, 141, 0.82) 14.52%,
+              rgba(43, 6, 56, 0.82) 48.48%,
+              rgba(96, 31, 102, 0.82) 86.77%);
+          box-shadow: 0px 1px 8.3px 0px #54278d;
+        }
+      }
+    }
+  }
+
+  .play {
+    position: absolute;
+    top: -6px;
+    left: 60px;
+    cursor: pointer;
+  }
+}
+
+.ruVersion {
+  .switchContainer {
+    .switch {
+      >div {
+        padding: 6px 12px;
+      }
+    }
+  }
+}
+
+@media(max-width: 1360px) {
+  .container {
+    .play {
+      left: 30px;
+    }
+  }
+}
+
+@media (max-width: 1140px) {
+  .container {
+    & h1 {
+      margin: 50px 0 16px 0;
+      padding-top: 24px;
+      font-size: 20px;
+    }
+
+    .play {
+      display: none;
+    }
+
+    .switchContainer {
+      margin-top: 24px;
+    }
+
+    .switch {
+      flex-direction: column;
+
+      &>div {
+        border-radius: 8px;
+        text-align: center;
+        width: 310px;
+        font-size: 14px;
+        height: 30px;
+        padding: 8px 0;
+        line-height: 14px;
+        position: relative;
+
+        &.active {
+
+          &::before,
+          &::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-image: url(/assets/company-management/mobile-switch-icon.png);
+            background-size: 100%;
+            background-position: center center;
+          }
+
+          &::after {
+            top: 0px;
+            left: -30px;
+          }
+
+          &::before {
+            top: -2px;
+            left: auto;
+            right: -30px;
+            transform: rotate(180deg);
+          }
+        }
+
+        &+div {
+          margin-top: 12px;
+        }
+      }
+    }
+  }
+}

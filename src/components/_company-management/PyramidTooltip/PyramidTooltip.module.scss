@@ -1,0 +1,112 @@
+.tooltip {
+  position: fixed;
+  background: #666666;
+  padding: 5px;
+  overflow: hidden;
+  color: #fff;
+  white-space: nowrap;
+  z-index: 99999;
+  background: linear-gradient(107.04deg,
+      rgba(86, 73, 95, 0.58) 12.63%,
+      rgba(25, 0, 40, 0.58) 90.62%);
+  backdrop-filter: blur(10px);
+  width: 349px;
+  border-radius: 16px;
+  border: 1px solid #69627a;
+  height: auto;
+  visibility: hidden;
+
+  .titleAndImg {
+    padding-left: 8px;
+    padding-right: 17px;
+    display: flex;
+    gap: 11px;
+
+    .title {
+      font-size: 16px;
+      text-wrap: wrap;
+      padding-left: 11px;
+    }
+
+    .imgWrapper {
+      width: 64px;
+      height: 67px;
+      display: flex;
+      align-items: center;
+
+      &:before {
+        content: '';
+        position: absolute;
+        background: url('/assets/company-management/tooltipBg.png');
+        width: 80px;
+        height: 80px;
+        background-repeat: round;
+        border-radius: 8px;
+      }
+
+      >img {
+        padding-left: 20px;
+        object-fit: contain;
+      }
+    }
+  }
+
+  .txt {
+    color: #ede3ff;
+    font-size: 16px;
+    text-shadow: 0px 1px 8.3px #5670e1;
+    gap: 6px;
+    margin: 11px 0 0 0;
+    padding-left: 16px;
+    padding-right: 16px;
+    text-wrap: initial;
+    //font-family: "Tomorrow-Regular", sans-serif;
+
+    .up,
+    .down {
+      text-shadow: 0px 1px 8.3px #5670e1;
+      display: inline-block;
+      width: 0px;
+      height: 0px;
+      border-style: solid;
+      border-color: transparent;
+      border-left-width: 10px;
+      border-right-width: 10px;
+      position: relative;
+      margin: 0 2px 0 8px;
+      border-bottom-width: 7px;
+      color: #29c30f;
+      border-bottom-color: #29c30f;
+    }
+
+    .up {
+      top: -2px;
+    }
+
+    .down {
+      transform: rotate(180deg);
+      top: 2px;
+    }
+  }
+
+  .txt:last-child {
+    margin: 11px 0 16px 0;
+  }
+
+  .none {
+    display: none;
+  }
+
+  .learnMore {
+    color: #ede3ff;
+    font-size: 14px;
+    margin-left: 17px;
+    text-shadow: 0px 1px 8.3px #5670e1;
+    display: flex;
+    gap: 3px;
+  }
+}
+
+.visible {
+  visibility: visible;
+}

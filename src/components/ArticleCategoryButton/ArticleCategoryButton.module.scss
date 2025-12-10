@@ -1,0 +1,34 @@
+.categoryButton {
+  all: unset;
+  border: 1px solid #000000d9;
+  border-radius: 20px;
+  font-family: Aboreto-Regular, sans-serif;
+  font-weight: 400;
+  padding: 8px 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+
+  &:hover {
+    background: #303030;
+    color: #ffffff;
+  }
+}
+
+.darkTheme {
+  border: 1px solid #ffffffd9;
+
+  &:hover {
+    background: #ffffff33;
+  }
+}
+
+.russianVersion {
+  font-family: 'Cormorant_Garamond-Regular', sans-serif;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .categoryButton {
+    font-size: 14px;
+  }
+}

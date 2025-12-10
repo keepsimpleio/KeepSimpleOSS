@@ -1,0 +1,51 @@
+.container {
+  margin-top: 16px;
+  opacity: 0.65;
+  max-width: 355px;
+  position: absolute;
+  bottom: 0;
+
+  &>div {
+    color: #ede3ff80;
+    text-shadow: 0 1px 8.3px #5670e1;
+    font-size: 12px;
+    line-height: 14px;
+
+    &>p {
+      max-width: 414px;
+
+      &>a {
+        color: #ede3ff80;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &.mobile {
+    & div {
+      line-height: 20px;
+    }
+
+    .releaseDate {
+      margin-top: 20px;
+    }
+  }
+}
+
+@media (max-width: 1140px) {
+  .container {
+    margin: 0 20px;
+    position: unset;
+
+    >div {
+      >p {
+        font-size: 12px;
+
+        >a {
+          margin-bottom: 5px;
+          display: inline-block;
+        }
+      }
+    }
+  }
+}

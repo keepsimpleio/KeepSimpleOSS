@@ -1,0 +1,363 @@
+.header {
+  box-sizing: border-box;
+  width: 100%;
+  font-weight: 100;
+  transition: 0.3s;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 48px;
+  padding-top: unset;
+  flex-direction: row;
+  gap: 74px;
+  padding-left: 2.5rem;
+
+  .logo {
+    margin-top: 3px !important;
+    cursor: pointer;
+  }
+
+  .actions {
+    bottom: 10px;
+  }
+
+  .burgerMenu,
+  .closeButton {
+    display: none;
+  }
+
+  .actions {
+    font-size: 16px;
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    display: flex;
+    align-items: center;
+
+    & > * {
+      display: inline-block;
+    }
+
+    .toggleLanguage {
+      text-align: center;
+      margin-right: 14px;
+
+      .languageTitle {
+        cursor: pointer;
+        text-decoration: none;
+        color: #252626;
+        display: flex;
+        align-items: flex-end;
+        text-transform: uppercase;
+        gap: 4px;
+      }
+
+      &.en a:nth-child(1) {
+        font-weight: 700;
+      }
+
+      &.ru a:nth-child(3) {
+        font-weight: 700;
+      }
+
+      & .toggleLanguageDivider {
+        margin: 0 6px;
+      }
+    }
+
+    & .toggleTheme {
+      background-image: url('/keepsimple_/assets/themeIcons/moon.png');
+      cursor: pointer;
+      background-position: left center;
+      background-repeat: no-repeat;
+      background-size: 24px;
+      width: 24px;
+      height: 24px;
+      padding-right: 16px;
+    }
+  }
+}
+
+@media (max-width: 1140px) {
+  .header {
+    gap: unset;
+    margin-left: unset;
+    height: 55px !important;
+    position: fixed;
+    padding: 0 1.4rem;
+    background-color: #fff;
+    z-index: 6;
+    align-items: center;
+    justify-content: center;
+
+    .logo {
+      display: block;
+    }
+
+    .actions {
+      top: 3rem !important;
+      display: block;
+      font-size: 1rem;
+      font-family: 'Sarabun-Medium', serif;
+      position: fixed;
+      padding-top: 0;
+      right: auto;
+      left: -100%;
+      text-align: left;
+      transition: 0.3s;
+      width: 100%;
+      background: #fff;
+      height: fit-content;
+      padding-left: 1.5rem;
+    }
+
+    & .burgerMenu {
+      display: block !important;
+      width: 1.125rem;
+      position: absolute;
+      transition: 0.3s;
+      top: 1.375rem;
+      left: 1.5rem;
+
+      & div {
+        height: 0.0625rem;
+        background-color: #5d6063;
+        margin-top: 0.25rem;
+      }
+    }
+
+    & .closeButton {
+      display: block;
+      position: absolute;
+      transition: 0.3s;
+      right: -2rem;
+      height: 1.875rem;
+      top: 1rem;
+
+      &:after,
+      &:before {
+        content: '';
+        position: relative;
+        transition: 0.3s;
+        height: 0.0625rem;
+        width: 1.875rem;
+        display: block;
+        background-color: #5d6063;
+      }
+
+      &:after {
+        transform: rotate(45deg);
+        top: 0.875rem;
+      }
+
+      &:before {
+        transform: rotate(-45deg);
+        top: 0.9375rem;
+      }
+    }
+  }
+
+  .header.openedSidebar {
+    & .closeButton {
+      right: 1rem;
+    }
+
+    & .burgerMenu {
+      left: -1.5rem;
+    }
+
+    & .actions {
+      left: 0;
+    }
+  }
+
+  .header.darkTheme {
+    background-color: #151a26;
+
+    & .actions {
+      background: #151a26;
+
+      & .toggleTheme {
+        background-image: url('/keepsimple_/assets/themeIcons/sun.png');
+      }
+
+      .toggleLanguage {
+        .languageTitle {
+          color: #dadada;
+        }
+      }
+    }
+
+    & .burgerMenu {
+      & div {
+        background-color: #fff;
+      }
+    }
+
+    & .closeButton {
+      &:after,
+      &:before {
+        background-color: #fff;
+      }
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .header {
+    position: fixed;
+    padding: 0 1.4rem;
+    height: 82px;
+    background-color: #fff;
+    z-index: 5;
+    align-items: center;
+    justify-content: center;
+
+    .actions {
+      display: block;
+      font-size: 1rem;
+      font-family: 'Sarabun-Medium', serif;
+      position: fixed;
+      padding-top: 0;
+      right: auto;
+      top: 3.575rem;
+      left: -100%;
+      text-align: left;
+      transition: 0.3s;
+      width: 100%;
+      background: #fff;
+      height: fit-content;
+      padding-left: 1.5rem;
+    }
+
+    & .burgerMenu {
+      display: block !important;
+      width: 1.125rem;
+      position: absolute;
+      transition: 0.3s;
+      top: 1.375rem;
+      left: 1.5rem;
+
+      & div {
+        height: 0.0625rem;
+        background-color: #5d6063;
+        margin-top: 0.25rem;
+      }
+    }
+
+    & .closeButton {
+      display: block;
+      position: absolute;
+      transition: 0.3s;
+      right: -2rem;
+      height: 1.875rem;
+      top: 1rem;
+
+      &:after,
+      &:before {
+        content: '';
+        position: relative;
+        transition: 0.3s;
+        height: 0.0625rem;
+        width: 1.875rem;
+        display: block;
+        background-color: #5d6063;
+      }
+
+      &:after {
+        transform: rotate(45deg);
+        top: 0.875rem;
+      }
+
+      &:before {
+        transform: rotate(-45deg);
+        top: 0.9375rem;
+      }
+    }
+  }
+}
+
+/* Dark Theme */
+.header.darkTheme {
+  background-color: #151a26;
+
+  & .actions {
+    .user {
+      &:hover {
+        background-color: #3a3b3b !important;
+      }
+
+      .userName {
+        color: #fff !important;
+      }
+    }
+
+    & .roundButton {
+      border: 0.0625rem solid #5d6063;
+
+      &:hover {
+        border: 0.0625rem solid #dadada;
+      }
+    }
+
+    & .toggleTheme {
+      background-image: url('/keepsimple_/assets/themeIcons/sun.png');
+    }
+
+    .toggleLanguage {
+      .languageTitle {
+        color: #dadada;
+      }
+    }
+  }
+
+  & .burgerMenu {
+    & div {
+      background-color: #fff;
+    }
+  }
+
+  & .closeButton {
+    &:after,
+    &:before {
+      background-color: #fff;
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .header.darkTheme {
+    & .actions {
+      background: #151a26;
+
+      .user {
+        &:hover {
+          background-color: #3a3b3b !important;
+        }
+
+        .userName {
+          color: #fff !important;
+        }
+      }
+    }
+  }
+
+  .header.openedSidebar {
+    & .closeButton {
+      right: 1rem;
+    }
+
+    & .burgerMenu {
+      left: -1.5rem;
+    }
+
+    & .actions {
+      left: 0;
+    }
+  }
+}

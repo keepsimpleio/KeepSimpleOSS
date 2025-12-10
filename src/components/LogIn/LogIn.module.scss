@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+
+  .heading {
+    h3 {
+      font-size: 48px !important;
+    }
+  }
+  .text {
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+  }
+  .btnWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .linkBtn {
+      all: unset;
+      cursor: pointer;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow:
+        0px 2px 3px rgba(0, 0, 0, 0.168),
+        0px 0px 3px rgba(0, 0, 0, 0.084);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    .googleBtn {
+      background-color: #fff;
+      color: #0000008a;
+    }
+    .discordBtn {
+      background-color: #5865f2;
+      color: white;
+      margin-bottom: 114px;
+    }
+  }
+}

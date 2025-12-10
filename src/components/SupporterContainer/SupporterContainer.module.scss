@@ -1,0 +1,125 @@
+@import '@styles/_animations.scss';
+
+.gradientBg {
+  width: 100%;
+  max-width: 367px;
+  height: 485px;
+  padding: 1px;
+  opacity: 0;
+
+  .wrapper {
+    background-image: url('/keepsimple_/assets/landingPage/landing-bg.png');
+    width: 100%;
+    border: 1px solid #dad6d4;
+    max-width: 367px;
+    height: 485px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    .supporterInfo,
+    .quoteWrapper {
+      width: 100%;
+      max-width: 336px;
+    }
+
+    p,
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Source-Serif-Regular', sans-serif;
+      letter-spacing: -0.01em;
+      line-height: 1.5;
+    }
+
+    .quoteMark {
+      margin-top: 24px;
+      display: block;
+      color: #ce1f26;
+      font-size: 32px;
+    }
+
+    .quote {
+      p {
+        margin: 0 0 42px 0;
+        line-height: 24px;
+        height: 96px;
+        max-height: 100%;
+      }
+    }
+
+    .about {
+      p {
+        > span {
+          margin: 0 0 32px 0;
+          font-size: 14px;
+          line-height: 21px;
+          font-family: 'Source-Serif-Regular', sans-serif;
+        }
+      }
+    }
+
+    .name {
+      margin: 0 0 8px 0;
+      font-family: Aboreto-Regular, sans-serif;
+      font-size: 20px;
+      line-height: 1.5;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .image {
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 16px;
+    }
+  }
+}
+
+.inViewWrapper {
+  @extend .animate-fadeInRightToLeft;
+}
+
+.darkTheme {
+  .wrapper {
+    background-image: url('/keepsimple_/assets/landingPage/cards-bg.png');
+    background-size: cover;
+    border: 1px solid #414141;
+  }
+
+  .quote,
+  .about {
+    p {
+      color: #fffffff5;
+    }
+  }
+
+  .name {
+    color: #ffffffd9;
+  }
+}
+
+@media (max-width: 960px) {
+  .gradientBg {
+    max-width: 600px;
+    width: -webkit-fill-available;
+    width: -moz-available;
+
+    .wrapper {
+      max-width: 600px;
+      width: -webkit-fill-available;
+      width: -moz-available;
+
+      .quoteWrapper {
+        .quote {
+          padding: 0 15px;
+        }
+      }
+    }
+
+    .about {
+      padding: 0 15px;
+    }
+  }
+}

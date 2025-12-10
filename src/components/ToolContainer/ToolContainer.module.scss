@@ -1,0 +1,291 @@
+@import '@styles/_animations.scss';
+
+.tool {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  position: relative;
+  opacity: 0;
+
+  &:hover {
+    background-color: #ffebe673;
+  }
+
+  &:before,
+  &:after {
+    content: '';
+    opacity: 0;
+    position: absolute;
+    width: 4px;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 5;
+  }
+
+  &:before {
+    top: 0;
+    left: -1px;
+  }
+
+  &:after {
+    top: 0;
+    right: -1px;
+  }
+}
+
+.toolDarkTheme {
+  &:hover {
+    background-color: unset;
+  }
+}
+
+.smallWrapper {
+  &:before {
+    top: -5px;
+    height: 363px;
+    background-image: url('/keepsimple_/assets/landingPage/ourTools/small-left.svg');
+  }
+
+  &:after {
+    top: -5px;
+    height: 361px;
+    background-image: url('/keepsimple_/assets/landingPage/ourTools/small-right.svg');
+  }
+}
+
+.mediumWrapper {
+  &:before {
+    top: -5px;
+    height: 396px;
+    background-image: url('/keepsimple_/assets/landingPage/ourTools/medium-left.svg');
+  }
+
+  &:after {
+    top: -18px;
+    right: -1px;
+    height: 411px;
+    background-image: url('/keepsimple_/assets/landingPage/ourTools/medium-right.svg');
+  }
+}
+
+.largeWrapper {
+  &:before {
+    top: -15px;
+    height: 447px;
+    background-image: url('/keepsimple_/assets/landingPage/ourTools/large-left.svg');
+  }
+
+  &:after {
+    top: -8px;
+    right: -1px;
+    height: 440px;
+    background-image: url('/keepsimple_/assets/landingPage/ourTools/large-right.svg');
+  }
+}
+
+.wrapper {
+  padding: 1px;
+  width: 100%;
+  height: 100%;
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.png');
+  background-repeat: no-repeat;
+  border: 1px solid #dad6d4;
+  max-width: 364px;
+  opacity: 0;
+
+  .mainContentUrl {
+    position: relative;
+    z-index: 4;
+  }
+
+  .mainContent {
+    width: 100%;
+    height: 100%;
+    max-width: 312px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 27px;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    .iconWrapper {
+      position: relative;
+
+      .japaneseName {
+        position: absolute;
+        top: 21px;
+        width: max-content;
+        right: 50%;
+        transform: translateX(50%);
+        font-size: 36px;
+        line-height: 30.5px;
+        font-family: 'YujiSyuku-Regular', sans-serif;
+        color: #444444;
+        margin: 0;
+        font-weight: 400;
+      }
+    }
+
+    .name,
+    p {
+      color: #000000d9;
+      font-family: 'Source-Serif-Regular', sans-serif;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 1.5;
+      margin: 16px 0;
+      font-family: 'Source-Serif-SemiBold', sans-serif;
+
+      text-align: center;
+    }
+
+    p {
+      margin: 0;
+      text-align: center;
+      line-height: 1.5;
+      font-family: 'Source-Serif-Regular', serif;
+      font-size: 18px;
+
+      span {
+        font-family: 'Source-Serif-Regular', serif;
+      }
+    }
+  }
+}
+
+.inViewSmall,
+.inViewMedium,
+.inViewLarge {
+  animation-delay: 0.4s;
+  @extend .animate-fadeInRightToLeft;
+
+  &:before,
+  &:after {
+    opacity: 1;
+  }
+
+  .wrapper {
+    opacity: 1;
+  }
+}
+
+.inViewMedium {
+  animation-delay: 0.5s;
+}
+
+.inViewLarge {
+  animation-delay: 0.6s;
+}
+
+.darkTheme.wrapper {
+  border: 1px solid #414141;
+  background-image: url('/keepsimple_/assets/landingPage/cards-bg.png');
+  background-size: cover;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 45%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    background-color: #41393773;
+    z-index: 0;
+
+    .mainContent {
+      position: relative;
+      z-index: 5;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: #41393773;
+      opacity: 75%;
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+}
+
+.darkTheme {
+  .mainContent {
+    .name,
+    p {
+      color: #ffffffd9;
+    }
+
+    .iconWrapper {
+      .japaneseName {
+        color: #909090;
+      }
+    }
+  }
+}
+
+.small {
+  height: 344px;
+
+  .mainContent {
+    height: 348px;
+  }
+}
+
+.medium {
+  height: 363px;
+
+  .mainContent {
+    height: 367px;
+  }
+}
+
+.large {
+  height: 418px;
+
+  .mainContent {
+    height: 418px;
+  }
+}
+
+.russianView {
+  &.large {
+    height: 420px;
+
+    .mainContent {
+      height: 420px;
+    }
+  }
+}
+
+@media (max-width: 1000px) {
+  .wrapper {
+    padding: 0 5px;
+
+    .mainContent {
+      max-width: 600px;
+      padding: 0 5px;
+
+      p {
+        padding: 0 10px;
+      }
+
+      .iconWrapper {
+        .japaneseName {
+          font-size: 25px;
+        }
+      }
+    }
+  }
+}

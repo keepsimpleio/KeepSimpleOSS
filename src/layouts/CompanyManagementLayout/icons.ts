@@ -1,0 +1,40 @@
+const icons = {
+  blue: [
+    '/keepsimple_/assets/company-management/icons/blue/house.png',
+    '/keepsimple_/assets/company-management/icons/blue/organizer.png',
+    '/keepsimple_/assets/company-management/icons/blue/comms.png',
+    '/keepsimple_/assets/company-management/icons/blue/cube.png',
+    '/keepsimple_/assets/company-management/icons/blue/file.png',
+    '/keepsimple_/assets/company-management/icons/blue/todos.png',
+    '/keepsimple_/assets/company-management/icons/blue/book.png',
+    '/keepsimple_/assets/company-management/icons/blue/branch.png',
+    '/keepsimple_/assets/company-management/icons/blue/timer.png',
+    '/keepsimple_/assets/company-management/icons/blue/vector.png',
+  ],
+  orange: [
+    '/keepsimple_/assets/company-management/icons/orange/spin.png',
+    '/keepsimple_/assets/company-management/icons/orange/bell.png',
+    '/keepsimple_/assets/company-management/icons/orange/users.png',
+    '/keepsimple_/assets/company-management/icons/orange/globe.png',
+    '/keepsimple_/assets/company-management/icons/orange/energy.png',
+    '/keepsimple_/assets/company-management/icons/orange/dollar.png',
+    '/keepsimple_/assets/company-management/icons/orange/picture.png',
+    '/keepsimple_/assets/company-management/icons/orange/chat.png',
+    '/keepsimple_/assets/company-management/icons/orange/multi.png',
+    '/keepsimple_/assets/company-management/icons/orange/connection.png',
+  ],
+  purple: [
+    '/keepsimple_/assets/company-management/icons/purple/eye.png',
+    '/keepsimple_/assets/company-management/icons/purple/bell.png',
+    '/keepsimple_/assets/company-management/icons/purple/user.png',
+    '/keepsimple_/assets/company-management/icons/purple/clock.png',
+    '/keepsimple_/assets/company-management/icons/purple/wall.png',
+    '/keepsimple_/assets/company-management/icons/purple/shield.png',
+    '/keepsimple_/assets/company-management/icons/purple/keyhole.png',
+    '/keepsimple_/assets/company-management/icons/purple/wifi.png',
+    '/keepsimple_/assets/company-management/icons/purple/key.png',
+    '/keepsimple_/assets/company-management/icons/purple/img.png',
+  ],
+};
+
+export default icons;

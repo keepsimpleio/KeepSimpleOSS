@@ -1,0 +1,121 @@
+.Accordion {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 46px;
+  margin-bottom: 10px;
+
+  & .Title {
+    font-size: 18px;
+    color: #000;
+    height: 46px;
+    width: 100%;
+    position: absolute;
+    box-sizing: border-box;
+    background-color: #fafafa;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+
+    .articleTitle {
+      font-family: 'Source-Serif-Regular', sans-serif !important;
+    }
+
+    & > img {
+      margin-right: 14px;
+      transition: 0.1s;
+    }
+
+    & .DownloadButton {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      right: 30px;
+      top: 14px;
+      text-decoration: none;
+      color: #28587b;
+      font-size: 12px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      & > img {
+        margin-right: 6px;
+      }
+    }
+  }
+
+  & .Content {
+    box-sizing: border-box;
+    transition: 0.1s;
+    max-height: 46px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 0px 20px;
+    overflow: hidden;
+    font-size: 16px;
+    color: #000;
+    display: none;
+  }
+
+  &.Opened {
+    & .Title > img {
+      transform: rotate(90deg);
+    }
+
+    & .Content {
+      max-height: 3000px;
+      padding: 60px 20px 15px;
+      display: block;
+    }
+  }
+
+  &.darkTheme {
+    & .Title {
+      color: #dadada;
+      background-color: #1e1e1e;
+    }
+
+    & .Content {
+      background-color: #2c2c2c;
+      color: #dadada;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .Accordion {
+    & .Title {
+      .Span {
+        width: 100%;
+      }
+
+      & .DownloadButton {
+        height: 32px;
+        width: 32px;
+        right: 10px;
+        top: 6px;
+        background: #28587b;
+        border-radius: 4px;
+        justify-content: center;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        & > img {
+          margin-right: 0px;
+        }
+
+        & > span {
+          display: none;
+        }
+      }
+    }
+  }
+}

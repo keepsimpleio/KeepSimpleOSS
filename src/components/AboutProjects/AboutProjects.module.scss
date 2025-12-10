@@ -1,0 +1,98 @@
+@import '@styles/_animations.scss';
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  padding: 64px 0 153px 0;
+
+  .project {
+    padding-bottom: 48px;
+    opacity: 0;
+
+    &:before {
+      content: '';
+      position: absolute;
+      width: 311px;
+      height: 12px;
+      background-repeat: no-repeat;
+      background-size: inherit;
+    }
+  }
+
+  .inView-1,
+  .inView-4 {
+    opacity: 0;
+    animation-delay: 0.1s;
+    @extend .animate-fadeInRightToLeft;
+  }
+
+  .inView-2,
+  .inView-5 {
+    opacity: 0;
+    animation-delay: 0.5s;
+    @extend .animate-fadeInRightToLeft;
+  }
+
+  .inView-3,
+  .inView-6 {
+    opacity: 0;
+    animation-delay: 0.9s;
+    @extend .animate-fadeInRightToLeft;
+  }
+
+  .project:first-child {
+    position: relative;
+
+    &:before {
+      background-image: url('/keepsimple_/assets/landingPage/uxcore-line.svg');
+    }
+  }
+
+  .project:nth-child(2) {
+    &:before {
+      width: 324px;
+      background-image: url('/keepsimple_/assets/landingPage/cm-line.svg');
+    }
+  }
+
+  .project:last-child {
+    &:before {
+      width: 324px;
+      background-image: url('/keepsimple_/assets/landingPage/article-line.svg');
+    }
+  }
+
+  .name {
+    font-size: 24px;
+    margin: 20px 0 10px 0;
+    line-height: 1.5;
+    font-family: 'Source-Serif-SemiBold', sans-serif;
+    font-weight: 700;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    font-family: 'Source-Serif-Regular', sans-serif;
+
+    > span,
+    strong {
+      font-family: 'Source-Serif-Regular', sans-serif;
+      font-weight: 400;
+    }
+  }
+}
+
+.darkTheme {
+  .name,
+  p {
+    color: #ffffffd9;
+  }
+}
+
+@media (max-width: 960px) {
+  .projects {
+    padding: 40px 0 100px 0;
+  }
+}
