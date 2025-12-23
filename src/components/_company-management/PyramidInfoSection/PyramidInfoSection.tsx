@@ -168,7 +168,13 @@ const PyramidInfoSection: FC<PyramidInfoSectionProps> = ({
               <div className={styles.head}>
                 <div className={styles.mobileHeader}>
                   <div className={styles.imgWrapper}>
-                    <img src={icon} width={45} height={39} alt={title} />
+                    <Image
+                      src={icon}
+                      width={45}
+                      height={39}
+                      alt={title}
+                      unoptimized
+                    />
                   </div>
                   <h2 className={styles.title}>{title}</h2>
                 </div>
