@@ -102,6 +102,7 @@
     .contributors {
       color: #fafafa;
     }
+
     .uxcoreIcon,
     .companyManagementIcon {
       svg {
@@ -110,6 +111,7 @@
         }
       }
     }
+
     .url {
       color: #dadada;
 
@@ -215,8 +217,23 @@
       }
     }
 
+    .url {
+      &:after {
+        content: none;
+      }
+      &:hover {
+        &:after {
+          content: none;
+        }
+      }
+    }
+
     .active {
       border-left: 1px solid #252626;
+
+      &:after {
+        content: none;
+      }
     }
 
     &.authorized {
