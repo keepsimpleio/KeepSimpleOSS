@@ -1,0 +1,27 @@
+.longevityMain {
+  max-width: 1140px;
+  margin: 0 auto;
+
+  .section {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 20px;
+  }
+
+  .videoWrapper {
+    display: flex;
+    flex-direction: column;
+
+    .video:first-child {
+      margin-top: 40px;
+    }
+  }
+}
+
+@media (max-width: 965px) {
+  .longevityMain {
+    .videoWrapper {
+      display: none;
+    }
+  }
+}

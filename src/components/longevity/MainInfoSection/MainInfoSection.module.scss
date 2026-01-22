@@ -1,0 +1,42 @@
+@import '@styles/_variables.scss';
+
+.mainInfoSection {
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 40px 40px 0 40px;
+  max-width: 868px;
+  margin: 40px 16px 16px 0;
+  display: flex;
+
+  .heading {
+    padding-bottom: 24px;
+  }
+  .description {
+    line-height: 1.5;
+    font-size: 16px;
+    position: relative;
+    //z-index: 3;
+    @extend .longevityList;
+
+    p {
+      margin: 0;
+    }
+  }
+  .japaneseText {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-size: 24px;
+    font-family: 'YujiSyuku-Regular', sans-serif;
+    letter-spacing: -5px;
+    //font-weight: 700;
+    color: #ce2128;
+    margin-left: 60px;
+  }
+
+  .coverImg {
+    //position: absolute;
+    //z-index: 1;
+    //width: 100%;
+  }
+}

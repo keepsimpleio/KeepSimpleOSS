@@ -1,0 +1,10 @@
+@import '@styles/_variables.scss';
+
+.content {
+  max-width: 1140px;
+  margin: 0 auto;
+
+  .description {
+    @extend .longevityContent;
+  }
+}

@@ -15,7 +15,9 @@ const Heading: FC<HeadingProps> = ({
   Tag = 'h1',
   hasUnderline,
   isDarkTheme,
+  hasRedUnderline,
   locale,
+  isBold,
   isBig,
 }) => {
   return (
@@ -43,7 +45,9 @@ const Heading: FC<HeadingProps> = ({
           className={cn(styles.heading, {
             [styles.small]: Tag === 'h2' || Tag === 'h3',
             [styles.h4]: Tag === 'h4',
+            [styles.h5]: Tag === 'h5',
             [styles.big]: isBig,
+            [styles.bold]: isBold,
           })}
         >
           {text}
@@ -63,6 +67,16 @@ const Heading: FC<HeadingProps> = ({
           width={1000}
           height={2}
           className={styles.underline}
+        />
+      )}
+      {hasRedUnderline && (
+        <Image
+          src={'/keepsimple_/assets/longevity/red-line.svg'}
+          alt={'line'}
+          width={868}
+          height={4}
+          unoptimized
+          className={styles.redUnderline}
         />
       )}
     </div>

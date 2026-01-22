@@ -1,0 +1,43 @@
+.whyDoThisTooltip {
+  background-image: url('/keepsimple_/assets/longevity/habits/tooltip-bg.png');
+  background-size: contain;
+  width: 700px;
+  height: 100%;
+  background-repeat: no-repeat;
+  z-index: 999;
+  padding-bottom: 20px;
+
+  .heading {
+    padding-top: 20px;
+    padding-left: 20px;
+
+    h4 {
+      text-transform: uppercase;
+      position: relative;
+      z-index: 3;
+
+      &::after {
+        content: '';
+        background-image: url('/keepsimple_/assets/longevity/habits/tooltip-headline-bg.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 337px;
+        height: 26px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: -1;
+      }
+    }
+  }
+
+  .content {
+    padding-left: 20px;
+
+    p {
+      width: 337px;
+      margin-top: 0;
+      margin-bottom: 28px;
+    }
+  }
+}

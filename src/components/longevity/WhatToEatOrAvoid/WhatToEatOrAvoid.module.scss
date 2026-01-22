@@ -1,0 +1,84 @@
+@import '@styles/_variables.scss';
+
+.whatToEatOrAvoid {
+  padding: 24px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .heading {
+    background-image: url('/keepsimple_/assets/longevity/diet/heading-bg.png');
+    background-repeat: no-repeat;
+    max-width: 524px;
+    background-size: cover;
+    padding: 7px 8px;
+    margin-bottom: 12px;
+  }
+
+  .item {
+    display: flex;
+    gap: 8px;
+    row-gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .content {
+      p {
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .examples {
+    display: flex;
+    align-items: center;
+  }
+
+  .item:last-child {
+    padding-bottom: 0;
+  }
+
+  .heart {
+    cursor: pointer;
+  }
+
+  .tooltip {
+    background-image: url('/keepsimple_/assets/longevity/diet/tooltip-bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    flex-direction: column;
+    max-width: 500px;
+
+    // TODO Not working
+    .react-tooltip-arrow {
+      display: none !important;
+    }
+
+    .content {
+      @extend .longevityContent;
+      padding: unset;
+      color: #000;
+    }
+
+    .tooltipHeading {
+      padding-bottom: 19px;
+      h5 {
+        color: #ce2128 !important;
+        font-weight: 400 !important;
+        font-size: 20px !important;
+      }
+    }
+
+    .subText {
+      font-size: 20px;
+      color: #000000d9;
+      padding-bottom: 20px;
+      font-family: Aboreto-Regular, sans-serif;
+    }
+  }
+}

@@ -3,6 +3,7 @@ const hy = {
   companyManagement: 'Company Management',
   articles: 'Articles',
   contributorsTxt: 'contributors',
+  tools: 'Tools',
 };
 
 export default hy;

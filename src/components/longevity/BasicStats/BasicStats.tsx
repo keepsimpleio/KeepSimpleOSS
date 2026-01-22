@@ -1,0 +1,37 @@
+import { BasicStatsProps } from './BasicStats.types';
+import { FC } from 'react';
+import Heading from '@components/Heading';
+import Image from 'next/image';
+import styles from './BasicStats.module.scss';
+
+const BasicStats: FC<BasicStatsProps> = ({ data, locale }) => {
+  return (
+    <div className={styles.basicStats}>
+      <Heading
+        text={data['section title']}
+        Tag="h3"
+        showLeftIcon={false}
+        showRightIcon={false}
+        isBold
+      />
+      <div className={styles.statsList}>
+        {data.map((stat, index) => (
+          <div key={index} className={styles.statItem}>
+            <Image
+              width={23}
+              height={20}
+              src={stat.icon}
+              alt={stat.label}
+              className={styles.icon}
+            />
+
+            <span className={styles.statValue}>
+              {stat.label}: {stat.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+export default BasicStats;

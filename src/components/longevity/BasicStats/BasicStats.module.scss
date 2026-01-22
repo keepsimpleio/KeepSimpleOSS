@@ -1,0 +1,15 @@
+.basicStats {
+  padding-top: 28px;
+  padding-bottom: 40px;
+
+  .statsList {
+    padding-top: 20px;
+
+    .statItem {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 16px;
+    }
+  }
+}

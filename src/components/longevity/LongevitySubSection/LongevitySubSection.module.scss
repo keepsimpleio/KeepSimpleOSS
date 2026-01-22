@@ -1,0 +1,128 @@
+.subSection {
+  max-width: 948px;
+  padding-bottom: 40px;
+
+  .headline {
+    height: 27px;
+    position: relative;
+    max-width: 868px;
+    display: flex;
+    align-items: center;
+    padding: 20px 40px;
+    justify-content: space-between;
+
+    .backgroundImg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: -1;
+    }
+
+    .heading {
+      h3 {
+        font-size: 20px !important;
+      }
+    }
+    .hacksHeading {
+      h3 {
+        color: #fff !important;
+      }
+    }
+
+    .habitTooltip,
+    .dateTxt {
+      text-transform: uppercase;
+      font-family: Aboreto-Regular, sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #ce2128;
+      position: relative;
+      cursor: pointer;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        right: 0;
+        width: 100%;
+        height: 16px;
+        background-image: url('/keepsimple_/assets/longevity/red-short-line.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    }
+
+    .dateTxt {
+      cursor: default;
+
+      &::after {
+        content: none;
+      }
+    }
+
+    .tooltip {
+      background: unset !important;
+      padding: unset !important;
+      color: #000000d9;
+      font-size: 16px;
+      z-index: 999;
+    }
+  }
+
+  .mainContent {
+    background-image: url('/keepsimple_/assets/longevity/habits/white-bg.png') !important;
+
+    .content {
+      padding: 28px 40px;
+
+      p {
+        margin: 0;
+        line-height: 1.5;
+        font-size: 16px;
+      }
+
+      ul {
+        padding: 0 0 0 11px;
+
+        li {
+          padding-bottom: 20px;
+          padding-left: 12px;
+
+          &::marker {
+            content: url('/keepsimple_/assets/longevity/habits/marker.svg');
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1190px) {
+  .subSection {
+    margin-left: 16px;
+  }
+}
+
+@media (max-width: 965px) {
+  .subSection {
+    margin-right: 16px;
+
+    .headline {
+      height: 72px;
+      padding: 12px;
+
+      .backgroundImg {
+        height: 72px;
+      }
+
+      .heading {
+        h3 {
+          font-size: 16px !important;
+        }
+      }
+    }
+  }
+}

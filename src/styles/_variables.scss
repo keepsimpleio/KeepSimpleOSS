@@ -47,3 +47,41 @@
   align-items: center;
   margin: 0 auto;
 }
+
+.longevityContent {
+  padding: 28px 40px;
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 16px;
+  }
+
+  ul {
+    padding: 0 0 0 11px;
+
+    li {
+      padding-bottom: 20px;
+      padding-left: 12px;
+
+      &::marker {
+        content: url('/keepsimple_/assets/longevity/habits/marker.svg');
+      }
+    }
+  }
+}
+
+.longevityList {
+  ul {
+    padding: 0 0 0 11px;
+
+    li {
+      padding-bottom: 20px;
+      padding-left: 12px;
+
+      &::marker {
+        content: url('/keepsimple_/assets/longevity/habits/marker.svg');
+      }
+    }
+  }
+}

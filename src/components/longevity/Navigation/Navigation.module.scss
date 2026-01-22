@@ -1,0 +1,116 @@
+.ul,
+.subUl {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+  margin-bottom: 8px;
+
+  .item,
+  .subItem {
+    //position: relative;
+    background-image: url('/keepsimple_/assets/longevity/nav-bg.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    //padding: 13px 31px;
+    width: 221px;
+    height: 48px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+
+    &:hover {
+      cursor: pointer;
+      background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
+
+      .link,
+      .subLink {
+        color: #ffffff;
+      }
+    }
+    &:hover {
+      svg {
+        path {
+          fill: #2f2f2f;
+        }
+      }
+    }
+  }
+  .subItemActive {
+    text-decoration: none;
+    cursor: pointer;
+    background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
+    .subLink,
+    .link {
+      color: #fff;
+      svg {
+        path {
+          fill: #fff;
+        }
+      }
+    }
+  }
+
+  .link,
+  .subLink {
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+    color: #000000d9;
+  }
+}
+
+.subNav {
+  position: relative;
+  overflow: hidden;
+  height: 83px;
+
+  .subItem {
+    height: unset;
+
+    &:hover {
+      svg {
+        path {
+          fill: #fff;
+        }
+      }
+    }
+  }
+
+  .subLink {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+
+    svg {
+      path {
+        fill: #000;
+      }
+    }
+  }
+
+  .curtains {
+    transform: translateY(0);
+    position: absolute;
+    will-change: transform, opacity;
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
+    z-index: 55;
+  }
+
+  .curtainsOpen {
+    transform: translateY(100%);
+  }
+}
+
+.subUl {
+  margin-bottom: 0;
+  margin-top: 0;
+}
