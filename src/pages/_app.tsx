@@ -165,13 +165,14 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
     const isPage =
       router.pathname === '/' ||
       router.pathname === '/articles' ||
-      router.pathname === '/contributors';
+      router.pathname === '/contributors' ||
+      router.asPath.startsWith('/tools/longevity-protocol');
     document.body.classList.toggle('keepsimplePages', isPage && !isDarkTheme);
     document.body.classList.toggle(
       'keepsimplePagesDark',
       isPage && isDarkTheme,
     );
-  }, [router.pathname, isDarkTheme]);
+  }, [router.pathname, isDarkTheme, router.asPath]);
 
   useEffect(() => {
     initMixpanel();

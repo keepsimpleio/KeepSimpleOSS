@@ -1,0 +1,32 @@
+.results {
+  display: flex;
+  gap: 47px;
+  justify-content: center;
+  background-image: url('/keepsimple_/assets/longevity/diet/scale/scale-bg.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin: 16px 0;
+  padding: 20px 40px;
+
+  .img {
+    position: relative;
+  }
+
+  .selected {
+    font-size: 8px;
+    color: #fff;
+    text-transform: uppercase;
+    max-width: 100px;
+    width: 100%;
+    position: absolute;
+    margin-top: 5.64px;
+    height: 11px;
+    background: #2f2f2f;
+    display: flex;
+    font-family: Aboreto-Regular, sans-serif;
+    font-weight: 400;
+    justify-content: center;
+    align-items: center;
+    clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+  }
+}

@@ -16,10 +16,21 @@
       font-size: 64px;
     }
 
+    .bold {
+      font-weight: 700;
+    }
+
     .h4 {
       font-size: 20px;
       font-family: Source-Serif-SemiBold, sans-serif;
       line-height: 1.4;
+    }
+
+    .h5 {
+      font-size: 16px;
+      font-family: Aboreto-Regular, sans-serif;
+      line-height: 1;
+      font-weight: 600;
     }
 
     .diamond {
@@ -36,7 +47,8 @@
     }
   }
 
-  .underline {
+  .underline,
+  .redUnderline {
     width: 100%;
     padding: 16px 0 24px 0;
   }
