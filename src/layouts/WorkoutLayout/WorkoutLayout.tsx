@@ -1,10 +1,15 @@
 import { FC } from 'react';
+
 import MainInfoSection from '@components/longevity/MainInfoSection';
-import { WorkoutLayoutProps } from './WorkoutLayout.types';
 import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import BrainAgeActivity from '@components/BrainAgeActivity';
+import WeeklyWorkout from '@components/longevity/WeeklyWorkout';
+import StrengthAndTimeCompression from '@components/longevity/StrengthAndTimeCompression';
+
+import { WorkoutLayoutProps } from './WorkoutLayout.types';
 
 const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
-  //Mandatory workouts
+  // TODO: image paths move to constants
   return (
     <>
       <MainInfoSection
@@ -17,7 +22,7 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // todo add russian
+        // TODO: add russian
         title={'Mandatory Workouts'}
         description={data['mandatory workouts']}
         headlineBackgroundImageUrl={
@@ -26,7 +31,7 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // todo add russian
+        // TODO: add russian
         title={'Optional workouts'}
         description={data['optional workouts']}
         headlineBackgroundImageUrl={
@@ -35,13 +40,16 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // todo add russian
+        // TODO: add russian
         title={'Workout supplements'}
         description={data['workout supplements']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/workout/img.png'
         }
       />
+      <WeeklyWorkout />
+      <BrainAgeActivity />
+      <StrengthAndTimeCompression />
     </>
   );
 };

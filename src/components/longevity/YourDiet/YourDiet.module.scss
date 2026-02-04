@@ -1,0 +1,49 @@
+.selectedDiet {
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 16px 40px;
+  max-width: 828px;
+  flex-direction: column;
+  align-items: center;
+
+  .wrapper {
+    margin-top: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 80px;
+
+    .icon {
+      filter: drop-shadow(0px 0px 18px rgba(53, 35, 13, 0.4));
+    }
+
+    p {
+      margin: 0;
+
+      span {
+        color: #4d8539;
+        font-weight: 700;
+      }
+    }
+
+    p:first-child,
+    p:nth-child(2) {
+      span {
+        margin-right: 8px;
+      }
+    }
+
+    // TODO: Move to global styles
+    .divider {
+      border: none;
+      background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+      background-size: cover;
+      height: 1px;
+      background-repeat: no-repeat;
+      width: clamp(319px, 75vw, 345px);
+      margin: 8px 0;
+    }
+  }
+}

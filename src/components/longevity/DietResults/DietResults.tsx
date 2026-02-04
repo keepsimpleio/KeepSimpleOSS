@@ -1,45 +1,41 @@
-import { DietResultsProps } from '@components/longevity/DietResults/DietResults.types';
 import { FC } from 'react';
 import Image from 'next/image';
-import styles from './DietResults.module.scss';
-const DietResults: FC<DietResultsProps> = ({ id }) => {
-  const scaleImgPath = '/keepsimple_/assets/longevity/diet/scale/';
-  const scaleLavels = [
-    {
-      id: 1,
-      imagePath: scaleImgPath + 'borderline-ok-fruits.svg',
-    },
-    {
-      id: 2,
-      imagePath: scaleImgPath + 'supportive-foods.svg',
-    },
-    {
-      id: 3,
-      imagePath: scaleImgPath + 'protective-foods.svg',
-    },
-    {
-      id: 4,
-      imagePath: scaleImgPath + 'clean-nutritent.svg',
-    },
-    {
-      id: 5,
-      imagePath: scaleImgPath + 'metabolic-gold.svg',
-    },
-  ];
+import cn from 'classnames';
 
+import { DietResultsProps } from './DietResults.types';
+
+import styles from './DietResults.module.scss';
+
+const DietResults: FC<DietResultsProps> = ({ id, scaleLevels }) => {
   return (
     <div className={styles.results}>
-      {scaleLavels.map(level => (
-        <Image
-          className={styles.img}
-          key={id}
-          src={level.imagePath}
-          alt={`Diet level ${level.id}`}
-          width={120}
-          height={120}
-        />
+      {scaleLevels.map((level, index) => (
+        <div
+          key={level.id}
+          className={cn(styles.item, {
+            [styles.active]: id === level.id,
+          })}
+        >
+          <Image
+            className={cn(styles.img, {})}
+            src={level.imagePath}
+            alt={`Diet level ${level.id}`}
+            width={120}
+            height={120}
+            unoptimized
+          />
+          <span
+            className={cn(styles.selected, {
+              [styles.active]: id === level.id,
+            })}
+          >
+            selected state
+          </span>
+          {index === 0 && (
+            <span className={styles.defaultLabel}>Borderline “OK” Foods</span>
+          )}
+        </div>
       ))}
-      <span className={styles.selected}>selected state</span>
     </div>
   );
 };

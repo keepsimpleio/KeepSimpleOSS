@@ -11,7 +11,8 @@
   .videoWrapper {
     display: flex;
     flex-direction: column;
-
+    overflow: hidden;
+    gap: 0;
     .video:first-child {
       margin-top: 40px;
     }

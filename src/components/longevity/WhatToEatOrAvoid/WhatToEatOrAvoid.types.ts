@@ -1,12 +1,15 @@
 export type WhatToEatOrAvoidProps = {
   className?: string;
   title?: string;
-  damageIndex: any;
-  info: any;
-  examples: any;
-  tooltipContent?: any;
+  damageIndex: number;
+  info: string;
+  examples: string;
+  tooltipContent?: string;
   imageUrl?: string;
-  setSelectedHealthyOptionId?: any;
+  setSelectedOptionIconUrl?: string;
+  setSelectedHealthyOptionId?: (
+    value: number | null | string | ((prev: number | null) => number | null),
+  ) => void;
   selectedHealthyOptionId?: number;
   id?: string;
 };
