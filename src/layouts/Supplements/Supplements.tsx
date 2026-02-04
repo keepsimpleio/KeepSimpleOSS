@@ -11,7 +11,8 @@ import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import { SupplementsProps } from './Supplements.types';
 
-import styles from './SleepLayout.module.scss';
+// TODO: move supplements styles to its own file, currently it shares styles with sleep layout which is not ideal
+import styles from '@layouts/SleepLayout/SleepLayout.module.scss';
 
 const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
   const [open, setOpen] = useState(false);
