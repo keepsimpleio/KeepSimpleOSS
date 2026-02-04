@@ -1,0 +1,40 @@
+.supplement {
+  padding: 28px 40px 0 28px;
+
+  .heading {
+    font-size: 20px;
+    line-height: 1.5;
+    font-weight: 600;
+    padding-bottom: 16px;
+    margin: 0;
+  }
+
+  .categoryWrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    gap: 20px;
+  }
+
+  .categoryBadge {
+    display: flex;
+    gap: 5px;
+
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .description {
+    p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 0;
+      padding-bottom: 16px;
+    }
+  }
+}
+
+.supplement:last-child {
+  padding-bottom: 28px;
+}

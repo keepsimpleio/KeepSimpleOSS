@@ -11,11 +11,13 @@ import { DietIcon } from '@icons/longevity/DietIcon';
 import { WorkoutIcon } from '@icons/longevity/WorkoutIcon';
 import { SleepIcon } from '@icons/longevity/SleepIcon';
 import { SupplementsIcon } from '@icons/longevity/SupplementsIcon';
-// import { TomIcon } from '@icons/longevity/TomIcon';
+import { TomIcon } from '@icons/longevity/TomIcon';
+import NewPageIcon from '@icons/longevity/NewPageIocn';
 
 const Navigation: FC = () => {
   const router = useRouter();
-  // const [openSubMenu, setOpenSubMenu] = useState(false);
+
+  // TODO: Move nav items
   const navItems = [
     { name: 'What is this?', path: '/tools/longevity-protocol/what-is-this' },
     {
@@ -28,9 +30,14 @@ const Navigation: FC = () => {
       path: '/tools/longevity-protocol/environment',
     },
     { name: '3.0 Results', path: '/tools/longevity-protocol/results' },
-    { name: 'AI Assistant', path: '/tools/longevity-protocol/environment' },
+    {
+      name: 'AI Assistant',
+      path: 'https://chatgpt.com/g/g-6952e0caa7c88191b1ba18e63b36dd69-tom-longevity-and-food-guide-by-keepsimple-io',
+      icon: <TomIcon />,
+    },
   ];
 
+  // TODO: Move sub nav items
   const subNavItems = [
     {
       name: 'Lifestyle',
@@ -66,26 +73,19 @@ const Navigation: FC = () => {
   return (
     <nav>
       <ul className={styles.ul}>
-        {navItems.map(item => (
+        {navItems.map((item, key) => (
           <Link
-            key={item.path}
+            key={key}
             className={cn(styles.item, {
-              [styles.subItemActive]: router.pathname === item.path,
-              // (item.hasNoUrl &&
-              //   (openSubMenu || router.pathname.includes('habits'))),
+              [styles.itemActive]: router.pathname === item.path,
             })}
             href={item.path}
-            onClick={e => {
-              // if (item.hasNoUrl) {
-              //   e.preventDefault();
-              //   setOpenSubMenu(!openSubMenu);
-              // }
-            }}
           >
-            {/*<li className={styles.link}>*/}
-            {/*  {item.icon && item.icon}*/}
-            {/*  {item.name}*/}
-            {/*</li>*/}
+            <li className={styles.link}>
+              {item.icon && item.icon}
+              {item.name}
+              {key === 4 && <NewPageIcon />}
+            </li>
           </Link>
         ))}
       </ul>

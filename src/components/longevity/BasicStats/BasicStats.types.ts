@@ -1,4 +1,8 @@
 export type BasicStatsProps = {
-  data?: any;
+  data?: {
+    label: string;
+    value: string;
+    icon: string;
+  }[];
   locale?: string;
 };

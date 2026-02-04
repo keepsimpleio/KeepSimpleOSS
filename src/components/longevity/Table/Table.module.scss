@@ -1,0 +1,141 @@
+.table {
+  max-width: 948px;
+  width: 100%;
+  border-spacing: 0;
+  margin-bottom: 40px;
+
+  .header {
+    background-image: url('/keepsimple_/assets/longevity/sleep/sleep-headline.png ');
+    background-repeat: no-repeat;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      background-image: url('/keepsimple_/assets/longevity/sleep/header-line.svg ');
+      height: 1px;
+      width: 100%;
+    }
+  }
+
+  .headerRow {
+    .headline {
+      padding: 20px 0;
+      text-transform: uppercase;
+      font-size: 20px;
+      font-family: Aboreto-Regular, sans-serif;
+      font-weight: 400;
+    }
+  }
+
+  .tr {
+    padding: 16px;
+    position: relative;
+
+    td {
+      position: relative;
+      background-size: cover;
+      padding: 16px;
+      width: clamp(140px, 20vw, 205px);
+
+      &::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        // TODO: test it in Diet page
+        background-size: cover;
+        background-image: url('/keepsimple_/assets/longevity/sleep/table-border.svg');
+        background-repeat: no-repeat;
+        height: 100%;
+        width: 1px;
+      }
+    }
+
+    td:last-child {
+      &::before {
+        display: none;
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 25px;
+      background-image: url('/keepsimple_/assets/longevity/sleep/table-line.svg');
+      background-repeat: no-repeat;
+      height: 1px;
+      width: 100%;
+    }
+
+    .factor {
+      font-weight: 700;
+      padding: 29px 40px;
+      background-image: url('/keepsimple_/assets/longevity/sleep/first-row.png');
+      background-repeat: no-repeat;
+    }
+
+    .secondTd {
+      background-image: url('/keepsimple_/assets/longevity/sleep/second-row.png');
+      background-repeat: no-repeat;
+    }
+
+    .thirdTd {
+      background-image: url('/keepsimple_/assets/longevity/sleep/third-row.png');
+      background-repeat: no-repeat;
+    }
+
+    .fourthTd {
+      background-image: url('/keepsimple_/assets/longevity/sleep/forth-row.png');
+      background-repeat: no-repeat;
+    }
+  }
+}
+
+.supplementTable {
+  .header {
+    height: 62px;
+    background-image: url('/keepsimple_/assets/longevity/supplements/table-header.png ');
+  }
+
+  .headerRow {
+    .headline {
+      padding: 0 0 0 40px;
+      text-transform: uppercase;
+      font-size: 16px;
+      font-family: Aboreto-Regular, sans-serif;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .headline:nth-child(2) {
+      padding: 0 0 0 10px;
+    }
+
+    .headline:nth-child(3) {
+      padding: 0 0 0 2px;
+      text-align: center;
+    }
+  }
+
+  .tr {
+    .factor {
+      width: 191px;
+      padding: 59px 0 59px 40px;
+    }
+
+    .secondTd {
+      width: 158px;
+      padding: 16px;
+    }
+
+    .thirdTd {
+      width: clamp(158px, 20vw, 131px);
+    }
+
+    .fourthTd {
+      width: auto;
+    }
+  }
+}

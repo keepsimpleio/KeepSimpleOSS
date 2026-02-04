@@ -1,0 +1,21 @@
+.openChartBtn {
+  border: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background-image: url('/keepsimple_/assets/longevity/shared-assets/btn-bg.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 20px 15px;
+  padding: 15px;
+  //width: 100%;
+  font-size: 16px;
+  width: -webkit-fill-available;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.img {
+  object-fit: contain;
+}
