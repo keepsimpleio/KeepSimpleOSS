@@ -1,0 +1,42 @@
+.environmentSubSection {
+  padding: 20px 60px 20px 40px;
+
+  .titleAndIcon {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+
+    .title {
+      font-weight: 600;
+      line-height: 1.5;
+    }
+  }
+
+  // TODO: Move to global styles
+  .hr {
+    border: none;
+    background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+    background-size: cover;
+    height: 2px;
+    width: clamp(319px, 50vw, 466px);
+    margin: 0;
+  }
+
+  .description {
+    padding-top: 12px;
+
+    p {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 965px) {
+  .environmentSubSection {
+    padding: 12px;
+  }
+}

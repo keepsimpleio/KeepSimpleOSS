@@ -4,7 +4,11 @@ export type MainInfoSectionProps = {
   description?: string;
   hasBasicStats?: boolean;
   japaneseText?: string;
-  basicStats?: any;
+  basicStats: {
+    label: string;
+    value: string;
+    icon: string;
+  }[];
   hasRedUnderline?: boolean;
   locale?: string;
 };

@@ -1,10 +1,12 @@
-import { WhatToEatOrAvoidProps } from './WhatToEatOrAvoid.types';
-import styles from './WhatToEatOrAvoid.module.scss';
 import { FC } from 'react';
 import Image from 'next/image';
-import Heading from '@components/Heading';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import cn from 'classnames';
+
+import Heading from '@components/Heading';
+
+import { WhatToEatOrAvoidProps } from './WhatToEatOrAvoid.types';
+
+import styles from './WhatToEatOrAvoid.module.scss';
 
 const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   damageIndex,
@@ -13,8 +15,9 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   title,
   imageUrl,
   tooltipContent,
-  // setSelectedHealthyOptionId,
-  // id,
+  setSelectedHealthyOptionId,
+  selectedHealthyOptionId,
+  id,
 }) => {
   return (
     <div className={styles.whatToEatOrAvoid}>
@@ -25,11 +28,6 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
           Tag={'h5'}
           showRightIcon={false}
           showLeftIcon={false}
-          // onClick={() => {
-          //   if (setSelectedHealthyOptionId && id) {
-          //     setSelectedHealthyOptionId(id);
-          //   }
-          // }}
         />
         <div className={styles.item}>
           <Image
@@ -69,6 +67,35 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
           </div>
         </div>
       </div>
+      <div>
+        {selectedHealthyOptionId && (
+          <>
+            {selectedHealthyOptionId === Number(id) && (
+              <span className={styles.label}> Your diet </span>
+            )}
+            <div
+              onClick={() => {
+                if (setSelectedHealthyOptionId && id) {
+                  setSelectedHealthyOptionId(id);
+                }
+              }}
+              role="checkbox"
+              aria-checked={selectedHealthyOptionId === Number(1)}
+              tabIndex={0}
+              onKeyDown={e =>
+                e.key === 'Enter' &&
+                setSelectedHealthyOptionId(prev => (prev === 3 ? null : 3))
+              }
+              className={styles.checkbox}
+            >
+              {selectedHealthyOptionId === Number(id) && (
+                <span className={styles.checkmark} />
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
       {tooltipContent && (
         <div>
           <Image
@@ -82,11 +109,8 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
           <ReactTooltip
             id={title}
             place={'top'}
-            className={cn(styles.tooltip, {
-              // [styles.darkThemeTooltip]: darkTheme,
-            })}
+            className={styles.tooltip}
             opacity={1}
-            // isOpen
           >
             <Heading
               className={styles.tooltipHeading}
@@ -109,9 +133,6 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
           </ReactTooltip>
         </div>
       )}
-      {
-        // id &&
-      }
     </div>
   );
 };

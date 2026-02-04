@@ -1,10 +1,12 @@
 @import '@styles/_variables.scss';
+@import '@styles/_animations.scss';
 
 .whatToEatOrAvoid {
   padding: 24px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 
   .heading {
     background-image: url('/keepsimple_/assets/longevity/diet/heading-bg.png');
@@ -28,6 +30,50 @@
         line-height: 1.5;
       }
     }
+  }
+
+  .label {
+    font-size: 14px;
+    color: #fff;
+    text-transform: uppercase;
+    max-width: 100px;
+    width: 100%;
+    position: absolute;
+    height: 13px;
+    padding: 2px;
+    background: #2f2f2f;
+    display: flex;
+    font-family: Aboreto-Regular, sans-serif;
+    font-weight: 400;
+    justify-content: center;
+    align-items: center;
+    top: 24px;
+    right: 40px;
+    opacity: 0;
+    @extend .animate-slowFadeIn;
+  }
+
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background-image: url('/keepsimple_/assets/longevity/diet/checkmark.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+  }
+
+  .checkmark {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 11px;
+    height: 11px;
+    background-image: url('/keepsimple_/assets/longevity/diet/checked-box.png');
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   .examples {
@@ -67,6 +113,7 @@
 
     .tooltipHeading {
       padding-bottom: 19px;
+
       h5 {
         color: #ce2128 !important;
         font-weight: 400 !important;

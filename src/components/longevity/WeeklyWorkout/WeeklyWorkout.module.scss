@@ -1,0 +1,66 @@
+.weeklyWorkout {
+  background-image: url('/keepsimple_/assets/longevity/workout/weekly-workout-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px;
+  max-width: 868px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .heading {
+      h3 {
+        font-size: 20px !important;
+      }
+    }
+
+    .minutes {
+      font-size: 32px;
+      color: #ce2128;
+      font-family: Aboreto-Regular, sans-serif;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+
+  .divider {
+    border: none;
+    background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+    background-size: initial;
+    height: 2px;
+    width: clamp(319px, 80vw, 868px);
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .imageWrapper {
+    opacity: 70%;
+    transform: translateX(-6px);
+    transition: transform 200ms ease;
+    z-index: 1;
+  }
+
+  .activeImageWrapper {
+    opacity: 100%;
+    transform: translateX(0);
+    z-index: 99;
+  }
+
+  .summary {
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      color: #ce2128;
+      font-weight: 700;
+    }
+  }
+}

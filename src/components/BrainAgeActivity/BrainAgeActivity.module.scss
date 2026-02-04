@@ -1,0 +1,136 @@
+.section {
+  background-image: url('/keepsimple_/assets/longevity/workout/brain-activity-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 40px;
+  max-width: 868px;
+
+  // TODO: Move to global styles
+  .hr {
+    border: none;
+    background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+    background-size: cover;
+    height: 2px;
+    width: clamp(319px, 50vw, 788px);
+    margin-top: 24px;
+    margin-bottom: 40px;
+  }
+
+  // TODO: Duplicated
+  .subHeading {
+    margin-bottom: 43px;
+
+    h4 {
+      font-weight: 400 !important;
+      font-family: 'Source-Serif-Regular', sans-serif !important;
+      text-transform: uppercase;
+    }
+  }
+
+  .buttonContainer {
+    display: flex;
+    gap: 70px;
+  }
+
+  .ageButton {
+    cursor: pointer;
+    border: none;
+    background-color: unset;
+    color: #9c9c9c;
+    font-size: 32px;
+    font-family: Aboreto-Regular, sans-serif;
+    font-weight: 700;
+  }
+
+  .selectedButton {
+    color: #ce2128;
+    border-bottom: 2px solid #ce2128;
+  }
+
+  .result {
+    width: clamp(319px, 67vw, 868px);
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+    margin-top: 43px;
+
+    .minimal,
+    .maximal {
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex: 1 1 0;
+      margin: 0;
+      min-width: 0;
+    }
+
+    .minimal {
+      border: 1px solid #ce2128;
+      background-color: #ce21281a;
+
+      .passive {
+        color: #ce2128;
+        font-size: 28px;
+        text-transform: uppercase;
+      }
+    }
+
+    .maximal {
+      border: 1px solid #64b766;
+      background-color: #64b7661a;
+
+      .active {
+        color: #64b766;
+        border-bottom: 1px solid #64b766;
+        font-size: 28px;
+      }
+    }
+  }
+}
+
+@media (max-width: 965px) {
+  .section {
+    margin: 0 16px;
+    padding: 12px;
+    max-width: unset;
+    //16px
+    .heading {
+      h3 {
+        font-size: 16px !important;
+        text-align: center !important;
+      }
+    }
+
+    .subHeading {
+      h4 {
+        font-size: 16px !important;
+      }
+    }
+
+    .buttonContainer {
+      gap: 5px;
+
+      .ageButton {
+        font-size: 20px;
+      }
+    }
+
+    .result {
+      flex-direction: column;
+
+      .minimal,
+      .maximal {
+        .passive,
+        .active {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
