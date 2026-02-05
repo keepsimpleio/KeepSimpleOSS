@@ -19,7 +19,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
   const foodFacts = data['food science facts that most influenced my choices'];
   const items = data['what not to eat'];
 
-  const whatNotToEat = items.map((item, index) => ({
+  const whatNotToEat = items?.map((item, index) => ({
     ...item,
     imageUrl: images[index] ?? null,
   }));
@@ -46,7 +46,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
         locale={locale}
         headlineBackgroundImageUrl={`${longevityDietPath}/what-not-to-eat.png`}
       >
-        {whatNotToEat.map((item, index) => (
+        {whatNotToEat?.map((item, index) => (
           <WhatToEatOrAvoid
             key={index}
             className={'mb-8'}
@@ -54,7 +54,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
             info={item.info}
             examples={item.examples}
             title={item['product name']}
-            imageUrl={item.imageUrl}
+            imageUrl={item?.imageUrl}
             tooltipContent={item['tooltip content']}
           />
         ))}
@@ -83,7 +83,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
           '/keepsimple_/assets/longevity/diet/what-not-to-eat.png'
         }
       >
-        {data['what to eat'].map((item, index) => (
+        {data?.['what to eat']?.map((item, index) => (
           <WhatToEatOrAvoid
             key={index}
             className={'mb-8'}
@@ -104,7 +104,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
         locale={locale}
         // TODO add russian
         title={'Generic rules'}
-        description={data['generic rules']}
+        description={data?.['generic rules']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/diet/generic-rules-headline.png'
         }
@@ -113,7 +113,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
         locale={locale}
         // TODO add russian
         title={'Hacks'}
-        description={data.hacks}
+        description={data?.hacks}
         isHacks={true}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/diet/hacks-headline.png'

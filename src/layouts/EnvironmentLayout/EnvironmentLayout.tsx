@@ -18,20 +18,20 @@ const EnvironmentLayout: FC<EnvironmentLayoutProps> = ({ locale, data }) => {
         description={data?.description}
         basicStats={data?.basicStats}
         locale={locale}
-        japaneseText={data['japanese title']}
-        backgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data['image']?.data?.attributes.url}`}
+        japaneseText={data?.['japanese title'] ? data?.['japanese title'] : ''}
+        backgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['image']?.data?.attributes.url}`}
       />
       <LongevitySubSection
         locale={locale}
         title={'Home'}
         headlineBackgroundImageUrl={`${imgPath}used-devices-header.png`}
       >
-        {data.home.map((item, index) => (
+        {data?.home.map((item, index) => (
           <EnvironmentSubSection
             key={index}
-            description={item.explanation}
-            name={item.title}
-            iconUrl={`${strapiURl}${item.icon.data.attributes.url}`}
+            description={item?.explanation}
+            name={item?.title}
+            iconUrl={`${strapiURl}${item?.icon.data.attributes.url}`}
           />
         ))}
       </LongevitySubSection>
@@ -40,11 +40,11 @@ const EnvironmentLayout: FC<EnvironmentLayoutProps> = ({ locale, data }) => {
         title={'Principles'}
         headlineBackgroundImageUrl={`${imgPath}used-devices-header.png`}
       >
-        {data.principles.map((item, index) => (
+        {data?.principles.map((item, index) => (
           <EnvironmentSubSection
             key={index}
-            description={item.explanation}
-            name={item.title}
+            description={item?.explanation}
+            name={item?.title}
             iconUrl={`${strapiURl}${item.icon.data.attributes.url}`}
           />
         ))}
@@ -54,7 +54,7 @@ const EnvironmentLayout: FC<EnvironmentLayoutProps> = ({ locale, data }) => {
         title={'Data Tracking'}
         headlineBackgroundImageUrl={`${imgPath}used-devices-header.png`}
       >
-        {data['data_tracking'].map((item, index) => (
+        {data?.['data_tracking'].map((item, index) => (
           <EnvironmentSubSection
             key={index}
             description={item.explanation}

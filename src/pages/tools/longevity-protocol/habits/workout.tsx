@@ -8,7 +8,14 @@ import { getWorkout } from '@api/longevity/workout';
 const Workout = ({ workoutData }) => {
   const router = useRouter();
   const { locale } = router;
-  return <WorkoutLayout data={workoutData[locale]} locale={locale} />;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
+  return (
+    <WorkoutLayout
+      data={workoutData ? workoutData[currentLocale] : null}
+      locale={locale}
+    />
+  );
 };
 export default Workout;
 

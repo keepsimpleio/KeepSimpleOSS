@@ -8,7 +8,14 @@ import { getEnvironment } from '@api/longevity/environment';
 const Environment = ({ environment }) => {
   const router = useRouter();
   const { locale } = router;
-  return <EnvironmentLayout data={environment[locale]} locale={locale} />;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
+  return (
+    <EnvironmentLayout
+      data={environment ? environment[currentLocale] : null}
+      locale={locale}
+    />
+  );
 };
 
 export default Environment;
