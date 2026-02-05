@@ -1,7 +1,9 @@
-import { GetServerSideProps } from 'next';
-import { getHabitsProtocol } from '@api/longevity/habits-protocol';
-import HabitsLayout from '@layouts/HabitsLayout/HabitsLayout';
+import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+
+import HabitsLayout from '@layouts/HabitsLayout/HabitsLayout';
+
+import { getHabitsProtocol } from '@api/longevity/habits-protocol';
 
 const Index = ({ habitsData }) => {
   const router = useRouter();
@@ -11,10 +13,11 @@ const Index = ({ habitsData }) => {
 
 export default Index;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const habitsData = await getHabitsProtocol(locale);
 
   return {
     props: { habitsData },
+    revalidate: 5,
   };
 };

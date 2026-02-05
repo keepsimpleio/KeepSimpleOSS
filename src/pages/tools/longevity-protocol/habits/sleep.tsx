@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 
 import { getSleep } from '@api/longevity/sleep';
 import { getSleepSupplements } from '@api/longevity/sleep-supplements';
@@ -20,10 +20,12 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
 };
 export default Sleep;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const sleepData = await getSleep(locale);
   const sleepSupplements = await getSleepSupplements(locale);
+
   return {
     props: { sleepData, locale: locale ?? 'en', sleepSupplements },
+    revalidate: 5,
   };
 };

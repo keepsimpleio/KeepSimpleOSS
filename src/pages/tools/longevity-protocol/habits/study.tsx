@@ -1,7 +1,9 @@
-import { getStudy } from '@api/longevity/study';
-import { GetServerSideProps } from 'next';
-import StudyLayout from '@layouts/StudyLayout';
+import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+
+import StudyLayout from '@layouts/StudyLayout';
+
+import { getStudy } from '@api/longevity/study';
 
 const Study = ({ studyData }) => {
   const router = useRouter();
@@ -10,10 +12,11 @@ const Study = ({ studyData }) => {
 };
 export default Study;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const studyData = await getStudy(locale);
 
   return {
     props: { studyData },
+    revalidate: 5,
   };
 };

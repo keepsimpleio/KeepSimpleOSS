@@ -1,7 +1,9 @@
 import { GetServerSideProps } from 'next';
-import { getLongevityResults } from '@api/longevity/results';
-import ResultsLayout from '@layouts/ResultsLayout';
 import { useRouter } from 'next/router';
+
+import ResultsLayout from '@layouts/ResultsLayout';
+
+import { getLongevityResults } from '@api/longevity/results';
 
 const Results = ({ yearlyResults }) => {
   const router = useRouter();

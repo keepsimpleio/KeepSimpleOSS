@@ -1,7 +1,9 @@
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
-import { getEnvironment } from '@api/longevity/environment';
+
 import EnvironmentLayout from '@layouts/EnvironmentLayout/EnvironmentLayout';
+
+import { getEnvironment } from '@api/longevity/environment';
 
 const Environment = ({ environment }) => {
   const router = useRouter();
@@ -11,10 +13,11 @@ const Environment = ({ environment }) => {
 
 export default Environment;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const environment = await getEnvironment(locale);
 
   return {
     props: { environment },
+    revalidate: 5,
   };
 };

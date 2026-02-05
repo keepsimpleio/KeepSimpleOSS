@@ -1,7 +1,9 @@
-import WhatIsThisLayout from '@layouts/LongevityLayouts';
-import { getWhatIsThis } from '@api/longevity/what-is-this';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+
+import { getWhatIsThis } from '@api/longevity/what-is-this';
+
+import WhatIsThisLayout from '@layouts/LongevityLayouts';
 
 const WhatIsThis = ({ aboutTheProject }) => {
   const router = useRouter();
