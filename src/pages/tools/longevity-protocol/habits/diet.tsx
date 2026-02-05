@@ -1,7 +1,9 @@
-import DietLayout from '@layouts/DietLayout';
-import { GetServerSideProps } from 'next';
-import { getDiet } from '@api/longevity/diet';
 import { useRouter } from 'next/router';
+import { GetStaticProps } from 'next';
+
+import DietLayout from '@layouts/DietLayout';
+
+import { getDiet } from '@api/longevity/diet';
 
 const Diet = ({ dietData }) => {
   const router = useRouter();
@@ -10,10 +12,11 @@ const Diet = ({ dietData }) => {
 };
 export default Diet;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const dietData = await getDiet(locale);
 
   return {
     props: { dietData },
+    revalidate: 5,
   };
 };

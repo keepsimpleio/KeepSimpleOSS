@@ -1,7 +1,9 @@
-import { getWorkout } from '@api/longevity/workout';
+import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+
 import WorkoutLayout from '@layouts/WorkoutLayout/WorkoutLayout';
-import { GetServerSideProps } from 'next';
+
+import { getWorkout } from '@api/longevity/workout';
 
 const Workout = ({ workoutData }) => {
   const router = useRouter();
@@ -10,10 +12,11 @@ const Workout = ({ workoutData }) => {
 };
 export default Workout;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const workoutData = await getWorkout(locale);
 
   return {
     props: { workoutData },
+    revalidate: 5,
   };
 };

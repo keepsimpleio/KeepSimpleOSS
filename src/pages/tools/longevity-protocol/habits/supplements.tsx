@@ -1,7 +1,9 @@
-import { getSupplements } from '@api/longevity/supplements';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+
 import SupplementsLayout from '@layouts/Supplements';
+
+import { getSupplements } from '@api/longevity/supplements';
 
 const Supplements = ({ supplements }) => {
   const router = useRouter();
@@ -10,10 +12,11 @@ const Supplements = ({ supplements }) => {
 };
 export default Supplements;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const supplements = await getSupplements(locale);
 
   return {
     props: { supplements },
+    revalidate: 5,
   };
 };
