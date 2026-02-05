@@ -1,5 +1,6 @@
 export async function getSleepSupplements(locale: string) {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-sleep?locale=${locale}&populate[supplements][populate]=supplements`;
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-sleep?locale=${chosenLocale}&populate[supplements][populate]=supplements`;
 
   const res = await fetch(url, { next: { revalidate: 3600 } });
 

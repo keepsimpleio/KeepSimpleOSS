@@ -8,8 +8,12 @@ import WhatIsThisLayout from '@layouts/LongevityLayouts';
 const WhatIsThis = ({ aboutTheProject }) => {
   const router = useRouter();
   const { locale } = router;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
   return (
-    <WhatIsThisLayout data={aboutTheProject[locale || 'en']} locale={locale} />
+    <WhatIsThisLayout
+      data={aboutTheProject ? aboutTheProject[currentLocale] : null}
+      locale={locale}
+    />
   );
 };
 

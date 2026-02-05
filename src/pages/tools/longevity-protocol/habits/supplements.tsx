@@ -8,7 +8,14 @@ import { getSupplements } from '@api/longevity/supplements';
 const Supplements = ({ supplements }) => {
   const router = useRouter();
   const { locale } = router;
-  return <SupplementsLayout data={supplements[locale]} locale={locale} />;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
+  return (
+    <SupplementsLayout
+      data={!!supplements ? supplements[currentLocale] : null}
+      locale={locale}
+    />
+  );
 };
 export default Supplements;
 

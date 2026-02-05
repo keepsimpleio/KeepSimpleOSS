@@ -8,7 +8,14 @@ import { getLongevityResults } from '@api/longevity/results';
 const Results = ({ yearlyResults }) => {
   const router = useRouter();
   const { locale } = router;
-  return <ResultsLayout data={yearlyResults[locale]} locale={locale} />;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
+  return (
+    <ResultsLayout
+      data={yearlyResults ? yearlyResults[currentLocale] : null}
+      locale={locale}
+    />
+  );
 };
 
 export default Results;

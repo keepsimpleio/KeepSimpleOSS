@@ -30,7 +30,7 @@ const StudySection: FC<StudySectionProps> = ({
     <section className={styles.studySection}>
       <div className={styles.headline}>
         <Image
-          src={headlineBg}
+          src={headlineBg || ''}
           alt={title}
           width={948}
           height={67}

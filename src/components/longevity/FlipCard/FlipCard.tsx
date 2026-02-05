@@ -1,9 +1,12 @@
-import { FlipCardProps } from '@components/longevity/FlipCard/FlipCard.types';
 import { FC } from 'react';
-import styles from './FlipCard.module.scss';
-import Heading from '@components/Heading';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+
+import { FlipCardProps } from '@components/longevity/FlipCard/FlipCard.types';
+import Heading from '@components/Heading';
+
+import styles from './FlipCard.module.scss';
+
 const FlipCard: FC<FlipCardProps> = ({
   headline,
   subText,
@@ -47,7 +50,14 @@ const FlipCard: FC<FlipCardProps> = ({
           <span className={styles.subText}>{subText}</span>
           <div className={styles.chartWrapper}>
             <span className={styles.chartTitle}> {chartTitle} </span>
-            <Image src={chart} alt={chartTitle} width={512} height={455} />
+            {chart && !chart.includes('undefined') ? (
+              <Image
+                src={chart}
+                alt={chartTitle ?? 'chart'}
+                width={512}
+                height={455}
+              />
+            ) : null}
           </div>
           <Image
             src={'/keepsimple_/assets/longevity/study/line.svg'}

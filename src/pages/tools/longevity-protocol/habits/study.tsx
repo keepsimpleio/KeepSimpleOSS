@@ -8,7 +8,14 @@ import { getStudy } from '@api/longevity/study';
 const Study = ({ studyData }) => {
   const router = useRouter();
   const { locale } = router;
-  return <StudyLayout data={studyData[locale]} locale={locale} />;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
+  return (
+    <StudyLayout
+      data={studyData ? studyData[currentLocale] : null}
+      locale={locale}
+    />
+  );
 };
 export default Study;
 

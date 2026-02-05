@@ -8,7 +8,14 @@ import { getDiet } from '@api/longevity/diet';
 const Diet = ({ dietData }) => {
   const router = useRouter();
   const { locale } = router;
-  return <DietLayout locale={locale} data={dietData[locale]} />;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
+  return (
+    <DietLayout
+      locale={locale}
+      data={dietData ? dietData[currentLocale] : null}
+    />
+  );
 };
 export default Diet;
 

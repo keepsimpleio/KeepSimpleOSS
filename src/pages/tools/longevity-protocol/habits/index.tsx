@@ -8,7 +8,14 @@ import { getHabitsProtocol } from '@api/longevity/habits-protocol';
 const Index = ({ habitsData }) => {
   const router = useRouter();
   const { locale } = router;
-  return <HabitsLayout data={habitsData[locale]} locale={locale} />;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
+  return (
+    <HabitsLayout
+      data={habitsData ? habitsData[currentLocale] : null}
+      locale={locale}
+    />
+  );
 };
 
 export default Index;
