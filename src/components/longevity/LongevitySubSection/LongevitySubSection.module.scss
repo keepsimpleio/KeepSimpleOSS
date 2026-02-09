@@ -1,3 +1,5 @@
+@import '@styles/fonts.scss';
+
 .subSection {
   max-width: 948px;
   padding-bottom: 40px;
@@ -76,21 +78,29 @@
   .mainContent {
     background-image: url('/keepsimple_/assets/longevity/habits/white-bg.png') !important;
 
+    .dateTxtMobile {
+      display: none;
+    }
+
     .content {
       padding: 28px 40px;
 
       p {
         margin: 0;
         line-height: 1.5;
-        font-size: 16px;
+        @include text-body;
       }
 
+      div > ul,
       ul {
         padding: 0 0 0 11px;
+        margin: 0;
 
         li {
           padding-bottom: 20px;
           padding-left: 12px;
+          line-height: 1.5;
+          @include text-body;
 
           &::marker {
             content: url('/keepsimple_/assets/longevity/habits/marker.svg');
@@ -110,17 +120,44 @@
 @media (max-width: 965px) {
   .subSection {
     margin-right: 16px;
+    padding-bottom: 20px;
 
     .mainContent {
+      .dateTxtMobile {
+        display: block;
+        background-color: #f4ebdc;
+        padding: 2px 12px;
+        margin: 0 12px 16px 12px;
+      }
+
       .content {
         padding: 12px;
+
+        ul {
+          margin: 0;
+
+          li {
+            padding-bottom: 12px;
+          }
+        }
       }
+    }
+
+    .withDate {
+      padding-top: 16px;
     }
 
     .headline {
       height: 48px;
-
       padding: 0 12px;
+
+      .dateTxt {
+        display: none;
+      }
+
+      .habitTooltip {
+        font-size: 16px;
+      }
 
       .backgroundImg {
         height: 48px;
@@ -129,7 +166,7 @@
 
       .heading {
         h3 {
-          font-size: 16px !important;
+          font-size: 18px !important;
         }
       }
     }

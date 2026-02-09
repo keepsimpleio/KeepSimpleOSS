@@ -11,4 +11,6 @@ export type MainInfoSectionProps = {
   }[];
   hasRedUnderline?: boolean;
   locale?: string;
+  basicStatsTitle?: string;
+  isIntroPage?: boolean;
 };

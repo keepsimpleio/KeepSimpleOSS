@@ -59,7 +59,7 @@ const ResultsLayout: FC<ResultsLayoutProps> = ({ data, locale }) => {
           height={104}
           className={styles.backgroundImg}
         />
-        <p>{data['PS Quote']}</p>
+        <div dangerouslySetInnerHTML={{ __html: data['PS Quote'] }} />
       </div>
     </div>
   );

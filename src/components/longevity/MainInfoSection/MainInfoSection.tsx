@@ -1,4 +1,6 @@
 import { FC } from 'react';
+import cn from 'classnames';
+
 import Heading from '@components/Heading';
 import BasicStats from '@components/longevity/BasicStats';
 
@@ -15,10 +17,14 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
   backgroundImageUrl,
   hasRedUnderline = false,
   japaneseText,
+  basicStatsTitle,
+  isIntroPage,
 }) => {
   return (
     <section
-      className={styles.mainInfoSection}
+      className={cn(styles.mainInfoSection, {
+        [styles.introPage]: isIntroPage,
+      })}
       style={{
         backgroundImage: backgroundImageUrl
           ? `url(${backgroundImageUrl})`
@@ -40,7 +46,7 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
           className={styles.description}
         />
         {hasBasicStats ? (
-          <BasicStats data={basicStats} locale={locale} />
+          <BasicStats data={basicStats} title={basicStatsTitle} />
         ) : null}
       </div>
       {japaneseText && (

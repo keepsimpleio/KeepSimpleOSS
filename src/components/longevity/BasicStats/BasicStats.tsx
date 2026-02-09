@@ -1,14 +1,17 @@
-import { BasicStatsProps } from './BasicStats.types';
 import { FC } from 'react';
-import Heading from '@components/Heading';
 import Image from 'next/image';
+
+import Heading from '@components/Heading';
+
+import { BasicStatsProps } from './BasicStats.types';
+
 import styles from './BasicStats.module.scss';
 
-const BasicStats: FC<BasicStatsProps> = ({ data, locale }) => {
+const BasicStats: FC<BasicStatsProps> = ({ data, title }) => {
   return (
     <div className={styles.basicStats}>
       <Heading
-        text={data['section title']}
+        text={title}
         Tag="h3"
         showLeftIcon={false}
         showRightIcon={false}

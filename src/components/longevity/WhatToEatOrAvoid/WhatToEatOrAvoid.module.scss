@@ -24,11 +24,31 @@
     align-items: center;
     margin-bottom: 12px;
 
+    .icon {
+      margin-top: 5px;
+    }
+
     .content {
       p {
         margin: 0;
         line-height: 1.5;
       }
+    }
+  }
+
+  .examplesItem {
+    align-items: flex-start;
+  }
+
+  .exampleContent {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 16px;
+
+    &::before {
+      content: 'Examples:';
+      font-weight: 600;
+      white-space: nowrap;
     }
   }
 
@@ -98,6 +118,7 @@
     align-items: center;
     padding: 20px;
     flex-direction: column;
+    z-index: 10;
     max-width: 500px;
 
     // TODO Not working
@@ -127,5 +148,10 @@
       padding-bottom: 20px;
       font-family: Aboreto-Regular, sans-serif;
     }
+  }
+
+  .divider {
+    position: absolute;
+    bottom: 0;
   }
 }

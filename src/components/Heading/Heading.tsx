@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { HeadingProps } from './Heading.types';
 
 import styles from './Heading.module.scss';
+import RedLine from '@icons/longevity/RedLine';
 
 const Heading: FC<HeadingProps> = ({
   text,
@@ -69,16 +70,7 @@ const Heading: FC<HeadingProps> = ({
           className={styles.underline}
         />
       )}
-      {hasRedUnderline && (
-        <Image
-          src={'/keepsimple_/assets/longevity/red-line.svg'}
-          alt={'line'}
-          width={868}
-          height={4}
-          unoptimized
-          className={styles.redUnderline}
-        />
-      )}
+      {hasRedUnderline && <RedLine className={styles.redUnderline} />}
     </div>
   );
 };

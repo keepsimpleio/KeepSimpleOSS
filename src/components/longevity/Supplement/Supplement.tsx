@@ -9,9 +9,9 @@ const Supplement: FC<SupplementProps> = ({ name, description, categories }) => {
   return (
     <div className={styles.supplement}>
       <h3 className={styles.heading}>{name}</h3>
-      <div className={styles.categoryWrapper}>
-        {categories &&
-          categories?.data?.map((category, key) => (
+      {categories?.data.length > 0 && (
+        <div className={styles.categoryWrapper}>
+          {categories?.data?.map((category, key) => (
             <span key={key} className={styles.categoryBadge}>
               <Image
                 src={`/keepsimple_/assets/longevity/sleep/supplements-icons/${category.attributes.title}.png`}
@@ -22,7 +22,8 @@ const Supplement: FC<SupplementProps> = ({ name, description, categories }) => {
               {category.attributes.title}
             </span>
           ))}
-      </div>
+        </div>
+      )}
       <div
         dangerouslySetInnerHTML={{ __html: description }}
         className={styles.description}

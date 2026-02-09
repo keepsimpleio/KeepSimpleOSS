@@ -6,11 +6,16 @@ import { DietResultsProps } from './DietResults.types';
 
 import styles from './DietResults.module.scss';
 
-const DietResults: FC<DietResultsProps> = ({ id, scaleLevels }) => {
+const DietResults: FC<DietResultsProps> = ({
+  id,
+  scaleLevels,
+  setSelectedHealthyOptionId,
+}) => {
   return (
     <div className={styles.results}>
       {scaleLevels.map((level, index) => (
         <div
+          onClick={() => setSelectedHealthyOptionId(level.id)}
           key={level.id}
           className={cn(styles.item, {
             [styles.active]: id === level.id,

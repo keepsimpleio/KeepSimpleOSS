@@ -43,12 +43,14 @@ const WhatIsThisLayout: FC<WhatIsThisLayoutProps> = ({ data, locale }) => {
     <>
       <section className={styles.content}>
         <MainInfoSection
+          isIntroPage
           hasBasicStats
           hasRedUnderline
           title={data?.title}
           description={data?.description}
           basicStats={basicStats}
           locale={locale}
+          basicStatsTitle={data?.['basic stats section title']}
         />
       </section>
     </>

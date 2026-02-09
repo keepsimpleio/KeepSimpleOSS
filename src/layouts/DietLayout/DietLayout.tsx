@@ -96,7 +96,11 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
             id={item.id}
           />
         ))}
-        <DietResults scaleLevels={scaleLevels} id={selectedHealthyOptionId} />
+        <DietResults
+          scaleLevels={scaleLevels}
+          id={selectedHealthyOptionId}
+          setSelectedHealthyOptionId={setSelectedHealthyOptionId}
+        />
         <YourDiet id={selectedHealthyOptionId} scaleLevels={scaleLevels} />
       </LongevitySubSection>
 

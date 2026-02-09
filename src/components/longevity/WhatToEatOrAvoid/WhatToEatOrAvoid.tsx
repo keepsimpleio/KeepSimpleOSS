@@ -1,8 +1,11 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import cn from 'classnames';
 
 import Heading from '@components/Heading';
+
+import Divider from '@icons/longevity/Divider';
 
 import { WhatToEatOrAvoidProps } from './WhatToEatOrAvoid.types';
 
@@ -19,6 +22,19 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   selectedHealthyOptionId,
   id,
 }) => {
+  const [exampleContent, setExampleContent] = useState('');
+
+  const getPText = (html: string) => {
+    if (!html) return '';
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.querySelector('p')?.textContent?.trim() ?? '';
+  };
+
+  useEffect(() => {
+    getPText(examples);
+    setExampleContent(getPText(examples));
+  }, []);
+
   return (
     <div className={styles.whatToEatOrAvoid}>
       <div>
@@ -51,22 +67,21 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
             className={styles.content}
           />
         </div>
-        <div className={styles.item}>
+        <div className={cn(styles.item, styles.examplesItem)}>
           <Image
             src={'/keepsimple_/assets/longevity/diet/examples-icon.svg'}
             alt={'info'}
             width={16}
             height={16}
+            className={styles.icon}
           />
           <div className={styles.examples}>
-            <span> Examples:</span>
-            <div
-              dangerouslySetInnerHTML={{ __html: examples }}
-              className={styles.content}
-            />
+            <span></span>
+            <p className={styles.exampleContent}> {exampleContent}</p>
           </div>
         </div>
       </div>
+
       <div>
         {selectedHealthyOptionId && (
           <>
@@ -133,6 +148,7 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
           </ReactTooltip>
         </div>
       )}
+      <Divider className={styles.divider} />
     </div>
   );
 };
