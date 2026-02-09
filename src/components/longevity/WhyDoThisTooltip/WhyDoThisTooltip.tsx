@@ -1,15 +1,18 @@
-import { WhyDoThisTooltipProps } from './WhyDoThisTooltip.types';
 import { FC } from 'react';
-import styles from './WhyDoThisTooltip.module.scss';
+
 import Heading from '@components/Heading';
+
 import longevityData from '@data/longevity';
+
+import { WhyDoThisTooltipProps } from './WhyDoThisTooltip.types';
+
+import styles from './WhyDoThisTooltip.module.scss';
 
 const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
   whatDamagesText,
-  howDamagesText,
   locale,
 }) => {
-  const { whatDamagesTitle, howDamagesTitle } = longevityData[locale];
+  const { whatDamagesTitle } = longevityData[locale];
 
   return (
     <div className={styles.whyDoThisTooltip}>
@@ -23,19 +26,6 @@ const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
         />
         <div
           dangerouslySetInnerHTML={{ __html: whatDamagesText || '' }}
-          className={styles.content}
-        />
-      </div>
-      <div>
-        <Heading
-          text={howDamagesTitle}
-          Tag={'h4'}
-          showLeftIcon={false}
-          showRightIcon={false}
-          className={styles.heading}
-        />
-        <div
-          dangerouslySetInnerHTML={{ __html: howDamagesText || '' }}
           className={styles.content}
         />
       </div>

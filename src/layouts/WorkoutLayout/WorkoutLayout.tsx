@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import MainInfoSection from '@components/longevity/MainInfoSection';
 import LongevitySubSection from '@components/longevity/LongevitySubSection';
@@ -8,8 +8,38 @@ import StrengthAndTimeCompression from '@components/longevity/StrengthAndTimeCom
 
 import { WorkoutLayoutProps } from './WorkoutLayout.types';
 
+import styles from './WorkoutLayout.module.scss';
+
 const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
   // TODO: image paths move to constants
+
+  function splitUlHtml(ulHtmlString: string) {
+    const doc = new DOMParser().parseFromString(ulHtmlString, 'text/html');
+    const ul = doc.querySelector('ul');
+    if (!ul) return { firstUlHtml: '', restUlHtml: '' };
+
+    const items = Array.from(ul.querySelectorAll(':scope > li'));
+    const [first, ...rest] = items;
+
+    const wrap = (lis: Element[]) => {
+      if (!lis.length) return '';
+      const newUl = doc.createElement('ul');
+      lis.forEach(li => newUl.appendChild(li.cloneNode(true)));
+      return newUl.outerHTML;
+    };
+
+    return { firstUlHtml: first ? wrap([first]) : '', restUlHtml: wrap(rest) };
+  }
+  const [parts, setParts] = useState({ firstUlHtml: '', restUlHtml: '' });
+
+  useEffect(() => {
+    if (!data.hacks) {
+      setParts({ firstUlHtml: '', restUlHtml: '' });
+      return;
+    }
+    setParts(splitUlHtml(data.hacks));
+  }, [data.hacks]);
+
   return (
     <>
       <MainInfoSection
@@ -49,7 +79,28 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       />
       <WeeklyWorkout />
       <BrainAgeActivity />
-      <StrengthAndTimeCompression />
+      <LongevitySubSection
+        locale={locale}
+        title={'Hacks'}
+        isHacks
+        headlineBackgroundImageUrl={
+          '/keepsimple_/assets/longevity/workout/hacks.png'
+        }
+      >
+        {parts.firstUlHtml && (
+          <div
+            dangerouslySetInnerHTML={{ __html: parts.firstUlHtml }}
+            className={styles.list}
+          />
+        )}
+        <StrengthAndTimeCompression />
+        {parts.restUlHtml && (
+          <div
+            dangerouslySetInnerHTML={{ __html: parts.restUlHtml }}
+            className={styles.list}
+          />
+        )}
+      </LongevitySubSection>
     </>
   );
 };

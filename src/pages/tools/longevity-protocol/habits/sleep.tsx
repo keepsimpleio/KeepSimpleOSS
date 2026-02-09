@@ -5,6 +5,7 @@ import { getSleep } from '@api/longevity/sleep';
 import { getSleepSupplements } from '@api/longevity/sleep-supplements';
 
 import SleepLayout from '@layouts/SleepLayout/SleepLayout';
+import SeoGenerator from '@components/SeoGenerator';
 
 const Sleep = ({ sleepData, sleepSupplements }) => {
   const router = useRouter();
@@ -12,11 +13,24 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
   return (
-    <SleepLayout
-      locale={locale}
-      data={sleepData ? sleepData[currentLocale] : null}
-      supplements={sleepSupplements?.supplements}
-    />
+    <>
+      <SeoGenerator
+        strapiSEO={{
+          description: sleepData[currentLocale]?.Seo?.seoDescription || '',
+          keywords: sleepData[currentLocale]?.Seo?.keywords || '',
+          title: sleepData[currentLocale]?.Seo?.pageTitle || '',
+          seoTitle: sleepData[currentLocale]?.Seo?.seoTitle || '',
+        }}
+        ogTags={sleepData[currentLocale]?.OGTags || []}
+        createdDate={sleepData[currentLocale]?.createdAt || ''}
+        modifiedDate={sleepData[currentLocale]?.updatedAt || ''}
+      />
+      <SleepLayout
+        locale={locale}
+        data={sleepData ? sleepData[currentLocale] : null}
+        supplements={sleepSupplements?.supplements}
+      />
+    </>
   );
 };
 export default Sleep;

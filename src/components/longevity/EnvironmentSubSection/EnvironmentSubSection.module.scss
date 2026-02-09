@@ -1,5 +1,5 @@
 .environmentSubSection {
-  padding: 20px 60px 20px 40px;
+  padding: 20px 60px 0 40px;
 
   .titleAndIcon {
     display: flex;
@@ -35,8 +35,36 @@
   }
 }
 
+.environmentSubSection:first-child {
+  padding: 28px 60px 0 40px;
+}
+
+.environmentSubSection:last-child {
+  padding: 20px 60px 28px 40px;
+}
+
 @media (max-width: 965px) {
   .environmentSubSection {
     padding: 12px;
+
+    .hr {
+      //width: 100%;
+      background-size: contain;
+    }
+  }
+  .environmentSubSection:first-child {
+    padding: 12px 12px 0 12px;
+  }
+
+  .environmentSubSection:last-child {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 450px) {
+  .environmentSubSection {
+    .hr {
+      width: 100%;
+    }
   }
 }

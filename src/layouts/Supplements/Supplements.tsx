@@ -11,8 +11,7 @@ import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import { SupplementsProps } from './Supplements.types';
 
-// TODO: move supplements styles to its own file, currently it shares styles with sleep layout which is not ideal
-import styles from '@layouts/SleepLayout/SleepLayout.module.scss';
+import styles from './Supplements.module.scss';
 
 const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
   const [open, setOpen] = useState(false);
@@ -108,7 +107,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
           <div ref={tableRef}>
             <Table
               headerRows={tableKeys}
-              rows={data['key brain rules section']}
+              rows={data['situational section']}
               isSupplementTable
             />
           </div>
@@ -145,7 +144,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
               <Image
                 src={imgSrc}
                 alt="Table"
-                width={700}
+                width={540}
                 height={600}
                 className={styles.img}
               />

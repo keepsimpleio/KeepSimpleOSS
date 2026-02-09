@@ -18,7 +18,6 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
   headlineBackgroundImageUrl,
   locale,
   whatDamages,
-  howDamages,
   children,
   date,
   isHacks,
@@ -45,28 +44,30 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
             [styles.hacksHeading]: isHacks,
           })}
         />
-        {whatDamages && howDamages && (
+        {whatDamages && (
           <span className={styles.habitTooltip} data-tooltip-id={title}>
             {habitTooltipTitle}
           </span>
         )}
         {date && <div className={styles.dateTxt}>{date}</div>}
-        {whatDamages && howDamages && (
+        {whatDamages && (
           <ReactTooltip
             opacity={1}
             id={title}
             place={'bottom'}
             className={cn(styles.tooltip, {})}
           >
-            <WhyDoThisTooltip
-              whatDamagesText={whatDamages}
-              howDamagesText={howDamages}
-              locale={locale}
-            />
+            <WhyDoThisTooltip whatDamagesText={whatDamages} locale={locale} />
           </ReactTooltip>
         )}
       </div>
-      <div className={styles.mainContent}>
+      <div
+        className={cn(styles.mainContent, {
+          [styles.withDate]: date,
+        })}
+      >
+        {date && <div className={styles.dateTxtMobile}>{date}</div>}
+
         {description ? (
           <div
             dangerouslySetInnerHTML={{ __html: description || '' }}

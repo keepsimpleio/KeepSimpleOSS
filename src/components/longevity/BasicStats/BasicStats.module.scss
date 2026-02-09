@@ -1,3 +1,5 @@
+@import '@styles/fonts.scss';
+
 .basicStats {
   padding-top: 28px;
   padding-bottom: 40px;
@@ -10,6 +12,16 @@
       gap: 12px;
       align-items: center;
       padding-bottom: 16px;
+
+      .statValue {
+        @include text-body;
+      }
     }
+  }
+}
+
+@media (max-width: 965px) {
+  .basicStats {
+    margin-bottom: 0;
   }
 }

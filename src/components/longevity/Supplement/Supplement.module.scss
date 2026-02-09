@@ -38,3 +38,21 @@
 .supplement:last-child {
   padding-bottom: 28px;
 }
+
+@media (max-width: 965px) {
+  .supplement {
+    padding: 0px 12px 16px 12px;
+
+    .heading {
+      font-size: 18px;
+      padding-bottom: 12px;
+    }
+  }
+  .supplement:first-child {
+    padding: 16px 12px 0 12px;
+  }
+
+  .supplement:last-child {
+    padding-bottom: 0;
+  }
+}

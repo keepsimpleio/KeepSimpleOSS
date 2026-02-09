@@ -49,7 +49,7 @@ const YourDiet: FC<YourDietProps> = ({ id, scaleLevels }) => {
           <p>
             Biological Age:{' '}
             <span>
-              {selectedDiet.biologicalAge} year
+              -{selectedDiet.biologicalAge} year
               {addSToYear(selectedDiet.biologicalAge)}
             </span>
           </p>
@@ -58,7 +58,7 @@ const YourDiet: FC<YourDietProps> = ({ id, scaleLevels }) => {
           <p>
             Skin Age:{' '}
             <span>
-              {selectedDiet.skinAge} year
+              -{selectedDiet.skinAge} year
               {addSToYear(selectedDiet.skinAge)}
             </span>
           </p>
@@ -67,7 +67,7 @@ const YourDiet: FC<YourDietProps> = ({ id, scaleLevels }) => {
           <p>
             Joint Age:{' '}
             <span>
-              {selectedDiet.jointAge} year
+              -{selectedDiet.jointAge} year
               {addSToYear(selectedDiet.jointAge)}
             </span>
           </p>
@@ -76,7 +76,7 @@ const YourDiet: FC<YourDietProps> = ({ id, scaleLevels }) => {
           <p>
             Metabolic Age:{' '}
             <span>
-              {selectedDiet.metabolicAge} year
+              -{selectedDiet.metabolicAge} year
               {addSToYear(selectedDiet.metabolicAge)}
             </span>
           </p>

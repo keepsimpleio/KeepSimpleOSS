@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import StudyLayout from '@layouts/StudyLayout';
 
 import { getStudy } from '@api/longevity/study';
+import SeoGenerator from '@components/SeoGenerator';
 
 const Study = ({ studyData }) => {
   const router = useRouter();
@@ -11,10 +12,23 @@ const Study = ({ studyData }) => {
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
   return (
-    <StudyLayout
-      data={studyData ? studyData[currentLocale] : null}
-      locale={locale}
-    />
+    <>
+      <SeoGenerator
+        strapiSEO={{
+          description: studyData[currentLocale]?.Seo?.seoDescription || '',
+          keywords: studyData[currentLocale]?.Seo?.keywords || '',
+          title: studyData[currentLocale]?.Seo?.pageTitle || '',
+          seoTitle: studyData[currentLocale]?.Seo?.seoTitle || '',
+        }}
+        ogTags={studyData[currentLocale]?.OGTags || []}
+        createdDate={studyData[currentLocale]?.createdAt || ''}
+        modifiedDate={studyData[currentLocale]?.updatedAt || ''}
+      />
+      <StudyLayout
+        data={studyData ? studyData[currentLocale] : null}
+        locale={locale}
+      />
+    </>
   );
 };
 export default Study;

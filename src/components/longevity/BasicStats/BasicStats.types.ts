@@ -4,5 +4,5 @@ export type BasicStatsProps = {
     value: string;
     icon: string;
   }[];
-  locale?: string;
+  title?: string;
 };

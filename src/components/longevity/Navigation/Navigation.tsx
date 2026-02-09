@@ -19,17 +19,17 @@ const Navigation: FC = () => {
 
   // TODO: Move nav items
   const navItems = [
-    { name: 'What is this?', path: '/tools/longevity-protocol/what-is-this' },
+    { name: 'About Project', path: '/tools/longevity-protocol/what-is-this' },
     {
-      name: '1.0 Habits (Protocols)',
-      path: '/tools/longevity-protocol/habits',
+      name: 'Habits',
+      path: '/tools/longevity-protocol/habits/lifestyle',
       hasNoUrl: true,
     },
     {
-      name: '2.0 Environment (Devices, other)',
+      name: 'Environment',
       path: '/tools/longevity-protocol/environment',
     },
-    { name: '3.0 Results', path: '/tools/longevity-protocol/results' },
+    { name: 'Results', path: '/tools/longevity-protocol/results' },
     {
       name: 'AI Assistant',
       path: 'https://chatgpt.com/g/g-6952e0caa7c88191b1ba18e63b36dd69-tom-longevity-and-food-guide-by-keepsimple-io',
@@ -41,7 +41,7 @@ const Navigation: FC = () => {
   const subNavItems = [
     {
       name: 'Lifestyle',
-      path: '/tools/longevity-protocol/habits',
+      path: '/tools/longevity-protocol/habits/lifestyle',
       icon: <LifestyleIcon />,
     },
     {
@@ -70,24 +70,29 @@ const Navigation: FC = () => {
       icon: <SupplementsIcon />,
     },
   ];
+
   return (
     <nav>
       <ul className={styles.ul}>
-        {navItems.map((item, key) => (
-          <Link
-            key={key}
-            className={cn(styles.item, {
-              [styles.itemActive]: router.pathname === item.path,
-            })}
-            href={item.path}
-          >
-            <li className={styles.link}>
-              {item.icon && item.icon}
-              {item.name}
-              {key === 4 && <NewPageIcon />}
-            </li>
-          </Link>
-        ))}
+        {navItems.map((item, key) => {
+          return (
+            <Link
+              key={key}
+              className={cn(styles.item, {
+                [styles.itemActive]:
+                  router.pathname === item.path ||
+                  (router.pathname.includes('habits') && item.hasNoUrl),
+              })}
+              href={item.path}
+            >
+              <li className={styles.link}>
+                {item.icon && item.icon}
+                {item.name}
+                {key === 4 && <NewPageIcon />}
+              </li>
+            </Link>
+          );
+        })}
       </ul>
       <div className={styles.subNav}>
         <Image
