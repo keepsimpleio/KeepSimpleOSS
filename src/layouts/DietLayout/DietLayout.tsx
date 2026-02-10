@@ -103,7 +103,6 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
         />
         <YourDiet id={selectedHealthyOptionId} scaleLevels={scaleLevels} />
       </LongevitySubSection>
-
       <LongevitySubSection
         locale={locale}
         // TODO add russian

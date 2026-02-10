@@ -12,8 +12,8 @@
     background-image: url('/keepsimple_/assets/longevity/nav-bg.svg');
     background-repeat: no-repeat;
     background-size: cover;
-    width: 221px;
-    height: 48px;
+    width: 220px;
+    height: 49px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -22,20 +22,8 @@
 
     &:hover {
       cursor: pointer;
-      background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
-
-      .link,
-      .subLink {
-        color: #ffffff;
-      }
-    }
-
-    &:hover {
-      svg {
-        path {
-          fill: #2f2f2f;
-        }
-      }
+      background-image: url('/keepsimple_/assets/longevity/navbar-borders.svg');
+      background-color: #fff;
     }
   }
 
@@ -72,6 +60,11 @@
           fill: #fff;
         }
       }
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
     }
   }
 
@@ -131,7 +124,7 @@
 
     svg {
       path {
-        fill: #000;
+        fill: #bdbdbd;
       }
     }
   }
@@ -155,3 +148,15 @@
   margin-bottom: 0;
   margin-top: 0;
 }
+
+@media (max-width: 1170px) {
+  .nav {
+    margin: 0 15px;
+  }
+}
+
+//@media(max-width: 950px) {
+//  .nav {
+//    display: none;
+//  }
+//}

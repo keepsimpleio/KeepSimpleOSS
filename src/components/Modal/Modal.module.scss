@@ -44,6 +44,7 @@
         font-size: 16px;
         color: #28587b;
       }
+
       .closeIconWrapper {
         position: relative;
         width: 24px;
@@ -159,6 +160,15 @@
   align-items: center;
   justify-content: center;
   z-index: 46;
+}
+
+@media (max-width: 965px) {
+  .overlay {
+    .full {
+      max-width: -webkit-fill-available !important;
+      margin: 16px;
+    }
+  }
 }
 
 @media (max-width: 800px) {

@@ -155,3 +155,33 @@
     bottom: 0;
   }
 }
+
+@media (max-width: 965px) {
+  .whatToEatOrAvoid {
+    padding: 12px;
+
+    .heart,
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      top: 15px;
+      right: 22px;
+    }
+
+    .label {
+      top: 20px;
+      right: 53px;
+    }
+
+    .divider {
+      width: -webkit-fill-available;
+    }
+
+    .heading {
+      h5 {
+        font-size: 16px !important;
+      }
+    }
+  }
+}

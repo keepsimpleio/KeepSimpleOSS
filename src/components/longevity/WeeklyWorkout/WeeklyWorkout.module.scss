@@ -41,17 +41,30 @@
     margin-bottom: 20px;
   }
 
+  .wrapper {
+    display: flex;
+    gap: 20px;
+  }
+
   .imageWrapper {
     opacity: 70%;
     transform: translateX(-6px);
     transition: transform 200ms ease;
     z-index: 1;
+    cursor: pointer;
   }
 
   .activeImageWrapper {
+    width: 180px;
+    height: 180px;
     opacity: 100%;
     transform: translateX(0);
     z-index: 99;
+
+    img {
+      width: 180px;
+      height: 180px;
+    }
   }
 
   .summary {

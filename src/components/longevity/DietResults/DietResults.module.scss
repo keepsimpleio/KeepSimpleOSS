@@ -87,3 +87,20 @@
     padding-top: 3px;
   }
 }
+
+@media (max-width: 965px) {
+  .results {
+    max-width: unset;
+    background-size: cover;
+    height: 82px;
+
+    .item {
+      width: auto;
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+  }
+}

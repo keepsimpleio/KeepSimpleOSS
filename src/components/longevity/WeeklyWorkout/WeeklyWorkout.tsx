@@ -31,14 +31,6 @@ const WeeklyWorkout: FC = () => {
     }, [selectedMinutes]);
   }
   const summary = useActivitySummary(selectedMinutes);
-  const settings = {
-    infinite: true,
-    slidesToShow: 5,
-    centerMode: true,
-    arrows: false,
-    dots: false,
-    swipeToSlide: true,
-  };
 
   // TODO
   // The 'images' array makes the dependencies of useMemo Hook (at line 115) change on every render.
@@ -99,7 +91,7 @@ const WeeklyWorkout: FC = () => {
         setStopIndex={setSelectedIndex}
         stopIndex={selectedIndex}
       />
-      <Slider {...settings} ref={slider}>
+      <div className={styles.wrapper}>
         {images.map(image => {
           const isActive = image.id === selectedIndex;
 
@@ -114,14 +106,14 @@ const WeeklyWorkout: FC = () => {
               <Image
                 src={image.src}
                 alt={image.alt}
-                width={250}
-                height={250}
+                width={152}
+                height={152}
                 className={styles.image}
               />
             </div>
           );
         })}
-      </Slider>
+      </div>
       <div>
         <p className={styles.summary}>
           Risk of Dying Early <span> {summary.riskOfDyingEarly}</span>
