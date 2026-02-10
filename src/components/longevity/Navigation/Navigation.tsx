@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import Link from 'next/link';
 
-import styles from './Navigation.module.scss';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import cn from 'classnames';
+
 import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
 import { StudyIcon } from '@icons/longevity/StudyIcon';
 import { DietIcon } from '@icons/longevity/DietIcon';
@@ -14,12 +14,14 @@ import { SupplementsIcon } from '@icons/longevity/SupplementsIcon';
 import { TomIcon } from '@icons/longevity/TomIcon';
 import NewPageIcon from '@icons/longevity/NewPageIocn';
 
+import styles from './Navigation.module.scss';
+
 const Navigation: FC = () => {
   const router = useRouter();
 
   // TODO: Move nav items
   const navItems = [
-    { name: 'About Project', path: '/tools/longevity-protocol/what-is-this' },
+    { name: 'About Project', path: '/tools/longevity-protocol/about-project' },
     {
       name: 'Habits',
       path: '/tools/longevity-protocol/habits/lifestyle',
@@ -72,7 +74,7 @@ const Navigation: FC = () => {
   ];
 
   return (
-    <nav>
+    <nav className={styles.nav}>
       <ul className={styles.ul}>
         {navItems.map((item, key) => {
           return (
@@ -84,6 +86,7 @@ const Navigation: FC = () => {
                   (router.pathname.includes('habits') && item.hasNoUrl),
               })}
               href={item.path}
+              target={item.name.includes('AI Assistant') ? '_blank' : '_self'}
             >
               <li className={styles.link}>
                 {item.icon && item.icon}

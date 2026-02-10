@@ -61,7 +61,7 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
     },
     {
       name: tools,
-      path: '/tools/longevity-protocol/what-is-this',
+      path: '/tools/longevity-protocol/about-project',
       logo: isDarkTheme ? <ToolsIcon /> : <ToolsDarkIcon />,
       target: '',
       id: 'tools',

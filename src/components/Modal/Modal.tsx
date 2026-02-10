@@ -7,7 +7,7 @@ import styles from './Modal.module.scss';
 
 type ModalProps = {
   children?: ReactNode;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'full';
   onClick?: () => void;
   title?: string | ReactNode;
   close?: boolean;
@@ -99,6 +99,7 @@ const Modal: FC<ModalProps> = ({
         className={cn(styles.wrapper, styles.small, {
           [styles.large]: size === 'large',
           [styles.medium]: size === 'medium',
+          [styles.full]: size === 'full',
           [wrapperClassName]: wrapperClassName,
           [styles.fullSizeMobile]: fullSizeMobile,
         })}

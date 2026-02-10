@@ -39,7 +39,7 @@ const FlipCard: FC<FlipCardProps> = ({
           />
         </div>
       ) : (
-        <div>
+        <div className={styles.content}>
           <Heading
             text={headline || ''}
             Tag="h4"
@@ -56,6 +56,7 @@ const FlipCard: FC<FlipCardProps> = ({
                 alt={chartTitle ?? 'chart'}
                 width={512}
                 height={455}
+                className={styles.chart}
               />
             ) : null}
           </div>

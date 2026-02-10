@@ -86,12 +86,15 @@
       font-family: Aboreto-Regular, sans-serif;
     }
   }
+
   .separator {
     display: block;
     margin: 8px 0;
   }
+
   .quoteAuthor {
     display: unset;
+
     h4 {
       line-height: 1.5;
       font-size: 20px !important;
@@ -99,6 +102,45 @@
       margin: 0;
       font-family: Aboreto-Regular, sans-serif !important;
       color: #fff !important;
+    }
+  }
+}
+
+@media (max-width: 965px) {
+  .flipCard {
+    background-image: unset;
+    height: auto;
+    padding: 0;
+
+    .headline {
+      justify-content: center;
+
+      h4 {
+        font-size: 18px !important;
+      }
+    }
+
+    .subText {
+      font-size: 16px;
+    }
+
+    .chartWrapper {
+      .chartTitle {
+        font-size: 14px;
+      }
+
+      .chart {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+    .divider {
+      width: -webkit-fill-available;
+    }
+
+    .content {
+      width: -webkit-fill-available;
     }
   }
 }
