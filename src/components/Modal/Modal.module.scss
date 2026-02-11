@@ -194,5 +194,15 @@
     .fullSizeMobile {
       max-width: unset;
     }
+
+    .isLongevityProtocolModal {
+      .header {
+        position: absolute;
+      }
+
+      .body {
+        padding: 0;
+      }
+    }
   }
 }

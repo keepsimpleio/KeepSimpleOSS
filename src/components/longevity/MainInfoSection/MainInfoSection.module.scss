@@ -40,7 +40,7 @@
 
 .introPage {
   padding: 40px 40px 0 40px;
-  margin: 40px 16px;
+  margin: 40px 0;
 
   .heading {
     padding-bottom: 4px;
@@ -48,7 +48,8 @@
 }
 
 @media (max-width: 1190px) {
-  .mainInfoSection {
+  .mainInfoSection,
+  .introPage {
     margin: 20px 16px;
   }
 }

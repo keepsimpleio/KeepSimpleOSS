@@ -1,10 +1,18 @@
 import { useRouter } from 'next/router';
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { useRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import Header from '@components/Header';
 import Hero from '@components/longevity/Hero';
 import Navigation from '@components/longevity/Navigation';
+import MobileNavigation from '@components/longevity/MobileNavigation';
+
+import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import styles from './Layout.module.scss';
 
@@ -15,8 +23,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [targetHeight, setTargetHeight] = useState(0);
   const [renderedCount, setRenderedCount] = useState(1);
   const [isLongevityProtocolPage, setIsLongevityProtocolPage] = useState(false);
+  const isMobile = useIsWidthLessThan(956);
 
-  const recalc = () => {
+  const recalc = useCallback(() => {
     if (!isLongevityProtocolPage) return;
 
     const section = sectionRef.current;
@@ -32,7 +41,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     setTargetHeight(prev => (prev === h ? prev : h));
     setRenderedCount(prev => (needed > prev ? needed : prev));
-  };
+  }, [isLongevityProtocolPage]);
 
   useEffect(() => {
     if (router.pathname.startsWith('/tools/longevity-protocol')) {
@@ -99,20 +108,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <>
           <Hero />
           <main className={styles.longevityMain}>
-            <Navigation />
-            <section className={styles.section} ref={sectionRef}>
+            {isMobile ? <MobileNavigation /> : <Navigation />}
+            <section ref={sectionRef} className={styles.section}>
               <div
-                className={styles.videoWrapper}
-                style={
-                  isLongevityProtocolPage && targetHeight
-                    ? { height: `${targetHeight}px`, overflow: 'hidden' }
-                    : undefined
-                }
+                className={styles.videoLayer}
+                aria-hidden
+                style={{ height: targetHeight }}
               >
                 {Array.from({ length: renderedCount }).map((_, i) => (
                   <video
                     key={i}
-                    width={130}
                     ref={i === 0 ? probeVideoRef : undefined}
                     src="/keepsimple_/assets/longevity/dna.mp4"
                     muted
@@ -125,7 +130,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   />
                 ))}
               </div>
-              <div>{children}</div>
+              <div className={styles.content}>{children}</div>
             </section>
           </main>
         </>

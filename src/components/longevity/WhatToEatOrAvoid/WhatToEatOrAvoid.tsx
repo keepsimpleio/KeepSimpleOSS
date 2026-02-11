@@ -1,13 +1,17 @@
 import { FC, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import cn from 'classnames';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import Heading from '@components/Heading';
+import Modal from '@components/Modal';
+import AboutTheProduct from '@components/longevity/WhatToEatOrAvoid/AboutTheProduct';
 
-import Divider from '@icons/longevity/Divider';
+import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import { WhatToEatOrAvoidProps } from './WhatToEatOrAvoid.types';
+
+import Divider from '@icons/longevity/Divider';
 
 import styles from './WhatToEatOrAvoid.module.scss';
 
@@ -23,6 +27,8 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   id,
 }) => {
   const [exampleContent, setExampleContent] = useState('');
+  const isMobile = useIsWidthLessThan(956);
+  const [openMobileModal, setOpenMobileModal] = useState(false);
 
   const getPText = (html: string) => {
     if (!html) return '';
@@ -120,32 +126,27 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
             width={59}
             height={59}
             className={styles.heart}
+            onClick={() => isMobile && setOpenMobileModal(true)}
           />
-          <ReactTooltip
-            id={title}
-            place={'top'}
-            className={styles.tooltip}
-            opacity={1}
-          >
-            <Heading
-              className={styles.tooltipHeading}
-              text={title}
-              Tag={'h5'}
-              showRightIcon={false}
-              showLeftIcon={false}
-            />
-            <span className={styles.subText}> CONSUMPTION CONSEQUENCES </span>
-            <Image
-              src={'/keepsimple_/assets/longevity/diet/tooltip-line.png'}
-              alt={'info'}
-              width={459}
-              height={2}
-            />
-            <div
-              dangerouslySetInnerHTML={{ __html: tooltipContent }}
-              className={styles.content}
-            />
-          </ReactTooltip>
+          {!isMobile && (
+            <ReactTooltip
+              id={title}
+              place={'top'}
+              className={styles.tooltip}
+              opacity={1}
+            >
+              <AboutTheProduct content={tooltipContent} title={title} />
+            </ReactTooltip>
+          )}
+          {isMobile && openMobileModal && (
+            <Modal
+              onClick={() => setOpenMobileModal(false)}
+              size={'full'}
+              isLongevityProtocolModal
+            >
+              <AboutTheProduct content={tooltipContent} title={title} />
+            </Modal>
+          )}
         </div>
       )}
       <Divider className={styles.divider} />

@@ -3,22 +3,29 @@ import Image from 'next/image';
 
 import Heading from '@components/Heading';
 
+import { useIsWidthLessThan } from '@hooks/useScreenSize';
+
 import { YourDietProps } from './YourDiet.types';
 
 import styles from './YourDiet.module.scss';
 
 const YourDiet: FC<YourDietProps> = ({ id, scaleLevels }) => {
   const selectedDiet = scaleLevels.find((level: any) => level.id === id);
+  const isMobile = useIsWidthLessThan(956);
+  const backgroundImageUrl = isMobile
+    ? selectedDiet?.backgroundUrlMobile
+    : selectedDiet?.backgroundUrl;
 
   const addSToYear = (year: string) => {
     if (year > '1') return 's';
     return '';
   };
+
   return (
     <section
       className={styles.selectedDiet}
       style={{
-        backgroundImage: `url(${selectedDiet ? selectedDiet.backGroundUrl : ''})`,
+        backgroundImage: `url(${selectedDiet ? backgroundImageUrl : ''})`,
       }}
     >
       <Heading

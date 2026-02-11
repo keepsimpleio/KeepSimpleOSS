@@ -78,3 +78,42 @@
     border-bottom: 3px solid #000000d9;
   }
 }
+
+@media (max-width: 956px) {
+  .strengthAndTimeCompression {
+    background-size: auto;
+    margin: 0 12px;
+
+    .heading,
+    .subHeading {
+      h4,
+      h3 {
+        font-size: 18px !important;
+      }
+    }
+
+    .divider {
+      margin: 20px 0;
+    }
+
+    .totalMins,
+    .staticBigText,
+    .staticSmallText {
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .result {
+      flex-direction: column;
+
+      .perWeek,
+      .perSession {
+        padding: 12px 20px;
+      }
+
+      .perWeek {
+        margin-top: 15px;
+      }
+    }
+  }
+}

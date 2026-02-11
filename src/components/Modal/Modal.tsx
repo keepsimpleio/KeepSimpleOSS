@@ -22,7 +22,7 @@ type ModalProps = {
   fullSizeMobile?: boolean;
   removeBorderMobile?: boolean;
   disableBackgroundClick?: boolean;
-
+  isLongevityProtocolModal?: boolean;
   grayTitle?: boolean;
   dataCy?: string;
 };
@@ -46,6 +46,7 @@ const Modal: FC<ModalProps> = ({
   disableBackgroundClick,
   grayTitle,
   dataCy,
+  isLongevityProtocolModal,
 }) => {
   const handleClose = () => {
     onClick();
@@ -102,6 +103,7 @@ const Modal: FC<ModalProps> = ({
           [styles.full]: size === 'full',
           [wrapperClassName]: wrapperClassName,
           [styles.fullSizeMobile]: fullSizeMobile,
+          [styles.isLongevityProtocolModal]: isLongevityProtocolModal,
         })}
       >
         {!removeHeader && (

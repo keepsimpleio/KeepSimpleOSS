@@ -11,8 +11,8 @@
   .subItem {
     background-image: url('/keepsimple_/assets/longevity/nav-bg.svg');
     background-repeat: no-repeat;
-    background-size: cover;
-    width: 220px;
+    background-size: contain;
+    width: 222px;
     height: 49px;
     text-align: center;
     display: flex;
@@ -154,9 +154,3 @@
     margin: 0 15px;
   }
 }
-
-//@media(max-width: 950px) {
-//  .nav {
-//    display: none;
-//  }
-//}

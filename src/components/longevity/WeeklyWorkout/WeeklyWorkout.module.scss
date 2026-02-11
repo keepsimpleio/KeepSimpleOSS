@@ -77,3 +77,60 @@
     }
   }
 }
+
+@media (max-width: 965px) {
+  .weeklyWorkout {
+    .header {
+      .minutes {
+        font-size: 18px;
+      }
+    }
+
+    .divider {
+      margin: 8px 0;
+      background-size: cover;
+    }
+
+    .wrapper {
+      gap: 0;
+
+      .imageWrapper {
+        width: 100%;
+        height: auto;
+        position: relative;
+
+        img {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+        }
+      }
+
+      .imageWrapper:first-child {
+        transform: translateX(40px);
+      }
+
+      .imageWrapper:nth-child(2) {
+        transform: translateX(-20px);
+      }
+
+      .imageWrapper:nth-child(3) {
+        transform: translateX(-40px);
+      }
+
+      .imageWrapper:nth-child(3) {
+        transform: translateX(-60px);
+      }
+
+      .activeImageWrapper {
+        transform: translateX(0);
+        z-index: 99;
+      }
+    }
+
+    .summary {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+}
