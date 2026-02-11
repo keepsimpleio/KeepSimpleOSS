@@ -4,8 +4,35 @@
 
   .section {
     display: flex;
-    flex-direction: row-reverse;
-    gap: 20px;
+  }
+
+  .section {
+    position: relative;
+  }
+
+  .videoLayer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .video {
+    display: block;
+    width: 160px;
+    height: auto;
+  }
+
+  .video:first-child {
+    margin-top: 40px;
   }
 
   .videoWrapper {
@@ -13,14 +40,15 @@
     flex-direction: column;
     overflow: hidden;
     gap: 0;
-    .video:first-child {
-      margin-top: 40px;
-    }
   }
 }
 
 @media (max-width: 965px) {
   .longevityMain {
+    .section {
+      gap: 0;
+    }
+
     .videoWrapper {
       display: none;
     }

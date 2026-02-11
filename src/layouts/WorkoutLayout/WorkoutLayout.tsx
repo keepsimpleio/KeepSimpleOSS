@@ -74,7 +74,7 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
         title={'Workout supplements'}
         description={data['workout supplements']}
         headlineBackgroundImageUrl={
-          '/keepsimple_/assets/longevity/workout/img.png'
+          '/keepsimple_/assets/longevity/workout/workout-supplements.png'
         }
       />
       <WeeklyWorkout />

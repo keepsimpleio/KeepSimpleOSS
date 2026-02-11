@@ -1,7 +1,8 @@
 export type YourDietProps = {
   id: number;
   scaleLevels: {
-    backGroundUrl: string;
+    backgroundUrl: string;
+    backgroundUrlMobile?: string;
     biologicalAge: string;
     skinAge: string;
     jointAge: string;
