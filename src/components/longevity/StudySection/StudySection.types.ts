@@ -9,4 +9,5 @@ export type StudySectionProps = {
   flippedCardChart?: string;
   hacksQuote?: string;
   quoteAuthor?: string;
+  backsBackgroundImageUrl?: string;
 };

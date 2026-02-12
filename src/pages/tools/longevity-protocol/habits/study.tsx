@@ -11,6 +11,20 @@ const Study = ({ studyData }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: studyData[currentLocale]?.ogDescription || '',
+    ogTitle: studyData[currentLocale]?.ogTitle || '',
+    ogType: studyData[currentLocale]?.ogType || '',
+    ogImageAlt: studyData[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url: studyData[currentLocale]?.ogImage?.data?.attributes?.url || '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -20,7 +34,7 @@ const Study = ({ studyData }) => {
           title: studyData[currentLocale]?.Seo?.pageTitle || '',
           seoTitle: studyData[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={studyData[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={studyData[currentLocale]?.createdAt || ''}
         modifiedDate={studyData[currentLocale]?.updatedAt || ''}
       />

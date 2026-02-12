@@ -12,6 +12,20 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: sleepData[currentLocale]?.ogDescription || '',
+    ogTitle: sleepData[currentLocale]?.ogTitle || '',
+    ogType: sleepData[currentLocale]?.ogType || '',
+    ogImageAlt: sleepData[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url: sleepData[currentLocale]?.ogImage?.data?.attributes?.url || '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -21,7 +35,7 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
           title: sleepData[currentLocale]?.Seo?.pageTitle || '',
           seoTitle: sleepData[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={sleepData[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={sleepData[currentLocale]?.createdAt || ''}
         modifiedDate={sleepData[currentLocale]?.updatedAt || ''}
       />

@@ -57,6 +57,7 @@ const FlipCard: FC<FlipCardProps> = ({
                 width={512}
                 height={455}
                 className={styles.chart}
+                unoptimized
               />
             ) : null}
           </div>

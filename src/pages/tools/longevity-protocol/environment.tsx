@@ -11,6 +11,20 @@ const Environment = ({ environment }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: environment[currentLocale]?.ogDescription || '',
+    ogTitle: environment[currentLocale]?.ogTitle || '',
+    ogType: environment[currentLocale]?.ogType || '',
+    ogImageAlt: environment[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url: environment[currentLocale]?.ogImage?.data?.attributes?.url || '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -20,7 +34,7 @@ const Environment = ({ environment }) => {
           title: environment[currentLocale]?.Seo?.pageTitle || '',
           seoTitle: environment[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={environment[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={environment[currentLocale]?.createdAt || ''}
         modifiedDate={environment[currentLocale]?.updatedAt || ''}
       />

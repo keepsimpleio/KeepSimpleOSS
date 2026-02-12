@@ -11,6 +11,20 @@ const Supplements = ({ supplements }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: supplements[currentLocale]?.ogDescription || '',
+    ogTitle: supplements[currentLocale]?.ogTitle || '',
+    ogType: supplements[currentLocale]?.ogType || '',
+    ogImageAlt: supplements[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url: supplements[currentLocale]?.ogImage?.data?.attributes?.url || '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -20,7 +34,7 @@ const Supplements = ({ supplements }) => {
           title: supplements[currentLocale]?.Seo?.pageTitle || '',
           seoTitle: supplements[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={supplements[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={supplements[currentLocale]?.createdAt || ''}
         modifiedDate={supplements[currentLocale]?.updatedAt || ''}
       />

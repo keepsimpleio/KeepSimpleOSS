@@ -11,6 +11,20 @@ const Diet = ({ dietData }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: dietData[currentLocale]?.ogDescription || '',
+    ogTitle: dietData[currentLocale]?.ogTitle || '',
+    ogType: dietData[currentLocale]?.ogType || '',
+    ogImageAlt: dietData[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url: dietData[currentLocale]?.ogImage?.data?.attributes?.url || '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -20,7 +34,7 @@ const Diet = ({ dietData }) => {
           title: dietData[currentLocale]?.Seo?.seoTitle || '',
           seoTitle: dietData[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={dietData[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={dietData[currentLocale]?.createdAt || ''}
         modifiedDate={dietData[currentLocale]?.updatedAt || ''}
       />

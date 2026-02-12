@@ -44,6 +44,7 @@
   .wrapper {
     display: flex;
     gap: 20px;
+    margin-top: 32px;
   }
 
   .imageWrapper {
@@ -60,6 +61,8 @@
     opacity: 100%;
     transform: translateX(0);
     z-index: 99;
+    position: relative;
+    top: -14px;
 
     img {
       width: 180px;
@@ -92,12 +95,28 @@
     }
 
     .wrapper {
+      margin-top: 20px;
       gap: 0;
+      --overlap: 42px;
+      display: flex;
+      align-items: center;
 
       .imageWrapper {
         width: 100%;
         height: auto;
         position: relative;
+        margin-left: calc(var(--overlap) * -1);
+        border: 0;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+        top: 0;
+        transition:
+          transform 180ms ease,
+          box-shadow 180ms ease,
+          z-index 0ms;
+        transform: translateY(0) scale(1);
+        z-index: 1;
 
         img {
           width: 100%;
@@ -106,25 +125,34 @@
         }
       }
 
-      .imageWrapper:first-child {
-        transform: translateX(40px);
+      .imageWrapper:nth-child(4) {
+        z-index: 2;
+      }
+
+      .imageWrapper:nth-child(3) {
+        z-index: 3;
       }
 
       .imageWrapper:nth-child(2) {
-        transform: translateX(-20px);
+        z-index: 4;
       }
 
-      .imageWrapper:nth-child(3) {
-        transform: translateX(-40px);
+      .imageWrapper:nth-child(1) {
+        z-index: 5;
       }
 
-      .imageWrapper:nth-child(3) {
-        transform: translateX(-60px);
+      .imageWrapper:first-child {
+        margin-left: 0;
       }
 
       .activeImageWrapper {
-        transform: translateX(0);
-        z-index: 99;
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 99 !important;
+
+        img {
+          position: relative;
+        }
       }
     }
 
