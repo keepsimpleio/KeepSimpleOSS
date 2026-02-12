@@ -11,6 +11,20 @@ const Workout = ({ workoutData }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: workoutData[currentLocale]?.ogDescription || '',
+    ogTitle: workoutData[currentLocale]?.ogTitle || '',
+    ogType: workoutData[currentLocale]?.ogType || '',
+    ogImageAlt: workoutData[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url: workoutData[currentLocale]?.ogImage?.data?.attributes?.url || '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -20,7 +34,7 @@ const Workout = ({ workoutData }) => {
           title: workoutData[currentLocale]?.Seo?.pageTitle || '',
           seoTitle: workoutData[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={workoutData[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={workoutData[currentLocale]?.createdAt || ''}
         modifiedDate={workoutData[currentLocale]?.updatedAt || ''}
       />

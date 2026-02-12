@@ -1,6 +1,6 @@
 const en = {
   habitTooltipTitle: 'Why do this?',
-  whatDamagesTitle: 'What damages',
+  whatDamagesTitle: 'Damage type',
 };
 
 export default en;

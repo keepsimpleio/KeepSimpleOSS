@@ -11,6 +11,20 @@ const Lifestyle = ({ habitsData }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: habitsData[currentLocale]?.ogDescription || '',
+    ogTitle: habitsData[currentLocale]?.ogTitle || '',
+    ogType: habitsData[currentLocale]?.ogType || '',
+    ogImageAlt: habitsData[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url: habitsData[currentLocale]?.ogImage?.data?.attributes?.url || '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -20,7 +34,7 @@ const Lifestyle = ({ habitsData }) => {
           title: habitsData[currentLocale]?.Seo?.pageTitle || '',
           seoTitle: habitsData[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={habitsData[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={habitsData[currentLocale]?.createdAt || ''}
         modifiedDate={habitsData[currentLocale]?.updatedAt || ''}
       />

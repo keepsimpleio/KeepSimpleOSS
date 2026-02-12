@@ -101,6 +101,7 @@
   .studySection {
     margin-right: 16px;
     margin-bottom: 20px;
+
     .headline {
       max-width: unset;
       padding: 16px 12px;
@@ -128,7 +129,6 @@
           align-items: center;
           gap: 12px;
           background-color: transparent;
-          //background-image: url("/keepsimple_/assets/longevity/btn-border.svg");
         }
       }
     }
@@ -136,5 +136,8 @@
     .pageSwitcher {
       display: none;
     }
+  }
+  .hacksModalBody {
+    display: flex !important;
   }
 }

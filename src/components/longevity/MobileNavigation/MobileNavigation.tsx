@@ -82,13 +82,16 @@ const MobileNavigation: FC = () => {
       icon: <SupplementsIcon />,
     },
   ];
-  const getActiveNavItemName = (nav1, nav2) => {
+  const getActiveNavItemName = (nav1, nav2 = []) => {
+    const pathname = router.pathname;
+
     const active =
-      nav1.find(i => i.path === router.pathname) ??
-      nav2.find(i => i.path === router.pathname);
+      nav1.find(i => !i.hasNoUrl && i.path === pathname) ??
+      nav2.find(i => i.path === pathname);
 
     return active?.name ?? '';
   };
+
   // TODO - Get back to this
   // const getNextNavItemName = (nav1, nav2) => {
   //   const allNavItems = [...nav1, ...nav2];

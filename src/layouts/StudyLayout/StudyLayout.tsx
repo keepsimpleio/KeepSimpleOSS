@@ -46,6 +46,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         description={data?.['explain to learn description']}
       />
       <StudySection
+        // research tasks flipped card image
         title={data['research tasks']?.title}
         description={data['research tasks']?.description}
         flippedCardChartTitle={
@@ -56,6 +57,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardPainText={
           data['research tasks']?.['flipped card pain caption']
         }
+        flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['research tasks flipped card image']?.data?.attributes?.url}`}
       />
       <StudySection
         title={data.data?.title}
@@ -72,6 +74,8 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         isHacks
         hacksQuote={data.hacks?.['hacks card quote']}
         quoteAuthor={data.hacks?.['hacks card quote author']}
+        flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['hacks flipped card image']?.data?.attributes?.url}`}
+        backsBackgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['hacks flipped card image']?.data?.attributes?.url}`}
       />
     </div>
   );

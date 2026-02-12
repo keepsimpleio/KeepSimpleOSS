@@ -1,10 +1,10 @@
 .flipCard {
   background-image: url('/keepsimple_/assets/longevity/study/flipped-card-bg.png');
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
   max-width: 948px;
   padding: 28px 103px;
-  height: 780px;
+  height: 550px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -41,10 +41,15 @@
       font-size: 20px;
       font-weight: 600;
     }
+
+    .chart {
+      max-width: 100%;
+      height: auto;
+    }
   }
 
   .diamond {
-    width: 14px;
+    width: 13px;
     height: 10px;
     background-color: #df382e;
     transform: rotate(45deg);
@@ -111,6 +116,10 @@
     background-image: unset;
     height: auto;
     padding: 0;
+
+    .diamond {
+      width: 19px;
+    }
 
     .headline {
       justify-content: center;

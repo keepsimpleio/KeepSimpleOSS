@@ -22,6 +22,7 @@ const StudySection: FC<StudySectionProps> = ({
   flippedCardChart,
   flippedCardPainText,
   hacksQuote,
+  backsBackgroundImageUrl,
   quoteAuthor,
 }) => {
   const [switchPage, setSwitchPage] = useState<boolean>(false);
@@ -40,6 +41,7 @@ const StudySection: FC<StudySectionProps> = ({
             alt={title}
             width={948}
             height={67}
+            unoptimized
             className={styles.backgroundImg}
           />
           <Heading
@@ -69,6 +71,7 @@ const StudySection: FC<StudySectionProps> = ({
                   alt={'Learn more icon'}
                   width={16}
                   height={16}
+                  unoptimized
                 />
                 Learn More
               </button>
@@ -97,7 +100,16 @@ const StudySection: FC<StudySectionProps> = ({
         )}
       </section>
       {isMobile && openModal && (
-        <Modal size={'full'} onClick={() => setOpenModal(false)}>
+        <Modal
+          size={'full'}
+          onClick={() => setOpenModal(false)}
+          backgroundImageUrl={
+            backsBackgroundImageUrl
+              ? backsBackgroundImageUrl
+              : '/keepsimple_/assets/longevity/study/flipped-card-bg.png'
+          }
+          bodyClassName={isHacks ? styles.hacksModalBody : styles.modalBody}
+        >
           <FlipCard
             headline={flippedCardHeadline}
             subText={flippedCardSubText}

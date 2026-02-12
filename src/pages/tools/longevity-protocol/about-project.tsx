@@ -11,6 +11,22 @@ const AboutProject = ({ aboutTheProject }) => {
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
+  const OGTags = {
+    ogDescription: aboutTheProject[currentLocale]?.ogDescription || '',
+    ogTitle: aboutTheProject[currentLocale]?.ogTitle || '',
+    ogType: aboutTheProject[currentLocale]?.ogType || '',
+    ogImageAlt: aboutTheProject[currentLocale]?.ogImageAlt || '',
+    ogImage: {
+      data: {
+        attributes: {
+          url:
+            aboutTheProject[currentLocale]?.ogImage?.data?.attributes?.url ||
+            '',
+        },
+      },
+    },
+  };
+
   return (
     <>
       <SeoGenerator
@@ -21,7 +37,7 @@ const AboutProject = ({ aboutTheProject }) => {
           title: aboutTheProject[currentLocale]?.Seo?.pageTitle || '',
           seoTitle: aboutTheProject[currentLocale]?.Seo?.seoTitle || '',
         }}
-        ogTags={aboutTheProject[currentLocale]?.OGTags || []}
+        ogTags={OGTags}
         createdDate={aboutTheProject[currentLocale]?.createdAt || ''}
         modifiedDate={aboutTheProject[currentLocale]?.updatedAt || ''}
       />
