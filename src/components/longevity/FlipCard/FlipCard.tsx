@@ -16,6 +16,8 @@ const FlipCard: FC<FlipCardProps> = ({
   hacksQuote,
   quoteAuthor,
   isHacks,
+  setSwitchPage,
+  switchPage,
 }) => {
   return (
     <div
@@ -23,6 +25,14 @@ const FlipCard: FC<FlipCardProps> = ({
         [styles.hacksFlipCard]: isHacks,
       })}
     >
+      <Image
+        src={'/keepsimple_/assets/longevity/study/page-switcher-back.svg'}
+        alt={'Page switcher'}
+        width={60}
+        height={60}
+        className={styles.pageSwitcherFlip}
+        onClick={() => setSwitchPage && setSwitchPage(!switchPage)}
+      />
       {isHacks ? (
         <div>
           <div

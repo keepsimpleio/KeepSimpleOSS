@@ -41,3 +41,20 @@
     }
   }
 }
+
+@media (max-width: 956px) {
+  .whyDoThisTooltip {
+    background-image: unset;
+    width: unset;
+    height: 100%;
+
+    .content {
+      padding-top: 12px;
+
+      p {
+        text-align: left;
+        width: unset;
+      }
+    }
+  }
+}

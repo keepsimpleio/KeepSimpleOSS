@@ -11,6 +11,7 @@ const Hero: FC = ({}) => {
         Tag={'h2'}
         showRightIcon={false}
         showLeftIcon={false}
+        className={styles.author}
       />
     </section>
   );

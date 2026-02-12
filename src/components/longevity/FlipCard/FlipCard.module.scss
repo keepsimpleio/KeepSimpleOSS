@@ -1,24 +1,36 @@
 .flipCard {
-  background-image: url('/keepsimple_/assets/longevity/study/flipped-card-bg.png');
+  background-image: url('/keepsimple_/assets/longevity/study/study-flip-card-bg.webp');
   background-size: cover;
   background-repeat: no-repeat;
   max-width: 948px;
-  padding: 28px 103px;
-  height: 550px;
+  height: 531px;
   text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-bottom: 30px;
+  padding: 10px;
+
+  .pageSwitcherFlip {
+    position: absolute;
+    bottom: 120px;
+    right: 5px;
+    left: 93%;
+    z-index: 55;
+    cursor: pointer;
+  }
 
   .headline {
-    padding-bottom: 16px;
+    padding-bottom: 12px;
+    justify-content: center !important;
+    padding-top: 20px;
 
     h4 {
       color: #ce2128 !important;
       text-transform: uppercase;
       font-family: Aboreto-Regular, sans-serif !important;
-      font-size: 24px !important;
+      font-size: 20px !important;
     }
   }
 
@@ -36,9 +48,9 @@
     flex-direction: column;
 
     .chartTitle {
-      padding: 40px 0 32px 0;
+      padding: 16px 0;
       line-height: 1;
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 600;
     }
 
@@ -71,7 +83,6 @@
   }
 
   .divider {
-    padding: 35px 0 28px 0;
   }
 }
 
