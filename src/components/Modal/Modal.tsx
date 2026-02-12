@@ -142,7 +142,7 @@ const Modal: FC<ModalProps> = ({
               </div>
               <div className={`${styles.lineWrapper} ${styles.leftWrapper}`}>
                 <Image
-                  src="/assets/close-left-line.svg"
+                  src="/keepsimple_/assets/close-left-line.svg"
                   alt="close left line"
                   width={24}
                   height={24}

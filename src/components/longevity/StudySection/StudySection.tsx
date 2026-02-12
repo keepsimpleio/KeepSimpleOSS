@@ -35,69 +35,87 @@ const StudySection: FC<StudySectionProps> = ({
   return (
     <>
       <section className={styles.studySection}>
-        <div className={styles.headline}>
-          <Image
-            src={headlineBg || ''}
-            alt={title}
-            width={948}
-            height={67}
-            unoptimized
-            className={styles.backgroundImg}
-          />
-          <Heading
-            showLeftIcon={false}
-            showRightIcon={false}
-            text={title}
-            Tag={'h3'}
-            className={cn(styles.heading, {
-              [styles.hacksHeading]: isHacks,
-            })}
-            isBold
-          />
-        </div>
-        <div className={styles.mainContent}>
+        <div className={styles.cardContainer}>
           <div
-            dangerouslySetInnerHTML={{ __html: description || '' }}
-            className={styles.description}
-          />
-          {isMobile && (
-            <div className={styles.learnMoreWrapper}>
-              <button
-                className={styles.learnMoreBtn}
-                onClick={() => setOpenModal(true)}
-              >
-                <Image
-                  src={'/keepsimple_/assets/longevity/learn-more-icon.svg'}
-                  alt={'Learn more icon'}
-                  width={16}
-                  height={16}
-                  unoptimized
-                />
-                Learn More
-              </button>
+            className={cn(styles.firstPage, {
+              [styles.fadeOutFirstPage]: switchPage,
+              [styles.fadeInFirstPage]: !switchPage,
+            })}
+          >
+            <div className={styles.headline}>
+              <Image
+                src={headlineBg || ''}
+                alt={title}
+                width={948}
+                height={67}
+                unoptimized
+                className={styles.backgroundImg}
+              />
+              <Heading
+                showLeftIcon={false}
+                showRightIcon={false}
+                text={title}
+                Tag={'h3'}
+                className={cn(styles.heading, {
+                  [styles.hacksHeading]: isHacks,
+                })}
+                isBold
+              />
+            </div>
+            <div className={styles.mainContent}>
+              <div
+                dangerouslySetInnerHTML={{ __html: description || '' }}
+                className={styles.description}
+              />
+              {isMobile && (
+                <div className={styles.learnMoreWrapper}>
+                  <button
+                    className={styles.learnMoreBtn}
+                    onClick={() => setOpenModal(true)}
+                  >
+                    <Image
+                      src={'/keepsimple_/assets/longevity/learn-more-icon.svg'}
+                      alt={'Learn more icon'}
+                      width={16}
+                      height={16}
+                      unoptimized
+                    />
+                    Learn More
+                  </button>
+                </div>
+              )}
+            </div>
+            <Image
+              src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
+              alt={'Page switcher'}
+              width={60}
+              height={60}
+              className={styles.pageSwitcher}
+              onClick={() => setSwitchPage(!switchPage)}
+            />
+          </div>
+          {!isMobile && (
+            <div
+              className={cn(styles.flipCardWrapper, {
+                [styles.showFlipCard]: switchPage,
+                [styles.hideFlipCard]: !switchPage,
+              })}
+            >
+              <FlipCard
+                headline={flippedCardHeadline}
+                subText={flippedCardSubText}
+                chart={flippedCardChart}
+                chartTitle={flippedCardChartTitle}
+                painText={flippedCardPainText}
+                isHacks={isHacks}
+                hacksQuote={hacksQuote}
+                quoteAuthor={quoteAuthor}
+                switchPage={switchPage}
+                setSwitchPage={setSwitchPage}
+              />
             </div>
           )}
         </div>
-        <Image
-          src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
-          alt={'Page switcher'}
-          width={60}
-          height={60}
-          className={styles.pageSwitcher}
-          onClick={() => setSwitchPage(!switchPage)}
-        />
-        {!isMobile && (
-          <FlipCard
-            headline={flippedCardHeadline}
-            subText={flippedCardSubText}
-            chart={flippedCardChart}
-            chartTitle={flippedCardChartTitle}
-            painText={flippedCardPainText}
-            isHacks={isHacks}
-            hacksQuote={hacksQuote}
-            quoteAuthor={quoteAuthor}
-          />
-        )}
       </section>
       {isMobile && openModal && (
         <Modal
@@ -109,6 +127,7 @@ const StudySection: FC<StudySectionProps> = ({
               : '/keepsimple_/assets/longevity/study/flipped-card-bg.png'
           }
           bodyClassName={isHacks ? styles.hacksModalBody : styles.modalBody}
+          className={styles.modal}
         >
           <FlipCard
             headline={flippedCardHeadline}
