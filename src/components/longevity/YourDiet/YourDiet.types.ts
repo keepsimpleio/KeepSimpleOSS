@@ -1,5 +1,7 @@
 export type YourDietProps = {
   id: number;
+  isIconClicked?: boolean;
+  selectedHealthOptionName: string | null;
   scaleLevels: {
     backgroundUrl: string;
     backgroundUrlMobile?: string;

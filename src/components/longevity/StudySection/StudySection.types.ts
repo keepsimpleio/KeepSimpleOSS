@@ -7,7 +7,9 @@ export type StudySectionProps = {
   flippedCardHeadline?: string;
   flippedCardPainText?: string;
   flippedCardChart?: string;
+  flippedCardChartMobile?: string;
   hacksQuote?: string;
   quoteAuthor?: string;
   backsBackgroundImageUrl?: string;
+  chartWidth?: number;
 };

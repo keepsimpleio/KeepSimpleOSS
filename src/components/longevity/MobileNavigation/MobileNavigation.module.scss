@@ -1,7 +1,7 @@
 @import '@styles/_animations.scss';
 
 .nav {
-  margin: 20px 16px;
+  margin: 20px 16px 16px 16px;
 
   .activePage {
     cursor: pointer;
@@ -196,11 +196,27 @@
   }
 }
 
-.nextPageBtn {
-  background-size: cover;
-  border: 1px solid #000;
-  margin: 20px 16px;
-  padding: 13px 16px;
+.nextButton {
+  margin-left: 16px;
+
+  .nextLink {
+    text-decoration: unset;
+
+    .nextStaticTxt {
+      color: #484848;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .nextPage {
+      font-weight: 600;
+      color: #000;
+    }
+  }
+
+  span {
+    gap: 5px !important;
+  }
 }
 
 @keyframes rotateArrowUp {

@@ -9,6 +9,10 @@ import { StudySectionProps } from './StudySection.types';
 import FlipCard from '@components/longevity/FlipCard';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 import Modal from '@components/Modal';
+import { BorderedPill } from '@components/longevity/BorderedPill/BorderedPill';
+
+import LearnMoreIcon from '@icons/longevity/LearnMoreIcon';
+import { StudyCloseIcon } from '@icons/longevity/Study/CloseIcon';
 
 import styles from './StudySection.module.scss';
 
@@ -20,18 +24,23 @@ const StudySection: FC<StudySectionProps> = ({
   flippedCardChartTitle,
   flippedCardSubText,
   flippedCardChart,
+  flippedCardChartMobile,
   flippedCardPainText,
   hacksQuote,
   backsBackgroundImageUrl,
   quoteAuthor,
+  chartWidth,
 }) => {
-  const [switchPage, setSwitchPage] = useState<boolean>(false);
+  const [switchPage, setSwitchPage] = useState<boolean>(null);
   const isMobile = useIsWidthLessThan(965);
   const [openModal, setOpenModal] = useState(false);
+  const chartImage = flippedCardChartMobile
+    ? flippedCardChartMobile
+    : flippedCardChart;
   const headlineBg = isHacks
     ? '/keepsimple_/assets/longevity/study/hacks.png'
     : '/keepsimple_/assets/longevity/study-headline-bg.png';
-
+  //explain to learn doesn't have it
   return (
     <>
       <section className={styles.studySection}>
@@ -39,7 +48,7 @@ const StudySection: FC<StudySectionProps> = ({
           <div
             className={cn(styles.firstPage, {
               [styles.fadeOutFirstPage]: switchPage,
-              [styles.fadeInFirstPage]: !switchPage,
+              [styles.fadeInFirstPage]: switchPage === false,
             })}
           >
             <div className={styles.headline}>
@@ -67,38 +76,34 @@ const StudySection: FC<StudySectionProps> = ({
                 dangerouslySetInnerHTML={{ __html: description || '' }}
                 className={styles.description}
               />
-              {isMobile && (
+              {isMobile && flippedCardChart && (
                 <div className={styles.learnMoreWrapper}>
-                  <button
-                    className={styles.learnMoreBtn}
+                  <BorderedPill
+                    text={'Learn more'}
                     onClick={() => setOpenModal(true)}
-                  >
-                    <Image
-                      src={'/keepsimple_/assets/longevity/learn-more-icon.svg'}
-                      alt={'Learn more icon'}
-                      width={16}
-                      height={16}
-                      unoptimized
-                    />
-                    Learn More
-                  </button>
+                    leftIcon={<LearnMoreIcon />}
+                  />
                 </div>
               )}
+              {flippedCardChart && (
+                <Image
+                  src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
+                  alt={'Page switcher'}
+                  width={60}
+                  height={60}
+                  className={styles.pageSwitcher}
+                  onClick={() => {
+                    setSwitchPage(!switchPage);
+                  }}
+                />
+              )}
             </div>
-            <Image
-              src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
-              alt={'Page switcher'}
-              width={60}
-              height={60}
-              className={styles.pageSwitcher}
-              onClick={() => setSwitchPage(!switchPage)}
-            />
           </div>
           {!isMobile && (
             <div
               className={cn(styles.flipCardWrapper, {
                 [styles.showFlipCard]: switchPage,
-                [styles.hideFlipCard]: !switchPage,
+                [styles.hideFlipCard]: switchPage === false,
               })}
             >
               <FlipCard
@@ -112,6 +117,7 @@ const StudySection: FC<StudySectionProps> = ({
                 quoteAuthor={quoteAuthor}
                 switchPage={switchPage}
                 setSwitchPage={setSwitchPage}
+                chartWidth={chartWidth}
               />
             </div>
           )}
@@ -132,12 +138,19 @@ const StudySection: FC<StudySectionProps> = ({
           <FlipCard
             headline={flippedCardHeadline}
             subText={flippedCardSubText}
-            chart={flippedCardChart}
+            chart={isMobile ? chartImage : flippedCardChart}
             chartTitle={flippedCardChartTitle}
             painText={flippedCardPainText}
             isHacks={isHacks}
             hacksQuote={hacksQuote}
             quoteAuthor={quoteAuthor}
+            chartWidth={chartWidth}
+          />
+          <BorderedPill
+            text={'Close'}
+            leftIcon={<StudyCloseIcon />}
+            onClick={() => setOpenModal(false)}
+            isWhite={isHacks}
           />
         </Modal>
       )}

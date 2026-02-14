@@ -111,3 +111,11 @@
   margin-top: 10px;
   font-weight: 700;
 }
+
+@media (max-width: 956px) {
+  .wrapper {
+    .container {
+      touch-action: none;
+    }
+  }
+}

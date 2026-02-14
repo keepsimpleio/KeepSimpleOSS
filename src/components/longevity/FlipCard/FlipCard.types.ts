@@ -9,4 +9,5 @@ export type FlipCardProps = {
   quoteAuthor?: string;
   setSwitchPage?: (value: boolean) => void;
   switchPage?: boolean;
+  chartWidth?: number;
 };

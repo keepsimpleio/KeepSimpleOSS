@@ -11,6 +11,10 @@
   margin: 40px 0 16px 0;
   display: flex;
 
+  .wrapper {
+    position: relative;
+  }
+
   .heading {
     padding-bottom: 24px;
   }
@@ -35,6 +39,7 @@
     letter-spacing: -5px;
     color: #ce2128;
     margin-left: 60px;
+    z-index: 555;
   }
 }
 

@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import Image from 'next/image';
 import cn from 'classnames';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { DietResultsProps } from './DietResults.types';
 
@@ -10,16 +11,30 @@ const DietResults: FC<DietResultsProps> = ({
   id,
   scaleLevels,
   setSelectedHealthyOptionId,
+  whatToEatItemNamesAndIds,
+  setIsIconClicked,
 }) => {
+  const getSelectedHealthOptionName = (id: number) => {
+    const selectedOption = whatToEatItemNamesAndIds.find(
+      (option: any) => option.id === id,
+    );
+    return selectedOption ? selectedOption.name : null;
+  };
+
   return (
     <div className={styles.results}>
       {scaleLevels.map((level, index) => (
         <div
-          onClick={() => setSelectedHealthyOptionId(level.id)}
+          onClick={() => {
+            setSelectedHealthyOptionId(level.id);
+            setIsIconClicked(false);
+            requestAnimationFrame(() => setIsIconClicked(true));
+          }}
           key={level.id}
           className={cn(styles.item, {
             [styles.active]: id === level.id,
           })}
+          data-tooltip-id={level.id.toString()}
         >
           <Image
             className={cn(styles.img, {})}
@@ -34,11 +49,18 @@ const DietResults: FC<DietResultsProps> = ({
               [styles.active]: id === level.id,
             })}
           >
-            selected state
+            Your Diet
           </span>
-          {index === 0 && (
-            <span className={styles.defaultLabel}>Borderline “OK” Foods</span>
-          )}
+          <ReactTooltip
+            id={level.id.toString()}
+            place={'bottom'}
+            className={cn(styles.tooltip, {})}
+            opacity={1}
+          >
+            <span className={styles.defaultLabel}>
+              {getSelectedHealthOptionName(index + 1)}
+            </span>
+          </ReactTooltip>
         </div>
       ))}
     </div>

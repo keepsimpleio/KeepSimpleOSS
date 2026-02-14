@@ -14,7 +14,6 @@ const ProgressBar: FC<ProgressBarProps> = ({
   activityLevels,
 }) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
-
   const [isDragging, setIsDragging] = useState(false);
 
   const selectedMinutes = useMemo(() => stops[stopIndex], [stops, stopIndex]);
@@ -49,27 +48,34 @@ const ProgressBar: FC<ProgressBarProps> = ({
     [getClosestIndexFromClientX],
   );
 
-  const onPointerDownThumb = (e: React.PointerEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    (e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId);
-    setIsDragging(true);
-  };
-
-  const onPointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (!isDragging) return;
-    jumpTo(e.clientX);
-  };
-
-  const onPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
-    setIsDragging(false);
-    try {
-      (e.currentTarget as HTMLButtonElement).releasePointerCapture(e.pointerId);
-    } catch {}
-  };
-
   const onTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
     jumpTo(e.clientX);
   };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    setIsDragging(true);
+
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    jumpTo(e.clientX);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    jumpTo(e.clientX);
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    setIsDragging(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+  };
+
+  const onPointerCancel = () => setIsDragging(false);
 
   return (
     <div className={styles.wrapper}>
@@ -86,7 +92,15 @@ const ProgressBar: FC<ProgressBarProps> = ({
               </span>
             ))}
       </div>
-      <div ref={trackRef} className={styles.container} onClick={onTrackClick}>
+      <div
+        className={styles.container}
+        onClick={onTrackClick}
+        ref={trackRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
+      >
         <div className={styles.track} />
         <div className={styles.fill} style={{ width: firstItemPercentage }} />
         <button
@@ -94,9 +108,6 @@ const ProgressBar: FC<ProgressBarProps> = ({
           className={styles.thumb}
           style={{ left: firstItemPercentage }}
           aria-label={`Selected ${selectedMinutes} minutes`}
-          onPointerDown={onPointerDownThumb}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
         />
       </div>
     </div>

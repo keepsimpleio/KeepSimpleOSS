@@ -42,7 +42,21 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   }, []);
 
   return (
-    <div className={styles.whatToEatOrAvoid}>
+    <div
+      className={cn(styles.whatToEatOrAvoid, {
+        [styles.selected]: selectedHealthyOptionId === Number(id),
+        [styles.whatToEatSection]: setSelectedHealthyOptionId,
+      })}
+      onClick={e => {
+        const selectedText = window.getSelection?.()?.toString() ?? '';
+        if (selectedText.trim().length > 0) return;
+
+        if (setSelectedHealthyOptionId && id) {
+          setSelectedHealthyOptionId(id);
+          e.stopPropagation();
+        }
+      }}
+    >
       <div>
         <Heading
           className={styles.heading}
@@ -95,11 +109,6 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
               <span className={styles.label}> Your diet </span>
             )}
             <div
-              onClick={() => {
-                if (setSelectedHealthyOptionId && id) {
-                  setSelectedHealthyOptionId(id);
-                }
-              }}
               role="checkbox"
               aria-checked={selectedHealthyOptionId === Number(1)}
               tabIndex={0}

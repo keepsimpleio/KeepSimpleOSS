@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import cn from 'classnames';
 
+import BorderedPill from '@components/longevity/BorderedPill';
+
 import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
 import { StudyIcon } from '@icons/longevity/StudyIcon';
 import { DietIcon } from '@icons/longevity/DietIcon';
@@ -12,16 +14,19 @@ import { SleepIcon } from '@icons/longevity/SleepIcon';
 import { SupplementsIcon } from '@icons/longevity/SupplementsIcon';
 import { TomIcon } from '@icons/longevity/TomIcon';
 import NewPageIcon from '@icons/longevity/NewPageIocn';
+import Divider from '@icons/longevity/Divider';
+import NavigationIcon from '@icons/longevity/NavigationIcon';
+
+import { useClickOutside } from '@lib/useClickOutside';
 
 import styles from './MobileNavigation.module.scss';
-import NavigationIcon from '@icons/longevity/NavigationIcon';
-import Divider from '@icons/longevity/Divider';
-import { useClickOutside } from '@lib/useClickOutside';
 
 const MobileNavigation: FC = () => {
   const router = useRouter();
   const [openNav, setOpenNav] = useState(false);
   const [openSubNav, setOpenSubNav] = useState(false);
+
+  const isInternal = (path: string) => path.startsWith('/');
 
   const toggleNavbar = () => {
     setOpenNav(false);
@@ -93,18 +98,36 @@ const MobileNavigation: FC = () => {
   };
 
   // TODO - Get back to this
-  // const getNextNavItemName = (nav1, nav2) => {
-  //   const allNavItems = [...nav1, ...nav2];
-  //   const currentIndex = allNavItems.findIndex(i => i.path === router.pathname);
-  //   const nextItem = allNavItems[currentIndex + 1];
-  //
-  //   if (currentIndex === -1) return '';
-  //   if (currentIndex === allNavItems.length - 1) {
-  //     return allNavItems[0].name;
-  //   }
-  //   return nextItem ? nextItem.name : '';
-  // };
-  // const nextPathname = getNextNavItemName(navItems, subNavItems);
+
+  const buildNavOrder = (nav1: any[], nav2: any[]) => {
+    const out: any[] = [];
+
+    for (const item of nav1) {
+      if (item.hasNoUrl) {
+        out.push(...nav2);
+        continue;
+      }
+
+      if (!isInternal(item.path)) continue;
+      out.push(item);
+    }
+    return out;
+  };
+
+  const getNextNavItem = (nav1: any[], nav2: any[] = []) => {
+    const pathname = router.pathname;
+    const ordered = buildNavOrder(nav1, nav2);
+
+    const currentIndex = ordered.findIndex(i => i.path === pathname);
+    if (currentIndex === -1) return null;
+
+    const nextIndex = (currentIndex + 1) % ordered.length;
+    const next = ordered[nextIndex];
+
+    return next ? { name: next.name, path: next.path } : null;
+  };
+
+  const nextPathname = getNextNavItem(navItems, subNavItems);
 
   return (
     <>
@@ -205,7 +228,12 @@ const MobileNavigation: FC = () => {
           ))}
         </ul>
       </nav>
-      {/*<button className={styles.nextPageBtn}> Next: {nextPathname}</button>*/}
+      <BorderedPill className={styles.nextButton}>
+        <Link href={nextPathname.path} className={styles.nextLink}>
+          <span className={styles.nextStaticTxt}>Next:</span>{' '}
+          <span className={styles.nextPage}> {nextPathname.name}</span>
+        </Link>
+      </BorderedPill>
     </>
   );
 };

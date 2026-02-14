@@ -139,3 +139,24 @@
     }
   }
 }
+
+@media (max-width: 1140px) {
+  .table {
+    width: 739px;
+
+    .header {
+      .headerRow {
+        .headline {
+          padding: unset;
+        }
+      }
+    }
+
+    .tr {
+      &::after {
+        right: 0;
+        left: unset;
+      }
+    }
+  }
+}

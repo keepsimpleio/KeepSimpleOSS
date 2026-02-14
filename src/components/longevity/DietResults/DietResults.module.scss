@@ -19,6 +19,10 @@
     opacity: 60%;
     cursor: pointer;
 
+    &:hover {
+      opacity: 1;
+    }
+
     &.active {
       opacity: 1;
 
@@ -38,7 +42,7 @@
   }
 
   .selected {
-    font-size: 8px;
+    font-size: 12px;
     color: #fff;
     text-transform: uppercase;
     max-width: 100px;
@@ -69,22 +73,18 @@
     transform: translateY(0);
   }
 
-  .defaultLabel {
-    font-size: 8px;
-    text-transform: uppercase;
-    left: 0;
-    font-family: Aboreto-Regular, sans-serif;
-    font-weight: 400;
-    background-repeat: no-repeat;
-    background-size: cover;
-    bottom: 5px;
+  .tooltip {
+    background-color: #f2e7d6;
     color: #000000d9;
-    width: 127px;
-    position: absolute;
-    background-image: url('/keepsimple_/assets/longevity/diet/default-label-bg.png');
-    height: 11px;
-    text-align: center;
-    padding-top: 3px;
+    font-size: 14px;
+    margin-top: -40px;
+    z-index: 788;
+    padding: 2.5px 9px;
+    border-radius: unset;
+
+    div {
+      display: none;
+    }
   }
 }
 

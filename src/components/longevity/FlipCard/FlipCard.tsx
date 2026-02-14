@@ -18,6 +18,7 @@ const FlipCard: FC<FlipCardProps> = ({
   isHacks,
   setSwitchPage,
   switchPage,
+  chartWidth,
 }) => {
   return (
     <div
@@ -64,7 +65,7 @@ const FlipCard: FC<FlipCardProps> = ({
               <Image
                 src={chart}
                 alt={chartTitle ?? 'chart'}
-                width={512}
+                width={chartWidth || 590}
                 height={455}
                 className={styles.chart}
                 unoptimized

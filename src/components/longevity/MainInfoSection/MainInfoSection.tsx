@@ -1,8 +1,10 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import cn from 'classnames';
+import Image from 'next/image';
 
 import Heading from '@components/Heading';
 import BasicStats from '@components/longevity/BasicStats';
+import { GlobalContext } from '@components/Context/GlobalContext';
 
 import { MainInfoSectionProps } from './MainInfoSection.types';
 
@@ -20,18 +22,27 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
   basicStatsTitle,
   isIntroPage,
 }) => {
+  const { setHeroReady } = useContext(GlobalContext);
+
   return (
     <section
       className={cn(styles.mainInfoSection, {
         [styles.introPage]: isIntroPage,
       })}
-      style={{
-        backgroundImage: backgroundImageUrl
-          ? `url(${backgroundImageUrl})`
-          : `url('/keepsimple_/assets/longevity/what-is-this-bg.png')`,
-      }}
     >
-      <div>
+      <Image
+        src={
+          backgroundImageUrl
+            ? backgroundImageUrl
+            : '/keepsimple_/assets/longevity/what-is-this-bg.png'
+        }
+        alt="Background"
+        layout="fill"
+        objectFit="cover"
+        priority
+        onLoadingComplete={() => setHeroReady(true)}
+      />
+      <div className={styles.wrapper}>
         <Heading
           isBold
           text={title}
