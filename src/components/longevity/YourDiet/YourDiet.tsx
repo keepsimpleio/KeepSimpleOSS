@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import Image from 'next/image';
+import cn from 'classnames';
 
 import Heading from '@components/Heading';
 
@@ -9,7 +10,12 @@ import { YourDietProps } from './YourDiet.types';
 
 import styles from './YourDiet.module.scss';
 
-const YourDiet: FC<YourDietProps> = ({ id, scaleLevels }) => {
+const YourDiet: FC<YourDietProps> = ({
+  id,
+  scaleLevels,
+  isIconClicked,
+  selectedHealthOptionName,
+}) => {
   const selectedDiet = scaleLevels.find((level: any) => level.id === id);
   const isMobile = useIsWidthLessThan(956);
   const backgroundImageUrl = isMobile
@@ -23,13 +29,15 @@ const YourDiet: FC<YourDietProps> = ({ id, scaleLevels }) => {
 
   return (
     <section
-      className={styles.selectedDiet}
+      className={cn(styles.selectedDiet, {
+        [styles.active]: isIconClicked,
+      })}
       style={{
         backgroundImage: `url(${selectedDiet ? backgroundImageUrl : ''})`,
       }}
     >
       <Heading
-        text="Your Diet"
+        text={`Your Diet - ${selectedHealthOptionName ?? ''}`}
         Tag="h3"
         showLeftIcon={false}
         showRightIcon={false}

@@ -1,5 +1,4 @@
-import { FC, useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
+import { FC, useState } from 'react';
 import Image from 'next/image';
 
 import Modal from '@components/Modal';
@@ -16,30 +15,13 @@ import styles from './SleepLayout.module.scss';
 
 const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
   const isMobile = useIsWidthLessThan(1140);
-  const tableRef = useRef(null);
   // TODO: move to constants
   const imgPath = '/keepsimple_/assets/longevity/sleep/';
 
   const [open, setOpen] = useState(false);
-  const [imgSrc, setImgSrc] = useState('');
-
-  const makeTableImage = async () => {
-    if (!tableRef.current) return;
-
-    await new Promise(r => setTimeout(r, 50));
-
-    const canvas = await html2canvas(tableRef.current, {
-      backgroundColor: '#fff',
-      scale: Math.min(2, window.devicePixelRatio || 1),
-      useCORS: true,
-    });
-
-    setImgSrc(canvas.toDataURL('image/png'));
-  };
 
   const handleOpen = async () => {
     setOpen(true);
-    await makeTableImage();
   };
 
   // TODO: move to constants
@@ -87,24 +69,6 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
         headlineBackgroundImageUrl={`${imgPath}used-devices-header.png`}
       />
       {isMobile && (
-        <div
-          style={{
-            position: 'fixed',
-            left: -99999,
-            top: 0,
-            width: 900,
-            background: '#fff',
-          }}
-        >
-          <div ref={tableRef}>
-            <Table
-              headerRows={tableKeys}
-              rows={data['key brain rules section']}
-            />
-          </div>
-        </div>
-      )}
-      {isMobile && (
         <>
           <button
             type="button"
@@ -131,13 +95,10 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
           </button>
 
           {open && (
-            <Modal onClick={() => setOpen(false)}>
-              <Image
-                src={imgSrc}
-                alt="Table"
-                width={700}
-                height={600}
-                className={styles.img}
+            <Modal onClick={() => setOpen(false)} fullSizeMobile>
+              <Table
+                headerRows={tableKeys}
+                rows={data['key brain rules section']}
               />
             </Modal>
           )}

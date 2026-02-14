@@ -27,6 +27,9 @@ html {
     border-left: 1px solid #fafafa;
   }
 }
+body.noScroll {
+  overflow: hidden;
+}
 
 html::-webkit-scrollbar-thumb {
   background: rgba(40, 88, 123, 0.5);

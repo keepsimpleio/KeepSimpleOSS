@@ -22,6 +22,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardHeadline={data.books?.['flipped card headline']}
         flippedCardPainText={data.books?.['flipped card pain caption']}
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['books flipped card image']?.data?.attributes?.url}`}
+        chartWidth={387}
       />
       <StudySection
         title={data['book notes']?.title}
@@ -31,6 +32,10 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardHeadline={data['book notes']?.['flipped card headline']}
         flippedCardPainText={data['book notes']?.['flipped card pain caption']}
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['books notes flipped card image']?.data?.attributes?.url}`}
+        chartWidth={387}
+        flippedCardChartMobile={
+          '/keepsimple_/assets/longevity/study/mobile-charts/book-notes-chart.webp'
+        }
       />
       <StudySection
         title={data['daily work']?.title}
@@ -40,13 +45,16 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardHeadline={data['daily work']?.['flipped card headline']}
         flippedCardPainText={data['daily work']?.['flipped card pain caption']}
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['daily work flipped card image']?.data?.attributes?.url}`}
+        flippedCardChartMobile={
+          '/keepsimple_/assets/longevity/study/mobile-charts/daily-work.webp'
+        }
+        chartWidth={810}
       />
       <StudySection
         title={data?.['explain to learn title']}
         description={data?.['explain to learn description']}
       />
       <StudySection
-        // research tasks flipped card image
         title={data['research tasks']?.title}
         description={data['research tasks']?.description}
         flippedCardChartTitle={
@@ -58,6 +66,10 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
           data['research tasks']?.['flipped card pain caption']
         }
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['research tasks flipped card image']?.data?.attributes?.url}`}
+        chartWidth={590}
+        flippedCardChartMobile={
+          '/keepsimple_/assets/longevity/study/mobile-charts/research-task.webp'
+        }
       />
       <StudySection
         title={data.data?.title}
@@ -67,6 +79,10 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardHeadline={data.data?.['flipped card headline']}
         flippedCardPainText={data.data?.['flipped card pain caption']}
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['data flipped card image']?.data?.attributes?.url}`}
+        chartWidth={390}
+        flippedCardChartMobile={
+          '/keepsimple_/assets/longevity/study/mobile-charts/data-chart.webp'
+        }
       />
       <StudySection
         title={data.hacks?.title}
@@ -76,6 +92,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         quoteAuthor={data.hacks?.['hacks card quote author']}
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['hacks flipped card image']?.data?.attributes?.url}`}
         backsBackgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['hacks flipped card image']?.data?.attributes?.url}`}
+        chartWidth={390}
       />
     </div>
   );

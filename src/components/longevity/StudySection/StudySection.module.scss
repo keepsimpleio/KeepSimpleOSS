@@ -2,6 +2,8 @@
 
 .studySection {
   max-width: 948px;
+  margin-bottom: 40px;
+  position: relative;
 }
 
 .cardContainer {
@@ -29,6 +31,7 @@
 
 .showFlipCard {
   animation: showFlipCardAndScaleUp 0.6s forwards;
+  z-index: 33;
 }
 
 .hideFlipCard {
@@ -70,7 +73,7 @@
 .mainContent {
   padding: 28px 40px;
   background-image: url('/keepsimple_/assets/longevity/study/study-bg.png');
-  height: 483px;
+  height: 427px;
   background-size: cover;
 
   .description {
@@ -114,11 +117,9 @@
 }
 
 .pageSwitcher {
-  position: relative;
-  bottom: 70px;
-  right: 5px;
-  left: 93%;
-  z-index: 5;
+  position: absolute;
+  bottom: 20px;
+  right: 12px;
   cursor: pointer;
 }
 
@@ -175,8 +176,11 @@
       background-position: right !important;
     }
   }
+
   .hacksModalBody {
     display: flex !important;
+    flex-direction: column;
+    justify-content: space-around;
   }
 }
 

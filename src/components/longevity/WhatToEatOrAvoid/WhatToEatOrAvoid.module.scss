@@ -156,6 +156,14 @@
   }
 }
 
+.selected {
+  user-select: text;
+}
+
+.whatToEatSection {
+  cursor: pointer;
+}
+
 @media (max-width: 965px) {
   .whatToEatOrAvoid {
     padding: 12px;

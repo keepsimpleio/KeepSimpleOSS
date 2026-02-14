@@ -21,9 +21,11 @@
   }
 
   .canvas {
-    width: 175px;
+    width: 175px !important;
     height: 100%;
     display: block;
+    position: absolute;
+    z-index: 2;
   }
 
   .hiddenVideo {
@@ -33,6 +35,15 @@
     opacity: 0;
     pointer-events: none;
   }
+}
+
+.canvas {
+  opacity: 1;
+}
+
+.canvasTransitionOn {
+  transition: opacity 350ms ease;
+  will-change: opacity;
 }
 
 @media (max-width: 965px) {

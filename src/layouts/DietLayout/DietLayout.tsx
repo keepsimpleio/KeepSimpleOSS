@@ -14,10 +14,29 @@ import { images, longevityDietPath, scaleLevels } from '@constants/longevity';
 import styles from './DietLayout.module.scss';
 
 const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
-  const [selectedHealthyOptionId, setSelectedHealthyOptionId] = useState(3);
-
+  const [selectedHealthyOptionId, setSelectedHealthyOptionId] = useState(1);
+  const [isIconClicked, setIsIconClicked] = useState(false);
   const foodFacts = data['food science facts that most influenced my choices'];
   const items = data['what not to eat'];
+  const getSelectedHealthOptionName = (id: number) => {
+    const selectedOption = data?.['what to eat']?.find(
+      (option: any) => option.id === id,
+    );
+    return selectedOption ? selectedOption['product name'] : null;
+  };
+  const whatToEatItemNamesAndIds = () => {
+    return (
+      data?.['what to eat']?.map((option: any) => ({
+        id: option.id,
+        name: option['product name'],
+      })) || []
+    );
+  };
+
+  const selectedHealthOption = {
+    id: selectedHealthyOptionId,
+    name: getSelectedHealthOptionName(selectedHealthyOptionId),
+  };
 
   const whatNotToEat = items?.map((item, index) => ({
     ...item,
@@ -100,8 +119,16 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
           scaleLevels={scaleLevels}
           id={selectedHealthyOptionId}
           setSelectedHealthyOptionId={setSelectedHealthyOptionId}
+          selectedHealthOption={selectedHealthOption}
+          whatToEatItemNamesAndIds={whatToEatItemNamesAndIds()}
+          setIsIconClicked={setIsIconClicked}
         />
-        <YourDiet id={selectedHealthyOptionId} scaleLevels={scaleLevels} />
+        <YourDiet
+          id={selectedHealthyOptionId}
+          scaleLevels={scaleLevels}
+          selectedHealthOptionName={selectedHealthOption.name}
+          isIconClicked={isIconClicked}
+        />
       </LongevitySubSection>
       <LongevitySubSection
         locale={locale}

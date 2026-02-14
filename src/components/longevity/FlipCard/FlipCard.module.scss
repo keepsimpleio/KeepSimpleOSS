@@ -3,22 +3,19 @@
   background-size: cover;
   background-repeat: no-repeat;
   max-width: 948px;
-  height: 531px;
+  height: 550px;
   text-align: center;
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
   margin-bottom: 30px;
-  padding: 10px;
 
   .pageSwitcherFlip {
     position: absolute;
-    bottom: 120px;
-    right: 5px;
-    left: 93%;
+    bottom: 20px;
     z-index: 55;
     cursor: pointer;
+    right: 12px;
   }
 
   .headline {
@@ -61,7 +58,7 @@
   }
 
   .diamond {
-    width: 13px;
+    width: 10px;
     height: 10px;
     background-color: #df382e;
     transform: rotate(45deg);
@@ -76,13 +73,11 @@
 
   .painText {
     margin: 0 30px;
+    width: 604px;
 
     p {
       margin: 0;
     }
-  }
-
-  .divider {
   }
 }
 
@@ -128,8 +123,12 @@
     height: auto;
     padding: 0;
 
+    .pageSwitcherFlip {
+      display: none;
+    }
+
     .diamond {
-      width: 19px;
+      width: 10px;
     }
 
     .headline {
@@ -144,9 +143,22 @@
       font-size: 16px;
     }
 
+    .painText,
+    .hacksFlipCard {
+      p {
+        width: 267px;
+      }
+    }
+
+    .painText {
+      margin: 0 10px;
+      width: unset;
+    }
+
     .chartWrapper {
       .chartTitle {
         font-size: 14px;
+        padding: 16px 0 32px 0;
       }
 
       .chart {
