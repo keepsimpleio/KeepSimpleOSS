@@ -199,19 +199,15 @@
 .nextButton {
   margin-left: 16px;
 
-  .nextLink {
-    text-decoration: unset;
+  .nextStaticTxt {
+    color: #484848;
+    font-size: 16px;
+    font-weight: 400;
+  }
 
-    .nextStaticTxt {
-      color: #484848;
-      font-size: 16px;
-      font-weight: 400;
-    }
-
-    .nextPage {
-      font-weight: 600;
-      color: #000;
-    }
+  .nextPage {
+    font-weight: 600;
+    color: #000;
   }
 
   span {

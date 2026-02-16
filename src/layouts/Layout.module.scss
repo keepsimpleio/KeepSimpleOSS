@@ -37,13 +37,22 @@
   }
 }
 
-.canvas {
-  opacity: 1;
-}
-
 .canvasTransitionOn {
   transition: opacity 350ms ease;
   will-change: opacity;
+}
+
+.canvasTransitionOff {
+  transition: none;
+}
+
+.canvasOn {
+  animation: smooth-fadeIn 350ms ease;
+  will-change: opacity;
+}
+
+.canvasOff {
+  opacity: 80%;
 }
 
 @media (max-width: 965px) {
@@ -52,9 +61,17 @@
       gap: 0;
     }
 
-    .videoWrapper,
     .canvas {
       display: none;
     }
+  }
+}
+
+@keyframes smooth-fadeIn {
+  from {
+    opacity: 80%;
+  }
+  to {
+    opacity: 100%;
   }
 }

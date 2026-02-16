@@ -23,6 +23,7 @@ const AboutTheProduct: FC<AboutTheProductProps> = ({ title, content }) => {
         alt={'info'}
         width={459}
         height={2}
+        className={styles.divider}
       />
       <div
         dangerouslySetInnerHTML={{ __html: content }}

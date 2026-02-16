@@ -1,6 +1,6 @@
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import Image from 'next/image';
-
+import html2canvas from 'html2canvas';
 import Modal from '@components/Modal';
 import Table from '@components/longevity/Table';
 import Supplement from '@components/longevity/Supplement';
@@ -17,12 +17,9 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
   const isMobile = useIsWidthLessThan(1140);
   // TODO: move to constants
   const imgPath = '/keepsimple_/assets/longevity/sleep/';
-
+  const tableRef = useRef(null);
   const [open, setOpen] = useState(false);
-
-  const handleOpen = async () => {
-    setOpen(true);
-  };
+  const [imgSrc, setImgSrc] = useState('');
 
   // TODO: move to constants
   const tableKeys = [
@@ -31,6 +28,34 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
     'my structure',
     'fully optimized',
   ];
+
+  const makeTableImage = async () => {
+    if (!tableRef.current) return;
+
+    await new Promise(r => setTimeout(r, 50));
+
+    const targetWidth = 900;
+
+    const canvas = await html2canvas(tableRef.current, {
+      backgroundColor: '#fff',
+      useCORS: true,
+
+      scale: 2,
+
+      windowWidth: targetWidth,
+      width: targetWidth,
+
+      scrollX: 0,
+      scrollY: 0,
+    });
+
+    setImgSrc(canvas.toDataURL('image/png'));
+  };
+
+  const handleOpen = async () => {
+    setOpen(true);
+    await makeTableImage();
+  };
 
   return (
     <>
@@ -47,6 +72,24 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
         title={data['supplement headline']}
         headlineBackgroundImageUrl={`${imgPath}supplements-header.png`}
       >
+        {isMobile && (
+          <div
+            style={{
+              position: 'fixed',
+              left: -99999,
+              top: 0,
+              width: 900,
+              background: '#fff',
+            }}
+          >
+            <div ref={tableRef}>
+              <Table
+                headerRows={tableKeys}
+                rows={data['key brain rules section']}
+              />
+            </div>
+          </div>
+        )}
         {supplements.map((supplementItem, index) => (
           <Supplement
             key={index}
@@ -95,10 +138,13 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
           </button>
 
           {open && (
-            <Modal onClick={() => setOpen(false)} fullSizeMobile>
-              <Table
-                headerRows={tableKeys}
-                rows={data['key brain rules section']}
+            <Modal onClick={() => setOpen(false)}>
+              <Image
+                src={imgSrc}
+                alt="Table"
+                width={500}
+                height={600}
+                className={styles.img}
               />
             </Modal>
           )}

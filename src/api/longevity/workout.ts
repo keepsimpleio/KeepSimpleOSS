@@ -5,7 +5,7 @@ export async function getWorkout(locale: string) {
     next: { revalidate: 3600 },
   });
 
-  if (!res.ok) throw new Error('Failed to fetch contributor');
+  if (!res.ok) throw new Error('Failed to fetch workout data');
 
   const json = await res.json();
   const attrs = json?.data?.attributes ?? {};

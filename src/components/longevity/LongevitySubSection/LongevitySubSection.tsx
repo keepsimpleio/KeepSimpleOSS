@@ -6,6 +6,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import WhyDoThisTooltip from '@components/longevity/WhyDoThisTooltip';
 import Modal from '@components/Modal';
 import Heading from '@components/Heading';
+import BorderedPill from '@components/longevity/BorderedPill';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
@@ -24,6 +25,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
   children,
   date,
   isHacks,
+  damageTypeHeadline,
 }) => {
   const { habitTooltipTitle } = longevityData[locale];
   const isMobile = useIsWidthLessThan(956);
@@ -70,7 +72,11 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
               place={'bottom'}
               className={cn(styles.tooltip, {})}
             >
-              <WhyDoThisTooltip whatDamagesText={whatDamages} locale={locale} />
+              <WhyDoThisTooltip
+                whatDamagesText={whatDamages}
+                locale={locale}
+                headline={damageTypeHeadline}
+              />
             </ReactTooltip>
           )}
         </div>
@@ -99,7 +105,17 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
           }
           onClick={() => setOpenMobileModal(false)}
         >
-          <WhyDoThisTooltip whatDamagesText={whatDamages} locale={locale} />
+          <div className={styles.whyDoThisMobileModal}>
+            <WhyDoThisTooltip
+              whatDamagesText={whatDamages}
+              locale={locale}
+              headline={damageTypeHeadline}
+            />
+            <BorderedPill
+              text={'Close'}
+              onClick={() => setOpenMobileModal(false)}
+            />
+          </div>
         </Modal>
       )}
     </>

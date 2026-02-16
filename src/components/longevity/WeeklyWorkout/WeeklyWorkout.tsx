@@ -83,7 +83,15 @@ const WeeklyWorkout: FC = () => {
           showRightIcon={false}
           className={styles.heading}
         />
-        <span className={styles.minutes}>{selectedMinutes} min</span>
+        <span
+          className={cn(styles.minutes, {
+            [styles.orangeMinutes]: selectedMinutes === 150,
+            [styles.greenMinutes]:
+              selectedMinutes === 225 || selectedMinutes === 300,
+          })}
+        >
+          {selectedMinutes} min
+        </span>
       </div>
       <hr className={styles.divider} />
       <ProgressBar
@@ -116,19 +124,45 @@ const WeeklyWorkout: FC = () => {
       </div>
       <div>
         <p className={styles.summary}>
-          Risk of Dying Early <span> {summary.riskOfDyingEarly}</span>
+          Risk of Dying Early{' '}
+          <span
+            className={cn({
+              [styles.orangeRisk]: selectedMinutes === 150,
+              [styles.greenRisk]:
+                selectedMinutes === 225 || selectedMinutes === 300,
+            })}
+          >
+            {summary.riskOfDyingEarly}
+          </span>
         </p>
         <hr className={styles.divider} />
 
         <p className={styles.summary}>
           Estimated ↓ Cognitive Decline / Dementia Risk
-          <span> {summary.cognitiveDecline}</span>
+          <span
+            className={cn({
+              [styles.orangeRisk]: selectedMinutes === 150,
+              [styles.greenRisk]:
+                selectedMinutes === 225 || selectedMinutes === 300,
+            })}
+          >
+            {' '}
+            {summary.cognitiveDecline}
+          </span>
         </p>
         <hr className={styles.divider} />
 
         <p className={styles.summary}>
           Brain Aging Trajectory
-          <span>{summary.brainAgingActive}</span>
+          <span
+            className={cn({
+              [styles.orangeRisk]: selectedMinutes === 150,
+              [styles.greenRisk]:
+                selectedMinutes === 225 || selectedMinutes === 300,
+            })}
+          >
+            {summary.brainAgingActive}
+          </span>
         </p>
       </div>
     </section>

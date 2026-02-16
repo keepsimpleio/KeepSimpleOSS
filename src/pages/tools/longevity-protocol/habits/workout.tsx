@@ -1,5 +1,4 @@
 import { GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
 
 import WorkoutLayout from '@layouts/WorkoutLayout/WorkoutLayout';
 
@@ -7,19 +6,15 @@ import { getWorkout } from '@api/longevity/workout';
 import SeoGenerator from '@components/SeoGenerator';
 
 const Workout = ({ workoutData }) => {
-  const router = useRouter();
-  const { locale } = router;
-  const currentLocale = locale === 'ru' ? 'ru' : 'en';
-
   const OGTags = {
-    ogDescription: workoutData[currentLocale]?.ogDescription || '',
-    ogTitle: workoutData[currentLocale]?.ogTitle || '',
-    ogType: workoutData[currentLocale]?.ogType || '',
-    ogImageAlt: workoutData[currentLocale]?.ogImageAlt || '',
+    ogDescription: workoutData['en']?.ogDescription || '',
+    ogTitle: workoutData['en']?.ogTitle || '',
+    ogType: workoutData['en']?.ogType || '',
+    ogImageAlt: workoutData['en']?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
-          url: workoutData[currentLocale]?.ogImage?.data?.attributes?.url || '',
+          url: workoutData['en']?.ogImage?.data?.attributes?.url || '',
         },
       },
     },
@@ -29,18 +24,18 @@ const Workout = ({ workoutData }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: workoutData[currentLocale]?.Seo?.seoDescription || '',
-          keywords: workoutData[currentLocale]?.Seo?.keywords || '',
-          title: workoutData[currentLocale]?.Seo?.pageTitle || '',
-          seoTitle: workoutData[currentLocale]?.Seo?.seoTitle || '',
+          description: workoutData['en']?.Seo?.seoDescription || '',
+          keywords: workoutData['en']?.Seo?.keywords || '',
+          title: workoutData['en']?.Seo?.pageTitle || '',
+          seoTitle: workoutData['en']?.Seo?.seoTitle || '',
         }}
         ogTags={OGTags}
-        createdDate={workoutData[currentLocale]?.createdAt || ''}
-        modifiedDate={workoutData[currentLocale]?.updatedAt || ''}
+        createdDate={workoutData['en']?.createdAt || ''}
+        modifiedDate={workoutData['en']?.updatedAt || ''}
       />
       <WorkoutLayout
-        data={workoutData ? workoutData[currentLocale] : null}
-        locale={locale}
+        data={workoutData ? workoutData['en'] : null}
+        locale={'en'}
       />
     </>
   );

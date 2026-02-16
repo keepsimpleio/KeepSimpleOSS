@@ -7,4 +7,5 @@ export type LongevitySubSectionProps = {
   children?: React.ReactNode;
   date?: string;
   isHacks?: boolean;
+  damageTypeHeadline?: string;
 };

@@ -96,6 +96,12 @@
   }
 }
 
+.link {
+  svg:first-child {
+    margin-top: -5px;
+  }
+}
+
 .subNav {
   position: relative;
   overflow: hidden;

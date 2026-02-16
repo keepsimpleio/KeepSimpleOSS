@@ -1,5 +1,4 @@
 import { GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
 
 import SupplementsLayout from '@layouts/Supplements';
 
@@ -7,19 +6,15 @@ import { getSupplements } from '@api/longevity/supplements';
 import SeoGenerator from '@components/SeoGenerator';
 
 const Supplements = ({ supplements }) => {
-  const router = useRouter();
-  const { locale } = router;
-  const currentLocale = locale === 'ru' ? 'ru' : 'en';
-
   const OGTags = {
-    ogDescription: supplements[currentLocale]?.ogDescription || '',
-    ogTitle: supplements[currentLocale]?.ogTitle || '',
-    ogType: supplements[currentLocale]?.ogType || '',
-    ogImageAlt: supplements[currentLocale]?.ogImageAlt || '',
+    ogDescription: supplements['en']?.ogDescription || '',
+    ogTitle: supplements['en']?.ogTitle || '',
+    ogType: supplements['en']?.ogType || '',
+    ogImageAlt: supplements['en']?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
-          url: supplements[currentLocale]?.ogImage?.data?.attributes?.url || '',
+          url: supplements['en']?.ogImage?.data?.attributes?.url || '',
         },
       },
     },
@@ -29,18 +24,18 @@ const Supplements = ({ supplements }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: supplements[currentLocale]?.Seo?.seoDescription || '',
-          keywords: supplements[currentLocale]?.Seo?.keywords || '',
-          title: supplements[currentLocale]?.Seo?.pageTitle || '',
-          seoTitle: supplements[currentLocale]?.Seo?.seoTitle || '',
+          description: supplements['en']?.Seo?.seoDescription || '',
+          keywords: supplements['en']?.Seo?.keywords || '',
+          title: supplements['en']?.Seo?.pageTitle || '',
+          seoTitle: supplements['en']?.Seo?.seoTitle || '',
         }}
         ogTags={OGTags}
-        createdDate={supplements[currentLocale]?.createdAt || ''}
-        modifiedDate={supplements[currentLocale]?.updatedAt || ''}
+        createdDate={supplements['en']?.createdAt || ''}
+        modifiedDate={supplements['en']?.updatedAt || ''}
       />
       <SupplementsLayout
-        data={!!supplements ? supplements[currentLocale] : null}
-        locale={locale}
+        data={!!supplements ? supplements['en'] : null}
+        locale={'en'}
       />
     </>
   );

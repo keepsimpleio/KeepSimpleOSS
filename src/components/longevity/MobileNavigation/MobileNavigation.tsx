@@ -228,11 +228,12 @@ const MobileNavigation: FC = () => {
           ))}
         </ul>
       </nav>
-      <BorderedPill className={styles.nextButton}>
-        <Link href={nextPathname.path} className={styles.nextLink}>
-          <span className={styles.nextStaticTxt}>Next:</span>{' '}
-          <span className={styles.nextPage}> {nextPathname.name}</span>
-        </Link>
+      <BorderedPill
+        className={styles.nextButton}
+        onClick={() => nextPathname && router.push(nextPathname.path)}
+      >
+        <span className={styles.nextStaticTxt}>Next:</span>{' '}
+        <span className={styles.nextPage}> {nextPathname.name}</span>
       </BorderedPill>
     </>
   );

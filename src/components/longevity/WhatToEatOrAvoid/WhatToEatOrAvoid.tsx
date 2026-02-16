@@ -6,6 +6,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import Heading from '@components/Heading';
 import Modal from '@components/Modal';
 import AboutTheProduct from '@components/longevity/WhatToEatOrAvoid/AboutTheProduct';
+import ShinyStars from '@components/longevity/ShinyStars';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
@@ -127,7 +128,8 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
       </div>
 
       {tooltipContent && (
-        <div>
+        <div className={styles.heartWrapper}>
+          {!isMobile && <ShinyStars />}
           <Image
             src={imageUrl}
             alt={title}

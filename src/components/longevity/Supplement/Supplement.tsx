@@ -18,6 +18,7 @@ const Supplement: FC<SupplementProps> = ({ name, description, categories }) => {
                 alt={category.attributes.title}
                 width={24}
                 height={24}
+                unoptimized
               />
               {category.attributes.title}
             </span>
