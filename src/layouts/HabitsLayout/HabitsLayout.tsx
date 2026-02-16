@@ -1,8 +1,11 @@
-import { HabitsLayoutProps } from '@layouts/HabitsLayout/HabitsLayout.types';
 import { FC } from 'react';
-import styles from '@layouts/LongevityLayouts/WhatIsThisLayout.module.scss';
+
 import MainInfoSection from '@components/longevity/MainInfoSection';
 import LongevitySubSection from '@components/longevity/LongevitySubSection';
+
+import { HabitsLayoutProps } from '@layouts/HabitsLayout/HabitsLayout.types';
+
+import styles from '@layouts/LongevityLayouts/WhatIsThisLayout.module.scss';
 
 const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
   const imgPath = '/keepsimple_/assets/longevity/habits/';
@@ -24,6 +27,7 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.routine?.description || ''}
           headlineBackgroundImageUrl={`${imgPath}routine.png`}
           whatDamages={data?.routine?.['damage type']}
+          damageTypeHeadline={data?.routine?.['damage type headline']}
         />
         <LongevitySubSection
           locale={locale}
@@ -31,12 +35,16 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.['daily movement']?.description}
           headlineBackgroundImageUrl={`${imgPath}daily-movement.png`}
           whatDamages={data?.['daily movement']?.['damage type']}
+          damageTypeHeadline={
+            data?.['daily movement']?.['damage type headline']
+          }
         />
         <LongevitySubSection
           locale={locale}
           title={data?.breathing?.title}
           description={data?.breathing?.description}
           headlineBackgroundImageUrl={`${imgPath}daily-movement.png`}
+          damageTypeHeadline={data?.breathing?.['damage type headline']}
           whatDamages={data?.breathing?.['damage type']}
         />
         <LongevitySubSection
@@ -45,6 +53,9 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.['substance junk']?.description}
           headlineBackgroundImageUrl={`${imgPath}substance-junk.png`}
           whatDamages={data?.['substance junk']?.['damage type']}
+          damageTypeHeadline={
+            data?.['substance junk']?.['damage type headline']
+          }
         />
         <LongevitySubSection
           locale={locale}
@@ -52,6 +63,9 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.['informational junk']?.description}
           headlineBackgroundImageUrl={`${imgPath}informational-junk.png`}
           whatDamages={data?.['informational junk']?.['damage type']}
+          damageTypeHeadline={
+            data?.['informational junk']?.['damage type headline']
+          }
         />
         <LongevitySubSection
           locale={locale}
@@ -59,6 +73,9 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.['cold environment']?.description}
           headlineBackgroundImageUrl={`${imgPath}cold-environment.png`}
           whatDamages={data?.['cold environment']?.['damage type']}
+          damageTypeHeadline={
+            data?.['cold environment']?.['damage type headline']
+          }
         />
         <LongevitySubSection
           locale={locale}
@@ -66,6 +83,9 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.['mental load management']?.description}
           headlineBackgroundImageUrl={`${imgPath}mental-load.png`}
           whatDamages={data?.['mental load management']?.['damage type']}
+          damageTypeHeadline={
+            data?.['mental load management']?.['damage type headline']
+          }
         />{' '}
         <LongevitySubSection
           locale={locale}
@@ -73,6 +93,9 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.['weekend protocol']?.description}
           headlineBackgroundImageUrl={`${imgPath}informational-junk.png`}
           whatDamages={data?.['weekend protocol']?.['damage type']}
+          damageTypeHeadline={
+            data?.['weekend protocol']?.['damage type headline']
+          }
         />
         <LongevitySubSection
           locale={locale}
@@ -80,6 +103,9 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
           description={data?.['weekly Lan Party']?.description}
           headlineBackgroundImageUrl={`${imgPath}informational-junk.png`}
           whatDamages={data?.['weekly Lan Party']?.['damage type']}
+          damageTypeHeadline={
+            data?.['weekly Lan Party']?.['damage type headline']
+          }
         />
       </section>
     </>

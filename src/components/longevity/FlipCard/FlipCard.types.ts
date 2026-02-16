@@ -7,7 +7,5 @@ export type FlipCardProps = {
   isHacks?: boolean;
   hacksQuote?: string;
   quoteAuthor?: string;
-  setSwitchPage?: (value: boolean) => void;
-  switchPage?: boolean;
   chartWidth?: number;
 };

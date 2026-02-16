@@ -97,13 +97,22 @@
         margin: 0;
 
         li {
+          list-style: none;
+          position: relative;
+          padding-left: 25px;
           padding-bottom: 20px;
-          padding-left: 12px;
           line-height: 1.5;
           @include text-body;
 
-          &::marker {
-            content: url('/keepsimple_/assets/longevity/habits/marker.svg');
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.35em;
+            width: 12px;
+            height: 12px;
+            background: url('/keepsimple_/assets/longevity/habits/marker.svg')
+              no-repeat center / contain;
           }
         }
       }
@@ -156,7 +165,7 @@
       }
 
       .habitTooltip {
-        font-size: 16px;
+        font-size: 14px;
       }
 
       .backgroundImg {
@@ -170,5 +179,11 @@
         }
       }
     }
+  }
+  .whyDoThisMobileModal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
   }
 }

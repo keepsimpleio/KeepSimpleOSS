@@ -19,7 +19,7 @@ const EnvironmentLayout: FC<EnvironmentLayoutProps> = ({ locale, data }) => {
         basicStats={data?.basicStats}
         locale={locale}
         japaneseText={data?.['japanese title'] ? data?.['japanese title'] : ''}
-        backgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['image']?.data?.attributes.url}`}
+        backgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['image']?.data?.attributes?.url}`}
       />
       <LongevitySubSection
         locale={locale}
@@ -59,7 +59,7 @@ const EnvironmentLayout: FC<EnvironmentLayoutProps> = ({ locale, data }) => {
             key={index}
             description={item.explanation}
             name={item.title}
-            iconUrl={`${strapiURl}${item.icon.data.attributes.url}`}
+            iconUrl={`${strapiURl}${item?.icon?.data?.attributes?.url}`}
           />
         ))}
       </LongevitySubSection>

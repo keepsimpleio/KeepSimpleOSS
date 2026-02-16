@@ -9,6 +9,7 @@ import { StudySectionProps } from './StudySection.types';
 import FlipCard from '@components/longevity/FlipCard';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 import Modal from '@components/Modal';
+import HtmlClamp from '@components/longevity/HTMLClamp';
 import { BorderedPill } from '@components/longevity/BorderedPill/BorderedPill';
 
 import LearnMoreIcon from '@icons/longevity/LearnMoreIcon';
@@ -40,7 +41,7 @@ const StudySection: FC<StudySectionProps> = ({
   const headlineBg = isHacks
     ? '/keepsimple_/assets/longevity/study/hacks.png'
     : '/keepsimple_/assets/longevity/study-headline-bg.png';
-  //explain to learn doesn't have it
+
   return (
     <>
       <section className={styles.studySection}>
@@ -72,10 +73,18 @@ const StudySection: FC<StudySectionProps> = ({
               />
             </div>
             <div className={styles.mainContent}>
-              <div
-                dangerouslySetInnerHTML={{ __html: description || '' }}
-                className={styles.description}
-              />
+              {isMobile ? (
+                <HtmlClamp
+                  html={description || ''}
+                  lines={6}
+                  className={styles.descsription}
+                />
+              ) : (
+                <div
+                  dangerouslySetInnerHTML={{ __html: description || '' }}
+                  className={styles.description}
+                />
+              )}
               {isMobile && flippedCardChart && (
                 <div className={styles.learnMoreWrapper}>
                   <BorderedPill
@@ -84,18 +93,6 @@ const StudySection: FC<StudySectionProps> = ({
                     leftIcon={<LearnMoreIcon />}
                   />
                 </div>
-              )}
-              {flippedCardChart && (
-                <Image
-                  src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
-                  alt={'Page switcher'}
-                  width={60}
-                  height={60}
-                  className={styles.pageSwitcher}
-                  onClick={() => {
-                    setSwitchPage(!switchPage);
-                  }}
-                />
               )}
             </div>
           </div>
@@ -115,13 +112,25 @@ const StudySection: FC<StudySectionProps> = ({
                 isHacks={isHacks}
                 hacksQuote={hacksQuote}
                 quoteAuthor={quoteAuthor}
-                switchPage={switchPage}
-                setSwitchPage={setSwitchPage}
                 chartWidth={chartWidth}
               />
             </div>
           )}
         </div>
+        {flippedCardChart && (
+          <div className={styles.pageSwitcherWrapper}>
+            <Image
+              src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
+              alt={'Page switcher'}
+              width={60}
+              height={60}
+              className={styles.pageSwitcher}
+              onClick={() => {
+                setSwitchPage(!switchPage);
+              }}
+            />
+          </div>
+        )}
       </section>
       {isMobile && openModal && (
         <Modal

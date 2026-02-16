@@ -73,8 +73,8 @@ const Header: FC = () => {
               }}
               src={
                 isDarkTheme
-                  ? '/keepsimple_/assets/logos/keepsimpleNewYearDark.svg'
-                  : '/keepsimple_/assets/logos/keepsimpleNewYear.svg'
+                  ? '/keepsimple_/assets/logos/keepsimpleDark.svg'
+                  : '/keepsimple_/assets/logos/keepsimple.svg'
               }
               alt="keepsimple logo"
               width={130.61}

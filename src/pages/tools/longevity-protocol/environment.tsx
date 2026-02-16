@@ -12,14 +12,14 @@ const Environment = ({ environment }) => {
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
   const OGTags = {
-    ogDescription: environment[currentLocale]?.ogDescription || '',
-    ogTitle: environment[currentLocale]?.ogTitle || '',
-    ogType: environment[currentLocale]?.ogType || '',
-    ogImageAlt: environment[currentLocale]?.ogImageAlt || '',
+    ogDescription: environment['en']?.ogDescription || '',
+    ogTitle: environment['en']?.ogTitle || '',
+    ogType: environment['en']?.ogType || '',
+    ogImageAlt: environment['en']?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
-          url: environment[currentLocale]?.ogImage?.data?.attributes?.url || '',
+          url: environment['en']?.ogImage?.data?.attributes?.url || '',
         },
       },
     },
@@ -29,10 +29,10 @@ const Environment = ({ environment }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: environment[currentLocale]?.Seo?.seoDescription || '',
-          keywords: environment[currentLocale]?.Seo?.keywords || '',
-          title: environment[currentLocale]?.Seo?.pageTitle || '',
-          seoTitle: environment[currentLocale]?.Seo?.seoTitle || '',
+          description: environment['en']?.Seo?.seoDescription || '',
+          keywords: environment['en']?.Seo?.keywords || '',
+          title: environment['en']?.Seo?.pageTitle || '',
+          seoTitle: environment['en']?.Seo?.seoTitle || '',
         }}
         ogTags={OGTags}
         createdDate={environment[currentLocale]?.createdAt || ''}

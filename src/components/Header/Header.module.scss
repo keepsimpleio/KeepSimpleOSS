@@ -19,6 +19,7 @@
   .logo {
     margin-top: 3px !important;
     cursor: pointer;
+    object-fit: contain;
   }
 
   .actions {
@@ -214,7 +215,7 @@
     padding: 0 1.4rem;
     height: 82px;
     background-color: #fff;
-    z-index: 5;
+    z-index: 6;
     align-items: center;
     justify-content: center;
 

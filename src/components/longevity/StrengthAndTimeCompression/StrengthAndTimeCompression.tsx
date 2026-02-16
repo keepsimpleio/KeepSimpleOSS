@@ -1,4 +1,5 @@
 import React, { FC, useMemo, useState } from 'react';
+import cn from 'classnames';
 
 import Heading from '@components/Heading';
 import ProgressBar from '@components/longevity/ProgressBar';
@@ -42,7 +43,13 @@ const StrengthAndTimeCompression: FC = () => {
         setStopIndex={setSelectedIndex}
         stopIndex={selectedIndex}
       />
-      <div>
+      <div
+        className={cn({
+          [styles.orangeResult]: stops[selectedIndex] === 2,
+          [styles.greenResult]:
+            stops[selectedIndex] === 3 || stops[selectedIndex] === 4,
+        })}
+      >
         <span className={styles.totalMins}>
           {selectedLevel.totalMinutesPerWeek}
         </span>

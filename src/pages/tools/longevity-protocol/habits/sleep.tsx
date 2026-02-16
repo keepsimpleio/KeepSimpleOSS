@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { GetStaticProps } from 'next';
 
 import { getSleep } from '@api/longevity/sleep';
@@ -8,19 +7,15 @@ import SleepLayout from '@layouts/SleepLayout/SleepLayout';
 import SeoGenerator from '@components/SeoGenerator';
 
 const Sleep = ({ sleepData, sleepSupplements }) => {
-  const router = useRouter();
-  const { locale } = router;
-  const currentLocale = locale === 'ru' ? 'ru' : 'en';
-
   const OGTags = {
-    ogDescription: sleepData[currentLocale]?.ogDescription || '',
-    ogTitle: sleepData[currentLocale]?.ogTitle || '',
-    ogType: sleepData[currentLocale]?.ogType || '',
-    ogImageAlt: sleepData[currentLocale]?.ogImageAlt || '',
+    ogDescription: sleepData['en']?.ogDescription || '',
+    ogTitle: sleepData['en']?.ogTitle || '',
+    ogType: sleepData['en']?.ogType || '',
+    ogImageAlt: sleepData['en']?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
-          url: sleepData[currentLocale]?.ogImage?.data?.attributes?.url || '',
+          url: sleepData['en']?.ogImage?.data?.attributes?.url || '',
         },
       },
     },
@@ -30,18 +25,18 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: sleepData[currentLocale]?.Seo?.seoDescription || '',
-          keywords: sleepData[currentLocale]?.Seo?.keywords || '',
-          title: sleepData[currentLocale]?.Seo?.pageTitle || '',
-          seoTitle: sleepData[currentLocale]?.Seo?.seoTitle || '',
+          description: sleepData['en']?.Seo?.seoDescription || '',
+          keywords: sleepData['en']?.Seo?.keywords || '',
+          title: sleepData['en']?.Seo?.pageTitle || '',
+          seoTitle: sleepData['en']?.Seo?.seoTitle || '',
         }}
         ogTags={OGTags}
-        createdDate={sleepData[currentLocale]?.createdAt || ''}
-        modifiedDate={sleepData[currentLocale]?.updatedAt || ''}
+        createdDate={sleepData['en']?.createdAt || ''}
+        modifiedDate={sleepData['en']?.updatedAt || ''}
       />
       <SleepLayout
-        locale={locale}
-        data={sleepData ? sleepData[currentLocale] : null}
+        locale={'en'}
+        data={sleepData ? sleepData['en'] : null}
         supplements={sleepSupplements?.supplements}
       />
     </>

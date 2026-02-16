@@ -48,6 +48,22 @@
   .staticSmallText {
     font-size: 18px;
   }
+
+  .orangeResult {
+    .totalMins,
+    .staticBigText,
+    .staticSmallText {
+      color: #ffae01;
+    }
+  }
+
+  .greenResult {
+    .totalMins,
+    .staticBigText,
+    .staticSmallText {
+      color: #4d8539;
+    }
+  }
 }
 
 .result {

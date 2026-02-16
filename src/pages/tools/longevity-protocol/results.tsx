@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
 
 import ResultsLayout from '@layouts/ResultsLayout';
 
@@ -7,20 +6,15 @@ import { getLongevityResults } from '@api/longevity/results';
 import SeoGenerator from '@components/SeoGenerator';
 
 const Results = ({ yearlyResults }) => {
-  const router = useRouter();
-  const { locale } = router;
-  const currentLocale = locale === 'ru' ? 'ru' : 'en';
-
   const OGTags = {
-    ogDescription: yearlyResults[currentLocale]?.ogDescription || '',
-    ogTitle: yearlyResults[currentLocale]?.ogTitle || '',
-    ogType: yearlyResults[currentLocale]?.ogType || '',
-    ogImageAlt: yearlyResults[currentLocale]?.ogImageAlt || '',
+    ogDescription: yearlyResults['en']?.ogDescription || '',
+    ogTitle: yearlyResults['en']?.ogTitle || '',
+    ogType: yearlyResults['en']?.ogType || '',
+    ogImageAlt: yearlyResults['en']?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
-          url:
-            yearlyResults[currentLocale]?.ogImage?.data?.attributes?.url || '',
+          url: yearlyResults['en']?.ogImage?.data?.attributes?.url || '',
         },
       },
     },
@@ -30,18 +24,18 @@ const Results = ({ yearlyResults }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: yearlyResults[currentLocale]?.Seo?.seoDescription,
-          keywords: yearlyResults[currentLocale]?.Seo?.keywords,
-          title: yearlyResults[currentLocale]?.Seo?.pageTitle,
-          seoTitle: yearlyResults[currentLocale]?.Seo?.seoTitle,
+          description: yearlyResults['en']?.Seo?.seoDescription,
+          keywords: yearlyResults['en']?.Seo?.keywords,
+          title: yearlyResults['en']?.Seo?.pageTitle,
+          seoTitle: yearlyResults['en']?.Seo?.seoTitle,
         }}
         ogTags={OGTags}
-        createdDate={yearlyResults[currentLocale]?.createdAt}
-        modifiedDate={yearlyResults[currentLocale]?.updatedAt}
+        createdDate={yearlyResults['en']?.createdAt}
+        modifiedDate={yearlyResults['en']?.updatedAt}
       />
       <ResultsLayout
-        data={yearlyResults ? yearlyResults[currentLocale] : null}
-        locale={locale}
+        data={yearlyResults ? yearlyResults['en'] : null}
+        locale={'en'}
       />
     </>
   );

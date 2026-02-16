@@ -29,6 +29,12 @@
       text-transform: uppercase;
       font-weight: 600;
     }
+    .orangeMinutes {
+      color: #ffae01;
+    }
+    .greenMinutes {
+      color: #4d8539;
+    }
   }
 
   .divider {
@@ -77,6 +83,13 @@
     span {
       color: #ce2128;
       font-weight: 700;
+    }
+    .orangeRisk {
+      color: #ffae01;
+    }
+
+    .greenRisk {
+      color: #4d8539;
     }
   }
 }

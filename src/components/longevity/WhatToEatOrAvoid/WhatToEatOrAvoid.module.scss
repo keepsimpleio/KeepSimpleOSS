@@ -105,6 +105,10 @@
     padding-bottom: 0;
   }
 
+  .heartWrapper {
+    position: relative;
+  }
+
   .heart {
     cursor: pointer;
   }
@@ -168,6 +172,10 @@
   .whatToEatOrAvoid {
     padding: 12px;
 
+    .heartWrapper {
+      position: unset;
+    }
+
     .heart,
     .checkbox {
       width: 24px;
@@ -175,6 +183,12 @@
       position: absolute;
       top: 15px;
       right: 22px;
+    }
+
+    .heart {
+      width: 28px;
+      height: 28px;
+      animation: pulse-shadow-animation 2s infinite;
     }
 
     .label {
@@ -191,5 +205,17 @@
         font-size: 16px !important;
       }
     }
+  }
+}
+
+@keyframes pulse-shadow-animation {
+  0% {
+    filter: drop-shadow(0px 0px 18px rgba(53, 35, 13, 0.2));
+  }
+  70% {
+    filter: drop-shadow(0px 0px 18px rgba(255, 0, 0, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0px 0px 18px rgba(53, 35, 13, 0.2));
   }
 }

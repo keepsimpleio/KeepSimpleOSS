@@ -43,7 +43,7 @@
 @media (max-width: 965px) {
   .aboutProduct {
     padding: 16px;
-    background-image: url('/keepsimple_/assets/longevity/diet/tooltip-bg.png');
+    background-image: unset;
     background-repeat: no-repeat;
     background-size: cover;
     display: flex;
@@ -53,10 +53,16 @@
     z-index: 10;
     max-width: 500px;
 
+    .content {
+      padding-top: 20px;
+    }
     .tooltipHeading {
       h5 {
         font-size: 18px !important;
       }
+    }
+    .divider {
+      width: -webkit-fill-available;
     }
 
     .subText {

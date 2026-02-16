@@ -33,6 +33,7 @@
 
   .content {
     padding-left: 20px;
+    padding-top: 12px;
 
     p {
       width: 337px;
@@ -46,10 +47,27 @@
   .whyDoThisTooltip {
     background-image: unset;
     width: unset;
-    height: 100%;
+    height: unset;
+    padding-bottom: unset;
+
+    .heading {
+      padding-top: 0;
+      padding-left: 0;
+
+      h4 {
+        font-size: 18px !important;
+
+        &::after {
+          width: 235px;
+          height: 33px;
+          bottom: -12px;
+        }
+      }
+    }
 
     .content {
       padding-top: 12px;
+      padding-left: 0;
 
       p {
         text-align: left;
