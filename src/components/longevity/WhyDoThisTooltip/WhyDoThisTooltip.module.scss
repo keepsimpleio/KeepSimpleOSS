@@ -1,12 +1,13 @@
 .whyDoThisTooltip {
-  background-image: url('/keepsimple_/assets/longevity/habits/what-is-this-bg.webp');
-  background-size: contain;
   width: 700px;
   height: 100%;
-  background-repeat: no-repeat;
   z-index: 999;
   padding-bottom: 20px;
+  position: relative;
 
+  .img {
+    position: absolute;
+  }
   .heading {
     padding-top: 20px;
     padding-left: 20px;
@@ -34,6 +35,8 @@
   .content {
     padding-left: 20px;
     padding-top: 12px;
+    z-index: 55;
+    position: relative;
 
     p {
       width: 337px;
@@ -45,11 +48,13 @@
 
 @media (max-width: 956px) {
   .whyDoThisTooltip {
-    background-image: unset;
     width: unset;
     height: unset;
     padding-bottom: unset;
 
+    .img {
+      display: none;
+    }
     .heading {
       padding-top: 0;
       padding-left: 0;
