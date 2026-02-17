@@ -4,6 +4,7 @@ import WorkoutLayout from '@layouts/WorkoutLayout/WorkoutLayout';
 
 import { getWorkout } from '@api/longevity/workout';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Workout = ({ workoutData }) => {
   const OGTags = {
@@ -14,7 +15,7 @@ const Workout = ({ workoutData }) => {
     ogImage: {
       data: {
         attributes: {
-          url: workoutData['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -29,6 +30,7 @@ const Workout = ({ workoutData }) => {
           title: workoutData['en']?.Seo?.pageTitle || '',
           seoTitle: workoutData['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={workoutData['en']?.createdAt || ''}
         modifiedDate={workoutData['en']?.updatedAt || ''}

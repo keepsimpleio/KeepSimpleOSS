@@ -4,6 +4,7 @@ import DietLayout from '@layouts/DietLayout';
 
 import { getDiet } from '@api/longevity/diet';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Diet = ({ dietData }) => {
   const OGTags = {
@@ -14,7 +15,7 @@ const Diet = ({ dietData }) => {
     ogImage: {
       data: {
         attributes: {
-          url: dietData['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -29,6 +30,7 @@ const Diet = ({ dietData }) => {
           title: dietData['en']?.Seo?.seoTitle || '',
           seoTitle: dietData['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={dietData['en']?.createdAt || ''}
         modifiedDate={dietData['en']?.updatedAt || ''}

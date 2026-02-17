@@ -5,6 +5,7 @@ import EnvironmentLayout from '@layouts/EnvironmentLayout/EnvironmentLayout';
 
 import { getEnvironment } from '@api/longevity/environment';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Environment = ({ environment }) => {
   const router = useRouter();
@@ -18,7 +19,7 @@ const Environment = ({ environment }) => {
     ogImage: {
       data: {
         attributes: {
-          url: environment['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -33,6 +34,7 @@ const Environment = ({ environment }) => {
           title: environment['en']?.Seo?.pageTitle || '',
           seoTitle: environment['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={environment['en']?.createdAt || ''}
         modifiedDate={environment['en']?.updatedAt || ''}
