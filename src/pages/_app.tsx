@@ -224,10 +224,10 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
     }
   }, [accountData?.id, accountData?.createdAt]);
 
-  const clean = (url: string) =>
-    url.split('?')[0].split('#')[0].replace(/\/+$/, '');
-  const isLongevityUrl = (url: string) =>
-    clean(url).startsWith(longevityBaseUrl);
+  const isLongevityUrl = (url: string) => {
+    const normalizedUrl = url.split('?')[0].split('#')[0].replace(/\/+$/, '');
+    return normalizedUrl.startsWith(longevityBaseUrl);
+  };
 
   useEffect(() => {
     const onStart = (url: string) => {
@@ -273,8 +273,8 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
   }, []);
 
   const isLongevityNow = isLongevityUrl(router.asPath);
-  const overlayOn =
-    isLongevityNow && (routeLoading || !heroReady || !videosReady);
+  //TODO: Fix heroReady logic
+  const overlayOn = isLongevityNow && (routeLoading || !videosReady);
 
   return (
     <SessionProvider session={session}>
