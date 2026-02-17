@@ -1,5 +1,12 @@
 import { useRouter } from 'next/router';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { GlobalContext } from '@components/Context/GlobalContext';
 
 import Header from '@components/Header';
 import Hero from '@components/longevity/Hero';
@@ -34,6 +41,7 @@ function pickLayer(pathname: string): LayerKey {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { setVideosReady, videosReady } = useContext(GlobalContext);
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -222,6 +230,80 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       v?.play?.().catch(() => {});
     });
   }, [isLongevityProtocolPage]);
+
+  useEffect(() => {
+    if (!isLongevityProtocolPage) return;
+
+    let cancelled = false;
+    setVideosReady(false);
+
+    const keys = Object.keys(SOURCES) as LayerKey[];
+
+    const readyByKey: Record<string, boolean> = {};
+    keys.forEach(k => (readyByKey[k] = false));
+
+    const checkAll = () => {
+      if (cancelled) return;
+      const allReady = keys.every(k => readyByKey[k]);
+      if (allReady) setVideosReady(true);
+    };
+
+    const cleanupFns: Array<() => void> = [];
+
+    keys.forEach(k => {
+      const v = videosRef.current[k];
+      if (!v) return;
+
+      const markReady = () => {
+        readyByKey[k] = true;
+        checkAll();
+      };
+
+      if (v.readyState >= 2) {
+        markReady();
+        return;
+      }
+
+      const onCanPlay = () => markReady();
+      const onError = () => markReady(); // don't deadlock if one fails
+
+      v.addEventListener('canplay', onCanPlay, { once: true });
+      v.addEventListener('error', onError, { once: true });
+
+      v.load?.();
+      v.play?.().catch(() => {});
+
+      cleanupFns.push(() => {
+        v.removeEventListener('canplay', onCanPlay);
+        v.removeEventListener('error', onError);
+      });
+    });
+
+    const t = window.setTimeout(() => {
+      if (!cancelled) setVideosReady(true);
+    }, 2500);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+      cleanupFns.forEach(fn => fn());
+    };
+  }, [isLongevityProtocolPage, setVideosReady]);
+
+  useEffect(() => {
+    if (!videosReady) return;
+    const base = videosRef.current['default'];
+    if (!base) return;
+
+    const t = base.currentTime || 0;
+    (Object.keys(SOURCES) as LayerKey[]).forEach(k => {
+      const v = videosRef.current[k];
+      if (!v) return;
+      try {
+        if (v.duration) v.currentTime = t % v.duration;
+      } catch {}
+    });
+  }, [videosReady]);
 
   return (
     <>

@@ -90,18 +90,41 @@
 
 @media (max-width: 965px) {
   .results {
+    padding: 0 8px;
+    margin: 16px 12px 16px 12px;
     max-width: unset;
+    background-image: url('/keepsimple_/assets/longevity/diet/scale/scale-bg-mobile.webp');
     background-size: cover;
-    height: 82px;
+    height: unset;
     gap: 8px;
 
+    .tooltip {
+      font-size: 12px;
+    }
+
+    .selected {
+      left: 0;
+      font-size: 8px;
+    }
+
     .item {
-      max-width: 50px;
-      max-height: 50px;
+      width: unset;
+      height: unset;
+      max-width: unset;
+      max-height: unset;
+      padding: 12px 0;
+
+      &.active {
+        &::after {
+          top: 10px;
+          background-size: contain;
+        }
+      }
 
       img {
-        max-width: 50px;
-        max-height: 50px;
+        max-width: unset;
+        width: 100%;
+        height: auto;
       }
     }
   }

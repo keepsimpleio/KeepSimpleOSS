@@ -16,7 +16,8 @@ export const scaleLevels = [
   {
     id: 1,
     imagePath: scaleImgPath + 'borderline-ok-foods.png',
-    backgroundUrlMobile: backgroundImgPath + 'borderline-ok-mobile-bg.webp',
+    backgroundUrlMobile:
+      backgroundImgPath + 'borderline-ok-foods-mobile-bg.webp',
     backgroundUrl: backgroundImgPath + 'borderline-ok-foods-bg.png',
     biologicalAge: '0',
     skinAge: '0',
@@ -47,7 +48,7 @@ export const scaleLevels = [
     id: 4,
     imagePath: scaleImgPath + 'clean-nutrients.png',
     backgroundUrl: backgroundImgPath + 'clean-nutrients-bg.png',
-    backgroundUrlMobile: backgroundImgPath + 'clean-nutrients-mobile-bg.webp',
+    backgroundUrlMobile: backgroundImgPath + 'clean-nutrient-mobile-bg.webp',
     biologicalAge: '3.5',
     skinAge: '5.5',
     jointAge: '4.5',
@@ -57,7 +58,7 @@ export const scaleLevels = [
     id: 5,
     imagePath: scaleImgPath + 'metabolic-gold.png',
     backgroundUrl: backgroundImgPath + 'metabolic-gold-bg.png',
-    backgroundUrlMobile: backgroundImgPath + 'metabolic-gold-mobile-bg.webp',
+    backgroundUrlMobile: backgroundImgPath + 'metabolic-gold-mobile.bg.webp',
     biologicalAge: '5',
     skinAge: '7',
     jointAge: '6',

@@ -31,7 +31,7 @@ const EnvironmentLayout: FC<EnvironmentLayoutProps> = ({ locale, data }) => {
             key={index}
             description={item?.explanation}
             name={item?.title}
-            iconUrl={`${strapiURl}${item?.icon?.data?.attributes.url}`}
+            iconUrl={`${strapiURl}${item?.icon?.data?.attributes?.url}`}
           />
         ))}
       </LongevitySubSection>
