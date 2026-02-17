@@ -1,16 +1,22 @@
-FROM node:20.14.0
- 
-WORKDIR /app  
+FROM node:20.19.0 AS base
+WORKDIR /app
 
-COPY package*.json ./  
+FROM base AS deps
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-RUN yarn install
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN yarn run build
 
-COPY . .  
-
-RUN yarn run build  
-
-EXPOSE 3005  
-
-CMD ["yarn", "run", "start:staging"] 
-
+FROM base AS runner
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+EXPOSE 3005
+CMD ["yarn", "run", "start:staging"]
