@@ -9,7 +9,6 @@ import SeoGenerator from '@components/SeoGenerator';
 const Environment = ({ environment }) => {
   const router = useRouter();
   const { locale } = router;
-  const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
   const OGTags = {
     ogDescription: environment['en']?.ogDescription || '',
@@ -35,11 +34,11 @@ const Environment = ({ environment }) => {
           seoTitle: environment['en']?.Seo?.seoTitle || '',
         }}
         ogTags={OGTags}
-        createdDate={environment[currentLocale]?.createdAt || ''}
-        modifiedDate={environment[currentLocale]?.updatedAt || ''}
+        createdDate={environment['en']?.createdAt || ''}
+        modifiedDate={environment['en']?.updatedAt || ''}
       />
       <EnvironmentLayout
-        data={environment ? environment[currentLocale] : null}
+        data={environment ? environment['en'] : null}
         locale={locale}
       />
     </>

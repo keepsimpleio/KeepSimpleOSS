@@ -56,10 +56,30 @@
 
 @media (max-width: 965px) {
   .selectedDiet {
+    background-size: contain;
     max-width: unset;
+    background-position: center;
+    margin: 0 12px;
+
+    .yourDietHeading {
+      h3 {
+        font-size: 18px !important;
+        text-align: center;
+      }
+    }
 
     .wrapper {
       flex-direction: column;
+      align-items: center;
+      margin-top: unset;
+      gap: 20px;
+      padding: 38px 0px;
+
+      .hasGapP {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 20px;
+      }
 
       .icon {
         width: 100%;
