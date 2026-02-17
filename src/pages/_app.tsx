@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import ReactGA from 'react-ga4';
 import { SessionProvider } from 'next-auth/react';
@@ -37,6 +37,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
   const [heroReady, setHeroReady] = useState(true);
   const [routeLoading, setRouteLoading] = useState(false);
   const [longevityTransition, setLongevityTransition] = useState(false);
+  const [videosReady, setVideosReady] = useState(false);
 
   const isIndexingOn = process.env.NEXT_PUBLIC_INDEXING === 'on';
   const isProduction = process.env.NEXT_PUBLIC_ENV === 'prod';
@@ -257,9 +258,23 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
       router.events.off('routeChangeComplete', onDone);
       router.events.off('routeChangeError', onDone);
     };
-  }, [router]);
+  }, [router.events, router.asPath]);
 
-  const overlayOn = longevityTransition && (routeLoading || !heroReady);
+  useLayoutEffect(() => {
+    const initialIsLongevity = isLongevityUrl(router.asPath);
+    if (!initialIsLongevity) return;
+
+    setHeroReady(false);
+    setRouteLoading(true);
+
+    const id = requestAnimationFrame(() => setRouteLoading(false));
+    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const isLongevityNow = isLongevityUrl(router.asPath);
+  const overlayOn =
+    isLongevityNow && (routeLoading || !heroReady || !videosReady);
 
   return (
     <SessionProvider session={session}>
@@ -275,6 +290,8 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
           routeLoading,
           longevityTransition,
           setHeroReady,
+          setVideosReady,
+          videosReady,
         }}
       >
         {showLoader && !isSmallScreen && (

@@ -42,6 +42,7 @@ const YourDiet: FC<YourDietProps> = ({
         showLeftIcon={false}
         showRightIcon={false}
         isBold
+        className={styles.yourDietHeading}
       />
       <div className={styles.wrapper}>
         <Image
@@ -61,7 +62,7 @@ const YourDiet: FC<YourDietProps> = ({
             <span> +20% </span> Years of life gained!
           </p>
           <hr className={styles.divider} />
-          <p>
+          <p className={styles.hasGapP}>
             Biological Age:{' '}
             <span>
               -{selectedDiet.biologicalAge} year
@@ -70,7 +71,7 @@ const YourDiet: FC<YourDietProps> = ({
           </p>
           <hr className={styles.divider} />
 
-          <p>
+          <p className={styles.hasGapP}>
             Skin Age:{' '}
             <span>
               -{selectedDiet.skinAge} year
@@ -79,7 +80,7 @@ const YourDiet: FC<YourDietProps> = ({
           </p>
           <hr className={styles.divider} />
 
-          <p>
+          <p className={styles.hasGapP}>
             Joint Age:{' '}
             <span>
               -{selectedDiet.jointAge} year
@@ -88,7 +89,7 @@ const YourDiet: FC<YourDietProps> = ({
           </p>
           <hr className={styles.divider} />
 
-          <p>
+          <p className={styles.hasGapP}>
             Metabolic Age:{' '}
             <span>
               -{selectedDiet.metabolicAge} year

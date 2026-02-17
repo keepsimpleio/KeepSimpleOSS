@@ -52,19 +52,20 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       target: '',
       id: 'companyManagement',
     },
-    {
-      name: articles,
-      path: '/articles',
-      logo: isDarkTheme ? <ArticlesDarkIcon /> : <ArticlesIcon />,
-      target: '',
-      id: 'articles',
-    },
+
     {
       name: tools,
       path: '/tools/longevity-protocol/about-project',
       logo: isDarkTheme ? <ToolsIcon /> : <ToolsDarkIcon />,
       target: '',
       id: 'tools',
+    },
+    {
+      name: articles,
+      path: '/articles',
+      logo: isDarkTheme ? <ArticlesDarkIcon /> : <ArticlesIcon />,
+      target: '',
+      id: 'articles',
     },
   ];
 
