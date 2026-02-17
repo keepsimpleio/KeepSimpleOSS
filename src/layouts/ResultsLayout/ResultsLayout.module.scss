@@ -1,0 +1,34 @@
+.ps {
+  height: 27px;
+  position: relative;
+  max-width: 868px;
+  display: flex;
+  align-items: center;
+  padding: 28px 60px 28px 40px;
+  justify-content: space-between;
+  line-height: 1.5;
+  margin-bottom: 78px;
+  color: #fff;
+
+  .backgroundImg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+}
+
+@media (max-width: 965px) {
+  .ps {
+    height: unset;
+    margin: 0 16px 30px 16px;
+    padding: 12px;
+
+    .backgroundImg {
+      object-fit: fill;
+    }
+  }
+}

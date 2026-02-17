@@ -9,7 +9,7 @@
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 65;
   height: 48px;
   padding-top: unset;
   flex-direction: row;
@@ -19,6 +19,7 @@
   .logo {
     margin-top: 3px !important;
     cursor: pointer;
+    object-fit: contain;
   }
 
   .actions {
@@ -214,7 +215,7 @@
     padding: 0 1.4rem;
     height: 82px;
     background-color: #fff;
-    z-index: 5;
+    z-index: 6;
     align-items: center;
     justify-content: center;
 

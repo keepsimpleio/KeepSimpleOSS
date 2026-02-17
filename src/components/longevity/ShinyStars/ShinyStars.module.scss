@@ -1,0 +1,22 @@
+.starWrap {
+  position: absolute;
+  z-index: 10;
+  animation: fadeInAndOut 2s linear infinite;
+  will-change: opacity;
+}
+
+.starImg {
+  display: block;
+}
+
+@keyframes fadeInAndOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

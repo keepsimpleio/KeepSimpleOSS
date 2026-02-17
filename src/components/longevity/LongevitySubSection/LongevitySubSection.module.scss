@@ -1,0 +1,189 @@
+@import '@styles/fonts.scss';
+
+.subSection {
+  max-width: 948px;
+  padding-bottom: 40px;
+
+  .headline {
+    height: 27px;
+    position: relative;
+    max-width: 868px;
+    display: flex;
+    align-items: center;
+    padding: 20px 40px;
+    justify-content: space-between;
+
+    .backgroundImg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: -1;
+    }
+
+    .heading {
+      h3 {
+        font-size: 20px !important;
+      }
+    }
+
+    .hacksHeading {
+      h3 {
+        color: #fff !important;
+      }
+    }
+
+    .habitTooltip,
+    .dateTxt {
+      text-transform: uppercase;
+      font-family: Aboreto-Regular, sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #ce2128;
+      position: relative;
+      cursor: pointer;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        right: 0;
+        width: 100%;
+        height: 16px;
+        background-image: url('/keepsimple_/assets/longevity/red-short-line.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    }
+
+    .dateTxt {
+      cursor: default;
+
+      &::after {
+        content: none;
+      }
+    }
+
+    .tooltip {
+      background: unset !important;
+      padding: unset !important;
+      color: #000000d9;
+      font-size: 16px;
+      z-index: 999;
+    }
+  }
+
+  .mainContent {
+    background-image: url('/keepsimple_/assets/longevity/habits/white-bg.png') !important;
+
+    .dateTxtMobile {
+      display: none;
+    }
+
+    .content {
+      padding: 28px 40px;
+
+      p {
+        margin: 0;
+        line-height: 1.5;
+        @include text-body;
+      }
+
+      div > ul,
+      ul {
+        padding: 0 0 0 11px;
+        margin: 0;
+
+        li {
+          list-style: none;
+          position: relative;
+          padding-left: 25px;
+          padding-bottom: 20px;
+          line-height: 1.5;
+          @include text-body;
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.35em;
+            width: 12px;
+            height: 12px;
+            background: url('/keepsimple_/assets/longevity/habits/marker.svg')
+              no-repeat center / contain;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1190px) {
+  .subSection {
+    margin-left: 16px;
+  }
+}
+
+@media (max-width: 965px) {
+  .subSection {
+    margin-right: 16px;
+    padding-bottom: 20px;
+
+    .mainContent {
+      .dateTxtMobile {
+        display: block;
+        background-color: #f4ebdc;
+        padding: 2px 12px;
+        margin: 0 12px 16px 12px;
+      }
+
+      .content {
+        padding: 12px;
+
+        ul {
+          margin: 0;
+
+          li {
+            padding-bottom: 12px;
+          }
+        }
+      }
+    }
+
+    .withDate {
+      padding-top: 16px;
+    }
+
+    .headline {
+      height: 48px;
+      padding: 0 12px;
+
+      .dateTxt {
+        display: none;
+      }
+
+      .habitTooltip {
+        font-size: 14px;
+      }
+
+      .backgroundImg {
+        height: 48px;
+        object-fit: cover;
+      }
+
+      .heading {
+        h3 {
+          font-size: 18px !important;
+        }
+      }
+    }
+  }
+  .whyDoThisMobileModal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+  }
+}

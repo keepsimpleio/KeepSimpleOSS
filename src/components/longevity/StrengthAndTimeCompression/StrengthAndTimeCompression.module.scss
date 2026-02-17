@@ -1,0 +1,135 @@
+.strengthAndTimeCompression {
+  background-image: url('/keepsimple_/assets/longevity/workout/strength-bg.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 40px;
+  max-width: 868px;
+
+  margin: 20px;
+  // TODO: Move to global styles
+  .divider {
+    border: none;
+    background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+    background-size: cover;
+    height: 2px;
+    width: clamp(319px, 75vw, 788px);
+    margin-top: 24px;
+    margin-bottom: 40px;
+  }
+
+  .subHeading {
+    margin-bottom: 43px;
+
+    h4 {
+      font-weight: 400 !important;
+      font-family: 'Source-Serif-Regular', sans-serif !important;
+      text-transform: uppercase;
+    }
+  }
+
+  .totalMins,
+  .staticBigText,
+  .staticSmallText {
+    display: inline-block;
+    font-size: 40px;
+    color: #ce2128;
+    font-family: Aboreto-Regular, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  .staticSmallText {
+    font-size: 18px;
+  }
+
+  .orangeResult {
+    .totalMins,
+    .staticBigText,
+    .staticSmallText {
+      color: #ffae01;
+    }
+  }
+
+  .greenResult {
+    .totalMins,
+    .staticBigText,
+    .staticSmallText {
+      color: #4d8539;
+    }
+  }
+}
+
+.result {
+  width: clamp(319px, 67vw, 868px);
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+
+  .perWeek,
+  .perSession {
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1 1 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .perWeek,
+  .perSession {
+    border: 1px solid #24262e;
+    background-color: #24262e1a;
+  }
+
+  .quantity {
+    font-size: 28px;
+    border-bottom: 3px solid #000000d9;
+  }
+}
+
+@media (max-width: 956px) {
+  .strengthAndTimeCompression {
+    background-size: auto;
+    margin: 0 12px;
+
+    .heading,
+    .subHeading {
+      h4,
+      h3 {
+        font-size: 18px !important;
+      }
+    }
+
+    .divider {
+      margin: 20px 0;
+    }
+
+    .totalMins,
+    .staticBigText,
+    .staticSmallText {
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .result {
+      flex-direction: column;
+
+      .perWeek,
+      .perSession {
+        padding: 12px 20px;
+      }
+
+      .perWeek {
+        margin-top: 15px;
+      }
+    }
+  }
+}

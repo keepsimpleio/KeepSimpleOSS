@@ -7,7 +7,7 @@ import styles from './Modal.module.scss';
 
 type ModalProps = {
   children?: ReactNode;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'full';
   onClick?: () => void;
   title?: string | ReactNode;
   close?: boolean;
@@ -22,9 +22,10 @@ type ModalProps = {
   fullSizeMobile?: boolean;
   removeBorderMobile?: boolean;
   disableBackgroundClick?: boolean;
-
+  isLongevityProtocolModal?: boolean;
   grayTitle?: boolean;
   dataCy?: string;
+  backgroundImageUrl?: string;
 };
 
 const Modal: FC<ModalProps> = ({
@@ -46,6 +47,8 @@ const Modal: FC<ModalProps> = ({
   disableBackgroundClick,
   grayTitle,
   dataCy,
+  isLongevityProtocolModal,
+  backgroundImageUrl,
 }) => {
   const handleClose = () => {
     onClick();
@@ -91,7 +94,7 @@ const Modal: FC<ModalProps> = ({
       data-cy={dataCy}
     >
       <div
-        className={styles.background}
+        className={cn(styles.background, {})}
         onClick={!disableBackgroundClick ? handleClose : () => {}}
         data-cy={'modal-background-click'}
       />
@@ -99,9 +102,17 @@ const Modal: FC<ModalProps> = ({
         className={cn(styles.wrapper, styles.small, {
           [styles.large]: size === 'large',
           [styles.medium]: size === 'medium',
+          [styles.full]: size === 'full',
           [wrapperClassName]: wrapperClassName,
           [styles.fullSizeMobile]: fullSizeMobile,
+          [styles.isLongevityProtocolModal]: isLongevityProtocolModal,
+          [styles.withBackgroundImage]: backgroundImageUrl,
         })}
+        style={{
+          backgroundImage: backgroundImageUrl
+            ? `url(${backgroundImageUrl})`
+            : 'none',
+        }}
       >
         {!removeHeader && (
           <div
@@ -122,7 +133,7 @@ const Modal: FC<ModalProps> = ({
             <div className={styles.closeIconWrapper} onClick={onClick}>
               <div className={`${styles.lineWrapper} ${styles.rightWrapper}`}>
                 <Image
-                  src="/assets/close-right-line.svg"
+                  src="/keepsimple_/assets/close-right-line.svg"
                   alt="close right line"
                   width={24}
                   height={24}
@@ -131,7 +142,7 @@ const Modal: FC<ModalProps> = ({
               </div>
               <div className={`${styles.lineWrapper} ${styles.leftWrapper}`}>
                 <Image
-                  src="/assets/close-left-line.svg"
+                  src="/keepsimple_/assets/close-left-line.svg"
                   alt="close left line"
                   width={24}
                   height={24}
@@ -143,7 +154,7 @@ const Modal: FC<ModalProps> = ({
         )}
         {withoutHeader && (
           <img
-            src="/assets/biases/close-icon-white.svg"
+            src="/keepsimple_/assets/biases/close-icon-white.svg"
             alt="modal close button"
             className={styles.closeBtnWithoutHeader}
             onClick={handleClose}

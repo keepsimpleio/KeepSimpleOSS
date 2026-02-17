@@ -1,0 +1,70 @@
+.environmentSubSection {
+  padding: 20px 60px 0 40px;
+
+  .titleAndIcon {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+
+    .title {
+      font-weight: 600;
+      line-height: 1.5;
+    }
+  }
+
+  // TODO: Move to global styles
+  .hr {
+    border: none;
+    background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+    background-size: cover;
+    height: 2px;
+    width: clamp(319px, 50vw, 466px);
+    margin: 0;
+  }
+
+  .description {
+    padding-top: 12px;
+
+    p {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+  }
+}
+
+.environmentSubSection:first-child {
+  padding: 28px 60px 0 40px;
+}
+
+.environmentSubSection:last-child {
+  padding: 20px 60px 28px 40px;
+}
+
+@media (max-width: 965px) {
+  .environmentSubSection {
+    padding: 12px;
+
+    .hr {
+      //width: 100%;
+      background-size: contain;
+    }
+  }
+  .environmentSubSection:first-child {
+    padding: 12px 12px 0 12px;
+  }
+
+  .environmentSubSection:last-child {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 450px) {
+  .environmentSubSection {
+    .hr {
+      width: 100%;
+    }
+  }
+}

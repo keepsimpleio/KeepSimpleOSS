@@ -1,0 +1,77 @@
+.longevityMain {
+  max-width: 1140px;
+  margin: 0 auto;
+
+  .section {
+    display: flex;
+  }
+
+  .section {
+    position: relative;
+  }
+
+  .videoLayer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 40px;
+  }
+
+  .canvas {
+    width: 175px !important;
+    height: 100%;
+    display: block;
+    position: absolute;
+    z-index: 2;
+  }
+
+  .hiddenVideo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.canvasTransitionOn {
+  transition: opacity 350ms ease;
+  will-change: opacity;
+}
+
+.canvasTransitionOff {
+  transition: none;
+}
+
+.canvasOn {
+  animation: smooth-fadeIn 350ms ease;
+  will-change: opacity;
+}
+
+.canvasOff {
+  opacity: 80%;
+}
+
+@media (max-width: 965px) {
+  .longevityMain {
+    .section {
+      gap: 0;
+    }
+
+    .canvas {
+      display: none;
+    }
+  }
+}
+
+@keyframes smooth-fadeIn {
+  from {
+    opacity: 80%;
+  }
+  to {
+    opacity: 100%;
+  }
+}

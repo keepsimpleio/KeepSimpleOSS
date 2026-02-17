@@ -1,0 +1,170 @@
+.flipCard {
+  background-image: url('/keepsimple_/assets/longevity/study/study-flip-card-bg.webp');
+  background-size: cover;
+  background-repeat: no-repeat;
+  max-width: 948px;
+  height: 550px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 30px;
+
+  .headline {
+    padding-bottom: 12px;
+    justify-content: center !important;
+    padding-top: 20px;
+
+    h4 {
+      color: #ce2128 !important;
+      text-transform: uppercase;
+      font-family: Aboreto-Regular, sans-serif !important;
+      font-size: 20px !important;
+    }
+  }
+
+  .subText {
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #000000d9;
+    line-height: 1;
+  }
+
+  .chartWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .chartTitle {
+      padding: 16px 0;
+      line-height: 1;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .chart {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  .diamond {
+    width: 10px;
+    height: 10px;
+    background-color: #df382e;
+    transform: rotate(45deg);
+    display: inline-flex;
+  }
+
+  .painTextWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .painText {
+    margin: 0 30px;
+    width: 604px;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.hacksFlipCard {
+  background-image: url('/keepsimple_/assets/longevity/study/hacks-bg.png');
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .quote {
+    p {
+      line-height: 1.5;
+      font-size: 20px;
+      text-transform: uppercase;
+      margin: 0;
+      font-family: Aboreto-Regular, sans-serif;
+    }
+  }
+
+  .separator {
+    display: block;
+    margin: 8px 0;
+  }
+
+  .quoteAuthor {
+    display: unset;
+
+    h4 {
+      line-height: 1.5;
+      font-size: 20px !important;
+      text-transform: uppercase;
+      margin: 0;
+      font-family: Aboreto-Regular, sans-serif !important;
+      color: #fff !important;
+    }
+  }
+}
+
+@media (max-width: 965px) {
+  .flipCard {
+    background-image: unset;
+    height: auto;
+    padding: 0;
+
+    .pageSwitcherFlip {
+      display: none;
+    }
+
+    .diamond {
+      width: 10px;
+    }
+
+    .headline {
+      justify-content: center;
+
+      h4 {
+        font-size: 18px !important;
+      }
+    }
+
+    .subText {
+      font-size: 16px;
+    }
+
+    .painText,
+    .hacksFlipCard {
+      p {
+        width: 267px;
+      }
+    }
+
+    .painText {
+      margin: 0 10px;
+      width: unset;
+    }
+
+    .chartWrapper {
+      .chartTitle {
+        font-size: 14px;
+        padding: 16px 0 32px 0;
+      }
+
+      .chart {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+    .divider {
+      width: -webkit-fill-available;
+    }
+
+    .content {
+      width: -webkit-fill-available;
+    }
+  }
+}

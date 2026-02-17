@@ -20,7 +20,7 @@
     position: relative;
     z-index: 80;
     border-radius: 4px;
-    background-image: url('/assets/landingPage/landing-bg.png');
+    background-image: url('/keepsimple_/assets/landingPage/landing-bg.png');
 
     .header {
       .hadBorder {
@@ -44,6 +44,7 @@
         font-size: 16px;
         color: #28587b;
       }
+
       .closeIconWrapper {
         position: relative;
         width: 24px;
@@ -161,6 +162,25 @@
   z-index: 46;
 }
 
+@media (max-width: 965px) {
+  .overlay {
+    .full {
+      margin: 16px;
+      height: -webkit-fill-available !important;
+
+      .body {
+        height: 100%;
+        text-align: center;
+      }
+    }
+  }
+
+  .withBackgroundImage {
+    background-color: unset;
+    background-size: cover;
+  }
+}
+
 @media (max-width: 800px) {
   .overlay {
     .removeBorderMobile {
@@ -183,6 +203,16 @@
 
     .fullSizeMobile {
       max-width: unset;
+    }
+
+    .isLongevityProtocolModal {
+      .header {
+        position: absolute;
+      }
+
+      .body {
+        padding: 0;
+      }
     }
   }
 }

@@ -1,0 +1,177 @@
+.weeklyWorkout {
+  background-image: url('/keepsimple_/assets/longevity/workout/weekly-workout-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px;
+  max-width: 868px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .heading {
+      h3 {
+        font-size: 20px !important;
+      }
+    }
+
+    .minutes {
+      font-size: 32px;
+      color: #ce2128;
+      font-family: Aboreto-Regular, sans-serif;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .orangeMinutes {
+      color: #df8804;
+    }
+    .greenMinutes {
+      color: #4d8539;
+    }
+  }
+
+  .divider {
+    border: none;
+    background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+    background-size: initial;
+    height: 2px;
+    width: clamp(319px, 80vw, 868px);
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .wrapper {
+    display: flex;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  .imageWrapper {
+    opacity: 70%;
+    transform: translateX(-6px);
+    transition: transform 200ms ease;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  .activeImageWrapper {
+    width: 180px;
+    height: 180px;
+    opacity: 100%;
+    transform: translateX(0);
+    z-index: 99;
+    position: relative;
+    top: -14px;
+
+    img {
+      width: 180px;
+      height: 180px;
+    }
+  }
+
+  .summary {
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      color: #ce2128;
+      font-weight: 700;
+    }
+    .orangeRisk {
+      color: #df8804;
+    }
+
+    .greenRisk {
+      color: #4d8539;
+    }
+  }
+}
+
+@media (max-width: 965px) {
+  .weeklyWorkout {
+    .header {
+      .minutes {
+        font-size: 18px;
+      }
+    }
+
+    .divider {
+      margin: 8px 0;
+      background-size: cover;
+    }
+
+    .wrapper {
+      margin-top: 20px;
+      gap: 0;
+      --overlap: 42px;
+      display: flex;
+      align-items: center;
+
+      .imageWrapper {
+        width: 100%;
+        height: auto;
+        position: relative;
+        margin-left: calc(var(--overlap) * -1);
+        border: 0;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+        top: 0;
+        transition:
+          transform 180ms ease,
+          box-shadow 180ms ease,
+          z-index 0ms;
+        transform: translateY(0) scale(1);
+        z-index: 1;
+
+        img {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+        }
+      }
+
+      .imageWrapper:nth-child(4) {
+        z-index: 2;
+      }
+
+      .imageWrapper:nth-child(3) {
+        z-index: 3;
+      }
+
+      .imageWrapper:nth-child(2) {
+        z-index: 4;
+      }
+
+      .imageWrapper:nth-child(1) {
+        z-index: 5;
+      }
+
+      .imageWrapper:first-child {
+        margin-left: 0;
+      }
+
+      .activeImageWrapper {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 99 !important;
+
+        img {
+          position: relative;
+        }
+      }
+    }
+
+    .summary {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+}

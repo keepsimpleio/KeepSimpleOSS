@@ -15,6 +15,8 @@ import UXCoreIcon from '@icons/UXCoreIcon';
 import CompanyManagementIcon from '@icons/CompanyManagementIcon';
 import ArticlesIcon from '@icons/ArticlesIcon';
 import ArticlesDarkIcon from '@icons/ArticlesDarkIcon';
+import ToolsIcon from '@icons/ToolsIocn';
+import ToolsDarkIcon from '@icons/ToolsDarkIcon';
 
 import styles from './Navbar.module.scss';
 
@@ -31,7 +33,7 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
   const { isDarkTheme, isOpenedSidebar } = useGlobals()[1];
   const { accountData } = useContext(GlobalContext);
 
-  const { about, companyManagement, articles, contributorsTxt } =
+  const { about, companyManagement, articles, contributorsTxt, tools } =
     navbar[locale];
 
   const routes = [
@@ -49,6 +51,14 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       logo: <CompanyManagementIcon />,
       target: '',
       id: 'companyManagement',
+    },
+
+    {
+      name: tools,
+      path: '/tools/longevity-protocol/about-project',
+      logo: isDarkTheme ? <ToolsIcon /> : <ToolsDarkIcon />,
+      target: '',
+      id: 'tools',
     },
     {
       name: articles,

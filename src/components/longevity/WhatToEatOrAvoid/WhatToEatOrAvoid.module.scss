@@ -1,0 +1,221 @@
+@import '@styles/_variables.scss';
+@import '@styles/_animations.scss';
+
+.whatToEatOrAvoid {
+  padding: 24px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+
+  .heading {
+    background-image: url('/keepsimple_/assets/longevity/diet/heading-bg.png');
+    background-repeat: no-repeat;
+    max-width: 524px;
+    background-size: cover;
+    padding: 7px 8px;
+    margin-bottom: 12px;
+  }
+
+  .item {
+    display: flex;
+    gap: 8px;
+    row-gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .icon {
+      margin-top: 5px;
+    }
+
+    .content {
+      p {
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .examplesItem {
+    align-items: flex-start;
+  }
+
+  .exampleContent {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 16px;
+
+    &::before {
+      content: 'Examples:';
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+
+  .label {
+    font-size: 14px;
+    color: #fff;
+    text-transform: uppercase;
+    max-width: 100px;
+    width: 100%;
+    position: absolute;
+    height: 13px;
+    padding: 2px;
+    background: #2f2f2f;
+    display: flex;
+    font-family: Aboreto-Regular, sans-serif;
+    font-weight: 400;
+    justify-content: center;
+    align-items: center;
+    top: 24px;
+    right: 40px;
+    opacity: 0;
+    @extend .animate-slowFadeIn;
+  }
+
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background-image: url('/keepsimple_/assets/longevity/diet/checkmark.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+  }
+
+  .checkmark {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 11px;
+    height: 11px;
+    background-image: url('/keepsimple_/assets/longevity/diet/checked-box.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .examples {
+    display: flex;
+    align-items: center;
+  }
+
+  .item:last-child {
+    padding-bottom: 0;
+  }
+
+  .heartWrapper {
+    position: relative;
+  }
+
+  .heart {
+    cursor: pointer;
+  }
+
+  .tooltip {
+    background-image: url('/keepsimple_/assets/longevity/diet/tooltip-bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    flex-direction: column;
+    z-index: 10;
+    max-width: 500px;
+
+    // TODO Not working
+    .react-tooltip-arrow {
+      display: none !important;
+    }
+
+    .content {
+      @extend .longevityContent;
+      padding: unset;
+      color: #000;
+    }
+
+    .tooltipHeading {
+      padding-bottom: 19px;
+
+      h5 {
+        color: #ce2128 !important;
+        font-weight: 400 !important;
+        font-size: 20px !important;
+      }
+    }
+
+    .subText {
+      font-size: 20px;
+      color: #000000d9;
+      padding-bottom: 20px;
+      font-family: Aboreto-Regular, sans-serif;
+    }
+  }
+
+  .divider {
+    position: absolute;
+    bottom: 0;
+  }
+}
+
+.selected {
+  user-select: text;
+}
+
+.whatToEatSection {
+  cursor: pointer;
+}
+
+@media (max-width: 965px) {
+  .whatToEatOrAvoid {
+    padding: 12px;
+
+    .heartWrapper {
+      position: unset;
+    }
+
+    .heart,
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      top: 15px;
+      right: 22px;
+    }
+
+    .heart {
+      width: 28px;
+      height: 28px;
+      animation: pulse-shadow-animation 2s infinite;
+    }
+
+    .label {
+      top: 20px;
+      right: 53px;
+    }
+
+    .divider {
+      width: -webkit-fill-available;
+    }
+
+    .heading {
+      h5 {
+        font-size: 16px !important;
+      }
+    }
+  }
+}
+
+@keyframes pulse-shadow-animation {
+  0% {
+    filter: drop-shadow(0px 0px 18px rgba(53, 35, 13, 0.2));
+  }
+  70% {
+    filter: drop-shadow(0px 0px 18px rgba(255, 0, 0, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0px 0px 18px rgba(53, 35, 13, 0.2));
+  }
+}

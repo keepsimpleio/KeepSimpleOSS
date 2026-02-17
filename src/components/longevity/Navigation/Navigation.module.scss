@@ -1,0 +1,162 @@
+.ul,
+.subUl {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+  margin-bottom: 8px;
+
+  .item,
+  .subItem {
+    background-image: url('/keepsimple_/assets/longevity/nav-bg.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 222px;
+    height: 49px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+
+    &:hover {
+      cursor: pointer;
+      background-image: url('/keepsimple_/assets/longevity/navbar-borders.svg');
+      background-color: #fff;
+    }
+  }
+
+  .subItem {
+    background-image: url('/keepsimple_/assets/longevity/nav-sub-bg.png');
+
+    &:hover {
+      background-image: url('/keepsimple_/assets/longevity/nav-sub-bg-hover.png');
+
+      .link,
+      .subLink {
+        color: #b67636;
+      }
+
+      svg {
+        path {
+          fill: #b67636 !important;
+        }
+      }
+    }
+  }
+
+  .itemActive {
+    text-decoration: none;
+    cursor: pointer;
+    background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
+
+    .subLink,
+    .link {
+      color: #fff;
+
+      svg {
+        path {
+          fill: #fff;
+        }
+      }
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
+    }
+  }
+
+  .subItemActive {
+    background-image: url('/keepsimple_/assets/longevity/nav-sub-bg-hover.png');
+
+    .subLink,
+    .link {
+      color: #b67636;
+
+      svg {
+        path {
+          fill: #b67636;
+        }
+      }
+    }
+  }
+
+  .link,
+  .subLink {
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+    color: #000000d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.link {
+  svg:first-child {
+    margin-top: -5px;
+  }
+}
+
+.subNav {
+  position: relative;
+  overflow: hidden;
+  height: 83px;
+
+  .subItem {
+    height: unset;
+
+    &:hover {
+      svg {
+        path {
+          fill: #fff;
+        }
+      }
+    }
+  }
+
+  .subLink {
+    width: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+
+    svg {
+      path {
+        fill: #bdbdbd;
+      }
+    }
+  }
+
+  .curtains {
+    transform: translateY(0);
+    position: absolute;
+    will-change: transform, opacity;
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
+    z-index: 55;
+  }
+
+  .curtainsOpen {
+    transform: translateY(100%);
+  }
+}
+
+.subUl {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+@media (max-width: 1170px) {
+  .nav {
+    margin: 0 15px;
+  }
+}

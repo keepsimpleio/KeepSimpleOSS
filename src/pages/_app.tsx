@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import ReactGA from 'react-ga4';
 import { SessionProvider } from 'next-auth/react';
@@ -12,6 +12,7 @@ import Layout from '@layouts/Layout';
 
 import { GlobalContext } from '@components/Context/GlobalContext';
 import Box from 'src/components/Box';
+import Loader from '@components/longevity/Loader';
 
 import { authenticate } from '@api/auth';
 import mixpanel, { initMixpanel, trackPageView } from '../../lib/mixpanel';
@@ -33,9 +34,14 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
   const loadingTimer = useRef(null);
   const [accountData, setAccountData] = useState(null);
   const [token, setToken] = useState(null);
+  const [heroReady, setHeroReady] = useState(true);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [longevityTransition, setLongevityTransition] = useState(false);
+  const [videosReady, setVideosReady] = useState(false);
 
   const isIndexingOn = process.env.NEXT_PUBLIC_INDEXING === 'on';
   const isProduction = process.env.NEXT_PUBLIC_ENV === 'prod';
+  const longevityBaseUrl = '/tools/longevity-protocol';
   const { initUseMobile } = useMobile()[0];
   const { events } = useRouter();
   const { setIsVisible } = useSpinner()[0];
@@ -171,7 +177,18 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
       'keepsimplePagesDark',
       isPage && isDarkTheme,
     );
-  }, [router.pathname, isDarkTheme]);
+  }, [router.pathname, isDarkTheme, router.asPath]);
+
+  useEffect(() => {
+    const isLongevityProtocolPage = router.asPath.startsWith(
+      '/tools/longevity-protocol',
+    );
+    if (isLongevityProtocolPage) {
+      document.body.classList.add('keepsimplePages');
+      document.body.classList.remove('darkTheme');
+      document.body.classList.remove('keepsimplePagesDark');
+    }
+  }, [isDarkTheme, router]);
 
   useEffect(() => {
     initMixpanel();
@@ -207,6 +224,58 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
     }
   }, [accountData?.id, accountData?.createdAt]);
 
+  const clean = (url: string) =>
+    url.split('?')[0].split('#')[0].replace(/\/+$/, '');
+  const isLongevityUrl = (url: string) =>
+    clean(url).startsWith(longevityBaseUrl);
+
+  useEffect(() => {
+    const onStart = (url: string) => {
+      const fromLongevity = isLongevityUrl(router.asPath);
+      const toLongevity = isLongevityUrl(url);
+
+      const shouldGate = fromLongevity && toLongevity;
+
+      setLongevityTransition(shouldGate);
+
+      if (shouldGate) {
+        setHeroReady(false);
+        setRouteLoading(true);
+      }
+    };
+
+    const onDone = () => {
+      setRouteLoading(false);
+      setLongevityTransition(false);
+    };
+
+    router.events.on('routeChangeStart', onStart);
+    router.events.on('routeChangeComplete', onDone);
+    router.events.on('routeChangeError', onDone);
+
+    return () => {
+      router.events.off('routeChangeStart', onStart);
+      router.events.off('routeChangeComplete', onDone);
+      router.events.off('routeChangeError', onDone);
+    };
+  }, [router.events, router.asPath]);
+
+  useLayoutEffect(() => {
+    const initialIsLongevity = isLongevityUrl(router.asPath);
+    if (!initialIsLongevity) return;
+
+    setHeroReady(false);
+    setRouteLoading(true);
+
+    const id = requestAnimationFrame(() => setRouteLoading(false));
+    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const isLongevityNow = isLongevityUrl(router.asPath);
+  const overlayOn =
+    isLongevityNow && (routeLoading || !heroReady || !videosReady);
+
   return (
     <SessionProvider session={session}>
       <GlobalContext.Provider
@@ -217,6 +286,12 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
           setShowLoader,
           videoRef,
           setToken,
+          heroReady,
+          routeLoading,
+          longevityTransition,
+          setHeroReady,
+          setVideosReady,
+          videosReady,
         }}
       >
         {showLoader && !isSmallScreen && (
@@ -236,6 +311,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
         <Layout>
           <Component {...pageProps} />
         </Layout>
+        {overlayOn && <Loader />}
         {isCookieStateLoaded && !cookieBoxIsSeen && (
           <Box setIsSeen={handleAccept} />
         )}

@@ -1,0 +1,234 @@
+@import '@styles/_animations.scss';
+
+.nav {
+  margin: 20px 16px 16px 16px;
+
+  .activePage {
+    cursor: pointer;
+    background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
+    color: #ffffff;
+    border: unset;
+    padding: 15px 16px;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navList {
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    display: none;
+    z-index: 888;
+    transition:
+      transform 220ms ease,
+      opacity 220ms ease,
+      visibility 0ms linear 220ms;
+    will-change: transform, opacity;
+    background-color: #fff;
+    width: 93%;
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+
+    .li,
+    .subNav {
+      .link {
+        color: #000000a6;
+        text-decoration: none;
+        display: flex;
+      }
+
+      .habitsArrow {
+        animation: rotateArrowDown 220ms ease forwards;
+
+        path {
+          fill: #000000a6;
+        }
+      }
+
+      .openHabitsArrow {
+        animation: rotateArrowUp 220ms ease forwards;
+      }
+    }
+
+    .li {
+      display: flex;
+      align-items: flex-start;
+      padding: 13px 16px;
+      gap: 8px;
+      position: relative;
+      justify-content: space-between;
+
+      .divider {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        max-width: 310px;
+      }
+
+      .icon {
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+
+    .li.active {
+      display: block;
+
+      .link {
+        color: #000;
+        font-weight: 500;
+      }
+    }
+
+    .habitsLi {
+      flex-direction: column;
+      align-items: baseline;
+    }
+
+    .subNav {
+      transform: translateY(-10px);
+      opacity: 0;
+      display: none;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 888;
+      transition:
+        transform 220ms ease,
+        opacity 220ms ease,
+        visibility 0ms linear 220ms;
+      will-change: transform, opacity;
+      background-color: #fff;
+      display: none;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .subLi {
+      display: flex;
+      gap: 13px;
+      align-items: center;
+      padding-bottom: 13px;
+      padding-top: 13px;
+
+      .icon {
+        svg {
+          width: 28px;
+          height: 20px;
+        }
+      }
+    }
+
+    // TODO: Not working as expected, need to check
+    .subNav.openSubNav {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      display: block;
+      transition:
+        transform 220ms ease,
+        opacity 220ms ease,
+        visibility 0ms;
+    }
+  }
+
+  .navList.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    display: block;
+    pointer-events: auto;
+    transition:
+      transform 220ms ease,
+      opacity 220ms ease,
+      visibility 0ms;
+  }
+
+  .txtAndIcon {
+    display: flex;
+    gap: 8px;
+  }
+
+  .habitsTxtAndIcon {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .contentsTxt {
+    display: block;
+  }
+
+  .disableContentsTxt {
+    @extend .animate-fadeOut;
+    animation-duration: 0.1s;
+  }
+
+  .arrow {
+    animation: rotateArrowDown 220ms ease forwards;
+  }
+
+  .openArrow {
+    animation: rotateArrowUp 220ms ease forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .navList,
+    .navList.open,
+    .subNav,
+    .openSubNav {
+      transition: none;
+      transform: none;
+    }
+  }
+}
+
+.nextButton {
+  margin-left: 16px;
+
+  .nextStaticTxt {
+    color: #484848;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .nextPage {
+    font-weight: 600;
+    color: #000;
+  }
+
+  span {
+    gap: 5px !important;
+  }
+}
+
+@keyframes rotateArrowUp {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-90deg);
+  }
+}
+
+@keyframes rotateArrowDown {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}

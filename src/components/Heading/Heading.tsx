@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { HeadingProps } from './Heading.types';
 
 import styles from './Heading.module.scss';
+import RedLine from '@icons/longevity/RedLine';
 
 const Heading: FC<HeadingProps> = ({
   text,
@@ -15,7 +16,9 @@ const Heading: FC<HeadingProps> = ({
   Tag = 'h1',
   hasUnderline,
   isDarkTheme,
+  hasRedUnderline,
   locale,
+  isBold,
   isBig,
 }) => {
   return (
@@ -43,7 +46,9 @@ const Heading: FC<HeadingProps> = ({
           className={cn(styles.heading, {
             [styles.small]: Tag === 'h2' || Tag === 'h3',
             [styles.h4]: Tag === 'h4',
+            [styles.h5]: Tag === 'h5',
             [styles.big]: isBig,
+            [styles.bold]: isBold,
           })}
         >
           {text}
@@ -65,6 +70,7 @@ const Heading: FC<HeadingProps> = ({
           className={styles.underline}
         />
       )}
+      {hasRedUnderline && <RedLine className={styles.redUnderline} />}
     </div>
   );
 };

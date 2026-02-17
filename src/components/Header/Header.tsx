@@ -7,6 +7,8 @@ import { flushSync } from 'react-dom';
 import Navbar from '@components/Navbar';
 import Link from '@components/NextLink';
 import { GlobalContext } from '@components/Context/GlobalContext';
+// import UserProfile from '@components/UserProfile';
+// import LogIn from '@components/LogIn';
 
 import type { TRouter } from '@local-types/global';
 
@@ -20,7 +22,8 @@ const Header: FC = () => {
   const { locale, locales } = router as TRouter;
   const { setShowLoader, videoRef } = useContext(GlobalContext);
   const isSmallScreen = useIsWidthLessThan(1141);
-
+  // const [openLogin, setOpenLogin] = useState(false);
+  // const { accountData, setAccountData } = useContext(GlobalContext);
   const [
     { toggleIsDarkTheme, toggleSidebar },
     { isDarkTheme, isOpenedSidebar },
@@ -70,8 +73,8 @@ const Header: FC = () => {
               }}
               src={
                 isDarkTheme
-                  ? '/keepsimple_/assets/logos/keepsimpleNewYearDark.svg'
-                  : '/keepsimple_/assets/logos/keepsimpleNewYear.svg'
+                  ? '/keepsimple_/assets/logos/keepsimpleDark.svg'
+                  : '/keepsimple_/assets/logos/keepsimple.svg'
               }
               alt="keepsimple logo"
               width={130.61}
@@ -154,10 +157,18 @@ const Header: FC = () => {
                 </Link>
               )}
             </div>
+            {/*<UserProfile*/}
+            {/*  showDropdown*/}
+            {/*  setAccountData={setAccountData}*/}
+            {/*  isLoggedIn={!!accountData}*/}
+            {/*  username={accountData?.username}*/}
+            {/*  setOpenLoginModal={setOpenLogin}*/}
+            {/*/>*/}
           </div>
         </div>
         <div className={styles.closeButton} onClick={handleToggleSidebar} />
       </header>
+      {/*{openLogin && <LogIn setShowLogIn={setOpenLogin} />}*/}
     </Fragment>
   );
 };

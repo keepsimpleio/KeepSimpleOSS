@@ -1,0 +1,27 @@
+@import '@styles/fonts.scss';
+
+.basicStats {
+  padding-top: 28px;
+  padding-bottom: 40px;
+
+  .statsList {
+    padding-top: 20px;
+
+    .statItem {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 16px;
+
+      .statValue {
+        @include text-body;
+      }
+    }
+  }
+}
+
+@media (max-width: 965px) {
+  .basicStats {
+    margin-bottom: 0;
+  }
+}
