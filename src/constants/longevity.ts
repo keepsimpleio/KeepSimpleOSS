@@ -2,7 +2,8 @@ export const longevityDietPath = '/keepsimple_/assets/longevity/diet';
 const heartsPath = '/keepsimple_/assets/longevity/diet/hearts/';
 const scaleImgPath = '/keepsimple_/assets/longevity/diet/diet-results-icons/';
 const backgroundImgPath = '/keepsimple_/assets/longevity/diet/diet-results-bg/';
-
+const domain = process.env.NEXT_PUBLIC_DOMAIN;
+export const ogImage = `${domain}/keepsimple_/assets/longevity/og.png`;
 export const images = [
   `${heartsPath}sugar.svg`,
   `${heartsPath}seed-oil.svg`,
@@ -144,7 +145,7 @@ export const ACTIVITY_LEVEL_SUMMARY = [
     minutes: 300,
     riskOfDyingEarly: '65% of early-death risk',
     cognitiveDecline: '~25–35% lower',
-    brainAgingActive: 'Optimized (use brain-age model)',
+    brainAgingActive: 'Optimized',
     brainAgingSedentary: 'Worst-case brain-age path',
   },
 ];

@@ -4,6 +4,7 @@ import SupplementsLayout from '@layouts/Supplements';
 
 import { getSupplements } from '@api/longevity/supplements';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Supplements = ({ supplements }) => {
   const OGTags = {
@@ -14,7 +15,7 @@ const Supplements = ({ supplements }) => {
     ogImage: {
       data: {
         attributes: {
-          url: supplements['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -29,6 +30,7 @@ const Supplements = ({ supplements }) => {
           title: supplements['en']?.Seo?.pageTitle || '',
           seoTitle: supplements['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={supplements['en']?.createdAt || ''}
         modifiedDate={supplements['en']?.updatedAt || ''}
