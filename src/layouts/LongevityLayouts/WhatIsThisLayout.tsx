@@ -29,7 +29,7 @@ const WhatIsThisLayout: FC<WhatIsThisLayoutProps> = ({ data, locale }) => {
     },
     {
       label: weightTxt,
-      value: `${data['basic stats weight']} kg`,
+      value: `${data['basic stats weight']}`,
       icon: `${imgPath}weight.svg`,
     },
     {
