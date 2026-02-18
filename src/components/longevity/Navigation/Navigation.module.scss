@@ -11,7 +11,7 @@
   .subItem {
     background-image: url('/keepsimple_/assets/longevity/nav-bg.svg');
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
     width: 222px;
     height: 49px;
     text-align: center;
@@ -50,7 +50,7 @@
     text-decoration: none;
     cursor: pointer;
     background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
-
+    background-size: cover;
     .subLink,
     .link {
       color: #fff;
@@ -64,6 +64,7 @@
 
     &:hover {
       cursor: pointer;
+
       background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
     }
   }

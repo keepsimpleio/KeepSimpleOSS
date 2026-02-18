@@ -129,22 +129,25 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
 
       {tooltipContent && (
         <div className={styles.heartWrapper}>
-          {!isMobile && <ShinyStars />}
-          <Image
-            src={imageUrl}
-            alt={title}
-            data-tooltip-id={title}
-            width={59}
-            height={59}
-            className={styles.heart}
-            onClick={() => isMobile && setOpenMobileModal(true)}
-          />
+          <div data-tooltip-id={title}>
+            {!isMobile && <ShinyStars />}
+            <Image
+              src={imageUrl}
+              alt={title}
+              width={59}
+              height={59}
+              className={styles.heart}
+              onClick={() => isMobile && setOpenMobileModal(true)}
+            />
+          </div>
+
           {!isMobile && (
             <ReactTooltip
               id={title}
               place={'top'}
               className={styles.tooltip}
               opacity={1}
+              clickable
             >
               <AboutTheProduct content={tooltipContent} title={title} />
             </ReactTooltip>

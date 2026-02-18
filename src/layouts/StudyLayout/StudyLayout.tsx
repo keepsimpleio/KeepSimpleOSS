@@ -68,7 +68,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['research tasks flipped card image']?.data?.attributes?.url}`}
         chartWidth={590}
         flippedCardChartMobile={
-          '/keepsimple_/assets/longevity/study/mobile-charts/research-task.webp'
+          '/keepsimple_/assets/longevity/study/mobile-charts/research-task-mobile.webp'
         }
       />
       <StudySection
@@ -81,7 +81,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['data flipped card image']?.data?.attributes?.url}`}
         chartWidth={390}
         flippedCardChartMobile={
-          '/keepsimple_/assets/longevity/study/mobile-charts/data-chart.webp'
+          '/keepsimple_/assets/longevity/study/mobile-charts/data-mobile.webp'
         }
       />
       <StudySection
