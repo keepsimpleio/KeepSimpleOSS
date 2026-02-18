@@ -71,6 +71,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
               id={title}
               place={'bottom'}
               className={cn(styles.tooltip, {})}
+              clickable
             >
               <WhyDoThisTooltip
                 whatDamagesText={whatDamages}

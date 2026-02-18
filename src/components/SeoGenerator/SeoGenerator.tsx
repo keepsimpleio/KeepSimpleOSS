@@ -13,6 +13,7 @@ interface SeoGeneratorProps {
   localizedSlug?: any;
   modifiedDate?: string;
   createdDate?: string;
+  isLongevityPage?: boolean;
   ogTags?: {
     ogDescription: string;
     ogTitle: string;
@@ -38,6 +39,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
   createdDate,
   modifiedDate,
   localizedSlug,
+  isLongevityPage,
 }) => {
   const router = useRouter();
 
@@ -224,7 +226,9 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         property="og:image"
         content={
           ogTags?.ogImage?.data?.attributes?.url
-            ? `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
+            ? isLongevityPage
+              ? ogTags?.ogImage?.data?.attributes?.url
+              : `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
             : ogTags?.ogImage?.data?.attributes?.staticUrl
         }
       />
@@ -254,7 +258,9 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         name="twitter:image"
         content={
           ogTags?.ogImage?.data?.attributes?.url
-            ? `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
+            ? isLongevityPage
+              ? ogTags?.ogImage?.data?.attributes?.url
+              : `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
             : ogTags?.ogImage?.data?.attributes?.staticUrl
         }
       />

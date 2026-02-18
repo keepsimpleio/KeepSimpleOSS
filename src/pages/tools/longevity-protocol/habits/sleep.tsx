@@ -5,6 +5,7 @@ import { getSleepSupplements } from '@api/longevity/sleep-supplements';
 
 import SleepLayout from '@layouts/SleepLayout/SleepLayout';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Sleep = ({ sleepData, sleepSupplements }) => {
   const OGTags = {
@@ -15,7 +16,7 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
     ogImage: {
       data: {
         attributes: {
-          url: sleepData['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -30,6 +31,7 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
           title: sleepData['en']?.Seo?.pageTitle || '',
           seoTitle: sleepData['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={sleepData['en']?.createdAt || ''}
         modifiedDate={sleepData['en']?.updatedAt || ''}

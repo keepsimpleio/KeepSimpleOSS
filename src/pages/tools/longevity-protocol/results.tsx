@@ -4,6 +4,7 @@ import ResultsLayout from '@layouts/ResultsLayout';
 
 import { getLongevityResults } from '@api/longevity/results';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Results = ({ yearlyResults }) => {
   const OGTags = {
@@ -14,7 +15,7 @@ const Results = ({ yearlyResults }) => {
     ogImage: {
       data: {
         attributes: {
-          url: yearlyResults['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -29,6 +30,7 @@ const Results = ({ yearlyResults }) => {
           title: yearlyResults['en']?.Seo?.pageTitle,
           seoTitle: yearlyResults['en']?.Seo?.seoTitle,
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={yearlyResults['en']?.createdAt}
         modifiedDate={yearlyResults['en']?.updatedAt}

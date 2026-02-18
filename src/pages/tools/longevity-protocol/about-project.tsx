@@ -4,6 +4,7 @@ import { getWhatIsThis } from '@api/longevity/what-is-this';
 import SeoGenerator from '@components/SeoGenerator';
 
 import WhatIsThisLayout from '@layouts/LongevityLayouts';
+import { ogImage } from '@constants/longevity';
 
 const AboutProject = ({ aboutTheProject }) => {
   const OGTags = {
@@ -14,7 +15,7 @@ const AboutProject = ({ aboutTheProject }) => {
     ogImage: {
       data: {
         attributes: {
-          url: aboutTheProject['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -29,6 +30,7 @@ const AboutProject = ({ aboutTheProject }) => {
           title: aboutTheProject['en']?.Seo?.pageTitle || '',
           seoTitle: aboutTheProject['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={aboutTheProject['en']?.createdAt || ''}
         modifiedDate={aboutTheProject['en']?.updatedAt || ''}

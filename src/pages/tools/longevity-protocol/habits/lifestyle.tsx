@@ -4,6 +4,7 @@ import HabitsLayout from '@layouts/HabitsLayout/HabitsLayout';
 
 import { getHabitsProtocol } from '@api/longevity/habits-protocol';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Lifestyle = ({ habitsData }) => {
   const OGTags = {
@@ -14,7 +15,7 @@ const Lifestyle = ({ habitsData }) => {
     ogImage: {
       data: {
         attributes: {
-          url: habitsData['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -29,6 +30,7 @@ const Lifestyle = ({ habitsData }) => {
           title: habitsData['en']?.Seo?.pageTitle || '',
           seoTitle: habitsData['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={habitsData['en']?.createdAt || ''}
         modifiedDate={habitsData['en']?.updatedAt || ''}

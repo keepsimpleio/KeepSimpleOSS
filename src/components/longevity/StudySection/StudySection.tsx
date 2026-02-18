@@ -42,6 +42,9 @@ const StudySection: FC<StudySectionProps> = ({
     ? '/keepsimple_/assets/longevity/study/hacks.png'
     : '/keepsimple_/assets/longevity/study-headline-bg.png';
 
+  const mobalBackgroundImage = isHacks
+    ? '/keepsimple_/assets/longevity/study/hacks-bg.png'
+    : '/keepsimple_/assets/longevity/study/flipped-card-bg.png';
   return (
     <>
       <section className={styles.studySection}>
@@ -119,16 +122,31 @@ const StudySection: FC<StudySectionProps> = ({
         </div>
         {flippedCardChart && (
           <div className={styles.pageSwitcherWrapper}>
-            <Image
-              src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
-              alt={'Page switcher'}
-              width={60}
-              height={60}
-              className={styles.pageSwitcher}
-              onClick={() => {
-                setSwitchPage(!switchPage);
-              }}
-            />
+            {!switchPage ? (
+              <Image
+                src={'/keepsimple_/assets/longevity/study/page-switcher.svg'}
+                alt={'Page switcher'}
+                width={60}
+                height={60}
+                className={styles.pageSwitcher}
+                onClick={() => {
+                  setSwitchPage(!switchPage);
+                }}
+              />
+            ) : (
+              <Image
+                src={
+                  '/keepsimple_/assets/longevity/study/page-switcher-back.svg'
+                }
+                alt={'Page switcher'}
+                width={60}
+                height={60}
+                className={styles.pageSwitcher}
+                onClick={() => {
+                  setSwitchPage(!switchPage);
+                }}
+              />
+            )}
           </div>
         )}
       </section>
@@ -136,11 +154,7 @@ const StudySection: FC<StudySectionProps> = ({
         <Modal
           size={'full'}
           onClick={() => setOpenModal(false)}
-          backgroundImageUrl={
-            backsBackgroundImageUrl
-              ? backsBackgroundImageUrl
-              : '/keepsimple_/assets/longevity/study/flipped-card-bg.png'
-          }
+          backgroundImageUrl={mobalBackgroundImage}
           bodyClassName={isHacks ? styles.hacksModalBody : styles.modalBody}
           className={styles.modal}
         >

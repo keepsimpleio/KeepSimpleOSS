@@ -4,6 +4,7 @@ import StudyLayout from '@layouts/StudyLayout';
 
 import { getStudy } from '@api/longevity/study';
 import SeoGenerator from '@components/SeoGenerator';
+import { ogImage } from '@constants/longevity';
 
 const Study = ({ studyData }) => {
   const OGTags = {
@@ -14,7 +15,7 @@ const Study = ({ studyData }) => {
     ogImage: {
       data: {
         attributes: {
-          url: studyData['en']?.ogImage?.data?.attributes?.url || '',
+          url: ogImage,
         },
       },
     },
@@ -29,6 +30,7 @@ const Study = ({ studyData }) => {
           title: studyData['en']?.Seo?.pageTitle || '',
           seoTitle: studyData['en']?.Seo?.seoTitle || '',
         }}
+        isLongevityPage
         ogTags={OGTags}
         createdDate={studyData['en']?.createdAt || ''}
         modifiedDate={studyData['en']?.updatedAt || ''}

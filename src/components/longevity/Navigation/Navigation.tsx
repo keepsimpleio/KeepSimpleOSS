@@ -104,7 +104,7 @@ const Navigation: FC = () => {
           width={1140}
           height={83}
           className={cn(styles.curtains, {
-            [styles.curtainsOpen]: router.pathname.includes('habits'),
+            [styles.curtainsOpen]: !router.asPath.includes('about-project'),
           })}
         />
         <ul className={styles.subUl}>

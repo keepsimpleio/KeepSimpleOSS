@@ -29,7 +29,7 @@ const StrengthAndTimeCompression: FC = () => {
       />
       <hr className={styles.divider} />
       <Heading
-        text={'Strength and Time Compression'}
+        text={'Your strength level'}
         Tag="h4"
         isBold
         showLeftIcon={false}
