@@ -59,6 +59,7 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       logo: isDarkTheme ? <ToolsIcon /> : <ToolsDarkIcon />,
       target: '',
       id: 'tools',
+      activeMatch: '/tools/longevity-protocol',
     },
     {
       name: articles,
@@ -81,31 +82,38 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
           [styles.authorized]: !!accountData,
         })}
       >
-        {routes.map(({ name, path, target, logo, id }, index) => (
-          <a
-            key={index}
-            href={path}
-            target={target}
-            onClick={e => {
-              if (target === '_blank') return;
-              e.preventDefault();
-              if (isSmallScreen) handleToggleSidebar();
-              handleClick(e, path);
-            }}
-            className={cn(styles.url, {
-              [styles.active]:
-                path === '/'
-                  ? router.asPath === '/'
-                  : router.asPath.startsWith(path),
-              [styles.uxcoreIcon]: id === 'uxcore',
-              [styles.companyManagementIcon]: id === 'companyManagement',
-              [styles.articlesIcon]: id === 'articles',
-              [styles.ruUrl]: locale === 'ru',
-            })}
-          >
-            {logo} {name}
-          </a>
-        ))}
+        {routes.map(({ name, path, target, logo, id, activeMatch }, index) => {
+          const match = activeMatch ?? path;
+
+          const isActive =
+            match === '/'
+              ? router.asPath === '/'
+              : router.asPath.startsWith(match);
+
+          return (
+            <a
+              key={index}
+              href={path}
+              target={target}
+              onClick={e => {
+                if (target === '_blank') return;
+                e.preventDefault();
+                if (isSmallScreen) handleToggleSidebar();
+                handleClick(e, path);
+              }}
+              className={cn(styles.url, {
+                [styles.active]: isActive,
+                [styles.uxcoreIcon]: id === 'uxcore',
+                [styles.companyManagementIcon]: id === 'companyManagement',
+                [styles.articlesIcon]: id === 'articles',
+                [styles.ruUrl]: locale === 'ru',
+              })}
+            >
+              {logo} {name}
+            </a>
+          );
+        })}
+
         <a
           href={'/contributors'}
           onClick={e => {
