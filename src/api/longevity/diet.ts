@@ -1,5 +1,5 @@
 export async function getDiet(locale: string) {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-diet?populate=*`;
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-diet?populate=*&locale=${locale}`;
 
   const res = await fetch(url, {
     next: { revalidate: 3600 },

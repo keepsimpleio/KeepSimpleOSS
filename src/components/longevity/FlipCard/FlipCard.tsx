@@ -17,11 +17,14 @@ const FlipCard: FC<FlipCardProps> = ({
   quoteAuthor,
   isHacks,
   chartWidth,
+  locale,
 }) => {
   return (
     <div
       className={cn(styles.flipCard, {
         [styles.hacksFlipCard]: isHacks,
+        [styles.flipCardRu]: locale === 'ru',
+        [styles.hacksFlipCardRu]: isHacks && locale === 'ru',
       })}
     >
       {isHacks ? (

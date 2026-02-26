@@ -40,6 +40,17 @@
   }
 }
 
+.aboutProductRu {
+  .tooltipHeading {
+    h5 {
+      font-family: 'Source-Serif-Regular', serif !important;
+    }
+  }
+  .subText {
+    font-family: 'Source-Serif-Regular', serif !important;
+  }
+}
+
 @media (max-width: 965px) {
   .aboutProduct {
     padding: 16px;

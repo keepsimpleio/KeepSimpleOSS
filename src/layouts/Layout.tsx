@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { GlobalContext } from '@components/Context/GlobalContext';
+import Loader from '@components/longevity/Loader';
 
 import Header from '@components/Header';
 import Hero from '@components/longevity/Hero';
@@ -16,6 +17,7 @@ import MobileNavigation from '@components/longevity/MobileNavigation';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import styles from './Layout.module.scss';
+import cn from 'classnames';
 
 type LayerKey = 'default' | 'red' | 'blue' | 'red-and-blue';
 
@@ -42,6 +44,7 @@ function pickLayer(pathname: string): LayerKey {
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { setVideosReady, videosReady } = useContext(GlobalContext);
+  const { overlayOn } = useContext(GlobalContext);
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -353,7 +356,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 />
               ))}
             </div>
-            <div className={styles.content}>{children}</div>
+            <div
+              className={cn(styles.content, {
+                [styles.contentBlur]: overlayOn,
+              })}
+            >
+              {children}
+            </div>
+            {overlayOn && <Loader />}
           </section>
         ) : (
           <section>{children}</section>

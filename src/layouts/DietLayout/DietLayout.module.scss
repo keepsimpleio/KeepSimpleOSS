@@ -3,6 +3,11 @@
   justify-content: center;
   align-items: center;
   gap: 20px;
+
+  img {
+    margin-bottom: 40px;
+    margin-top: 32px;
+  }
 }
 
 @media (max-width: 965px) {

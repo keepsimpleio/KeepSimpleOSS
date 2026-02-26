@@ -65,6 +65,23 @@
     }
   }
 }
+.strengthAndTimeCompressionRu {
+  .heading {
+    h3 {
+      font-family: 'Source-Serif-Regular', sans-serif !important;
+    }
+  }
+  .subHeading {
+    h4 {
+      font-family: 'Source-Serif-Regular', sans-serif !important;
+    }
+  }
+  .staticBigText,
+  .staticSmallText {
+    font-weight: 400;
+    font-family: 'Source-Serif-Regular', sans-serif !important;
+  }
+}
 
 .result {
   width: clamp(319px, 67vw, 868px);

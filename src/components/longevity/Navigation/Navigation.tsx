@@ -15,25 +15,35 @@ import { TomIcon } from '@icons/longevity/TomIcon';
 import NewPageIcon from '@icons/longevity/NewPageIocn';
 
 import styles from './Navigation.module.scss';
+import longevityData from '@data/longevity';
+import { TRouter } from '@local-types/global';
 
 const Navigation: FC = () => {
   const router = useRouter();
+  const { locale } = router as TRouter;
+  const { navigationItems, subNavigationItems } = longevityData[locale];
 
   // TODO: Move nav items
   const navItems = [
-    { name: 'About Project', path: '/tools/longevity-protocol/about-project' },
     {
-      name: 'Habits',
+      name: navigationItems?.aboutProject,
+      path: '/tools/longevity-protocol/about-project',
+    },
+    {
+      name: navigationItems?.habits,
       path: '/tools/longevity-protocol/habits/lifestyle',
       hasNoUrl: true,
     },
     {
-      name: 'Environment',
+      name: navigationItems?.environment,
       path: '/tools/longevity-protocol/environment',
     },
-    { name: 'Results', path: '/tools/longevity-protocol/results' },
     {
-      name: 'AI Assistant',
+      name: navigationItems?.results,
+      path: '/tools/longevity-protocol/results',
+    },
+    {
+      name: navigationItems?.aiAssistant,
       path: 'https://chatgpt.com/g/g-6952e0caa7c88191b1ba18e63b36dd69-tom-longevity-and-food-guide-by-keepsimple-io',
       icon: <TomIcon />,
     },
@@ -42,32 +52,32 @@ const Navigation: FC = () => {
   // TODO: Move sub nav items
   const subNavItems = [
     {
-      name: 'Lifestyle',
+      name: subNavigationItems?.lifestyle,
       path: '/tools/longevity-protocol/habits/lifestyle',
       icon: <LifestyleIcon />,
     },
     {
-      name: 'Study',
+      name: subNavigationItems?.study,
       path: '/tools/longevity-protocol/habits/study',
       icon: <StudyIcon />,
     },
     {
-      name: 'Diet',
+      name: subNavigationItems?.diet,
       path: '/tools/longevity-protocol/habits/diet',
       icon: <DietIcon />,
     },
     {
-      name: 'Workout',
+      name: subNavigationItems?.workout,
       path: '/tools/longevity-protocol/habits/workout',
       icon: <WorkoutIcon />,
     },
     {
-      name: 'Sleep',
+      name: subNavigationItems?.sleep,
       path: '/tools/longevity-protocol/habits/sleep',
       icon: <SleepIcon />,
     },
     {
-      name: 'Supplements',
+      name: subNavigationItems?.supplements,
       path: '/tools/longevity-protocol/habits/supplements',
       icon: <SupplementsIcon />,
     },
@@ -80,13 +90,14 @@ const Navigation: FC = () => {
           return (
             <Link
               key={key}
+              scroll={false}
               className={cn(styles.item, {
                 [styles.itemActive]:
                   router.pathname === item.path ||
                   (router.pathname.includes('habits') && item.hasNoUrl),
               })}
               href={item.path}
-              target={item.name.includes('AI Assistant') ? '_blank' : '_self'}
+              target={item.path.startsWith('https://') ? '_blank' : '_self'}
             >
               <li className={styles.link}>
                 {item.icon && item.icon}
@@ -115,7 +126,7 @@ const Navigation: FC = () => {
                 [styles.subItemActive]: router.pathname === item.path,
               })}
             >
-              <Link href={item.path} className={styles.subLink}>
+              <Link href={item.path} className={styles.subLink} scroll={false}>
                 {item.icon && item.icon}
                 {item.name}
               </Link>

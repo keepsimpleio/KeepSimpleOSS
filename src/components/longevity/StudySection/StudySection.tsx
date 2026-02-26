@@ -30,11 +30,13 @@ const StudySection: FC<StudySectionProps> = ({
   hacksQuote,
   backsBackgroundImageUrl,
   quoteAuthor,
+  locale,
   chartWidth,
 }) => {
   const [switchPage, setSwitchPage] = useState<boolean>(null);
   const isMobile = useIsWidthLessThan(965);
   const [openModal, setOpenModal] = useState(false);
+  const learnMoreText = locale === 'ru' ? 'Узнать больше' : 'Learn more';
   const chartImage = flippedCardChartMobile
     ? flippedCardChartMobile
     : flippedCardChart;
@@ -47,7 +49,11 @@ const StudySection: FC<StudySectionProps> = ({
     : '/keepsimple_/assets/longevity/study/flipped-card-bg.png';
   return (
     <>
-      <section className={styles.studySection}>
+      <section
+        className={cn(styles.studySection, {
+          [styles.studySectionRu]: locale === 'ru',
+        })}
+      >
         <div className={styles.cardContainer}>
           <div
             className={cn(styles.firstPage, {
@@ -81,6 +87,7 @@ const StudySection: FC<StudySectionProps> = ({
                   html={description || ''}
                   lines={6}
                   className={styles.descsription}
+                  learnMoreText={learnMoreText}
                 />
               ) : (
                 <div
@@ -91,7 +98,7 @@ const StudySection: FC<StudySectionProps> = ({
               {isMobile && flippedCardChart && (
                 <div className={styles.learnMoreWrapper}>
                   <BorderedPill
-                    text={'Learn more'}
+                    text={learnMoreText}
                     onClick={() => setOpenModal(true)}
                     leftIcon={<LearnMoreIcon />}
                   />
@@ -116,6 +123,7 @@ const StudySection: FC<StudySectionProps> = ({
                 hacksQuote={hacksQuote}
                 quoteAuthor={quoteAuthor}
                 chartWidth={chartWidth}
+                locale={locale}
               />
             </div>
           )}
@@ -168,6 +176,7 @@ const StudySection: FC<StudySectionProps> = ({
             hacksQuote={hacksQuote}
             quoteAuthor={quoteAuthor}
             chartWidth={chartWidth}
+            locale={locale}
           />
           <BorderedPill
             text={'Close'}

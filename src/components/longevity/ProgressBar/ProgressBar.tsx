@@ -12,6 +12,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
   setStopIndex,
   isStrengthSection,
   activityLevels,
+  minutesTxt,
 }) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -22,7 +23,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
     [stopIndex, stops.length],
   );
 
-  const firstItemPercentage = stopIndex === 0 ? `4%` : `${percent - 1.5}%`;
+  const firstItemPercentage = stopIndex === 0 ? `4%` : `${percent}%`;
 
   const getClosestIndexFromClientX = useCallback(
     (clientX: number) => {
@@ -88,7 +89,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
             ))
           : stops.map(m => (
               <span key={m} className={styles.label}>
-                {m} minutes
+                {m} {minutesTxt}
               </span>
             ))}
       </div>

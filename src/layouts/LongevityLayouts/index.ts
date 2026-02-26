@@ -1,3 +1,3 @@
-import WhatIsThisLayout from './WhatIsThisLayout';
+import AboutProjectLayout from './AboutProjectLayout';
 
-export default WhatIsThisLayout;
+export default AboutProjectLayout;

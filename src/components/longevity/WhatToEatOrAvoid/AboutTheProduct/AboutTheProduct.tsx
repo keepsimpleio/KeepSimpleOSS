@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import Image from 'next/image';
+import cn from 'classnames';
 
 import Heading from '@components/Heading';
 
@@ -7,9 +8,18 @@ import { AboutTheProductProps } from './AboutTheProduct.types';
 
 import styles from './AboutTheProduct.module.scss';
 
-const AboutTheProduct: FC<AboutTheProductProps> = ({ title, content }) => {
+const AboutTheProduct: FC<AboutTheProductProps> = ({
+  title,
+  content,
+  subTitle,
+  locale,
+}) => {
   return (
-    <div className={styles.aboutProduct}>
+    <div
+      className={cn(styles.aboutProduct, {
+        [styles.aboutProductRu]: locale === 'ru',
+      })}
+    >
       <Heading
         className={styles.tooltipHeading}
         text={title}
@@ -17,7 +27,7 @@ const AboutTheProduct: FC<AboutTheProductProps> = ({ title, content }) => {
         showRightIcon={false}
         showLeftIcon={false}
       />
-      <span className={styles.subText}> CONSUMPTION CONSEQUENCES </span>
+      <span className={styles.subText}> {subTitle} </span>
       <Image
         src={'/keepsimple_/assets/longevity/diet/tooltip-line.png'}
         alt={'info'}

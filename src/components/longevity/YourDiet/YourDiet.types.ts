@@ -12,4 +12,5 @@ export type YourDietProps = {
     id: number;
     imagePath: string;
   }[];
+  locale?: string;
 };

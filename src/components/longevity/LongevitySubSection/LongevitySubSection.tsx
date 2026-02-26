@@ -32,7 +32,11 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
   const [openMobileModal, setOpenMobileModal] = useState(false);
   return (
     <>
-      <section className={styles.subSection}>
+      <section
+        className={cn(styles.subSection, {
+          [styles.subSectionRu]: locale === 'ru',
+        })}
+      >
         <div className={styles.headline}>
           <Image
             src={headlineBackgroundImageUrl}
@@ -70,7 +74,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
               opacity={1}
               id={title}
               place={'bottom'}
-              className={cn(styles.tooltip, {})}
+              className={styles.tooltip}
               clickable
             >
               <WhyDoThisTooltip

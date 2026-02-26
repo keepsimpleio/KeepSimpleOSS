@@ -1,19 +1,21 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import Image from 'next/image';
 import cn from 'classnames';
-import Slider from 'react-slick';
 
 import ProgressBar from '@components/longevity/ProgressBar/ProgressBar';
 import Heading from '@components/Heading';
 
-import { ACTIVITY_LEVEL_SUMMARY, STOPS } from '@constants/longevity';
+import { STOPS } from '@constants/longevity';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import styles from './WeeklyWorkout.module.scss';
+import longevityData from '@data/longevity';
+import { WeeklyWorkoutProps } from './WeeklyWorkout.types';
 
-const WeeklyWorkout: FC = () => {
-  const slider = useRef<Slider | null>(null);
+const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
+  const { totalWeeklyActivity } = longevityData[locale];
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedMinutes] = useMemo(() => {
     const minutes = STOPS[selectedIndex];
@@ -21,62 +23,47 @@ const WeeklyWorkout: FC = () => {
     return [minutes, perc];
   }, [selectedIndex]);
 
-  type Minutes = (typeof ACTIVITY_LEVEL_SUMMARY)[number]['minutes'];
-  function useActivitySummary(selectedMinutes: Minutes) {
-    return useMemo(() => {
-      return (
-        ACTIVITY_LEVEL_SUMMARY.find(r => r.minutes === selectedMinutes) ??
-        ACTIVITY_LEVEL_SUMMARY[0]
-      );
-    }, [selectedMinutes]);
-  }
-  const summary = useActivitySummary(selectedMinutes);
+  const summary = useMemo(() => {
+    const content = totalWeeklyActivity.summaryContent;
+    return content?.find(r => r.minutes === selectedMinutes) ?? content?.[0];
+  }, [totalWeeklyActivity.summaryContent, selectedMinutes]);
 
-  // TODO
-  // The 'images' array makes the dependencies of useMemo Hook (at line 115) change on every render.
-  // To fix this, wrap the initialization of 'images' in its own useMemo() Hook. (react-hooks/exhaustive-deps)
-  const images = [
-    {
-      src: '/keepsimple_/assets/longevity/workout/weekly-workout/0.png',
-      id: 0,
-      alt: 'Warrior',
-    },
-    {
-      src: '/keepsimple_/assets/longevity/workout/weekly-workout/1.png',
-      id: 1,
-      alt: 'Warrior',
-    },
-    {
-      src: '/keepsimple_/assets/longevity/workout/weekly-workout/2.png',
-      id: 2,
-      alt: 'Warrior',
-    },
-    {
-      src: '/keepsimple_/assets/longevity/workout/weekly-workout/3.png',
-      id: 3,
-      alt: 'Warrior',
-    },
-    {
-      src: '/keepsimple_/assets/longevity/workout/weekly-workout/4.png',
-      id: 4,
-      alt: 'Warrior',
-    },
-  ];
-
-  const slideIndexBySelectedId = useMemo(() => {
-    const idx = images.findIndex(img => img.id === selectedIndex);
-    return idx === -1 ? 0 : idx;
-  }, [images, selectedIndex]);
-
-  useEffect(() => {
-    slider.current?.slickGoTo(slideIndexBySelectedId);
-  }, [slideIndexBySelectedId]);
+  const images = useMemo(
+    () => [
+      {
+        src: '/keepsimple_/assets/longevity/workout/weekly-workout/0.png',
+        id: 0,
+        alt: 'Warrior',
+      },
+      {
+        src: '/keepsimple_/assets/longevity/workout/weekly-workout/1.png',
+        id: 1,
+        alt: 'Warrior',
+      },
+      {
+        src: '/keepsimple_/assets/longevity/workout/weekly-workout/2.png',
+        id: 2,
+        alt: 'Warrior',
+      },
+      {
+        src: '/keepsimple_/assets/longevity/workout/weekly-workout/3.png',
+        id: 3,
+        alt: 'Warrior',
+      },
+      {
+        src: '/keepsimple_/assets/longevity/workout/weekly-workout/4.png',
+        id: 4,
+        alt: 'Warrior',
+      },
+    ],
+    [],
+  );
 
   return (
     <section className={styles.weeklyWorkout}>
       <div className={styles.header}>
         <Heading
-          text={'Total weekly activity'}
+          text={totalWeeklyActivity.title}
           isBold
           Tag="h3"
           showLeftIcon={false}
@@ -90,7 +77,7 @@ const WeeklyWorkout: FC = () => {
               selectedMinutes === 225 || selectedMinutes === 300,
           })}
         >
-          {selectedMinutes} min
+          {selectedMinutes} {totalWeeklyActivity.min}
         </span>
       </div>
       <hr className={styles.divider} />
@@ -98,6 +85,7 @@ const WeeklyWorkout: FC = () => {
         stops={STOPS}
         setStopIndex={setSelectedIndex}
         stopIndex={selectedIndex}
+        minutesTxt={totalWeeklyActivity.minutes}
       />
       <div className={styles.wrapper}>
         {images.map(image => {
@@ -124,7 +112,7 @@ const WeeklyWorkout: FC = () => {
       </div>
       <div>
         <p className={styles.summary}>
-          Risk of Dying Early{' '}
+          {totalWeeklyActivity.earlyDyingRisk}
           <span
             className={cn({
               [styles.orangeRisk]: selectedMinutes === 150,
@@ -132,13 +120,13 @@ const WeeklyWorkout: FC = () => {
                 selectedMinutes === 225 || selectedMinutes === 300,
             })}
           >
-            {summary.riskOfDyingEarly}
+            {summary?.riskOfDyingEarly}
           </span>
         </p>
         <hr className={styles.divider} />
 
         <p className={styles.summary}>
-          Estimated ↓ Cognitive Decline / Dementia Risk
+          {totalWeeklyActivity.dementiaRisk}
           <span
             className={cn({
               [styles.orangeRisk]: selectedMinutes === 150,
@@ -147,13 +135,13 @@ const WeeklyWorkout: FC = () => {
             })}
           >
             {' '}
-            {summary.cognitiveDecline}
+            {summary?.cognitiveDecline}
           </span>
         </p>
         <hr className={styles.divider} />
 
         <p className={styles.summary}>
-          Brain Aging Trajectory
+          {totalWeeklyActivity.agingTrajectory}
           <span
             className={cn({
               [styles.orangeRisk]: selectedMinutes === 150,
@@ -161,7 +149,7 @@ const WeeklyWorkout: FC = () => {
                 selectedMinutes === 225 || selectedMinutes === 300,
             })}
           >
-            {summary.brainAgingActive}
+            {summary?.brainAgingActive}
           </span>
         </p>
       </div>

@@ -42,6 +42,9 @@ html.scroll-style-home::-webkit-scrollbar-thumb {
 html.scroll-style-articles::-webkit-scrollbar-thumb {
   background-color: #262626;
 }
+.hide-body-move {
+  scrollbar-gutter: stable;
+}
 
 body {
   background: linear-gradient(180deg, #f9fafb 0%, #e8e8e8 100%), #f9fafb;

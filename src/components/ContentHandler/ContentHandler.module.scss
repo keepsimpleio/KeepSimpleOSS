@@ -62,14 +62,6 @@
     font-weight: 400 !important;
   }
 
-  &.darkTheme .h1 {
-    color: #ffffffd9 !important;
-  }
-
-  &.darkTheme.span {
-    color: #000000d9;
-  }
-
   .a,
   .strong {
     color: #252626;
@@ -218,7 +210,19 @@
   .h3,
   .h2,
   .quote a {
-    color: #dadada;
+    color: #dadada !important;
+  }
+  .p,
+  .li,
+  .h1,
+  .h2,
+  h2,
+  h3,
+  .h3 {
+    p,
+    span {
+      color: #dadada !important;
+    }
   }
 
   .a {

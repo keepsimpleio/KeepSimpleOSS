@@ -12,4 +12,5 @@ export type StudySectionProps = {
   quoteAuthor?: string;
   backsBackgroundImageUrl?: string;
   chartWidth?: number;
+  locale?: string;
 };

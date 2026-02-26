@@ -13,6 +13,8 @@ const DietResults: FC<DietResultsProps> = ({
   setSelectedHealthyOptionId,
   whatToEatItemNamesAndIds,
   setIsIconClicked,
+  dietTxt,
+  locale,
 }) => {
   const getSelectedHealthOptionName = (id: number) => {
     const selectedOption = whatToEatItemNamesAndIds.find(
@@ -22,7 +24,11 @@ const DietResults: FC<DietResultsProps> = ({
   };
 
   return (
-    <div className={styles.results}>
+    <div
+      className={cn(styles.results, {
+        [styles.resultsRu]: locale === 'ru',
+      })}
+    >
       {scaleLevels.map((level, index) => (
         <div
           onClick={() => {
@@ -37,7 +43,7 @@ const DietResults: FC<DietResultsProps> = ({
           data-tooltip-id={level.id.toString()}
         >
           <Image
-            className={cn(styles.img, {})}
+            className={styles.img}
             src={level.imagePath}
             alt={`Diet level ${level.id}`}
             width={120}
@@ -49,12 +55,12 @@ const DietResults: FC<DietResultsProps> = ({
               [styles.active]: id === level.id,
             })}
           >
-            Your Diet
+            {dietTxt}
           </span>
           <ReactTooltip
             id={level.id.toString()}
             place={'bottom'}
-            className={cn(styles.tooltip, {})}
+            className={styles.tooltip}
             opacity={1}
           >
             <span className={styles.defaultLabel}>
