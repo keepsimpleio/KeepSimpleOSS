@@ -51,7 +51,8 @@ const Workout = ({ workoutData }) => {
 export default Workout;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const workoutData = await getWorkout(locale);
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+  const workoutData = await getWorkout(chosenLocale);
 
   return {
     props: { workoutData },

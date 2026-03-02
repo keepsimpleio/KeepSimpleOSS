@@ -1,6 +1,5 @@
 export async function getLifestyleProtocol(locale: string) {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-habit-protocol?populate=*&locale=${locale}`;
-
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-lifestyle?populate=*&locale=${locale}`;
   const res = await fetch(url, {
     next: { revalidate: 3600 },
   });

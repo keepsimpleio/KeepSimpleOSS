@@ -1,5 +1,5 @@
 export async function getAboutProject(locale: string) {
-  const base = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-what-is-this`;
+  const base = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-about-project`;
 
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
