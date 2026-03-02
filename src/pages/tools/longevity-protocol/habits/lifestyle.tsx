@@ -52,7 +52,8 @@ const Lifestyle = ({ habitsData }) => {
 export default Lifestyle;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const habitsData = await getLifestyleProtocol(locale);
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+  const habitsData = await getLifestyleProtocol(chosenLocale);
 
   return {
     props: { habitsData },

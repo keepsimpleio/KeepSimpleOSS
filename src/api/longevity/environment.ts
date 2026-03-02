@@ -1,5 +1,6 @@
 export async function getEnvironment(locale: string) {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-environment?populate[home][populate]=icon&populate[principles][populate]=icon&populate[data_tracking][populate]=icon&[populate]=image&populate[OGTags][populate]=ogImage&populate=Seo&locale=${locale}`;
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-environment?populate[home][populate]=icon&populate[principles][populate]=icon&populate[data_tracking][populate]=icon&[populate]=image&populate[OGTags][populate]=ogImage&populate=Seo&locale=${chosenLocale}`;
 
   const res = await fetch(url, {
     next: { revalidate: 3600 },

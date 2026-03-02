@@ -52,8 +52,9 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
 export default Sleep;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const sleepData = await getSleep(locale);
-  const sleepSupplements = await getSleepSupplements(locale || 'en');
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+  const sleepData = await getSleep(chosenLocale);
+  const sleepSupplements = await getSleepSupplements(chosenLocale || 'en');
 
   return {
     props: { sleepData, locale: locale ?? 'en', sleepSupplements },

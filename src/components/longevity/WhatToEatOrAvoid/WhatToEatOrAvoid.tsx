@@ -44,7 +44,6 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
     getPText(examples);
     setExampleContent(getPText(examples));
   }, []);
-  console.log(selectedHealthyOptionId, ', id');
 
   return (
     <div

@@ -51,7 +51,9 @@ const Diet = ({ dietData }) => {
 export default Diet;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const dietData = await getDiet(locale);
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+
+  const dietData = await getDiet(chosenLocale);
 
   return {
     props: { dietData },
