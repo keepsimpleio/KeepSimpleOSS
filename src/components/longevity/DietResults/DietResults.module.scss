@@ -88,6 +88,12 @@
   }
 }
 
+.resultsRu {
+  .selected {
+    font-family: 'Source-Serif-Regular', serif !important;
+  }
+}
+
 @media (max-width: 965px) {
   .results {
     padding: 0 8px;

@@ -49,6 +49,13 @@
     }
   }
 }
+.selectedDietRu {
+  .yourDietHeading {
+    h3 {
+      font-family: 'Source-Serif-Regular', serif !important;
+    }
+  }
+}
 
 .active {
   @extend .animate-fadeIn;

@@ -12,7 +12,6 @@ import Layout from '@layouts/Layout';
 
 import { GlobalContext } from '@components/Context/GlobalContext';
 import Box from 'src/components/Box';
-import Loader from '@components/longevity/Loader';
 
 import { authenticate } from '@api/auth';
 import mixpanel, { initMixpanel, trackPageView } from '../../lib/mixpanel';
@@ -292,6 +291,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
           setHeroReady,
           setVideosReady,
           videosReady,
+          overlayOn,
         }}
       >
         {showLoader && !isSmallScreen && (
@@ -311,7 +311,6 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
         <Layout>
           <Component {...pageProps} />
         </Layout>
-        {overlayOn && <Loader />}
         {isCookieStateLoaded && !cookieBoxIsSeen && (
           <Box setIsSeen={handleAccept} />
         )}

@@ -5,10 +5,16 @@ import Heading from '@components/Heading';
 import ProgressBar from '@components/longevity/ProgressBar';
 
 import { ACTIVITY_LEVELS } from '@constants/longevity';
+import longevityData from '@data/longevity';
+
+import { StrengthAndTimeCompressionProps } from './StrengthAndTimeCompression.types';
 
 import styles from './StrengthAndTimeCompression.module.scss';
 
-const StrengthAndTimeCompression: FC = () => {
+const StrengthAndTimeCompression: FC<StrengthAndTimeCompressionProps> = ({
+  locale,
+}) => {
+  const { totalWeeklyActivity } = longevityData[locale];
   const stops = [0, 1, 2, 3, 4];
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -18,9 +24,13 @@ const StrengthAndTimeCompression: FC = () => {
   );
 
   return (
-    <section className={styles.strengthAndTimeCompression}>
+    <section
+      className={cn(styles.strengthAndTimeCompression, {
+        [styles.strengthAndTimeCompressionRu]: locale === 'ru',
+      })}
+    >
       <Heading
-        text={'Strength and Time Compression'}
+        text={totalWeeklyActivity.strengthTitle}
         Tag="h3"
         isBold
         showLeftIcon={false}
@@ -29,7 +39,7 @@ const StrengthAndTimeCompression: FC = () => {
       />
       <hr className={styles.divider} />
       <Heading
-        text={'Your strength level'}
+        text={totalWeeklyActivity.strengthSubTitle}
         Tag="h4"
         isBold
         showLeftIcon={false}
@@ -38,7 +48,7 @@ const StrengthAndTimeCompression: FC = () => {
       />
       <ProgressBar
         stops={stops}
-        activityLevels={ACTIVITY_LEVELS}
+        activityLevels={totalWeeklyActivity.activityLevels}
         isStrengthSection
         setStopIndex={setSelectedIndex}
         stopIndex={selectedIndex}
@@ -53,19 +63,26 @@ const StrengthAndTimeCompression: FC = () => {
         <span className={styles.totalMins}>
           {selectedLevel.totalMinutesPerWeek}
         </span>
-        <span className={styles.staticBigText}> Min</span>
-        <span className={styles.staticSmallText}> / Week</span>
+        <span className={styles.staticBigText}> {totalWeeklyActivity.min}</span>
+        <span className={styles.staticSmallText}>
+          {' '}
+          / {totalWeeklyActivity.week}
+        </span>
       </div>
       <div className={styles.result}>
         <p className={styles.perWeek}>
           <span className={styles.quantity}> 3 </span>
-          <span className={styles.staticText}>Sessions / Week</span>
+          <span className={styles.staticText}>
+            {totalWeeklyActivity.sessionsAndWeek}
+          </span>
         </p>
         <p className={styles.perSession}>
           <span className={styles.quantity}>
             {selectedLevel.minutesPerSession}
           </span>
-          <span className={styles.staticText}>Minutes / Session</span>
+          <span className={styles.staticText}>
+            {totalWeeklyActivity.minAndSessions}
+          </span>
         </p>
       </div>
     </section>

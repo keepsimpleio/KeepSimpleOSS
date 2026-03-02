@@ -3,4 +3,5 @@ export type TableProps = {
   // TODO: fix any type
   rows?: any;
   isSupplementTable?: boolean;
+  locale?: string;
 };

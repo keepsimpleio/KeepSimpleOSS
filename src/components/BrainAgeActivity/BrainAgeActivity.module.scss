@@ -79,17 +79,34 @@
         font-size: 28px;
         text-transform: uppercase;
       }
+
+      .subContent {
+        display: flex;
+        flex-direction: column;
+      }
     }
 
     .maximal {
       border: 1px solid #64b766;
       background-color: #64b7661a;
 
+      .subContent {
+        display: flex;
+        flex-direction: column;
+      }
+
       .active {
         color: #64b766;
         border-bottom: 1px solid #64b766;
         font-size: 28px;
       }
+    }
+  }
+}
+.sectionRu {
+  .heading {
+    h3 {
+      font-family: 'Source-Serif-Regular', sans-serif !important;
     }
   }
 }

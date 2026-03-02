@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import MainInfoSection from '@components/longevity/MainInfoSection';
-import { WhatIsThisLayoutProps } from '@layouts/LongevityLayouts/WhatIsThisLayout.types';
+import { AboutProjectLayoutProps } from './AboutProjectLayout.types';
 
 import basicStatsData from '@data/longevity/basicStats';
 
-import styles from './WhatIsThisLayout.module.scss';
+import styles from './AboutProjectLayout.module.scss';
 
-const WhatIsThisLayout: FC<WhatIsThisLayoutProps> = ({ data, locale }) => {
+const AboutProjectLayout: FC<AboutProjectLayoutProps> = ({ data, locale }) => {
   const imgPath = '/keepsimple_/assets/longevity/basic-stats/';
   const { ageTxt, genderTxt, gender, heightTxt, weightTxt, occupationTxt } =
     basicStatsData[locale];
@@ -57,4 +57,4 @@ const WhatIsThisLayout: FC<WhatIsThisLayoutProps> = ({ data, locale }) => {
   );
 };
 
-export default WhatIsThisLayout;
+export default AboutProjectLayout;

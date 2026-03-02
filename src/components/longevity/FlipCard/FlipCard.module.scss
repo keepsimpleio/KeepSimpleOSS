@@ -73,6 +73,15 @@
   }
 }
 
+.flipCardRu {
+  .headline {
+    h4 {
+      font-family: 'Source-Serif-Regular', serif !important;
+      font-weight: 400 !important;
+    }
+  }
+}
+
 .hacksFlipCard {
   background-image: url('/keepsimple_/assets/longevity/study/hacks-bg.png');
   color: #fff;
@@ -105,6 +114,23 @@
       margin: 0;
       font-family: Aboreto-Regular, sans-serif !important;
       color: #fff !important;
+    }
+  }
+}
+
+.hacksFlipCardRu {
+  .quoteAuthor {
+    h4 {
+      font-family: 'Source-Serif-Regular', serif !important;
+      font-weight: 400 !important;
+      color: red;
+    }
+  }
+  .quote {
+    padding: 0 15px;
+    p {
+      font-family: 'Source-Serif-Regular', serif !important;
+      font-weight: 400 !important;
     }
   }
 }

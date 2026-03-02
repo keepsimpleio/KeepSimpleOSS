@@ -11,7 +11,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         description={data?.description}
         basicStats={data?.basicStats}
         locale={locale}
-        japaneseText={data['japanese title']}
+        japaneseText={data?.['japanese title']}
         backgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data['background image']?.data?.attributes?.url}`}
       />
       <StudySection
@@ -21,8 +21,13 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardSubText={data.books?.['flipped card subtext']}
         flippedCardHeadline={data.books?.['flipped card headline']}
         flippedCardPainText={data.books?.['flipped card pain caption']}
-        flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['books flipped card image']?.data?.attributes?.url}`}
+        flippedCardChart={
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/what-to-read-ru.png'
+            : `${process.env.NEXT_PUBLIC_STRAPI}${data?.['books flipped card image']?.data?.attributes?.url}`
+        }
         chartWidth={387}
+        locale={locale}
       />
       <StudySection
         title={data['book notes']?.title}
@@ -31,11 +36,18 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardSubText={data['book notes']?.['flipped card subtext']}
         flippedCardHeadline={data['book notes']?.['flipped card headline']}
         flippedCardPainText={data['book notes']?.['flipped card pain caption']}
-        flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['books notes flipped card image']?.data?.attributes?.url}`}
+        flippedCardChart={
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/book-notes-ru.png'
+            : `${process.env.NEXT_PUBLIC_STRAPI}${data?.['books notes flipped card image']?.data?.attributes?.url}`
+        }
         chartWidth={387}
         flippedCardChartMobile={
-          '/keepsimple_/assets/longevity/study/mobile-charts/book-notes-chart.webp'
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/book-notes-ru-mobile.png'
+            : '/keepsimple_/assets/longevity/study/mobile-charts/book-notes-chart.webp'
         }
+        locale={locale}
       />
       <StudySection
         title={data['daily work']?.title}
@@ -44,15 +56,23 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardSubText={data['daily work']?.['flipped card subtext']}
         flippedCardHeadline={data['daily work']?.['flipped card headline']}
         flippedCardPainText={data['daily work']?.['flipped card pain caption']}
-        flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['daily work flipped card image']?.data?.attributes?.url}`}
+        flippedCardChart={
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/daily-work-ru.png'
+            : `${process.env.NEXT_PUBLIC_STRAPI}${data?.['daily work flipped card image']?.data?.attributes?.url}`
+        }
         flippedCardChartMobile={
-          '/keepsimple_/assets/longevity/study/mobile-charts/daily-work.webp'
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/daily-work-ru-mobile.png'
+            : '/keepsimple_/assets/longevity/study/mobile-charts/daily-work.webp'
         }
         chartWidth={810}
+        locale={locale}
       />
       <StudySection
         title={data?.['explain to learn title']}
         description={data?.['explain to learn description']}
+        locale={locale}
       />
       <StudySection
         title={data['research tasks']?.title}
@@ -65,11 +85,18 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardPainText={
           data['research tasks']?.['flipped card pain caption']
         }
-        flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['research tasks flipped card image']?.data?.attributes?.url}`}
+        flippedCardChart={
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/research-tasks-ru.png'
+            : `${process.env.NEXT_PUBLIC_STRAPI}${data?.['research tasks flipped card image']?.data?.attributes?.url}`
+        }
         chartWidth={590}
         flippedCardChartMobile={
-          '/keepsimple_/assets/longevity/study/mobile-charts/research-task-mobile.webp'
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/research-tasks-ru-mobile.png'
+            : '/keepsimple_/assets/longevity/study/mobile-charts/research-task-mobile.webp'
         }
+        locale={locale}
       />
       <StudySection
         title={data.data?.title}
@@ -78,11 +105,18 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardSubText={data.data?.['flipped card subtext']}
         flippedCardHeadline={data.data?.['flipped card headline']}
         flippedCardPainText={data.data?.['flipped card pain caption']}
-        flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['data flipped card image']?.data?.attributes?.url}`}
+        flippedCardChart={
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/data-ru.png'
+            : `${process.env.NEXT_PUBLIC_STRAPI}${data?.['data flipped card image']?.data?.attributes?.url}`
+        }
         chartWidth={390}
         flippedCardChartMobile={
-          '/keepsimple_/assets/longevity/study/mobile-charts/data-mobile.webp'
+          locale === 'ru'
+            ? '/keepsimple_/assets/longevity/study/charts/data-ru-mobile.png'
+            : '/keepsimple_/assets/longevity/study/mobile-charts/data-mobile.webp'
         }
+        locale={locale}
       />
       <StudySection
         title={data.hacks?.title}
@@ -93,6 +127,7 @@ const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
         flippedCardChart={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['hacks flipped card image']?.data?.attributes?.url}`}
         backsBackgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['hacks flipped card image']?.data?.attributes?.url}`}
         chartWidth={390}
+        locale={locale}
       />
     </div>
   );

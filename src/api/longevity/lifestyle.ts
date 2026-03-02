@@ -1,13 +1,11 @@
-export async function getHabitsProtocol(locale: string) {
-  const base = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-habit-protocol`;
-
-  const url = `${base}` + `?populate=*`;
+export async function getLifestyleProtocol(locale: string) {
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-habit-protocol?populate=*&locale=${locale}`;
 
   const res = await fetch(url, {
     next: { revalidate: 3600 },
   });
 
-  if (!res.ok) throw new Error('Failed to fetch contributor');
+  if (!res.ok) throw new Error('Failed to fetch longevity lifestyle protocol');
 
   const json = await res.json();
   const attrs = json?.data?.attributes ?? {};

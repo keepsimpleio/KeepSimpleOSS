@@ -11,18 +11,27 @@ const Supplement: FC<SupplementProps> = ({ name, description, categories }) => {
       <h3 className={styles.heading}>{name}</h3>
       {categories?.data.length > 0 && (
         <div className={styles.categoryWrapper}>
-          {categories?.data?.map((category, key) => (
-            <span key={key} className={styles.categoryBadge}>
-              <Image
-                src={`/keepsimple_/assets/longevity/sleep/supplements-icons/${category.attributes.title}.png`}
-                alt={category.attributes.title}
-                width={24}
-                height={24}
-                unoptimized
-              />
-              {category.attributes.title}
-            </span>
-          ))}
+          {categories?.data?.map((category, key) => {
+            const displayTitle = category.attributes.title;
+            const enLocalization =
+              category.attributes.localizations?.data?.find(
+                (loc: any) => loc.attributes?.locale === 'en',
+              );
+            const imageTitle =
+              enLocalization?.attributes?.title ?? displayTitle;
+            return (
+              <span key={key} className={styles.categoryBadge}>
+                <Image
+                  src={`/keepsimple_/assets/longevity/sleep/supplements-icons/${imageTitle}.png`}
+                  alt={displayTitle}
+                  width={24}
+                  height={24}
+                  unoptimized
+                />
+                {displayTitle}
+              </span>
+            );
+          })}
         </div>
       )}
       <div

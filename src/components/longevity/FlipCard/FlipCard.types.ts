@@ -8,4 +8,5 @@ export type FlipCardProps = {
   hacksQuote?: string;
   quoteAuthor?: string;
   chartWidth?: number;
+  locale?: string;
 };

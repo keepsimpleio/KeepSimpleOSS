@@ -1,17 +1,24 @@
 import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 
 import StudyLayout from '@layouts/StudyLayout';
+
+import type { TRouter } from '@local-types/global';
 
 import { getStudy } from '@api/longevity/study';
 import SeoGenerator from '@components/SeoGenerator';
 import { ogImage } from '@constants/longevity';
 
 const Study = ({ studyData }) => {
+  const router = useRouter();
+  const { locale } = router as TRouter;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
   const OGTags = {
-    ogDescription: studyData['en']?.ogDescription || '',
-    ogTitle: studyData['en']?.ogTitle || '',
-    ogType: studyData['en']?.ogType || '',
-    ogImageAlt: studyData['en']?.ogImageAlt || '',
+    ogDescription: studyData[currentLocale]?.ogDescription || '',
+    ogTitle: studyData[currentLocale]?.ogTitle || '',
+    ogType: studyData[currentLocale]?.ogType || '',
+    ogImageAlt: studyData[currentLocale]?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
@@ -25,17 +32,20 @@ const Study = ({ studyData }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: studyData['en']?.Seo?.seoDescription || '',
-          keywords: studyData['en']?.Seo?.keywords || '',
-          title: studyData['en']?.Seo?.pageTitle || '',
-          seoTitle: studyData['en']?.Seo?.seoTitle || '',
+          description: studyData[currentLocale]?.Seo?.seoDescription || '',
+          keywords: studyData[currentLocale]?.Seo?.keywords || '',
+          title: studyData[currentLocale]?.Seo?.pageTitle || '',
+          seoTitle: studyData[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
         ogTags={OGTags}
-        createdDate={studyData['en']?.createdAt || ''}
-        modifiedDate={studyData['en']?.updatedAt || ''}
+        createdDate={studyData[currentLocale]?.createdAt || ''}
+        modifiedDate={studyData[currentLocale]?.updatedAt || ''}
       />
-      <StudyLayout data={studyData ? studyData['en'] : null} locale={'en'} />
+      <StudyLayout
+        data={studyData ? studyData[currentLocale] : null}
+        locale={currentLocale}
+      />
     </>
   );
 };

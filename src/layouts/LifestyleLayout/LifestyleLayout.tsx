@@ -3,11 +3,11 @@ import { FC } from 'react';
 import MainInfoSection from '@components/longevity/MainInfoSection';
 import LongevitySubSection from '@components/longevity/LongevitySubSection';
 
-import { HabitsLayoutProps } from '@layouts/HabitsLayout/HabitsLayout.types';
+import { LifestyleLayoutProps } from './LifestyleLayout.types';
 
-import styles from '@layouts/LongevityLayouts/WhatIsThisLayout.module.scss';
+import styles from './LifestyleLayout.module.scss';
 
-const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
+const LifestyleLayout: FC<LifestyleLayoutProps> = ({ data, locale }) => {
   const imgPath = '/keepsimple_/assets/longevity/habits/';
 
   return (
@@ -112,4 +112,4 @@ const HabitsLayout: FC<HabitsLayoutProps> = ({ data, locale }) => {
   );
 };
 
-export default HabitsLayout;
+export default LifestyleLayout;

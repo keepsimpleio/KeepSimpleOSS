@@ -1,19 +1,26 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
 
 import Heading from '@components/Heading';
 
+import longevityData from '@data/longevity';
 import { BRAIN_AGE_TABLE } from '@constants/longevity';
+
+import { BrainAgeActivityProps } from './BrainAgeActivity.types';
 
 import styles from './BrainAgeActivity.module.scss';
 
-function formatDelta(delta: number) {
-  const sign = delta > 0 ? '+' : '';
-  return `(${sign}${delta} years)`;
-}
+const BrainAgeActivity: FC<BrainAgeActivityProps> = ({ locale }) => {
+  const { totalWeeklyActivity } = longevityData[locale];
 
-const BrainAgeActivity: FC = () => {
   const [selectedBaseline, setSelectedBaseline] = useState<number>(32);
+  const formatDelta = useCallback(
+    (delta: number) => {
+      const sign = delta > 0 ? '+' : '';
+      return `(${sign}${delta} ${totalWeeklyActivity.years})`;
+    },
+    [totalWeeklyActivity.years],
+  );
 
   const result = useMemo(() => {
     const row = BRAIN_AGE_TABLE.find(r => r.baseline === selectedBaseline);
@@ -29,12 +36,16 @@ const BrainAgeActivity: FC = () => {
       activeDeltaText: formatDelta(activeDelta),
       sedentaryDeltaText: formatDelta(sedentaryDelta),
     };
-  }, [selectedBaseline]);
+  }, [selectedBaseline, formatDelta]);
 
   return (
-    <section className={styles.section}>
+    <section
+      className={cn(styles.section, {
+        [styles.sectionRu]: locale === 'ru',
+      })}
+    >
       <Heading
-        text={'Brain age with different activity levels'}
+        text={totalWeeklyActivity.brainAgeTitle}
         Tag={'h3'}
         showRightIcon={false}
         showLeftIcon={false}
@@ -42,7 +53,7 @@ const BrainAgeActivity: FC = () => {
       />{' '}
       <hr className={styles.hr} />
       <Heading
-        text={'Select baseline age to see the difference'}
+        text={totalWeeklyActivity.brainAgeSubTitle}
         Tag={'h4'}
         showRightIcon={false}
         showLeftIcon={false}
@@ -64,16 +75,30 @@ const BrainAgeActivity: FC = () => {
       <div>
         {result && (
           <div className={styles.result}>
-            <p className={styles.minimal}>
-              Brain age if sedentary
+            <div className={styles.minimal}>
+              <p className={styles.subContent}>
+                <span>{totalWeeklyActivity.brainIfSedentary}</span>
+                {totalWeeklyActivity.brainIfSedentarySubText && (
+                  <span className={styles.subText}>
+                    {totalWeeklyActivity.brainIfSedentarySubText}
+                  </span>
+                )}
+              </p>
               <span className={styles.passive}>
                 {result.sedentary} {result.sedentaryDeltaText}
               </span>
-            </p>
-            <p className={styles.maximal}>
-              Brain age if active{' '}
+            </div>
+            <div className={styles.maximal}>
+              <p className={styles.subContent}>
+                <span>{totalWeeklyActivity.brainIfActive}</span>
+                {totalWeeklyActivity.brainIfActiveSubText && (
+                  <span className={styles.subText}>
+                    {totalWeeklyActivity.brainIfActiveSubText}
+                  </span>
+                )}
+              </p>
               <span className={styles.active}>{result.active}</span>
-            </p>
+            </div>
           </div>
         )}
       </div>

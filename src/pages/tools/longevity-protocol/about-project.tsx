@@ -1,17 +1,22 @@
 import { GetServerSideProps } from 'next';
 
-import { getWhatIsThis } from '@api/longevity/what-is-this';
 import SeoGenerator from '@components/SeoGenerator';
 
-import WhatIsThisLayout from '@layouts/LongevityLayouts';
 import { ogImage } from '@constants/longevity';
+import { getAboutProject } from '@api/longevity/about-project';
+import { useRouter } from 'next/router';
+import type { TRouter } from '@local-types/global';
+import AboutProjectLayout from '@layouts/LongevityLayouts';
 
 const AboutProject = ({ aboutTheProject }) => {
+  const router = useRouter();
+  const { locale } = router as TRouter;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
   const OGTags = {
-    ogDescription: aboutTheProject['en']?.ogDescription || '',
-    ogTitle: aboutTheProject['en']?.ogTitle || '',
-    ogType: aboutTheProject['en']?.ogType || '',
-    ogImageAlt: aboutTheProject['en']?.ogImageAlt || '',
+    ogDescription: aboutTheProject[currentLocale]?.ogDescription || '',
+    ogTitle: aboutTheProject[currentLocale]?.ogTitle || '',
+    ogType: aboutTheProject[currentLocale]?.ogType || '',
+    ogImageAlt: aboutTheProject[currentLocale]?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
@@ -25,19 +30,20 @@ const AboutProject = ({ aboutTheProject }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: aboutTheProject['en']?.Seo?.seoDescription || '',
-          keywords: aboutTheProject['en']?.Seo?.keywords || '',
-          title: aboutTheProject['en']?.Seo?.pageTitle || '',
-          seoTitle: aboutTheProject['en']?.Seo?.seoTitle || '',
+          description:
+            aboutTheProject[currentLocale]?.Seo?.seoDescription || '',
+          keywords: aboutTheProject[currentLocale]?.Seo?.keywords || '',
+          title: aboutTheProject[currentLocale]?.Seo?.pageTitle || '',
+          seoTitle: aboutTheProject[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
         ogTags={OGTags}
-        createdDate={aboutTheProject['en']?.createdAt || ''}
-        modifiedDate={aboutTheProject['en']?.updatedAt || ''}
+        createdDate={aboutTheProject[currentLocale]?.createdAt || ''}
+        modifiedDate={aboutTheProject[currentLocale]?.updatedAt || ''}
       />
-      <WhatIsThisLayout
-        data={aboutTheProject ? aboutTheProject['en'] : null}
-        locale={'en'}
+      <AboutProjectLayout
+        data={aboutTheProject ? aboutTheProject[currentLocale] : null}
+        locale={currentLocale}
       />
     </>
   );
@@ -46,7 +52,7 @@ const AboutProject = ({ aboutTheProject }) => {
 export default AboutProject;
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const aboutTheProject = await getWhatIsThis(locale);
+  const aboutTheProject = await getAboutProject(locale);
 
   return {
     props: { aboutTheProject },

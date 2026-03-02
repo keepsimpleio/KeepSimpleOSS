@@ -3,12 +3,18 @@ import { TableProps } from './Table.types';
 import styles from './Table.module.scss';
 import cn from 'classnames';
 
-const Table: FC<TableProps> = ({ headerRows, rows, isSupplementTable }) => {
+const Table: FC<TableProps> = ({
+  headerRows,
+  rows,
+  isSupplementTable,
+  locale,
+}) => {
   // TODO: Check naming here, they should be matchable for 2 different tables
   return (
     <table
       className={cn(styles.table, {
         [styles.supplementTable]: isSupplementTable,
+        [styles.tableRu]: locale === 'ru',
       })}
     >
       <thead className={styles.header}>

@@ -124,6 +124,26 @@
   }
 }
 
+.subSectionRu {
+  .heading {
+    h3 {
+      font-family: 'Source-Serif-Regular', serif !important;
+    }
+  }
+
+  .dateTxtMobile,
+  .dateTxt {
+    font-family: 'Source-Serif-Regular', serif !important;
+  }
+
+  .headline {
+    .habitTooltip {
+      font-family: 'Source-Serif-Regular', serif !important;
+      font-weight: 400 !important;
+    }
+  }
+}
+
 @media (max-width: 1190px) {
   .subSection {
     margin-left: 16px;

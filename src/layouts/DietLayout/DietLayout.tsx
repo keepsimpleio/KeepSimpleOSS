@@ -12,22 +12,35 @@ import { DietLayoutProps } from '@layouts/DietLayout/DietLayout.types';
 import { images, longevityDietPath, scaleLevels } from '@constants/longevity';
 
 import styles from './DietLayout.module.scss';
+import longevityData from '@data/longevity';
 
 const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
-  const [selectedHealthyOptionId, setSelectedHealthyOptionId] = useState(1);
+  const firstItemIndex = 1;
+  const [selectedHealthyOptionId, setSelectedHealthyOptionId] =
+    useState(firstItemIndex);
   const [isIconClicked, setIsIconClicked] = useState(false);
-  const foodFacts = data['food science facts that most influenced my choices'];
-  const items = data['what not to eat'];
-  const getSelectedHealthOptionName = (id: number) => {
-    const selectedOption = data?.['what to eat']?.find(
-      (option: any) => option.id === id,
-    );
+  const foodFacts =
+    data?.['food science facts that most influenced my choices'];
+  const items = data?.['what not to eat'];
+  const {
+    foodScienceFactsTitle,
+    whatToEatTitle,
+    whatNotToEatTitle,
+    genericRulesTitle,
+    hacksTitle,
+    tooltipSubText,
+    whatTOEatOrAvoidContent,
+  } = longevityData[locale];
+
+  const getSelectedHealthOptionName = (index: number) => {
+    const selectedOption = data?.['what to eat']?.[index - 1];
     return selectedOption ? selectedOption['product name'] : null;
   };
+
   const whatToEatItemNamesAndIds = () => {
     return (
-      data?.['what to eat']?.map((option: any) => ({
-        id: option.id,
+      data?.['what to eat']?.map((option: any, index: number) => ({
+        id: index + 1,
         name: option['product name'],
       })) || []
     );
@@ -37,7 +50,6 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
     id: selectedHealthyOptionId,
     name: getSelectedHealthOptionName(selectedHealthyOptionId),
   };
-
   const whatNotToEat = items?.map((item, index) => ({
     ...item,
     imageUrl: images[index] ?? null,
@@ -55,13 +67,12 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // TODO add russian
-        title={'Food-science facts that most influenced my choices'}
+        title={foodScienceFactsTitle}
         description={foodFacts}
         headlineBackgroundImageUrl={`${longevityDietPath}/food-facts-headline.png`}
       />
       <LongevitySubSection
-        title={'What not to eat'}
+        title={whatNotToEatTitle}
         locale={locale}
         headlineBackgroundImageUrl={`${longevityDietPath}/what-not-to-eat.png`}
       >
@@ -75,28 +86,38 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
             title={item['product name']}
             imageUrl={item?.imageUrl}
             tooltipContent={item['tooltip content']}
+            tooltipSubText={tooltipSubText}
+            locale={locale}
           />
         ))}
         <div className={styles.imageWrapper}>
           <Image
-            src={`${longevityDietPath}/diet-results.png`}
+            src={
+              locale === 'ru'
+                ? `${longevityDietPath}/diet-results-ru.png`
+                : `${longevityDietPath}/diet-results.png`
+            }
             alt={'This diet results'}
             width={424}
-            height={403}
+            height={353}
+            unoptimized
           />
           {/*TODO change all of them to longevityDietPath*/}
           <Image
             src={
-              '/keepsimple_/assets/longevity/diet/diet-smoke-and-drink-results.png'
+              locale === 'ru'
+                ? '/keepsimple_/assets/longevity/diet/diet-smoke-and-drink-results-ru.png'
+                : '/keepsimple_/assets/longevity/diet/diet-smoke-and-drink-results.png'
             }
             alt={'This diet results'}
             width={424}
-            height={403}
+            height={353}
+            unoptimized
           />
         </div>
       </LongevitySubSection>
       <LongevitySubSection
-        title={'What to eat'}
+        title={whatToEatTitle}
         locale={locale}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/diet/what-not-to-eat.png'
@@ -112,7 +133,8 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
             title={item['product name']}
             setSelectedHealthyOptionId={setSelectedHealthyOptionId}
             selectedHealthyOptionId={selectedHealthyOptionId}
-            id={item.id}
+            id={index + 1}
+            locale={locale}
           />
         ))}
         <DietResults
@@ -122,18 +144,20 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
           selectedHealthOption={selectedHealthOption}
           whatToEatItemNamesAndIds={whatToEatItemNamesAndIds()}
           setIsIconClicked={setIsIconClicked}
+          dietTxt={whatTOEatOrAvoidContent.yourDietTxt}
+          locale={locale}
         />
         <YourDiet
           id={selectedHealthyOptionId}
           scaleLevels={scaleLevels}
           selectedHealthOptionName={selectedHealthOption.name}
           isIconClicked={isIconClicked}
+          locale={locale}
         />
       </LongevitySubSection>
       <LongevitySubSection
         locale={locale}
-        // TODO add russian
-        title={'Generic rules'}
+        title={genericRulesTitle}
         description={data?.['generic rules']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/diet/generic-rules-headline.png'
@@ -141,8 +165,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // TODO add russian
-        title={'Hacks'}
+        title={hacksTitle}
         description={data?.hacks}
         isHacks={true}
         headlineBackgroundImageUrl={

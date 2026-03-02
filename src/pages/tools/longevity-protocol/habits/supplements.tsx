@@ -5,13 +5,18 @@ import SupplementsLayout from '@layouts/Supplements';
 import { getSupplements } from '@api/longevity/supplements';
 import SeoGenerator from '@components/SeoGenerator';
 import { ogImage } from '@constants/longevity';
+import { useRouter } from 'next/router';
+import type { TRouter } from '@local-types/global';
 
 const Supplements = ({ supplements }) => {
+  const router = useRouter();
+  const { locale } = router as TRouter;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
   const OGTags = {
-    ogDescription: supplements['en']?.ogDescription || '',
-    ogTitle: supplements['en']?.ogTitle || '',
-    ogType: supplements['en']?.ogType || '',
-    ogImageAlt: supplements['en']?.ogImageAlt || '',
+    ogDescription: supplements[currentLocale]?.ogDescription || '',
+    ogTitle: supplements[currentLocale]?.ogTitle || '',
+    ogType: supplements[currentLocale]?.ogType || '',
+    ogImageAlt: supplements[currentLocale]?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
@@ -25,19 +30,19 @@ const Supplements = ({ supplements }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: supplements['en']?.Seo?.seoDescription || '',
-          keywords: supplements['en']?.Seo?.keywords || '',
-          title: supplements['en']?.Seo?.pageTitle || '',
-          seoTitle: supplements['en']?.Seo?.seoTitle || '',
+          description: supplements[currentLocale]?.Seo?.seoDescription || '',
+          keywords: supplements[currentLocale]?.Seo?.keywords || '',
+          title: supplements[currentLocale]?.Seo?.pageTitle || '',
+          seoTitle: supplements[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
         ogTags={OGTags}
-        createdDate={supplements['en']?.createdAt || ''}
-        modifiedDate={supplements['en']?.updatedAt || ''}
+        createdDate={supplements[currentLocale]?.createdAt || ''}
+        modifiedDate={supplements[currentLocale]?.updatedAt || ''}
       />
       <SupplementsLayout
-        data={!!supplements ? supplements['en'] : null}
-        locale={'en'}
+        data={!!supplements ? supplements[currentLocale] : null}
+        locale={currentLocale}
       />
     </>
   );

@@ -9,6 +9,8 @@ import LongevitySubSection from '@components/longevity/LongevitySubSection';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
+import longevityData from '@data/longevity';
+
 import { SleepLayoutProps } from './SleepLayout.types';
 
 import styles from './SleepLayout.module.scss';
@@ -20,14 +22,8 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
   const tableRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [imgSrc, setImgSrc] = useState('');
-
-  // TODO: move to constants
-  const tableKeys = [
-    'key brain rules',
-    'no structure',
-    'my structure',
-    'fully optimized',
-  ];
+  const { sleepTableTitles, sleepHeadlines, hacksTitle, viewSleepChart } =
+    longevityData[locale];
 
   const makeTableImage = async () => {
     if (!tableRef.current) return;
@@ -65,7 +61,7 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
         basicStats={data?.basicStats}
         locale={locale}
         japaneseText={data['japanese title']}
-        backgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data['background image']?.data?.attributes.url}`}
+        // backgroundImageUrl={`${process.env.NEXT_PUBLIC_STRAPI}${data?.['background image']?.data?.attributes?.url}`}
       />
       <LongevitySubSection
         locale={locale}
@@ -84,8 +80,9 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
           >
             <div ref={tableRef}>
               <Table
-                headerRows={tableKeys}
-                rows={data['key brain rules section']}
+                headerRows={sleepTableTitles}
+                rows={data?.['key brain rules section']}
+                locale={locale}
               />
             </div>
           </div>
@@ -101,13 +98,13 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
       </LongevitySubSection>
       <LongevitySubSection
         locale={locale}
-        title={'Key Brain Rules'}
+        title={sleepHeadlines.keyBrainRules}
         description={data['key brain rules']}
         headlineBackgroundImageUrl={`${imgPath}key-brain-rules-header.png`}
       />
       <LongevitySubSection
         locale={locale}
-        title={'Used devices'}
+        title={sleepHeadlines.usedDevices}
         description={data['used devices']}
         headlineBackgroundImageUrl={`${imgPath}used-devices-header.png`}
       />
@@ -126,7 +123,7 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
               width={22}
               height={24}
             />
-            View sleep structure chart
+            {viewSleepChart}
             <Image
               src={
                 '/keepsimple_/assets/longevity/shared-assets/right-arrow.svg'
@@ -151,11 +148,15 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
         </>
       )}
       {!isMobile && (
-        <Table headerRows={tableKeys} rows={data['key brain rules section']} />
+        <Table
+          locale={locale}
+          headerRows={sleepTableTitles}
+          rows={data['key brain rules section']}
+        />
       )}
       <LongevitySubSection
         locale={locale}
-        title={'Hacks'}
+        title={hacksTitle}
         isHacks
         description={data.hacks}
         headlineBackgroundImageUrl={`${imgPath}sleep-hacks.png`}

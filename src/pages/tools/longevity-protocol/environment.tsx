@@ -10,12 +10,12 @@ import { ogImage } from '@constants/longevity';
 const Environment = ({ environment }) => {
   const router = useRouter();
   const { locale } = router;
-
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
   const OGTags = {
-    ogDescription: environment['en']?.ogDescription || '',
-    ogTitle: environment['en']?.ogTitle || '',
-    ogType: environment['en']?.ogType || '',
-    ogImageAlt: environment['en']?.ogImageAlt || '',
+    ogDescription: environment[currentLocale]?.ogDescription || '',
+    ogTitle: environment[currentLocale]?.ogTitle || '',
+    ogType: environment[currentLocale]?.ogType || '',
+    ogImageAlt: environment[currentLocale]?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
@@ -29,18 +29,18 @@ const Environment = ({ environment }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: environment['en']?.Seo?.seoDescription || '',
-          keywords: environment['en']?.Seo?.keywords || '',
-          title: environment['en']?.Seo?.pageTitle || '',
-          seoTitle: environment['en']?.Seo?.seoTitle || '',
+          description: environment[currentLocale]?.Seo?.seoDescription || '',
+          keywords: environment[currentLocale]?.Seo?.keywords || '',
+          title: environment[currentLocale]?.Seo?.pageTitle || '',
+          seoTitle: environment[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
         ogTags={OGTags}
-        createdDate={environment['en']?.createdAt || ''}
-        modifiedDate={environment['en']?.updatedAt || ''}
+        createdDate={environment[currentLocale]?.createdAt || ''}
+        modifiedDate={environment[currentLocale]?.updatedAt || ''}
       />
       <EnvironmentLayout
-        data={environment ? environment['en'] : null}
+        data={environment ? environment[currentLocale] : null}
         locale={locale}
       />
     </>

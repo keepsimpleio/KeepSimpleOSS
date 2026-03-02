@@ -20,6 +20,14 @@
   }
 }
 
+.basicStatsRu {
+  .heading {
+    h3 {
+      font-family: 'Source-Serif-Regular', serif !important;
+      //font-weight: 400 !important;
+    }
+  }
+}
 @media (max-width: 965px) {
   .basicStats {
     margin-bottom: 0;

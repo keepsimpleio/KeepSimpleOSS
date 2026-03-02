@@ -160,6 +160,23 @@
   }
 }
 
+.whatToEatOrAvoidRu {
+  .heading {
+    h5 {
+      font-family: 'Source-Serif-Regular', serif !important;
+    }
+  }
+
+  .exampleContent {
+    &::before {
+      content: 'Примеры: ';
+    }
+  }
+  .label {
+    font-family: 'Source-Serif-Regular', serif;
+  }
+}
+
 .selected {
   user-select: text;
 }

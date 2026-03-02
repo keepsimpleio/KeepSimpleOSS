@@ -3,4 +3,5 @@ export type HTMLClampTypes = {
   lines?: number;
   onlyMobile?: boolean;
   className?: string;
+  learnMoreText?: string;
 };
