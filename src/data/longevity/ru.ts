@@ -1,4 +1,5 @@
 const ru = {
+  mainTitle: 'ПРАКТИЧЕСКИЙ ПРОТОКОЛ ДОЛГОЛЕТИЯ',
   habitTooltipTitle: 'Зачем это делать?',
   foodScienceFactsTitle: 'Научные факты повлиявшие на меня больше всего',
   whatNotToEatTitle: 'Что не есть',
