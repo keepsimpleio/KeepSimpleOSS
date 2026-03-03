@@ -5,19 +5,14 @@ $dot-start: (($dot-count / 2 + 1) * ($dot-size + $dot-space)) / 2;
 
 $animation-time: 2s;
 $animation-distance: 18px;
+
 .wrapper {
   display: flex;
-  width: 100vw;
-  height: 100vh;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.35);
-  align-items: center;
-  justify-content: center;
   z-index: 9999;
+  width: 100%;
+  top: 65%;
+  left: 45%;
 }
 
 .loader {
@@ -31,6 +26,7 @@ $animation-distance: 18px;
     animation-timing-function: ease-in-out;
     height: $dot-size;
     position: absolute;
+
     top: -#{$dot-size};
     transform: translate3d(0, -#{$animation-distance}, 0) scale(1);
     width: $dot-size;
@@ -59,7 +55,7 @@ $animation-distance: 18px;
       animation-duration: $animation-time;
       animation-iteration-count: infinite;
       animation-timing-function: ease;
-      background: #e1d0b1;
+      background: #987f53;
       border-radius: 50%;
       content: '';
       display: block;

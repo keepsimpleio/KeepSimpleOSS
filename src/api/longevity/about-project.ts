@@ -1,5 +1,5 @@
-export async function getWhatIsThis(locale: string) {
-  const base = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-what-is-this`;
+export async function getAboutProject(locale: string) {
+  const base = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-about-project`;
 
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
@@ -12,10 +12,10 @@ export async function getWhatIsThis(locale: string) {
     `&populate[Seo]=*`;
 
   const res = await fetch(url, {
-    next: { revalidate: 3600, tags: ['contributor'] },
+    next: { revalidate: 3600 },
   });
 
-  if (!res.ok) throw new Error('Failed to fetch contributor');
+  if (!res.ok) throw new Error('Failed to fetch About Project');
 
   const json = await res.json();
   const attrs = json?.data?.attributes ?? {};

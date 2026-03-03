@@ -12,4 +12,6 @@ export type WhatToEatOrAvoidProps = {
   ) => void;
   selectedHealthyOptionId?: number;
   id?: string;
+  tooltipSubText?: string;
+  locale?: string;
 };

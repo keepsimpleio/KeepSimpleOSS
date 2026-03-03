@@ -5,4 +5,5 @@ export type ProgressBarProps = {
   isStrengthSection?: boolean;
   // TODO: change any
   activityLevels?: any;
+  minutesTxt?: string;
 };

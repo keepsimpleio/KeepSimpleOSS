@@ -23,11 +23,11 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
   isIntroPage,
 }) => {
   const { setHeroReady } = useContext(GlobalContext);
-
   return (
     <section
       className={cn(styles.mainInfoSection, {
         [styles.introPage]: isIntroPage,
+        [styles.mainInfoSectionRu]: locale === 'ru',
       })}
     >
       <Image
@@ -57,7 +57,11 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
           className={styles.description}
         />
         {hasBasicStats ? (
-          <BasicStats data={basicStats} title={basicStatsTitle} />
+          <BasicStats
+            data={basicStats}
+            title={basicStatsTitle}
+            locale={locale}
+          />
         ) : null}
       </div>
       {japaneseText && (

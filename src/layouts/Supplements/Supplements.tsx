@@ -12,21 +12,22 @@ import { useIsWidthLessThan } from '@hooks/useScreenSize';
 import { SupplementsProps } from './Supplements.types';
 
 import styles from './Supplements.module.scss';
+import longevityData from '@data/longevity';
 
 const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
   const [open, setOpen] = useState(false);
   const [imgSrc, setImgSrc] = useState('');
 
   const isMobile = useIsWidthLessThan(1140);
+  const {
+    supplementsHeadlines,
+    hacksTitle,
+    supplementsTableHeadlines,
+    viewSupplementsChart,
+  } = longevityData[locale];
 
-  // TODO: move to constants
   // TODO: Image paths to constants
-  const tableKeys = [
-    'Area',
-    'No Supplements',
-    'WITH SUPPLEMENTS (Generic)',
-    'TAILORED OPTIMIZED (Bloodwork-driven)',
-  ];
+
   const tableRef = useRef(null);
 
   const makeTableImage = async () => {
@@ -60,8 +61,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // TODO: add russian
-        title={'Foundational'}
+        title={supplementsHeadlines.foundational}
         description={data.foundational}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/supplements/foundational.png'
@@ -69,8 +69,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // TODO: add russian
-        title={'Longevity and Cellular Health'}
+        title={supplementsHeadlines.longevity}
         description={data['longevity and cellular health']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/supplements/longevity.png'
@@ -79,7 +78,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
       <LongevitySubSection
         locale={locale}
         // TODO: add russian
-        title={'Performance and Recovery'}
+        title={supplementsHeadlines.performance}
         description={data['performance and recovery']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/supplements/performance.png'
@@ -88,7 +87,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
       <LongevitySubSection
         locale={locale}
         // TODO: add russian
-        title={'Situational'}
+        title={supplementsHeadlines.situational}
         description={data['situational']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/supplements/situational.png'
@@ -106,9 +105,10 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
         >
           <div ref={tableRef}>
             <Table
-              headerRows={tableKeys}
+              headerRows={supplementsTableHeadlines}
               rows={data['situational section']}
               isSupplementTable
+              locale={locale}
             />
           </div>
         </div>
@@ -128,7 +128,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
               width={22}
               height={24}
             />
-            View sleep structure chart
+            {viewSupplementsChart}
             <Image
               src={
                 '/keepsimple_/assets/longevity/shared-assets/right-arrow.svg'
@@ -154,15 +154,15 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
       )}
       {!isMobile && (
         <Table
-          headerRows={tableKeys}
+          headerRows={supplementsTableHeadlines}
           rows={data['situational section']}
           isSupplementTable
+          locale={locale}
         />
       )}
       <LongevitySubSection
         locale={locale}
-        // TODO: add russian
-        title={'Hacks'}
+        title={hacksTitle}
         description={data.hacks}
         isHacks
         headlineBackgroundImageUrl={

@@ -9,10 +9,11 @@ import StrengthAndTimeCompression from '@components/longevity/StrengthAndTimeCom
 import { WorkoutLayoutProps } from './WorkoutLayout.types';
 
 import styles from './WorkoutLayout.module.scss';
+import longevityData from '@data/longevity';
 
 const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
   // TODO: image paths move to constants
-
+  const { workoutHeadlines, hacksTitle } = longevityData[locale];
   function splitUlHtml(ulHtmlString: string) {
     const doc = new DOMParser().parseFromString(ulHtmlString, 'text/html');
     const ul = doc.querySelector('ul');
@@ -52,8 +53,7 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // TODO: add russian
-        title={'Mandatory Workouts'}
+        title={workoutHeadlines.mandatoryWorkouts}
         description={data['mandatory workouts']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/workout/mandatory-workouts.png'
@@ -61,8 +61,7 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // TODO: add russian
-        title={'Optional workouts'}
+        title={workoutHeadlines.optionalWorkouts}
         description={data['optional workouts']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/workout/optional-workouts.png'
@@ -70,18 +69,17 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
-        // TODO: add russian
-        title={'Workout supplements'}
+        title={workoutHeadlines.workoutSupplements}
         description={data['workout supplements']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/workout/workout-supplements.png'
         }
       />
-      <WeeklyWorkout />
-      <BrainAgeActivity />
+      <WeeklyWorkout locale={locale} />
+      <BrainAgeActivity locale={locale} />
       <LongevitySubSection
         locale={locale}
-        title={'Hacks'}
+        title={hacksTitle}
         isHacks
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/workout/hacks.png'
@@ -93,7 +91,7 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
             className={styles.list}
           />
         )}
-        <StrengthAndTimeCompression />
+        <StrengthAndTimeCompression locale={locale} />
         {parts.restUlHtml && (
           <div
             dangerouslySetInnerHTML={{ __html: parts.restUlHtml }}

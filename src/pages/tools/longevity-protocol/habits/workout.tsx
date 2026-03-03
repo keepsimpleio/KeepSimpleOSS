@@ -1,17 +1,23 @@
 import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 
 import WorkoutLayout from '@layouts/WorkoutLayout/WorkoutLayout';
+
+import type { TRouter } from '@local-types/global';
 
 import { getWorkout } from '@api/longevity/workout';
 import SeoGenerator from '@components/SeoGenerator';
 import { ogImage } from '@constants/longevity';
 
 const Workout = ({ workoutData }) => {
+  const router = useRouter();
+  const { locale } = router as TRouter;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
   const OGTags = {
-    ogDescription: workoutData['en']?.ogDescription || '',
-    ogTitle: workoutData['en']?.ogTitle || '',
-    ogType: workoutData['en']?.ogType || '',
-    ogImageAlt: workoutData['en']?.ogImageAlt || '',
+    ogDescription: workoutData[currentLocale]?.ogDescription || '',
+    ogTitle: workoutData[currentLocale]?.ogTitle || '',
+    ogType: workoutData[currentLocale]?.ogType || '',
+    ogImageAlt: workoutData[currentLocale]?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
@@ -25,19 +31,19 @@ const Workout = ({ workoutData }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: workoutData['en']?.Seo?.seoDescription || '',
-          keywords: workoutData['en']?.Seo?.keywords || '',
-          title: workoutData['en']?.Seo?.pageTitle || '',
-          seoTitle: workoutData['en']?.Seo?.seoTitle || '',
+          description: workoutData[currentLocale]?.Seo?.seoDescription || '',
+          keywords: workoutData[currentLocale]?.Seo?.keywords || '',
+          title: workoutData[currentLocale]?.Seo?.pageTitle || '',
+          seoTitle: workoutData[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
         ogTags={OGTags}
-        createdDate={workoutData['en']?.createdAt || ''}
-        modifiedDate={workoutData['en']?.updatedAt || ''}
+        createdDate={workoutData[currentLocale]?.createdAt || ''}
+        modifiedDate={workoutData[currentLocale]?.updatedAt || ''}
       />
       <WorkoutLayout
-        data={workoutData ? workoutData['en'] : null}
-        locale={'en'}
+        data={workoutData ? workoutData[currentLocale] : null}
+        locale={currentLocale}
       />
     </>
   );
@@ -45,7 +51,8 @@ const Workout = ({ workoutData }) => {
 export default Workout;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const workoutData = await getWorkout(locale);
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+  const workoutData = await getWorkout(chosenLocale);
 
   return {
     props: { workoutData },

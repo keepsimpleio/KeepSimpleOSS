@@ -5,13 +5,19 @@ import DietLayout from '@layouts/DietLayout';
 import { getDiet } from '@api/longevity/diet';
 import SeoGenerator from '@components/SeoGenerator';
 import { ogImage } from '@constants/longevity';
+import type { TRouter } from '@local-types/global';
+import { useRouter } from 'next/router';
 
 const Diet = ({ dietData }) => {
+  const router = useRouter();
+  const { locale } = router as TRouter;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
+
   const OGTags = {
-    ogDescription: dietData['en']?.ogDescription || '',
-    ogTitle: dietData['en']?.ogTitle || '',
-    ogType: dietData['en']?.ogType || '',
-    ogImageAlt: dietData['en']?.ogImageAlt || '',
+    ogDescription: dietData?.[currentLocale]?.ogDescription || '',
+    ogTitle: dietData?.[currentLocale]?.ogTitle || '',
+    ogType: dietData?.[currentLocale]?.ogType || '',
+    ogImageAlt: dietData?.[currentLocale]?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
@@ -25,24 +31,29 @@ const Diet = ({ dietData }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: dietData['en']?.Seo?.seoDescription || '',
-          keywords: dietData['en']?.Seo?.keywords || '',
-          title: dietData['en']?.Seo?.seoTitle || '',
-          seoTitle: dietData['en']?.Seo?.seoTitle || '',
+          description: dietData[currentLocale]?.Seo?.seoDescription || '',
+          keywords: dietData[currentLocale]?.Seo?.keywords || '',
+          title: dietData[currentLocale]?.Seo?.seoTitle || '',
+          seoTitle: dietData[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
         ogTags={OGTags}
-        createdDate={dietData['en']?.createdAt || ''}
-        modifiedDate={dietData['en']?.updatedAt || ''}
+        createdDate={dietData[currentLocale]?.createdAt || ''}
+        modifiedDate={dietData[currentLocale]?.updatedAt || ''}
       />
-      <DietLayout locale={'en'} data={dietData ? dietData['en'] : null} />
+      <DietLayout
+        locale={currentLocale}
+        data={dietData ? dietData[currentLocale] : null}
+      />
     </>
   );
 };
 export default Diet;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const dietData = await getDiet(locale);
+  const chosenLocale = locale === 'ru' ? 'ru' : 'en';
+
+  const dietData = await getDiet(chosenLocale);
 
   return {
     props: { dietData },

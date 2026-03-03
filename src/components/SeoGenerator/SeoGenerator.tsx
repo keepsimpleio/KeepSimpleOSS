@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-
+import Script from 'next/script';
 import type { TRouter } from '@local-types/global';
 
 import { generateSchema } from '@lib/schema';
@@ -59,7 +59,6 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
       ...questionsSeo.ru,
     };
   }
-
   const { locale, asPath } = router as TRouter;
 
   let pathname = asPath;
@@ -160,121 +159,125 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
   );
 
   return (
-    <Head>
-      <meta charSet="UTF-8" />
-      <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=2"
-      />
-      <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
-      <meta name="theme-color" content="#1e2023" />
-      {pathname.includes('/user') ? (
-        <meta name="robots" content={'noindex, nofollow'} />
-      ) : (
+    <>
+      <Head>
+        <meta charSet="UTF-8" />
         <meta
-          name="robots"
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=2"
+        />
+        <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
+        <meta name="theme-color" content="#1e2023" />
+        {pathname.includes('/user') ? (
+          <meta name="robots" content={'noindex, nofollow'} />
+        ) : (
+          <meta
+            name="robots"
+            content={
+              process.env.NEXT_PUBLIC_INDEXING === 'off'
+                ? 'noindex, nofollow'
+                : 'index, follow'
+            }
+          />
+        )}
+
+        <link rel="shortcut icon" href={favIconPath} />
+        <title>{title}</title>
+        <link rel="canonical" href={originalUrl} key={'canonical'} />
+        <link
+          rel="alternate"
+          hrefLang="ru"
+          href={`${process.env.NEXT_PUBLIC_DOMAIN}/ru${localizedSlug ? `${localizedSlug.slugRu}` : alternateLink}`}
+        />
+        <link
+          rel="alternate"
+          hrefLang="en"
+          href={`${process.env.NEXT_PUBLIC_DOMAIN}${localizedSlug ? `${localizedSlug.slugEn}` : alternateLink}`}
+        />
+        <link
+          rel="alternate"
+          hrefLang="hy"
+          href={`${process.env.NEXT_PUBLIC_DOMAIN}/hy${localizedSlug ? `${localizedSlug.slugEn}` : alternateLink}`}
+        />
+        <link
+          rel="alternate"
+          hrefLang="x-default"
+          href={`${process.env.NEXT_PUBLIC_DOMAIN}${localizedSlug ? `${localizedSlug.slugEn}` : alternateLink}`}
+        />
+        <meta name="description" content={stripHTML(description)} />
+        <meta name="keywords" content={keywords} />
+        {/* GOOGLE */}
+        <meta itemProp="name" content={pageTitle} />
+        <meta itemProp="description" content={stripHTML(description)} />
+        <meta
+          itemProp="image"
+          content="https://keepsimple.io/assets/keep-simple.jpg"
+        />
+
+        <meta
+          property="og:title"
+          content={ogTags?.ogTitle ? ogTags.ogTitle : ogTags?.ogStaticTitle}
+        />
+        <meta property="og:description" content={ogTags?.ogDescription} />
+        <meta
+          property="og:image"
           content={
-            process.env.NEXT_PUBLIC_INDEXING === 'off'
-              ? 'noindex, nofollow'
-              : 'index, follow'
+            ogTags?.ogImage?.data?.attributes?.url
+              ? isLongevityPage
+                ? ogTags?.ogImage?.data?.attributes?.url
+                : `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
+              : ogTags?.ogImage?.data?.attributes?.staticUrl
           }
         />
-      )}
+        <meta
+          property="og:image:alt"
+          content={
+            ogTags?.ogImageAlt
+              ? ogTags?.ogImageAlt
+              : ogTags?.ogTitle || ogTags?.ogStaticTitle
+          }
+        />
+        <meta property="og:url" content={originalUrl} />
+        <meta property="og:site_name" content="Keep Simple" />
 
-      <link rel="shortcut icon" href={favIconPath} />
-      <title>{title}</title>
-      {/*Testing canonical links on Staging*/}
-      {/*{process.env.NEXT_PUBLIC_DOMAIN === 'https://keepsimple.io' && (*/}
-      <link rel="canonical" href={originalUrl} key={'canonical'} />
-      {/*)}*/}
-      <link
-        rel="alternate"
-        hrefLang="ru"
-        href={`${process.env.NEXT_PUBLIC_DOMAIN}/ru${localizedSlug ? `${localizedSlug.slugRu}` : alternateLink}`}
-      />
-      <link
-        rel="alternate"
-        hrefLang="en"
-        href={`${process.env.NEXT_PUBLIC_DOMAIN}${localizedSlug ? `${localizedSlug.slugEn}` : alternateLink}`}
-      />
-      <link
-        rel="alternate"
-        hrefLang="hy"
-        href={`${process.env.NEXT_PUBLIC_DOMAIN}/hy${localizedSlug ? `${localizedSlug.slugEn}` : alternateLink}`}
-      />
-      <link
-        rel="alternate"
-        hrefLang="x-default"
-        href={`${process.env.NEXT_PUBLIC_DOMAIN}${localizedSlug ? `${localizedSlug.slugEn}` : alternateLink}`}
-      />
-      <meta name="description" content={stripHTML(description)} />
-      <meta name="keywords" content={keywords} />
-      {/* GOOGLE */}
-      <meta itemProp="name" content={pageTitle} />
-      <meta itemProp="description" content={stripHTML(description)} />
-      <meta
-        itemProp="image"
-        content="https://keepsimple.io/assets/keep-simple.jpg"
-      />
+        <meta property="og:type" content={ogTags?.ogType} />
 
-      <meta
-        property="og:title"
-        content={ogTags?.ogTitle ? ogTags.ogTitle : ogTags?.ogStaticTitle}
-      />
-      <meta property="og:description" content={ogTags?.ogDescription} />
-      <meta
-        property="og:image"
-        content={
-          ogTags?.ogImage?.data?.attributes?.url
-            ? isLongevityPage
-              ? ogTags?.ogImage?.data?.attributes?.url
-              : `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
-            : ogTags?.ogImage?.data?.attributes?.staticUrl
-        }
-      />
-      <meta
-        property="og:image:alt"
-        content={
-          ogTags?.ogImageAlt
-            ? ogTags?.ogImageAlt
-            : ogTags?.ogTitle || ogTags?.ogStaticTitle
-        }
-      />
-      <meta property="og:url" content={originalUrl} />
-      <meta property="og:site_name" content="Keep Simple" />
+        {/* AUTHRO */}
 
-      <meta property="og:type" content={ogTags?.ogType} />
+        <meta property="article:author" content="Wolf Alexanyan" />
 
-      {/* AUTHRO */}
-
-      <meta property="article:author" content="Wolf Alexanyan" />
-
-      {/* TWITTER */}
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:creator" content="@AlexanyanWolf" />
-      <meta name="twitter:title" content={pageTitle} />
-      <meta name="twitter:description" content={ogTags?.ogDescription} />
-      <meta
-        name="twitter:image"
-        content={
-          ogTags?.ogImage?.data?.attributes?.url
-            ? isLongevityPage
-              ? ogTags?.ogImage?.data?.attributes?.url
-              : `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
-            : ogTags?.ogImage?.data?.attributes?.staticUrl
-        }
+        {/* TWITTER */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:creator" content="@AlexanyanWolf" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={ogTags?.ogDescription} />
+        <meta
+          name="twitter:image"
+          content={
+            ogTags?.ogImage?.data?.attributes?.url
+              ? isLongevityPage
+                ? ogTags?.ogImage?.data?.attributes?.url
+                : `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
+              : ogTags?.ogImage?.data?.attributes?.staticUrl
+          }
+        />
+        <meta
+          name="twitter:url"
+          content={`https://keepsimple.io/${localePath}${alternateLink}`}
+        />
+        <meta name="twitter:label1" content="Written by" />
+        <meta name="twitter:data1" content="Wolf Alexanyan" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      </Head>
+      <Script
+        src="https://analytics.ahrefs.com/analytics.js"
+        data-key={process.env.NEXT_PUBLIC_AHREFS_ANALYTICS_KEY}
+        strategy="afterInteractive"
       />
-      <meta
-        name="twitter:url"
-        content={`https://keepsimple.io/${localePath}${alternateLink}`}
-      />
-      <meta name="twitter:label1" content="Written by" />
-      <meta name="twitter:data1" content="Wolf Alexanyan" />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
-    </Head>
+    </>
   );
 };
 

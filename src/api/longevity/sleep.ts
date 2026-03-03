@@ -1,12 +1,12 @@
 export async function getSleep(locale: string) {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-sleep?populate=*
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-sleep?populate=*&locale=${locale}
 `;
 
   const res = await fetch(url, {
     next: { revalidate: 3600 },
   });
 
-  if (!res.ok) throw new Error('Failed to fetch contributor');
+  if (!res.ok) throw new Error('Failed to fetch Sleep data');
 
   const json = await res.json();
   const attrs = json?.data?.attributes ?? {};

@@ -5,7 +5,12 @@ import { HTMLClampTypes } from '@components/longevity/HTMLClamp/HTMLClamp.types'
 
 import styles from './HTMLClamp.module.scss';
 
-const HtmlClamp: FC<HTMLClampTypes> = ({ html, lines = 9, className }) => {
+const HtmlClamp: FC<HTMLClampTypes> = ({
+  html,
+  lines = 9,
+  className,
+  learnMoreText,
+}) => {
   const shouldClamp = true;
 
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -59,7 +64,7 @@ const HtmlClamp: FC<HTMLClampTypes> = ({ html, lines = 9, className }) => {
             onClick={() => setExpanded(v => !v)}
           >
             {/*Keeping show less just in case*/}
-            {expanded ? 'Show less' : 'Learn more'}
+            {expanded ? 'Show less' : learnMoreText}
           </button>
         )}
       </div>

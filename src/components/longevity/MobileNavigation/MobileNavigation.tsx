@@ -6,6 +6,10 @@ import cn from 'classnames';
 
 import BorderedPill from '@components/longevity/BorderedPill';
 
+import { TRouter } from '@local-types/global';
+
+import longevityData from '@data/longevity';
+
 import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
 import { StudyIcon } from '@icons/longevity/StudyIcon';
 import { DietIcon } from '@icons/longevity/DietIcon';
@@ -23,6 +27,10 @@ import styles from './MobileNavigation.module.scss';
 
 const MobileNavigation: FC = () => {
   const router = useRouter();
+  const { locale } = router as TRouter;
+
+  const { navigationItems, subNavigationItems, nextBtn, contentsTxt } =
+    longevityData[locale];
   const [openNav, setOpenNav] = useState(false);
   const [openSubNav, setOpenSubNav] = useState(false);
 
@@ -36,19 +44,25 @@ const MobileNavigation: FC = () => {
 
   // TODO: Move nav items
   const navItems = [
-    { name: 'About Project', path: '/tools/longevity-protocol/about-project' },
     {
-      name: 'Habits',
+      name: navigationItems?.aboutProject,
+      path: '/tools/longevity-protocol/about-project',
+    },
+    {
+      name: navigationItems?.habits,
       path: '/tools/longevity-protocol/habits/lifestyle',
       hasNoUrl: true,
     },
     {
-      name: 'Environment',
+      name: navigationItems?.environment,
       path: '/tools/longevity-protocol/environment',
     },
-    { name: 'Results', path: '/tools/longevity-protocol/results' },
     {
-      name: 'AI Assistant',
+      name: navigationItems?.results,
+      path: '/tools/longevity-protocol/results',
+    },
+    {
+      name: navigationItems?.aiAssistant,
       path: 'https://chatgpt.com/g/g-6952e0caa7c88191b1ba18e63b36dd69-tom-longevity-and-food-guide-by-keepsimple-io',
       icon: <TomIcon />,
     },
@@ -57,32 +71,32 @@ const MobileNavigation: FC = () => {
   // TODO: Move sub nav items
   const subNavItems = [
     {
-      name: 'Habits - Lifestyle',
+      name: subNavigationItems?.lifestyle,
       path: '/tools/longevity-protocol/habits/lifestyle',
       icon: <LifestyleIcon />,
     },
     {
-      name: 'Habits - Study',
+      name: subNavigationItems?.study,
       path: '/tools/longevity-protocol/habits/study',
       icon: <StudyIcon />,
     },
     {
-      name: 'Habits - Diet',
+      name: subNavigationItems?.diet,
       path: '/tools/longevity-protocol/habits/diet',
       icon: <DietIcon />,
     },
     {
-      name: 'Habits - Workout',
+      name: subNavigationItems?.workout,
       path: '/tools/longevity-protocol/habits/workout',
       icon: <WorkoutIcon />,
     },
     {
-      name: 'Habits - Sleep',
+      name: subNavigationItems?.sleep,
       path: '/tools/longevity-protocol/habits/sleep',
       icon: <SleepIcon />,
     },
     {
-      name: 'Habits - Supplements',
+      name: subNavigationItems?.supplements,
       path: '/tools/longevity-protocol/habits/supplements',
       icon: <SupplementsIcon />,
     },
@@ -143,7 +157,7 @@ const MobileNavigation: FC = () => {
                 [styles.disableContentsTxt]: openNav,
               })}
             >
-              Contents
+              {contentsTxt}
             </span>
             <NavigationIcon
               className={cn(styles.arrow, {
@@ -232,7 +246,7 @@ const MobileNavigation: FC = () => {
         className={styles.nextButton}
         onClick={() => nextPathname && router.push(nextPathname.path)}
       >
-        <span className={styles.nextStaticTxt}>Next:</span>{' '}
+        <span className={styles.nextStaticTxt}>{nextBtn}</span>{' '}
         <span className={styles.nextPage}> {nextPathname.name}</span>
       </BorderedPill>
     </>

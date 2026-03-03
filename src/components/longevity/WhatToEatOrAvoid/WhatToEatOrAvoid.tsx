@@ -15,6 +15,7 @@ import { WhatToEatOrAvoidProps } from './WhatToEatOrAvoid.types';
 import Divider from '@icons/longevity/Divider';
 
 import styles from './WhatToEatOrAvoid.module.scss';
+import longevityData from '@data/longevity';
 
 const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   damageIndex,
@@ -26,11 +27,13 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   setSelectedHealthyOptionId,
   selectedHealthyOptionId,
   id,
+  tooltipSubText,
+  locale,
 }) => {
   const [exampleContent, setExampleContent] = useState('');
   const isMobile = useIsWidthLessThan(956);
   const [openMobileModal, setOpenMobileModal] = useState(false);
-
+  const { whatTOEatOrAvoidContent } = longevityData[locale];
   const getPText = (html: string) => {
     if (!html) return '';
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -46,7 +49,8 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
     <div
       className={cn(styles.whatToEatOrAvoid, {
         [styles.selected]: selectedHealthyOptionId === Number(id),
-        [styles.whatToEatSection]: setSelectedHealthyOptionId,
+        [styles.whatToEatSection]: selectedHealthyOptionId,
+        [styles.whatToEatOrAvoidRu]: locale === 'ru',
       })}
       onClick={e => {
         const selectedText = window.getSelection?.()?.toString() ?? '';
@@ -74,7 +78,9 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
             height={16}
             className={styles.img}
           />
-          <span> Damage index: {damageIndex}</span>
+          <span>
+            {whatTOEatOrAvoidContent.damageIndexTxt} {damageIndex}
+          </span>
         </div>
         <div className={styles.item}>
           <Image
@@ -97,7 +103,6 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
             className={styles.icon}
           />
           <div className={styles.examples}>
-            <span></span>
             <p className={styles.exampleContent}> {exampleContent}</p>
           </div>
         </div>
@@ -107,7 +112,10 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
         {selectedHealthyOptionId && (
           <>
             {selectedHealthyOptionId === Number(id) && (
-              <span className={styles.label}> Your diet </span>
+              <span className={styles.label}>
+                {' '}
+                {whatTOEatOrAvoidContent.yourDietTxt}{' '}
+              </span>
             )}
             <div
               role="checkbox"
@@ -149,7 +157,12 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
               opacity={1}
               clickable
             >
-              <AboutTheProduct content={tooltipContent} title={title} />
+              <AboutTheProduct
+                content={tooltipContent}
+                title={title}
+                subTitle={tooltipSubText}
+                locale={locale}
+              />
             </ReactTooltip>
           )}
           {isMobile && openMobileModal && (
@@ -158,7 +171,12 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
               size={'full'}
               isLongevityProtocolModal
             >
-              <AboutTheProduct content={tooltipContent} title={title} />
+              <AboutTheProduct
+                content={tooltipContent}
+                subTitle={tooltipSubText}
+                title={title}
+                locale={locale}
+              />
             </Modal>
           )}
         </div>

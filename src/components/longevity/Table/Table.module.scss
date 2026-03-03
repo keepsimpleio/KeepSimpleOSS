@@ -8,6 +8,7 @@
     background-image: url('/keepsimple_/assets/longevity/sleep/sleep-headline.png ');
     background-repeat: no-repeat;
     position: relative;
+    background-size: cover;
 
     &::after {
       content: '';
@@ -89,6 +90,14 @@
     .fourthTd {
       background-image: url('/keepsimple_/assets/longevity/sleep/forth-row.png');
       background-repeat: no-repeat;
+    }
+  }
+}
+
+.tableRu {
+  .headerRow {
+    .headline {
+      font-family: 'Source-Serif-Regular', serif !important;
     }
   }
 }

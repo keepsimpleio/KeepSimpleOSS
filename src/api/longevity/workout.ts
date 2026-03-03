@@ -1,5 +1,5 @@
 export async function getWorkout(locale: string) {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-workout?populate=*`;
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-workout?populate=*&locale=${locale}`;
 
   const res = await fetch(url, {
     next: { revalidate: 3600 },

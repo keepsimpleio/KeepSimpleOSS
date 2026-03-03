@@ -1,5 +1,5 @@
 export async function getLongevityResults(locale: string) {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-result?populate=*`;
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/longevity-result?populate=*&locale=${locale}`;
 
   const res = await fetch(url, {
     next: { revalidate: 3600 },

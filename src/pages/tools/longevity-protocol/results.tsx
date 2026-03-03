@@ -1,17 +1,23 @@
 import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 
 import ResultsLayout from '@layouts/ResultsLayout';
+
+import type { TRouter } from '@local-types/global';
 
 import { getLongevityResults } from '@api/longevity/results';
 import SeoGenerator from '@components/SeoGenerator';
 import { ogImage } from '@constants/longevity';
 
 const Results = ({ yearlyResults }) => {
+  const router = useRouter();
+  const { locale } = router as TRouter;
+  const currentLocale = locale === 'ru' ? 'ru' : 'en';
   const OGTags = {
-    ogDescription: yearlyResults['en']?.ogDescription || '',
-    ogTitle: yearlyResults['en']?.ogTitle || '',
-    ogType: yearlyResults['en']?.ogType || '',
-    ogImageAlt: yearlyResults['en']?.ogImageAlt || '',
+    ogDescription: yearlyResults[currentLocale]?.ogDescription || '',
+    ogTitle: yearlyResults[currentLocale]?.ogTitle || '',
+    ogType: yearlyResults[currentLocale]?.ogType || '',
+    ogImageAlt: yearlyResults[currentLocale]?.ogImageAlt || '',
     ogImage: {
       data: {
         attributes: {
@@ -25,19 +31,19 @@ const Results = ({ yearlyResults }) => {
     <>
       <SeoGenerator
         strapiSEO={{
-          description: yearlyResults['en']?.Seo?.seoDescription,
-          keywords: yearlyResults['en']?.Seo?.keywords,
-          title: yearlyResults['en']?.Seo?.pageTitle,
-          seoTitle: yearlyResults['en']?.Seo?.seoTitle,
+          description: yearlyResults[currentLocale]?.Seo?.seoDescription,
+          keywords: yearlyResults[currentLocale]?.Seo?.keywords,
+          title: yearlyResults[currentLocale]?.Seo?.pageTitle,
+          seoTitle: yearlyResults[currentLocale]?.Seo?.seoTitle,
         }}
         isLongevityPage
         ogTags={OGTags}
-        createdDate={yearlyResults['en']?.createdAt}
-        modifiedDate={yearlyResults['en']?.updatedAt}
+        createdDate={yearlyResults[currentLocale]?.createdAt}
+        modifiedDate={yearlyResults[currentLocale]?.updatedAt}
       />
       <ResultsLayout
-        data={yearlyResults ? yearlyResults['en'] : null}
-        locale={'en'}
+        data={yearlyResults ? yearlyResults[currentLocale] : null}
+        locale={currentLocale}
       />
     </>
   );

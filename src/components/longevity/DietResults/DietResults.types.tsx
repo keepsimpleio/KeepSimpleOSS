@@ -14,4 +14,6 @@ export type DietResultsProps = {
     id: number;
     imagePath: string;
   }[];
+  dietTxt?: string;
+  locale?: string;
 };
