@@ -1,4 +1,5 @@
 const en = {
+  mainTitle: 'Practical longevity protocol',
   habitTooltipTitle: 'Why do this?',
   foodScienceFactsTitle: 'Food-science facts that most influenced my choices',
   whatNotToEatTitle: 'What not to eat',

@@ -9,7 +9,14 @@
   padding: 40px 0;
 }
 
-@media (max-width: 1160px) {
+.heroRu {
+  h1 {
+    font-family: Cormorant_Garamond-Regular, sans-serif !important;
+    font-weight: 200 !important;
+  }
+}
+
+@media (max-width: 1350px) {
   .hero {
     text-align: center;
 
