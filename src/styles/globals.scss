@@ -33,6 +33,7 @@ body.noScroll {
 
 html::-webkit-scrollbar-thumb {
   background: rgba(40, 88, 123, 0.5);
+  //background: #e2d0b1;
 }
 
 html.scroll-style-home::-webkit-scrollbar-thumb {
@@ -41,6 +42,9 @@ html.scroll-style-home::-webkit-scrollbar-thumb {
 
 html.scroll-style-articles::-webkit-scrollbar-thumb {
   background-color: #262626;
+}
+html.scroll-style-longevity::-webkit-scrollbar-thumb {
+  background: #e2d0b1;
 }
 .hide-body-move {
   scrollbar-gutter: stable;

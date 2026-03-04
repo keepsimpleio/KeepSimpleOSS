@@ -11,7 +11,7 @@
 .footerImage {
   width: 100%;
   object-position: center;
-  object-fit: none;
+  object-fit: cover;
 }
 
 .footerImage {
@@ -97,12 +97,5 @@
   .coverImage,
   .footerImage {
     object-fit: cover;
-  }
-}
-
-@media (min-width: 1366px) {
-  .coverImage,
-  .footerImage {
-    object-fit: none;
   }
 }

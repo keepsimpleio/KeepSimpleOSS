@@ -55,15 +55,26 @@
       gap: 6px;
       font-family: Sarabun-Medium, sans-serif;
 
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #131313;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        will-change: transform;
+      }
+
       &:hover {
+        color: #131313;
+        transition: color 0.3s ease;
+
         &:after {
-          content: '';
-          position: absolute;
-          bottom: -3px;
-          left: 0;
-          width: 100%;
-          height: 2px;
           background-color: #131313;
+          transform: scaleX(1);
         }
       }
     }
@@ -92,6 +103,8 @@
         width: 100%;
         height: 2px;
         background-color: #131313;
+        transform: scaleX(1);
+        transition: none;
       }
     }
   }
@@ -115,7 +128,13 @@
     .url {
       color: #dadada;
 
+      &:after {
+        background-color: #dadada;
+      }
+
       &:hover {
+        color: #dadada;
+
         &:after {
           background-color: #dadada;
         }
@@ -221,6 +240,7 @@
       &:after {
         content: none;
       }
+
       &:hover {
         &:after {
           content: none;

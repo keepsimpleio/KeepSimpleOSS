@@ -2,19 +2,25 @@ import React, { FC, useMemo, useState } from 'react';
 import Image from 'next/image';
 import cn from 'classnames';
 
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 import ProgressBar from '@components/longevity/ProgressBar/ProgressBar';
 import Heading from '@components/Heading';
 
 import { STOPS } from '@constants/longevity';
 
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import styles from './WeeklyWorkout.module.scss';
 import longevityData from '@data/longevity';
+
 import { WeeklyWorkoutProps } from './WeeklyWorkout.types';
+
+import { useIsWidthLessThan } from '@hooks/useScreenSize';
+
+import styles from './WeeklyWorkout.module.scss';
 
 const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
   const { totalWeeklyActivity } = longevityData[locale];
+  const isMobile = useIsWidthLessThan(1140);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedMinutes] = useMemo(() => {
@@ -85,7 +91,9 @@ const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
         stops={STOPS}
         setStopIndex={setSelectedIndex}
         stopIndex={selectedIndex}
-        minutesTxt={totalWeeklyActivity.minutes}
+        minutesTxt={
+          isMobile ? totalWeeklyActivity.min : totalWeeklyActivity.minutes
+        }
       />
       <div className={styles.wrapper}>
         {images.map(image => {

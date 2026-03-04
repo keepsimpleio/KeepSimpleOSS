@@ -141,6 +141,8 @@ const MobileNavigation: FC = () => {
     return next ? { name: next.name, path: next.path } : null;
   };
 
+  const isHabitsItem = (item: { hasNoUrl?: boolean }) => Boolean(item.hasNoUrl);
+
   const nextPathname = getNextNavItem(navItems, subNavItems);
 
   return (
@@ -172,10 +174,10 @@ const MobileNavigation: FC = () => {
               key={item.path}
               className={cn(styles.li, {
                 [styles.active]: router.pathname === item.path,
-                [styles.habitsLi]: item.name === 'Habits',
+                [styles.habitsLi]: isHabitsItem(item),
               })}
               onClick={() => {
-                if (item.name === 'Habits') {
+                if (isHabitsItem(item)) {
                   setOpenSubNav(!openSubNav);
                 } else {
                   setOpenNav(!openNav);
@@ -184,7 +186,7 @@ const MobileNavigation: FC = () => {
             >
               <span
                 className={cn(styles.txtAndIcon, {
-                  [styles.habitsTxtAndIcon]: item.name === 'Habits',
+                  [styles.habitsTxtAndIcon]: isHabitsItem(item),
                 })}
               >
                 {item.icon && <span className={styles.icon}>{item.icon}</span>}
@@ -195,12 +197,12 @@ const MobileNavigation: FC = () => {
                     href={item.path}
                     passHref
                     className={styles.link}
-                    target={item.name === 'AI Assistant' ? '_blank' : '_self'}
+                    target={isInternal(item.path) ? '_self' : '_blank'}
                   >
                     {item.name}
                   </Link>
                 )}
-                {item.name === 'Habits' && (
+                {isHabitsItem(item) && (
                   <NavigationIcon
                     className={cn(styles.habitsArrow, {
                       [styles.openHabitsArrow]: openSubNav,
@@ -211,7 +213,7 @@ const MobileNavigation: FC = () => {
               {item.icon && <NewPageIcon />}
 
               <Divider className={styles.divider} />
-              {item.name === 'Habits' && (
+              {isHabitsItem(item) && (
                 <ul
                   className={cn(styles.subNav, {
                     [styles.openSubNav]:
