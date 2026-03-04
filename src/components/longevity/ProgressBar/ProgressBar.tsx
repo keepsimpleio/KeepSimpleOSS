@@ -15,6 +15,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
   minutesTxt,
 }) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const labelsRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const selectedMinutes = useMemo(() => stops[stopIndex], [stops, stopIndex]);
@@ -23,7 +24,31 @@ const ProgressBar: FC<ProgressBarProps> = ({
     [stopIndex, stops.length],
   );
 
-  const firstItemPercentage = stopIndex === 0 ? `4%` : `${percent}%`;
+  const fillPercentage = useMemo(() => {
+    const n = isStrengthSection ? activityLevels?.length : stops.length;
+    const isFirst = stopIndex === 0;
+    const isLast = stopIndex === n - 1;
+
+    if (isFirst) return '4%';
+    if (isLast) return '100%';
+
+    const labelsEl = labelsRef.current;
+    const containerEl = trackRef.current;
+    if (labelsEl && containerEl) {
+      const labelSpans = labelsEl.querySelectorAll('span');
+      const label = labelSpans[stopIndex];
+      if (label) {
+        const labelRect = label.getBoundingClientRect();
+        const containerRect = containerEl.getBoundingClientRect();
+        const labelCenter =
+          labelRect.left + labelRect.width / 2 - containerRect.left;
+        const pct = (labelCenter / containerRect.width) * 100;
+        return `${pct}%`;
+      }
+    }
+
+    return `${percent}%`;
+  }, [stopIndex, stops.length, percent, isStrengthSection, activityLevels]);
 
   const getClosestIndexFromClientX = useCallback(
     (clientX: number) => {
@@ -80,7 +105,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.labels}>
+      <div className={styles.labels} ref={labelsRef}>
         {isStrengthSection
           ? activityLevels.map(l => (
               <span key={l.level} className={styles.label}>
@@ -103,11 +128,11 @@ const ProgressBar: FC<ProgressBarProps> = ({
         onPointerCancel={onPointerCancel}
       >
         <div className={styles.track} />
-        <div className={styles.fill} style={{ width: firstItemPercentage }} />
+        <div className={styles.fill} style={{ width: fillPercentage }} />
         <button
           type="button"
           className={styles.thumb}
-          style={{ left: firstItemPercentage }}
+          style={{ left: fillPercentage }}
           aria-label={`Selected ${selectedMinutes} minutes`}
         />
       </div>
