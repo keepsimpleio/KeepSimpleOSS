@@ -166,6 +166,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
       />
       <LongevitySubSection
         locale={locale}
+        isFoodChoices
         title={healthChoicesTitle}
         description={data?.['food choices for Armenia']}
         headlineBackgroundImageUrl={

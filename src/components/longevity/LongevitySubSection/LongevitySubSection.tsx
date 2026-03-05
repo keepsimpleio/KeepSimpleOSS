@@ -26,6 +26,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
   date,
   isHacks,
   damageTypeHeadline,
+  isFoodChoices,
 }) => {
   const { habitTooltipTitle } = longevityData[locale];
   const isMobile = useIsWidthLessThan(956);
@@ -95,7 +96,9 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
           {description ? (
             <div
               dangerouslySetInnerHTML={{ __html: description || '' }}
-              className={styles.content}
+              className={cn(styles.content, {
+                [styles.foodChoicesContent]: isFoodChoices,
+              })}
             />
           ) : (
             <div>{children}</div>
