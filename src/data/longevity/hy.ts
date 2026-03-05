@@ -7,6 +7,7 @@ const hy = {
   damageIndexTitle: 'Damage Index',
   examplesTitle: 'Examples',
   genericRulesTitle: 'Generic rules',
+  healthChoicesTitle: 'Food choices for Armenia',
   hacksTitle: 'Hacks',
   tooltipSubText: 'Consumption consequences',
   viewSleepChart: 'View sleep structure chart',
