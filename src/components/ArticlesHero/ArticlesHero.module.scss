@@ -48,8 +48,15 @@
 @media (max-width: 768px) {
   .heroSection {
     background-position: right;
+    height: 420px;
+    display: flex;
+    justify-content: center;
 
     .heroContent {
+      .title {
+        padding: 30px 0 16px 0;
+      }
+
       .p {
         padding: 16px 17px 20px 17px;
         margin: 0;

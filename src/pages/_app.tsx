@@ -156,6 +156,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
     const html = document.documentElement;
 
     html.classList.remove('scroll-style-articles');
+    html.classList.remove('scroll-style-longevity');
 
     if (
       router.pathname === '/' ||
@@ -163,6 +164,10 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
       router.asPath.startsWith('/articles/')
     ) {
       html.classList.add('scroll-style-articles');
+    }
+
+    if (router.asPath.startsWith('/tools/')) {
+      html.classList.add('scroll-style-longevity');
     }
   }, [router.pathname, router.asPath]);
 

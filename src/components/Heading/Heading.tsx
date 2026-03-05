@@ -44,6 +44,7 @@ const Heading: FC<HeadingProps> = ({
         )}
         <Tag
           className={cn(styles.heading, {
+            [styles.h1]: Tag === 'h1',
             [styles.small]: Tag === 'h2' || Tag === 'h3',
             [styles.h4]: Tag === 'h4',
             [styles.h5]: Tag === 'h5',
