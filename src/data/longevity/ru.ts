@@ -7,6 +7,7 @@ const ru = {
   damageIndexTitle: 'Индекс вреда',
   examplesTitle: 'Примеры',
   genericRulesTitle: 'Общие правила',
+  healthChoicesTitle: 'Полезные продукты в Армении',
   hacksTitle: 'Лайфхаки',
   tooltipSubText: 'Последствия потребления',
   viewSleepChart: 'Показать чарт структуры сна',

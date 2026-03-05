@@ -3,7 +3,7 @@ const ru = {
   companyManagement: 'Управление Компанией',
   articles: 'Статьи',
   contributorsTxt: 'участники',
-  tools: 'Инструменты',
+  tools: 'Протокол Долголетия',
 };
 
 export default ru;

@@ -27,6 +27,7 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
     whatToEatTitle,
     whatNotToEatTitle,
     genericRulesTitle,
+    healthChoicesTitle,
     hacksTitle,
     tooltipSubText,
     whatTOEatOrAvoidContent,
@@ -159,6 +160,14 @@ const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
         locale={locale}
         title={genericRulesTitle}
         description={data?.['generic rules']}
+        headlineBackgroundImageUrl={
+          '/keepsimple_/assets/longevity/diet/generic-rules-headline.png'
+        }
+      />
+      <LongevitySubSection
+        locale={locale}
+        title={healthChoicesTitle}
+        description={data?.['food choices for Armenia']}
         headlineBackgroundImageUrl={
           '/keepsimple_/assets/longevity/diet/generic-rules-headline.png'
         }
