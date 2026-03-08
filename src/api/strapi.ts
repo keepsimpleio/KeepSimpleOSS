@@ -28,7 +28,7 @@ export const getArticles = async (locale: TLocales) => {
   const articleUrl = `${process.env.NEXT_PUBLIC_STRAPI}/api/articles?locale=${currentLocale}
 &populate[coverImage]=*
 &populate[footerImage]=*
-&populate[OGTags][populate]=ogImage`;
+&populate[OGTags][populate]=ogImage&pagination[pageSize]=50`;
   const articles: TArticle[] = await fetch(articleUrl)
     .then(resp => resp.json())
     .then(json => json?.data || []);
