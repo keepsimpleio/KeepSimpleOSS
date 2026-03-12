@@ -249,7 +249,7 @@ const MobileNavigation: FC = () => {
         onClick={() => nextPathname && router.push(nextPathname.path)}
       >
         <span className={styles.nextStaticTxt}>{nextBtn}</span>{' '}
-        <span className={styles.nextPage}> {nextPathname.name}</span>
+        <span className={styles.nextPage}> {nextPathname?.name}</span>
       </BorderedPill>
     </>
   );
