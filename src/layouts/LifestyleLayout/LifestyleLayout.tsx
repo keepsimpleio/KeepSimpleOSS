@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
-import MainInfoSection from '@components/longevity/MainInfoSection';
 import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import MainInfoSection from '@components/longevity/MainInfoSection';
 
 import { LifestyleLayoutProps } from './LifestyleLayout.types';
 

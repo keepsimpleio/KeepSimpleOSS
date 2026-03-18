@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import { P, List, Collection, Image, Span, Link } from './elements';
+
+import { Collection, Image, Link, List, P, Span } from './elements';
 
 type ContentGeneratorProps = {
   data: any;

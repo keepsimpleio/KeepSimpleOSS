@@ -1,12 +1,12 @@
-import { FC } from 'react';
 import cn from 'classnames';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { FC } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 import type { TRouter } from '@local-types/global';
 
 import styles from './UsedBy.module.scss';
-import { useInView } from 'react-intersection-observer';
-import Image from 'next/image';
 
 type UsedByProps = {
   darkTheme?: boolean;

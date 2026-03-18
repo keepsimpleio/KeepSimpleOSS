@@ -1,6 +1,6 @@
-import { FC } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import { FC } from 'react';
 
 import Heading from '@components/Heading';
 
@@ -14,6 +14,7 @@ const BasicStats: FC<BasicStatsProps> = ({ data, title, locale }) => {
       className={cn(styles.basicStats, {
         [styles.basicStatsRu]: locale === 'ru',
       })}
+      data-cy="basic-stats"
     >
       <Heading
         text={title}
@@ -25,7 +26,7 @@ const BasicStats: FC<BasicStatsProps> = ({ data, title, locale }) => {
       />
       <div className={styles.statsList}>
         {data.map((stat, index) => (
-          <div key={index} className={styles.statItem}>
+          <div key={index} className={styles.statItem} data-cy="stat-item">
             <Image
               width={23}
               height={20}
@@ -34,7 +35,7 @@ const BasicStats: FC<BasicStatsProps> = ({ data, title, locale }) => {
               className={styles.icon}
             />
 
-            <span className={styles.statValue}>
+            <span className={styles.statValue} data-cy="stat-value">
               {stat.label}: {stat.value}
             </span>
           </div>

@@ -51,6 +51,14 @@ export type TArticle = {
   headline?: string;
   createdAt: string;
   updatedAt: string;
+  footerImage?: {
+    data: {
+      attributes: {
+        name: string;
+        url: string;
+      };
+    };
+  };
   OGTags: {
     ogDescription: string;
     ogTitle: string;

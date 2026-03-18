@@ -1,11 +1,14 @@
-import React, { FC, useMemo, useState } from 'react';
 import cn from 'classnames';
-
-import Heading from '@components/Heading';
-import ProgressBar from '@components/longevity/ProgressBar';
+import React, { FC, useMemo, useState } from 'react';
 
 import { ACTIVITY_LEVELS } from '@constants/longevity';
+
 import longevityData from '@data/longevity';
+
+import Heading from '@components/Heading';
+import BorderedPill from '@components/longevity/BorderedPill';
+import Digit from '@components/longevity/Digit/Digit';
+import ProgressBar from '@components/longevity/ProgressBar';
 
 import { StrengthAndTimeCompressionProps } from './StrengthAndTimeCompression.types';
 
@@ -28,6 +31,7 @@ const StrengthAndTimeCompression: FC<StrengthAndTimeCompressionProps> = ({
       className={cn(styles.strengthAndTimeCompression, {
         [styles.strengthAndTimeCompressionRu]: locale === 'ru',
       })}
+      data-cy="strength-section"
     >
       <Heading
         text={totalWeeklyActivity.strengthTitle}
@@ -60,7 +64,7 @@ const StrengthAndTimeCompression: FC<StrengthAndTimeCompressionProps> = ({
             stops[selectedIndex] === 3 || stops[selectedIndex] === 4,
         })}
       >
-        <span className={styles.totalMins}>
+        <span className={styles.totalMins} data-cy="strength-total-mins">
           {selectedLevel.totalMinutesPerWeek}
         </span>
         <span className={styles.staticBigText}> {totalWeeklyActivity.min}</span>
@@ -70,20 +74,33 @@ const StrengthAndTimeCompression: FC<StrengthAndTimeCompressionProps> = ({
         </span>
       </div>
       <div className={styles.result}>
-        <p className={styles.perWeek}>
-          <span className={styles.quantity}> 3 </span>
+        <BorderedPill
+          className={styles.perWeek}
+          contentClassName={styles.content}
+        >
+          <div className={styles.quantity}>
+            <Digit value={3} size={24} />
+          </div>
           <span className={styles.staticText}>
             {totalWeeklyActivity.sessionsAndWeek}
           </span>
-        </p>
-        <p className={styles.perSession}>
-          <span className={styles.quantity}>
-            {selectedLevel.minutesPerSession}
-          </span>
+        </BorderedPill>
+        <BorderedPill
+          className={styles.perSession}
+          contentClassName={styles.content}
+        >
+          <div
+            className={styles.quantity}
+            data-cy="strength-per-session-qty"
+            data-value={selectedLevel.minutesPerSession}
+          >
+            <Digit value={selectedLevel.minutesPerSession} size={24} />
+          </div>
+
           <span className={styles.staticText}>
             {totalWeeklyActivity.minAndSessions}
           </span>
-        </p>
+        </BorderedPill>
       </div>
     </section>
   );

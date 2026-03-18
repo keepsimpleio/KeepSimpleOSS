@@ -1,19 +1,19 @@
-import { FC, useContext, useEffect, useState } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { FC, useContext, useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
+
+import { socialMediaLinks } from '@constants/common';
 
 import { TRouter } from '@local-types/global';
 
-import { socialMediaLinks } from '@constants/common';
+import contributors from '@data/contributors';
 
 import AudioPlayer from '@components/AudioPlayer';
 import { GlobalContext } from '@components/Context/GlobalContext';
 
 import styles from './Headline.module.scss';
-
-import contributors from '@data/contributors';
 
 type HeadlineProps = {
   headline: string;
@@ -273,7 +273,7 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
             height={600}
           >
             <source
-              src="/keepsimple_/assets/mobile-leaves-compressed.mp4"
+              src="/keepsimple_/assets/Mobile-Leaves-Compressed1.mp4"
               type="video/mp4"
             />
             Your browser does not support the video tag.

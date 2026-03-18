@@ -1,6 +1,6 @@
+import cn from 'classnames';
 import type { FC } from 'react';
 import { Fragment } from 'react';
-import cn from 'classnames';
 
 import useGlobals from '@hooks/useGlobals';
 

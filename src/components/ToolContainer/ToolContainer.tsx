@@ -1,11 +1,11 @@
-import { FC, useContext } from 'react';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
+import { FC, useContext } from 'react';
 import { flushSync } from 'react-dom';
 
-import { handleMixpanelClick } from '../../../lib/mixpanel';
-
 import { GlobalContext } from '@components/Context/GlobalContext';
+
+import { handleMixpanelClick } from '../../../lib/mixpanel';
 
 import styles from './ToolContainer.module.scss';
 

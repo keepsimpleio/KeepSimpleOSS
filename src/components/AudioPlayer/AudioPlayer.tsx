@@ -1,6 +1,6 @@
-import { FC, useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import { FC, useEffect, useRef, useState } from 'react';
 
 import styles from './AudioPlayer.module.scss';
 

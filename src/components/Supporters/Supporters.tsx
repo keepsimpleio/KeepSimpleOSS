@@ -1,14 +1,15 @@
-import { FC } from 'react';
 import cn from 'classnames';
-import type { TRouter } from '@local-types/global';
+import { useRouter } from 'next/router';
+import { FC } from 'react';
 import { useInView } from 'react-intersection-observer';
+
+import type { TRouter } from '@local-types/global';
+
+import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import SupporterContainer from '@components/SupporterContainer';
 
-import { useRouter } from 'next/router';
-
 import styles from './Supporters.module.scss';
-import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 type Supporter = {
   id: number;

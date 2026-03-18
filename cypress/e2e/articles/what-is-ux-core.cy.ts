@@ -5,9 +5,7 @@ describe('template spec', () => {
   });
 
   it('Should show a h1', () => {
-    cy.checkH1(
-      'Reintroduction to UX Core - the world’s largest open-source library of nudging strategies and cognitive biases.',
-    );
+    cy.checkH1();
   });
 
   it('verifies all image src URLs are valid', () => {

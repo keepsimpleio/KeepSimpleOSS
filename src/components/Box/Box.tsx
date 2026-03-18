@@ -1,12 +1,12 @@
-import { FC } from 'react';
-import { useRouter } from 'next/router';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { FC } from 'react';
 
-import Button from '@components/Button';
+import { TRouter } from '@local-types/global';
 
 import cookieData from '@data/cookies';
 
-import { TRouter } from '@local-types/global';
+import Button from '@components/Button';
 
 import styles from './Box.module.scss';
 
@@ -22,6 +22,7 @@ const Box: FC<CookiesBoxProps> = ({ setIsSeen }) => {
   return (
     <div>
       <div
+        data-cy="cookie-box"
         className={cn(styles.content, {
           [styles.hyLang]: locale === 'hy',
         })}
@@ -31,7 +32,12 @@ const Box: FC<CookiesBoxProps> = ({ setIsSeen }) => {
         </div>
         <p className={styles.txt}>{description}</p>
         <div className={styles.btnWrapper}>
-          <Button label={ok} onClick={setIsSeen} variant={'primary'} />
+          <Button
+            label={ok}
+            onClick={setIsSeen}
+            variant={'primary'}
+            dataCy="cookie-box-accept"
+          />
         </div>
       </div>
     </div>

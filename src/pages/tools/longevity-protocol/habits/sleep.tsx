@@ -1,13 +1,16 @@
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
+import { ogImage } from '@constants/longevity';
+
+import type { TRouter } from '@local-types/global';
+
 import { getSleep } from '@api/longevity/sleep';
 import { getSleepSupplements } from '@api/longevity/sleep-supplements';
 
-import SleepLayout from '@layouts/SleepLayout/SleepLayout';
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
-import type { TRouter } from '@local-types/global';
+
+import SleepLayout from '@layouts/SleepLayout/SleepLayout';
 
 const Sleep = ({ sleepData, sleepSupplements }) => {
   const router = useRouter();
@@ -37,6 +40,7 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
           seoTitle: sleepData[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={sleepData[currentLocale]?.createdAt || ''}
         modifiedDate={sleepData[currentLocale]?.updatedAt || ''}

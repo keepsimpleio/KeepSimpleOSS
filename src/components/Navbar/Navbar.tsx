@@ -1,22 +1,22 @@
-import React, { FC, useContext } from 'react';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
+import React, { FC, useContext } from 'react';
 
 import type { TRouter } from '@local-types/global';
 
 import useGlobals from '@hooks/useGlobals';
-import { GlobalContext } from '@components/Context/GlobalContext';
+import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import navbar from '@data/navbar';
 
-import { useIsWidthLessThan } from '@hooks/useScreenSize';
-
-import UXCoreIcon from '@icons/UXCoreIcon';
-import CompanyManagementIcon from '@icons/CompanyManagementIcon';
-import ArticlesIcon from '@icons/ArticlesIcon';
 import ArticlesDarkIcon from '@icons/ArticlesDarkIcon';
-import ToolsIcon from '@icons/ToolsIocn';
+import ArticlesIcon from '@icons/ArticlesIcon';
+import CompanyManagementIcon from '@icons/CompanyManagementIcon';
 import ToolsDarkIcon from '@icons/ToolsDarkIcon';
+import ToolsIcon from '@icons/ToolsIocn';
+import UXCoreIcon from '@icons/UXCoreIcon';
+
+import { GlobalContext } from '@components/Context/GlobalContext';
 
 import styles from './Navbar.module.scss';
 

@@ -1,12 +1,13 @@
-import { FC, useContext, useEffect } from 'react';
-import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { signIn, useSession } from 'next-auth/react';
+import { FC, useContext, useEffect } from 'react';
+
+import { deleteRedirectCookie, getRedirectCookie } from '@lib/cookies';
 
 import { authenticate } from '@api/auth';
 
-import Spinner from '@components/Spinner';
 import { GlobalContext } from '@components/Context/GlobalContext';
-import { deleteRedirectCookie, getRedirectCookie } from '@lib/cookies';
+import Spinner from '@components/Spinner';
 
 const Auth: FC = () => {
   const { setAccountData, setToken } = useContext(GlobalContext);

@@ -1,8 +1,8 @@
+import unescape from 'lodash.unescape';
 import { FC, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
-import unescape from 'lodash.unescape';
+import remarkBreaks from 'remark-breaks';
 
 import useContentType from '@hooks/useContentType';
 

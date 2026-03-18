@@ -1,11 +1,13 @@
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
-import EnvironmentLayout from '@layouts/EnvironmentLayout/EnvironmentLayout';
+import { ogImage } from '@constants/longevity';
 
 import { getEnvironment } from '@api/longevity/environment';
+
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
+
+import EnvironmentLayout from '@layouts/EnvironmentLayout/EnvironmentLayout';
 
 const Environment = ({ environment }) => {
   const router = useRouter();
@@ -35,6 +37,7 @@ const Environment = ({ environment }) => {
           seoTitle: environment[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={environment[currentLocale]?.createdAt || ''}
         modifiedDate={environment[currentLocale]?.updatedAt || ''}

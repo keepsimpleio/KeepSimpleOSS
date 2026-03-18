@@ -1,34 +1,54 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import React, { useEffect, useRef, useState } from 'react';
 
-import ContentHandler from '@components/ContentHandler';
-import SeoGenerator from '@components/SeoGenerator';
-import Spinner from '@components/Spinner';
-import Custom404 from '../404';
+import { TArticle, TLocales, TPaths, TStaticProps } from '@local-types/data';
 
-import HomeLayout from '@layouts/HomeLayout';
+import useGlobals from '@hooks/useGlobals';
 
 import {
   getArticleNewPaths,
   getArticles,
   getCurrentArticle,
+  getRecommendedArticles,
 } from '@api/strapi';
-
-import { TArticle, TLocales, TPaths, TStaticProps } from '@local-types/data';
 
 import pageNotFoundData from '@data/404';
 
-import useGlobals from '@hooks/useGlobals';
+import ArticleSection from '@components/ArticleSection';
+import ContentHandler from '@components/ContentHandler';
+import SeoGenerator from '@components/SeoGenerator';
+import Spinner from '@components/Spinner';
+
+import ArticleLayout from '@layouts/ArticleLayout';
+
+import Custom404 from '../404';
 
 import styles from './page.module.scss';
+
+const HY_NOINDEX_SLUGS = [
+  'table-of-contents',
+  'why-study-management',
+  'what-is-a-project',
+  'project-artifacts-and-their-importance',
+];
 
 type ArticleProps = {
   data: TArticle;
   locale: TLocales;
+  recommendedArticles: any[];
+  hyNoIndex?: boolean;
+  canonicalUrl?: string;
 };
 
-const Article = ({ data, locale }: ArticleProps) => {
+const Article = ({
+  data,
+  locale,
+  recommendedArticles,
+  hyNoIndex,
+  canonicalUrl,
+}: ArticleProps) => {
   const {
     seoDescription: description = '',
     seoTitle: title = '',
@@ -82,19 +102,41 @@ const Article = ({ data, locale }: ArticleProps) => {
   if (!Object.keys(data).length) {
     return <Custom404 intl={pageNotFoundData[locale]} locale={currentLocale} />;
   }
-
   return (
     <>
       <SeoGenerator
         strapiSEO={{ description, title, keywords, pageTitle }}
+        type={'Article'}
         ogTags={ogTags}
         createdDate={data.createdAt}
         modifiedDate={data.updatedAt}
+        forceNoIndex={hyNoIndex}
+        canonicalOverride={canonicalUrl}
       />
       <section ref={articleRef} className={styles.section}>
-        <HomeLayout>
+        <ArticleLayout>
           <ContentHandler data={data} locale={locale} />
-        </HomeLayout>
+        </ArticleLayout>
+        {recommendedArticles?.length > 0 && (
+          <ArticleSection
+            isRecommended
+            isFeatured={false}
+            articles={recommendedArticles}
+            title={
+              locale === 'ru' ? 'Рекомендуемые статьи' : 'Recommended articles'
+            }
+            locale={locale}
+          />
+        )}
+        {data?.footerImage?.data?.attributes?.url && (
+          <Image
+            src={`${process.env.NEXT_PUBLIC_STRAPI}${data?.footerImage?.data?.attributes?.url}`}
+            alt={data?.footerImage?.data?.attributes?.name}
+            height={160}
+            className={styles.footerImage}
+            width={1920}
+          />
+        )}
         <Spinner />
       </section>
     </>
@@ -123,10 +165,20 @@ export const getStaticProps: GetStaticProps = async ({
     return { notFound: true };
   }
 
+  const recommendedArticles = getRecommendedArticles(articles, page);
+
+  const hyNoIndex = locale === 'hy' && HY_NOINDEX_SLUGS.includes(page);
+  const domain = process.env.NEXT_PUBLIC_DOMAIN ?? 'https://keepsimple.io';
+
   return {
     props: {
       data: article || {},
       locale,
+      recommendedArticles,
+      ...(hyNoIndex && {
+        hyNoIndex: true,
+        canonicalUrl: `${domain}/articles/${page}`,
+      }),
     },
     revalidate: 10,
   };

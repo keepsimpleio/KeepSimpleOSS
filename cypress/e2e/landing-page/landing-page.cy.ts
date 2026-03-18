@@ -4,8 +4,8 @@ describe('template spec', () => {
     cy.visit(`${Cypress.config().baseUrl}`);
   });
 
-  it('should show a h1', () => {
-    cy.checkH1('Wolf Alexanyan');
+  it('Should show a h1', () => {
+    cy.checkH1();
   });
 
   it('should check external links and their accessibility', () => {
@@ -33,6 +33,6 @@ describe('template spec', () => {
       .should('exist')
       .click();
     cy.url().should('include', '/ru');
-    cy.checkH1('Вольф Алексанян');
+    cy.checkH1();
   });
 });

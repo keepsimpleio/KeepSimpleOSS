@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useRouter } from 'next/router';
 import {
   useContext,
@@ -6,18 +7,17 @@ import {
   useRef,
   useState,
 } from 'react';
-import { GlobalContext } from '@components/Context/GlobalContext';
-import Loader from '@components/longevity/Loader';
-
-import Header from '@components/Header';
-import Hero from '@components/longevity/Hero';
-import Navigation from '@components/longevity/Navigation';
-import MobileNavigation from '@components/longevity/MobileNavigation';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
+import { GlobalContext } from '@components/Context/GlobalContext';
+import Header from '@components/Header';
+import Hero from '@components/longevity/Hero';
+import Loader from '@components/longevity/Loader';
+import MobileNavigation from '@components/longevity/MobileNavigation';
+import Navigation from '@components/longevity/Navigation';
+
 import styles from './Layout.module.scss';
-import cn from 'classnames';
 
 type LayerKey = 'default' | 'red' | 'blue' | 'red-and-blue';
 
@@ -59,6 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const [transitionsOn, setTransitionsOn] = useState(false);
   const [canvasVisible, setCanvasVisible] = useState(true);
+  const [canvasAnimating, setCanvasAnimating] = useState(false);
 
   const isMobile = useIsWidthLessThan(956);
 
@@ -90,11 +91,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     if (next === activeLayer) return;
 
     setCanvasVisible(false);
+    setCanvasAnimating(false);
 
     const FADE_MS = 250;
+    const ANIM_MS = 350;
     const t = window.setTimeout(() => {
       setActiveLayer(next);
       setCanvasVisible(true);
+      setCanvasAnimating(true);
+      window.setTimeout(() => setCanvasAnimating(false), ANIM_MS);
     }, FADE_MS);
 
     return () => window.clearTimeout(t);
@@ -327,7 +332,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <section ref={sectionRef} className={styles.section}>
             <div
               ref={videoLayerRef}
-              className={`${styles.videoLayer} ${styles.videoLayerOn}`}
+              className={cn(styles.videoLayer, {
+                [styles.videoLayerOn]: videosReady,
+              })}
               aria-hidden
             >
               <canvas
@@ -337,7 +344,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   transitionsOn
                     ? styles.canvasTransitionOn
                     : styles.canvasTransitionOff,
-                  canvasVisible ? styles.canvasOn : styles.canvasOff,
+                  canvasAnimating ? styles.canvasOn : '',
+                  !canvasVisible ? styles.canvasOff : '',
                 ].join(' ')}
               />
               {(Object.keys(SOURCES) as LayerKey[]).map(k => (
@@ -372,3 +380,4 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     </>
   );
 }
+// 375

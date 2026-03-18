@@ -1,12 +1,12 @@
-import { type FC, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/router';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { type FC, useEffect, useMemo } from 'react';
+
+import { TRouter } from '@local-types/global';
 
 import staticData from '@data/companyManagement';
 
 import Triangle from '@components/_company-management/Pyramid/Triangle';
-
-import { TRouter } from '@local-types/global';
 
 import styles from './Pyramid.module.scss';
 

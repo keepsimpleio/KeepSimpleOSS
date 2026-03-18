@@ -14,7 +14,7 @@ declare global {
         selector?: string,
       ): Chainable<void>;
 
-      checkH1(expectedText: string): Chainable<void>;
+      checkH1(): Chainable<void>;
 
       scrollToSection(sectionText: string): Chainable<void>;
 
@@ -58,6 +58,8 @@ declare global {
 
       uxcpAddBiases: () => Chainable<void>;
       checkAllLinks: (routes) => Chainable<void>;
+      checkPageLinks: () => Chainable<void>;
+      checkJapaneseText: () => Chainable<void>;
       openLoginModalByButtonClick: (buttonLabel: string) => Chainable<void>;
       loginBySession: () => Chainable<void>;
     }

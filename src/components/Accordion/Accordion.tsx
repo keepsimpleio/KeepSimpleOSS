@@ -1,12 +1,12 @@
-import type { FC } from 'react';
-import { useRouter } from 'next/router';
 import cn from 'classnames';
-
-import ccordionIntl from '@data/accordion';
+import { useRouter } from 'next/router';
+import type { FC } from 'react';
 
 import type { TRouter } from '@local-types/global';
 
 import useMobile from '@hooks/useMobile';
+
+import ccordionIntl from '@data/accordion';
 
 import styles from './Accordion.module.scss';
 

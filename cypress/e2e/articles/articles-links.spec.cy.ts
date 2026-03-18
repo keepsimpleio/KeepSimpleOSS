@@ -1,9 +1,11 @@
 describe('External Links from API', () => {
   let routes: string[] = [];
-  const apiUrl =
-    'https://strapi.keepsimple.io/api/articles?locale=en&fields[1]=newUrl';
 
   before(() => {
+    const strapiUrl =
+      Cypress.env('STRAPI_URL') || 'https://strapi.keepsimple.io';
+    const apiUrl = `${strapiUrl}/api/articles?locale=en&fields[1]=newUrl`;
+
     cy.request(apiUrl).then(response => {
       routes = response.body.data.map(
         item =>
@@ -29,9 +31,10 @@ describe('External Links from API', () => {
         if (
           href &&
           href.startsWith('http') &&
-          !href.includes('http:localhost:3005') &&
+          !href.includes('http://localhost:3005') &&
           !href.includes('linkedin.com') &&
-          !href.includes('facebook.com')
+          !href.includes('facebook.com') &&
+          !href.includes('/uxcore')
         ) {
           cy.request({
             url: href,

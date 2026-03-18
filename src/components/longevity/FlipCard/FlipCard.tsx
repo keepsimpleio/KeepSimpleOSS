@@ -1,9 +1,9 @@
-import { FC } from 'react';
 import cn from 'classnames';
 import Image from 'next/image';
+import { FC } from 'react';
 
-import { FlipCardProps } from '@components/longevity/FlipCard/FlipCard.types';
 import Heading from '@components/Heading';
+import { FlipCardProps } from '@components/longevity/FlipCard/FlipCard.types';
 
 import styles from './FlipCard.module.scss';
 

@@ -5,10 +5,11 @@ export function generateSchema(
   image: string,
   publishedAt: string,
   updatedAt: string,
+  type?: string,
 ) {
   return {
     '@context': 'https://schema.org',
-    '@type': 'WebPage',
+    '@type': type || 'WebPage',
     headline: headline || 'KeepSimple',
     description: description || '',
     url: url || `https://keepsimple.io/`,

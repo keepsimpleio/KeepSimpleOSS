@@ -1,6 +1,7 @@
-import { type FC, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
+import { type FC, useEffect, useRef, useState } from 'react';
+
 import { TRouter } from '@local-types/global';
 
 import styles from './PyramidStats.module.scss';

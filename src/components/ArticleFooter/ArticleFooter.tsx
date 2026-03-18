@@ -1,7 +1,9 @@
 import cn from 'classnames';
-import useGlobals from '@hooks/useGlobals';
 import { useRouter } from 'next/router';
+
 import type { TRouter } from '@local-types/global';
+
+import useGlobals from '@hooks/useGlobals';
 
 import styles from './ArticleFooter.module.scss';
 

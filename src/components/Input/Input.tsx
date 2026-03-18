@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import {
   ChangeEvent,
   FC,
@@ -8,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import cn from 'classnames';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import styles from './Input.module.scss';

@@ -1,7 +1,8 @@
-import type { FC } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
+import type { FC } from 'react';
+
 import type { TRouter } from '@local-types/global';
 
 import { generateSchema } from '@lib/schema';
@@ -14,6 +15,9 @@ interface SeoGeneratorProps {
   modifiedDate?: string;
   createdDate?: string;
   isLongevityPage?: boolean;
+  type?: string;
+  forceNoIndex?: boolean;
+  canonicalOverride?: string;
   ogTags?: {
     ogDescription: string;
     ogTitle: string;
@@ -40,8 +44,20 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
   modifiedDate,
   localizedSlug,
   isLongevityPage,
+  type,
+  forceNoIndex,
+  canonicalOverride,
 }) => {
   const router = useRouter();
+
+  if (forceNoIndex && canonicalOverride) {
+    return (
+      <Head>
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href={canonicalOverride} />
+      </Head>
+    );
+  }
 
   const hasStrapiSEO =
     !!strapiSEO.title ||
@@ -156,6 +172,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
     favIcon,
     createdDate,
     modifiedDate,
+    type,
   );
 
   return (
@@ -165,6 +182,13 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=2"
+        />
+        <link
+          rel="preload"
+          href="/keepsimple_/fonts/Source-Serif-4/static/SourceSerif4-Regular.ttf"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
         <meta name="theme-color" content="#1e2023" />

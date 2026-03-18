@@ -41,6 +41,24 @@
   }
 }
 
+.recommended {
+  display: flex;
+  max-width: unset;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f1eb80;
+  padding: 0 0 40px 0;
+  margin-top: 80px;
+
+  .underline {
+    width: 100% !important;
+    object-fit: cover;
+    margin-bottom: 35px;
+  }
+}
+
 .darkTheme {
   .showMoreButtonWrapper {
     .showMore {
@@ -71,6 +89,12 @@
     .wrapper {
       margin: 0 15px;
     }
+  }
+
+  .recommended {
+    width: unset;
+    margin: unset;
+    padding: 40px 15px;
   }
 }
 

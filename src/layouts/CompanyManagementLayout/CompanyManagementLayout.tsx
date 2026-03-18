@@ -1,15 +1,16 @@
-import { type FC, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import cn from 'classnames';
 import { UrlObject } from 'node:url';
+
+import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { type FC, useEffect, useRef, useState } from 'react';
 
 import { TRouter } from '@local-types/global';
 
 import Pyramid from '@components/_company-management/Pyramid';
-import PyramidStats from '@components/_company-management/PyramidStats';
-import PyramidHeader from '@components/_company-management/PyramidHeader';
 import PyramidAuthors from '@components/_company-management/PyramidAuthors';
+import PyramidHeader from '@components/_company-management/PyramidHeader';
 import PyramidInfoSection from '@components/_company-management/PyramidInfoSection';
+import PyramidStats from '@components/_company-management/PyramidStats';
 
 // @ts-ignore
 import icons from './icons.ts';

@@ -1,17 +1,19 @@
-import Accordion from '@components/Accordion';
-import ContentParser from '@components/ContentParser';
-import { useState, useCallback, useMemo } from 'react';
+import cn from 'classnames';
+import { useCallback, useMemo, useState } from 'react';
 import ReactDomServer from 'react-dom/server';
+
+import Accordion from '@components/Accordion';
 import {
   Div,
-  Link,
-  Span,
-  Image,
   H1,
+  Image,
+  Link,
   P,
+  Span,
 } from '@components/ContentGenerator/elements';
+import ContentParser from '@components/ContentParser';
+
 import useGlobals from './useGlobals';
-import cn from 'classnames';
 
 const useContentType = (styles: any, usePTag: boolean) => {
   const { isDarkTheme } = useGlobals()[1];
@@ -121,6 +123,7 @@ const useContentType = (styles: any, usePTag: boolean) => {
             [styles.darkTheme]: isDarkTheme,
           })}
         >
+          {/* change this image */}
           <img src={src} alt="theme" />
           <span>{children}</span>
         </a>

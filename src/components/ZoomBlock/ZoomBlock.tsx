@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 
 import useImageModule from '@hooks/useImageModule';
+
 import styles from './ZoomBlock.module.scss';
 
 interface ZoomBlockProps {

@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
 import cn from 'classnames';
+import React, { FC } from 'react';
 
 import type { ContributorsLabelProps } from './ContributorsLabel.types';
 

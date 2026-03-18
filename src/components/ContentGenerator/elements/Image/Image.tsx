@@ -1,10 +1,12 @@
-import { useCallback, FC } from 'react';
-import { useRouter } from 'next/router';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { FC, useCallback } from 'react';
+
+import type { TRouter } from '@local-types/global';
+
+import useImageModule from '@hooks/useImageModule';
 
 import imageModuleData from '@data/imageModule';
-import useImageModule from '@hooks/useImageModule';
-import type { TRouter } from '@local-types/global';
 
 type TImage = {
   styles: any;

@@ -1,13 +1,15 @@
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
-import WorkoutLayout from '@layouts/WorkoutLayout/WorkoutLayout';
+import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
 
 import { getWorkout } from '@api/longevity/workout';
+
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
+
+import WorkoutLayout from '@layouts/WorkoutLayout/WorkoutLayout';
 
 const Workout = ({ workoutData }) => {
   const router = useRouter();
@@ -37,6 +39,7 @@ const Workout = ({ workoutData }) => {
           seoTitle: workoutData[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={workoutData[currentLocale]?.createdAt || ''}
         modifiedDate={workoutData[currentLocale]?.updatedAt || ''}

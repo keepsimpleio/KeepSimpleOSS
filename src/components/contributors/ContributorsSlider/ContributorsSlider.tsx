@@ -1,15 +1,16 @@
-import { FC, useRef } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import Slider, { LazyLoadTypes } from 'react-slick';
 import cn from 'classnames';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FC, useRef } from 'react';
+import Slider, { LazyLoadTypes } from 'react-slick';
+
+import ArrowButton from '@components/contributors/ArrowButton/ArrowButton';
 
 import type { ContributorsSliderProps } from './ContributorsSlider.types';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import styles from './ContributorsSlider.module.scss';
-import ArrowButton from '@components/contributors/ArrowButton/ArrowButton';
 
 const ContributorsSlider: FC<ContributorsSliderProps> = ({
   contributors,

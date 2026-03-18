@@ -1,5 +1,5 @@
-import { FC, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
+import { FC, useEffect, useRef } from 'react';
 
 import type { TRouter } from '@local-types/global';
 import type { ContributorLocaleData } from '@local-types/pageTypes/contributors';
@@ -8,9 +8,9 @@ import useGlobals from '@hooks/useGlobals';
 
 import { getContributors } from '@api/contributors';
 
-import ContributorsLayout from '@layouts/ContributorsLayout';
-
 import SeoGenerator from '@components/SeoGenerator';
+
+import ContributorsLayout from '@layouts/ContributorsLayout';
 
 const Contributors: FC<ContributorLocaleData> = ({ contributors }) => {
   const router = useRouter();

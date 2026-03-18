@@ -1,7 +1,7 @@
-import { FC } from 'react';
 import cn from 'classnames';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+import { FC } from 'react';
 
 import type { ContributorProps } from '@components/contributors/Contributor/Contributor.types';
 
