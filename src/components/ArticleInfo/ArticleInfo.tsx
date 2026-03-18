@@ -1,23 +1,19 @@
-import { FC, useContext } from 'react';
-import { flushSync } from 'react-dom';
+import cn from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
-import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { FC, useContext } from 'react';
+import { flushSync } from 'react-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 
-import styles from './ArticleInfo.module.scss';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
-import { GlobalContext } from '@components/Context/GlobalContext';
-import { useRouter } from 'next/router';
 
-type ArticleInfoProps = {
-  title: string;
-  description: string;
-  bgImage: string;
-  slug?: string;
-  locale?: string;
-  darkTheme: boolean;
-};
+import ArticleTag from '@components/articles/ArticleTag';
+import { GlobalContext } from '@components/Context/GlobalContext';
+
+import type { ArticleInfoProps } from './ArticleInfo.types';
+
+import styles from './ArticleInfo.module.scss';
 
 const ArticleInfo: FC<ArticleInfoProps> = ({
   title,
@@ -26,6 +22,7 @@ const ArticleInfo: FC<ArticleInfoProps> = ({
   slug,
   locale,
   darkTheme,
+  tags,
 }) => {
   const router = useRouter();
   const { setShowLoader, videoRef } = useContext(GlobalContext);
@@ -35,7 +32,6 @@ const ArticleInfo: FC<ArticleInfoProps> = ({
   const oneLineDescription = description?.toString().length >= 32;
   const twoLineDescription = description?.toString().length >= 70;
   const isSmallScreen = useIsWidthLessThan(768);
-
   const descLineCountForDesc =
     descLineCount === 2 ? twoLineDescription : oneLineDescription;
 
@@ -83,6 +79,13 @@ const ArticleInfo: FC<ArticleInfoProps> = ({
             unoptimized
           />
         </div>
+        {tags && (
+          <div className={styles.tags}>
+            {tags.map((tag, index) => (
+              <ArticleTag title={tag.title} key={index} />
+            ))}
+          </div>
+        )}
         <div className={styles.titleAndDescription}>
           {title.length >= 56 && !isSmallScreen ? (
             <>

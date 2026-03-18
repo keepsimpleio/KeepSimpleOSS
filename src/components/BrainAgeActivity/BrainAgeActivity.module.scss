@@ -49,7 +49,19 @@
 
   .selectedButton {
     color: #ce2128;
-    border-bottom: 2px solid #ce2128;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 36px;
+      height: 4px;
+      background-image: url('/keepsimple_/assets/longevity/line.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
   }
 
   .result {
@@ -61,22 +73,37 @@
 
     .minimal,
     .maximal {
-      padding: 12px 20px;
+      padding: 1px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex: 1 1 0;
       margin: 0;
       min-width: 0;
+      cursor: unset;
+      max-width: unset;
+      min-height: unset;
+
+      .content {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1px 20px;
+      }
     }
 
     .minimal {
-      border: 1px solid #ce2128;
       background-color: #ce21281a;
+
+      svg {
+        path {
+          fill: #ce2128;
+        }
+      }
 
       .passive {
         color: #ce2128;
-        font-size: 28px;
+        font-size: 24px;
         text-transform: uppercase;
       }
 
@@ -87,8 +114,13 @@
     }
 
     .maximal {
-      border: 1px solid #64b766;
       background-color: #64b7661a;
+
+      svg {
+        path {
+          fill: #64b766;
+        }
+      }
 
       .subContent {
         display: flex;
@@ -97,12 +129,33 @@
 
       .active {
         color: #64b766;
-        border-bottom: 1px solid #64b766;
         font-size: 28px;
+      }
+
+      .valueWrapper::after {
+        filter: brightness(0) saturate(100%) invert(63%) sepia(20%)
+          saturate(662%) hue-rotate(83deg) brightness(95%) contrast(95%);
+      }
+    }
+
+    .valueWrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      &::after {
+        content: '';
+        display: block;
+        width: stretch;
+        height: 4px;
+        background-image: url('/keepsimple_/assets/longevity/line.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
       }
     }
   }
 }
+
 .sectionRu {
   .heading {
     h3 {
@@ -135,17 +188,28 @@
 
       .ageButton {
         font-size: 20px;
+
+        svg {
+          height: 20px;
+          width: calc(20px * 20 / 32);
+        }
       }
     }
 
     .result {
       flex-direction: column;
+      width: 90vw;
 
       .minimal,
       .maximal {
         .passive,
         .active {
           font-size: 16px;
+
+          svg {
+            height: 16px;
+            width: calc(16px * 20 / 32);
+          }
         }
       }
     }

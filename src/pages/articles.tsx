@@ -1,17 +1,18 @@
-import React, { FC, useRef } from 'react';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+import React, { FC, useRef } from 'react';
 
-import SeoGenerator from '@components/SeoGenerator';
-import ArticlesLayout from '@layouts/ArticlesLayout';
-
-import useGlobals from '../hooks/useGlobals';
+import type { TRouter } from '@local-types/global';
 
 import { getArticleBlog } from '@api/articleBlog';
 
 import articlesBlog from '@data/articlesBlog';
 
-import type { TRouter } from '@local-types/global';
+import SeoGenerator from '@components/SeoGenerator';
+
+import ArticlesLayout from '@layouts/ArticlesLayout';
+
+import useGlobals from '../hooks/useGlobals';
 
 type ArticleProps = {
   articleBlog: {
@@ -42,6 +43,13 @@ type ArticleProps = {
       featuredArticles: {
         data: {
           attributes: {
+            tags: {
+              data: {
+                attributes: {
+                  title: string;
+                };
+              }[];
+            };
             title: string;
             description: string;
             coverImage: {
@@ -81,6 +89,10 @@ const Articles: FC<ArticleProps> = ({ articleBlog }) => {
   const featuredArticles = articleBlog.attributes.featuredArticles.data;
   const featured = featuredArticles.map(item => ({
     ...item.attributes,
+    tags:
+      item.attributes?.tags?.data?.map((tag: any) => tag.attributes) ??
+      item.attributes?.tags ??
+      [],
   }));
 
   const allArticles = articleBlog.articles;
@@ -113,6 +125,7 @@ const Articles: FC<ArticleProps> = ({ articleBlog }) => {
           keywords,
           seoTitle,
         }}
+        type={'CollectionPage'}
         ogTags={articleBlog.attributes?.OGTags}
         createdDate={articleBlog.attributes.createdAt}
         modifiedDate={articleBlog.attributes.updatedAt}

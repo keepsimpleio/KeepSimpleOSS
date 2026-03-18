@@ -1,18 +1,19 @@
-import { FC, useRef, useState } from 'react';
-import Image from 'next/image';
 import html2canvas from 'html2canvas';
-
-import Modal from '@components/Modal';
-import MainInfoSection from '@components/longevity/MainInfoSection';
-import LongevitySubSection from '@components/longevity/LongevitySubSection';
-import Table from '@components/longevity/Table';
+import Image from 'next/image';
+import { FC, useRef, useState } from 'react';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
+
+import longevityData from '@data/longevity';
+
+import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import MainInfoSection from '@components/longevity/MainInfoSection';
+import Table from '@components/longevity/Table';
+import Modal from '@components/Modal';
 
 import { SupplementsProps } from './Supplements.types';
 
 import styles from './Supplements.module.scss';
-import longevityData from '@data/longevity';
 
 const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
   const [open, setOpen] = useState(false);
@@ -119,6 +120,7 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
             type="button"
             onClick={handleOpen}
             className={styles.openChartBtn}
+            data-cy="open-chart-btn"
           >
             <Image
               src={
@@ -140,13 +142,17 @@ const SupplementsLayout: FC<SupplementsProps> = ({ locale, data }) => {
           </button>
 
           {open && (
-            <Modal onClick={() => setOpen(false)}>
+            <Modal
+              onClick={() => setOpen(false)}
+              dataCy="supplements-chart-modal"
+            >
               <Image
                 src={imgSrc}
                 alt="Table"
                 width={540}
                 height={600}
                 className={styles.img}
+                data-cy="supplements-chart-img"
               />
             </Modal>
           )}

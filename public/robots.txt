@@ -11,10 +11,6 @@ Disallow: /hy/uxcgstory/
 Disallow: /hy/uxcgdiy/
 Disallow: /hy/uiux/
 Disallow: /hy/awareness-test/
-Disallow: /hy/table-of-contents/
-Disallow: /hy/why-study-management/
-Disallow: /hy/what-is-a-project/
-Disallow: /hy/project-artifacts-and-their-importance/
 Disallow: /hy/project-management-environment/
 Disallow: /hy/philosophies-methodologies-and-frameworks/
 Disallow: /hy/software-development-life-cycles/
@@ -25,3 +21,5 @@ Disallow: /hy/all-about-user-stories/
 Disallow: /hy/client-dev-company-workflow-birds-eye-view/
 Disallow: /hy/career-path-of-a-manager-and-a-few-universal-tips/
 Disallow: /hy/overengineering_and_demo_readiness/
+Disallow: /articles/[page]
+Disallow: /uxcore_next/

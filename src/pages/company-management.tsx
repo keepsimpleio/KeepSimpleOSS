@@ -1,7 +1,10 @@
-import React, { useEffect, useRef } from 'react';
 import { GetStaticProps } from 'next';
+import React, { useEffect, useRef } from 'react';
 
 import { TStaticProps } from '@local-types/data';
+
+import useGlobals from '@hooks/useGlobals';
+
 import {
   getCompanyManagementData,
   getPyramids,
@@ -10,8 +13,6 @@ import {
 
 import SeoGenerator from '@components/SeoGenerator';
 import Spinner from '@components/Spinner';
-
-import useGlobals from '@hooks/useGlobals';
 
 import CompanyManagementLayout from '@layouts/CompanyManagementLayout';
 

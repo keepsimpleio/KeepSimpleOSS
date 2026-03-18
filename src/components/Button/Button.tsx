@@ -1,6 +1,6 @@
-import { FC, useCallback } from 'react';
 import cn from 'classnames';
 import Image from 'next/image';
+import { FC, useCallback } from 'react';
 
 import Loader from '@icons/Loader';
 

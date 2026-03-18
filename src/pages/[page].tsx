@@ -1,4 +1,5 @@
 import { GetStaticProps } from 'next';
+
 import { getArticleRedirects } from '../../lib/getArticleRedirects';
 
 export const getStaticPaths = async () => {

@@ -1,5 +1,7 @@
+import { ReactNode } from 'react';
+
 export type HeadingProps = {
-  text: string;
+  text: string | ReactNode;
   showLeftIcon?: boolean;
   showRightIcon?: boolean;
   hasRedUnderline?: boolean;

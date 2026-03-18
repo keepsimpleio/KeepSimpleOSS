@@ -1,5 +1,5 @@
-import type { FC } from 'react';
 import Link from 'next/link';
+import type { FC } from 'react';
 
 const NextLink: FC<any> = ({ children, shallow, ...restProps }) => {
   const shallowValue = shallow === false ? false : true;

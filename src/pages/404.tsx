@@ -1,8 +1,8 @@
-import React, { FC, Fragment } from 'react';
+import cn from 'classnames';
+import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import type { GetStaticProps } from 'next';
-import cn from 'classnames';
+import React, { FC, Fragment } from 'react';
 
 import pageNotFoundData from '@data/404';
 

@@ -1,7 +1,7 @@
-import { FC, useRef } from 'react';
+import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import cn from 'classnames';
+import { FC, useRef } from 'react';
 
 import { TRouter } from '@local-types/global';
 

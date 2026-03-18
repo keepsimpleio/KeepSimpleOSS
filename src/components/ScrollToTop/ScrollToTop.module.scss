@@ -1,0 +1,52 @@
+.scrollToTop {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
+  border: 0.125rem solid #252626;
+  background-color: #ffffff;
+  color: #252626;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    opacity 0.2s;
+  opacity: 0.75;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  &:hover {
+    opacity: 1;
+    background-color: #252626;
+    color: #ffffff;
+  }
+
+  &.dark {
+    background-color: #1b1e26;
+    color: #dadada;
+    border-color: #dadada;
+
+    &:hover {
+      background-color: #dadada;
+      color: #1b1e26;
+      border-color: #dadada;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .scrollToTop {
+    display: none;
+  }
+}

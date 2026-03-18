@@ -7,6 +7,8 @@ type CommonProps<T extends ElementType> = {
   className?: string;
   isWhite?: boolean;
   children?: ReactNode;
+  contentClassName?: string;
+  dataCy?: string;
 };
 
 type ButtonOnlyProps = {

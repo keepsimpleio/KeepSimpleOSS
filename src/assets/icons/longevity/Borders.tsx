@@ -1,9 +1,8 @@
 const Borders = ({ className }) => (
   <svg
     className={className}
-    // width="321"
-    // height="42"
     viewBox="0 0 321 42"
+    preserveAspectRatio="none"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >

@@ -1,11 +1,12 @@
-import { FC } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
-
-import Heading from '@components/Heading';
+import Image from 'next/image';
+import { FC } from 'react';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
+
 import longevityData from '@data/longevity';
+
+import Heading from '@components/Heading';
 
 import { YourDietProps } from './YourDiet.types';
 
@@ -42,6 +43,9 @@ const YourDiet: FC<YourDietProps> = ({
         [styles.active]: isIconClicked,
         [styles.selectedDietRu]: locale === 'ru',
       })}
+      data-cy="your-diet"
+      data-active={isIconClicked}
+      data-selected-id={id}
       style={{
         backgroundImage: `url(${selectedDiet ? backgroundImageUrl : ''})`,
       }}

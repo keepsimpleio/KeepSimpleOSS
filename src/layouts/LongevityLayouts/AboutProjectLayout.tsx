@@ -1,8 +1,10 @@
 import { FC } from 'react';
-import MainInfoSection from '@components/longevity/MainInfoSection';
-import { AboutProjectLayoutProps } from './AboutProjectLayout.types';
 
 import basicStatsData from '@data/longevity/basicStats';
+
+import MainInfoSection from '@components/longevity/MainInfoSection';
+
+import { AboutProjectLayoutProps } from './AboutProjectLayout.types';
 
 import styles from './AboutProjectLayout.module.scss';
 

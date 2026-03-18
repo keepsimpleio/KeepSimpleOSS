@@ -1,6 +1,8 @@
-import { SupplementsProps } from '@layouts/Supplements/Supplements.types';
 import { FC } from 'react';
+
 import MainInfoSection from '@components/longevity/MainInfoSection';
+
+import { SupplementsProps } from '@layouts/Supplements/Supplements.types';
 
 const Supplements: FC<SupplementsProps> = ({ locale, data }) => {
   return (

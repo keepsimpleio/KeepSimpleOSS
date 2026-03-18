@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
+
 import styles from './ShinyStars.module.scss';
 
 const rand = (min: number, max: number) => Math.random() * (max - min) + min;

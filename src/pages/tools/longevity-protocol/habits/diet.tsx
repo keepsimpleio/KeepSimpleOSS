@@ -1,12 +1,15 @@
 import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 
-import DietLayout from '@layouts/DietLayout';
+import { ogImage } from '@constants/longevity';
+
+import type { TRouter } from '@local-types/global';
 
 import { getDiet } from '@api/longevity/diet';
+
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
-import type { TRouter } from '@local-types/global';
-import { useRouter } from 'next/router';
+
+import DietLayout from '@layouts/DietLayout';
 
 const Diet = ({ dietData }) => {
   const router = useRouter();
@@ -38,6 +41,7 @@ const Diet = ({ dietData }) => {
         }}
         isLongevityPage
         ogTags={OGTags}
+        type={'MedicalWebPage'}
         createdDate={dietData[currentLocale]?.createdAt || ''}
         modifiedDate={dietData[currentLocale]?.updatedAt || ''}
       />

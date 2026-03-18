@@ -1,10 +1,10 @@
-import React, { FC, useEffect, useRef } from 'react';
 import cn from 'classnames';
+import React, { FC, useEffect, useRef } from 'react';
 
 import useGlobals from '@hooks/useGlobals';
 
-import ArticlesHero from '@components/ArticlesHero';
 import ArticleSection from '@components/ArticleSection';
+import ArticlesHero from '@components/ArticlesHero';
 
 import styles from './ArticlesLayout.module.scss';
 

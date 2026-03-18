@@ -1,10 +1,10 @@
-import { FC } from 'react';
 import Image from 'next/image';
+import { FC } from 'react';
+
+import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import MainInfoSection from '@components/longevity/MainInfoSection';
 
 import { ResultsLayoutProps } from '@layouts/ResultsLayout/ResultsLayout.types';
-import LongevitySubSection from '@components/longevity/LongevitySubSection';
-
-import MainInfoSection from '@components/longevity/MainInfoSection';
 
 import styles from './ResultsLayout.module.scss';
 

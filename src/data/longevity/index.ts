@@ -1,6 +1,6 @@
 import en from './en';
-import ru from './ru';
 import hy from './hy';
+import ru from './ru';
 
 export default { en, ru, hy } as {
   en: typeof en;

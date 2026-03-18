@@ -1,19 +1,19 @@
-import React, { FC, Fragment, useCallback, useContext } from 'react';
 import cn from 'classnames';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import React, { FC, Fragment, useCallback, useContext } from 'react';
 import { flushSync } from 'react-dom';
 
-import Navbar from '@components/Navbar';
-import Link from '@components/NextLink';
-import { GlobalContext } from '@components/Context/GlobalContext';
 // import UserProfile from '@components/UserProfile';
 // import LogIn from '@components/LogIn';
-
 import type { TRouter } from '@local-types/global';
 
 import useGlobals from '@hooks/useGlobals';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
+
+import { GlobalContext } from '@components/Context/GlobalContext';
+import Navbar from '@components/Navbar';
+import Link from '@components/NextLink';
 
 import styles from './Header.module.scss';
 

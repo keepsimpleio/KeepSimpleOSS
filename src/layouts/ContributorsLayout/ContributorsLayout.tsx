@@ -1,11 +1,9 @@
-import React, { forwardRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
-
-import type { ContributorsLayoutProps } from './ContributorsLayout.types';
-
-import useMobile from '@hooks/useMobile';
+import React, { forwardRef, useEffect } from 'react';
 
 import { TRouter } from '@local-types/global';
+
+import useMobile from '@hooks/useMobile';
 
 import contributors from '@data/contributors';
 
@@ -13,6 +11,8 @@ import Contributor from '@components/contributors/Contributor/Contributor';
 import ContributorsLabel from '@components/contributors/ContributorsLabel';
 import ContributorsSlider from '@components/contributors/ContributorsSlider';
 import Heading from '@components/Heading';
+
+import type { ContributorsLayoutProps } from './ContributorsLayout.types';
 
 import styles from './ContributorsLayout.module.scss';
 

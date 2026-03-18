@@ -1,3 +1,6 @@
+import cn from 'classnames';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
 import {
   type FC,
   Fragment,
@@ -7,17 +10,13 @@ import {
   useRef,
 } from 'react';
 import { createPortal } from 'react-dom';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import cn from 'classnames';
-
-import useMobile from '@hooks/useMobile';
-
-import containerData from '@data/companyManagement';
 
 import { TRouter } from '@local-types/global';
 
 import useImageModule from '@hooks/useImageModule';
+import useMobile from '@hooks/useMobile';
+
+import containerData from '@data/companyManagement';
 
 import ZoomBlock from '@components/ZoomBlock';
 

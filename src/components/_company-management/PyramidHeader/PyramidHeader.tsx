@@ -1,16 +1,16 @@
-import { type FC, type MouseEvent } from 'react';
-import { useRouter } from 'next/router';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { type FC, type MouseEvent } from 'react';
 
 import { TRouter } from '@local-types/global';
 
 import useMobile from '@hooks/useMobile';
 
-import { handleMixpanelClick } from '../../../../lib/mixpanel';
+import staticData from '@data/companyManagement';
 
 import AudioPlayer from '@components/AudioPlayer';
 
-import staticData from '@data/companyManagement';
+import { handleMixpanelClick } from '../../../../lib/mixpanel';
 
 import styles from './PyramidHeader.module.scss';
 

@@ -1,21 +1,20 @@
-import React, { FC, useMemo, useState } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
-
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-
-import ProgressBar from '@components/longevity/ProgressBar/ProgressBar';
-import Heading from '@components/Heading';
+import Image from 'next/image';
+import React, { FC, useMemo, useState } from 'react';
 
 import { STOPS } from '@constants/longevity';
 
+import { useIsWidthLessThan } from '@hooks/useScreenSize';
+
 import longevityData from '@data/longevity';
+
+import Heading from '@components/Heading';
+import ProgressBar from '@components/longevity/ProgressBar/ProgressBar';
 
 import { WeeklyWorkoutProps } from './WeeklyWorkout.types';
 
-import { useIsWidthLessThan } from '@hooks/useScreenSize';
-
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import styles from './WeeklyWorkout.module.scss';
 
 const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
@@ -66,7 +65,7 @@ const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
   );
 
   return (
-    <section className={styles.weeklyWorkout}>
+    <section className={styles.weeklyWorkout} data-cy="weekly-workout">
       <div className={styles.header}>
         <Heading
           text={totalWeeklyActivity.title}
@@ -106,6 +105,9 @@ const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
                 [styles.activeImageWrapper]: isActive,
               })}
               onClick={() => setSelectedIndex(image.id)}
+              data-cy="weekly-workout-image"
+              data-active={isActive}
+              data-id={image.id}
             >
               <Image
                 src={image.src}
@@ -118,7 +120,10 @@ const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
           );
         })}
       </div>
-      <div>
+      <div
+        data-cy="weekly-workout-summary"
+        data-risk={summary?.riskOfDyingEarly ?? ''}
+      >
         <p className={styles.summary}>
           {totalWeeklyActivity.earlyDyingRisk}
           <span

@@ -1,12 +1,15 @@
 import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 
-import LifestyleLayout from '@layouts/LifestyleLayout/LifestyleLayout';
+import { ogImage } from '@constants/longevity';
+
+import type { TRouter } from '@local-types/global';
 
 import { getLifestyleProtocol } from '@api/longevity/lifestyle';
+
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
-import { useRouter } from 'next/router';
-import type { TRouter } from '@local-types/global';
+
+import LifestyleLayout from '@layouts/LifestyleLayout/LifestyleLayout';
 
 const Lifestyle = ({ habitsData }) => {
   const router = useRouter();
@@ -37,6 +40,7 @@ const Lifestyle = ({ habitsData }) => {
           seoTitle: habitsData[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={habitsData[currentLocale]?.createdAt || ''}
         modifiedDate={habitsData[currentLocale]?.updatedAt || ''}

@@ -1,7 +1,9 @@
-import { FC } from 'react';
-import { TableProps } from './Table.types';
-import styles from './Table.module.scss';
 import cn from 'classnames';
+import { FC } from 'react';
+
+import { TableProps } from './Table.types';
+
+import styles from './Table.module.scss';
 
 const Table: FC<TableProps> = ({
   headerRows,

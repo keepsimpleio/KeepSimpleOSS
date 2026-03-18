@@ -1,5 +1,5 @@
-import { type FC } from 'react';
 import cn from 'classnames';
+import { type FC } from 'react';
 
 import useMobile from '@hooks/useMobile';
 

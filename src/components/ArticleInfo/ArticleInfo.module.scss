@@ -3,6 +3,7 @@
   color: #000000d9;
   font-family: 'Source-Serif-Regular', sans-serif;
   font-weight: 400;
+  position: relative;
 
   .articleInfo {
     width: 262px;
@@ -20,6 +21,12 @@
       border-bottom: 1px solid #c7c7c7;
       width: inherit;
       height: inherit;
+    }
+    .tags {
+      position: absolute;
+      left: 18px;
+      display: flex;
+      top: 0;
     }
 
     .titleAndDescription {
@@ -136,7 +143,12 @@
 
       .imgWrapper {
         width: 88px;
-        height: 88px;
+        height: 126px;
+      }
+      .tags {
+        left: 95px;
+        display: flex;
+        top: 5px;
       }
 
       .titleAndDescription {
@@ -144,6 +156,7 @@
 
         .h3 {
           font-size: 14px;
+          padding-top: 28px;
         }
 
         .p {

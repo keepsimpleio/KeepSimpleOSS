@@ -1,20 +1,19 @@
-import React, { FC } from 'react';
 import cn from 'classnames';
 import Image from 'next/image';
+import React, { FC } from 'react';
 
 import useGlobals from '@hooks/useGlobals';
 
-import ProgressBar from '@components/ProgressBar';
-import ZoomBlock from '@components/ZoomBlock';
 import PinBlock from '@components/PinBlock';
+import ProgressBar from '@components/ProgressBar';
+import ScrollToTop from '@components/ScrollToTop';
+import ZoomBlock from '@components/ZoomBlock';
 
-import styles from './HomeLayout.module.scss';
+import { ArticleLayoutProps } from './ArticleLayout.types';
 
-type THomeLayout = {
-  children?: any;
-};
+import styles from './ArticleLayout.module.scss';
 
-const HomeLayout: FC<THomeLayout> = ({ children }) => {
+const ArticleLayout: FC<ArticleLayoutProps> = ({ children }) => {
   const [{}, { isFullScreen, isDarkTheme }] = useGlobals();
 
   return (
@@ -31,7 +30,8 @@ const HomeLayout: FC<THomeLayout> = ({ children }) => {
           height={314}
           className={styles.coverImage}
           width={1920}
-          unoptimized
+          // unoptimized
+          priority
         />
       )}
       <main className={styles.main}>
@@ -44,19 +44,12 @@ const HomeLayout: FC<THomeLayout> = ({ children }) => {
           <section className={styles.section}>{children}</section>
         </article>
       </main>
-      {children?.props?.data?.footerImage?.data?.attributes?.url && (
-        <Image
-          src={`${process.env.NEXT_PUBLIC_STRAPI}${children?.props?.data?.footerImage?.data?.attributes?.url}`}
-          alt={children?.props?.data?.footerImage?.data?.attributes?.name}
-          height={160}
-          className={styles.footerImage}
-          width={1920}
-        />
-      )}
+
       <PinBlock />
       <ZoomBlock />
+      <ScrollToTop />
     </div>
   );
 };
 
-export default HomeLayout;
+export default ArticleLayout;

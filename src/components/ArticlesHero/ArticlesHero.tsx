@@ -1,9 +1,9 @@
-import { FC } from 'react';
 import cn from 'classnames';
+import { FC } from 'react';
 
-import Heading from '@components/Heading';
 import ArticleCategoryButton from '@components/ArticleCategoryButton';
 import ContentParser from '@components/ContentParser';
+import Heading from '@components/Heading';
 
 import styles from './ArticlesHero.module.scss';
 

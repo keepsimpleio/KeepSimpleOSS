@@ -50,6 +50,67 @@ export const getCurrentArticle = (articles: TArticle[], url: string) => {
   return article || {};
 };
 
+export const getRecommendedArticles = (
+  articles: TArticle[],
+  currentUrl: string,
+) => {
+  const currentArticle = articles?.find(
+    ({ attributes }: any) => attributes?.newUrl === currentUrl,
+  );
+
+  if (!currentArticle) return [];
+
+  const currentCategory: string | undefined = (currentArticle as any)
+    ?.attributes?.type;
+
+  const pool = currentCategory
+    ? articles.filter(
+        ({ attributes }: any) =>
+          attributes?.type === currentCategory &&
+          attributes.newUrl !== currentUrl,
+      )
+    : articles.filter(
+        ({ attributes }: any) => attributes.newUrl !== currentUrl,
+      );
+
+  if (pool.length === 0) return [];
+
+  const poolWithCurrent = currentCategory
+    ? articles.filter(
+        ({ attributes }: any) => attributes?.type === currentCategory,
+      )
+    : articles;
+
+  const currentIndex = poolWithCurrent.findIndex(
+    ({ attributes }: any) => attributes.newUrl === currentUrl,
+  );
+
+  const n = poolWithCurrent.length;
+  const wrap = (i: number) => ((i % n) + n) % n;
+
+  const candidateIndices = [
+    wrap(currentIndex - 2),
+    wrap(currentIndex - 1),
+    wrap(currentIndex + 1),
+    wrap(currentIndex + 2),
+  ].filter(i => i !== currentIndex);
+
+  // @ts-ignore
+  const uniqueIndices = [...new Set(candidateIndices)];
+
+  return uniqueIndices.map(i => {
+    const { attributes }: any = poolWithCurrent[i];
+    return {
+      id: (poolWithCurrent[i] as any).id,
+      title: attributes.title,
+      shortDescription:
+        attributes?.shortDescription ?? attributes?.description ?? null,
+      newUrl: attributes.newUrl,
+      coverImage: attributes.coverImage,
+    };
+  });
+};
+
 export const getArticleNewPaths = async () => {
   const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/articles?locale=all&populate=*`;
 

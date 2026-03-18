@@ -1,7 +1,9 @@
-import { StudyLayoutProps } from '@layouts/StudyLayout/StudyLayout.types';
 import { FC } from 'react';
+
 import MainInfoSection from '@components/longevity/MainInfoSection';
 import StudySection from '@components/longevity/StudySection/StudySection';
+
+import { StudyLayoutProps } from '@layouts/StudyLayout/StudyLayout.types';
 
 const StudyLayout: FC<StudyLayoutProps> = ({ data, locale }) => {
   return (

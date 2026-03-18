@@ -1,13 +1,15 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 
-import ResultsLayout from '@layouts/ResultsLayout';
+import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
 
 import { getLongevityResults } from '@api/longevity/results';
+
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
+
+import ResultsLayout from '@layouts/ResultsLayout';
 
 const Results = ({ yearlyResults }) => {
   const router = useRouter();
@@ -37,6 +39,7 @@ const Results = ({ yearlyResults }) => {
           seoTitle: yearlyResults[currentLocale]?.Seo?.seoTitle,
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={yearlyResults[currentLocale]?.createdAt}
         modifiedDate={yearlyResults[currentLocale]?.updatedAt}

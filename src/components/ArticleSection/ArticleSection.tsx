@@ -1,11 +1,11 @@
-import React, { useState, forwardRef } from 'react';
 import cn from 'classnames';
 import Image from 'next/image';
-
-import Heading from '@components/Heading';
-import ArticleInfo from '@components/ArticleInfo';
+import React, { forwardRef, useState } from 'react';
 
 import buttonText from '@data/buttonText';
+
+import ArticleInfo from '@components/ArticleInfo';
+import Heading from '@components/Heading';
 
 import styles from './ArticleSection.module.scss';
 
@@ -16,12 +16,14 @@ type ArticleSectionProps = {
   ref?: React.RefObject<HTMLElement>;
   locale?: string;
   darkTheme?: boolean;
+  isRecommended?: boolean;
 };
 
 // eslint-disable-next-line react/display-name
 const ArticleSection = forwardRef<HTMLElement, ArticleSectionProps>(
-  ({ isFeatured, articles, title, locale, darkTheme }, ref) => {
+  ({ isFeatured, articles, title, locale, darkTheme, isRecommended }, ref) => {
     const currentLocale = locale === 'ru' ? 'ru' : 'en';
+    const isRecommendedOrFeatured = isRecommended || isFeatured;
     const [showAll, setShowAll] = useState(true);
     const visibleArticles = !showAll ? articles : articles.slice(0, 8);
     const { showMore, showLess } = buttonText[currentLocale];
@@ -40,9 +42,19 @@ const ArticleSection = forwardRef<HTMLElement, ArticleSectionProps>(
           className={cn(styles.articlesSection, {
             [styles.featured]: isFeatured && darkTheme,
             [styles.darkTheme]: darkTheme,
+            [styles.recommended]: isRecommended,
           })}
           ref={ref}
         >
+          {isRecommended && (
+            <Image
+              src={'/keepsimple_/assets/articles-blog/line.svg'}
+              alt={'line'}
+              width={1920}
+              height={2}
+              className={styles.underline}
+            />
+          )}
           <div className={styles.wrapper}>
             <Heading
               text={title}
@@ -59,12 +71,13 @@ const ArticleSection = forwardRef<HTMLElement, ArticleSectionProps>(
                   darkTheme={darkTheme}
                   key={article.id}
                   title={article.title}
+                  tags={article.tags}
                   description={article.shortDescription}
                   slug={article.newUrl}
                   locale={locale}
                   bgImage={
                     article?.coverImage
-                      ? isFeatured
+                      ? isRecommendedOrFeatured
                         ? `${process.env.NEXT_PUBLIC_STRAPI}${article?.coverImage.data.attributes.url}`
                         : `${process.env.NEXT_PUBLIC_STRAPI}${article?.coverImage?.url}`
                       : ''

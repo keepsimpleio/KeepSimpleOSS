@@ -1,6 +1,7 @@
-import type { FC } from 'react';
-import Link from '@components/NextLink';
 import { useRouter } from 'next/router';
+import type { FC } from 'react';
+
+import Link from '@components/NextLink';
 
 interface CustomLinkDataType {
   href: string;

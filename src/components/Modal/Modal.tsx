@@ -1,8 +1,8 @@
+import cn from 'classnames';
+import Image from 'next/image';
 import React, { FC, KeyboardEvent, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import cn from 'classnames';
 
-import Image from 'next/image';
 import styles from './Modal.module.scss';
 
 type ModalProps = {
@@ -130,7 +130,11 @@ const Modal: FC<ModalProps> = ({
             >
               {title}
             </span>
-            <div className={styles.closeIconWrapper} onClick={onClick}>
+            <div
+              className={styles.closeIconWrapper}
+              onClick={onClick}
+              data-cy="modal-close-icon"
+            >
               <div className={`${styles.lineWrapper} ${styles.rightWrapper}`}>
                 <Image
                   src="/keepsimple_/assets/close-right-line.svg"

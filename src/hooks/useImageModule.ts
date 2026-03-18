@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
 import { CustomHookType, DispatchFuntion } from '@local-types/global';
 
 interface StateType {

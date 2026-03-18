@@ -43,16 +43,12 @@
 }
 
 .canvasTransitionOn {
-  transition: opacity 350ms ease;
+  transition: opacity 700ms ease;
   will-change: opacity;
 }
 
-.canvasTransitionOff {
-  transition: none;
-}
-
 .canvasOn {
-  animation: smooth-fadeIn 350ms ease;
+  animation: smooth-fadeIn 700ms ease;
   will-change: opacity;
 }
 
@@ -74,7 +70,7 @@
 
 @keyframes smooth-fadeIn {
   from {
-    opacity: 80%;
+    opacity: 50%;
   }
   to {
     opacity: 100%;
