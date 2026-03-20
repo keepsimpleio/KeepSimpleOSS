@@ -22,8 +22,26 @@
 
     &:hover {
       cursor: pointer;
+    }
+  }
+
+  .item {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
       background-image: url('/keepsimple_/assets/longevity/navbar-borders.svg');
       background-color: #fff;
+      background-repeat: no-repeat;
+      background-size: cover;
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+
+    &:hover::after {
+      opacity: 1;
     }
   }
 
@@ -51,6 +69,11 @@
     cursor: pointer;
     background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
     background-size: cover;
+
+    &::after {
+      display: none;
+    }
+
     .subLink,
     .link {
       color: #fff;
@@ -64,7 +87,6 @@
 
     &:hover {
       cursor: pointer;
-
       background-image: url('/keepsimple_/assets/longevity/nav-hover-bg.png');
     }
   }
@@ -128,10 +150,12 @@
     justify-content: center;
     align-items: center;
     gap: 4px;
+    transition: color 200ms ease;
 
     svg {
       path {
         fill: #bdbdbd;
+        transition: fill 200ms ease;
       }
     }
   }

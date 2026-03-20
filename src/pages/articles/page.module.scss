@@ -1,3 +1,21 @@
 .section {
   background-color: #ffffff;
+
+  .coverImage,
+  .footerImage {
+    width: 100%;
+    object-position: center;
+    object-fit: cover;
+  }
+
+  .footerImage {
+    margin-top: 64px;
+  }
+}
+
+@media (max-width: 960px) {
+  .footerImage {
+    height: 50px;
+    width: 100%;
+  }
 }
