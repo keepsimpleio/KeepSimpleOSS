@@ -1,3 +1,13 @@
+@keyframes drawRedLine {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
 .headingAndUnderline {
   .headingWrapper {
     .heading {
@@ -51,10 +61,17 @@
     }
   }
 
-  .underline,
+  .underline {
+    width: 100%;
+    padding: 16px 0 24px 0;
+  }
+
   .redUnderline {
     width: 100%;
     padding: 16px 0 24px 0;
+    animation: drawRedLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.1s;
+    clip-path: inset(0 100% 0 0);
   }
 
   .left {

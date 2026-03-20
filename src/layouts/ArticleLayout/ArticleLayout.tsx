@@ -30,7 +30,6 @@ const ArticleLayout: FC<ArticleLayoutProps> = ({ children }) => {
           height={314}
           className={styles.coverImage}
           width={1920}
-          // unoptimized
           priority
         />
       )}
