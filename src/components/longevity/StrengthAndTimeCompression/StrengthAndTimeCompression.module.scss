@@ -135,7 +135,8 @@
 @media (max-width: 956px) {
   .strengthAndTimeCompression {
     background-size: auto;
-    margin: 0 12px;
+    margin: unset;
+    padding: 20px;
 
     .heading,
     .subHeading {
