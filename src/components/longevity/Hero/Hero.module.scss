@@ -9,6 +9,40 @@
   padding: 40px 0;
 }
 
+.letterWithButton {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  font: inherit;
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-40%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
 .heroRu {
   h1 {
     font-family: Cormorant_Garamond-Regular, sans-serif !important;
@@ -29,6 +63,10 @@
 @media (max-width: 1140px) {
   .hero {
     margin-top: 55px;
+
+    .playButton {
+      display: none;
+    }
 
     h1 {
       width: 290px;

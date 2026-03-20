@@ -270,6 +270,7 @@ body {
   font-family: 'Aldrich';
   src: url('/keepsimple_/fonts/Aldrich-Regular.ttf') format('truetype');
   font-weight: normal;
+  font-display: optional;
 }
 
 @font-face {
@@ -277,7 +278,7 @@ body {
   src: url('/keepsimple_/fonts/Tomorrow/Tomorrow-Light.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 // This is only for mobile
@@ -287,7 +288,7 @@ body {
     format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 // Tomorrow medium
@@ -306,7 +307,7 @@ body {
   src: url('/keepsimple_/fonts/Jost/Jost-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -314,7 +315,7 @@ body {
   src: url('/keepsimple_/fonts/Jost/Jost-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 // For UXCat certificate
@@ -323,7 +324,7 @@ body {
   src: url('/keepsimple_/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 // Armenian

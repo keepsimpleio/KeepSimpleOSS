@@ -1,13 +1,13 @@
-import { Fragment, FC } from 'react';
+import { FC, Fragment } from 'react';
 
-import P from '../P';
-import Link from '../Link';
-import Span from '../Span';
-import List from '../List';
-import Italic from '../Italic';
 import Bold from '../Bold';
 import H1 from '../H1';
 import H4 from '../H4';
+import Italic from '../Italic';
+import Link from '../Link';
+import List from '../List';
+import P from '../P';
+import Span from '../Span';
 import Underline from '../Underline';
 
 type CollectionProps = {

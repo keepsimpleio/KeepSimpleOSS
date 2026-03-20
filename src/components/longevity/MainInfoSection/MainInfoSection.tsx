@@ -1,10 +1,10 @@
-import { FC, useContext } from 'react';
 import cn from 'classnames';
 import Image from 'next/image';
+import { FC, useContext } from 'react';
 
+import { GlobalContext } from '@components/Context/GlobalContext';
 import Heading from '@components/Heading';
 import BasicStats from '@components/longevity/BasicStats';
-import { GlobalContext } from '@components/Context/GlobalContext';
 
 import { MainInfoSectionProps } from './MainInfoSection.types';
 
@@ -65,7 +65,9 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
         ) : null}
       </div>
       {japaneseText && (
-        <span className={styles.japaneseText}>{japaneseText}</span>
+        <span className={styles.japaneseText} data-cy="japanese-text">
+          {japaneseText}
+        </span>
       )}
     </section>
   );

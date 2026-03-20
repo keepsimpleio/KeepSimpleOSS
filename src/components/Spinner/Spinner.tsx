@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+
 import useSpinner from '@hooks/useSpinner';
 
 import styles from './Spinner.module.scss';

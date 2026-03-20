@@ -1,4 +1,5 @@
 import { Dispatch } from 'react';
+
 export type TLocales = 'en' | 'ru' | 'hy';
 export type TRouter = {
   locale: TLocales;

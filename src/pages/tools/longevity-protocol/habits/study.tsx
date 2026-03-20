@@ -1,13 +1,15 @@
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
-import StudyLayout from '@layouts/StudyLayout';
+import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
 
 import { getStudy } from '@api/longevity/study';
+
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
+
+import StudyLayout from '@layouts/StudyLayout';
 
 const Study = ({ studyData }) => {
   const router = useRouter();
@@ -38,6 +40,7 @@ const Study = ({ studyData }) => {
           seoTitle: studyData[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={studyData[currentLocale]?.createdAt || ''}
         modifiedDate={studyData[currentLocale]?.updatedAt || ''}

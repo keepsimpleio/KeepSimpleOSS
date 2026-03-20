@@ -1,23 +1,24 @@
-import React, { FC, useEffect, useRef } from 'react';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
+import React, { FC, useEffect, useRef } from 'react';
 
-import Quote from '@components/Quote';
-import UsedBy from '@components/UsedBy';
-import OurTools from '@components/OurTools';
-import Headline from '@components/Headline';
-import Supporters from '@components/Supporters';
-import ProgressBar from '@components/ProgressBar';
-import SeoGenerator from '@components/SeoGenerator';
-import AboutProjects from '@components/AboutProjects';
-import ArticleFooter from '@components/ArticleFooter';
-
-import useGlobals from '@hooks/useGlobals';
 import { TRouter } from '@local-types/global';
 
-import type { LandingLayoutTypes } from './LandingLayout.types';
+import useGlobals from '@hooks/useGlobals';
 
 import landingPage from '@data/landingPage';
+
+import AboutProjects from '@components/AboutProjects';
+import ArticleFooter from '@components/ArticleFooter';
+import Headline from '@components/Headline';
+import OurTools from '@components/OurTools';
+import ProgressBar from '@components/ProgressBar';
+import Quote from '@components/Quote';
+import SeoGenerator from '@components/SeoGenerator';
+import Supporters from '@components/Supporters';
+import UsedBy from '@components/UsedBy';
+
+import type { LandingLayoutTypes } from './LandingLayout.types';
 
 import styles from './LandingLayout.module.scss';
 

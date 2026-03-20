@@ -1,5 +1,5 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { HTMLClampTypes } from '@components/longevity/HTMLClamp/HTMLClamp.types';
 
@@ -56,11 +56,14 @@ const HtmlClamp: FC<HTMLClampTypes> = ({
             [styles.clamped]: !expanded,
           })}
           dangerouslySetInnerHTML={{ __html: html || '' }}
+          data-cy="html-clamp-content"
+          data-expanded={expanded}
         />
         {hasOverflow && (
           <button
             type="button"
             className={styles.showMoreBtn}
+            data-cy="show-more-btn"
             onClick={() => setExpanded(v => !v)}
           >
             {/*Keeping show less just in case*/}

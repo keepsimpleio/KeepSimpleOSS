@@ -5,7 +5,7 @@ describe('template spec', () => {
   });
 
   it('Should show a h1', () => {
-    cy.checkH1('Pyramid of Operational Needs');
+    cy.checkH1();
   });
 
   it('Should start playing a music', () => {

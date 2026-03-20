@@ -1,9 +1,9 @@
-import { FC } from 'react';
 import Image from 'next/image';
-
-import type { SerenityButtonProps } from './SerenityButton.types';
+import { FC } from 'react';
 
 import AudioPlayer from '@components/AudioPlayer';
+
+import type { SerenityButtonProps } from './SerenityButton.types';
 
 import styles from './SerenityButton.module.scss';
 

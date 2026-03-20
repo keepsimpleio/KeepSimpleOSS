@@ -1,9 +1,9 @@
-import React, { ElementType } from 'react';
 import cn from 'classnames';
-
-import type { BorderedPillProps } from './BorderedPill.types';
+import React, { ElementType } from 'react';
 
 import Borders from '@icons/longevity/Borders';
+
+import type { BorderedPillProps } from './BorderedPill.types';
 
 import styles from './BorderedPill.module.scss';
 
@@ -13,7 +13,9 @@ export function BorderedPill<T extends ElementType = 'button'>({
   leftIcon,
   children,
   className,
+  contentClassName,
   isWhite,
+  dataCy,
   ...rest
 }: BorderedPillProps<T>) {
   const Component = (as ?? 'button') as ElementType;
@@ -24,9 +26,10 @@ export function BorderedPill<T extends ElementType = 'button'>({
         [styles.white]: isWhite,
       })}
       {...(rest as any)}
+      data-cy={dataCy}
     >
       <Borders className={styles.border} aria-hidden />
-      <span className={styles.content}>
+      <span className={cn(styles.content, contentClassName)}>
         {leftIcon ? <span className={styles.leftIcon}>{leftIcon}</span> : null}
         {text ? <span className={styles.label}>{text} </span> : children}
       </span>

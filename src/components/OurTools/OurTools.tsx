@@ -1,12 +1,13 @@
-import { FC } from 'react';
-import ToolContainer from '@components/ToolContainer';
 import cn from 'classnames';
+import { FC } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import UXCoreGray from '@icons/UXCoreGray';
-import PyramidsGray from '@icons/PyramidsGray';
 import BobGray from '@icons/BobGray';
 import BobLight from '@icons/BobLight';
+import PyramidsGray from '@icons/PyramidsGray';
+import UXCoreGray from '@icons/UXCoreGray';
+
+import ToolContainer from '@components/ToolContainer';
 
 import styles from './OurTools.module.scss';
 

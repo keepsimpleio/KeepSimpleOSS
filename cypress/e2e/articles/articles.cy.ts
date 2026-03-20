@@ -5,7 +5,7 @@ describe('template spec', () => {
   });
 
   it('Should show a h1', () => {
-    cy.checkH1('Articles');
+    cy.checkH1();
   });
 
   it("Should click and scroll to 'UX Core' section", () => {

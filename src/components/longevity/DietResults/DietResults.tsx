@@ -1,6 +1,6 @@
-import { FC } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import { FC } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { DietResultsProps } from './DietResults.types';
@@ -31,6 +31,8 @@ const DietResults: FC<DietResultsProps> = ({
     >
       {scaleLevels.map((level, index) => (
         <div
+          data-cy="diet-results-item"
+          data-active={id === level.id}
           onClick={() => {
             setSelectedHealthyOptionId(level.id);
             setIsIconClicked(false);

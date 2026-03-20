@@ -1,6 +1,7 @@
-import { FC } from 'react';
 import cn from 'classnames';
+import { FC } from 'react';
 import { useInView } from 'react-intersection-observer';
+
 import quote from '@data/quote';
 
 import styles from './Quote.module.scss';

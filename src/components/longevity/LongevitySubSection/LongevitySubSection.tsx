@@ -1,16 +1,16 @@
-import { FC, useState } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import { FC, useState } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-
-import WhyDoThisTooltip from '@components/longevity/WhyDoThisTooltip';
-import Modal from '@components/Modal';
-import Heading from '@components/Heading';
-import BorderedPill from '@components/longevity/BorderedPill';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import longevityData from '@data/longevity';
+
+import Heading from '@components/Heading';
+import BorderedPill from '@components/longevity/BorderedPill';
+import WhyDoThisTooltip from '@components/longevity/WhyDoThisTooltip';
+import Modal from '@components/Modal';
 
 import { LongevitySubSectionProps } from './LongevitySubSection.types';
 
@@ -60,6 +60,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
             <span
               className={styles.habitTooltip}
               data-tooltip-id={title}
+              data-cy="why-do-this-trigger"
               onClick={() => {
                 if (isMobile) {
                   setOpenMobileModal(true);
@@ -112,6 +113,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
             '/keepsimple_/assets/longevity/habits/damage-type-mobile.bg.webp'
           }
           onClick={() => setOpenMobileModal(false)}
+          dataCy="why-do-this-modal"
         >
           <div className={styles.whyDoThisMobileModal}>
             <WhyDoThisTooltip
@@ -122,6 +124,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
             <BorderedPill
               text={'Close'}
               onClick={() => setOpenMobileModal(false)}
+              dataCy="why-do-this-modal-close"
             />
           </div>
         </Modal>

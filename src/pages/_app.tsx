@@ -1,21 +1,23 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import ReactGA from 'react-ga4';
 import { SessionProvider } from 'next-auth/react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import ReactGA from 'react-ga4';
 
-import useSpinner from '@hooks/useSpinner';
-import useMobile from '@hooks/useMobile';
 import useGlobals from '@hooks/useGlobals';
+import useMobile from '@hooks/useMobile';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
+import useSpinner from '@hooks/useSpinner';
+
+import { authenticate } from '@api/auth';
+import { getMyInfo } from '@api/strapi';
+
+import { GlobalContext } from '@components/Context/GlobalContext';
 
 import Layout from '@layouts/Layout';
 
-import { GlobalContext } from '@components/Context/GlobalContext';
 import Box from 'src/components/Box';
 
-import { authenticate } from '@api/auth';
 import mixpanel, { initMixpanel, trackPageView } from '../../lib/mixpanel';
-import { getMyInfo } from '@api/strapi';
 
 import '../styles/globals.scss';
 
@@ -37,6 +39,8 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
   const [routeLoading, setRouteLoading] = useState(false);
   const [longevityTransition, setLongevityTransition] = useState(false);
   const [videosReady, setVideosReady] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   const isIndexingOn = process.env.NEXT_PUBLIC_INDEXING === 'on';
   const isProduction = process.env.NEXT_PUBLIC_ENV === 'prod';
@@ -297,6 +301,9 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
           setVideosReady,
           videosReady,
           overlayOn,
+          audioRef,
+          isAudioPlaying,
+          setIsAudioPlaying,
         }}
       >
         {showLoader && !isSmallScreen && (
@@ -313,6 +320,12 @@ function App({ Component, pageProps: { session, ...pageProps } }: TApp) {
             </div>
           </div>
         )}
+        <audio
+          ref={audioRef}
+          src="/keepsimple_/audio/eat_mushrooms.mp3"
+          preload="none"
+          loop
+        />
         <Layout>
           <Component {...pageProps} />
         </Layout>

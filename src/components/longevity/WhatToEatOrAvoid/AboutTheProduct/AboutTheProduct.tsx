@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import React, { FC } from 'react';
 
 import Heading from '@components/Heading';
 
@@ -19,6 +19,7 @@ const AboutTheProduct: FC<AboutTheProductProps> = ({
       className={cn(styles.aboutProduct, {
         [styles.aboutProductRu]: locale === 'ru',
       })}
+      data-cy="about-product"
     >
       <Heading
         className={styles.tooltipHeading}

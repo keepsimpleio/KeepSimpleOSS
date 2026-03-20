@@ -1,11 +1,14 @@
 import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
+
+import { ogImage } from '@constants/longevity';
+
+import type { TRouter } from '@local-types/global';
+
+import { getAboutProject } from '@api/longevity/about-project';
 
 import SeoGenerator from '@components/SeoGenerator';
 
-import { ogImage } from '@constants/longevity';
-import { getAboutProject } from '@api/longevity/about-project';
-import { useRouter } from 'next/router';
-import type { TRouter } from '@local-types/global';
 import AboutProjectLayout from '@layouts/LongevityLayouts';
 
 const AboutProject = ({ aboutTheProject }) => {
@@ -37,6 +40,7 @@ const AboutProject = ({ aboutTheProject }) => {
           seoTitle: aboutTheProject[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={aboutTheProject[currentLocale]?.createdAt || ''}
         modifiedDate={aboutTheProject[currentLocale]?.updatedAt || ''}

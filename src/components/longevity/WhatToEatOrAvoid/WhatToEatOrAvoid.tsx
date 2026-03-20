@@ -1,21 +1,22 @@
-import { FC, useEffect, useState } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import { FC, useEffect, useState } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-
-import Heading from '@components/Heading';
-import Modal from '@components/Modal';
-import AboutTheProduct from '@components/longevity/WhatToEatOrAvoid/AboutTheProduct';
-import ShinyStars from '@components/longevity/ShinyStars';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
-import { WhatToEatOrAvoidProps } from './WhatToEatOrAvoid.types';
+import longevityData from '@data/longevity';
 
 import Divider from '@icons/longevity/Divider';
 
+import Heading from '@components/Heading';
+import ShinyStars from '@components/longevity/ShinyStars';
+import AboutTheProduct from '@components/longevity/WhatToEatOrAvoid/AboutTheProduct';
+import Modal from '@components/Modal';
+
+import { WhatToEatOrAvoidProps } from './WhatToEatOrAvoid.types';
+
 import styles from './WhatToEatOrAvoid.module.scss';
-import longevityData from '@data/longevity';
 
 const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
   damageIndex,
@@ -52,6 +53,7 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
         [styles.whatToEatSection]: selectedHealthyOptionId,
         [styles.whatToEatOrAvoidRu]: locale === 'ru',
       })}
+      data-cy="what-to-eat-or-avoid"
       onClick={e => {
         const selectedText = window.getSelection?.()?.toString() ?? '';
         if (selectedText.trim().length > 0) return;
@@ -126,9 +128,10 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
                 setSelectedHealthyOptionId(prev => (prev === 3 ? null : 3))
               }
               className={styles.checkbox}
+              data-cy="diet-checkbox"
             >
               {selectedHealthyOptionId === Number(id) && (
-                <span className={styles.checkmark} />
+                <span className={styles.checkmark} data-cy="diet-checkmark" />
               )}
             </div>
           </>
@@ -136,8 +139,8 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
       </div>
 
       {tooltipContent && (
-        <div className={styles.heartWrapper}>
-          <div data-tooltip-id={title}>
+        <div className={styles.heartWrapper} data-cy="heart-wrapper">
+          <div data-tooltip-id={title} data-cy="heart-trigger">
             {!isMobile && <ShinyStars />}
             <Image
               src={imageUrl}

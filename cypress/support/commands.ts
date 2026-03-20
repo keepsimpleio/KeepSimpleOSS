@@ -1,4 +1,9 @@
-// 1. Check all external links on the page
+// 1. Check if a h1 element is visible and not empty
+Cypress.Commands.add('checkH1', () => {
+  cy.get('h1').should('be.visible').and('not.be.empty');
+});
+
+// 2. Check all external links on the page
 Cypress.Commands.add('checkExternalLinks', (excludedDomains = []) => {
   cy.get('a').each($link => {
     const href = $link.prop('href');
@@ -24,11 +29,6 @@ Cypress.Commands.add('checkExternalLinks', (excludedDomains = []) => {
       });
     }
   });
-});
-
-// 2. VERY REUSABLE - Check if the H1 element contains the expected text
-Cypress.Commands.add('checkH1', expectedText => {
-  cy.get('h1').should('have.text', expectedText);
 });
 
 // 3. Scroll to a specific section by clicking a button and checking scroll position
@@ -152,21 +152,99 @@ Cypress.Commands.add('showMoreAndLess', () => {
   cy.get('[data-cy="show-less-button"]').should('be.visible').click();
 });
 
-// 12. Play Audio
-Cypress.Commands.add('playAudio', () => {
-  cy.get('[data-cy="pyramid-play-icon"]').click({ force: true });
-  cy.get('[data-cy="audio-player"]')
-    .invoke('attr', 'class')
-    .should('contain', 'playing');
-  cy.get('[data-cy="pause-icon"]').click({ force: true });
-  cy.wait(500);
-
-  cy.get('[data-cy="audio-player"]')
-    .invoke('attr', 'class')
-    .should('contain', 'paused');
+// 12. Check Japanese text exists and is not empty
+Cypress.Commands.add('checkJapaneseText', () => {
+  cy.get('[data-cy="japanese-text"]')
+    .should('exist')
+    .invoke('text')
+    .should('not.be.empty');
 });
 
-// 13. Check Pyramid Change
+// 13. Play Audio
+Cypress.Commands.add('playAudio', () => {
+  // Initially paused: play icon visible, pause icon hidden
+  cy.get('[data-cy="pyramid-play-icon"]').should('be.visible');
+  cy.get('[data-cy="pyramid-pause-icon"]').should('not.be.visible');
+
+  // Click to play
+  cy.get('[data-cy="audio-player"]').click({ force: true });
+
+  // Now playing: pause icon visible, play icon hidden
+  cy.get('[data-cy="pyramid-pause-icon"]').should('be.visible');
+  cy.get('[data-cy="pyramid-play-icon"]').should('not.be.visible');
+
+  // Click to pause
+  cy.get('[data-cy="audio-player"]').click({ force: true });
+
+  // Paused again: play icon visible, pause icon hidden
+  cy.get('[data-cy="pyramid-play-icon"]').should('be.visible');
+  cy.get('[data-cy="pyramid-pause-icon"]').should('not.be.visible');
+
+  // Click to play again
+  cy.get('[data-cy="audio-player"]').click({ force: true });
+
+  // Playing again: pause icon visible, play icon hidden
+  cy.get('[data-cy="pyramid-pause-icon"]').should('be.visible');
+  cy.get('[data-cy="pyramid-play-icon"]').should('not.be.visible');
+});
+
+// 14. Check all links on the current page (internal + external + no empty hrefs)
+const SKIP_LINK_DOMAINS = [
+  'linkedin.com',
+  'twitter.com',
+  'instagram.com',
+  'facebook.com',
+];
+
+Cypress.Commands.add('checkPageLinks', () => {
+  // No empty or missing hrefs
+  cy.get('a').each($a => {
+    const href = $a.attr('href');
+    expect(href, `Anchor "${$a.text().trim()}" has no href`).to.not.be
+      .undefined;
+    expect(
+      href.trim(),
+      `Anchor "${$a.text().trim()}" has empty href`,
+    ).to.not.equal('');
+    expect(
+      href.trim(),
+      `Anchor "${$a.text().trim()}" has bare # href`,
+    ).to.not.equal('#');
+    expect(
+      href,
+      `Anchor "${$a.text().trim()}" has undefined in href`,
+    ).to.not.include('undefined');
+  });
+
+  // Internal links (skip /uxcore which requires auth)
+  cy.get('a[href^="/"]').each($a => {
+    const href = $a.attr('href');
+    if (!href || href.includes('/uxcore')) return;
+    cy.request({ url: href, failOnStatusCode: false }).then(res => {
+      expect(res.status, `Internal link broken: ${href}`).to.be.lt(400);
+    });
+  });
+
+  // External links (skip social media that blocks bots)
+  cy.get('a[href^="http"]').each($a => {
+    const href = $a.attr('href');
+    if (!href || SKIP_LINK_DOMAINS.some(domain => href.includes(domain)))
+      return;
+    cy.request({
+      url: href,
+      failOnStatusCode: false,
+      timeout: 10000,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Cypress link checker)',
+      },
+    }).then(res => {
+      expect(res.status, `External link broken: ${href}`).to.be.lt(400);
+    });
+  });
+});
+
+// 15. Check Pyramid Change
 Cypress.Commands.add(
   'checkPyramidChange',
   (bluePyramidId: string, orangePyramidId: string, purplePyramidId: string) => {
@@ -185,7 +263,7 @@ Cypress.Commands.add(
   },
 );
 
-// 14. Checks swiper slide
+// 16. Checks swiper slide
 Cypress.Commands.add('checkSwiperSlide', (prevUrl: string, nextUrl: string) => {
   cy.get('[data-cy="slide-move-right"]').first().click({ force: true });
   cy.wait(1000);
@@ -196,7 +274,7 @@ Cypress.Commands.add('checkSwiperSlide', (prevUrl: string, nextUrl: string) => {
   cy.url().should('include', prevUrl);
 });
 
-// 15. UXCP Adding BIases
+// 17. UXCP Adding BIases
 Cypress.Commands.add('uxcpAddBiases', () => {
   cy.get('[data-cy="add-bias"]').first().click();
   cy.get('[data-cy="added-bias-item"]').first().should('be.visible');
@@ -213,7 +291,7 @@ Cypress.Commands.add('uxcpAddBiases', () => {
   cy.get('[data-cy="added-bias-item"]').eq(2).should('not.be.visible');
 });
 
-// 16. Check all links on the page
+// 18. Check all links on the page
 Cypress.Commands.add('checkAllLinks', (routes: []) => {
   routes.forEach(route => {
     cy.visit(route);

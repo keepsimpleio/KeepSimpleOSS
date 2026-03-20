@@ -1,4 +1,5 @@
 import { FC, useCallback, useMemo, useRef, useState } from 'react';
+
 import { ProgressBarProps } from './ProgressBar.types';
 
 import styles from './ProgressBar.module.scss';
@@ -126,14 +127,20 @@ const ProgressBar: FC<ProgressBarProps> = ({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
+        data-cy="progress-bar-container"
       >
         <div className={styles.track} />
-        <div className={styles.fill} style={{ width: fillPercentage }} />
+        <div
+          className={styles.fill}
+          style={{ width: fillPercentage }}
+          data-cy="progress-bar-fill"
+        />
         <button
           type="button"
           className={styles.thumb}
           style={{ left: fillPercentage }}
           aria-label={`Selected ${selectedMinutes} minutes`}
+          data-cy="progress-bar-thumb"
         />
       </div>
     </div>

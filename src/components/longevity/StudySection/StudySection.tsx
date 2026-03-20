@@ -1,19 +1,19 @@
-import { FC, useState } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import { FC, useState } from 'react';
 
-import Heading from '@components/Heading';
-
-import { StudySectionProps } from './StudySection.types';
-
-import FlipCard from '@components/longevity/FlipCard';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
-import Modal from '@components/Modal';
-import HtmlClamp from '@components/longevity/HTMLClamp';
-import { BorderedPill } from '@components/longevity/BorderedPill/BorderedPill';
 
 import LearnMoreIcon from '@icons/longevity/LearnMoreIcon';
 import { StudyCloseIcon } from '@icons/longevity/Study/CloseIcon';
+
+import Heading from '@components/Heading';
+import { BorderedPill } from '@components/longevity/BorderedPill/BorderedPill';
+import FlipCard from '@components/longevity/FlipCard';
+import HtmlClamp from '@components/longevity/HTMLClamp';
+import Modal from '@components/Modal';
+
+import { StudySectionProps } from './StudySection.types';
 
 import styles from './StudySection.module.scss';
 
@@ -53,6 +53,7 @@ const StudySection: FC<StudySectionProps> = ({
         className={cn(styles.studySection, {
           [styles.studySectionRu]: locale === 'ru',
         })}
+        data-cy="study-section"
       >
         <div className={styles.cardContainer}>
           <div
@@ -101,6 +102,7 @@ const StudySection: FC<StudySectionProps> = ({
                     text={learnMoreText}
                     onClick={() => setOpenModal(true)}
                     leftIcon={<LearnMoreIcon />}
+                    dataCy="learn-more-btn"
                   />
                 </div>
               )}
@@ -112,6 +114,7 @@ const StudySection: FC<StudySectionProps> = ({
                 [styles.showFlipCard]: switchPage,
                 [styles.hideFlipCard]: switchPage === false,
               })}
+              data-cy="flip-card-wrapper"
             >
               <FlipCard
                 headline={flippedCardHeadline}
@@ -137,6 +140,7 @@ const StudySection: FC<StudySectionProps> = ({
                 width={60}
                 height={60}
                 className={styles.pageSwitcher}
+                data-cy="page-switcher"
                 onClick={() => {
                   setSwitchPage(!switchPage);
                 }}
@@ -150,6 +154,7 @@ const StudySection: FC<StudySectionProps> = ({
                 width={60}
                 height={60}
                 className={styles.pageSwitcher}
+                data-cy="page-switcher"
                 onClick={() => {
                   setSwitchPage(!switchPage);
                 }}
@@ -165,6 +170,7 @@ const StudySection: FC<StudySectionProps> = ({
           backgroundImageUrl={mobalBackgroundImage}
           bodyClassName={isHacks ? styles.hacksModalBody : styles.modalBody}
           className={styles.modal}
+          dataCy="study-flip-card-modal"
         >
           <FlipCard
             headline={flippedCardHeadline}
@@ -183,6 +189,7 @@ const StudySection: FC<StudySectionProps> = ({
             leftIcon={<StudyCloseIcon />}
             onClick={() => setOpenModal(false)}
             isWhite={isHacks}
+            dataCy="study-close-btn"
           />
         </Modal>
       )}

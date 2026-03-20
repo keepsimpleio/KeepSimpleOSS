@@ -1,12 +1,15 @@
 import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 
-import SupplementsLayout from '@layouts/Supplements';
+import { ogImage } from '@constants/longevity';
+
+import type { TRouter } from '@local-types/global';
 
 import { getSupplements } from '@api/longevity/supplements';
+
 import SeoGenerator from '@components/SeoGenerator';
-import { ogImage } from '@constants/longevity';
-import { useRouter } from 'next/router';
-import type { TRouter } from '@local-types/global';
+
+import SupplementsLayout from '@layouts/Supplements';
 
 const Supplements = ({ supplements }) => {
   const router = useRouter();
@@ -36,6 +39,7 @@ const Supplements = ({ supplements }) => {
           seoTitle: supplements[currentLocale]?.Seo?.seoTitle || '',
         }}
         isLongevityPage
+        type={'MedicalWebPage'}
         ogTags={OGTags}
         createdDate={supplements[currentLocale]?.createdAt || ''}
         modifiedDate={supplements[currentLocale]?.updatedAt || ''}

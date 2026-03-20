@@ -1,18 +1,18 @@
-import React, { FC, useContext, useEffect } from 'react';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
-
-import type { LogInProps } from './LogIn.types';
-
-import Modal from '@components/Modal';
-import { GlobalContext } from '@components/Context/GlobalContext';
-import Heading from '@components/Heading';
-
-import GoogleIcon from '@icons/GoogleIcon';
-import DiscordIcon from '@icons/DiscordIcon';
+import React, { FC, useContext, useEffect } from 'react';
 
 import { setRedirectCookie } from '@lib/cookies';
+
+import DiscordIcon from '@icons/DiscordIcon';
+import GoogleIcon from '@icons/GoogleIcon';
+
+import { GlobalContext } from '@components/Context/GlobalContext';
+import Heading from '@components/Heading';
+import Modal from '@components/Modal';
+
+import type { LogInProps } from './LogIn.types';
 
 import styles from './LogIn.module.scss';
 

@@ -1,8 +1,8 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import cn from 'classnames';
-import { createPortal } from 'react-dom';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { FC, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { TRouter } from '@local-types/global';
 

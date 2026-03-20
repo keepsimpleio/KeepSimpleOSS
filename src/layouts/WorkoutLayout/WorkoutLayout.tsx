@@ -1,15 +1,16 @@
 import { FC, useEffect, useState } from 'react';
 
-import MainInfoSection from '@components/longevity/MainInfoSection';
-import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import longevityData from '@data/longevity';
+
 import BrainAgeActivity from '@components/BrainAgeActivity';
-import WeeklyWorkout from '@components/longevity/WeeklyWorkout';
+import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import MainInfoSection from '@components/longevity/MainInfoSection';
 import StrengthAndTimeCompression from '@components/longevity/StrengthAndTimeCompression';
+import WeeklyWorkout from '@components/longevity/WeeklyWorkout';
 
 import { WorkoutLayoutProps } from './WorkoutLayout.types';
 
 import styles from './WorkoutLayout.module.scss';
-import longevityData from '@data/longevity';
 
 const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
   // TODO: image paths move to constants

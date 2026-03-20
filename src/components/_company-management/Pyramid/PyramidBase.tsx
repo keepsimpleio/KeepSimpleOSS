@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+
 import BlueSeparators from './separators/BlueSeparators';
 import OrangeSeparators from './separators/OrangeSeparators';
 import PurpleSeparators from './separators/PurpleSeparators';
@@ -603,11 +604,7 @@ const PyramidBase: FC<PyramidBaseProps> = ({
       {/* Here */}
       <g type="group">
         {currentData.map(({ text, ...coords }, index) => (
-          <text
-            key={index}
-            {...coords}
-            fill="#fff"
-          >
+          <text key={index} {...coords} fill="#fff">
             {text}
           </text>
         ))}

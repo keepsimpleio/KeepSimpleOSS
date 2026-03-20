@@ -1,11 +1,12 @@
 import { FC } from 'react';
 
-import { EnvironmentLayoutProps } from './EnvironmentLayout.types';
-
-import MainInfoSection from '@components/longevity/MainInfoSection';
-import LongevitySubSection from '@components/longevity/LongevitySubSection';
-import EnvironmentSubSection from '@components/longevity/EnvironmentSubSection/EnvironmentSubSection';
 import longevityData from '@data/longevity';
+
+import EnvironmentSubSection from '@components/longevity/EnvironmentSubSection/EnvironmentSubSection';
+import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import MainInfoSection from '@components/longevity/MainInfoSection';
+
+import { EnvironmentLayoutProps } from './EnvironmentLayout.types';
 
 const EnvironmentLayout: FC<EnvironmentLayoutProps> = ({ locale, data }) => {
   // TODO: check image paths and move to constants

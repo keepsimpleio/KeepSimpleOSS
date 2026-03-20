@@ -1,5 +1,5 @@
-import { FC } from 'react';
 import cn from 'classnames';
+import { FC } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 import styles from './AboutProjects.module.scss';

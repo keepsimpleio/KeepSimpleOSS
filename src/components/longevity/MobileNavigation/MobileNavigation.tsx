@@ -1,27 +1,26 @@
-import { FC, useState } from 'react';
-import Link from 'next/link';
-
-import { useRouter } from 'next/router';
 import cn from 'classnames';
-
-import BorderedPill from '@components/longevity/BorderedPill';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { FC, useState } from 'react';
 
 import { TRouter } from '@local-types/global';
 
+import { useClickOutside } from '@lib/useClickOutside';
+
 import longevityData from '@data/longevity';
 
-import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
-import { StudyIcon } from '@icons/longevity/StudyIcon';
 import { DietIcon } from '@icons/longevity/DietIcon';
-import { WorkoutIcon } from '@icons/longevity/WorkoutIcon';
+import Divider from '@icons/longevity/Divider';
+import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
+import NavigationIcon from '@icons/longevity/NavigationIcon';
+import NewPageIcon from '@icons/longevity/NewPageIocn';
 import { SleepIcon } from '@icons/longevity/SleepIcon';
+import { StudyIcon } from '@icons/longevity/StudyIcon';
 import { SupplementsIcon } from '@icons/longevity/SupplementsIcon';
 import { TomIcon } from '@icons/longevity/TomIcon';
-import NewPageIcon from '@icons/longevity/NewPageIocn';
-import Divider from '@icons/longevity/Divider';
-import NavigationIcon from '@icons/longevity/NavigationIcon';
+import { WorkoutIcon } from '@icons/longevity/WorkoutIcon';
 
-import { useClickOutside } from '@lib/useClickOutside';
+import BorderedPill from '@components/longevity/BorderedPill';
 
 import styles from './MobileNavigation.module.scss';
 
@@ -150,6 +149,7 @@ const MobileNavigation: FC = () => {
       <nav className={styles.nav} ref={ref}>
         <button
           className={styles.activePage}
+          data-cy="mobile-nav-toggle"
           onClick={() => setOpenNav(!openNav)}
         >
           {getActiveNavItemName(navItems, subNavItems)}
@@ -188,6 +188,9 @@ const MobileNavigation: FC = () => {
                 className={cn(styles.txtAndIcon, {
                   [styles.habitsTxtAndIcon]: isHabitsItem(item),
                 })}
+                {...(isHabitsItem(item)
+                  ? { 'data-cy': 'mobile-habits-toggle' }
+                  : {})}
               >
                 {item.icon && <span className={styles.icon}>{item.icon}</span>}
                 {item.hasNoUrl ? (
@@ -219,6 +222,7 @@ const MobileNavigation: FC = () => {
                     [styles.openSubNav]:
                       openSubNav || router.pathname.includes('habits'),
                   })}
+                  data-cy="mobile-subnav"
                 >
                   {subNavItems.map(subItem => (
                     <li
@@ -246,6 +250,7 @@ const MobileNavigation: FC = () => {
       </nav>
       <BorderedPill
         className={styles.nextButton}
+        dataCy="mobile-next-button"
         onClick={() => nextPathname && router.push(nextPathname.path)}
       >
         <span className={styles.nextStaticTxt}>{nextBtn}</span>{' '}

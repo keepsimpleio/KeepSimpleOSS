@@ -1,22 +1,23 @@
-import { FC } from 'react';
-import Link from 'next/link';
-
-import { useRouter } from 'next/router';
-import Image from 'next/image';
 import cn from 'classnames';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { FC } from 'react';
 
-import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
-import { StudyIcon } from '@icons/longevity/StudyIcon';
+import { TRouter } from '@local-types/global';
+
+import longevityData from '@data/longevity';
+
 import { DietIcon } from '@icons/longevity/DietIcon';
-import { WorkoutIcon } from '@icons/longevity/WorkoutIcon';
+import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
+import NewPageIcon from '@icons/longevity/NewPageIocn';
 import { SleepIcon } from '@icons/longevity/SleepIcon';
+import { StudyIcon } from '@icons/longevity/StudyIcon';
 import { SupplementsIcon } from '@icons/longevity/SupplementsIcon';
 import { TomIcon } from '@icons/longevity/TomIcon';
-import NewPageIcon from '@icons/longevity/NewPageIocn';
+import { WorkoutIcon } from '@icons/longevity/WorkoutIcon';
 
 import styles from './Navigation.module.scss';
-import longevityData from '@data/longevity';
-import { TRouter } from '@local-types/global';
 
 const Navigation: FC = () => {
   const router = useRouter();

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
 import { CustomHookType, DispatchFuntion } from '@local-types/global';
 
 type TFullscreenFunction = (options?: FullscreenOptions) => Promise<void>;

@@ -1,11 +1,12 @@
-import { FC } from 'react';
 import cn from 'classnames';
 import Image from 'next/image';
+import { FC } from 'react';
+
+import RedLine from '@icons/longevity/RedLine';
 
 import { HeadingProps } from './Heading.types';
 
 import styles from './Heading.module.scss';
-import RedLine from '@icons/longevity/RedLine';
 
 const Heading: FC<HeadingProps> = ({
   text,

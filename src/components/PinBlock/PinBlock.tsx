@@ -1,9 +1,12 @@
-import { useCallback } from 'react';
 import { useRouter } from 'next/router';
+import { useCallback } from 'react';
 
 import type { TRouter } from '@local-types/global';
+
 import useImageModule from '@hooks/useImageModule';
+
 import { scrollToImage } from '@lib/helpers';
+
 import imageModuleData from '@data/imageModule';
 
 import styles from './PinBlock.module.scss';

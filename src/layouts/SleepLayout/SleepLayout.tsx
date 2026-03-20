@@ -1,15 +1,16 @@
-import { FC, useRef, useState } from 'react';
-import Image from 'next/image';
 import html2canvas from 'html2canvas';
-import Modal from '@components/Modal';
-import Table from '@components/longevity/Table';
-import Supplement from '@components/longevity/Supplement';
-import MainInfoSection from '@components/longevity/MainInfoSection';
-import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import Image from 'next/image';
+import { FC, useRef, useState } from 'react';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import longevityData from '@data/longevity';
+
+import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import MainInfoSection from '@components/longevity/MainInfoSection';
+import Supplement from '@components/longevity/Supplement';
+import Table from '@components/longevity/Table';
+import Modal from '@components/Modal';
 
 import { SleepLayoutProps } from './SleepLayout.types';
 
@@ -114,6 +115,7 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
             type="button"
             onClick={handleOpen}
             className={styles.openChartBtn}
+            data-cy="open-chart-btn"
           >
             <Image
               src={
@@ -135,13 +137,14 @@ const SleepLayout: FC<SleepLayoutProps> = ({ locale, data, supplements }) => {
           </button>
 
           {open && (
-            <Modal onClick={() => setOpen(false)}>
+            <Modal onClick={() => setOpen(false)} dataCy="sleep-chart-modal">
               <Image
                 src={imgSrc}
                 alt="Table"
                 width={500}
                 height={600}
                 className={styles.img}
+                data-cy="sleep-chart-img"
               />
             </Modal>
           )}

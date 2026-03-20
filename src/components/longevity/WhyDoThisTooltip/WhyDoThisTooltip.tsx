@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { FC } from 'react';
 
 import Heading from '@components/Heading';
@@ -5,7 +6,6 @@ import Heading from '@components/Heading';
 import { WhyDoThisTooltipProps } from './WhyDoThisTooltip.types';
 
 import styles from './WhyDoThisTooltip.module.scss';
-import Image from 'next/image';
 
 const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
   whatDamagesText,
@@ -48,7 +48,7 @@ const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
   }
 
   return (
-    <div className={styles.whyDoThisTooltip}>
+    <div className={styles.whyDoThisTooltip} data-cy="why-do-this-content">
       <div>
         <Image
           src={'/keepsimple_/assets/longevity/habits/what-is-this-bg.webp'}

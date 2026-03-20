@@ -1,18 +1,19 @@
-import { FC, useState } from 'react';
 import Image from 'next/image';
+import { FC, useState } from 'react';
 
-import MainInfoSection from '@components/longevity/MainInfoSection';
-import LongevitySubSection from '@components/longevity/LongevitySubSection';
-import WhatToEatOrAvoid from '@components/longevity/WhatToEatOrAvoid';
+import { images, longevityDietPath, scaleLevels } from '@constants/longevity';
+
+import longevityData from '@data/longevity';
+
 import DietResults from '@components/longevity/DietResults';
+import LongevitySubSection from '@components/longevity/LongevitySubSection';
+import MainInfoSection from '@components/longevity/MainInfoSection';
+import WhatToEatOrAvoid from '@components/longevity/WhatToEatOrAvoid';
 import YourDiet from '@components/longevity/YourDiet';
 
 import { DietLayoutProps } from '@layouts/DietLayout/DietLayout.types';
 
-import { images, longevityDietPath, scaleLevels } from '@constants/longevity';
-
 import styles from './DietLayout.module.scss';
-import longevityData from '@data/longevity';
 
 const DietLayout: FC<DietLayoutProps> = ({ locale, data }) => {
   const firstItemIndex = 1;

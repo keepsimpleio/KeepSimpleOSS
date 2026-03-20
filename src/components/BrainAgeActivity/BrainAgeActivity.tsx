@@ -1,11 +1,14 @@
-import { FC, useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
+import { FC, ReactNode, useCallback, useMemo, useState } from 'react';
 
-import Heading from '@components/Heading';
-
-import longevityData from '@data/longevity';
 import { BRAIN_AGE_TABLE } from '@constants/longevity';
 
+import longevityData from '@data/longevity';
+
+import Heading from '@components/Heading';
+import Digit from '@components/longevity/Digit/Digit';
+
+import { BorderedPill } from '../longevity/BorderedPill/BorderedPill';
 import { BrainAgeActivityProps } from './BrainAgeActivity.types';
 
 import styles from './BrainAgeActivity.module.scss';
@@ -15,9 +18,15 @@ const BrainAgeActivity: FC<BrainAgeActivityProps> = ({ locale }) => {
 
   const [selectedBaseline, setSelectedBaseline] = useState<number>(32);
   const formatDelta = useCallback(
-    (delta: number) => {
-      const sign = delta > 0 ? '+' : '';
-      return `(${sign}${delta} ${totalWeeklyActivity.years})`;
+    (delta: number): ReactNode => {
+      const sign = delta > 0 ? '+ ' : '';
+      return (
+        <span>
+          ({sign}
+          <Digit value={Math.abs(delta)} size={24} />{' '}
+          {totalWeeklyActivity.years})
+        </span>
+      );
     },
     [totalWeeklyActivity.years],
   );
@@ -35,6 +44,12 @@ const BrainAgeActivity: FC<BrainAgeActivityProps> = ({ locale }) => {
       sedentary: row.sedentary,
       activeDeltaText: formatDelta(activeDelta),
       sedentaryDeltaText: formatDelta(sedentaryDelta),
+    } as {
+      selectedBaseline: number;
+      active: number;
+      sedentary: number;
+      activeDeltaText: ReactNode;
+      sedentaryDeltaText: ReactNode;
     };
   }, [selectedBaseline, formatDelta]);
 
@@ -43,6 +58,7 @@ const BrainAgeActivity: FC<BrainAgeActivityProps> = ({ locale }) => {
       className={cn(styles.section, {
         [styles.sectionRu]: locale === 'ru',
       })}
+      data-cy="brain-age-activity"
     >
       <Heading
         text={totalWeeklyActivity.brainAgeTitle}
@@ -67,15 +83,26 @@ const BrainAgeActivity: FC<BrainAgeActivityProps> = ({ locale }) => {
             className={cn(styles.ageButton, {
               [styles.selectedButton]: selectedBaseline === row.baseline,
             })}
+            data-cy="age-button"
+            data-active={selectedBaseline === row.baseline}
+            data-baseline={row.baseline}
           >
-            {row.baseline}
+            <Digit value={row.baseline} size={32} />
           </button>
         ))}
       </div>
       <div>
         {result && (
-          <div className={styles.result}>
-            <div className={styles.minimal}>
+          <div
+            className={styles.result}
+            data-cy="brain-age-result"
+            data-sedentary={result.sedentary}
+            data-active-age={result.active}
+          >
+            <BorderedPill
+              className={styles.minimal}
+              contentClassName={styles.content}
+            >
               <p className={styles.subContent}>
                 <span>{totalWeeklyActivity.brainIfSedentary}</span>
                 {totalWeeklyActivity.brainIfSedentarySubText && (
@@ -84,11 +111,17 @@ const BrainAgeActivity: FC<BrainAgeActivityProps> = ({ locale }) => {
                   </span>
                 )}
               </p>
-              <span className={styles.passive}>
-                {result.sedentary} {result.sedentaryDeltaText}
-              </span>
-            </div>
-            <div className={styles.maximal}>
+              <div className={styles.valueWrapper}>
+                <span className={styles.passive}>
+                  <Digit value={result.sedentary} size={24} />{' '}
+                  {result.sedentaryDeltaText}
+                </span>
+              </div>
+            </BorderedPill>
+            <BorderedPill
+              className={styles.maximal}
+              contentClassName={styles.content}
+            >
               <p className={styles.subContent}>
                 <span>{totalWeeklyActivity.brainIfActive}</span>
                 {totalWeeklyActivity.brainIfActiveSubText && (
@@ -97,8 +130,12 @@ const BrainAgeActivity: FC<BrainAgeActivityProps> = ({ locale }) => {
                   </span>
                 )}
               </p>
-              <span className={styles.active}>{result.active}</span>
-            </div>
+              <div className={styles.valueWrapper}>
+                <span className={styles.active}>
+                  <Digit value={result.active} size={24} />
+                </span>
+              </div>
+            </BorderedPill>
           </div>
         )}
       </div>
