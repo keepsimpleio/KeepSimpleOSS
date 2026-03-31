@@ -1,35 +1,22 @@
-# Keepsimple Project 
-> Description for testing the llms
+# KeepSimple
+> Practical resources and articles from KeepSimple.
 ## Pages & Resources
-- [Home](https://staging.keepsimple.io/): KeepSimple home page.
-- [Slug](https://staging.keepsimple.io/[page]): No description available.
-- [Articles](https://staging.keepsimple.io/articles): Browse all KeepSimple articles and categories.
-- [Articles All About User Stories Brand New](https://staging.keepsimple.io/articles/all-about-user-stories-brand-new): This article describes how to write user stories. The author uses real-world example based on the real feature developed for a major online platform.
-- [Articles Career Path Of A Manager And A Few Universal Tips](https://staging.keepsimple.io/articles/career-path-of-a-manager-and-a-few-universal-tips): The article summarizes what was described in all previous articles and what are the possible ways of a project manager's career development.
-- [Articles Overengineering And Demo Readiness](https://staging.keepsimple.io/articles/overengineering_and_demo_readiness): How to solve overengineering issues in engineering teams, and how to always be ready for important DEMOs and milestones.
-- [Articles Philosophies Methodologies And Frameworks](https://staging.keepsimple.io/articles/philosophies-methodologies-and-frameworks): The article describes the fundamental differences between project management philosophies, methodologies, and frameworks.
-- [Articles Scrum Framework Artifacts Rituals And Roles](https://staging.keepsimple.io/articles/scrum-framework-artifacts-rituals-and-roles): This article describes all SCRUM Framework artifacts, rituals, and roles, including nuanced details such as the definition of Done, Increment, and others.
-- [Articles Software Development Life Cycles](https://staging.keepsimple.io/articles/software-development-life-cycles): The article describes all actual software development life cycles (SDLCs), in particular Predictive, Iterative, Incremental, and Agile.
-- [Articles Summarize Like Your Job Depends On It](https://staging.keepsimple.io/articles/summarize-like-your-job-depends-on-it): The article describes the importance of summarization, making quality executive summaries and its impact on career.
-- [Articles Technical Components Of The Project](https://staging.keepsimple.io/articles/technical-components-of-the-project): A brief introduction of the main technical components and terms used in the infrastructure of any software project
-- [Articles What Is A Project](https://staging.keepsimple.io/articles/what-is-a-project): The article describes what can be considered as a project.
-- [Articles Why Study Management](https://staging.keepsimple.io/articles/why-study-management): This article describes the importance of management and why everyone should study management basics regardless of their specialty and interests.
-- [Auth](https://staging.keepsimple.io/auth): Authentication page for KeepSimple.
-- [Company Management](https://staging.keepsimple.io/company-management): Explore company management resources.
-- [Contributors](https://staging.keepsimple.io/contributors): Meet the KeepSimple contributors.
-- [Tools](https://staging.keepsimple.io/tools): No description available.
-- [Tools Longevity Protocol About Project](https://staging.keepsimple.io/tools/longevity-protocol/about-project): No description available.
-- [Tools Longevity Protocol Environment](https://staging.keepsimple.io/tools/longevity-protocol/environment): No description available.
-- [Tools Longevity Protocol Habits Diet](https://staging.keepsimple.io/tools/longevity-protocol/habits/diet): No description available.
-- [Tools Longevity Protocol Habits Lifestyle](https://staging.keepsimple.io/tools/longevity-protocol/habits/lifestyle): No description available.
-- [Tools Longevity Protocol Habits Sleep](https://staging.keepsimple.io/tools/longevity-protocol/habits/sleep): No description available.
-- [Tools Longevity Protocol Habits Study](https://staging.keepsimple.io/tools/longevity-protocol/habits/study): No description available.
-- [Tools Longevity Protocol Habits Supplements](https://staging.keepsimple.io/tools/longevity-protocol/habits/supplements): No description available.
-- [Tools Longevity Protocol Habits Workout](https://staging.keepsimple.io/tools/longevity-protocol/habits/workout): No description available.
-- [Tools Longevity Protocol Results](https://staging.keepsimple.io/tools/longevity-protocol/results): No description available.
-- [Uxcore Explain To Learn](https://staging.keepsimple.io/uxcore/explain-to-learn): Read how explaining can be the best skill to boost your learning and communication skills.
-- [Uxcore Friendship Explained](https://staging.keepsimple.io/uxcore/friendship-explained): Learn how to quantify your relationships with the Friendship Index. A practical framework to measure loyalty, balance, and sacrifice in friendships.
-- [Uxcore Practical Longevity Protocol](https://staging.keepsimple.io/uxcore/practical-longevity-protocol): Why Longevity is the most important trend nowadays and beyond
-- [Uxcore Summarize Like Your Job Depends On It](https://staging.keepsimple.io/uxcore/summarize-like-your-job-depends-on-it): The article describes the importance of summarization, making quality executive summaries and its impact on career.
-- [Uxcore Uiux](https://staging.keepsimple.io/uxcore/uiux): UI-UX design case study on a real-world multi-million $ project. The study includes examples of work in Figma and the PRD standard used for the project.
-- [See All Articles](https://staging.keepsimple.io/articles): Browse all KeepSimple articles and categories.
+- [Home](https://keepsimple.io/): KeepSimple home page.
+- [Slug](https://keepsimple.io/[page]): No description available.
+- [Articles](https://keepsimple.io/articles): Browse all KeepSimple articles and categories.
+- [Articles Slug](https://keepsimple.io/articles/[page]): No description available.
+- [Auth](https://keepsimple.io/auth): Authentication page for KeepSimple.
+- [Company Management](https://keepsimple.io/company-management): Explore company management resources.
+- [Contributors](https://keepsimple.io/contributors): Meet the KeepSimple contributors.
+- [Tools](https://keepsimple.io/tools): No description available.
+- [Tools Longevity Protocol About Project](https://keepsimple.io/tools/longevity-protocol/about-project): No description available.
+- [Tools Longevity Protocol Environment](https://keepsimple.io/tools/longevity-protocol/environment): No description available.
+- [Tools Longevity Protocol Habits Diet](https://keepsimple.io/tools/longevity-protocol/habits/diet): No description available.
+- [Tools Longevity Protocol Habits Lifestyle](https://keepsimple.io/tools/longevity-protocol/habits/lifestyle): No description available.
+- [Tools Longevity Protocol Habits Sleep](https://keepsimple.io/tools/longevity-protocol/habits/sleep): No description available.
+- [Tools Longevity Protocol Habits Study](https://keepsimple.io/tools/longevity-protocol/habits/study): No description available.
+- [Tools Longevity Protocol Habits Supplements](https://keepsimple.io/tools/longevity-protocol/habits/supplements): No description available.
+- [Tools Longevity Protocol Habits Workout](https://keepsimple.io/tools/longevity-protocol/habits/workout): No description available.
+- [Tools Longevity Protocol Results](https://keepsimple.io/tools/longevity-protocol/results): No description available.
+- [Uxcore Slug](https://keepsimple.io/uxcore/[slug]): No description available.
+- [See All Articles](https://keepsimple.io/articles): Browse all KeepSimple articles and categories.
