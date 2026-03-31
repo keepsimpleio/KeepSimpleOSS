@@ -1,12 +1,13 @@
 import cn from 'classnames';
+import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 import ReactDomServer from 'react-dom/server';
 
 import Accordion from '@components/Accordion';
 import {
+  ArticleImage,
   Div,
   H1,
-  Image,
   Link,
   P,
   Span,
@@ -95,12 +96,12 @@ const useContentType = (styles: any, usePTag: boolean) => {
     ul: (props: any) => <ul className={styles.ul}>{props.children}</ul>,
     img: (props: any) => {
       return (
-        <Image
+        <ArticleImage
           styles={styles}
           src={
             props.src.includes(process.env.NEXT_PUBLIC_STRAPI)
-              ? props.src
-              : `${process.env.NEXT_PUBLIC_STRAPI}${props.src}`
+              ? `${process.env.NEXT_PUBLIC_STRAPI}${props.src}`
+              : props.src
           }
           alt={props.alt}
         />
@@ -123,8 +124,14 @@ const useContentType = (styles: any, usePTag: boolean) => {
             [styles.darkTheme]: isDarkTheme,
           })}
         >
-          {/* change this image */}
-          <img src={src} alt="theme" />
+          <Image
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 'inherit', height: 'auto' }}
+            src={src}
+            alt={'theme'}
+          />
           <span>{children}</span>
         </a>
       );
@@ -139,7 +146,14 @@ const useContentType = (styles: any, usePTag: boolean) => {
             [styles.darkTheme]: isDarkTheme,
           })}
         >
-          <img src="/keepsimple_/assets/icons/trello.svg" alt="trello icon" />
+          <Image
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: 'inherit', height: 'auto' }}
+            src="/keepsimple_/assets/icons/trello.svg"
+            alt={'trello icon'}
+          />
           <span>{children}</span>
         </a>
       );

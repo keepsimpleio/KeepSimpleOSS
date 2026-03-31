@@ -13,4 +13,5 @@ export type HeadingProps = {
   locale?: string;
   isBig?: boolean;
   isBold?: boolean;
+  textColor?: string;
 };

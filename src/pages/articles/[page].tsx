@@ -59,6 +59,7 @@ const Article = ({
   const router = useRouter();
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
   const currentUrl = router.asPath;
+  const [{}, { isDarkTheme }] = useGlobals();
 
   const articleRef = useRef<HTMLElement>(null);
   const [{ initUseGlobals, unmountUseGlobals }] = useGlobals();
@@ -126,6 +127,7 @@ const Article = ({
               locale === 'ru' ? 'Рекомендуемые статьи' : 'Recommended articles'
             }
             locale={locale}
+            darkTheme={isDarkTheme}
           />
         )}
         {data?.footerImage?.data?.attributes?.url && (

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { FC, useCallback, useEffect } from 'react';
 
 import useImageModule from '@hooks/useImageModule';
@@ -37,7 +38,16 @@ const ZoomBlock: FC<ZoomBlockProps> = ({ className }) => {
       data-cy="zoomed-image"
     >
       <div>
-        <img src={zoomedImage} alt="" className={className} />
+        wtd
+        <Image
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: 'inherit', height: 'auto' }}
+          src={zoomedImage}
+          alt={'zoomed image'}
+          className={className}
+        />
       </div>
     </div>
   );

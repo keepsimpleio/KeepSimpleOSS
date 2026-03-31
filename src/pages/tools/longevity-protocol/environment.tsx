@@ -57,6 +57,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   return {
     props: { environment },
-    revalidate: 5,
+    revalidate: 10,
   };
 };

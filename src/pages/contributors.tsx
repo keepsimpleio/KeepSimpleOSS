@@ -12,6 +12,8 @@ import SeoGenerator from '@components/SeoGenerator';
 
 import ContributorsLayout from '@layouts/ContributorsLayout';
 
+import DownloadIcon from './../assets/icons/download.svg';
+
 const Contributors: FC<ContributorLocaleData> = ({ contributors }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
@@ -44,6 +46,7 @@ const Contributors: FC<ContributorLocaleData> = ({ contributors }) => {
         createdDate={data.createdAt}
         modifiedDate={data.updatedAt}
       />
+      <DownloadIcon width={14} height={13} />
       <ContributorsLayout
         ref={darkThemeRef}
         contributorsData={data}

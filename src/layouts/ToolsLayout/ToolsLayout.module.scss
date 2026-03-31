@@ -1,0 +1,63 @@
+.layout {
+  width: 100%;
+}
+
+.content {
+  position: relative;
+  max-width: 1140px;
+  margin: 0 auto;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.contentInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.decorTexts {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.decorText1,
+.decorText2,
+.decorText3,
+.decorText4 {
+  position: absolute;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #00000033;
+}
+
+.dark .decorText1,
+.dark .decorText2,
+.dark .decorText3,
+.dark .decorText4 {
+  color: #ffffff33;
+}
+
+.decorText1 {
+  top: -17px;
+  right: -107px;
+}
+
+.decorText2 {
+  top: 326px;
+  left: -61px;
+}
+
+.decorText3 {
+  top: 823px;
+  left: -80px;
+}
+
+.decorText4 {
+  top: 823px;
+  right: -131px;
+}
