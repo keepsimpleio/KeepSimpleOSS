@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FC, useCallback } from 'react';
 
@@ -14,7 +15,7 @@ type TImage = {
   alt?: string;
 };
 
-const Image: FC<TImage> = ({ styles, src, alt }) => {
+const ArticleImage: FC<TImage> = ({ styles, src, alt }) => {
   const router = useRouter();
 
   const { locale } = router as TRouter;
@@ -53,9 +54,18 @@ const Image: FC<TImage> = ({ styles, src, alt }) => {
           title={newWindowTitle}
         />
       </div>
-      <img src={src} alt={alt} onClick={handleZoom} data-cy="zoom-trigger" />
+      <Image
+        width={0}
+        height={0}
+        sizes="100vw"
+        style={{ width: 'inherit', height: 'auto' }}
+        src={src}
+        alt={alt}
+        onClick={handleZoom}
+        data-cy="zoom-trigger"
+      />
     </div>
   );
 };
 
-export default Image;
+export default ArticleImage;

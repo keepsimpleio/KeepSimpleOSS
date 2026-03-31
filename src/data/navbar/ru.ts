@@ -3,7 +3,8 @@ const ru = {
   companyManagement: 'Управление Компанией',
   articles: 'Статьи',
   contributorsTxt: 'участники',
-  tools: 'Протокол Долголетия',
+  tools: 'Инструменты',
+  longevity: 'Протокол Долголетия',
 };
 
 export default ru;

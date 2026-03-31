@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { FC } from 'react';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
@@ -21,6 +22,7 @@ const DEFAULT_COLOR = '#4F6B4F';
 export const ArticleTag: FC<ArticleTagProps> = ({ title }) => {
   const color = TAG_COLORS[title] ?? DEFAULT_COLOR;
   const isSmallScreen = useIsWidthLessThan(768);
+  const isOxford = title === 'Oxford';
 
   return (
     <div className={styles.tag}>
@@ -29,7 +31,23 @@ export const ArticleTag: FC<ArticleTagProps> = ({ title }) => {
       ) : (
         <ArticleTagBg className={styles.bg} color={color} />
       )}
-      <span className={styles.title}> {title}</span>
+      {isOxford ? (
+        <span className={styles.content}>
+          <span className={`${styles.title} ${styles.titleOxford}`}>
+            {title}
+          </span>
+          <span className={styles.oxfordIcon}>
+            <Image
+              src="/keepsimple_/assets/icons/oxford.svg"
+              alt="Oxford icon"
+              width={20}
+              height={23}
+            />
+          </span>
+        </span>
+      ) : (
+        <span className={styles.title}>{title}</span>
+      )}
     </div>
   );
 };

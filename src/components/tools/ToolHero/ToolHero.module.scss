@@ -1,0 +1,157 @@
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backgroundLayer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 1;
+  transition: opacity 350ms ease-in-out;
+}
+
+@keyframes heroBackgroundFade {
+  0% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes logoDustReveal {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    filter: blur(4px);
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    filter: blur(0);
+  }
+}
+
+.darkBackground {
+  opacity: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 56px 16px 48px;
+}
+
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.diamond {
+  width: 10px;
+  height: 10px;
+  background-color: #df382e;
+  transform: rotate(45deg);
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.logoBox {
+  position: relative;
+  width: 662px;
+  height: 80px;
+}
+
+.logoLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  transition: opacity 350ms ease-in-out;
+}
+
+.darkLogo {
+  opacity: 0;
+}
+
+.lightBackgroundAnimated {
+  animation: heroBackgroundFade 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lightLogoReveal,
+.darkLogoReveal {
+  animation: logoDustReveal 950ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  will-change: clip-path, opacity, filter;
+}
+
+.subtitle {
+  text-transform: uppercase;
+
+  h2 {
+    margin: 0;
+    font-family: Aboreto-Regular, sans-serif;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 100%;
+    letter-spacing: 0;
+  }
+}
+
+.isDarkTheme {
+  .darkBackground,
+  .darkLogo {
+    opacity: 1;
+  }
+
+  .lightBackground,
+  .lightLogo {
+    opacity: 0;
+  }
+
+  .subtitle {
+    color: #fff;
+  }
+}
+
+@media (max-width: 956px) {
+  .hero {
+    min-height: 200px;
+  }
+
+  .content {
+    padding: 44px 16px 36px;
+  }
+
+  .logoBox {
+    width: 304px;
+    height: 37px;
+  }
+
+  .subtitle {
+    h2 {
+      font-size: 16px;
+      line-height: 100%;
+    }
+  }
+}

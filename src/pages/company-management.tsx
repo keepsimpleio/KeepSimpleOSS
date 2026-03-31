@@ -74,6 +74,6 @@ export const getStaticProps: GetStaticProps = async ({
       companyManagementData,
       pyramidStatistics,
     },
-    revalidate: 5,
+    revalidate: 10,
   };
 };

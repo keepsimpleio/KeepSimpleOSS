@@ -1,0 +1,72 @@
+.root {
+  margin-top: 10px;
+
+  .title {
+    border-top: 1px solid #afc0ae;
+    border-bottom: 1px solid #afc0ae;
+    padding: 1px 0;
+    text-transform: uppercase;
+    font-size: 14px;
+    display: flex;
+    margin-bottom: 14px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .achievements {
+    display: flex;
+    gap: 14px;
+  }
+
+  .rating,
+  .productivity,
+  .conversations {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    text-transform: uppercase;
+    flex-direction: column;
+
+    .category {
+      color: #000000a6;
+      text-transform: none;
+    }
+
+    .value {
+      color: #000000d9;
+      font-weight: 700;
+      text-transform: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+}
+
+.darkTheme {
+  .title {
+    border-top: 1px solid #6c756c;
+    border-bottom: 1px solid #6c756c;
+  }
+
+  .rating,
+  .productivity,
+  .conversations {
+    .category {
+      color: #ffffff;
+    }
+
+    .value {
+      color: #ffffff;
+    }
+  }
+
+  .title svg {
+    path {
+      fill: #add19a;
+    }
+  }
+}

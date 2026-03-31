@@ -58,6 +58,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   return {
     props: { supplements },
-    revalidate: 5,
+    revalidate: 10,
   };
 };

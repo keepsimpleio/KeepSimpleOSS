@@ -1,0 +1,65 @@
+.videoLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 40px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.videoLayerOn {
+  opacity: 1;
+}
+
+.canvas {
+  width: 175px !important;
+  height: 100%;
+  display: block;
+  position: absolute;
+  z-index: 2;
+}
+
+.hiddenVideo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.canvasTransitionOn {
+  transition: opacity 700ms ease;
+  will-change: opacity;
+}
+
+.canvasTransitionOff {
+  transition: none;
+}
+
+.canvasOn {
+  animation: smooth-fadeIn 700ms ease;
+  will-change: opacity;
+}
+
+.canvasOff {
+  opacity: 80%;
+}
+
+@media (max-width: 965px) {
+  .canvas {
+    display: none;
+  }
+}
+
+@keyframes smooth-fadeIn {
+  from {
+    opacity: 50%;
+  }
+
+  to {
+    opacity: 100%;
+  }
+}

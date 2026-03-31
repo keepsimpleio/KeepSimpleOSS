@@ -3,7 +3,8 @@ const en = {
   companyManagement: 'Company Management',
   articles: 'Articles',
   contributorsTxt: 'contributors',
-  tools: 'Longevity Protocol',
+  tools: 'Tools',
+  longevity: 'Longevity Protocol',
 };
 
 export default en;
