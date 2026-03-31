@@ -25,9 +25,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Copy staging env file
+      - name: Copy prod env file
         run: |
-          echo "${{ secrets.ENV_STAGING }}" | base64 -d > .env
+          echo "${{ secrets.ENV_PROD }}" | base64 -d > .env
           rm -f .env.local
 
       - name: Generate llms.txt
