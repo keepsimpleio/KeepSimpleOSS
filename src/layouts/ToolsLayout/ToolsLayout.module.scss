@@ -61,3 +61,34 @@
   top: 823px;
   right: -131px;
 }
+
+@media (max-width: 768px) {
+  .layout {
+    margin-top: 54px;
+  }
+
+  .decorText1 {
+    top: 449px;
+    left: 16px;
+  }
+
+  .decorText2 {
+    top: 918px;
+    right: 20px;
+  }
+
+  .decorText3 {
+    top: 917px;
+    left: 6px;
+  }
+
+  .decorText4 {
+    top: unset;
+    bottom: 454px;
+    right: 93px;
+  }
+
+  .contentInner {
+    gap: 4px;
+  }
+}

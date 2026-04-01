@@ -134,7 +134,9 @@ const initUseGlobals = (articleRef: HTMLElement) => {
   const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
   if (isDarkTheme) {
     document.body.classList.add('darkTheme');
-    articleRef.classList.add('darkTheme');
+    if (articleRef) {
+      articleRef.classList.add('darkTheme');
+    }
     reducer({ isDarkTheme: true });
   }
 

@@ -1,7 +1,9 @@
 import { GetStaticProps } from 'next';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
 import { TStaticProps } from '@local-types/data';
+
+import useGlobals from '@hooks/useGlobals';
 
 import { getTools } from '@api/tools';
 
@@ -15,6 +17,16 @@ export type ToolsPageProps = {
   tools?: any | null;
 };
 const ToolsPage: FC<ToolsPageProps> = ({ tools }) => {
+  const [{ initUseGlobals, unmountUseGlobals }, { isDarkTheme }] = useGlobals();
+
+  useEffect(() => {
+    initUseGlobals(null);
+
+    return () => {
+      unmountUseGlobals();
+    };
+  }, []);
+
   const toolsList = tools?.tools_list?.data ?? tools?.tools_list ?? [];
   const sortedToolsList = [...toolsList].sort((a, b) => {
     const attrsA = a?.attributes ?? a;
@@ -49,7 +61,7 @@ const ToolsPage: FC<ToolsPageProps> = ({ tools }) => {
         modifiedDate={tools?.updatedAt}
       />
       <DevToolsEasterEgg />
-      <ToolsLayout>
+      <ToolsLayout isDarkTheme={isDarkTheme}>
         {sortedToolsList.map((tool: any) => {
           const attrs = tool?.attributes ?? tool;
           const title = attrs?.title;
