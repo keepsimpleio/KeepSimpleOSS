@@ -54,14 +54,21 @@ const ArticleInfo: FC<ArticleInfoProps> = ({
     }, 800);
   };
 
+  const isExternal =
+    slug?.startsWith('http://') || slug?.startsWith('https://');
+
   return (
     <Link
-      href={`/articles/${slug}`}
-      onClick={e => {
-        e.preventDefault();
-        handleClick(e);
-      }}
-      rel="noopener noreferrer"
+      href={isExternal ? slug : `/articles/${slug}`}
+      {...(isExternal
+        ? { target: '_blank', rel: 'noopener noreferrer' }
+        : {
+            onClick: e => {
+              e.preventDefault();
+              handleClick(e);
+            },
+            rel: 'noopener noreferrer',
+          })}
       className={cn(styles.articleInfoLink, {
         [styles.russianVersion]: locale === 'ru',
         [styles.darkTheme]: darkTheme,
