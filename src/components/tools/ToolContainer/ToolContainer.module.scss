@@ -173,12 +173,17 @@
   fill: var(--hover-color) !important;
 }
 
-.primaryButton.inDevelopment .buttonBg,
-.primaryButton.inDevelopment .buttonBg path {
+.primaryButton.inDevelopment .buttonBg {
   opacity: 1;
+  background-color: #acacac;
 }
 
-.primaryButton.inDevelopment .buttonBg path,
+.primaryButton.inDevelopment .buttonBg path {
+  opacity: 1;
+  fill: #acacac !important;
+  fill-opacity: 1 !important;
+}
+
 .primaryButton.inDevelopment:hover .buttonBg path {
   fill: #acacac !important;
   fill-opacity: 1 !important;
@@ -255,11 +260,17 @@
   .container {
     max-width: 100%;
     min-height: 360px;
+    margin: 16px;
+  }
+
+  .backgroundSvg {
+    top: 32px;
   }
 
   .content {
     min-height: 360px;
     padding: 24px 16px 28px;
+    background-size: cover;
   }
 
   .title {
