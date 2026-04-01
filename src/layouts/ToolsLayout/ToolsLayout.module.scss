@@ -62,29 +62,43 @@
   right: -131px;
 }
 
+@media (max-width: 1140px) {
+  .contentInner {
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .layout {
     margin-top: 54px;
   }
 
+  .decorText1,
+  .decorText2,
+  .decorText3,
+  .decorText4 {
+    width: max-content;
+  }
+
   .decorText1 {
-    top: 449px;
+    top: 431px;
     left: 16px;
   }
 
   .decorText2 {
-    top: 918px;
+    left: unset;
+    top: 884px;
     right: 20px;
   }
 
   .decorText3 {
-    top: 917px;
+    top: 1335px;
     left: 6px;
   }
 
   .decorText4 {
     top: unset;
-    bottom: 454px;
+    bottom: 451px;
     right: 93px;
   }
 
