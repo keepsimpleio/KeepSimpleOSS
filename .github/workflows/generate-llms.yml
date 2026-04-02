@@ -2,6 +2,15 @@ name: Generate LLMs files
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
 
 permissions:
   contents: write
@@ -23,20 +32,17 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Copy prod env file
+      - name: Copy env file
         run: |
-          echo "${{ secrets.ENV_PROD }}" | base64 -d > .env
+          if [ "${{ inputs.environment }}" = "prod" ]; then
+            echo "${{ secrets.ENV_PROD }}" | base64 -d > .env
+          else
+            echo "${{ secrets.ENV_DEV }}" | base64 -d > .env
+          fi
           rm -f .env.local
 
-      - name: Generate llms.txt
-        run: node scripts/generate-llms.mjs
-        env:
-          LLMS_MODE: curated
-
-      - name: Generate llms-full.txt
-        run: node scripts/generate-llms.mjs
-        env:
-          LLMS_MODE: full
+      - name: Generate llms-full-pages
+        run: yarn generate:llms:pages
 
       - name: Commit and push generated files
         run: |
@@ -44,6 +50,6 @@ jobs:
           git config user.email "github-actions@github.com"
           git add public/keepsimple_/
           if ! git diff --cached --quiet; then
-            git commit -m "chore: regenerate llms files"
+            git commit -m "chore: regenerate llms pages"
             git push
           fi
