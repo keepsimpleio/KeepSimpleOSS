@@ -8,7 +8,6 @@
   position: relative;
   width: 100%;
   max-width: 359px;
-  min-height: 390px;
   border: 1px solid #dad6d4;
   overflow: hidden;
   transition: border-color 240ms ease;
@@ -23,6 +22,7 @@
 
   .backgroundSvg path {
     fill: var(--dark-icon-fill) !important;
+    opacity: 20%;
   }
 
   .content {
@@ -88,15 +88,19 @@
   background-size: contain;
 }
 
+.contentRu {
+  height: 430px;
+}
+
 .backgroundSvg {
   position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 8;
+  z-index: 1;
   left: 48px;
   top: 32px;
+  opacity: 50%;
 }
 
 .title {
@@ -197,7 +201,7 @@
   justify-content: center;
   gap: 8px;
   font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   line-height: 1;
 }
