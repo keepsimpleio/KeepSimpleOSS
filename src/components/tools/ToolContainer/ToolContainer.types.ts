@@ -3,8 +3,8 @@ export type ToolContainerProps = {
   title?: string;
   description?: string;
   poweredBy?: 'Claude' | 'ChatGPT' | string;
-  isBlank?: boolean;
   isDarkTheme?: boolean;
   isInDevelopment?: boolean;
+  isBlank?: boolean;
   link?: string;
 };
