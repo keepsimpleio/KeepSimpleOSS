@@ -13,6 +13,7 @@ export type ToolConfig = {
   hoverColor: string;
   darkHoverColor: string;
   darkIconFill: string;
+  isBlank: boolean;
 };
 
 export const TOOL_CONFIG: Record<number, ToolConfig> = {
@@ -21,42 +22,49 @@ export const TOOL_CONFIG: Record<number, ToolConfig> = {
     hoverColor: '#3F4A7A',
     darkHoverColor: '#C1D6FF',
     darkIconFill: '#C1D6FF',
+    isBlank: false,
   },
   2: {
     Icon: EmaIcon,
     hoverColor: '#0A3D3D',
     darkHoverColor: '#95CCCC',
     darkIconFill: '#95CCCC',
+    isBlank: false,
   },
   3: {
     Icon: MosaicIcon,
     hoverColor: '#3F4A7A',
     darkHoverColor: '#C1D6FF',
     darkIconFill: '#E08080',
+    isBlank: false,
   },
   4: {
     Icon: GithubIcon,
     hoverColor: '#4A2F63',
     darkHoverColor: '#E9D3FF',
     darkIconFill: '#E9D3FF',
+    isBlank: true,
   },
   5: {
     Icon: BobIcon,
     hoverColor: '#2F4A3E',
     darkHoverColor: '#ADD19A',
     darkIconFill: '#ADD19A',
+    isBlank: true,
   },
   6: {
     Icon: TomIcon,
     hoverColor: '#6A3A2A',
     darkHoverColor: '#EACCAA',
     darkIconFill: '#EACCAA',
+    isBlank: true,
   },
   7: {
     Icon: ClaudeBobIcon,
     hoverColor: '#B06A3A',
     darkHoverColor: '#FFB366',
     darkIconFill: '#FFB366',
+    isBlank: true,
   },
 };
 
@@ -65,4 +73,5 @@ export const DEFAULT_CONFIG: ToolConfig = {
   hoverColor: '#3F4A7A',
   darkHoverColor: '#C1D6FF',
   darkIconFill: '#C1D6FF',
+  isBlank: false,
 };

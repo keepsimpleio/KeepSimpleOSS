@@ -75,7 +75,6 @@ const ToolsPage: FC<ToolsPageProps> = ({ tools }) => {
               title={title}
               description={description}
               poweredBy={attrs?.poweredBy}
-              isBlank={tool?.id === 5 || tool?.id === 6}
               isInDevelopment={attrs?.isInDevelopment ?? false}
             />
           );
