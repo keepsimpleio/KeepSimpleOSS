@@ -1,11 +1,14 @@
 import cn from 'classnames';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { FC } from 'react';
 
-import { DEFAULT_CONFIG, TOOL_CONFIG } from '@constants/tools';
+import { TOOL_CONFIG } from '@constants/tools';
 
 import { useEffectiveDarkTheme } from '@hooks/useEffectiveDarkTheme';
 import useGlobals from '@hooks/useGlobals';
+
+import toolsData from '@data/tools';
 
 import BtnBg from '@icons/tools/btn-vg.svg';
 import ClaudeIcon from '@icons/tools/claude.svg';
@@ -29,11 +32,13 @@ const ToolContainer: FC<ToolContainerProps> = ({
   isDarkTheme = false,
   isInDevelopment = false,
 }) => {
+  const { locale } = useRouter();
   const { isDarkTheme: globalDarkTheme } = useGlobals()[1];
   const darkTheme = useEffectiveDarkTheme(isDarkTheme || globalDarkTheme);
+  const t = toolsData[locale as keyof typeof toolsData] ?? toolsData.en;
 
-  const config = (id != null && TOOL_CONFIG[id]) || DEFAULT_CONFIG;
-  const { Icon, hoverColor, darkHoverColor, darkIconFill } = config;
+  const config = id ? TOOL_CONFIG[id] : undefined;
+  const { Icon, hoverColor, darkHoverColor, darkIconFill } = config ?? {};
 
   const isClaude = poweredBy === 'Claude';
   const isChatGPT = poweredBy === 'ChatGPT';
@@ -54,8 +59,12 @@ const ToolContainer: FC<ToolContainerProps> = ({
           } as React.CSSProperties
         }
       >
-        <Icon className={styles.backgroundSvg} />
-        <div className={styles.content}>
+        {Icon && <Icon className={styles.backgroundSvg} />}
+        <div
+          className={cn(styles.content, {
+            [styles.contentRu]: locale === 'ru',
+          })}
+        >
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.description}>{description}</p>
 
@@ -66,11 +75,12 @@ const ToolContainer: FC<ToolContainerProps> = ({
               <Link
                 href="/keepsimple_/assets/tools/bob.skill"
                 download
+                locale={false}
                 className={styles.primaryButton}
                 aria-disabled={isInDevelopment}
               >
                 <BtnBg className={styles.buttonBg} />
-                <span className={styles.primaryButtonLabel}>Download</span>
+                <span className={styles.primaryButtonLabel}>{t.download}</span>
               </Link>
             ) : (
               <Link
@@ -85,7 +95,7 @@ const ToolContainer: FC<ToolContainerProps> = ({
                 <BtnBg className={styles.buttonBg} />
                 <span className={styles.primaryButtonLabel}>
                   {isBlank && <OpenIcon className={styles.blankIcon} />}
-                  {isInDevelopment ? 'In Development' : 'Open'}
+                  {isInDevelopment ? t.inDevelopment : t.open}
                 </span>
               </Link>
             )}
@@ -108,12 +118,12 @@ const ToolContainer: FC<ToolContainerProps> = ({
                 {isClaude ? (
                   <>
                     <ClaudeIcon className={styles.poweredIcon} />
-                    Powered by Claude
+                    {t.poweredBy} Claude
                   </>
                 ) : (
                   <>
                     <GptIcon className={styles.poweredIcon} />
-                    Powered by ChatGPT
+                    {t.poweredBy} ChatGPT
                   </>
                 )}
               </span>

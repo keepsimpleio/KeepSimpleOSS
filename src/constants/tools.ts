@@ -1,5 +1,6 @@
 import { FC, SVGProps } from 'react';
 
+import CompanyManagementIcon from '@icons/tools/company-management.svg';
 import BobIcon from '@icons/tools/tool-icons/bob.svg';
 import ClaudeBobIcon from '@icons/tools/tool-icons/claude-bob.svg';
 import EmaIcon from '@icons/tools/tool-icons/ema.svg';
@@ -16,16 +17,22 @@ export type ToolConfig = {
 
 export const TOOL_CONFIG: Record<number, ToolConfig> = {
   1: {
-    Icon: MosaicIcon,
+    Icon: CompanyManagementIcon,
     hoverColor: '#3F4A7A',
     darkHoverColor: '#C1D6FF',
-    darkIconFill: '#E08080',
+    darkIconFill: '#C1D6FF',
   },
   2: {
     Icon: EmaIcon,
     hoverColor: '#0A3D3D',
     darkHoverColor: '#95CCCC',
     darkIconFill: '#95CCCC',
+  },
+  3: {
+    Icon: MosaicIcon,
+    hoverColor: '#3F4A7A',
+    darkHoverColor: '#C1D6FF',
+    darkIconFill: '#E08080',
   },
   4: {
     Icon: GithubIcon,
@@ -54,8 +61,8 @@ export const TOOL_CONFIG: Record<number, ToolConfig> = {
 };
 
 export const DEFAULT_CONFIG: ToolConfig = {
-  Icon: MosaicIcon,
+  Icon: CompanyManagementIcon,
   hoverColor: '#3F4A7A',
   darkHoverColor: '#C1D6FF',
-  darkIconFill: '#E08080',
+  darkIconFill: '#C1D6FF',
 };

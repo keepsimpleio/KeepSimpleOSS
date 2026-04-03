@@ -70,7 +70,7 @@ const ToolsPage: FC<ToolsPageProps> = ({ tools }) => {
           return (
             <ToolContainer
               key={tool?.id ?? title}
-              id={tool?.id}
+              id={Number(attrs?.idForDev)}
               link={attrs?.link}
               title={title}
               description={description}
