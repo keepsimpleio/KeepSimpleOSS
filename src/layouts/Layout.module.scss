@@ -14,46 +14,6 @@
     filter: blur(2px);
     z-index: 2;
   }
-
-  .videoLayer {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 40px;
-  }
-
-  .canvas {
-    width: 175px !important;
-    height: 100%;
-    display: block;
-    position: absolute;
-    z-index: 2;
-  }
-
-  .hiddenVideo {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
-.canvasTransitionOn {
-  transition: opacity 700ms ease;
-  will-change: opacity;
-}
-
-.canvasOn {
-  animation: smooth-fadeIn 700ms ease;
-  will-change: opacity;
-}
-
-.canvasOff {
-  opacity: 80%;
 }
 
 @media (max-width: 965px) {
@@ -61,18 +21,5 @@
     .section {
       gap: 0;
     }
-
-    .canvas {
-      display: none;
-    }
-  }
-}
-
-@keyframes smooth-fadeIn {
-  from {
-    opacity: 50%;
-  }
-  to {
-    opacity: 100%;
   }
 }

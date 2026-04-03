@@ -62,6 +62,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   return {
     props: { sleepData, locale: locale ?? 'en', sleepSupplements },
-    revalidate: 5,
+    revalidate: 10,
   };
 };

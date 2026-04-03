@@ -37,6 +37,6 @@ export const getStaticProps: GetStaticProps = async ({
       locale,
       landingData,
     },
-    revalidate: 5,
+    revalidate: 10,
   };
 };

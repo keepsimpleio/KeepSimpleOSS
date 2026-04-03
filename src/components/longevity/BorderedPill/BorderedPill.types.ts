@@ -1,6 +1,6 @@
-import type { ElementType, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
 
-type CommonProps<T extends ElementType> = {
+type OwnProps<T extends ElementType> = {
   as?: T;
   text?: string;
   leftIcon?: ReactNode;
@@ -11,17 +11,5 @@ type CommonProps<T extends ElementType> = {
   dataCy?: string;
 };
 
-type ButtonOnlyProps = {
-  onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>['onClick'];
-  type?: 'button' | 'submit' | 'reset';
-  disabled?: boolean;
-};
-
-type NonButtonProps = {
-  onClick?: never;
-  type?: never;
-  disabled?: never;
-};
-
-export type BorderedPillProps<T extends ElementType = 'button'> =
-  CommonProps<T> & (T extends 'button' ? ButtonOnlyProps : NonButtonProps);
+export type BorderedPillProps<T extends ElementType = 'button'> = OwnProps<T> &
+  Omit<ComponentPropsWithoutRef<T>, keyof OwnProps<T>>;

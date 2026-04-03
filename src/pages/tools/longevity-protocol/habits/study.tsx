@@ -59,6 +59,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   return {
     props: { studyData },
-    revalidate: 5,
+    revalidate: 10,
   };
 };

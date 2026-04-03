@@ -61,6 +61,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   return {
     props: { habitsData },
-    revalidate: 5,
+    revalidate: 10,
   };
 };

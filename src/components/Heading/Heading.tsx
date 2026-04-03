@@ -21,6 +21,7 @@ const Heading: FC<HeadingProps> = ({
   locale,
   isBold,
   isBig,
+  textColor,
 }) => {
   return (
     <div
@@ -52,6 +53,7 @@ const Heading: FC<HeadingProps> = ({
             [styles.big]: isBig,
             [styles.bold]: isBold,
           })}
+          style={textColor ? { color: textColor } : undefined}
         >
           {text}
         </Tag>

@@ -1,0 +1,287 @@
+@import '@styles/_variables.scss';
+
+.container {
+  --hover-color: #3f4a7a;
+  --border-hover-color: #c1d6ff;
+  --button-color: #494949;
+  --text-color: #000000d9;
+  position: relative;
+  width: 100%;
+  max-width: 359px;
+  border: 1px solid #dad6d4;
+  overflow: hidden;
+  transition: border-color 240ms ease;
+}
+
+.darkTheme {
+  --hover-color: #c1d6ff;
+  --border-hover-color: #c1d6ff;
+  --text-color: #ffffff;
+  --button-color: #000000d9;
+  border: 1px solid #454a55;
+
+  .backgroundSvg path {
+    fill: var(--dark-icon-fill) !important;
+    opacity: 20%;
+  }
+
+  .content {
+    background-image: url('/keepsimple_/assets/tools/container/dark-bg.svg');
+  }
+
+  .primaryButton {
+    color: var(--button-color);
+  }
+
+  .poweredIcon path {
+    fill: #f1f1f1 !important;
+  }
+
+  .blankIcon path {
+    fill: #000000d9 !important;
+  }
+
+  .buttonBg path {
+    fill: #ececec !important;
+  }
+
+  .primaryButton.inDevelopment .buttonBg path {
+    fill: #acacac !important;
+    fill-opacity: 1 !important;
+  }
+
+  .secondaryButton {
+    color: #ececec;
+  }
+
+  .secondaryButton > svg path {
+    fill: #ececec !important;
+  }
+
+  .secondaryButton:hover > svg path {
+    fill: var(--hover-color) !important;
+  }
+
+  .secondaryButtonContent {
+    color: #ececec;
+  }
+
+  .secondaryButton .blankIcon path {
+    fill: #ececec !important;
+  }
+}
+
+.container:not(.inDevelopment):hover {
+  border-color: var(--border-hover-color);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  height: 374px;
+  padding: 16px 20px 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image: url('/keepsimple_/assets/tools/container/white-bg.svg');
+  text-align: center;
+  background-size: contain;
+}
+
+.contentRu {
+  height: 430px;
+}
+
+.backgroundSvg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  left: 48px;
+  top: 32px;
+  opacity: 50%;
+}
+
+.title {
+  margin: 0;
+  font-family: 'Source Serif 4', 'Source-Serif-SemiBold', serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 150%;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.description {
+  margin: 16px 0 0;
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.actions {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 40px;
+}
+
+.primaryButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 210px;
+  height: 48px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
+.primaryButton:disabled,
+.primaryButton[aria-disabled='true'] {
+  cursor: default;
+  pointer-events: none;
+}
+
+.primaryButton.inDevelopment {
+  pointer-events: none;
+  cursor: default;
+}
+
+.buttonBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.buttonBg path {
+  fill: var(--button-color);
+  transition: fill 240ms ease;
+}
+
+.primaryButton:hover:not(:disabled) .buttonBg path {
+  fill: var(--hover-color) !important;
+}
+
+.primaryButton.inDevelopment .buttonBg {
+  opacity: 1;
+  background-color: #acacac;
+}
+
+.primaryButton.inDevelopment .buttonBg path {
+  opacity: 1;
+  fill: #acacac !important;
+  fill-opacity: 1 !important;
+}
+
+.primaryButton.inDevelopment:hover .buttonBg path {
+  fill: #acacac !important;
+  fill-opacity: 1 !important;
+}
+
+.primaryButtonLabel {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.secondaryButton {
+  width: 212px;
+  max-width: 100%;
+  background: transparent !important;
+  padding: 3px 0px;
+  text-decoration: none;
+}
+
+.secondaryButtonContent {
+  gap: 3px !important;
+}
+
+.secondaryButton > svg path {
+  fill: #494949 !important;
+  transition: fill 240ms ease;
+}
+
+.secondaryButton:hover > svg path {
+  fill: var(--hover-color) !important;
+}
+
+.secondaryButton span svg path {
+  fill: currentColor !important;
+}
+
+.poweredBy {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-color);
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-size: 14px;
+  line-height: 1.4;
+  position: absolute;
+  bottom: 11px;
+}
+
+.poweredIcon {
+  width: 13px;
+  height: 12px;
+}
+
+.blankIcon {
+  width: 17px;
+  height: 17px;
+}
+
+.tooltip {
+  @extend .defaultTooltip;
+  background: #fff !important;
+  color: #0b0921 !important;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    min-height: 360px;
+    margin: 0 16px 20px 16px;
+  }
+
+  .backgroundSvg {
+    top: 32px;
+  }
+
+  .content {
+    min-height: 360px;
+    padding: 24px 16px 28px;
+    background-size: cover;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .description {
+    font-size: 15px;
+  }
+}

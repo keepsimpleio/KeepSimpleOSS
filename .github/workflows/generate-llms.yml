@@ -1,0 +1,55 @@
+name: Generate LLMs files
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Copy env file
+        run: |
+          if [ "${{ inputs.environment }}" = "prod" ]; then
+            echo "${{ secrets.ENV_PROD }}" | base64 -d > .env
+          else
+            echo "${{ secrets.ENV_DEV }}" | base64 -d > .env
+          fi
+          rm -f .env.local
+
+      - name: Generate llms-full-pages
+        run: yarn generate:llms:pages
+
+      - name: Commit and push generated files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add public/keepsimple_/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: regenerate llms pages"
+            git push
+          fi

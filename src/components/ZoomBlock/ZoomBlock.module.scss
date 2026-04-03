@@ -12,14 +12,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 4;
+  z-index: 600;
 
   & div {
     max-height: 100%;
 
     & img {
       max-width: 100%;
-      max-height: calc(100vh - 2.5rem);
+      max-height: calc(100vh - 8.5rem);
     }
   }
 }

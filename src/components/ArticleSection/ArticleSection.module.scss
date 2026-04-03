@@ -50,7 +50,8 @@
   align-items: center;
   background-color: #f4f1eb80;
   padding: 0 0 40px 0;
-  margin-top: 80px;
+  padding-top: 80px;
+  padding-bottom: 60px;
 
   .underline {
     width: 100% !important;
@@ -60,6 +61,10 @@
 }
 
 .darkTheme {
+  &.recommended {
+    background-color: #1b1e26;
+  }
+
   .showMoreButtonWrapper {
     .showMore {
       color: #ffffffd9;
@@ -83,6 +88,7 @@
   .articlesSection {
     margin: 0 15px;
   }
+
   .featured {
     margin: unset;
 
@@ -105,6 +111,7 @@
       gap: 16px;
     }
   }
+
   .articlesSection:last-child {
     padding-bottom: 88px;
   }

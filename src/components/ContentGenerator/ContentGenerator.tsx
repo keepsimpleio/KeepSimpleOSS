@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { Collection, Image, Link, List, P, Span } from './elements';
+import { ArticleImage, Collection, Link, List, P, Span } from './elements';
 
 type ContentGeneratorProps = {
   data: any;
@@ -59,7 +59,7 @@ const ContentGenerator: FC<ContentGeneratorProps> = ({ data, styles = {} }) => {
             );
           case 'image':
             return (
-              <Image
+              <ArticleImage
                 key={index}
                 styles={styles}
                 src={item.src}

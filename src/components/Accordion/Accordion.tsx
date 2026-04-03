@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import type { FC } from 'react';
 
@@ -55,7 +56,7 @@ const Accordion: FC<AccordionProps> = ({
         onClick={isMobile ? null : onToggleClick}
         data-cy={'open-close-accordion-button'}
       >
-        <img
+        <Image
           src={`/keepsimple_/assets/icons/caret${darkThemeIcon}.svg`}
           onClick={isMobile ? onToggleClick : null}
           alt="arrow down"
@@ -79,9 +80,11 @@ const Accordion: FC<AccordionProps> = ({
             onClick={e => e.stopPropagation()}
             target="_blank"
           >
-            <img
+            <Image
               src={`/keepsimple_/assets/icons/download-${downloadIcon}.svg`}
               alt="download icon"
+              width={14}
+              height={13}
             />
             <span>{downloadButtonLabel}</span>
           </a>

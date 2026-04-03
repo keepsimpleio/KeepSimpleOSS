@@ -4,6 +4,7 @@ const hy = {
   articles: 'Articles',
   contributorsTxt: 'contributors',
   tools: 'Tools',
+  longevity: 'Longevity Protocol',
 };
 
 export default hy;
