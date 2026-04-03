@@ -28,7 +28,6 @@ const ToolContainer: FC<ToolContainerProps> = ({
   description = 'Modular management framework for remote-first software development companies, distilled from founding four successful software firms.',
   poweredBy,
   link,
-  isBlank = false,
   isDarkTheme = false,
   isInDevelopment = false,
 }) => {
@@ -38,7 +37,8 @@ const ToolContainer: FC<ToolContainerProps> = ({
   const t = toolsData[locale as keyof typeof toolsData] ?? toolsData.en;
 
   const config = id ? TOOL_CONFIG[id] : undefined;
-  const { Icon, hoverColor, darkHoverColor, darkIconFill } = config ?? {};
+  const { Icon, hoverColor, darkHoverColor, darkIconFill, isBlank } =
+    config ?? {};
 
   const isClaude = poweredBy === 'Claude';
   const isChatGPT = poweredBy === 'ChatGPT';

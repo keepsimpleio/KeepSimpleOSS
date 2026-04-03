@@ -39,7 +39,7 @@ const BobAchievements: FC<BobAchievementsProps> = ({
           <span className={styles.category}>{t.category} </span>
         </div>
         <div className={styles.conversations}>
-          <span className={styles.value}> 3906</span>
+          <span className={styles.value}> 3900+</span>
           <span className={styles.category}>{t.conversations} </span>
         </div>
       </div>

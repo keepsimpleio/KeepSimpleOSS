@@ -71,7 +71,10 @@ const ToolsLayout: FC<ToolsLayoutProps> = ({
         return;
       }
 
-      if (normalizedBuffer.endsWith(EASTER_SUBSEQUENT_CODE_NORMALIZED)) {
+      if (
+        idx > 0 &&
+        normalizedBuffer.endsWith(EASTER_SUBSEQUENT_CODE_NORMALIZED)
+      ) {
         typedBufferRef.current = '';
         setEasterThemeIndex(prev => (prev + 1) % 4);
         setTransitionKey(prev => prev + 1);
