@@ -11,7 +11,6 @@ import navbar from '@data/navbar';
 
 import ArticlesDarkIcon from '@icons/ArticlesDarkIcon';
 import ArticlesIcon from '@icons/ArticlesIcon';
-import CompanyManagementIcon from '@icons/CompanyManagementIcon';
 import LongevityIcon from '@icons/navbar/longevity.svg';
 import LongevityDarkIcon from '@icons/navbar/longevity-dark.svg';
 import ToolsIcon from '@icons/navbar/tools.svg';
@@ -35,14 +34,7 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
   const { isDarkTheme, isOpenedSidebar } = useGlobals()[1];
   const { accountData } = useContext(GlobalContext);
 
-  const {
-    about,
-    companyManagement,
-    articles,
-    contributorsTxt,
-    tools,
-    longevity,
-  } = navbar[locale];
+  const { about, articles, contributorsTxt, tools, longevity } = navbar[locale];
 
   const normalizePath = (p: string) => {
     const noQueryOrHash = p.split('?')[0].split('#')[0];
@@ -61,14 +53,6 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       target: '_blank',
       id: 'uxcore',
     },
-    {
-      name: companyManagement,
-      path: '/company-management',
-      logo: <CompanyManagementIcon />,
-      target: '',
-      id: 'companyManagement',
-    },
-
     {
       name: longevity,
       path: '/tools/longevity-protocol/about-project',
