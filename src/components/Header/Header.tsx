@@ -120,8 +120,8 @@ const Header: FC = () => {
                     <Image
                       src={
                         isDarkTheme
-                          ? '/keepsimple_/assets/globe-light.png'
-                          : '/keepsimple_/assets/globe-dark.png'
+                          ? '/keepsimple_/assets/globe-light.svg'
+                          : '/keepsimple_/assets/globe.svg'
                       }
                       width={24}
                       height={24}
@@ -145,8 +145,8 @@ const Header: FC = () => {
                     <Image
                       src={
                         isDarkTheme
-                          ? '/keepsimple_/assets/globe-light.png'
-                          : '/keepsimple_/assets/globe-dark.png'
+                          ? '/keepsimple_/assets/globe-light.svg'
+                          : '/keepsimple_/assets/globe.svg'
                       }
                       width={24}
                       height={24}
