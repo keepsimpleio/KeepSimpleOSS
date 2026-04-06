@@ -78,7 +78,7 @@ const ArticleSection = forwardRef<HTMLElement, ArticleSectionProps>(
                   bgImage={
                     article?.coverImage
                       ? isRecommendedOrFeatured
-                        ? `${process.env.NEXT_PUBLIC_STRAPI}${article?.coverImage.data.attributes.url}`
+                        ? `${process.env.NEXT_PUBLIC_STRAPI}${article?.coverImage?.data?.attributes?.url}`
                         : `${process.env.NEXT_PUBLIC_STRAPI}${article?.coverImage?.url}`
                       : ''
                   }
