@@ -1,9 +1,12 @@
+import { getWorkoutImageUrls } from '@utils/getLongevityImageUrls';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getWorkout } from '@api/longevity/workout';
 
@@ -15,6 +18,9 @@ const Workout = ({ workoutData }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const data = workoutData?.[currentLocale];
+  const imageUrls = getWorkoutImageUrls(data);
+  usePreloadImages(imageUrls);
   const OGTags = {
     ogDescription: workoutData[currentLocale]?.ogDescription || '',
     ogTitle: workoutData[currentLocale]?.ogTitle || '',
@@ -43,6 +49,7 @@ const Workout = ({ workoutData }) => {
         ogTags={OGTags}
         createdDate={workoutData[currentLocale]?.createdAt || ''}
         modifiedDate={workoutData[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <WorkoutLayout
         data={workoutData ? workoutData[currentLocale] : null}

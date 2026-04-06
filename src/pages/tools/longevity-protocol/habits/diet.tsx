@@ -1,9 +1,12 @@
+import { getDietImageUrls } from '@utils/getLongevityImageUrls';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getDiet } from '@api/longevity/diet';
 
@@ -15,6 +18,9 @@ const Diet = ({ dietData }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const data = dietData?.[currentLocale];
+  const imageUrls = getDietImageUrls(data);
+  usePreloadImages(imageUrls);
 
   const OGTags = {
     ogDescription: dietData?.[currentLocale]?.ogDescription || '',
@@ -44,6 +50,7 @@ const Diet = ({ dietData }) => {
         type={'MedicalWebPage'}
         createdDate={dietData[currentLocale]?.createdAt || ''}
         modifiedDate={dietData[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <DietLayout
         locale={currentLocale}

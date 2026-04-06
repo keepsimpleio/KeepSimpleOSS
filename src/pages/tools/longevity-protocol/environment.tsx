@@ -1,7 +1,10 @@
+import { getEnvironmentImageUrls } from '@utils/getLongevityImageUrls';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getEnvironment } from '@api/longevity/environment';
 
@@ -13,6 +16,9 @@ const Environment = ({ environment }) => {
   const router = useRouter();
   const { locale } = router;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const data = environment?.[currentLocale];
+  const imageUrls = getEnvironmentImageUrls(data);
+  usePreloadImages(imageUrls);
   const OGTags = {
     ogDescription: environment[currentLocale]?.ogDescription || '',
     ogTitle: environment[currentLocale]?.ogTitle || '',
@@ -41,6 +47,7 @@ const Environment = ({ environment }) => {
         ogTags={OGTags}
         createdDate={environment[currentLocale]?.createdAt || ''}
         modifiedDate={environment[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <EnvironmentLayout
         data={environment ? environment[currentLocale] : null}

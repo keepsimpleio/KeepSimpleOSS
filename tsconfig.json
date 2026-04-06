@@ -28,6 +28,7 @@
       "@api/*": ["src/api/*"],
       "@styles/*": ["src/styles/*"],
       "@local-types/*": ["src/local-types/*"],
+      "@utils/*": ["src/utils/*"],
       "@icons/*": ["src/assets/icons/*"],
       "react": ["node_modules/@types/react"]
     },
