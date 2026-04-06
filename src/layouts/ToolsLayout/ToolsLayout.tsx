@@ -39,6 +39,22 @@ const ToolsLayout: FC<ToolsLayoutProps> = ({
   }, [easterThemeIndex]);
 
   useEffect(() => {
+    const easterImages = [
+      '/keepsimple_/assets/tools/hero/green.png',
+      '/keepsimple_/assets/tools/logo/green.svg',
+      '/keepsimple_/assets/tools/hero/white.png',
+      '/keepsimple_/assets/tools/logo/white.svg',
+      '/keepsimple_/assets/tools/hero/black.png',
+      '/keepsimple_/assets/tools/logo/black.svg',
+    ];
+
+    easterImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
+  useEffect(() => {
     const handleSequence = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       const isEditable =
