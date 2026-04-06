@@ -1,9 +1,12 @@
+import { getAboutProjectImageUrls } from '@utils/getLongevityImageUrls';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getAboutProject } from '@api/longevity/about-project';
 
@@ -15,6 +18,8 @@ const AboutProject = ({ aboutTheProject }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const imageUrls = getAboutProjectImageUrls();
+  usePreloadImages(imageUrls);
   const OGTags = {
     ogDescription: aboutTheProject[currentLocale]?.ogDescription || '',
     ogTitle: aboutTheProject[currentLocale]?.ogTitle || '',
@@ -44,6 +49,7 @@ const AboutProject = ({ aboutTheProject }) => {
         ogTags={OGTags}
         createdDate={aboutTheProject[currentLocale]?.createdAt || ''}
         modifiedDate={aboutTheProject[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <AboutProjectLayout
         data={aboutTheProject ? aboutTheProject[currentLocale] : null}

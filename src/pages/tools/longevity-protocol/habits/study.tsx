@@ -1,9 +1,12 @@
+import { getStudyImageUrls } from '@utils/getLongevityImageUrls';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getStudy } from '@api/longevity/study';
 
@@ -15,6 +18,9 @@ const Study = ({ studyData }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const data = studyData?.[currentLocale];
+  const imageUrls = getStudyImageUrls(data);
+  usePreloadImages(imageUrls);
 
   const OGTags = {
     ogDescription: studyData[currentLocale]?.ogDescription || '',
@@ -44,6 +50,7 @@ const Study = ({ studyData }) => {
         ogTags={OGTags}
         createdDate={studyData[currentLocale]?.createdAt || ''}
         modifiedDate={studyData[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <StudyLayout
         data={studyData ? studyData[currentLocale] : null}

@@ -56,6 +56,14 @@ const ToolsPage: FC<ToolsPageProps> = ({ tools }) => {
           ogDescription: tools?.ogDescription,
           ogTitle: tools?.ogTitle,
           ogType: tools?.ogType,
+          ogImage: {
+            data: {
+              attributes: {
+                staticUrl: `${process.env.NEXT_PUBLIC_DOMAIN}/keepsimple_/assets/tools/tools-og.png`,
+                url: '',
+              },
+            },
+          },
         }}
         createdDate={tools?.publishedAt}
         modifiedDate={tools?.updatedAt}

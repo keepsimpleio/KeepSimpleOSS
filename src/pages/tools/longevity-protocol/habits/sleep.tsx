@@ -1,9 +1,12 @@
+import { getSleepImageUrls } from '@utils/getLongevityImageUrls';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getSleep } from '@api/longevity/sleep';
 import { getSleepSupplements } from '@api/longevity/sleep-supplements';
@@ -16,6 +19,8 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const imageUrls = getSleepImageUrls();
+  usePreloadImages(imageUrls);
   const OGTags = {
     ogDescription: sleepData[currentLocale]?.ogDescription || '',
     ogTitle: sleepData[currentLocale]?.ogTitle || '',
@@ -44,6 +49,7 @@ const Sleep = ({ sleepData, sleepSupplements }) => {
         ogTags={OGTags}
         createdDate={sleepData[currentLocale]?.createdAt || ''}
         modifiedDate={sleepData[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <SleepLayout
         locale={locale}

@@ -18,6 +18,7 @@ interface SeoGeneratorProps {
   type?: string;
   forceNoIndex?: boolean;
   canonicalOverride?: string;
+  preloadImages?: string[];
   ogTags?: {
     ogDescription: string;
     ogTitle: string;
@@ -47,6 +48,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
   type,
   forceNoIndex,
   canonicalOverride,
+  preloadImages,
 }) => {
   const router = useRouter();
 
@@ -190,6 +192,9 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        {preloadImages?.map(src => (
+          <link key={src} rel="preload" as="image" href={src} />
+        ))}
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
         <meta name="theme-color" content="#1e2023" />
         {pathname.includes('/user') ? (

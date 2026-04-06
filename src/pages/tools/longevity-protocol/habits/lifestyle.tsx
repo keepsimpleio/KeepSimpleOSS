@@ -1,9 +1,12 @@
+import { getLifestyleImageUrls } from '@utils/getLongevityImageUrls';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getLifestyleProtocol } from '@api/longevity/lifestyle';
 
@@ -15,6 +18,9 @@ const Lifestyle = ({ habitsData }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const data = habitsData?.[currentLocale];
+  const imageUrls = getLifestyleImageUrls(data);
+  usePreloadImages(imageUrls);
 
   const OGTags = {
     ogDescription: habitsData[currentLocale]?.ogDescription || '',
@@ -44,6 +50,7 @@ const Lifestyle = ({ habitsData }) => {
         ogTags={OGTags}
         createdDate={habitsData[currentLocale]?.createdAt || ''}
         modifiedDate={habitsData[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <LifestyleLayout
         data={habitsData ? habitsData[currentLocale] : null}
