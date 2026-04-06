@@ -1,9 +1,12 @@
+import { getResultsImageUrls } from '@utils/getLongevityImageUrls';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getLongevityResults } from '@api/longevity/results';
 
@@ -15,6 +18,9 @@ const Results = ({ yearlyResults }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const data = yearlyResults?.[currentLocale];
+  const imageUrls = getResultsImageUrls(data);
+  usePreloadImages(imageUrls);
   const OGTags = {
     ogDescription: yearlyResults[currentLocale]?.ogDescription || '',
     ogTitle: yearlyResults[currentLocale]?.ogTitle || '',
@@ -43,6 +49,7 @@ const Results = ({ yearlyResults }) => {
         ogTags={OGTags}
         createdDate={yearlyResults[currentLocale]?.createdAt}
         modifiedDate={yearlyResults[currentLocale]?.updatedAt}
+        preloadImages={imageUrls}
       />
       <ResultsLayout
         data={yearlyResults ? yearlyResults[currentLocale] : null}

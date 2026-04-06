@@ -169,6 +169,39 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
   }, [isDarkTheme, router]);
 
   useEffect(() => {
+    const isLongevityProtocolPage = router.asPath.startsWith(
+      '/tools/longevity-protocol',
+    );
+    if (!isLongevityProtocolPage) return;
+
+    const imagesToPreload = [
+      '/keepsimple_/assets/longevity/diet/hearts/sugar.svg',
+      '/keepsimple_/assets/longevity/diet/hearts/seed-oil.svg',
+      '/keepsimple_/assets/longevity/diet/hearts/sugary-drinks.svg',
+      '/keepsimple_/assets/longevity/diet/hearts/ultra-porcessed-food.svg',
+      '/keepsimple_/assets/longevity/diet/hearts/white-flour.svg',
+      '/keepsimple_/assets/longevity/diet/hearts/deceptive-food.svg',
+      '/keepsimple_/assets/longevity/diet/tooltip-line.png',
+      '/keepsimple_/assets/longevity/diet/damage-icon.svg',
+      '/keepsimple_/assets/longevity/diet/info-icon.svg',
+      '/keepsimple_/assets/longevity/diet/examples-icon.svg',
+      '/keepsimple_/assets/longevity/diet/diet-results-icons/borderline-ok-foods.png',
+      '/keepsimple_/assets/longevity/diet/diet-results-icons/supportive-foods.png',
+      '/keepsimple_/assets/longevity/diet/diet-results-icons/protective-foods.png',
+      '/keepsimple_/assets/longevity/diet/diet-results-icons/clean-nutrients.png',
+      '/keepsimple_/assets/longevity/diet/diet-results-icons/metabolic-gold.png',
+      '/keepsimple_/assets/longevity/habits/tooltip-bg.png',
+      '/keepsimple_/assets/longevity/habits/tooltip-headline-bg.png',
+      '/keepsimple_/assets/longevity/habits/what-is-this-bg.webp',
+    ];
+
+    imagesToPreload.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, [router.asPath]);
+
+  useEffect(() => {
     let handleRouteChange: (url: string) => void;
 
     import('../../lib/mixpanel').then(({ initMixpanel, trackPageView }) => {

@@ -1,9 +1,12 @@
+import { getSupplementsImageUrls } from '@utils/getLongevityImageUrls';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
 
 import type { TRouter } from '@local-types/global';
+
+import usePreloadImages from '@hooks/usePreloadImages';
 
 import { getSupplements } from '@api/longevity/supplements';
 
@@ -15,6 +18,9 @@ const Supplements = ({ supplements }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const data = supplements?.[currentLocale];
+  const imageUrls = getSupplementsImageUrls(data);
+  usePreloadImages(imageUrls);
   const OGTags = {
     ogDescription: supplements[currentLocale]?.ogDescription || '',
     ogTitle: supplements[currentLocale]?.ogTitle || '',
@@ -43,6 +49,7 @@ const Supplements = ({ supplements }) => {
         ogTags={OGTags}
         createdDate={supplements[currentLocale]?.createdAt || ''}
         modifiedDate={supplements[currentLocale]?.updatedAt || ''}
+        preloadImages={imageUrls}
       />
       <SupplementsLayout
         data={!!supplements ? supplements[currentLocale] : null}
