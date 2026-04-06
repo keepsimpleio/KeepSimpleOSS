@@ -95,17 +95,7 @@ const useContentType = (styles: any, usePTag: boolean) => {
     li: (props: any) => <li className={styles.li}>{props.children}</li>,
     ul: (props: any) => <ul className={styles.ul}>{props.children}</ul>,
     img: (props: any) => {
-      return (
-        <ArticleImage
-          styles={styles}
-          src={
-            props.src.includes(process.env.NEXT_PUBLIC_STRAPI)
-              ? `${process.env.NEXT_PUBLIC_STRAPI}${props.src}`
-              : props.src
-          }
-          alt={props.alt}
-        />
-      );
+      return <ArticleImage styles={styles} src={props.src} alt={props.alt} />;
     },
     download: ({ url, children }: any) => {
       const src = useMemo(

@@ -8,4 +8,5 @@ export type LongevitySubSectionProps = {
   date?: string;
   isHacks?: boolean;
   damageTypeHeadline?: string;
+  isFoodChoices?: boolean;
 };

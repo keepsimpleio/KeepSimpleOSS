@@ -134,6 +134,16 @@
         }
       }
     }
+    .foodChoicesContent {
+      p:first-child {
+        margin-bottom: 10px;
+      }
+      img {
+        width: 16px;
+        margin-bottom: -2px;
+        height: 16px;
+      }
+    }
   }
 }
 
