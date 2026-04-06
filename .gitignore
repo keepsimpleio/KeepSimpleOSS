@@ -132,9 +132,6 @@ QA_RECON.md
 TODO.md
 marys-notes.md
 
-# Playwright MCP cache
-.playwright-mcp/
-
 # Loose QA screenshots at repo root (they belong in reports/screenshots/<date>/)
 /qa-*.png
 /uxcore-*.png

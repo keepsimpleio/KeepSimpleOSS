@@ -38,18 +38,54 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.01,
+      animations: 'disabled',
+    },
+  },
+
   projects: [
     {
       name: 'chromium',
+      testIgnore: ['**/tests/visual/**'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'firefox',
+      testIgnore: ['**/tests/visual/**'],
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'webkit',
+      testIgnore: ['**/tests/visual/**'],
       use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'desktop',
+      testMatch: ['**/tests/visual/**/*.spec.ts'],
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 1280, height: 800 },
+      },
+    },
+    {
+      name: 'tablet',
+      testMatch: ['**/tests/visual/**/*.spec.ts'],
+      use: {
+        ...devices['iPad Pro 11'],
+        browserName: 'chromium',
+        defaultBrowserType: 'chromium',
+      },
+    },
+    {
+      name: 'mobile',
+      testMatch: ['**/tests/visual/**/*.spec.ts'],
+      use: {
+        ...devices['iPhone 13'],
+        browserName: 'chromium',
+        defaultBrowserType: 'chromium',
+      },
     },
   ],
 
