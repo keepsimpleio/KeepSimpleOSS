@@ -32,6 +32,7 @@ const ToolsLayout: FC<ToolsLayoutProps> = ({
   const [transitionKey, setTransitionKey] = useState(0);
   const typedBufferRef = useRef('');
   const easterThemeIndexRef = useRef(0);
+  const easterActivatedRef = useRef(false);
 
   useEffect(() => {
     easterThemeIndexRef.current = easterThemeIndex;
@@ -64,19 +65,26 @@ const ToolsLayout: FC<ToolsLayoutProps> = ({
       const normalizedBuffer = nextBuffer.replace(/\s+/g, '');
       const idx = easterThemeIndexRef.current;
 
-      if (idx === 0 && normalizedBuffer.endsWith(FIBONACCI_CODE_NORMALIZED)) {
+      if (
+        !easterActivatedRef.current &&
+        normalizedBuffer.endsWith(FIBONACCI_CODE_NORMALIZED)
+      ) {
         typedBufferRef.current = '';
+        easterActivatedRef.current = true;
+        easterThemeIndexRef.current = 1;
         setEasterThemeIndex(1);
         setTransitionKey(prev => prev + 1);
         return;
       }
 
       if (
-        idx > 0 &&
+        easterActivatedRef.current &&
         normalizedBuffer.endsWith(EASTER_SUBSEQUENT_CODE_NORMALIZED)
       ) {
         typedBufferRef.current = '';
-        setEasterThemeIndex(prev => (prev + 1) % 4);
+        const next = (idx + 1) % 4;
+        easterThemeIndexRef.current = next;
+        setEasterThemeIndex(next);
         setTransitionKey(prev => prev + 1);
       }
     };
