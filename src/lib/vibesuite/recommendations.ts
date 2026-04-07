@@ -1,5 +1,12 @@
+import type { TLocales } from '@local-types/global';
+import {
+  Recommendation,
+  RecommendationReason,
+  UserProgress,
+} from '@local-types/pageTypes/vibesuite';
+
+import vibesuiteIntl from '@data/vibesuite/intl';
 import { allSkills, getCategoryBySkillId } from '@data/vibesuite/skills';
-import { Recommendation, RecommendationReason, UserProgress } from '@local-types/pageTypes/vibesuite';
 
 function parseTimeEstimateHours(estimate: string): number {
   const lower = estimate.toLowerCase();
@@ -25,8 +32,14 @@ function buildUnlockCounts(): Record<string, number> {
   return counts;
 }
 
-export function getRecommendations(progress: UserProgress, count = 3): Recommendation[] {
-  const completedCount = Object.values(progress).filter((p) => p.completed).length;
+export function getRecommendations(
+  progress: UserProgress,
+  count = 3,
+  locale: TLocales = 'en',
+): Recommendation[] {
+  const completedCount = Object.values(progress).filter(
+    p => p.completed,
+  ).length;
   const progressPct = (completedCount / allSkills.length) * 100;
 
   // All done — nothing to recommend
@@ -36,7 +49,11 @@ export function getRecommendations(progress: UserProgress, count = 3): Recommend
 
   // Determine expected difficulty bracket
   const expectedDifficulty =
-    progressPct < 30 ? 'beginner' : progressPct < 70 ? 'intermediate' : 'advanced';
+    progressPct < 30
+      ? 'beginner'
+      : progressPct < 70
+        ? 'intermediate'
+        : 'advanced';
 
   // Score every unlearned skill
   const scored: Recommendation[] = [];
@@ -49,7 +66,7 @@ export function getRecommendations(progress: UserProgress, count = 3): Recommend
 
     // Check prerequisites
     const deps = skill.dependsOn || [];
-    const allDepsCompleted = deps.every((d) => progress[d]?.completed);
+    const allDepsCompleted = deps.every(d => progress[d]?.completed);
 
     if (allDepsCompleted) {
       score += 30;
@@ -99,7 +116,7 @@ export function getRecommendations(progress: UserProgress, count = 3): Recommend
 
     if (usedCategories.has(catId) && selected.length > 0) {
       const betterAlt = scored.find(
-        (s) =>
+        s =>
           !selected.includes(s) &&
           s !== rec &&
           !usedCategories.has(getCategoryBySkillId(s.skill.id)?.id || '') &&
@@ -109,14 +126,18 @@ export function getRecommendations(progress: UserProgress, count = 3): Recommend
         const altCat = getCategoryBySkillId(betterAlt.skill.id)?.id || '';
         usedCategories.add(altCat);
         betterAlt.reasons.push('diversity');
-        betterAlt.reasonText = generateReasonText(betterAlt, unlockCounts);
+        betterAlt.reasonText = generateReasonText(
+          betterAlt,
+          unlockCounts,
+          locale,
+        );
         selected.push(betterAlt);
         continue;
       }
     }
 
     usedCategories.add(catId);
-    rec.reasonText = generateReasonText(rec, unlockCounts);
+    rec.reasonText = generateReasonText(rec, unlockCounts, locale);
     selected.push(rec);
   }
 
@@ -126,21 +147,23 @@ export function getRecommendations(progress: UserProgress, count = 3): Recommend
 function generateReasonText(
   rec: Recommendation,
   unlockCounts: Record<string, number>,
+  locale: TLocales = 'en',
 ): string {
+  const t = vibesuiteIntl[locale];
   const { reasons, skill } = rec;
   const unlocks = unlockCounts[skill.id] || 0;
 
   if (reasons.includes('hub') && reasons.includes('unlocked')) {
-    return `Unlocks ${unlocks} new skill${unlocks === 1 ? '' : 's'}`;
+    return `${t.reasonUnlocks} ${unlocks} ${unlocks === 1 ? t.reasonNewSkill : t.reasonNewSkills}`;
   }
   if (reasons.includes('quick_win') && reasons.includes('unlocked')) {
-    return `Quick win — ${skill.timeEstimate}`;
+    return `${t.reasonQuickWin} \u2014 ${skill.timeEstimate}`;
   }
   if (reasons.includes('difficulty_match') && reasons.includes('unlocked')) {
-    return 'Matches your current level';
+    return t.reasonMatchesLevel;
   }
   if (reasons.includes('unlocked')) {
-    return 'All prerequisites done';
+    return t.reasonAllPrereqsDone;
   }
-  return 'Good next step';
+  return t.reasonGoodNextStep;
 }

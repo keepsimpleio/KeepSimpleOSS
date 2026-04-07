@@ -1,16 +1,42 @@
-import { useState } from 'react';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
+import type { TRouter } from '@local-types/global';
 import { Skill, SkillCategory } from '@local-types/pageTypes/vibesuite';
+
+import vibesuiteIntl from '@data/vibesuite/intl';
 
 import styles from './SkillCard.module.scss';
 
 // Map first letter to katakana
 const KATAKANA_MAP: Record<string, string> = {
-  a: 'ア', b: 'ビ', c: 'ク', d: 'デ', e: 'エ', f: 'フ', g: 'グ', h: 'ハ',
-  i: 'イ', j: 'ジ', k: 'カ', l: 'ル', m: 'マ', n: 'ナ', o: 'オ', p: 'プ',
-  q: 'ク', r: 'ラ', s: 'サ', t: 'タ', u: 'ウ', v: 'ヴ', w: 'ワ', x: 'シ',
-  y: 'ヤ', z: 'ズ',
+  a: 'ア',
+  b: 'ビ',
+  c: 'ク',
+  d: 'デ',
+  e: 'エ',
+  f: 'フ',
+  g: 'グ',
+  h: 'ハ',
+  i: 'イ',
+  j: 'ジ',
+  k: 'カ',
+  l: 'ル',
+  m: 'マ',
+  n: 'ナ',
+  o: 'オ',
+  p: 'プ',
+  q: 'ク',
+  r: 'ラ',
+  s: 'サ',
+  t: 'タ',
+  u: 'ウ',
+  v: 'ヴ',
+  w: 'ワ',
+  x: 'シ',
+  y: 'ヤ',
+  z: 'ズ',
 };
 
 function getKatakana(name: string): string {
@@ -33,6 +59,13 @@ export default function SkillCard({
   selected,
   onClick,
 }: SkillCardProps) {
+  const { locale } = useRouter() as TRouter;
+  const t = vibesuiteIntl[locale];
+  const difficultyLabels: Record<string, string> = {
+    beginner: t.difficultyBeginner,
+    intermediate: t.difficultyIntermediate,
+    advanced: t.difficultyAdvanced,
+  };
   const katakana = getKatakana(skill.name);
   const highlighted = completed || selected;
   const [showTip, setShowTip] = useState(false);
@@ -42,7 +75,7 @@ export default function SkillCard({
       role="button"
       tabIndex={0}
       onClick={onClick}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') onClick();
       }}
       className={cn(styles.Card, { [styles.Highlighted]: highlighted })}
@@ -56,7 +89,9 @@ export default function SkillCard({
 
       {/* Katakana — top-center, in flow */}
       <span
-        className={cn(styles.Katakana, { [styles.KatakanaCompleted]: completed })}
+        className={cn(styles.Katakana, {
+          [styles.KatakanaCompleted]: completed,
+        })}
         aria-hidden="true"
       >
         {katakana}
@@ -69,12 +104,18 @@ export default function SkillCard({
       {completed && <span className={styles.Checkmark}>✓</span>}
 
       {/* Skill name */}
-      <p className={cn(styles.SkillName, { [styles.SkillNameCompleted]: completed })}>
+      <p
+        className={cn(styles.SkillName, {
+          [styles.SkillNameCompleted]: completed,
+        })}
+      >
         {skill.name}
       </p>
 
       {/* Difficulty */}
-      <p className={styles.Difficulty}>{skill.difficulty}</p>
+      <p className={styles.Difficulty}>
+        {difficultyLabels[skill.difficulty] || skill.difficulty}
+      </p>
     </div>
   );
 }

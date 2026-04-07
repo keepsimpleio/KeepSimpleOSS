@@ -1,7 +1,13 @@
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { useMemo } from 'react';
 
-import { categories } from '@data/vibesuite/skills';
+import type { TRouter } from '@local-types/global';
 import { UserProgress } from '@local-types/pageTypes/vibesuite';
+
+import vibesuiteIntl from '@data/vibesuite/intl';
+import { localizeCategory } from '@data/vibesuite/localizeSkills';
+import { categories } from '@data/vibesuite/skills';
 
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
 
@@ -24,38 +30,43 @@ export default function CategoryNav({
   onOpenWhyModal,
   allCompleted,
 }: CategoryNavProps) {
+  const { locale } = useRouter() as TRouter;
+  const t = vibesuiteIntl[locale];
+
+  const localizedCats = useMemo(
+    () => categories.map(c => localizeCategory(c, locale)),
+    [locale],
+  );
+
   return (
     <nav className={styles.Nav}>
-      {/* Title */}
       <div className={styles.Title}>
-        <span className={styles.TitleLabel}>Categories</span>
+        <span className={styles.TitleLabel}>{t.categoriesTitle}</span>
       </div>
 
-      {/* Red accent rule */}
       <div className={styles.AccentRule} />
 
-      {/* What to Learn Next banner */}
       {!allCompleted && (
         <button className={styles.RecommendBtn} onClick={onOpenRecommendations}>
-          <span className={styles.RecommendBtnTitle}>What to learn next?</span>
-          <span className={styles.RecommendBtnSub}>Personalized for you</span>
+          <span className={styles.RecommendBtnTitle}>{t.whatToLearnNext}</span>
+          <span className={styles.RecommendBtnSub}>{t.personalizedForYou}</span>
         </button>
       )}
 
-      {/* All Categories button */}
       <button
-        className={cn(styles.AllCategoriesBtn, { [styles.Active]: activeCategoryId === null })}
+        className={cn(styles.AllCategoriesBtn, {
+          [styles.Active]: activeCategoryId === null,
+        })}
         onClick={() => onSelectCategory(null)}
       >
-        All Categories
+        {t.allCategories}
       </button>
 
-      {/* Divider */}
       <div className={styles.Divider} />
 
-      {categories.map((cat) => {
+      {localizedCats.map(cat => {
         const total = cat.skills.length;
-        const done = cat.skills.filter((s) => progress[s.id]?.completed).length;
+        const done = cat.skills.filter(s => progress[s.id]?.completed).length;
         const isActive = activeCategoryId === cat.id;
 
         return (
@@ -81,11 +92,10 @@ export default function CategoryNav({
         );
       })}
 
-      {/* Bottom spacer + "Why do I need this?" */}
       <div className={styles.Spacer} />
       <div className={styles.BottomSection}>
         <button className={styles.WhyBtn} onClick={onOpenWhyModal}>
-          Why do I need this?
+          {t.whyDoINeedThis}
         </button>
       </div>
     </nav>

@@ -1,8 +1,13 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
 
-import { categories, getTotalSkillCount } from '@data/vibesuite/skills';
+import type { TRouter } from '@local-types/global';
 import { UserProgress } from '@local-types/pageTypes/vibesuite';
+
+import vibesuiteIntl from '@data/vibesuite/intl';
+import { localizeCategory } from '@data/vibesuite/localizeSkills';
+import { categories, getTotalSkillCount } from '@data/vibesuite/skills';
 
 import styles from './ProgressHeader.module.scss';
 
@@ -10,19 +15,31 @@ interface ProgressHeaderProps {
   progress: UserProgress;
 }
 
-
-const MILESTONES = [
-  { pct: 20, label: 'Observer', kanji: '観' },
-  { pct: 50, label: 'Explorer', kanji: '探' },
-  { pct: 80, label: 'Master', kanji: '師' },
-  { pct: 100, label: 'Singularity', kanji: '∞' },
+const MILESTONE_KEYS = [
+  { pct: 20, key: 'milestoneObserver' as const, kanji: '\u89B3' },
+  { pct: 50, key: 'milestoneExplorer' as const, kanji: '\u63A2' },
+  { pct: 80, key: 'milestoneMaster' as const, kanji: '\u5E2B' },
+  { pct: 100, key: 'milestoneSingularity' as const, kanji: '\u221E' },
 ];
 
 const HIT_RADIUS = 24;
 
 export default function ProgressHeader({ progress }: ProgressHeaderProps) {
+  const { locale } = useRouter() as TRouter;
+  const t = vibesuiteIntl[locale];
+
+  const milestones = useMemo(
+    () => MILESTONE_KEYS.map(m => ({ ...m, label: t[m.key] })),
+    [t],
+  );
+
+  const localizedCats = useMemo(
+    () => categories.map(c => localizeCategory(c, locale)),
+    [locale],
+  );
+
   const total = getTotalSkillCount();
-  const completed = Object.values(progress).filter((p) => p.completed).length;
+  const completed = Object.values(progress).filter(p => p.completed).length;
   const pct = total > 0 ? (completed / total) * 100 : 0;
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [progressClosing, setProgressClosing] = useState(false);
@@ -32,7 +49,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
   const timeRef = useRef(0);
   const displayPctRef = useRef(0);
   const hoveredMilestoneRef = useRef<number>(-1);
-  const hoveredMilestoneAnimRef = useRef<number[]>(MILESTONES.map(() => 0));
+  const hoveredMilestoneAnimRef = useRef<number[]>(milestones.map(() => 0));
   const [tooltipData, setTooltipData] = useState<{
     text: string;
     x: number;
@@ -46,7 +63,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
   >([]);
 
   const draw = useCallback(
-    (canvas: HTMLCanvasElement, t: number) => {
+    (canvas: HTMLCanvasElement, time: number) => {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
@@ -58,16 +75,17 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, w, h);
 
-      // Smooth lerp for progress
+      const isDark = document.body.classList.contains('darkTheme');
+
       const target = pct;
       const current = displayPctRef.current;
       displayPctRef.current += (target - current) * 0.04;
-      if (Math.abs(displayPctRef.current - target) < 0.05) displayPctRef.current = target;
+      if (Math.abs(displayPctRef.current - target) < 0.05)
+        displayPctRef.current = target;
       const displayPct = displayPctRef.current;
 
-      // Smooth lerp for milestone hover animations
       const hoverAnims = hoveredMilestoneAnimRef.current;
-      for (let i = 0; i < MILESTONES.length; i++) {
+      for (let i = 0; i < milestones.length; i++) {
         const tgt = hoveredMilestoneRef.current === i ? 1 : 0;
         hoverAnims[i] += (tgt - hoverAnims[i]) * 0.12;
         if (Math.abs(hoverAnims[i] - tgt) < 0.01) hoverAnims[i] = tgt;
@@ -79,19 +97,16 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
       const padR = 40;
       const barW = w - padL - padR;
 
-      // Track line
       ctx.beginPath();
       ctx.moveTo(padL, barY);
       ctx.lineTo(padL + barW, barY);
-      ctx.strokeStyle = '#DDD7CE';
+      ctx.strokeStyle = isDark ? '#3a4050' : '#DDD7CE';
       ctx.lineWidth = barH;
       ctx.lineCap = 'round';
       ctx.stroke();
 
-      // Progress fill
       const fillEnd = padL + (displayPct / 100) * barW;
       if (displayPct > 0) {
-        // Glow
         ctx.beginPath();
         ctx.moveTo(padL, barY);
         ctx.lineTo(fillEnd, barY);
@@ -100,7 +115,6 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         ctx.lineCap = 'round';
         ctx.stroke();
 
-        // Main fill
         ctx.beginPath();
         ctx.moveTo(padL, barY);
         ctx.lineTo(fillEnd, barY);
@@ -109,8 +123,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         ctx.lineCap = 'round';
         ctx.stroke();
 
-        // Leading dot — pulsating glow
-        const pulse = (Math.sin(t * 1.8) + 1) / 2;
+        const pulse = (Math.sin(time * 1.8) + 1) / 2;
         const glowR = 6 + pulse * 4;
         const glowA = 0.08 + pulse * 0.07;
         ctx.beginPath();
@@ -125,15 +138,14 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         ctx.fill();
       }
 
-      // Milestones
       const positions: typeof milestonePositions.current = [];
 
-      MILESTONES.forEach((m, i) => {
+      milestones.forEach((m, i) => {
         const mx = padL + (m.pct / 100) * barW;
         const reached = displayPct >= m.pct;
         const skillsNeeded = Math.ceil((m.pct / 100) * total) - completed;
         const hoverAmt = hoverAnims[i];
-        const isLast = i === MILESTONES.length - 1;
+        const isLast = i === milestones.length - 1;
 
         positions.push({
           pct: m.pct,
@@ -143,26 +155,37 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         });
 
         if (hoverAmt > 0.01) {
-          const glowR = 18 + hoverAmt * 6;
-          const glowA = hoverAmt * (reached ? 0.15 : 0.1);
-          const gradient = ctx.createRadialGradient(mx, barY, 0, mx, barY, glowR);
-          gradient.addColorStop(0, `rgba(184, 50, 50, ${glowA})`);
+          const glowR2 = 18 + hoverAmt * 6;
+          const glowA2 = hoverAmt * (reached ? 0.15 : 0.1);
+          const gradient = ctx.createRadialGradient(
+            mx,
+            barY,
+            0,
+            mx,
+            barY,
+            glowR2,
+          );
+          gradient.addColorStop(0, `rgba(184, 50, 50, ${glowA2})`);
           gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
           ctx.beginPath();
-          ctx.arc(mx, barY, glowR, 0, Math.PI * 2);
+          ctx.arc(mx, barY, glowR2, 0, Math.PI * 2);
           ctx.fillStyle = gradient;
           ctx.fill();
         }
 
         const tickH = 7 + hoverAmt * 2;
-        const tickAlpha = reached ? 0.45 + hoverAmt * 0.3 : 0.25 + hoverAmt * 0.5;
+        const tickAlpha = reached
+          ? 0.45 + hoverAmt * 0.3
+          : 0.25 + hoverAmt * 0.5;
         ctx.beginPath();
         ctx.moveTo(mx, barY - tickH);
         ctx.lineTo(mx, barY + tickH);
         ctx.strokeStyle =
           reached || hoverAmt > 0.01
             ? `rgba(184, 50, 50, ${tickAlpha})`
-            : '#D5CFC7';
+            : isDark
+              ? '#3a4050'
+              : '#D5CFC7';
         ctx.lineWidth = 1 + hoverAmt * 0.5;
         ctx.lineCap = 'butt';
         ctx.stroke();
@@ -175,9 +198,9 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
           const fillAlpha = reached ? 1 : hoverAmt;
           ctx.fillStyle = `rgba(184, 50, 50, ${fillAlpha})`;
           ctx.fillRect(-dS / 2, -dS / 2, dS, dS);
-          const pR = dS + 1.5 + Math.sin(t * 1.5 + m.pct * 0.1) * 1;
+          const pR = dS + 1.5 + Math.sin(time * 1.5 + m.pct * 0.1) * 1;
           ctx.strokeStyle = `rgba(184, 50, 50, ${
-            0.15 + Math.sin(t * 1.5 + m.pct * 0.1) * 0.08 + hoverAmt * 0.15
+            0.15 + Math.sin(time * 1.5 + m.pct * 0.1) * 0.08 + hoverAmt * 0.15
           })`;
           ctx.lineWidth = 0.5;
           ctx.strokeRect(-pR / 2, -pR / 2, pR, pR);
@@ -186,7 +209,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
           ctx.lineWidth = 0.75 + hoverAmt * 0.5;
           ctx.strokeRect(-dS / 2, -dS / 2, dS, dS);
         } else {
-          ctx.strokeStyle = '#D5CFC7';
+          ctx.strokeStyle = isDark ? '#3a4050' : '#D5CFC7';
           ctx.lineWidth = 0.75;
           ctx.strokeRect(-dS / 2, -dS / 2, dS, dS);
         }
@@ -198,7 +221,9 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         ctx.fillStyle =
           reached || hoverAmt > 0.01
             ? `rgba(184, 50, 50, ${reached ? 1 : 0.4 + hoverAmt * 0.6})`
-            : 'rgba(181, 175, 168, 0.6)';
+            : isDark
+              ? 'rgba(160, 160, 160, 0.5)'
+              : 'rgba(181, 175, 168, 0.6)';
         ctx.fillText(m.label.toUpperCase(), isLast ? mx : mx, barY + 18);
 
         const kanjiSize = 10 + hoverAmt * 2;
@@ -206,7 +231,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         ctx.textAlign = isLast ? 'right' : 'center';
         ctx.fillStyle = `rgba(184, 50, 50, ${
           reached
-            ? 0.2 + Math.sin(t * 1.2 + m.pct * 0.05) * 0.08 + hoverAmt * 0.15
+            ? 0.2 + Math.sin(time * 1.2 + m.pct * 0.05) * 0.08 + hoverAmt * 0.15
             : 0.08 + hoverAmt * 0.25
         })`;
         ctx.fillText(m.kanji, isLast ? mx : mx, barY - 21 - hoverAmt * 1);
@@ -216,11 +241,13 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
 
       ctx.font = '300 7px Jost, system-ui, sans-serif';
       ctx.textAlign = 'center';
-      const ga = 0.07 + Math.sin(t * 0.6) * 0.03;
-      ctx.fillStyle = `rgba(28, 28, 26, ${ga})`;
-      ctx.fillText('T O   T H E   G L O R Y', padL + barW / 2, barY + 28);
+      const ga = 0.07 + Math.sin(time * 0.6) * 0.03;
+      ctx.fillStyle = isDark
+        ? `rgba(218, 218, 218, ${ga})`
+        : `rgba(28, 28, 26, ${ga})`;
+      ctx.fillText(t.toTheGlory, padL + barW / 2, barY + 28);
     },
-    [pct, total, completed],
+    [pct, total, completed, milestones, t],
   );
 
   useEffect(() => {
@@ -273,8 +300,8 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
           const n = mp.skillsNeeded;
           const reached = n === 0;
           const text = reached
-            ? `${mp.label} — Reached!`
-            : `${n} skill${n === 1 ? '' : 's'} to ${mp.label}`;
+            ? `${mp.label} \u2014 ${t.reached}`
+            : `${n} ${n === 1 ? t.skillSingular : t.skillPlural} ${t.toMilestone} ${mp.label}`;
           showTooltip(text, mp.x, reached);
           found = true;
           break;
@@ -285,7 +312,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         if (tooltipData) hideTooltip();
       }
     },
-    [tooltipData, showTooltip, hideTooltip],
+    [tooltipData, showTooltip, hideTooltip, t],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -295,12 +322,10 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
 
   return (
     <header className={styles.Header}>
-      {/* Logo */}
       <div className={styles.Logo}>
         <strong className={styles.LogoBold}>vibe</strong>code
       </div>
 
-      {/* Progress canvas */}
       <div className={styles.ProgressWrap}>
         <canvas
           ref={canvasRef}
@@ -309,7 +334,6 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
           onMouseLeave={handleMouseLeave}
           style={{ cursor: tooltipData ? 'pointer' : 'default' }}
         />
-        {/* Tooltip */}
         {tooltipData && (
           <div
             className={cn(styles.Tooltip, {
@@ -326,7 +350,6 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         )}
       </div>
 
-      {/* Stats + actions */}
       <div className={styles.Actions}>
         <span className={styles.StatsText}>
           {completed}
@@ -342,12 +365,10 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
             setShowProgressModal(true);
           }}
         >
-          My Progress
+          {t.myProgress}
         </button>
-
       </div>
 
-      {/* My Progress Modal */}
       {showProgressModal && (
         <div
           className={cn(styles.ModalBackdrop)}
@@ -364,18 +385,12 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
               styles.ModalBox,
               progressClosing ? 'animate-modal-out' : 'animate-modal-in',
             )}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <div className={styles.ModalContent}>
-              <h2 className={styles.ModalTitle}>My Progress</h2>
-              <p className={styles.ModalBody}>
-                Copy your learning state and paste it into any AI assistant you use for building.
-              </p>
-              <p className={styles.ModalBodyBottom}>
-                Tell it what you want to build — it will see which skills you already have and
-                which ones you haven&apos;t touched yet, then suggest an approach that plays to
-                your strengths while filling in the gaps. Just paste and go.
-              </p>
+              <h2 className={styles.ModalTitle}>{t.myProgress}</h2>
+              <p className={styles.ModalBody}>{t.progressBody1}</p>
+              <p className={styles.ModalBodyBottom}>{t.progressBody2}</p>
 
               <div className={styles.ModalBtns}>
                 <button
@@ -384,48 +399,40 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
                   })}
                   onClick={() => {
                     const lines: string[] = [];
-                    lines.push(
-                      'Here is my current skill profile. Each skill is marked as LEARNED or NOT LEARNED.',
-                    );
+                    lines.push(t.copyStateLine1);
+                    lines.push('');
+                    lines.push(t.copyStateLine2);
+                    lines.push(t.copyStateLine3);
+                    lines.push(t.copyStateLine4);
+                    lines.push(t.copyStateLine5);
                     lines.push('');
                     lines.push(
-                      'When I describe what I want to build, use this profile to:',
-                    );
-                    lines.push(
-                      '1. Suggest an architecture and tech stack that leverages skills I already know.',
-                    );
-                    lines.push(
-                      "2. Identify which skills I haven't learned yet that would be valuable for the project, and offer to teach them as we go.",
-                    );
-                    lines.push(
-                      '3. Give me options — one path that stays inside my comfort zone, one that stretches it, and one that balances both.',
+                      `${t.progressPrefix} ${completed}/${total} ${t.skillsWord} (${Math.round(pct)}%)`,
                     );
                     lines.push('');
-                    lines.push(
-                      `Progress: ${completed}/${total} skills (${Math.round(pct)}%)`,
-                    );
-                    lines.push('');
-                    categories.forEach((cat) => {
+                    localizedCats.forEach(cat => {
                       const catDone = cat.skills.filter(
-                        (s) => progress[s.id]?.completed,
+                        s => progress[s.id]?.completed,
                       ).length;
-                      lines.push(`## ${cat.name} (${catDone}/${cat.skills.length})`);
-                      cat.skills.forEach((skill) => {
+                      lines.push(
+                        `## ${cat.name} (${catDone}/${cat.skills.length})`,
+                      );
+                      cat.skills.forEach(skill => {
                         const learned = !!progress[skill.id]?.completed;
                         lines.push(
-                          `- [${learned ? 'LEARNED' : 'NOT LEARNED'}] ${skill.name}: ${skill.projectDescription}`,
+                          `- [${learned ? t.learned : t.notLearned}] ${skill.name}: ${skill.projectDescription}`,
                         );
                       });
                       lines.push('');
                     });
                     lines.push('---');
-                    lines.push("Now, here's what I want to build:");
+                    lines.push(t.copyStateEnd);
                     navigator.clipboard.writeText(lines.join('\n'));
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2000);
                   }}
                 >
-                  {copied ? 'Copied' : 'Copy my learning state'}
+                  {copied ? t.copied : t.copyMyLearningState}
                 </button>
                 <button
                   className={styles.CloseModalBtn}
@@ -437,7 +444,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
                     }, 180);
                   }}
                 >
-                  Close
+                  {t.close}
                 </button>
               </div>
             </div>

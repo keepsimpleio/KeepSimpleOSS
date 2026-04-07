@@ -24,6 +24,7 @@
 
   --border: #ddd7ce;
   --border-strong: #c8c0b5;
+  --bg-dim: rgba(244, 239, 230, 0.75);
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'EB Garamond', Georgia, serif;
@@ -40,8 +41,12 @@
   a,
   button,
   [role='button'] {
-    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease,
-      opacity 0.15s ease, transform 0.15s ease;
+    transition:
+      color 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease,
+      opacity 0.15s ease,
+      transform 0.15s ease;
   }
 
   background-color: var(--bg-base);
@@ -75,6 +80,33 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: var(--text-tertiary);
+  }
+}
+
+// ── Dark mode overrides ─────────────────────────────────────────────────────
+body.darkTheme .vibesuite-root {
+  --bg-base: #1b1e26;
+  --bg-card: #222730;
+  --bg-card-active: #2a2f3a;
+  --bg-hero: #1e2330;
+  --bg-dim: rgba(27, 30, 38, 0.8);
+
+  --text-primary: #dadada;
+  --text-secondary: #a0a0a0;
+  --text-tertiary: #707070;
+
+  --accent: #d4504a;
+  --accent-light: #e06060;
+  --accent-kanji: rgba(212, 80, 74, 0.3);
+  --accent-kanji-active: rgba(212, 80, 74, 0.6);
+
+  --border: #2e3340;
+  --border-strong: #3a4050;
+
+  // Paper grain — reduce & invert for dark backgrounds
+  &::after {
+    opacity: 0.02;
+    filter: invert(1);
   }
 }
 

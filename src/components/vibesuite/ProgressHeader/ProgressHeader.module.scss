@@ -6,11 +6,16 @@
   z-index: 40;
   background: var(--bg-base);
   border-bottom: 1px solid var(--border);
-  height: 58px;
+  height: 76px;
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
   gap: 1rem;
+
+  @media (max-width: 1023px) {
+    padding: 0 0.75rem;
+    gap: 0.5rem;
+  }
 }
 
 .Logo {
@@ -29,15 +34,19 @@
 .ProgressWrap {
   flex: 1;
   min-width: 0;
-  height: 58px;
+  height: 76px;
   position: relative;
   display: flex;
   align-items: center;
+
+  @media (max-width: 1023px) {
+    display: none;
+  }
 }
 
 .Canvas {
   width: 100%;
-  height: 58px;
+  height: 76px;
   display: block;
 }
 
@@ -57,7 +66,9 @@
   white-space: nowrap;
   pointer-events: none;
   z-index: 10;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 
   &.TooltipReached {
     color: #fff;
@@ -76,6 +87,11 @@
   align-items: center;
   gap: 0.75rem;
   flex-shrink: 0;
+
+  @media (max-width: 1023px) {
+    margin-left: auto;
+    gap: 0.5rem;
+  }
 }
 
 .StatsText {
@@ -141,6 +157,10 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (max-width: 1023px) {
+    max-width: calc(100% - 2rem);
+  }
 }
 
 .ModalContent {
@@ -188,7 +208,10 @@
   color: var(--text-primary);
   border: 1px solid var(--border-strong);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
   user-select: none;
 
   &:hover {
@@ -216,7 +239,10 @@
   border: 1px solid var(--border);
   cursor: pointer;
   user-select: none;
-  transition: border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
 
   &:hover {
     border-color: var(--accent);

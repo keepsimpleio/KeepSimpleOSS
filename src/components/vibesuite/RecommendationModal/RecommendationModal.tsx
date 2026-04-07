@@ -1,7 +1,13 @@
-import { useState, useEffect } from 'react';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { useEffect,useState } from 'react';
 
+import type { TRouter } from '@local-types/global';
 import { Recommendation } from '@local-types/pageTypes/vibesuite';
+
+import vibesuiteIntl from '@data/vibesuite/intl';
+import { categoriesRu } from '@data/vibesuite/intl/skills.ru';
+import { localizeSkill } from '@data/vibesuite/localizeSkills';
 import { getCategoryBySkillId } from '@data/vibesuite/skills';
 
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
@@ -9,14 +15,36 @@ import CategoryIcon from '@components/vibesuite/CategoryIcons';
 import styles from './RecommendationModal.module.scss';
 
 const KATAKANA_MAP: Record<string, string> = {
-  a: 'ア', b: 'ビ', c: 'ク', d: 'デ', e: 'エ', f: 'フ', g: 'グ', h: 'ハ',
-  i: 'イ', j: 'ジ', k: 'カ', l: 'ル', m: 'マ', n: 'ナ', o: 'オ', p: 'プ',
-  q: 'ク', r: 'ラ', s: 'サ', t: 'タ', u: 'ウ', v: 'ヴ', w: 'ワ', x: 'シ',
-  y: 'ヤ', z: 'ズ',
+  a: '\u30A2',
+  b: '\u30D3',
+  c: '\u30AF',
+  d: '\u30C7',
+  e: '\u30A8',
+  f: '\u30D5',
+  g: '\u30B0',
+  h: '\u30CF',
+  i: '\u30A4',
+  j: '\u30B8',
+  k: '\u30AB',
+  l: '\u30EB',
+  m: '\u30DE',
+  n: '\u30CA',
+  o: '\u30AA',
+  p: '\u30D7',
+  q: '\u30AF',
+  r: '\u30E9',
+  s: '\u30B5',
+  t: '\u30BF',
+  u: '\u30A6',
+  v: '\u30F4',
+  w: '\u30EF',
+  x: '\u30B7',
+  y: '\u30E4',
+  z: '\u30BA',
 };
 function getKatakana(name: string): string {
   const first = name.charAt(0).toLowerCase();
-  return KATAKANA_MAP[first] || 'ス';
+  return KATAKANA_MAP[first] || '\u30B9';
 }
 
 const difficultyColor: Record<string, string> = {
@@ -36,6 +64,15 @@ export default function RecommendationModal({
   onSelectSkill,
   onClose,
 }: RecommendationModalProps) {
+  const { locale } = useRouter() as TRouter;
+  const t = vibesuiteIntl[locale];
+
+  const difficultyLabels: Record<string, string> = {
+    beginner: t.difficultyBeginner,
+    intermediate: t.difficultyIntermediate,
+    advanced: t.difficultyAdvanced,
+  };
+
   const [closing, setClosing] = useState(false);
 
   const handleClose = () => {
@@ -67,24 +104,32 @@ export default function RecommendationModal({
           styles.Modal,
           closing ? 'animate-modal-out' : 'animate-modal-in',
         )}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
         <div className={styles.Header}>
-          <span className={styles.Title}>What to learn next</span>
-          <button className={styles.CloseBtn} onClick={handleClose} title="Close">
-            ✕
+          <span className={styles.Title}>{t.whatToLearnNextTitle}</span>
+          <button
+            className={styles.CloseBtn}
+            onClick={handleClose}
+            title="Close"
+          >
+            &#10005;
           </button>
         </div>
 
-        {/* Red accent rule */}
         <div className={styles.AccentRule} />
 
-        {/* Recommendation cards */}
         <div className={styles.List}>
-          {recommendations.map((rec) => {
+          {recommendations.map(rec => {
             const cat = getCategoryBySkillId(rec.skill.id);
-            const dColor = difficultyColor[rec.skill.difficulty] || 'var(--text-tertiary)';
+            const locRec = localizeSkill(rec.skill, locale);
+            const catDisplayName = cat
+              ? locale === 'ru'
+                ? categoriesRu[cat.id]?.name || cat.name
+                : cat.name
+              : undefined;
+            const dColor =
+              difficultyColor[rec.skill.difficulty] || 'var(--text-tertiary)';
 
             return (
               <button
@@ -92,11 +137,10 @@ export default function RecommendationModal({
                 className={styles.RecBtn}
                 onClick={() => handleSelect(rec.skill.id)}
               >
-                {/* Category + difficulty row */}
                 <div className={styles.RecTop}>
                   <span className={styles.RecCategory}>
                     {cat && <CategoryIcon categoryId={cat.id} />}
-                    {cat?.name}
+                    {catDisplayName}
                   </span>
                   <div className={styles.RecMeta}>
                     <span
@@ -109,19 +153,22 @@ export default function RecommendationModal({
                         color: dColor,
                       }}
                     >
-                      {rec.skill.difficulty}
+                      {difficultyLabels[rec.skill.difficulty] ||
+                        rec.skill.difficulty}
                     </span>
-                    <span className={styles.RecTime}>{rec.skill.timeEstimate}</span>
+                    <span className={styles.RecTime}>
+                      {locRec.timeEstimate}
+                    </span>
                   </div>
                 </div>
 
-                {/* Skill name */}
                 <p className={styles.RecName}>
-                  <span className={styles.RecKatakana}>{getKatakana(rec.skill.name)}</span>
-                  {rec.skill.name}
+                  <span className={styles.RecKatakana}>
+                    {getKatakana(rec.skill.name)}
+                  </span>
+                  {locRec.name}
                 </p>
 
-                {/* Reason */}
                 <p className={styles.RecReason}>{rec.reasonText}</p>
               </button>
             );
