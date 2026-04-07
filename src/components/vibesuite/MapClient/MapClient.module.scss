@@ -1,0 +1,970 @@
+.Root {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.DesktopOnly {
+  display: none;
+
+  @media (min-width: 1024px) {
+    display: block;
+  }
+}
+
+/* ─── Main content ─── */
+
+.Main {
+  padding-top: 106px;
+  margin-left: 376px;
+  min-height: 100vh;
+}
+
+.ContentWrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 4rem;
+}
+
+/* ─── Page title ─── */
+
+.PageTitle {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.TitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.DiamondAccent {
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent);
+  transform: rotate(45deg);
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.PageH1 {
+  font-family: var(--font-ui);
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.PageSubtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.GuideLink {
+  margin-top: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--accent);
+  }
+}
+
+/* ─── Search + filter ─── */
+
+.SearchRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 0 0 1.75rem;
+  flex-wrap: wrap;
+}
+
+.SearchWrap {
+  max-width: 300px;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.SearchInput {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: var(--accent);
+  }
+}
+
+.SearchClear {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  line-height: 1;
+}
+
+.FilterRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ShowLabel {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  user-select: none;
+}
+
+.FilterBtn {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* ─── Category sections ─── */
+
+.CategoryArea {
+  transition: opacity 0.15s ease;
+}
+
+.CategorySection {
+  margin-bottom: 3rem;
+}
+
+.SectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  user-select: none;
+}
+
+.SectionH2 {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.SectionRule {
+  flex: 1;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.SectionDesc {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.CardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0;
+}
+
+/* ─── Scroll-to-top ─── */
+
+.ScrollTopBtn {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--text-primary);
+  background: var(--bg-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, border-color 0.15s ease;
+  z-index: 40;
+  padding: 0;
+
+  &:hover {
+    border-color: var(--accent);
+  }
+}
+
+/* ─── Guide overlay ─── */
+
+.GuideOverlay {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 70;
+  background: var(--bg-base);
+  overflow: hidden;
+}
+
+.GuideNavbar {
+  height: 58px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: var(--bg-base);
+  position: relative;
+  z-index: 3;
+}
+
+.GuideTitleAccent {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.GuideTitleMain {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-left: 1rem;
+}
+
+.GuideGotItBtn {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.45rem 1.2rem;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #9A2A2A;
+  }
+}
+
+.GuideLayout {
+  display: flex;
+  height: calc(100vh - 48px - 58px);
+}
+
+.GuideLeftPanel {
+  width: 420px;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+}
+
+.GuideCatHeader {
+  padding: 0 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.GuideCatLabel {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.GuideAccentRule {
+  width: 2rem;
+  height: 2px;
+  background: var(--accent);
+  margin: 0 1.75rem 1rem;
+}
+
+.GuideLearnNextBanner {
+  margin: 0 1.75rem 1rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+}
+
+.GuideLearnNextTitle {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.GuideLearnNextSub {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.GuideAllCatsBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--bg-card-active);
+  border: none;
+  border-left: 3px solid var(--accent);
+  cursor: default;
+  margin-bottom: 0.25rem;
+}
+
+.GuideCatDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 1.75rem;
+}
+
+.GuideCatItem {
+  padding: 0.6rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  border-left: 3px solid transparent;
+}
+
+.GuideCatItemName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.GuideCatItemCount {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.GuidePanelAnnotation {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  right: 1rem;
+  transform: translateY(-50%);
+  z-index: 5;
+}
+
+.GuidePanelAnnotationBox {
+  background: var(--bg-base);
+  border: 2px solid var(--accent);
+  border-left: 4px solid var(--accent);
+  padding: 1rem 1.1rem;
+}
+
+.GuideAnnotationTitle {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.GuideAnnotationText {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.55;
+}
+
+.GuideDimOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.GuideCenter {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.GuideCenterContent {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.GuideCenterTitle {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.GuideCenterTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.GuideCenterH1 {
+  font-family: var(--font-ui);
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.GuideCenterSubtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.GuideCenterSection {
+  margin-bottom: 2.5rem;
+}
+
+.GuideCenterSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  user-select: none;
+}
+
+.GuideCenterH2 {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.GuideCenterDesc {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
+.GuideCenterCardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0;
+}
+
+.GuideStep1Annotation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  text-align: center;
+  max-width: 380px;
+}
+
+.GuideStep1Box {
+  background: var(--bg-base);
+  border: 2px solid var(--accent);
+  padding: 1.25rem 1.5rem;
+}
+
+.GuideStepBadgeRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.GuideStepBadge {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.GuideStepTitle {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.GuideStepText {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* Right panel (guide) */
+
+.GuideRightPanel {
+  width: 420px;
+  max-width: 420px;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+}
+
+.GuideRightInner {
+  position: relative;
+  z-index: 1;
+}
+
+.GuideRightNavRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.GuideRightNavBtns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.GuideRightNavBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.GuideRightCloseBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.GuideRightCatLabel {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.GuideRightSkillName {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.GuideRightKatakana {
+  font-family: var(--font-japanese);
+  font-size: 1.4rem;
+  color: var(--accent-kanji-active);
+  flex-shrink: 0;
+}
+
+.GuideRightBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.GuideRightDiff {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #6B8E6B;
+  border: 1px solid rgba(107, 142, 107, 0.3);
+  padding: 0.2rem 0.6rem;
+}
+
+.GuideRightTime {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.GuideRightRedRule {
+  width: 2rem;
+  height: 2px;
+  background: var(--accent);
+  margin-bottom: 1.25rem;
+}
+
+.GuideRightFieldLabel {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 0.5rem;
+}
+
+.GuideRightFieldTitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.GuideRightFieldDesc {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.GuideRightToolsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.GuideRightToolTag {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.GuideInstructionBlock {
+  border: 2px solid var(--accent);
+  border-top: 3px solid var(--accent);
+  padding: 1.1rem;
+  background: var(--bg-card-active);
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.GuideInstructionPulse {
+  position: absolute;
+  inset: -5px;
+  border: 2px solid var(--accent);
+  opacity: 0.3;
+  animation: guidePulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.GuideInstructionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.GuideInstructionDesc {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 0.85rem;
+}
+
+.GuideInstructionText {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.65rem;
+}
+
+.GuideInstructionP {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.GuideInstructionCopyBtn {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.45rem 0;
+  text-align: center;
+  width: 100%;
+}
+
+.GuideRightBottom {
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.GuideRightBottomInner {
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+  margin-top: 1rem;
+}
+
+.GuideRightStep3Wrap {
+  position: relative;
+}
+
+.GuideStep3BadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.GuideStep3Desc {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+}
+
+.GuideMarkBtn {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.75rem 0;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+}
+
+.GuideMarkPulse {
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  bottom: 0;
+  height: calc(0.75rem * 2 + 0.65rem + 8px);
+  border: 2px solid var(--accent);
+  opacity: 0.3;
+  animation: guidePulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─── Why modal ─── */
+
+.WhyBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.WhyModal {
+  position: relative;
+  width: calc(100% - 2rem);
+  max-width: 480px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-strong);
+  padding: 1.75rem;
+  overflow: hidden;
+}
+
+.WhyBgImg {
+  position: absolute;
+  pointer-events: none;
+  filter: grayscale(100%) contrast(1.1);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.WhyBgImg1 {
+  top: -15px;
+  left: -20px;
+  width: 180px;
+  height: 180px;
+  opacity: 0.25;
+  transform: rotate(-4deg);
+  mask-image: radial-gradient(ellipse at center, black 35%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 70%);
+}
+
+.WhyBgImg2 {
+  top: -20px;
+  right: -30px;
+  width: 200px;
+  height: 200px;
+  opacity: 0.17;
+  filter: grayscale(100%) contrast(1.2);
+  transform: rotate(8deg);
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+.WhyBgImg3 {
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-6deg);
+  width: 220px;
+  height: 220px;
+  opacity: 0.16;
+  filter: grayscale(100%) contrast(1.2);
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+.WhyContent {
+  position: relative;
+  z-index: 1;
+}
+
+.WhyCloseRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.WhyCloseBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 0;
+}
+
+.WhyRedRule {
+  width: 2rem;
+  height: 2px;
+  background: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.WhyBody {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+
+  p {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

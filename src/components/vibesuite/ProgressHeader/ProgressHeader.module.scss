@@ -1,0 +1,229 @@
+.Header {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  gap: 1rem;
+}
+
+.Logo {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.LogoBold {
+  font-weight: 600;
+}
+
+.ProgressWrap {
+  flex: 1;
+  min-width: 0;
+  height: 58px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Canvas {
+  width: 100%;
+  height: 58px;
+  display: block;
+}
+
+.Tooltip {
+  position: absolute;
+  bottom: -4px;
+  transform: translateY(0);
+  opacity: 0;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  padding: 0.3rem 0.7rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &.TooltipReached {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  &.TooltipVisible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.Actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.StatsText {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.StatsDim {
+  color: var(--text-tertiary);
+}
+
+.ActionBtn {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: none;
+  border: 1px solid var(--border-strong);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+.SignOutBtn {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+}
+
+// Progress Modal
+.ModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ModalBox {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  width: 560px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ModalContent {
+  padding: 1.5rem 1.75rem;
+}
+
+.ModalTitle {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.ModalBody {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+}
+
+.ModalBodyBottom {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.ModalBtns {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.CopyStateBtn {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  &.CopyStateBtnCopied {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+}
+
+.CloseModalBtn {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  background: none;
+  color: var(--text-tertiary);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}

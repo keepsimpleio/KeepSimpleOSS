@@ -1,0 +1,171 @@
+.Nav {
+  position: fixed;
+  left: 0;
+  top: 106px;
+  bottom: 0;
+  width: 376px;
+  z-index: 50;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.Title {
+  padding: 0 1.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.TitleLabel {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.AccentRule {
+  width: 2rem;
+  height: 2px;
+  background: var(--accent);
+  margin: 0 1.75rem 1.25rem;
+}
+
+.RecommendBtn {
+  display: block;
+  width: calc(100% - 3.5rem);
+  margin: 0 1.75rem 1.25rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    border-color: var(--accent);
+    background: var(--bg-card-active);
+  }
+}
+
+.RecommendBtnTitle {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.RecommendBtnSub {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.AllCategoriesBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 0.25rem;
+
+  &.Active {
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--bg-card-active);
+    border-left-color: var(--accent);
+  }
+}
+
+.Divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 1.75rem;
+}
+
+.CategoryBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 0.125rem;
+
+  &.Active {
+    color: var(--accent);
+    background: var(--bg-card-active);
+    border-left-color: var(--accent);
+  }
+}
+
+.CategoryBtnInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.CategoryBtnName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.CategoryBtnCount {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+
+  &.CountCompleted {
+    color: var(--accent);
+  }
+}
+
+.Spacer {
+  flex: 1;
+}
+
+.BottomSection {
+  padding: 1.25rem 1.75rem 0.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1.25rem;
+}
+
+.WhyBtn {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+
+  &:hover {
+    color: var(--accent);
+  }
+}

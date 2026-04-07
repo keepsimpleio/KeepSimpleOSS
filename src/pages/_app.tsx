@@ -17,6 +17,7 @@ import Layout from '@layouts/Layout';
 import { LongevityProvider, useLongevity } from '../context/LongevityContext';
 
 import '../styles/globals.scss';
+import '../styles/vibesuite.scss';
 
 type TApp = {
   Component: any;
