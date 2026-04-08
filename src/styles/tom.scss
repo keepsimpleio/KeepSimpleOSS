@@ -1,0 +1,104 @@
+// Tom Chat — global styles and CSS variables
+// Imported in _app.tsx. NOT a CSS module.
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Jost:wght@300;400;500;600&display=swap');
+
+.tom-root {
+  --tom-bg: #f4efe6;
+  --tom-sidebar-bg: rgba(250, 247, 242, 0.97);
+  --tom-bubble-bot: #ffffff;
+  --tom-bubble-user: #3c3c3c;
+  --tom-text: #1c1c1a;
+  --tom-text-light: #ffffff;
+  --tom-text-secondary: #756f69;
+  --tom-text-muted: #968f87;
+  --tom-border: #ddd7ce;
+  --tom-input-bg: #ffffff;
+  --tom-hover: #eee9e0;
+  --tom-active: #e5dfd5;
+  --tom-shadow: rgba(0, 0, 0, 0.06);
+
+  --tom-font-display: 'Playfair Display', Georgia, serif;
+  --tom-font-body: 'Jost', system-ui, sans-serif;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  font-family: var(--tom-font-body);
+  color: var(--tom-text);
+
+  // Paper texture background from actual image
+  &::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url('/keepsimple_/assets/tom/background.png') center / cover
+      no-repeat;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+  }
+
+  a,
+  button,
+  [role='button'] {
+    transition:
+      color 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease,
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  // Scrollbar
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--tom-border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--tom-text-muted);
+  }
+}
+
+// Dark mode
+body.darkTheme .tom-root {
+  --tom-bg: #1b1e26;
+  --tom-sidebar-bg: rgba(22, 25, 32, 0.97);
+  --tom-bubble-bot: #2a2f3a;
+  --tom-bubble-user: #4a4a4a;
+  --tom-text: #dadada;
+  --tom-text-light: #ffffff;
+  --tom-text-secondary: #a0a0a0;
+  --tom-text-muted: #606060;
+  --tom-border: #2e3340;
+  --tom-input-bg: #222730;
+  --tom-hover: #252a34;
+  --tom-active: #2a2f3a;
+  --tom-shadow: rgba(0, 0, 0, 0.3);
+
+  &::after {
+    opacity: 0.15;
+    filter: invert(1) brightness(0.3);
+  }
+}
+
+// Typing indicator animation
+@keyframes tom-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
