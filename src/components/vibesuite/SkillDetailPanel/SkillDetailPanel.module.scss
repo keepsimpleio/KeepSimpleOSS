@@ -1,17 +1,35 @@
 .backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  background: rgba(0, 0, 0, 0.3);
   display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  z-index: 9999;
 
   @media (max-width: 1023px) {
     padding: 0;
     align-items: stretch;
   }
+}
+
+.background {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 201;
 }
 
 .panel {
@@ -23,6 +41,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  z-index: 202;
 
   @media (max-width: 1023px) {
     width: 100%;

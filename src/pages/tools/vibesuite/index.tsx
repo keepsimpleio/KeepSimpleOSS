@@ -1,11 +1,20 @@
-import { useEffect } from 'react';
+import { GetStaticProps } from 'next';
+import { FC, useEffect } from 'react';
+
+import { TStaticProps } from '@local-types/data';
 
 import useGlobals from '@hooks/useGlobals';
+
+import { getVibesuite } from '@api/vibesuite';
 
 import SeoGenerator from '@components/SeoGenerator';
 import MapClient from '@components/vibesuite/MapClient';
 
-export default function VibeSuitePage() {
+export type VibeSuitePageProps = {
+  vibesuite?: any | null;
+};
+
+const VibeSuitePage: FC<VibeSuitePageProps> = ({ vibesuite }) => {
   const [{ initUseGlobals, unmountUseGlobals }, { isDarkTheme }] = useGlobals();
 
   useEffect(() => {
@@ -16,24 +25,37 @@ export default function VibeSuitePage() {
     };
   }, []);
 
+  const seoContent = vibesuite?.pageSeo;
   return (
     <>
       <SeoGenerator
         strapiSEO={{
-          title: 'Vibe Suite — AI Skill Guide | KeepSimple',
-          description:
-            'Interactive skill map that guides you from first AI prompt to shipped product. Track progress across 50+ hands-on projects covering LLMs, frontend, backend, and more.',
-          keywords: 'AI skills, vibe coding, learn AI, skill map, LLM projects',
-          pageTitle: 'Vibe Suite — AI Skill Guide',
+          description: seoContent?.seoDescription,
+          title: seoContent?.pageTitle,
+          keywords: seoContent?.keywords,
+          seoTitle: seoContent?.seoTitle,
         }}
-        ogTags={{
-          ogTitle: 'Vibe Suite — AI Skill Guide | KeepSimple',
-          ogDescription:
-            'Interactive skill map that guides you from first AI prompt to shipped product. Track progress across 50+ hands-on projects.',
-          ogType: 'website',
-        }}
+        type={'WebPage'}
+        ogTags={vibesuite?.OGTags}
+        createdDate={vibesuite?.publishedAt}
+        modifiedDate={vibesuite?.updatedAt}
       />
       <MapClient initialProgress={{}} isDarkTheme={isDarkTheme} />
     </>
   );
-}
+};
+
+export default VibeSuitePage;
+
+export const getStaticProps: GetStaticProps = async ({
+  locale,
+}: TStaticProps) => {
+  const vibesuite = await getVibesuite(locale);
+  return {
+    props: {
+      locale,
+      vibesuite,
+    },
+    revalidate: 10,
+  };
+};

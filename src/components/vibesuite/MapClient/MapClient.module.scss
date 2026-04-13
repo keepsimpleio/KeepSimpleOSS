@@ -21,6 +21,7 @@
 
   @media (max-width: 1023px) {
     margin-left: 0;
+    overflow: hidden;
   }
 }
 
@@ -37,6 +38,7 @@
 /* ─── Page title ─── */
 
 .pageTitle {
+  text-align: center;
   h1 {
     font-family: var(--font-ui);
     font-size: 2.5rem !important;
@@ -53,6 +55,7 @@
 
   @media (max-width: 1023px) {
     gap: 0.5rem;
+    padding-top: 50px;
   }
 
   @media (max-width: 480px) {
