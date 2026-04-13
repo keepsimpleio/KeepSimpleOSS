@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 
 import type { TRouter } from '@local-types/global';
-import { UserProgress } from '@local-types/pageTypes/vibesuite';
 
 import vibesuiteIntl from '@data/vibesuite/intl';
 import { localizeCategory } from '@data/vibesuite/localizeSkills';
@@ -11,16 +10,9 @@ import { categories } from '@data/vibesuite/skills';
 
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
 
-import styles from './CategoryNav.module.scss';
+import { CategoryNavProps } from './CategoryNav.types';
 
-interface CategoryNavProps {
-  progress: UserProgress;
-  activeCategoryId: string | null;
-  onSelectCategory: (categoryId: string | null) => void;
-  onOpenRecommendations: () => void;
-  onOpenWhyModal: () => void;
-  allCompleted: boolean;
-}
+import styles from './CategoryNav.module.scss';
 
 export default function CategoryNav({
   progress,
@@ -39,62 +31,71 @@ export default function CategoryNav({
   );
 
   return (
-    <nav className={styles.Nav}>
-      <div className={styles.Title}>
-        <span className={styles.TitleLabel}>{t.categoriesTitle}</span>
+    <nav className={styles.nav}>
+      <div className={styles.title}>
+        <span className={styles.titleLabel}>{t.categoriesTitle}</span>
       </div>
 
-      <div className={styles.AccentRule} />
+      <div className={styles.accentRule} />
 
       {!allCompleted && (
-        <button className={styles.RecommendBtn} onClick={onOpenRecommendations}>
-          <span className={styles.RecommendBtnTitle}>{t.whatToLearnNext}</span>
-          <span className={styles.RecommendBtnSub}>{t.personalizedForYou}</span>
+        <button className={styles.recommendBtn} onClick={onOpenRecommendations}>
+          <span className={styles.recommendBtnTitle}>{t.whatToLearnNext}</span>
+          <span className={styles.recommendBtnSub}>{t.personalizedForYou}</span>
         </button>
       )}
 
-      <button
-        className={cn(styles.AllCategoriesBtn, {
-          [styles.Active]: activeCategoryId === null,
-        })}
-        onClick={() => onSelectCategory(null)}
-      >
-        {t.allCategories}
-      </button>
-
-      <div className={styles.Divider} />
-
-      {localizedCats.map(cat => {
-        const total = cat.skills.length;
-        const done = cat.skills.filter(s => progress[s.id]?.completed).length;
-        const isActive = activeCategoryId === cat.id;
-
-        return (
+      <ul className={styles.navList}>
+        <li>
           <button
-            key={cat.id}
-            className={cn(styles.CategoryBtn, { [styles.Active]: isActive })}
-            onClick={() => onSelectCategory(cat.id)}
+            className={cn(styles.allCategoriesBtn, {
+              [styles.active]: activeCategoryId === null,
+            })}
+            onClick={() => onSelectCategory(null)}
+            aria-current={activeCategoryId === null ? 'true' : undefined}
           >
-            <div className={styles.CategoryBtnInner}>
-              <span className={styles.CategoryBtnName}>
-                <CategoryIcon categoryId={cat.id} />
-                {cat.name}
-              </span>
-              <span
-                className={cn(styles.CategoryBtnCount, {
-                  [styles.CountCompleted]: done === total && total > 0,
-                })}
-              >
-                {done}/{total}
-              </span>
-            </div>
+            {t.allCategories}
           </button>
-        );
-      })}
+        </li>
 
-      <div className={styles.Spacer} />
-      <div className={styles.BottomSection}>
-        <button className={styles.WhyBtn} onClick={onOpenWhyModal}>
+        <li className={styles.divider} role="separator" aria-hidden="true" />
+
+        {localizedCats.map(cat => {
+          const total = cat.skills.length;
+          const done = cat.skills.filter(s => progress[s.id]?.completed).length;
+          const isActive = activeCategoryId === cat.id;
+
+          return (
+            <li key={cat.id}>
+              <button
+                className={cn(styles.categoryBtn, {
+                  [styles.active]: isActive,
+                })}
+                onClick={() => onSelectCategory(cat.id)}
+                aria-current={isActive ? 'true' : undefined}
+              >
+                <div className={styles.categoryBtnInner}>
+                  <span className={styles.categoryBtnName}>
+                    <CategoryIcon categoryId={cat.id} />
+                    {cat.name}
+                  </span>
+                  <span
+                    className={cn(styles.categoryBtnCount, {
+                      [styles.countCompleted]: done === total && total > 0,
+                    })}
+                  >
+                    {done}/{total}
+                  </span>
+                </div>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className={styles.spacer} />
+      <div className={styles.bottomSection}>
+        <button className={styles.whyBtn} onClick={onOpenWhyModal}>
           {t.whyDoINeedThis}
         </button>
       </div>

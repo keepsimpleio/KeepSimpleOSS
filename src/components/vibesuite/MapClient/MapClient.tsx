@@ -1,10 +1,19 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect,useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import type { TRouter } from '@local-types/global';
 import { UserProgress } from '@local-types/pageTypes/vibesuite';
 
 import { getRecommendations } from '@lib/vibesuite/recommendations';
+
+import { updateLearnedSkills } from '@api/vibesuite';
 
 import vibesuiteIntl from '@data/vibesuite/intl';
 import { localizeCategory } from '@data/vibesuite/localizeSkills';
@@ -15,6 +24,10 @@ import {
   getSkillById,
 } from '@data/vibesuite/skills';
 
+import ArrowUp from '@icons/tools/vibesuite/ArrowUp';
+
+import { GlobalContext } from '@components/Context/GlobalContext';
+import Heading from '@components/Heading';
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
 import CategoryNav from '@components/vibesuite/CategoryNav';
 import ProgressHeader from '@components/vibesuite/ProgressHeader';
@@ -22,15 +35,17 @@ import RecommendationModal from '@components/vibesuite/RecommendationModal';
 import SkillCard from '@components/vibesuite/SkillCard';
 import SkillDetailPanel from '@components/vibesuite/SkillDetailPanel';
 
+import { MapClientProps } from './MapClient.types';
+
 import styles from './MapClient.module.scss';
 
-interface MapClientProps {
-  initialProgress: UserProgress;
-}
-
-export default function MapClient({ initialProgress }: MapClientProps) {
+export default function MapClient({
+  initialProgress,
+  isDarkTheme,
+}: MapClientProps) {
   const { locale } = useRouter() as TRouter;
   const t = vibesuiteIntl[locale];
+  const { accountData } = useContext(GlobalContext) ?? {};
   const [progress, setProgress] = useState<UserProgress>(initialProgress);
   const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
   const [focusCategoryId, setFocusCategoryId] = useState<string | null>(null);
@@ -48,6 +63,16 @@ export default function MapClient({ initialProgress }: MapClientProps) {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const searchRowRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const learned: string[] = accountData?.learnedSkills ?? [];
+    if (learned.length === 0) return;
+    const hydrated: UserProgress = {};
+    for (const id of learned) {
+      hydrated[id] = { completed: true, completedAt: '' };
+    }
+    setProgress(hydrated);
+  }, [accountData]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -122,38 +147,29 @@ export default function MapClient({ initialProgress }: MapClientProps) {
     setSelectedSkillId(skillId);
   }, []);
 
-  const handleToggle = useCallback(
-    async (skillId: string, completed: boolean) => {
-      setProgress(prev => {
-        const next = { ...prev };
-        if (completed) {
-          next[skillId] = {
-            completed: true,
-            completedAt: new Date().toISOString(),
-          };
-        } else {
-          delete next[skillId];
-        }
-        return next;
-      });
-
+  const handleToggle = useCallback((skillId: string, completed: boolean) => {
+    setProgress(prev => {
+      const next = { ...prev };
       if (completed) {
-        setSelectedSkillId(null);
+        next[skillId] = {
+          completed: true,
+          completedAt: new Date().toISOString(),
+        };
+      } else {
+        delete next[skillId];
       }
 
-      try {
-        const res = await fetch('/api/vibesuite/progress', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ skillId, completed }),
-        });
-        if (!res.ok) setProgress(initialProgress);
-      } catch {
-        setProgress(initialProgress);
-      }
-    },
-    [initialProgress],
-  );
+      // Fire-and-forget: send updated state to backend
+      const learnedSkills = Object.keys(next).filter(id => next[id]?.completed);
+      updateLearnedSkills(learnedSkills).catch(() => {});
+
+      return next;
+    });
+
+    if (completed) {
+      setSelectedSkillId(null);
+    }
+  }, []);
 
   const handleSelectCategory = useCallback((categoryId: string | null) => {
     setFocusCategoryId(categoryId);
@@ -194,10 +210,10 @@ export default function MapClient({ initialProgress }: MapClientProps) {
   }, [localizedCategories, searchLower, showFilter, progress]);
 
   return (
-    <div className={`${styles.Root} vibesuite-root`}>
+    <div className={`${styles.root} vibesuite-root`}>
       <ProgressHeader progress={progress} />
 
-      <div className={styles.DesktopOnly}>
+      <div className={styles.desktopOnly}>
         <CategoryNav
           progress={progress}
           activeCategoryId={focusCategoryId}
@@ -211,18 +227,22 @@ export default function MapClient({ initialProgress }: MapClientProps) {
         />
       </div>
 
-      <main className={styles.Main}>
-        <div className={styles.ContentWrapper}>
+      <main className={styles.main}>
+        <div className={styles.contentWrapper}>
           {/* Page title */}
-          <div className={styles.PageTitle}>
-            <div className={styles.TitleRow}>
-              <span className={styles.DiamondAccent} />
-              <h1 className={styles.PageH1}>{t.pageTitle}</h1>
-              <span className={styles.DiamondAccent} />
-            </div>
-            <p className={styles.PageSubtitle}>{t.pageSubtitle}</p>
+          <div className={styles.pageTitle}>
+            <Heading
+              text={t.pageTitle}
+              Tag="h1"
+              showLeftIcon
+              showRightIcon
+              textAlign="center"
+              className={styles.titleRow}
+              textColor={isDarkTheme ? '#ffffffd9' : undefined}
+            />
+            <p className={styles.pageSubtitle}>{t.pageSubtitle}</p>
             <button
-              className={styles.GuideLink}
+              className={styles.guideLink}
               onClick={() => {
                 setGuideClosing(false);
                 setShowGuideModal(true);
@@ -233,28 +253,37 @@ export default function MapClient({ initialProgress }: MapClientProps) {
           </div>
 
           {/* Search bar + filter */}
-          <div ref={searchRowRef} className={styles.SearchRow}>
-            <div className={styles.SearchWrap}>
+          <div ref={searchRowRef} role="search" className={styles.searchRow}>
+            <div className={styles.searchWrap}>
               <input
                 type="text"
+                role="searchbox"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder={t.searchPlaceholder}
-                className={styles.SearchInput}
+                aria-label={t.searchPlaceholder}
+                className={styles.searchInput}
                 style={{ paddingRight: searchQuery ? '2.5rem' : '1rem' }}
               />
               {searchQuery && (
                 <button
-                  className={styles.SearchClear}
+                  className={styles.searchClear}
                   onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
                 >
                   ✕
                 </button>
               )}
             </div>
 
-            <div className={styles.FilterRow}>
-              <span className={styles.ShowLabel}>{t.showLabel}</span>
+            <div
+              className={styles.filterRow}
+              role="group"
+              aria-label={t.showLabel}
+            >
+              <span className={styles.showLabel} aria-hidden="true">
+                {t.showLabel}
+              </span>
               {(['all', 'learned', 'not-learned'] as const).map(opt => {
                 const label =
                   opt === 'all'
@@ -266,7 +295,8 @@ export default function MapClient({ initialProgress }: MapClientProps) {
                 return (
                   <button
                     key={opt}
-                    className={styles.FilterBtn}
+                    className={styles.filterBtn}
+                    aria-pressed={isActive}
                     onClick={() => {
                       if (opt !== showFilter) {
                         setTransitioning(true);
@@ -304,7 +334,7 @@ export default function MapClient({ initialProgress }: MapClientProps) {
 
           {/* Category sections */}
           <div
-            className={styles.CategoryArea}
+            className={styles.categoryArea}
             style={{ opacity: transitioning ? 0 : 1 }}
           >
             {displayCategories.map(cat => {
@@ -326,13 +356,13 @@ export default function MapClient({ initialProgress }: MapClientProps) {
                   ref={el => {
                     sectionRefs.current[cat.id] = el;
                   }}
-                  className={styles.CategorySection}
+                  className={styles.categorySection}
                 >
-                  <div className={styles.SectionHeader}>
-                    <h2 className={styles.SectionH2}>
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionH2}>
                       <CategoryIcon categoryId={cat.id} /> {cat.name}
                     </h2>
-                    <div className={styles.SectionRule} />
+                    <div className={styles.sectionRule} />
                     <span
                       style={{
                         fontFamily: 'var(--font-ui)',
@@ -353,23 +383,24 @@ export default function MapClient({ initialProgress }: MapClientProps) {
                     </span>
                   </div>
 
-                  <p className={styles.SectionDesc}>{cat.description}</p>
+                  <p className={styles.sectionDesc}>{cat.description}</p>
 
-                  <div
-                    className={styles.CardGrid}
+                  <ul
+                    className={styles.cardGrid}
                     onClick={e => e.stopPropagation()}
                   >
                     {cat.skills.map(skill => (
-                      <SkillCard
-                        key={skill.id}
-                        skill={skill}
-                        category={cat}
-                        completed={!!progress[skill.id]?.completed}
-                        selected={selectedSkillId === skill.id}
-                        onClick={() => handleSelectSkill(skill.id)}
-                      />
+                      <li key={skill.id} className={styles.cardGridItem}>
+                        <SkillCard
+                          skill={skill}
+                          category={cat}
+                          completed={!!progress[skill.id]?.completed}
+                          selected={selectedSkillId === skill.id}
+                          onClick={() => handleSelectSkill(skill.id)}
+                        />
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </section>
               );
             })}
@@ -379,7 +410,7 @@ export default function MapClient({ initialProgress }: MapClientProps) {
 
       {/* Scroll to top */}
       <button
-        className={styles.ScrollTopBtn}
+        className={styles.scrollTopBtn}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         aria-label="Scroll to top"
         style={{
@@ -387,18 +418,7 @@ export default function MapClient({ initialProgress }: MapClientProps) {
           pointerEvents: showScrollTop ? 'auto' : 'none',
         }}
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 3.5L3.75 9.75L4.64375 10.6438L9.375 5.90625V16.25H10.625V5.90625L15.3563 10.6437L16.25 9.75L10 3.5Z"
-            fill="currentColor"
-          />
-        </svg>
+        <ArrowUp />
       </button>
 
       {/* Detail panel */}
@@ -441,7 +461,7 @@ export default function MapClient({ initialProgress }: MapClientProps) {
 
           return (
             <div
-              className={styles.GuideBackdrop}
+              className={styles.guideBackdrop}
               style={{
                 background: guideClosing
                   ? 'rgba(0, 0, 0, 0)'
@@ -450,63 +470,75 @@ export default function MapClient({ initialProgress }: MapClientProps) {
               onClick={closeGuide}
             >
               <div
-                className={`${styles.GuideModal} ${guideClosing ? 'animate-modal-out' : 'animate-modal-in'}`}
+                role="dialog"
+                aria-label={t.guideTitle}
+                className={`${styles.guideModal} ${guideClosing ? 'animate-modal-out' : 'animate-modal-in'}`}
                 onClick={e => e.stopPropagation()}
               >
                 {/* Header */}
-                <div className={styles.GuideHeader}>
+                <div className={styles.guideHeader}>
                   <div>
-                    <span className={styles.GuideTitleAccent}>
+                    <span className={styles.guideTitleAccent}>
                       {t.guideAccent}
                     </span>
-                    <p className={styles.GuideTitleMain}>{t.guideTitle}</p>
+                    <p className={styles.guideTitleMain}>{t.guideTitle}</p>
                   </div>
-                  <button className={styles.GuideCloseBtn} onClick={closeGuide}>
+                  <button
+                    className={styles.guideCloseBtn}
+                    onClick={closeGuide}
+                    aria-label="Close guide"
+                  >
                     ✕
                   </button>
                 </div>
 
-                <div className={styles.GuideRedRule} />
+                <div className={styles.guideRedRule} />
 
                 {/* Steps */}
-                <div className={styles.GuideSteps}>
-                  <div className={styles.GuideStep}>
-                    <span className={styles.GuideStepBadge}>1</span>
+                <ol className={styles.guideSteps}>
+                  <li className={styles.guideStep}>
+                    <span className={styles.guideStepBadge} aria-hidden="true">
+                      1
+                    </span>
                     <div>
-                      <p className={styles.GuideStepTitle}>
+                      <p className={styles.guideStepTitle}>
                         {t.guideStep1Title}
                       </p>
-                      <p className={styles.GuideStepDesc}>{t.guideStep1Desc}</p>
+                      <p className={styles.guideStepDesc}>{t.guideStep1Desc}</p>
                     </div>
-                  </div>
+                  </li>
 
-                  <div className={styles.GuideStepDivider} />
+                  <li className={styles.guideStepDivider} aria-hidden="true" />
 
-                  <div className={styles.GuideStep}>
-                    <span className={styles.GuideStepBadge}>2</span>
+                  <li className={styles.guideStep}>
+                    <span className={styles.guideStepBadge} aria-hidden="true">
+                      2
+                    </span>
                     <div>
-                      <p className={styles.GuideStepTitle}>
+                      <p className={styles.guideStepTitle}>
                         {t.guideStep2Title}
                       </p>
-                      <p className={styles.GuideStepDesc}>{t.guideStep2Desc}</p>
+                      <p className={styles.guideStepDesc}>{t.guideStep2Desc}</p>
                     </div>
-                  </div>
+                  </li>
 
-                  <div className={styles.GuideStepDivider} />
+                  <li className={styles.guideStepDivider} aria-hidden="true" />
 
-                  <div className={styles.GuideStep}>
-                    <span className={styles.GuideStepBadge}>3</span>
+                  <li className={styles.guideStep}>
+                    <span className={styles.guideStepBadge} aria-hidden="true">
+                      3
+                    </span>
                     <div>
-                      <p className={styles.GuideStepTitle}>
+                      <p className={styles.guideStepTitle}>
                         {t.guideStep3Title}
                       </p>
-                      <p className={styles.GuideStepDesc}>{t.guideStep3Desc}</p>
+                      <p className={styles.guideStepDesc}>{t.guideStep3Desc}</p>
                     </div>
-                  </div>
-                </div>
+                  </li>
+                </ol>
 
                 {/* Footer */}
-                <button className={styles.GuideGotItBtn} onClick={closeGuide}>
+                <button className={styles.guideGotItBtn} onClick={closeGuide}>
                   {t.guideGotIt}
                 </button>
               </div>
@@ -517,7 +549,7 @@ export default function MapClient({ initialProgress }: MapClientProps) {
       {/* Why modal */}
       {showWhyModal && (
         <div
-          className={styles.WhyBackdrop}
+          className={styles.whyBackdrop}
           style={{
             background: whyClosing
               ? 'rgba(28, 28, 26, 0)'
@@ -529,37 +561,40 @@ export default function MapClient({ initialProgress }: MapClientProps) {
           }}
         >
           <div
-            className={`${styles.WhyModal} ${whyClosing ? 'animate-modal-out' : 'animate-modal-in'}`}
+            role="dialog"
+            aria-label={t.whyDoINeedThis}
+            className={`${styles.whyModal} ${whyClosing ? 'animate-modal-out' : 'animate-modal-in'}`}
             onClick={e => e.stopPropagation()}
           >
             {/* Background images */}
-            <div className={`${styles.WhyBgImg} ${styles.WhyBgImg1}`}>
+            <div className={`${styles.whyBgImg} ${styles.whyBgImg1}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/keepsimple_/assets/vibesuite/why-bg-3.jpg" alt="" />
             </div>
-            <div className={`${styles.WhyBgImg} ${styles.WhyBgImg2}`}>
+            <div className={`${styles.whyBgImg} ${styles.whyBgImg2}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/keepsimple_/assets/vibesuite/why-bg-1.jpg" alt="" />
             </div>
-            <div className={`${styles.WhyBgImg} ${styles.WhyBgImg3}`}>
+            <div className={`${styles.whyBgImg} ${styles.whyBgImg3}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/keepsimple_/assets/vibesuite/why-bg-2.webp" alt="" />
             </div>
 
-            <div className={styles.WhyContent}>
-              <div className={styles.WhyCloseRow}>
+            <div className={styles.whyContent}>
+              <div className={styles.whyCloseRow}>
                 <button
-                  className={styles.WhyCloseBtn}
+                  className={styles.whyCloseBtn}
                   onClick={() => {
                     setWhyClosing(true);
                     setTimeout(() => setShowWhyModal(false), 180);
                   }}
+                  aria-label="Close"
                 >
                   ✕
                 </button>
               </div>
-              <div className={styles.WhyRedRule} />
-              <div className={styles.WhyBody}>
+              <div className={styles.whyRedRule} />
+              <div className={styles.whyBody}>
                 <p>{t.whyP1}</p>
                 <p>{t.whyP2}</p>
                 <p>{t.whyP3}</p>

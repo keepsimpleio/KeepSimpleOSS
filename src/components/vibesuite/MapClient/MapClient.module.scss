@@ -1,10 +1,10 @@
-.Root {
+.root {
   min-height: 100vh;
   position: relative;
   z-index: 1;
 }
 
-.DesktopOnly {
+.desktopOnly {
   display: none;
 
   @media (min-width: 1024px) {
@@ -14,7 +14,7 @@
 
 /* ─── Main content ─── */
 
-.Main {
+.main {
   padding-top: 78px;
   margin-left: 376px;
   min-height: 100vh;
@@ -24,7 +24,7 @@
   }
 }
 
-.ContentWrapper {
+.contentWrapper {
   max-width: 960px;
   margin: 0 auto;
   padding: 1rem 2rem 4rem;
@@ -36,52 +36,58 @@
 
 /* ─── Page title ─── */
 
-.PageTitle {
-  text-align: center;
-  margin-bottom: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
+.pageTitle {
+  h1 {
+    font-family: var(--font-ui);
+    font-size: 2.5rem !important;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0;
+  }
 }
 
-.TitleRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.titleRow {
   gap: 1rem;
-  margin-bottom: 0;
 
   @media (max-width: 1023px) {
     gap: 0.5rem;
   }
-}
 
-.DiamondAccent {
-  width: 10px;
-  height: 10px;
-  background-color: var(--accent);
-  transform: rotate(45deg);
-  display: inline-flex;
-  flex-shrink: 0;
-}
+  @media (max-width: 480px) {
+    gap: 0.25rem;
+  }
 
-.PageH1 {
-  font-family: var(--font-ui);
-  font-size: 2rem;
-  font-weight: 300;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  margin: 0;
+  h1 {
+    // font-family: var(--font-ui);
+    // font-size: 2rem;
+    // font-weight: 300;
+    // letter-spacing: 0.25em;
+    // text-transform: uppercase;
+    // color: var(--text-primary);
+    // width: auto;
 
-  @media (max-width: 1023px) {
-    font-size: 1.15rem;
-    letter-spacing: 0.15em;
+    @media (max-width: 1023px) {
+      font-size: 1.15rem;
+      letter-spacing: 0.15em;
+      width: auto;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
   }
 }
 
-.PageSubtitle {
+.pageSubtitle {
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--text-secondary);
@@ -90,7 +96,7 @@
   padding-top: 16px;
 }
 
-.GuideLink {
+.guideLink {
   margin-top: 0;
   padding-top: 16px;
   padding-bottom: 48px;
@@ -112,7 +118,7 @@
 
 /* ─── Search + filter ─── */
 
-.SearchRow {
+.searchRow {
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -126,7 +132,7 @@
   }
 }
 
-.SearchWrap {
+.searchWrap {
   max-width: 300px;
   position: relative;
   flex: 0 0 auto;
@@ -136,7 +142,7 @@
   }
 }
 
-.SearchInput {
+.searchInput {
   width: 100%;
   font-family: var(--font-body);
   font-size: 1rem;
@@ -152,7 +158,7 @@
   }
 }
 
-.SearchClear {
+.searchClear {
   position: absolute;
   right: 0.6rem;
   top: 50%;
@@ -167,13 +173,13 @@
   line-height: 1;
 }
 
-.FilterRow {
+.filterRow {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.ShowLabel {
+.showLabel {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -183,7 +189,7 @@
   user-select: none;
 }
 
-.FilterBtn {
+.filterBtn {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -200,15 +206,15 @@
 
 /* ─── Category sections ─── */
 
-.CategoryArea {
+.categoryArea {
   transition: opacity 0.15s ease;
 }
 
-.CategorySection {
+.categorySection {
   margin-bottom: 3rem;
 }
 
-.SectionHeader {
+.sectionHeader {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -216,7 +222,7 @@
   user-select: none;
 }
 
-.SectionH2 {
+.sectionH2 {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -229,13 +235,13 @@
   gap: 0.5rem;
 }
 
-.SectionRule {
+.sectionRule {
   flex: 1;
   height: 1px;
   background: var(--border-strong);
 }
 
-.SectionDesc {
+.sectionDesc {
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--text-secondary);
@@ -243,7 +249,10 @@
   font-style: italic;
 }
 
-.CardGrid {
+.cardGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 0;
@@ -253,9 +262,13 @@
   }
 }
 
+.cardGridItem {
+  display: flex;
+}
+
 /* ─── Scroll-to-top ─── */
 
-.ScrollTopBtn {
+.scrollTopBtn {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
@@ -290,7 +303,7 @@
 
 /* ─── Guide modal ─── */
 
-.GuideBackdrop {
+.guideBackdrop {
   position: fixed;
   inset: 0;
   z-index: 70;
@@ -305,7 +318,7 @@
   }
 }
 
-.GuideModal {
+.guideModal {
   width: 480px;
   max-width: 100%;
   background: var(--bg-base);
@@ -317,7 +330,7 @@
   }
 }
 
-.GuideHeader {
+.guideHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -325,7 +338,7 @@
   margin-bottom: 1.25rem;
 }
 
-.GuideTitleAccent {
+.guideTitleAccent {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -336,7 +349,7 @@
   margin-bottom: 0.35rem;
 }
 
-.GuideTitleMain {
+.guideTitleMain {
   font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 400;
@@ -344,7 +357,7 @@
   line-height: 1.4;
 }
 
-.GuideCloseBtn {
+.guideCloseBtn {
   width: 36px;
   height: 36px;
   display: flex;
@@ -365,24 +378,26 @@
   }
 }
 
-.GuideRedRule {
+.guideRedRule {
   width: 2rem;
   height: 2px;
   background: var(--accent);
   margin-bottom: 1.5rem;
 }
 
-.GuideSteps {
-  margin-bottom: 1.75rem;
+.guideSteps {
+  list-style: none;
+  margin: 0 0 1.75rem;
+  padding: 0;
 }
 
-.GuideStep {
+.guideStep {
   display: flex;
   gap: 1rem;
   align-items: flex-start;
 }
 
-.GuideStepBadge {
+.guideStepBadge {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 600;
@@ -397,7 +412,7 @@
   margin-top: 1px;
 }
 
-.GuideStepTitle {
+.guideStepTitle {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -407,20 +422,20 @@
   margin-bottom: 0.3rem;
 }
 
-.GuideStepDesc {
+.guideStepDesc {
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--text-secondary);
   line-height: 1.65;
 }
 
-.GuideStepDivider {
+.guideStepDivider {
   height: 1px;
   background: var(--border);
   margin: 1rem 0 1rem 2.35rem;
 }
 
-.GuideGotItBtn {
+.guideGotItBtn {
   width: 100%;
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -441,7 +456,7 @@
 
 /* ─── Why modal ─── */
 
-.WhyBackdrop {
+.whyBackdrop {
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -452,7 +467,7 @@
   transition: background 0.2s ease;
 }
 
-.WhyModal {
+.whyModal {
   position: relative;
   width: 100%;
   max-width: 480px;
@@ -466,7 +481,7 @@
   }
 }
 
-.WhyBgImg {
+.whyBgImg {
   position: absolute;
   pointer-events: none;
   filter: grayscale(100%) contrast(1.1);
@@ -478,7 +493,7 @@
   }
 }
 
-.WhyBgImg1 {
+.whyBgImg1 {
   top: -15px;
   left: -20px;
   width: 180px;
@@ -493,7 +508,7 @@
   );
 }
 
-.WhyBgImg2 {
+.whyBgImg2 {
   top: -20px;
   right: -30px;
   width: 200px;
@@ -509,7 +524,7 @@
   );
 }
 
-.WhyBgImg3 {
+.whyBgImg3 {
   bottom: -25px;
   left: 50%;
   transform: translateX(-50%) rotate(-6deg);
@@ -525,18 +540,18 @@
   );
 }
 
-.WhyContent {
+.whyContent {
   position: relative;
   z-index: 1;
 }
 
-.WhyCloseRow {
+.whyCloseRow {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1rem;
 }
 
-.WhyCloseBtn {
+.whyCloseBtn {
   width: 36px;
   height: 36px;
   display: flex;
@@ -551,14 +566,14 @@
   padding: 0;
 }
 
-.WhyRedRule {
+.whyRedRule {
   width: 2rem;
   height: 2px;
   background: var(--accent);
   margin-bottom: 1.5rem;
 }
 
-.WhyBody {
+.whyBody {
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.85;

@@ -1,3 +1,4 @@
+import { CategoryIconProps } from './CategoryIcons.types';
 
 const iconStyle = {
   width: '1em',
@@ -96,7 +97,10 @@ function AuthSecurityIcon() {
 function DeployInfraIcon() {
   return (
     <Icon>
-      <path d="M18,10 h1 a4,4 0 0,1 0,8 H6 A5,5 0 1,1 7.7,9.3 a7,7 0 0,1 13.3,1.7" fill="none" />
+      <path
+        d="M18,10 h1 a4,4 0 0,1 0,8 H6 A5,5 0 1,1 7.7,9.3 a7,7 0 0,1 13.3,1.7"
+        fill="none"
+      />
       <polyline points="12,13 12,21" />
       <polyline points="9,16 12,13 15,16" />
     </Icon>
@@ -144,7 +148,7 @@ const CATEGORY_ICONS: Record<string, React.ComponentType> = {
   'ai-tools': AiToolsIcon,
 };
 
-export default function CategoryIcon({ categoryId }: { categoryId: string }) {
+export default function CategoryIcon({ categoryId }: CategoryIconProps) {
   const IconComponent = CATEGORY_ICONS[categoryId];
   if (!IconComponent) return null;
   return <IconComponent />;

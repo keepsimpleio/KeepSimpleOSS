@@ -1,4 +1,4 @@
-.Nav {
+.nav {
   position: fixed;
   left: 0;
   top: 124px;
@@ -13,12 +13,12 @@
   flex-direction: column;
 }
 
-.Title {
+.title {
   padding: 0 1.75rem;
   margin-bottom: 1.25rem;
 }
 
-.TitleLabel {
+.titleLabel {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -27,14 +27,14 @@
   color: var(--text-tertiary);
 }
 
-.AccentRule {
+.accentRule {
   width: 2rem;
   height: 2px;
   background: var(--accent);
   margin: 0 1.75rem 1.25rem;
 }
 
-.RecommendBtn {
+.recommendBtn {
   display: block;
   width: calc(100% - 3.5rem);
   margin: 0 1.75rem 1.25rem;
@@ -51,7 +51,7 @@
   }
 }
 
-.RecommendBtnTitle {
+.recommendBtnTitle {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -62,13 +62,13 @@
   margin-bottom: 0.15rem;
 }
 
-.RecommendBtnSub {
+.recommendBtnSub {
   font-family: var(--font-body);
   font-size: 0.875rem;
   color: var(--text-tertiary);
 }
 
-.AllCategoriesBtn {
+.allCategoriesBtn {
   display: block;
   width: 100%;
   text-align: left;
@@ -84,7 +84,7 @@
   transition: all 0.15s ease;
   margin-bottom: 0.25rem;
 
-  &.Active {
+  &.active {
     font-weight: 500;
     color: var(--accent);
     background: var(--bg-card-active);
@@ -92,13 +92,19 @@
   }
 }
 
-.Divider {
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.divider {
   height: 1px;
   background: var(--border);
   margin: 0.5rem 1.75rem;
 }
 
-.CategoryBtn {
+.categoryBtn {
   display: block;
   width: 100%;
   text-align: left;
@@ -114,46 +120,46 @@
   transition: all 0.15s ease;
   margin-bottom: 0.125rem;
 
-  &.Active {
+  &.active {
     color: var(--accent);
     background: var(--bg-card-active);
     border-left-color: var(--accent);
   }
 }
 
-.CategoryBtnInner {
+.categoryBtnInner {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.CategoryBtnName {
+.categoryBtnName {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.CategoryBtnCount {
+.categoryBtnCount {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: var(--text-tertiary);
 
-  &.CountCompleted {
+  &.countCompleted {
     color: var(--accent);
   }
 }
 
-.Spacer {
+.spacer {
   flex: 1;
 }
 
-.BottomSection {
+.bottomSection {
   padding: 1.25rem 1.75rem 0.5rem;
   border-top: 1px solid var(--border);
   margin-top: 1.25rem;
 }
 
-.WhyBtn {
+.whyBtn {
   font-family: var(--font-body);
   font-size: 0.875rem;
   font-style: italic;

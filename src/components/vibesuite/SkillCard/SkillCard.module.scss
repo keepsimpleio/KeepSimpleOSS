@@ -1,4 +1,7 @@
-.Card {
+.card {
+  appearance: none;
+  font: inherit;
+  color: inherit;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -11,7 +14,9 @@
   border: 1px solid var(--border);
   overflow: visible;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
   margin: -1px 0 0 -1px;
   z-index: 1;
   text-align: center;
@@ -20,14 +25,14 @@
   outline: none;
 
   &:hover,
-  &.Highlighted {
+  &.highlighted {
     border-color: var(--accent);
     background: var(--bg-card-active);
     z-index: 2;
   }
 }
 
-.Tooltip {
+.tooltip {
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -44,15 +49,17 @@
   padding: 0.35rem 0.7rem;
   width: max-content;
   max-width: 280px;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 
-  &.TooltipVisible {
+  &.tooltipVisible {
     opacity: 1;
     transform: translateX(-50%) translateY(-4px);
   }
 }
 
-.Katakana {
+.katakana {
   font-family: var(--font-japanese);
   font-size: 2.16rem;
   color: var(--accent-kanji);
@@ -62,12 +69,12 @@
   pointer-events: none;
   margin-bottom: 0.35rem;
 
-  &.KatakanaCompleted {
+  &.katakanaCompleted {
     color: var(--accent-kanji-active);
   }
 }
 
-.CompletedBar {
+.completedBar {
   position: absolute;
   top: 0;
   left: 0;
@@ -76,7 +83,7 @@
   background: var(--accent);
 }
 
-.Checkmark {
+.checkmark {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
@@ -92,7 +99,7 @@
   font-weight: 600;
 }
 
-.SkillName {
+.skillName {
   font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 400;
@@ -100,12 +107,12 @@
   line-height: 1.3;
   margin-bottom: 0.25rem;
 
-  &.SkillNameCompleted {
+  &.skillNameCompleted {
     color: var(--accent);
   }
 }
 
-.Difficulty {
+.difficulty {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 400;

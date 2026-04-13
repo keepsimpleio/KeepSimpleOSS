@@ -1,4 +1,4 @@
-.Backdrop {
+.backdrop {
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -8,12 +8,12 @@
   background: rgba(28, 28, 26, 0.35);
   transition: background 0.2s ease;
 
-  &.Closing {
+  &.closing {
     background: rgba(28, 28, 26, 0);
   }
 }
 
-.Modal {
+.modal {
   width: calc(100% - 2rem);
   max-width: 440px;
   background: var(--bg-base);
@@ -25,14 +25,14 @@
   }
 }
 
-.Header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.Title {
+.title {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -41,7 +41,7 @@
   color: var(--text-tertiary);
 }
 
-.CloseBtn {
+.closeBtn {
   width: 36px;
   height: 36px;
   display: flex;
@@ -61,20 +61,23 @@
   }
 }
 
-.AccentRule {
+.accentRule {
   width: 2rem;
   height: 2px;
   background: var(--accent);
   margin-bottom: 1.5rem;
 }
 
-.List {
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.RecBtn {
+.recBtn {
   display: block;
   width: 100%;
   text-align: left;
@@ -89,14 +92,14 @@
   }
 }
 
-.RecTop {
+.recTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.4rem;
 }
 
-.RecCategory {
+.recCategory {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -108,19 +111,19 @@
   gap: 0.35rem;
 }
 
-.RecMeta {
+.recMeta {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.RecTime {
+.recTime {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
 
-.RecName {
+.recName {
   font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 400;
@@ -131,7 +134,7 @@
   gap: 0.5rem;
 }
 
-.RecKatakana {
+.recKatakana {
   font-family: var(--font-japanese);
   font-size: 1.1rem;
   color: var(--accent-kanji-active);
@@ -139,7 +142,7 @@
   line-height: 1;
 }
 
-.RecReason {
+.recReason {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: var(--accent);

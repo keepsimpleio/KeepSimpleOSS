@@ -4,9 +4,11 @@ import CompanyManagementIcon from '@icons/tools/company-management.svg';
 import BobIcon from '@icons/tools/tool-icons/bob.svg';
 import ClaudeBobIcon from '@icons/tools/tool-icons/claude-bob.svg';
 import EmaIcon from '@icons/tools/tool-icons/ema.svg';
+import FriendlyTomIcon from '@icons/tools/tool-icons/friendly-tom.svg';
 import GithubIcon from '@icons/tools/tool-icons/github.svg';
 import MosaicIcon from '@icons/tools/tool-icons/mosaic.svg';
 import TomIcon from '@icons/tools/tool-icons/tom.svg';
+import VibeSuiteIcon from '@icons/tools/tool-icons/vibesuite.svg';
 
 export type ToolConfig = {
   Icon: FC<SVGProps<SVGSVGElement>>;
@@ -15,6 +17,7 @@ export type ToolConfig = {
   darkIconFill: string;
   isBlank: boolean;
 };
+// TODO - review html, button with p and div
 
 export const TOOL_CONFIG: Record<number, ToolConfig> = {
   1: {
@@ -65,6 +68,20 @@ export const TOOL_CONFIG: Record<number, ToolConfig> = {
     darkHoverColor: '#FFB366',
     darkIconFill: '#FFB366',
     isBlank: true,
+  },
+  8: {
+    Icon: VibeSuiteIcon,
+    hoverColor: '#A4B465',
+    darkHoverColor: '#D3DEAC',
+    darkIconFill: '#D3DEAC',
+    isBlank: true,
+  },
+  9: {
+    Icon: FriendlyTomIcon,
+    hoverColor: '#B8860B',
+    darkHoverColor: '#E5C988',
+    darkIconFill: '#E5C988',
+    isBlank: false,
   },
 };
 

@@ -18,7 +18,7 @@ import { LongevityProvider, useLongevity } from '../context/LongevityContext';
 
 import '../styles/globals.scss';
 import '../styles/vibesuite.scss';
-import '../styles/tom.scss';
+// import '../styles/tom.scss';
 
 type TApp = {
   Component: any;
@@ -70,7 +70,8 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
 
   useEffect(() => {
     const getData = async () => {
-      if (!session?.user) return;
+      const hasAccessToken = !!localStorage.getItem('accessToken');
+      if (!session?.user && !hasAccessToken) return;
       try {
         const data = await getMyInfo();
         if (data) {

@@ -1,9 +1,8 @@
 import cn from 'classnames';
 import { useRouter } from 'next/router';
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { TRouter } from '@local-types/global';
-import { Recommendation } from '@local-types/pageTypes/vibesuite';
 
 import vibesuiteIntl from '@data/vibesuite/intl';
 import { categoriesRu } from '@data/vibesuite/intl/skills.ru';
@@ -11,6 +10,8 @@ import { localizeSkill } from '@data/vibesuite/localizeSkills';
 import { getCategoryBySkillId } from '@data/vibesuite/skills';
 
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
+
+import { RecommendationModalProps } from './RecommendationModal.types';
 
 import styles from './RecommendationModal.module.scss';
 
@@ -53,12 +54,6 @@ const difficultyColor: Record<string, string> = {
   advanced: '#B83232',
 };
 
-interface RecommendationModalProps {
-  recommendations: Recommendation[];
-  onSelectSkill: (skillId: string) => void;
-  onClose: () => void;
-}
-
 export default function RecommendationModal({
   recommendations,
   onSelectSkill,
@@ -96,30 +91,33 @@ export default function RecommendationModal({
 
   return (
     <div
-      className={cn(styles.Backdrop, { [styles.Closing]: closing })}
+      className={cn(styles.backdrop, { [styles.closing]: closing })}
       onClick={handleClose}
     >
       <div
+        role="dialog"
+        aria-label={t.whatToLearnNextTitle}
         className={cn(
-          styles.Modal,
+          styles.modal,
           closing ? 'animate-modal-out' : 'animate-modal-in',
         )}
         onClick={e => e.stopPropagation()}
       >
-        <div className={styles.Header}>
-          <span className={styles.Title}>{t.whatToLearnNextTitle}</span>
+        <div className={styles.header}>
+          <span className={styles.title}>{t.whatToLearnNextTitle}</span>
           <button
-            className={styles.CloseBtn}
+            className={styles.closeBtn}
             onClick={handleClose}
             title="Close"
+            aria-label="Close recommendations"
           >
             &#10005;
           </button>
         </div>
 
-        <div className={styles.AccentRule} />
+        <div className={styles.accentRule} />
 
-        <div className={styles.List}>
+        <ul className={styles.list}>
           {recommendations.map(rec => {
             const cat = getCategoryBySkillId(rec.skill.id);
             const locRec = localizeSkill(rec.skill, locale);
@@ -132,48 +130,49 @@ export default function RecommendationModal({
               difficultyColor[rec.skill.difficulty] || 'var(--text-tertiary)';
 
             return (
-              <button
-                key={rec.skill.id}
-                className={styles.RecBtn}
-                onClick={() => handleSelect(rec.skill.id)}
-              >
-                <div className={styles.RecTop}>
-                  <span className={styles.RecCategory}>
-                    {cat && <CategoryIcon categoryId={cat.id} />}
-                    {catDisplayName}
-                  </span>
-                  <div className={styles.RecMeta}>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-ui)',
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase' as const,
-                        color: dColor,
-                      }}
-                    >
-                      {difficultyLabels[rec.skill.difficulty] ||
-                        rec.skill.difficulty}
+              <li key={rec.skill.id}>
+                <button
+                  className={styles.recBtn}
+                  onClick={() => handleSelect(rec.skill.id)}
+                >
+                  <div className={styles.recTop}>
+                    <span className={styles.recCategory}>
+                      {cat && <CategoryIcon categoryId={cat.id} />}
+                      {catDisplayName}
                     </span>
-                    <span className={styles.RecTime}>
-                      {locRec.timeEstimate}
-                    </span>
+                    <div className={styles.recMeta}>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-ui)',
+                          fontSize: '0.75rem',
+                          fontWeight: 500,
+                          letterSpacing: '0.1em',
+                          textTransform: 'uppercase' as const,
+                          color: dColor,
+                        }}
+                      >
+                        {difficultyLabels[rec.skill.difficulty] ||
+                          rec.skill.difficulty}
+                      </span>
+                      <span className={styles.recTime}>
+                        {locRec.timeEstimate}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <p className={styles.RecName}>
-                  <span className={styles.RecKatakana}>
-                    {getKatakana(rec.skill.name)}
-                  </span>
-                  {locRec.name}
-                </p>
+                  <p className={styles.recName}>
+                    <span className={styles.recKatakana}>
+                      {getKatakana(rec.skill.name)}
+                    </span>
+                    {locRec.name}
+                  </p>
 
-                <p className={styles.RecReason}>{rec.reasonText}</p>
-              </button>
+                  <p className={styles.recReason}>{rec.reasonText}</p>
+                </button>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </div>
   );

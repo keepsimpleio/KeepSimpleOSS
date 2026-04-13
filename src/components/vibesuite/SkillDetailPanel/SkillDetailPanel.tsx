@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { useRouter } from 'next/router';
-import { useEffect, useRef,useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { TRouter } from '@local-types/global';
 import {
@@ -15,6 +15,8 @@ import { localizeSkill } from '@data/vibesuite/localizeSkills';
 import { getDependencies, getSkillById } from '@data/vibesuite/skills';
 
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
+
+import { SkillDetailPanelProps } from './SkillDetailPanel.types';
 
 import styles from './SkillDetailPanel.module.scss';
 
@@ -50,18 +52,6 @@ const KATAKANA_MAP: Record<string, string> = {
 function getKatakana(name: string): string {
   const first = name.charAt(0).toLowerCase();
   return KATAKANA_MAP[first] || '\u30B9';
-}
-
-interface SkillDetailPanelProps {
-  skill: Skill;
-  category: SkillCategory;
-  progress: UserProgress;
-  onToggle: (skillId: string, completed: boolean) => void;
-  onClose: () => void;
-  onSelectSkill: (skillId: string) => void;
-  prevSkillId: string | null;
-  nextSkillId: string | null;
-  requestClose?: boolean;
 }
 
 function buildInstruction(skill: Skill, locale: string): string {
@@ -160,119 +150,133 @@ export default function SkillDetailPanel({
   };
 
   return (
-    <div className={styles.Backdrop} onClick={handleClose}>
+    <div className={styles.backdrop} onClick={handleClose}>
       <div
+        role="dialog"
+        aria-label={locSkill.name}
         className={cn(
-          styles.Panel,
+          styles.panel,
           closing ? 'animate-modal-out' : 'animate-modal-in',
         )}
         onClick={e => e.stopPropagation()}
       >
         <div
-          className={styles.ScrollContent}
+          className={styles.scrollContent}
           style={{ opacity: contentVisible ? 1 : 0 }}
         >
-          <div className={styles.HeaderRow}>
-            <span className={styles.CategoryLabel}>
+          <div className={styles.headerRow}>
+            <span className={styles.categoryLabel}>
               <CategoryIcon categoryId={category.id} /> {catName}
             </span>
             <div
               style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
-              <div className={styles.NavBtns}>
+              <div className={styles.navBtns}>
                 <button
-                  className={cn(styles.NavBtn, {
-                    [styles.NavBtnDisabled]: !prevSkill,
+                  className={cn(styles.navBtn, {
+                    [styles.navBtnDisabled]: !prevSkill,
                   })}
                   disabled={!prevSkill}
                   onClick={() => prevSkillId && onSelectSkill(prevSkillId)}
                   title={prevSkill?.name}
+                  aria-label={
+                    prevSkill ? `Previous: ${prevSkill.name}` : 'Previous skill'
+                  }
                 >
                   &#8249;
                 </button>
                 <button
-                  className={cn(styles.NavBtn, {
-                    [styles.NavBtnDisabled]: !nextSkill,
+                  className={cn(styles.navBtn, {
+                    [styles.navBtnDisabled]: !nextSkill,
                   })}
                   disabled={!nextSkill}
                   onClick={() => nextSkillId && onSelectSkill(nextSkillId)}
                   title={nextSkill?.name}
+                  aria-label={
+                    nextSkill ? `Next: ${nextSkill.name}` : 'Next skill'
+                  }
                 >
                   &#8250;
                 </button>
               </div>
               <button
-                className={styles.CloseBtn}
+                className={styles.closeBtn}
                 onClick={handleClose}
                 title="Close"
+                aria-label="Close skill details"
               >
                 &#10005;
               </button>
             </div>
           </div>
 
-          <h2 className={styles.SkillTitle}>
-            <span className={styles.TitleKatakana}>
+          <h2 className={styles.skillTitle}>
+            <span className={styles.titleKatakana}>
               {getKatakana(skill.name)}
             </span>
             {locSkill.name}
           </h2>
 
-          <div className={styles.MetaRow}>
+          <div className={styles.metaRow}>
             <span
-              className={styles.DifficultyBadge}
+              className={styles.difficultyBadge}
               style={{ color: diff.color, border: `1px solid ${diff.color}40` }}
             >
               {diff.label}
             </span>
-            <span className={styles.TimeLabel}>{locSkill.timeEstimate}</span>
+            <span className={styles.timeLabel}>{locSkill.timeEstimate}</span>
           </div>
 
-          <div className={styles.AccentRule} />
+          <div className={styles.accentRule} />
 
-          <p className={styles.SectionLabel}>{t.whatYoullBuild}</p>
-          <p className={styles.ProjectTitle}>{locSkill.projectTitle}</p>
+          <p className={styles.sectionLabel}>{t.whatYoullBuild}</p>
+          <p className={styles.projectTitle}>{locSkill.projectTitle}</p>
 
-          <p className={styles.ProjectDesc}>{locSkill.projectDescription}</p>
+          <p className={styles.projectDesc}>{locSkill.projectDescription}</p>
 
-          <div className={styles.ToolsSection}>
-            <p className={styles.SectionLabel}>{t.tools}</p>
-            <div className={styles.ToolsWrap}>
+          <div className={styles.toolsSection}>
+            <p className={styles.sectionLabel}>{t.tools}</p>
+            <ul className={styles.toolsWrap}>
               {skill.tools.map(tool => (
-                <span key={tool} className={styles.ToolTag}>
+                <li key={tool} className={styles.toolTag}>
                   {tool}
-                </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
           {deps.length > 0 && (
-            <div className={styles.DepsSection}>
-              <p className={styles.SectionLabel}>{t.prerequisites}</p>
-              {deps.map(dep => {
-                const depDone = !!progress[dep.id]?.completed;
-                const locDep = localizeSkill(dep, locale);
-                return (
-                  <button
-                    key={dep.id}
-                    className={cn(styles.DepBtn, { [styles.DepDone]: depDone })}
-                    onClick={() => onSelectSkill(dep.id)}
-                  >
-                    <span>{depDone ? '\u2713' : '\u25CB'}</span>
-                    {locDep.name}
-                  </button>
-                );
-              })}
+            <div className={styles.depsSection}>
+              <p className={styles.sectionLabel}>{t.prerequisites}</p>
+              <ul className={styles.depsList}>
+                {deps.map(dep => {
+                  const depDone = !!progress[dep.id]?.completed;
+                  const locDep = localizeSkill(dep, locale);
+                  return (
+                    <li key={dep.id}>
+                      <button
+                        className={cn(styles.depBtn, {
+                          [styles.depDone]: depDone,
+                        })}
+                        onClick={() => onSelectSkill(dep.id)}
+                      >
+                        <span>{depDone ? '\u2713' : '\u25CB'}</span>
+                        {locDep.name}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           )}
 
-          <div className={styles.InstructionBlock}>
-            <div className={styles.InstructionHeader}>
-              <p className={styles.InstructionSectionLabel}>
+          <div className={styles.instructionBlock}>
+            <div className={styles.instructionHeader}>
+              <p className={styles.instructionSectionLabel}>
                 {t.howToLearnThis}
               </p>
               <button
-                className={styles.GuideToggleBtn}
+                className={styles.guideToggleBtn}
                 onClick={() => setShowGuide(!showGuide)}
               >
                 {showGuide ? t.hideGuide : t.firstTimeReadThis}
@@ -280,47 +284,55 @@ export default function SkillDetailPanel({
             </div>
 
             {showGuide && (
-              <div className={styles.GuideContent}>
-                <div className={styles.GuideText}>
-                  <p className={styles.GuideHeading}>{t.detailGuideHeading}</p>
-                  <div className={styles.GuideStep}>
-                    <span className={styles.GuideStepNum}>1.</span>
-                    <span>
-                      <strong style={{ color: 'var(--text-primary)' }}>
-                        {t.detailGuideStep1Bold}
-                      </strong>{' '}
-                      {t.detailGuideStep1Rest}
-                    </span>
-                  </div>
-                  <div className={styles.GuideStep}>
-                    <span className={styles.GuideStepNum}>2.</span>
-                    <span>
-                      <strong style={{ color: 'var(--text-primary)' }}>
-                        {t.detailGuideStep2Bold}
-                      </strong>{' '}
-                      {t.detailGuideStep2Rest}
-                    </span>
-                  </div>
-                  <div className={styles.GuideStep}>
-                    <span className={styles.GuideStepNum}>3.</span>
-                    <span>
-                      <strong style={{ color: 'var(--text-primary)' }}>
-                        {t.detailGuideStep3Bold}
-                      </strong>{' '}
-                      {t.detailGuideStep3Rest}
-                    </span>
-                  </div>
-                  <p className={styles.GuideTip}>{t.detailGuideTip}</p>
+              <div className={styles.guideContent}>
+                <div className={styles.guideText}>
+                  <p className={styles.guideHeading}>{t.detailGuideHeading}</p>
+                  <ol className={styles.guideStepList}>
+                    <li className={styles.guideStep}>
+                      <span className={styles.guideStepNum} aria-hidden="true">
+                        1.
+                      </span>
+                      <span>
+                        <strong style={{ color: 'var(--text-primary)' }}>
+                          {t.detailGuideStep1Bold}
+                        </strong>{' '}
+                        {t.detailGuideStep1Rest}
+                      </span>
+                    </li>
+                    <li className={styles.guideStep}>
+                      <span className={styles.guideStepNum} aria-hidden="true">
+                        2.
+                      </span>
+                      <span>
+                        <strong style={{ color: 'var(--text-primary)' }}>
+                          {t.detailGuideStep2Bold}
+                        </strong>{' '}
+                        {t.detailGuideStep2Rest}
+                      </span>
+                    </li>
+                    <li className={styles.guideStep}>
+                      <span className={styles.guideStepNum} aria-hidden="true">
+                        3.
+                      </span>
+                      <span>
+                        <strong style={{ color: 'var(--text-primary)' }}>
+                          {t.detailGuideStep3Bold}
+                        </strong>{' '}
+                        {t.detailGuideStep3Rest}
+                      </span>
+                    </li>
+                  </ol>
+                  <p className={styles.guideTip}>{t.detailGuideTip}</p>
                 </div>
               </div>
             )}
 
-            <div className={styles.InstructionText}>
-              <p className={styles.InstructionParagraph}>{instruction}</p>
+            <div className={styles.instructionText}>
+              <p className={styles.instructionParagraph}>{instruction}</p>
             </div>
 
             <button
-              className={cn(styles.CopyBtn, { [styles.CopyBtnCopied]: copied })}
+              className={cn(styles.copyBtn, { [styles.copyBtnCopied]: copied })}
               onClick={handleCopy}
             >
               {copied ? t.copiedExcl : t.copyInstruction}
@@ -328,10 +340,10 @@ export default function SkillDetailPanel({
           </div>
         </div>
 
-        <div className={styles.BottomBar}>
+        <div className={styles.bottomBar}>
           <button
-            className={cn(styles.ToggleBtn, {
-              [styles.ToggleBtnUnmark]: isCompleted,
+            className={cn(styles.toggleBtn, {
+              [styles.toggleBtnUnmark]: isCompleted,
             })}
             onClick={() => onToggle(skill.id, !isCompleted)}
           >

@@ -1,4 +1,4 @@
-.Header {
+.header {
   position: fixed;
   top: 48px;
   left: 0;
@@ -18,7 +18,7 @@
   }
 }
 
-.Logo {
+.logo {
   font-family: var(--font-ui);
   font-size: 1rem;
   font-weight: 400;
@@ -27,11 +27,11 @@
   flex-shrink: 0;
 }
 
-.LogoBold {
+.logoBold {
   font-weight: 600;
 }
 
-.ProgressWrap {
+.progressWrap {
   flex: 1;
   min-width: 0;
   height: 76px;
@@ -44,13 +44,13 @@
   }
 }
 
-.Canvas {
+.canvas {
   width: 100%;
   height: 76px;
   display: block;
 }
 
-.Tooltip {
+.tooltip {
   position: absolute;
   bottom: -4px;
   transform: translateY(0);
@@ -70,19 +70,19 @@
     opacity 0.2s ease,
     transform 0.2s ease;
 
-  &.TooltipReached {
+  &.tooltipReached {
     color: #fff;
     background: var(--accent);
     border-color: var(--accent);
   }
 
-  &.TooltipVisible {
+  &.tooltipVisible {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.Actions {
+.actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -94,18 +94,18 @@
   }
 }
 
-.StatsText {
+.statsText {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: var(--text-secondary);
   white-space: nowrap;
 }
 
-.StatsDim {
+.statsDim {
   color: var(--text-tertiary);
 }
 
-.ActionBtn {
+.actionBtn {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -124,7 +124,7 @@
   }
 }
 
-.SignOutBtn {
+.signOutBtn {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -138,7 +138,7 @@
 }
 
 // Progress Modal
-.ModalBackdrop {
+.modalBackdrop {
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -148,7 +148,7 @@
   justify-content: center;
 }
 
-.ModalBox {
+.modalBox {
   background: var(--bg-card);
   border: 1px solid var(--border);
   width: 560px;
@@ -163,11 +163,11 @@
   }
 }
 
-.ModalContent {
+.modalContent {
   padding: 1.5rem 1.75rem;
 }
 
-.ModalTitle {
+.modalTitle {
   font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 400;
@@ -175,7 +175,7 @@
   margin-bottom: 1rem;
 }
 
-.ModalBody {
+.modalBody {
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--text-secondary);
@@ -183,7 +183,7 @@
   margin-bottom: 0.5rem;
 }
 
-.ModalBodyBottom {
+.modalBodyBottom {
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--text-secondary);
@@ -191,12 +191,12 @@
   margin-bottom: 1.5rem;
 }
 
-.ModalBtns {
+.modalBtns {
   display: flex;
   gap: 0.75rem;
 }
 
-.CopyStateBtn {
+.copyStateBtn {
   flex: 1;
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -220,14 +220,14 @@
     border-color: var(--accent);
   }
 
-  &.CopyStateBtnCopied {
+  &.copyStateBtnCopied {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
   }
 }
 
-.CloseModalBtn {
+.closeModalBtn {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;

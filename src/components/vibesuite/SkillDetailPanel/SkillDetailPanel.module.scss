@@ -1,4 +1,4 @@
-.Backdrop {
+.backdrop {
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -14,7 +14,7 @@
   }
 }
 
-.Panel {
+.panel {
   background: var(--bg-card);
   border: 1px solid var(--border);
   width: 644px;
@@ -31,7 +31,7 @@
   }
 }
 
-.ScrollContent {
+.scrollContent {
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem 1.75rem;
@@ -42,14 +42,14 @@
   }
 }
 
-.HeaderRow {
+.headerRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.CategoryLabel {
+.categoryLabel {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -61,12 +61,12 @@
   gap: 0.4rem;
 }
 
-.NavBtns {
+.navBtns {
   display: flex;
   gap: 0.5rem;
 }
 
-.NavBtn {
+.navBtn {
   width: 36px;
   height: 36px;
   display: flex;
@@ -90,7 +90,7 @@
   }
 }
 
-.NavBtnDisabled {
+.navBtnDisabled {
   color: var(--text-tertiary);
   border-color: var(--border);
   cursor: default;
@@ -102,7 +102,7 @@
   }
 }
 
-.CloseBtn {
+.closeBtn {
   width: 36px;
   height: 36px;
   display: flex;
@@ -126,7 +126,7 @@
   }
 }
 
-.SkillTitle {
+.skillTitle {
   font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 400;
@@ -137,7 +137,7 @@
   gap: 0.6rem;
 }
 
-.TitleKatakana {
+.titleKatakana {
   font-family: var(--font-japanese);
   font-size: 1.4rem;
   color: var(--accent-kanji-active);
@@ -145,37 +145,36 @@
   line-height: 1;
 }
 
-.MetaRow {
+.metaRow {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.75rem;
 }
 
-.DifficultyBadge {
+.difficultyBadge {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 0.2rem 0.6rem;
-  // color and border are set inline (dynamic per difficulty)
 }
 
-.TimeLabel {
+.timeLabel {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
 
-.AccentRule {
+.accentRule {
   width: 2rem;
   height: 2px;
   background: var(--accent);
   margin-bottom: 1.25rem;
 }
 
-.SectionLabel {
+.sectionLabel {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -185,7 +184,7 @@
   margin-bottom: 0.5rem;
 }
 
-.ProjectTitle {
+.projectTitle {
   font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 400;
@@ -194,7 +193,7 @@
   line-height: 1.4;
 }
 
-.ProjectDesc {
+.projectDesc {
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.75;
@@ -202,17 +201,20 @@
   margin-bottom: 1.5rem;
 }
 
-.ToolsSection {
+.toolsSection {
   margin-bottom: 1.5rem;
 }
 
-.ToolsWrap {
+.toolsWrap {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
-.ToolTag {
+.toolTag {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   padding: 0.2rem 0.6rem;
@@ -221,11 +223,17 @@
   color: var(--text-secondary);
 }
 
-.DepsSection {
+.depsSection {
   margin-bottom: 1.5rem;
 }
 
-.DepBtn {
+.depsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.depBtn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -239,12 +247,12 @@
   width: 100%;
   text-align: left;
 
-  &.DepDone {
+  &.depDone {
     color: var(--accent);
   }
 }
 
-.InstructionBlock {
+.instructionBlock {
   margin-bottom: 0.5rem;
   border: 1px solid var(--accent);
   border-top: 3px solid var(--accent);
@@ -253,14 +261,14 @@
   position: relative;
 }
 
-.InstructionHeader {
+.instructionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.75rem;
 }
 
-.InstructionSectionLabel {
+.instructionSectionLabel {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -269,7 +277,7 @@
   color: var(--accent);
 }
 
-.GuideToggleBtn {
+.guideToggleBtn {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 500;
@@ -283,7 +291,7 @@
   padding: 0;
 }
 
-.GuideContent {
+.guideContent {
   margin-bottom: 1rem;
   padding: 0.85rem 1rem;
   background: var(--bg-base);
@@ -291,26 +299,32 @@
   animation: loaderFadeIn 0.2s ease;
 }
 
-.GuideText {
+.guideText {
   font-family: var(--font-body);
   font-size: 0.875rem;
   line-height: 1.7;
   color: var(--text-secondary);
 }
 
-.GuideHeading {
+.guideHeading {
   margin-bottom: 0.6rem;
   color: var(--text-primary);
   font-weight: 500;
 }
 
-.GuideStep {
+.guideStepList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guideStep {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.45rem;
 }
 
-.GuideStepNum {
+.guideStepNum {
   font-family: var(--font-ui);
   font-size: 0.75rem;
   font-weight: 600;
@@ -319,20 +333,20 @@
   margin-top: 2px;
 }
 
-.GuideTip {
+.guideTip {
   margin-top: 0.6rem;
   font-style: italic;
   color: var(--text-tertiary);
   font-size: 0.875rem;
 }
 
-.InstructionText {
+.instructionText {
   background: var(--bg-card);
   border: 1px solid var(--border);
   padding: 0.85rem 1rem;
 }
 
-.InstructionParagraph {
+.instructionParagraph {
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.6;
@@ -340,7 +354,7 @@
   margin: 0;
 }
 
-.CopyBtn {
+.copyBtn {
   margin-top: 0.65rem;
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -367,13 +381,13 @@
     transform: scale(0.97);
   }
 
-  &.CopyBtnCopied {
+  &.copyBtnCopied {
     background: var(--accent);
     color: #fff;
   }
 }
 
-.BottomBar {
+.bottomBar {
   padding: 1.25rem 1.75rem;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
@@ -383,7 +397,7 @@
   }
 }
 
-.ToggleBtn {
+.toggleBtn {
   width: 100%;
   font-family: var(--font-ui);
   font-size: 0.75rem;
@@ -409,7 +423,7 @@
     transform: scale(0.98);
   }
 
-  &.ToggleBtnUnmark {
+  &.toggleBtnUnmark {
     background: transparent;
     border-color: var(--border-strong);
     color: var(--text-secondary);

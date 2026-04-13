@@ -3,9 +3,10 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 import type { TRouter } from '@local-types/global';
-import { Skill, SkillCategory } from '@local-types/pageTypes/vibesuite';
 
 import vibesuiteIntl from '@data/vibesuite/intl';
+
+import { SkillCardProps } from './SkillCard.types';
 
 import styles from './SkillCard.module.scss';
 
@@ -44,14 +45,6 @@ function getKatakana(name: string): string {
   return KATAKANA_MAP[first] || 'ス';
 }
 
-interface SkillCardProps {
-  skill: Skill;
-  category: SkillCategory;
-  completed: boolean;
-  selected: boolean;
-  onClick: () => void;
-}
-
 export default function SkillCard({
   skill,
   category,
@@ -71,26 +64,22 @@ export default function SkillCard({
   const [showTip, setShowTip] = useState(false);
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       onClick={onClick}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') onClick();
-      }}
-      className={cn(styles.Card, { [styles.Highlighted]: highlighted })}
+      className={cn(styles.card, { [styles.highlighted]: highlighted })}
       onMouseEnter={() => setShowTip(true)}
       onMouseLeave={() => setShowTip(false)}
     >
       {/* Custom tooltip */}
-      <div className={cn(styles.Tooltip, { [styles.TooltipVisible]: showTip })}>
+      <div className={cn(styles.tooltip, { [styles.tooltipVisible]: showTip })}>
         {skill.projectTitle}
       </div>
 
       {/* Katakana — top-center, in flow */}
       <span
-        className={cn(styles.Katakana, {
-          [styles.KatakanaCompleted]: completed,
+        className={cn(styles.katakana, {
+          [styles.katakanaCompleted]: completed,
         })}
         aria-hidden="true"
       >
@@ -98,24 +87,24 @@ export default function SkillCard({
       </span>
 
       {/* Learned indicator — accent bar at top */}
-      {completed && <div className={styles.CompletedBar} />}
+      {completed && <div className={styles.completedBar} />}
 
       {/* Checkmark when learned */}
-      {completed && <span className={styles.Checkmark}>✓</span>}
+      {completed && <span className={styles.checkmark}>✓</span>}
 
       {/* Skill name */}
       <p
-        className={cn(styles.SkillName, {
-          [styles.SkillNameCompleted]: completed,
+        className={cn(styles.skillName, {
+          [styles.skillNameCompleted]: completed,
         })}
       >
         {skill.name}
       </p>
 
       {/* Difficulty */}
-      <p className={styles.Difficulty}>
+      <p className={styles.difficulty}>
         {difficultyLabels[skill.difficulty] || skill.difficulty}
       </p>
-    </div>
+    </button>
   );
 }

@@ -1,19 +1,16 @@
 import cn from 'classnames';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { TRouter } from '@local-types/global';
-import { UserProgress } from '@local-types/pageTypes/vibesuite';
 
 import vibesuiteIntl from '@data/vibesuite/intl';
 import { localizeCategory } from '@data/vibesuite/localizeSkills';
 import { categories, getTotalSkillCount } from '@data/vibesuite/skills';
 
-import styles from './ProgressHeader.module.scss';
+import { ProgressHeaderProps } from './ProgressHeader.types';
 
-interface ProgressHeaderProps {
-  progress: UserProgress;
-}
+import styles from './ProgressHeader.module.scss';
 
 const MILESTONE_KEYS = [
   { pct: 20, key: 'milestoneObserver' as const, kanji: '\u89B3' },
@@ -321,24 +318,24 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
   }, [hideTooltip]);
 
   return (
-    <header className={styles.Header}>
-      <div className={styles.Logo}>
-        <strong className={styles.LogoBold}>vibe</strong>code
+    <header className={styles.header}>
+      <div className={styles.logo}>
+        <strong className={styles.logoBold}>vibe</strong>code
       </div>
 
-      <div className={styles.ProgressWrap}>
+      <div className={styles.progressWrap}>
         <canvas
           ref={canvasRef}
-          className={styles.Canvas}
+          className={styles.canvas}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={{ cursor: tooltipData ? 'pointer' : 'default' }}
         />
         {tooltipData && (
           <div
-            className={cn(styles.Tooltip, {
-              [styles.TooltipReached]: tooltipData.reached,
-              [styles.TooltipVisible]: tooltipVisible,
+            className={cn(styles.tooltip, {
+              [styles.tooltipReached]: tooltipData.reached,
+              [styles.tooltipVisible]: tooltipVisible,
             })}
             style={{
               left: tooltipData.x,
@@ -350,15 +347,15 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
         )}
       </div>
 
-      <div className={styles.Actions}>
-        <span className={styles.StatsText}>
+      <div className={styles.actions}>
+        <span className={styles.statsText}>
           {completed}
-          <span className={styles.StatsDim}> / {total}</span>
-          <span className={styles.StatsDim}> ({Math.round(pct)}%)</span>
+          <span className={styles.statsDim}> / {total}</span>
+          <span className={styles.statsDim}> ({Math.round(pct)}%)</span>
         </span>
 
         <button
-          className={styles.ActionBtn}
+          className={styles.actionBtn}
           onClick={() => {
             setProgressClosing(false);
             setCopied(false);
@@ -371,7 +368,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
 
       {showProgressModal && (
         <div
-          className={cn(styles.ModalBackdrop)}
+          className={cn(styles.modalBackdrop)}
           onClick={() => {
             setProgressClosing(true);
             setTimeout(() => {
@@ -381,21 +378,23 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
           }}
         >
           <div
+            role="dialog"
+            aria-label={t.myProgress}
             className={cn(
-              styles.ModalBox,
+              styles.modalBox,
               progressClosing ? 'animate-modal-out' : 'animate-modal-in',
             )}
             onClick={e => e.stopPropagation()}
           >
-            <div className={styles.ModalContent}>
-              <h2 className={styles.ModalTitle}>{t.myProgress}</h2>
-              <p className={styles.ModalBody}>{t.progressBody1}</p>
-              <p className={styles.ModalBodyBottom}>{t.progressBody2}</p>
+            <div className={styles.modalContent}>
+              <h2 className={styles.modalTitle}>{t.myProgress}</h2>
+              <p className={styles.modalBody}>{t.progressBody1}</p>
+              <p className={styles.modalBodyBottom}>{t.progressBody2}</p>
 
-              <div className={styles.ModalBtns}>
+              <div className={styles.modalBtns}>
                 <button
-                  className={cn(styles.CopyStateBtn, {
-                    [styles.CopyStateBtnCopied]: copied,
+                  className={cn(styles.copyStateBtn, {
+                    [styles.copyStateBtnCopied]: copied,
                   })}
                   onClick={() => {
                     const lines: string[] = [];
@@ -435,7 +434,7 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
                   {copied ? t.copied : t.copyMyLearningState}
                 </button>
                 <button
-                  className={styles.CloseModalBtn}
+                  className={styles.closeModalBtn}
                   onClick={() => {
                     setProgressClosing(true);
                     setTimeout(() => {
