@@ -3,11 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 
 import type { TRouter } from '@local-types/global';
-import {
-  Skill,
-  SkillCategory,
-  UserProgress,
-} from '@local-types/pageTypes/vibesuite';
+import { Skill } from '@local-types/pageTypes/vibesuite';
 
 import vibesuiteIntl from '@data/vibesuite/intl';
 import { categoriesRu } from '@data/vibesuite/intl/skills.ru';
