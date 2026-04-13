@@ -1,0 +1,177 @@
+.nav {
+  position: fixed;
+  left: 0;
+  top: 124px;
+  bottom: 0;
+  width: 376px;
+  z-index: 50;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  padding: 0 1.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.titleLabel {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.accentRule {
+  width: 2rem;
+  height: 2px;
+  background: var(--accent);
+  margin: 0 1.75rem 1.25rem;
+}
+
+.recommendBtn {
+  display: block;
+  width: calc(100% - 3.5rem);
+  margin: 0 1.75rem 1.25rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    border-color: var(--accent);
+    background: var(--bg-card-active);
+  }
+}
+
+.recommendBtnTitle {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.recommendBtnSub {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.allCategoriesBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1.75rem;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 0.25rem;
+
+  &.active {
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--bg-card-active);
+    border-left-color: var(--accent);
+  }
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 1.75rem;
+}
+
+.categoryBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 0.125rem;
+
+  &.active {
+    color: var(--accent);
+    background: var(--bg-card-active);
+    border-left-color: var(--accent);
+  }
+}
+
+.categoryBtnInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.categoryBtnName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.categoryBtnCount {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+
+  &.countCompleted {
+    color: var(--accent);
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+.bottomSection {
+  padding: 1.25rem 1.75rem 0.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1.25rem;
+}
+
+.whyBtn {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+
+  &:hover {
+    color: var(--accent);
+  }
+}

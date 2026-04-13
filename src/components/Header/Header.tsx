@@ -1,19 +1,19 @@
 import cn from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { FC, Fragment, useCallback, useContext } from 'react';
+import React, { FC, Fragment, useCallback, useContext, useState } from 'react';
 import { flushSync } from 'react-dom';
 
-// import UserProfile from '@components/UserProfile';
-// import LogIn from '@components/LogIn';
 import type { TRouter } from '@local-types/global';
 
 import useGlobals from '@hooks/useGlobals';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import { GlobalContext } from '@components/Context/GlobalContext';
+import LogIn from '@components/LogIn';
 import Navbar from '@components/Navbar';
 import Link from '@components/NextLink';
+import UserProfile from '@components/UserProfile';
 
 import styles from './Header.module.scss';
 
@@ -22,8 +22,8 @@ const Header: FC = () => {
   const { locale, locales } = router as TRouter;
   const { setShowLoader, videoRef } = useContext(GlobalContext);
   const isSmallScreen = useIsWidthLessThan(1141);
-  // const [openLogin, setOpenLogin] = useState(false);
-  // const { accountData, setAccountData } = useContext(GlobalContext);
+  const [openLogin, setOpenLogin] = useState(false);
+  const { accountData, setAccountData } = useContext(GlobalContext);
   const [
     { toggleIsDarkTheme, toggleSidebar },
     { isDarkTheme, isOpenedSidebar },
@@ -157,18 +157,19 @@ const Header: FC = () => {
                 </Link>
               )}
             </div>
-            {/*<UserProfile*/}
-            {/*  showDropdown*/}
-            {/*  setAccountData={setAccountData}*/}
-            {/*  isLoggedIn={!!accountData}*/}
-            {/*  username={accountData?.username}*/}
-            {/*  setOpenLoginModal={setOpenLogin}*/}
-            {/*/>*/}
+            <UserProfile
+              setAccountData={setAccountData}
+              isLoggedIn={!!accountData}
+              isDarkTheme={isDarkTheme}
+              username={accountData?.username}
+              setOpenLoginModal={setOpenLogin}
+              userImage={accountData?.picture}
+            />
           </div>
         </div>
         <div className={styles.closeButton} onClick={handleToggleSidebar} />
       </header>
-      {/*{openLogin && <LogIn setShowLogIn={setOpenLogin} />}*/}
+      {openLogin && <LogIn setShowLogIn={setOpenLogin} />}
     </Fragment>
   );
 };
