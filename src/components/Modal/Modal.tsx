@@ -26,6 +26,7 @@ type ModalProps = {
   grayTitle?: boolean;
   dataCy?: string;
   backgroundImageUrl?: string;
+  hasHr?: boolean;
 };
 
 const Modal: FC<ModalProps> = ({
@@ -49,6 +50,7 @@ const Modal: FC<ModalProps> = ({
   dataCy,
   isLongevityProtocolModal,
   backgroundImageUrl,
+  hasHr,
 }) => {
   const handleClose = () => {
     onClick();
@@ -130,6 +132,7 @@ const Modal: FC<ModalProps> = ({
             >
               {title}
             </span>
+            {hasHr && <hr className={styles.hr} />}
             <div
               className={styles.closeIconWrapper}
               onClick={onClick}

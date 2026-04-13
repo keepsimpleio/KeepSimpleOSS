@@ -37,6 +37,16 @@
       border-color: #c5c5c5;
     }
   }
+  &.black {
+    background-color: #242424;
+    color: #fff;
+    border-color: #242424;
+    &:hover {
+      background-color: #242424;
+      color: #fff;
+      border-color: #242424;
+    }
+  }
 
   &.primary {
     color: #fff;

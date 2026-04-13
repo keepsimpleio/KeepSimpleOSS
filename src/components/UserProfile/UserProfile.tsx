@@ -16,6 +16,7 @@ type UserProfileProps = {
   isDarkTheme?: boolean;
   setAccountData?: (updater: (prev: boolean) => boolean) => void;
   setOpenLoginModal?: (openModal: boolean) => void;
+  handleOpenSettings?: () => void;
 };
 
 const labels = {
@@ -31,6 +32,7 @@ const UserProfile: FC<UserProfileProps> = ({
   isDarkTheme,
   setAccountData,
   setOpenLoginModal,
+  handleOpenSettings,
 }) => {
   const router: NextRouter = useRouter();
   const locale = (router.locale || 'en') as keyof typeof labels;
@@ -53,7 +55,8 @@ const UserProfile: FC<UserProfileProps> = ({
 
   const handleSettings = useCallback(() => {
     setIsDropdownOpen(false);
-  }, []);
+    handleOpenSettings?.();
+  }, [handleOpenSettings]);
 
   useEffect(() => {
     if (!isDropdownOpen) return;
@@ -112,7 +115,7 @@ const UserProfile: FC<UserProfileProps> = ({
         ) : (
           <div className={styles.user} onClick={() => setOpenLoginModal(true)}>
             <Image
-              src={'/assets/avatar.svg'}
+              src={'/keepsimple_/assets/avatar.svg'}
               alt="pic"
               width={32}
               height={32}

@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
-import React, { FC, useContext, useEffect } from 'react';
+import React, { FC, useContext } from 'react';
 
 import { setRedirectCookie } from '@lib/cookies';
 
@@ -29,6 +29,9 @@ const LogIn: FC<LogInProps> = ({ setShowLogIn, source }) => {
     provider: string,
     logInSource: string,
   ) => {
+    const returnTo = router.asPath;
+    setRedirectCookie(returnTo);
+
     if (session && accountData === null) {
       await signOut({ redirect: false });
 
@@ -45,12 +48,6 @@ const LogIn: FC<LogInProps> = ({ setShowLogIn, source }) => {
       router.push(`/auth?provider=${provider}`);
     }
   };
-
-  useEffect(() => {
-    if (!session) {
-      setRedirectCookie(window.location.pathname + window.location.search);
-    }
-  }, [session, router]);
 
   return (
     <Modal onClick={handleClose}>

@@ -7,7 +7,7 @@ import Loader from '@icons/Loader';
 import styles from './Button.module.scss';
 
 type TButton = {
-  variant?: 'default' | 'primary' | 'secondary' | 'grey';
+  variant?: 'default' | 'primary' | 'secondary' | 'grey' | 'black';
   type?: 'submit' | 'button' | 'reset';
   label: string;
   disabled?: boolean;
@@ -73,6 +73,7 @@ const Button: FC<TButton> = ({
         [styles.disabled]: disabled,
         [styles.grey]: variant === 'grey',
         [styles.secondary]: variant === 'secondary',
+        [styles.black]: variant === 'black',
       })}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}

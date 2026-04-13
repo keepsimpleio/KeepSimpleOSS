@@ -31,6 +31,7 @@
     "date-fns": "2.30.0",
     "dotenv": "^16.4.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "figma-developer-mcp": "^0.10.1",
     "geoip-lite": "1.4.2",
     "html2canvas": "^1.4.1",
     "lodash.debounce": "4.0.8",

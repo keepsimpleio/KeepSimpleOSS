@@ -55,7 +55,7 @@ function buildInstruction(skill: Skill, locale: string): string {
   const plural = skill.tools.length > 1;
 
   if (locale === 'ru') {
-    return `\u042F \u0445\u043E\u0447\u0443 \u0438\u0437\u0443\u0447\u0438\u0442\u044C \u00AB${skill.name}\u00BB. \u0417\u0430\u0434\u0430\u0447\u0430: ${skill.projectTitle}. \u0418\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B: ${tools}. \u0414\u0430\u0432\u0430\u0439 \u043F\u043E\u0441\u0442\u0440\u043E\u0438\u043C \u044D\u0442\u043E \u0432\u043C\u0435\u0441\u0442\u0435, \u0448\u0430\u0433 \u0437\u0430 \u0448\u0430\u0433\u043E\u043C.`;
+    return `Я хочу изучить «${skill.name}». Задача: ${skill.projectTitle}. Инструменты: ${tools}. Давай построим это вместе, шаг за шагом.`;
   }
 
   const title = skill.projectTitle
@@ -105,6 +105,14 @@ export default function SkillDetailPanel({
   const nextSkill = nextSkillId ? getSkillById(nextSkillId) : null;
 
   useEffect(() => {
+    const header = document.querySelector('header') as HTMLElement | null;
+    if (header) header.style.zIndex = '0';
+    return () => {
+      if (header) header.style.zIndex = '';
+    };
+  }, []);
+
+  useEffect(() => {
     if (skill.id !== prevSkillRef.current) {
       prevSkillRef.current = skill.id;
       setContentVisible(false);
@@ -147,6 +155,7 @@ export default function SkillDetailPanel({
 
   return (
     <div className={styles.backdrop} onClick={handleClose}>
+      <div className={cn(styles.background, {})} />
       <div
         role="dialog"
         aria-label={locSkill.name}
