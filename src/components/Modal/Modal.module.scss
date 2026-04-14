@@ -10,7 +10,7 @@
   background-color: rgba(0, 0, 0, 0.35);
   align-items: center;
   justify-content: center;
-  z-index: 45;
+  z-index: 200;
 
   .wrapper {
     display: flex;
@@ -89,6 +89,10 @@
         display: block;
         width: 24px;
         height: 24px;
+
+        :global(.darkTheme) & {
+          filter: invert(1);
+        }
       }
 
       .blackTitle {
@@ -104,6 +108,23 @@
         cursor: pointer;
         width: 16px;
         height: 34px;
+      }
+    }
+
+    .hr {
+      border: none;
+      background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+      background-size: cover;
+      height: 1px;
+      width: clamp(319px, 50vw, 466px);
+      margin: 0;
+      position: absolute;
+      top: 55px;
+      left: 14px;
+
+      :global(.darkTheme) & {
+        background-image: none;
+        background-color: #5b5b5b;
       }
     }
 
@@ -159,7 +180,6 @@
   bottom: 0;
   align-items: center;
   justify-content: center;
-  z-index: 46;
 }
 
 @media (max-width: 965px) {
