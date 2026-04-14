@@ -28,6 +28,7 @@ import ArrowUp from '@icons/tools/vibesuite/ArrowUp';
 
 import { GlobalContext } from '@components/Context/GlobalContext';
 import Heading from '@components/Heading';
+import LogIn from '@components/LogIn';
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
 import CategoryNav from '@components/vibesuite/CategoryNav';
 import ProgressHeader from '@components/vibesuite/ProgressHeader';
@@ -60,6 +61,7 @@ export default function MapClient({
     'all' | 'learned' | 'not-learned'
   >('all');
   const [panelCloseRequested, setPanelCloseRequested] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const searchRowRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -436,6 +438,8 @@ export default function MapClient({
           prevSkillId={prevSkillId}
           nextSkillId={nextSkillId}
           requestClose={panelCloseRequested}
+          isLoggedIn={!!accountData}
+          onOpenLogin={() => setShowLogin(true)}
         />
       )}
 
@@ -603,6 +607,7 @@ export default function MapClient({
           </div>
         </div>
       )}
+      {showLogin && <LogIn setShowLogIn={setShowLogin} />}
     </div>
   );
 }
