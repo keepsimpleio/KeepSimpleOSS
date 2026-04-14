@@ -27,7 +27,8 @@
   }
 
   .burgerMenu,
-  .closeButton {
+  .closeButton,
+  .mobileUserProfile {
     display: none;
   }
 
@@ -133,6 +134,19 @@
       }
     }
 
+    & .mobileUserProfile {
+      display: block;
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.3s,
+        visibility 0.3s;
+    }
+
     & .closeButton {
       display: block;
       position: absolute;
@@ -165,6 +179,11 @@
   }
 
   .header.openedSidebar {
+    & .mobileUserProfile {
+      opacity: 0;
+      visibility: hidden;
+    }
+
     & .closeButton {
       right: 1rem;
     }
@@ -350,6 +369,11 @@
   }
 
   .header.openedSidebar {
+    & .mobileUserProfile {
+      opacity: 0;
+      visibility: hidden;
+    }
+
     & .closeButton {
       right: 1rem;
     }

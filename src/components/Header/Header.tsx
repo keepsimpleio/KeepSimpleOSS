@@ -144,6 +144,21 @@ const Header: FC = () => {
           <div />
           <div />
         </div>
+        {isSmallScreen && (
+          <div className={styles.mobileUserProfile}>
+            <UserProfile
+              setAccountData={setAccountData}
+              isLoggedIn={!!accountData}
+              isDarkTheme={isDarkTheme}
+              username={accountData?.username}
+              setOpenLoginModal={setOpenLogin}
+              userImage={accountData?.picture}
+              handleOpenSettings={handleOpenSettings}
+              hideDropdown={isOpenedSidebar}
+              hideUsername
+            />
+          </div>
+        )}
         <div>
           <Navbar
             handleToggleSidebar={handleToggleSidebar}
@@ -213,15 +228,17 @@ const Header: FC = () => {
                 </Link>
               )}
             </div>
-            <UserProfile
-              setAccountData={setAccountData}
-              isLoggedIn={!!accountData}
-              isDarkTheme={isDarkTheme}
-              username={accountData?.username}
-              setOpenLoginModal={setOpenLogin}
-              userImage={accountData?.picture}
-              handleOpenSettings={handleOpenSettings}
-            />
+            {!isSmallScreen && (
+              <UserProfile
+                setAccountData={setAccountData}
+                isLoggedIn={!!accountData}
+                isDarkTheme={isDarkTheme}
+                username={accountData?.username}
+                setOpenLoginModal={setOpenLogin}
+                userImage={accountData?.picture}
+                handleOpenSettings={handleOpenSettings}
+              />
+            )}
           </div>
         </div>
         <div className={styles.closeButton} onClick={handleToggleSidebar} />

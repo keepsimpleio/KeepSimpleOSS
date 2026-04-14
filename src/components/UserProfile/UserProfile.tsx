@@ -14,6 +14,8 @@ type UserProfileProps = {
   userImage?: string;
   isLoggedIn?: boolean;
   isDarkTheme?: boolean;
+  hideDropdown?: boolean;
+  hideUsername?: boolean;
   setAccountData?: (updater: (prev: boolean) => boolean) => void;
   setOpenLoginModal?: (openModal: boolean) => void;
   handleOpenSettings?: () => void;
@@ -30,6 +32,8 @@ const UserProfile: FC<UserProfileProps> = ({
   userImage,
   isLoggedIn,
   isDarkTheme,
+  hideDropdown,
+  hideUsername,
   setAccountData,
   setOpenLoginModal,
   handleOpenSettings,
@@ -57,6 +61,10 @@ const UserProfile: FC<UserProfileProps> = ({
     setIsDropdownOpen(false);
     handleOpenSettings?.();
   }, [handleOpenSettings]);
+
+  useEffect(() => {
+    if (hideDropdown) setIsDropdownOpen(false);
+  }, [hideDropdown]);
 
   useEffect(() => {
     if (!isDropdownOpen) return;
@@ -110,7 +118,9 @@ const UserProfile: FC<UserProfileProps> = ({
               height={32}
               className={styles.image}
             />
-            <span className={styles.userName}>{renderUserName()}</span>
+            {!hideUsername && (
+              <span className={styles.userName}>{renderUserName()}</span>
+            )}
           </div>
         ) : (
           <div className={styles.user} onClick={() => setOpenLoginModal(true)}>
@@ -121,7 +131,7 @@ const UserProfile: FC<UserProfileProps> = ({
               height={32}
               className={styles.image}
             />
-            <span className={styles.userName}>Log In</span>
+            {!hideUsername && <span className={styles.userName}>Log In</span>}
           </div>
         )}
         {isDropdownOpen && isAccessTokenExist && (
