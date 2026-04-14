@@ -14,4 +14,6 @@ export type SkillDetailPanelProps = {
   prevSkillId: string | null;
   nextSkillId: string | null;
   requestClose?: boolean;
+  isLoggedIn?: boolean;
+  onOpenLogin?: () => void;
 };

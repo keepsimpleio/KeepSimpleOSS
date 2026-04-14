@@ -75,6 +75,8 @@ export default function SkillDetailPanel({
   prevSkillId,
   nextSkillId,
   requestClose,
+  isLoggedIn,
+  onOpenLogin,
 }: SkillDetailPanelProps) {
   const { locale } = useRouter() as TRouter;
   const t = vibesuiteIntl[locale];
@@ -350,7 +352,13 @@ export default function SkillDetailPanel({
             className={cn(styles.toggleBtn, {
               [styles.toggleBtnUnmark]: isCompleted,
             })}
-            onClick={() => onToggle(skill.id, !isCompleted)}
+            onClick={() => {
+              if (!isLoggedIn && onOpenLogin) {
+                onOpenLogin();
+                return;
+              }
+              onToggle(skill.id, !isCompleted);
+            }}
           >
             {isCompleted ? t.unmarkAsLearned : t.markAsLearned}
           </button>
