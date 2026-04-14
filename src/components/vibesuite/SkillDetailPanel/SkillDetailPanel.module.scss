@@ -37,6 +37,7 @@
   border: 1px solid var(--border);
   width: 644px;
   max-width: 100%;
+  min-height: 650px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -46,6 +47,7 @@
 
   @media (max-width: 1023px) {
     width: 100%;
+    min-height: unset;
     max-height: 100%;
     border: none;
   }
