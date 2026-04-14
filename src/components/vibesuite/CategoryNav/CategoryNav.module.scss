@@ -68,6 +68,45 @@
   color: var(--text-tertiary);
 }
 
+.knowledgeGapsBtn {
+  display: block;
+  width: calc(100% - 3.5rem);
+  margin: 0 1.75rem 1.25rem;
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  animation: knowledgeGapsPulse 4s ease-in-out infinite;
+
+  &:hover {
+    background: var(--accent);
+    color: #fff;
+    animation: none;
+  }
+}
+
+@keyframes knowledgeGapsPulse {
+  0%,
+  100% {
+    border-color: var(--accent);
+    opacity: 1;
+  }
+  50% {
+    border-color: var(--border);
+    opacity: 0.65;
+  }
+}
+
 .allCategoriesBtn {
   display: block;
   width: 100%;
@@ -83,6 +122,15 @@
   cursor: pointer;
   transition: all 0.15s ease;
   margin-bottom: 0.25rem;
+
+  &:hover:not(.active) {
+    color: var(--text-primary);
+    background: var(--bg-card-active);
+  }
+
+  &:active:not(.active) {
+    border-left-color: var(--border-strong);
+  }
 
   &.active {
     font-weight: 500;
@@ -119,6 +167,15 @@
   cursor: pointer;
   transition: all 0.15s ease;
   margin-bottom: 0.125rem;
+
+  &:hover:not(.active) {
+    color: var(--text-primary);
+    background: var(--bg-card-active);
+  }
+
+  &:active:not(.active) {
+    border-left-color: var(--border-strong);
+  }
 
   &.active {
     color: var(--accent);

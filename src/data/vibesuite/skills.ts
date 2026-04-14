@@ -42,7 +42,8 @@ export const categories: SkillCategory[] = [
       {
         id: 'streaming-responses',
         name: 'Streaming — Live AI Response',
-        projectTitle: 'Add streaming to your chatbot — text appears letter by letter like ChatGPT',
+        projectTitle:
+          'Add streaming to your chatbot — text appears letter by letter like ChatGPT',
         projectDescription:
           'Instead of waiting for the full response, text prints in real time. Learn Server-Sent Events (SSE), streaming APIs, and how to handle streamed data in the UI.',
         difficulty: 'intermediate',
@@ -64,12 +65,17 @@ export const categories: SkillCategory[] = [
       {
         id: 'rag-chat-documents',
         name: 'RAG — Chat With Your Documents',
-        projectTitle: 'Build a chatbot that answers questions from your uploaded documents',
+        projectTitle:
+          'Build a chatbot that answers questions from your uploaded documents',
         projectDescription:
           'Upload a PDF or text file — the AI reads it and answers questions based on its content. Learn vector embeddings (turning text into numbers AI can search), chunking (splitting documents into pieces), and similarity search.',
         difficulty: 'intermediate',
         timeEstimate: '1 day',
-        tools: ['Anthropic API', 'OpenAI Embeddings', 'Pinecone or Supabase pgvector'],
+        tools: [
+          'Anthropic API',
+          'OpenAI Embeddings',
+          'Pinecone or Supabase pgvector',
+        ],
         dependsOn: ['claude-api-chatbot'],
       },
       {
@@ -95,6 +101,18 @@ export const categories: SkillCategory[] = [
         tools: ['Claude API', 'OpenAI API', 'Next.js'],
         dependsOn: ['claude-api-chatbot', 'openai-api-content'],
       },
+      {
+        id: 'ai-agents-workflows',
+        name: 'AI Agents — Multi-Step Workflows',
+        projectTitle:
+          'Build an AI agent that breaks down tasks and executes them step by step',
+        projectDescription:
+          'Instead of one prompt → one answer, the agent plans, executes steps, checks results, and adjusts. Build a research agent that searches, summarizes, and compiles a report. Learn agent loops, tool orchestration, memory between steps, and when to stop.',
+        difficulty: 'advanced',
+        timeEstimate: '1-2 days',
+        tools: ['Anthropic API', 'Next.js'],
+        dependsOn: ['ai-function-calling'],
+      },
     ],
   },
 
@@ -119,7 +137,8 @@ export const categories: SkillCategory[] = [
       {
         id: 'local-ai-privacy',
         name: 'Local AI for Privacy',
-        projectTitle: 'Build an app that processes sensitive data with a local AI model',
+        projectTitle:
+          'Build an app that processes sensitive data with a local AI model',
         projectDescription:
           'Medical notes, legal documents, personal journals — some data should never leave your computer. Run a local model to summarize, classify, or extract info from private files. Learn when to use local vs. cloud AI, data privacy patterns, and offline inference.',
         difficulty: 'intermediate',
@@ -130,7 +149,8 @@ export const categories: SkillCategory[] = [
       {
         id: 'local-ai-backend',
         name: 'Local AI Backend for Projects',
-        projectTitle: 'Connect your project to a local model instead of a paid API',
+        projectTitle:
+          'Connect your project to a local model instead of a paid API',
         projectDescription:
           'Replace Claude/OpenAI API calls with a local model — same code, but free. Learn the OpenAI-compatible API format and how to switch between local and cloud models.',
         difficulty: 'intermediate',
@@ -225,7 +245,8 @@ export const categories: SkillCategory[] = [
       {
         id: 'tailwind-styling',
         name: 'Tailwind CSS — Styling',
-        projectTitle: 'Restyle your site with Tailwind and make it look professional',
+        projectTitle:
+          'Restyle your site with Tailwind and make it look professional',
         projectDescription:
           'Take your site and add professional styling: mobile responsive, dark theme, hover effects. Learn the utility-first CSS approach and responsive design.',
         difficulty: 'beginner',
@@ -235,7 +256,8 @@ export const categories: SkillCategory[] = [
       {
         id: 'shadcn-ui-dashboard',
         name: 'shadcn/ui — Ready Components',
-        projectTitle: 'Assemble a dashboard from ready-made components in an hour',
+        projectTitle:
+          'Assemble a dashboard from ready-made components in an hour',
         projectDescription:
           'Use a library of beautiful components (buttons, modals, tables, charts) and build a working dashboard from them. Learn the component approach and UI library customization.',
         difficulty: 'beginner',
@@ -273,6 +295,29 @@ export const categories: SkillCategory[] = [
         difficulty: 'advanced',
         timeEstimate: '1-2 days',
         tools: ['D3.js', 'Mapbox / Leaflet', 'React'],
+        dependsOn: ['react-nextjs-portfolio'],
+      },
+      {
+        id: 'pwa-mobile',
+        name: 'PWA — Mobile App Experience',
+        projectTitle:
+          'Turn your website into an installable app with offline support',
+        projectDescription:
+          'Users can install your site on their phone home screen and use it offline. Add a service worker, app manifest, push notifications, and responsive mobile patterns. Learn the PWA standard, caching strategies, and how to make web feel native.',
+        difficulty: 'intermediate',
+        timeEstimate: '3-4 hours',
+        tools: ['next-pwa', 'Service Workers', 'Web Push API'],
+        dependsOn: ['react-nextjs-portfolio'],
+      },
+      {
+        id: 'i18n-localization',
+        name: 'i18n — Multi-Language Support',
+        projectTitle: 'Make your site available in multiple languages',
+        projectDescription:
+          'Add language switching, translate UI strings, handle RTL layouts, and format dates and numbers for different locales. Learn Next.js i18n routing, translation file structure, and locale-aware content delivery.',
+        difficulty: 'intermediate',
+        timeEstimate: '3-4 hours',
+        tools: ['next-intl or next-i18next', 'Next.js'],
         dependsOn: ['react-nextjs-portfolio'],
       },
     ],
@@ -360,6 +405,28 @@ export const categories: SkillCategory[] = [
         timeEstimate: '2-3 hours',
         tools: ['Vercel Cron', 'GitHub Actions', 'Next.js'],
         dependsOn: ['api-routes-first'],
+      },
+      {
+        id: 'realtime-websockets',
+        name: 'Real-Time — WebSockets & Live Updates',
+        projectTitle: 'Build a live chat or real-time notification feed',
+        projectDescription:
+          'Messages appear instantly without page refresh. Build a chat room, live comments, or a collaborative document. Learn WebSockets, Supabase Realtime or Pusher, presence indicators, and handling connection drops.',
+        difficulty: 'intermediate',
+        timeEstimate: '3-4 hours',
+        tools: ['Supabase Realtime or Pusher', 'Next.js'],
+        dependsOn: ['api-routes-first'],
+      },
+      {
+        id: 'fulltext-search',
+        name: 'Search — Full-Text & Vector',
+        projectTitle: 'Add instant search to your app — keyword and AI-powered',
+        projectDescription:
+          'Build a search bar that finds results as the user types. Start with full-text search in PostgreSQL, then add AI-powered semantic search with vector embeddings. Learn search indexing, ranking, debounce patterns, and when to use keyword vs. vector search.',
+        difficulty: 'intermediate',
+        timeEstimate: '3-4 hours',
+        tools: ['Supabase or Algolia', 'OpenAI Embeddings', 'Next.js'],
+        dependsOn: ['supabase-crud'],
       },
     ],
   },
@@ -471,12 +538,36 @@ export const categories: SkillCategory[] = [
       {
         id: 'cloudflare-domain-cdn',
         name: 'Cloudflare — Domain & CDN',
-        projectTitle: 'Connect your domain and speed up your site via Cloudflare',
+        projectTitle:
+          'Connect your domain and speed up your site via Cloudflare',
         projectDescription:
           'Buy a domain, set up DNS, enable CDN and SSL. Learn how DNS works, what CDN is, and how to protect your site from DDoS.',
         difficulty: 'beginner',
         timeEstimate: '1 hour',
         tools: ['Cloudflare'],
+      },
+      {
+        id: 'seo-meta-tags',
+        name: 'SEO — Meta Tags & Open Graph',
+        projectTitle:
+          'Make your site look great in Google and social media previews',
+        projectDescription:
+          'Add meta tags, Open Graph images, structured data, sitemap, and robots.txt. When someone shares your link on Twitter or LinkedIn — it shows a beautiful preview instead of a blank card. Learn technical SEO, Next.js Head component, and how search engines index pages.',
+        difficulty: 'beginner',
+        timeEstimate: '2-3 hours',
+        tools: ['Next.js', 'Google Search Console'],
+        dependsOn: ['vercel-first-deploy'],
+      },
+      {
+        id: 'error-monitoring',
+        name: 'Error Monitoring — Sentry',
+        projectTitle: 'Know when your app breaks before your users tell you',
+        projectDescription:
+          'Set up Sentry to catch errors in production, get Slack/email alerts, and see exactly which line of code crashed and why. Learn error tracking, source maps, performance monitoring, and how to triage bugs.',
+        difficulty: 'beginner',
+        timeEstimate: '1-2 hours',
+        tools: ['Sentry', 'Next.js'],
+        dependsOn: ['vercel-first-deploy'],
       },
     ],
   },
@@ -567,7 +658,8 @@ export const categories: SkillCategory[] = [
       {
         id: 'google-sheets-api',
         name: 'Google APIs',
-        projectTitle: 'Connect Google Sheets as a database for a simple project',
+        projectTitle:
+          'Connect Google Sheets as a database for a simple project',
         projectDescription:
           'Read and write data directly from Google Sheets. Great for MVPs and prototypes. Learn Google API, service accounts, and authorization.',
         difficulty: 'intermediate',
@@ -585,6 +677,38 @@ export const categories: SkillCategory[] = [
         tools: ['Notion API', 'Next.js'],
         dependsOn: ['react-nextjs-portfolio'],
       },
+      {
+        id: 'slack-bot',
+        name: 'Slack Bot',
+        projectTitle: 'Build a Slack bot for your team',
+        projectDescription:
+          'Create a bot that responds to commands, posts updates, or runs AI queries inside Slack. Learn Slack Bolt SDK, slash commands, interactive messages, and OAuth app installation.',
+        difficulty: 'intermediate',
+        timeEstimate: '3-4 hours',
+        tools: ['Slack Bolt SDK', 'Next.js'],
+      },
+      {
+        id: 'discord-bot',
+        name: 'Discord Bot',
+        projectTitle: 'Build a Discord bot for your community',
+        projectDescription:
+          'A bot that moderates, answers questions, or runs commands in your Discord server. Learn Discord.js, slash commands, embeds, and bot hosting.',
+        difficulty: 'beginner',
+        timeEstimate: '2-3 hours',
+        tools: ['Discord.js', 'Node.js'],
+      },
+      {
+        id: 'zapier-make-automation',
+        name: 'Zapier / Make — No-Code Automation',
+        projectTitle:
+          'Connect your app to 5,000+ services without writing integrations',
+        projectDescription:
+          'New user signs up → add to Mailchimp, post in Slack, create a Notion page — all automatic. Learn how to expose webhooks from your app, trigger external workflows, and when to use no-code automation vs. custom code.',
+        difficulty: 'beginner',
+        timeEstimate: '1-2 hours',
+        tools: ['Zapier or Make', 'Webhooks'],
+        dependsOn: ['api-routes-first'],
+      },
     ],
   },
 
@@ -599,7 +723,8 @@ export const categories: SkillCategory[] = [
       {
         id: 'claude-code-tool',
         name: 'Claude Code',
-        projectTitle: 'Create an entire project with a single prompt in the terminal',
+        projectTitle:
+          'Create an entire project with a single prompt in the terminal',
         projectDescription:
           'Type a task in the CLI — Claude Code creates files, installs dependencies, writes code. Learn agentic coding, how to formulate tasks for AI, and terminal workflow.',
         difficulty: 'beginner',
@@ -653,20 +778,22 @@ export const categories: SkillCategory[] = [
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-export const allSkills: Skill[] = categories.flatMap((c) => c.skills);
+export const allSkills: Skill[] = categories.flatMap(c => c.skills);
 
 export function getSkillById(id: string): Skill | undefined {
-  return allSkills.find((s) => s.id === id);
+  return allSkills.find(s => s.id === id);
 }
 
-export function getCategoryBySkillId(skillId: string): SkillCategory | undefined {
-  return categories.find((c) => c.skills.some((s) => s.id === skillId));
+export function getCategoryBySkillId(
+  skillId: string,
+): SkillCategory | undefined {
+  return categories.find(c => c.skills.some(s => s.id === skillId));
 }
 
 export function getDependencies(skillId: string): Skill[] {
   const skill = getSkillById(skillId);
   if (!skill?.dependsOn) return [];
-  return skill.dependsOn.map((id) => getSkillById(id)).filter(Boolean) as Skill[];
+  return skill.dependsOn.map(id => getSkillById(id)).filter(Boolean) as Skill[];
 }
 
 export function getTotalSkillCount(): number {

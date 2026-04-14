@@ -20,6 +20,7 @@ export default function CategoryNav({
   onSelectCategory,
   onOpenRecommendations,
   onOpenWhyModal,
+  onOpenKnowledgeGaps,
   allCompleted,
 }: CategoryNavProps) {
   const { locale } = useRouter() as TRouter;
@@ -44,6 +45,10 @@ export default function CategoryNav({
           <span className={styles.recommendBtnSub}>{t.personalizedForYou}</span>
         </button>
       )}
+
+      <button className={styles.knowledgeGapsBtn} onClick={onOpenKnowledgeGaps}>
+        {t.knowledgeGaps}
+      </button>
 
       <ul className={styles.navList}>
         <li>

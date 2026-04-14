@@ -99,6 +99,21 @@ const ru = {
   unmarkAsLearned: 'Снять отметку',
   markAsLearned: 'Отметить как изученный',
 
+  // Knowledge Gaps
+  knowledgeGaps: 'Ваши пробелы',
+  knowledgeGapsTitle: 'AI SaaS платформа — полный путь разработки',
+  knowledgeGapsSubtitle: 'Ваши знания на карте реального проекта',
+  stageTooling: 'Настройка инструментов',
+  stagePrototype: 'Прототип',
+  stageBackend: 'Основа бэкенда',
+  stageAiCore: 'AI-ядро',
+  stageFrontendPolish: 'Финиш фронтенда',
+  stageInfrastructure: 'Инфраструктура',
+  stageMonetization: 'Монетизация и рост',
+  stageIntegrations: 'Интеграции',
+  stageSecurity: 'Безопасность',
+  stageScale: 'Масштаб и оптимизация',
+
   // RecommendationModal
   whatToLearnNextTitle: 'Что изучить дальше',
 
