@@ -26,6 +26,7 @@ const VibeSuitePage: FC<VibeSuitePageProps> = ({ vibesuite }) => {
   }, []);
 
   const seoContent = vibesuite?.pageSeo;
+
   return (
     <>
       <SeoGenerator

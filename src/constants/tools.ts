@@ -74,7 +74,7 @@ export const TOOL_CONFIG: Record<number, ToolConfig> = {
     hoverColor: '#A4B465',
     darkHoverColor: '#D3DEAC',
     darkIconFill: '#D3DEAC',
-    isBlank: true,
+    isBlank: false,
   },
   9: {
     Icon: FriendlyTomIcon,
