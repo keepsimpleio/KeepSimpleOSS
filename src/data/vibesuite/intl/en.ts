@@ -98,6 +98,22 @@ const en = {
   unmarkAsLearned: 'Unmark as Learned',
   markAsLearned: 'Mark as Learned',
 
+  // Knowledge Gaps
+  knowledgeGaps: 'Your Knowledge Gaps',
+  knowledgeGapsTitle: 'AI SaaS Platform — Full Build Path',
+  knowledgeGapsSubtitle:
+    'Your knowledge mapped across a real project lifecycle',
+  stageTooling: 'Tooling Setup',
+  stagePrototype: 'Prototype',
+  stageBackend: 'Backend Foundation',
+  stageAiCore: 'AI Core',
+  stageFrontendPolish: 'Frontend Polish',
+  stageInfrastructure: 'Infrastructure',
+  stageMonetization: 'Monetization & Growth',
+  stageIntegrations: 'Integrations',
+  stageSecurity: 'Security Hardening',
+  stageScale: 'Scale & Optimize',
+
   // RecommendationModal
   whatToLearnNextTitle: 'What to learn next',
 

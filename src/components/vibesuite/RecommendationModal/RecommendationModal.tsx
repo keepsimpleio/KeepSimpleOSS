@@ -58,6 +58,7 @@ export default function RecommendationModal({
   recommendations,
   onSelectSkill,
   onClose,
+  onOpenProgress,
 }: RecommendationModalProps) {
   const { locale } = useRouter() as TRouter;
   const t = vibesuiteIntl[locale];
@@ -173,6 +174,19 @@ export default function RecommendationModal({
             );
           })}
         </ul>
+
+        <button
+          className={styles.progressBtn}
+          onClick={() => {
+            setClosing(true);
+            setTimeout(() => {
+              onClose();
+              onOpenProgress();
+            }, 180);
+          }}
+        >
+          {t.myProgress}
+        </button>
       </div>
     </div>
   );

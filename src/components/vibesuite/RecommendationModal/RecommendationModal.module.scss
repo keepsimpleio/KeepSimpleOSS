@@ -6,10 +6,28 @@
   align-items: center;
   justify-content: center;
   background: rgba(28, 28, 26, 0.35);
-  transition: background 0.2s ease;
+  animation: backdropIn 0.2s ease-out;
 
   &.closing {
-    background: rgba(28, 28, 26, 0);
+    animation: backdropOut 0.18s ease-in forwards;
+  }
+}
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
@@ -147,4 +165,32 @@
   font-size: 0.75rem;
   color: var(--accent);
   padding-left: 1.35rem;
+}
+
+.progressBtn {
+  display: block;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.6rem 0;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  &:active {
+    color: var(--text-primary);
+  }
 }

@@ -1,8 +1,12 @@
 export const getVibesuite = async (locale: string) => {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/vibesuite?populate[pageSeo]=*&populate[OGTags][populate]=ogImage&locale=${locale}`;
+  const base = process.env.NEXT_PUBLIC_STRAPI;
+  if (!base) return null;
+
+  const url = `${base}/api/vibesuite?populate[pageSeo]=*&populate[OGTags][populate]=ogImage&locale=${locale}`;
   return await fetch(url)
     .then(resp => resp.json())
-    .then(json => json?.data?.attributes || null);
+    .then(json => json?.data?.attributes || null)
+    .catch(() => null);
 };
 
 export const updateLearnedSkills = async (learnedSkills: string[]) => {

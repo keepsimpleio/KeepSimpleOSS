@@ -4,4 +4,5 @@ export type RecommendationModalProps = {
   recommendations: Recommendation[];
   onSelectSkill: (skillId: string) => void;
   onClose: () => void;
+  onOpenProgress: () => void;
 };

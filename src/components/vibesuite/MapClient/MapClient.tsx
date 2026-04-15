@@ -31,6 +31,7 @@ import Heading from '@components/Heading';
 import LogIn from '@components/LogIn';
 import CategoryIcon from '@components/vibesuite/CategoryIcons';
 import CategoryNav from '@components/vibesuite/CategoryNav';
+import KnowledgeGapsMap from '@components/vibesuite/KnowledgeGapsMap';
 import ProgressHeader from '@components/vibesuite/ProgressHeader';
 import RecommendationModal from '@components/vibesuite/RecommendationModal';
 import SkillCard from '@components/vibesuite/SkillCard';
@@ -56,6 +57,8 @@ export default function MapClient({
   const [whyClosing, setWhyClosing] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [guideClosing, setGuideClosing] = useState(false);
+  const [showKnowledgeGaps, setShowKnowledgeGaps] = useState(false);
+  const [triggerProgress, setTriggerProgress] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilter, setShowFilter] = useState<
     'all' | 'learned' | 'not-learned'
@@ -213,7 +216,11 @@ export default function MapClient({
 
   return (
     <div className={`${styles.root} vibesuite-root`}>
-      <ProgressHeader progress={progress} />
+      <ProgressHeader
+        progress={progress}
+        externalShowProgress={triggerProgress}
+        onProgressShown={() => setTriggerProgress(false)}
+      />
 
       <div className={styles.desktopOnly}>
         <CategoryNav
@@ -225,6 +232,7 @@ export default function MapClient({
             setWhyClosing(false);
             setShowWhyModal(true);
           }}
+          onOpenKnowledgeGaps={() => setShowKnowledgeGaps(true)}
           allCompleted={allCompleted}
         />
       </div>
@@ -452,6 +460,7 @@ export default function MapClient({
             handleSelectSkill(skillId);
           }}
           onClose={() => setShowRecommendations(false)}
+          onOpenProgress={() => setTriggerProgress(true)}
         />
       )}
 
@@ -608,6 +617,16 @@ export default function MapClient({
         </div>
       )}
       {showLogin && <LogIn setShowLogIn={setShowLogin} />}
+      {showKnowledgeGaps && (
+        <KnowledgeGapsMap
+          progress={progress}
+          onClose={() => setShowKnowledgeGaps(false)}
+          onSelectSkill={skillId => {
+            setShowKnowledgeGaps(false);
+            setSelectedSkillId(skillId);
+          }}
+        />
+      )}
     </div>
   );
 }

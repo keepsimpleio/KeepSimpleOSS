@@ -1,6 +1,7 @@
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import type { TRouter } from '@local-types/global';
 
@@ -21,7 +22,11 @@ const MILESTONE_KEYS = [
 
 const HIT_RADIUS = 24;
 
-export default function ProgressHeader({ progress }: ProgressHeaderProps) {
+export default function ProgressHeader({
+  progress,
+  externalShowProgress,
+  onProgressShown,
+}: ProgressHeaderProps) {
   const { locale } = useRouter() as TRouter;
   const t = vibesuiteIntl[locale];
 
@@ -41,6 +46,15 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [progressClosing, setProgressClosing] = useState(false);
   const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (externalShowProgress) {
+      setProgressClosing(false);
+      setCopied(false);
+      setShowProgressModal(true);
+      onProgressShown?.();
+    }
+  }, [externalShowProgress]);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
   const timeRef = useRef(0);
@@ -318,138 +332,130 @@ export default function ProgressHeader({ progress }: ProgressHeaderProps) {
   }, [hideTooltip]);
 
   return (
-    <header className={styles.header}>
-      <div className={styles.logo}>
-        <strong className={styles.logoBold}>vibe</strong>code
-      </div>
+    <>
+      <header className={styles.header}>
+        <div className={styles.logo}>
+          <strong className={styles.logoBold}>vibe</strong>code
+        </div>
 
-      <div className={styles.progressWrap}>
-        <canvas
-          ref={canvasRef}
-          className={styles.canvas}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{ cursor: tooltipData ? 'pointer' : 'default' }}
-        />
-        {tooltipData && (
+        <div className={styles.progressWrap}>
+          <canvas
+            ref={canvasRef}
+            className={styles.canvas}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{ cursor: tooltipData ? 'pointer' : 'default' }}
+          />
+          {tooltipData && (
+            <div
+              className={cn(styles.tooltip, {
+                [styles.tooltipReached]: tooltipData.reached,
+                [styles.tooltipVisible]: tooltipVisible,
+              })}
+              style={{
+                left: tooltipData.x,
+                transform: `translateX(-50%) translateY(${tooltipVisible ? '0' : '-6px'})`,
+              }}
+            >
+              {tooltipData.text}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.actions}>
+          <span className={styles.statsText}>
+            {completed}
+            <span className={styles.statsDim}> / {total}</span>
+            <span className={styles.statsDim}> ({Math.round(pct)}%)</span>
+          </span>
+        </div>
+      </header>
+      {showProgressModal &&
+        createPortal(
           <div
-            className={cn(styles.tooltip, {
-              [styles.tooltipReached]: tooltipData.reached,
-              [styles.tooltipVisible]: tooltipVisible,
-            })}
-            style={{
-              left: tooltipData.x,
-              transform: `translateX(-50%) translateY(${tooltipVisible ? '0' : '-6px'})`,
+            className={cn(styles.modalBackdrop, 'vibesuite-root')}
+            onClick={() => {
+              setProgressClosing(true);
+              setTimeout(() => {
+                setShowProgressModal(false);
+                setProgressClosing(false);
+              }, 180);
             }}
           >
-            {tooltipData.text}
-          </div>
-        )}
-      </div>
+            <div
+              role="dialog"
+              aria-label={t.myProgress}
+              className={cn(
+                styles.modalBox,
+                progressClosing ? 'animate-modal-out' : 'animate-modal-in',
+              )}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className={styles.modalContent}>
+                <h2 className={styles.modalTitle}>{t.myProgress}</h2>
+                <p className={styles.modalBody}>{t.progressBody1}</p>
+                <p className={styles.modalBodyBottom}>{t.progressBody2}</p>
 
-      <div className={styles.actions}>
-        <span className={styles.statsText}>
-          {completed}
-          <span className={styles.statsDim}> / {total}</span>
-          <span className={styles.statsDim}> ({Math.round(pct)}%)</span>
-        </span>
-
-        <button
-          className={styles.actionBtn}
-          onClick={() => {
-            setProgressClosing(false);
-            setCopied(false);
-            setShowProgressModal(true);
-          }}
-        >
-          {t.myProgress}
-        </button>
-      </div>
-
-      {showProgressModal && (
-        <div
-          className={cn(styles.modalBackdrop)}
-          onClick={() => {
-            setProgressClosing(true);
-            setTimeout(() => {
-              setShowProgressModal(false);
-              setProgressClosing(false);
-            }, 180);
-          }}
-        >
-          <div
-            role="dialog"
-            aria-label={t.myProgress}
-            className={cn(
-              styles.modalBox,
-              progressClosing ? 'animate-modal-out' : 'animate-modal-in',
-            )}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className={styles.modalContent}>
-              <h2 className={styles.modalTitle}>{t.myProgress}</h2>
-              <p className={styles.modalBody}>{t.progressBody1}</p>
-              <p className={styles.modalBodyBottom}>{t.progressBody2}</p>
-
-              <div className={styles.modalBtns}>
-                <button
-                  className={cn(styles.copyStateBtn, {
-                    [styles.copyStateBtnCopied]: copied,
-                  })}
-                  onClick={() => {
-                    const lines: string[] = [];
-                    lines.push(t.copyStateLine1);
-                    lines.push('');
-                    lines.push(t.copyStateLine2);
-                    lines.push(t.copyStateLine3);
-                    lines.push(t.copyStateLine4);
-                    lines.push(t.copyStateLine5);
-                    lines.push('');
-                    lines.push(
-                      `${t.progressPrefix} ${completed}/${total} ${t.skillsWord} (${Math.round(pct)}%)`,
-                    );
-                    lines.push('');
-                    localizedCats.forEach(cat => {
-                      const catDone = cat.skills.filter(
-                        s => progress[s.id]?.completed,
-                      ).length;
-                      lines.push(
-                        `## ${cat.name} (${catDone}/${cat.skills.length})`,
-                      );
-                      cat.skills.forEach(skill => {
-                        const learned = !!progress[skill.id]?.completed;
-                        lines.push(
-                          `- [${learned ? t.learned : t.notLearned}] ${skill.name}: ${skill.projectDescription}`,
-                        );
-                      });
+                <div className={styles.modalBtns}>
+                  <button
+                    className={cn(styles.copyStateBtn, {
+                      [styles.copyStateBtnCopied]: copied,
+                    })}
+                    onClick={() => {
+                      const lines: string[] = [];
+                      lines.push(t.copyStateLine1);
                       lines.push('');
-                    });
-                    lines.push('---');
-                    lines.push(t.copyStateEnd);
-                    navigator.clipboard.writeText(lines.join('\n'));
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                  }}
-                >
-                  {copied ? t.copied : t.copyMyLearningState}
-                </button>
-                <button
-                  className={styles.closeModalBtn}
-                  onClick={() => {
-                    setProgressClosing(true);
-                    setTimeout(() => {
-                      setShowProgressModal(false);
-                      setProgressClosing(false);
-                    }, 180);
-                  }}
-                >
-                  {t.close}
-                </button>
+                      lines.push(t.copyStateLine2);
+                      lines.push(t.copyStateLine3);
+                      lines.push(t.copyStateLine4);
+                      lines.push(t.copyStateLine5);
+                      lines.push('');
+                      lines.push(
+                        `${t.progressPrefix} ${completed}/${total} ${t.skillsWord} (${Math.round(pct)}%)`,
+                      );
+                      lines.push('');
+                      localizedCats.forEach(cat => {
+                        const catDone = cat.skills.filter(
+                          s => progress[s.id]?.completed,
+                        ).length;
+                        lines.push(
+                          `## ${cat.name} (${catDone}/${cat.skills.length})`,
+                        );
+                        cat.skills.forEach(skill => {
+                          const learned = !!progress[skill.id]?.completed;
+                          lines.push(
+                            `- [${learned ? t.learned : t.notLearned}] ${skill.name}: ${skill.projectDescription}`,
+                          );
+                        });
+                        lines.push('');
+                      });
+                      lines.push('---');
+                      lines.push(t.copyStateEnd);
+                      navigator.clipboard.writeText(lines.join('\n'));
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                  >
+                    {copied ? t.copied : t.copyMyLearningState}
+                  </button>
+                  <button
+                    className={styles.closeModalBtn}
+                    onClick={() => {
+                      setProgressClosing(true);
+                      setTimeout(() => {
+                        setShowProgressModal(false);
+                        setProgressClosing(false);
+                      }, 180);
+                    }}
+                  >
+                    {t.close}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-    </header>
+          </div>,
+          document.body,
+        )}
+    </>
   );
 }

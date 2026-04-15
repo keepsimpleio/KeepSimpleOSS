@@ -39,6 +39,19 @@
   line-height: 1.4;
   height: 40px !important;
   padding: 9px 16px !important;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: #242424 !important;
+    color: #fff !important;
+  }
+
+  &:active {
+    background-color: #111 !important;
+    color: #fff !important;
+  }
 }
 
 .SaveBtn {
@@ -51,11 +64,18 @@
   line-height: 1.4;
   height: 40px !important;
   padding: 6px 23px;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
 
   &:hover {
-    background-color: #242424 !important;
-    border-color: #242424 !important;
-    color: #fff !important;
+    background-color: #111 !important;
+    border-color: #111 !important;
+  }
+
+  &:active {
+    background-color: #000 !important;
+    border-color: #000 !important;
   }
 }
 
@@ -98,6 +118,16 @@
   .CancelBtn {
     border-color: #fff !important;
     color: #fff !important;
+
+    &:hover {
+      background-color: #fff !important;
+      color: rgba(0, 0, 0, 0.85) !important;
+    }
+
+    &:active {
+      background-color: #ddd !important;
+      color: rgba(0, 0, 0, 0.85) !important;
+    }
   }
 
   .SaveBtn {
@@ -106,9 +136,13 @@
     color: rgba(0, 0, 0, 0.85) !important;
 
     &:hover {
-      background-color: #fff !important;
-      border-color: #fff !important;
-      color: rgba(0, 0, 0, 0.85) !important;
+      background-color: #e8e8e8 !important;
+      border-color: #e8e8e8 !important;
+    }
+
+    &:active {
+      background-color: #ddd !important;
+      border-color: #ddd !important;
     }
   }
 }

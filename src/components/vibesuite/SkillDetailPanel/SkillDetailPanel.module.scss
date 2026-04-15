@@ -8,8 +8,9 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.35);
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 7.5vh;
   z-index: 9999;
 
   @media (max-width: 1023px) {

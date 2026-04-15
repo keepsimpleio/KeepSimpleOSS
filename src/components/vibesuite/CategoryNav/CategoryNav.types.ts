@@ -6,5 +6,6 @@ export type CategoryNavProps = {
   onSelectCategory: (categoryId: string | null) => void;
   onOpenRecommendations: () => void;
   onOpenWhyModal: () => void;
+  onOpenKnowledgeGaps: () => void;
   allCompleted: boolean;
 };
