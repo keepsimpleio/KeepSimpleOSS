@@ -51,7 +51,7 @@ const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
     <div className={styles.whyDoThisTooltip} data-cy="why-do-this-content">
       <div>
         <Image
-          src={'/keepsimple_/assets/longevity/habits/what-is-this-bg.webp'}
+          src={'/keepsimple_/assets/longevity/habits/what-is-this-bg.png'}
           alt="Background"
           width={700}
           height={300}
