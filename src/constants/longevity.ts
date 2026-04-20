@@ -1,22 +1,23 @@
 export const longevityDietPath = '/keepsimple_/assets/longevity/diet';
 const heartsPath = '/keepsimple_/assets/longevity/diet/hearts/';
-const scaleImgPath = '/keepsimple_/assets/longevity/diet/diet-results-icons/';
+const dietResultsIconsPath =
+  '/keepsimple_/assets/longevity/diet/diet-results-icons/';
 const backgroundImgPath = '/keepsimple_/assets/longevity/diet/diet-results-bg/';
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 export const ogImage = `${domain}/keepsimple_/assets/longevity/og.png`;
 export const images = [
-  `${heartsPath}sugar.svg`,
-  `${heartsPath}seed-oil.svg`,
-  `${heartsPath}sugary-drinks.svg`,
-  `${heartsPath}ultra-porcessed-food.svg`,
-  `${heartsPath}white-flour.svg`,
-  `${heartsPath}deceptive-food.svg`,
+  `${heartsPath}sugar.png`,
+  `${heartsPath}seed-oil.png`,
+  `${heartsPath}sugary-drinks.png`,
+  `${heartsPath}ultra-porcessed-food.png`,
+  `${heartsPath}white-flour.png`,
+  `${heartsPath}deceptive-food.png`,
 ];
 
 export const scaleLevels = [
   {
     id: 1,
-    imagePath: scaleImgPath + 'borderline-ok-foods.png',
+    imagePath: dietResultsIconsPath + 'borderline-ok-foods.png',
     backgroundUrlMobile:
       backgroundImgPath + 'borderline-ok-foods-mobile-bg.webp',
     backgroundUrl: backgroundImgPath + 'borderline-ok-foods-bg.png',
@@ -27,7 +28,7 @@ export const scaleLevels = [
   },
   {
     id: 2,
-    imagePath: scaleImgPath + 'supportive-foods.png',
+    imagePath: dietResultsIconsPath + 'supportive-foods.png',
     backgroundUrl: backgroundImgPath + 'supportive-foods-bg.png',
     backgroundUrlMobile: backgroundImgPath + 'supportive-foods-mobile-bg.webp',
     biologicalAge: '1',
@@ -37,7 +38,7 @@ export const scaleLevels = [
   },
   {
     id: 3,
-    imagePath: scaleImgPath + 'protective-foods.png',
+    imagePath: dietResultsIconsPath + 'protective-foods.png',
     backgroundUrl: backgroundImgPath + 'protective-foods-bg.png',
     backgroundUrlMobile: backgroundImgPath + 'protective-foods-mobile-bg.webp',
     biologicalAge: '2',
@@ -47,7 +48,7 @@ export const scaleLevels = [
   },
   {
     id: 4,
-    imagePath: scaleImgPath + 'clean-nutrients.png',
+    imagePath: dietResultsIconsPath + 'clean-nutrients.png',
     backgroundUrl: backgroundImgPath + 'clean-nutrients-bg.png',
     backgroundUrlMobile: backgroundImgPath + 'clean-nutrient-mobile-bg.webp',
     biologicalAge: '3.5',
@@ -57,7 +58,7 @@ export const scaleLevels = [
   },
   {
     id: 5,
-    imagePath: scaleImgPath + 'metabolic-gold.png',
+    imagePath: dietResultsIconsPath + 'metabolic-gold.png',
     backgroundUrl: backgroundImgPath + 'metabolic-gold-bg.png',
     backgroundUrlMobile: backgroundImgPath + 'metabolic-gold-mobile.bg.webp',
     biologicalAge: '5',

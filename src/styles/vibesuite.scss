@@ -2,8 +2,6 @@
 // This file is imported in _app.tsx. It is NOT a CSS module.
 // All animation class names used as plain strings stay as plain selectors here.
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=Noto+Serif+JP:wght@400&display=swap');
-
 // ── CSS variable overrides scoped to vibesuite pages ─────────────────────────
 // These do NOT override keepsimple global variables; they are only applied
 // when the .vibesuite-root class is present (added by VibesuiteLayout).
@@ -26,10 +24,10 @@
   --border-strong: #c8c0b5;
   --bg-dim: rgba(244, 239, 230, 0.75);
 
-  --font-display: 'Playfair Display', Georgia, serif;
+  --font-display: 'Source-Serif-Regular', Georgia, serif;
   --font-body: 'EB Garamond', Georgia, serif;
   --font-ui: 'Jost', system-ui, sans-serif;
-  --font-japanese: 'Noto Serif JP', serif;
+  --font-japanese: 'YujiSyuku-Regular', serif;
 
   *,
   *::before,
