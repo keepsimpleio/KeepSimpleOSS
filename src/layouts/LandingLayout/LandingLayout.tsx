@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { FC, useEffect, useRef } from 'react';
 
@@ -53,8 +54,18 @@ const LandingLayout: FC<LandingLayoutProps> = ({ homeData, darkTheme }) => {
     };
   }, []);
 
+  console.log(homeData, 'homedata');
   return (
     <>
+      <Head>
+        <link
+          rel="preload"
+          as="image"
+          href="/keepsimple_/assets/landingPage/landing-bg.webp"
+          fetchPriority="high"
+          type="image/webp"
+        />
+      </Head>
       <SeoGenerator
         strapiSEO={{ description, title, keywords, pageTitle }}
         ogTags={homeData?.OGTags}
@@ -82,7 +93,7 @@ const LandingLayout: FC<LandingLayoutProps> = ({ homeData, darkTheme }) => {
             russianView={locale === 'ru'}
           />
           <UsedBy
-            usedBy={homeData?.usedBy}
+            usedBy={homeData?.sliderImage}
             darkTheme={darkTheme}
             title={usedBy}
           />

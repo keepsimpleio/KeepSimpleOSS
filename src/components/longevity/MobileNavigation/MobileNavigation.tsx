@@ -10,7 +10,6 @@ import { useClickOutside } from '@lib/useClickOutside';
 import longevityData from '@data/longevity';
 
 import { DietIcon } from '@icons/longevity/DietIcon';
-import Divider from '@icons/longevity/Divider';
 import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
 import NavigationIcon from '@icons/longevity/NavigationIcon';
 import NewPageIcon from '@icons/longevity/NewPageIocn';
@@ -215,7 +214,11 @@ const MobileNavigation: FC = () => {
               </span>
               {item.icon && <NewPageIcon />}
 
-              <Divider className={styles.divider} />
+              <img
+                src="/keepsimple_/assets/longevity/general-assets/divider.png"
+                alt=""
+                className={styles.divider}
+              />
               {isHabitsItem(item) && (
                 <ul
                   className={cn(styles.subNav, {

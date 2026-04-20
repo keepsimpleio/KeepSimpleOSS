@@ -238,7 +238,7 @@ export default function ProgressHeader({
         ctx.fillText(m.label.toUpperCase(), isLast ? mx : mx, barY + 18);
 
         const kanjiSize = 10 + hoverAmt * 2;
-        ctx.font = `${kanjiSize}px "Noto Serif JP", serif`;
+        ctx.font = `${kanjiSize}px "YujiSyuku-Regular", serif`;
         ctx.textAlign = isLast ? 'right' : 'center';
         ctx.fillStyle = `rgba(184, 50, 50, ${
           reached

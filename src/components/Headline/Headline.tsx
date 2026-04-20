@@ -1,7 +1,14 @@
 import cn from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { FC, useContext, useEffect, useState } from 'react';
+import {
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { flushSync } from 'react-dom';
 
 import { socialMediaLinks } from '@constants/common';
@@ -35,6 +42,52 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
   const [serenityModeStatus, setSereintyModeStatus] = useState(false);
   const [defaultState, setDefaultState] = useState(1);
   const [fadeInIndexes, setFadeInIndexes] = useState([]);
+
+  const [desktopVideoReady, setDesktopVideoReady] = useState(false);
+  const [mobileVideoReady, setMobileVideoReady] = useState(false);
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+
+  const loadVideo = useCallback(
+    (
+      ref: React.RefObject<HTMLVideoElement>,
+      src: string,
+      setReady: (v: boolean) => void,
+    ) => {
+      const video = ref.current;
+      if (!video) return;
+      video.src = src;
+      video.load();
+      const onCanPlay = () => {
+        setReady(true);
+        video.removeEventListener('canplay', onCanPlay);
+      };
+      video.addEventListener('canplay', onCanPlay);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const handleLoad = () => {
+      loadVideo(
+        desktopVideoRef,
+        '/keepsimple_/assets/leaves.mp4',
+        setDesktopVideoReady,
+      );
+      loadVideo(
+        mobileVideoRef,
+        '/keepsimple_/assets/home-page/Mobile-Leaves-Compressed1.mp4',
+        setMobileVideoReady,
+      );
+    };
+
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, [loadVideo]);
 
   const serenityText = locale === 'ru' ? 'покой' : 'serenity mode';
   const exitSerenityText =
@@ -164,18 +217,26 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
           </span>
         </div>
         <div className={styles.videoContainer}>
+          <Image
+            src="/keepsimple_/assets/home-page/desktop-thumbnail.png"
+            alt="Hero background"
+            fill
+            priority
+            className={styles.poster}
+            sizes="(max-width: 1440px) 50vw, 684px"
+          />
           <video
+            ref={desktopVideoRef}
             controls={false}
             playsInline
             autoPlay
             muted
             loop
-            className={styles.video}
+            className={cn(styles.video, {
+              [styles.videoVisible]: desktopVideoReady,
+            })}
             height={600}
-          >
-            <source src="/keepsimple_/assets/leaves.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          />
         </div>
         <div className={cn(styles.contentWrapper, {})}>
           <div className={styles.headlineContent}>
@@ -263,21 +324,26 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
           </div>
         </div>
         <div className={styles.videoContainerMobile}>
+          <Image
+            src="/keepsimple_/assets/home-page/mobile-thumbnail.png"
+            alt="Hero background"
+            fill
+            priority
+            className={styles.poster}
+            sizes="(max-width: 786px) 100vw, 786px"
+          />
           <video
+            ref={mobileVideoRef}
             controls={false}
             playsInline
             autoPlay
             muted
             loop
-            className={styles.video}
+            className={cn(styles.video, {
+              [styles.videoVisible]: mobileVideoReady,
+            })}
             height={600}
-          >
-            <source
-              src="/keepsimple_/assets/Mobile-Leaves-Compressed1.mp4"
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
+          />
         </div>
         <span onClick={handleClick} className={styles.contributors}>
           {contributorsTxt}

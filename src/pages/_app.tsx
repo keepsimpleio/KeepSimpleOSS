@@ -178,12 +178,12 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
     if (!isLongevityProtocolPage) return;
 
     const imagesToPreload = [
-      '/keepsimple_/assets/longevity/diet/hearts/sugar.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/seed-oil.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/sugary-drinks.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/ultra-porcessed-food.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/white-flour.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/deceptive-food.svg',
+      '/keepsimple_/assets/longevity/diet/hearts/sugar.png',
+      '/keepsimple_/assets/longevity/diet/hearts/seed-oil.png',
+      '/keepsimple_/assets/longevity/diet/hearts/sugary-drinks.png',
+      '/keepsimple_/assets/longevity/diet/hearts/ultra-porcessed-food.png',
+      '/keepsimple_/assets/longevity/diet/hearts/white-flour.png',
+      '/keepsimple_/assets/longevity/diet/hearts/deceptive-food.png',
       '/keepsimple_/assets/longevity/diet/tooltip-line.png',
       '/keepsimple_/assets/longevity/diet/damage-icon.svg',
       '/keepsimple_/assets/longevity/diet/info-icon.svg',
