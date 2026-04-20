@@ -37,7 +37,7 @@ export const getArticles = async (locale: TLocales) => {
 };
 
 export const getHomeData = async (locale: TLocales) => {
-  const homeUrl = `${process.env.NEXT_PUBLIC_STRAPI}/api/home-page?locale=${locale}&populate[tools][populate]=icon&populate[usedBy][populate]=*&populate[projects]=*&populate[pageSeo]=*&populate[supporters][populate]=image&populate[sliderImage]=*&populate[OGTags][populate]=ogImage`;
+  const homeUrl = `${process.env.NEXT_PUBLIC_STRAPI}/api/home-page?locale=${locale}&populate[tools][populate]=icon&populate[usedBy][populate]=*&populate[projects]=*&populate[pageSeo]=*&populate[supporters][populate]=image&populate[sliderImage][populate][image]=true&populate[sliderImage][populate][dark_image]=true&populate[OGTags][populate]=ogImage`;
   return await fetch(homeUrl)
     .then(resp => resp.json())
     .then(json => json?.data?.attributes || null);

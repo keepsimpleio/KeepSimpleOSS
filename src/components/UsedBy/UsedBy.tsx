@@ -8,19 +8,21 @@ import type { TRouter } from '@local-types/global';
 
 import styles from './UsedBy.module.scss';
 
+type StrapiImage = {
+  data?: {
+    attributes: {
+      url: string;
+    };
+  };
+};
+
 type UsedByProps = {
   darkTheme?: boolean;
   title?: string;
-  usedBy: {
-    icon: {
-      data: {
-        attributes: {
-          url: string;
-        };
-      };
-    };
-    name: string;
-  }[];
+  usedBy?: {
+    dark_image?: StrapiImage;
+    image?: StrapiImage;
+  };
 };
 
 const UsedBy: FC<UsedByProps> = ({ usedBy, darkTheme, title }) => {
