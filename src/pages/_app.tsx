@@ -195,7 +195,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
       '/keepsimple_/assets/longevity/diet/diet-results-icons/metabolic-gold.png',
       '/keepsimple_/assets/longevity/habits/tooltip-bg.png',
       '/keepsimple_/assets/longevity/habits/tooltip-headline-bg.png',
-      '/keepsimple_/assets/longevity/habits/what-is-this-bg.webp',
+      '/keepsimple_/assets/longevity/habits/what-is-this-bg.png',
     ];
 
     imagesToPreload.forEach(src => {

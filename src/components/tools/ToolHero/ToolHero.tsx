@@ -48,12 +48,25 @@ const ToolHero: FC<ToolHeroProps> = ({
           styles.lightBackground,
           isTransitioning && styles.lightBackgroundAnimated,
         )}
-        style={{ backgroundImage: `url('${backgroundImage}')` }}
-      />
-      <div
-        className={cn(styles.backgroundLayer, styles.darkBackground)}
-        style={{ backgroundImage: `url('${darkBackgroundImage}')` }}
-      />
+      >
+        <Image
+          src={backgroundImage}
+          alt="tools background"
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
+        />
+      </div>
+      <div className={cn(styles.backgroundLayer, styles.darkBackground)}>
+        <Image
+          src={darkBackgroundImage}
+          alt="tools background dark"
+          fill
+          sizes="100vw"
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
+        />
+      </div>
       <div className={styles.content}>
         <div className={styles.logoRow}>
           <span className={styles.diamond} />
