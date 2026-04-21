@@ -178,12 +178,12 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
     if (!isLongevityProtocolPage) return;
 
     const imagesToPreload = [
-      '/keepsimple_/assets/longevity/diet/hearts/sugar.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/seed-oil.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/sugary-drinks.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/ultra-porcessed-food.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/white-flour.svg',
-      '/keepsimple_/assets/longevity/diet/hearts/deceptive-food.svg',
+      '/keepsimple_/assets/longevity/diet/hearts/sugar.png',
+      '/keepsimple_/assets/longevity/diet/hearts/seed-oil.png',
+      '/keepsimple_/assets/longevity/diet/hearts/sugary-drinks.png',
+      '/keepsimple_/assets/longevity/diet/hearts/ultra-porcessed-food.png',
+      '/keepsimple_/assets/longevity/diet/hearts/white-flour.png',
+      '/keepsimple_/assets/longevity/diet/hearts/deceptive-food.png',
       '/keepsimple_/assets/longevity/diet/tooltip-line.png',
       '/keepsimple_/assets/longevity/diet/damage-icon.svg',
       '/keepsimple_/assets/longevity/diet/info-icon.svg',
@@ -195,7 +195,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
       '/keepsimple_/assets/longevity/diet/diet-results-icons/metabolic-gold.png',
       '/keepsimple_/assets/longevity/habits/tooltip-bg.png',
       '/keepsimple_/assets/longevity/habits/tooltip-headline-bg.png',
-      '/keepsimple_/assets/longevity/habits/what-is-this-bg.webp',
+      '/keepsimple_/assets/longevity/habits/what-is-this-bg.png',
     ];
 
     imagesToPreload.forEach(src => {
@@ -277,7 +277,11 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
             <div className={'mask'}>
               <video
                 ref={videoRef}
-                src="/keepsimple_/assets/test/ks-test.mp4"
+                src={
+                  isDarkTheme
+                    ? '/keepsimple_/assets/leaves/leaves-dark.mp4'
+                    : '/keepsimple_/assets/leaves/leaves.mp4'
+                }
                 muted
                 playsInline
                 preload="auto"

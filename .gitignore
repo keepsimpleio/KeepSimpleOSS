@@ -116,3 +116,6 @@ dist
 package-lock.json
 
 .claude/settings.local.json
+
+# Playwright
+playwright-report/

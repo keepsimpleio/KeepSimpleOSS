@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import Image from 'next/image';
 import { FC } from 'react';
 
 import styles from './SupporterContainer.module.scss';
@@ -41,7 +42,7 @@ const SupporterContainer: FC<SupporterContainerProps> = ({
           />
         </div>
         <div className={styles.supporterInfo}>
-          <img
+          <Image
             src={`${process.env.NEXT_PUBLIC_STRAPI}${image}`}
             alt={name}
             width={117}

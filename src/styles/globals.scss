@@ -88,11 +88,11 @@ body {
 }
 
 .keepsimplePages {
-  background-image: url('/keepsimple_/assets/landingPage/landing-bg.png') !important;
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.webp') !important;
   background: unset;
 }
 .keepsimplePagesDark {
-  background-image: url('/keepsimple_/assets/landingPage/landing-dark-bg.png') !important;
+  background-image: url('/keepsimple_/assets/landingPage/landing-dark-bg.webp') !important;
   background-repeat: repeat;
   background-size: 560px 420px;
 }
@@ -232,37 +232,21 @@ body {
   top: 50%;
 }
 
-@font-face {
-  font-family: 'Lato';
-  src: url('/keepsimple_/fonts/Lato/Lato-Regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 // Sarabun  is being used in landing and article pages
 @font-face {
   font-family: 'Sarabun-Regular';
-  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Regular.ttf') format('truetype');
+  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
   font-family: 'Sarabun-Medium';
-  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Medium.ttf') format('truetype');
+  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Sarabun-Bold';
-  src: url('/keepsimple_/fonts/Sarabun/Sarabun-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 // Aldrich is being used in Company Management(new)
@@ -297,7 +281,7 @@ body {
   src: url('/keepsimple_/fonts/Tomorrow/Tomorrow-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 // Jost - for Russian company management
@@ -307,7 +291,7 @@ body {
   src: url('/keepsimple_/fonts/Jost/Jost-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-  font-display: optional;
+  font-display: block;
 }
 
 @font-face {
@@ -315,7 +299,7 @@ body {
   src: url('/keepsimple_/fonts/Jost/Jost-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
-  font-display: optional;
+  font-display: block;
 }
 
 // For UXCat certificate
@@ -324,17 +308,7 @@ body {
   src: url('/keepsimple_/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
-  font-display: optional;
-}
-
-// Armenian
-@font-face {
-  font-family: 'NotoSansArmenian-Regular';
-  src: url('/keepsimple_/fonts/NotoSansArmenian/NotoSansArmenian-Regular.ttf')
-    format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 // Aboreto-Regular for Article titles
@@ -353,17 +327,7 @@ body {
     format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
-}
-
-// Cormorant_Garamond-Medium for ArticlesLayout [for russian version]
-@font-face {
-  font-family: 'Cormorant-Garamond-Medium';
-  src: url('/keepsimple_/fonts/Cormorant_Garamond/static/CormorantGaramond-Medium.ttf')
-    format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 // Source Serif 4 for ArticlesLayout

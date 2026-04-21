@@ -103,6 +103,6 @@ export const getStaticProps: GetStaticProps = async ({
       locale,
       tools: tools,
     },
-    revalidate: 10,
+    revalidate: 3600,
   };
 };

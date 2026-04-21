@@ -87,7 +87,7 @@
   max-width: 480px !important;
   width: 480px !important;
   border-radius: 0;
-  background-image: url('/keepsimple_/assets/landingPage/landing-bg.png') !important;
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.webp') !important;
 
   > div:first-child > span:first-child {
     text-transform: uppercase;
@@ -104,7 +104,7 @@
 // Dark mode
 :global(.darkTheme) {
   .ModalWrapper {
-    background-image: url('/keepsimple_/assets/landingPage/landing-dark-bg.png') !important;
+    background-image: url('/keepsimple_/assets/landingPage/landing-dark-bg.webp') !important;
 
     > div:first-child > span:first-child {
       color: #fff;
