@@ -54,7 +54,6 @@ const LandingLayout: FC<LandingLayoutProps> = ({ homeData, darkTheme }) => {
     };
   }, []);
 
-  console.log(homeData, 'homedata');
   return (
     <>
       <Head>

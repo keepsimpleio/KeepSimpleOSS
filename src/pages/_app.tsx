@@ -277,7 +277,11 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
             <div className={'mask'}>
               <video
                 ref={videoRef}
-                src="/keepsimple_/assets/test/ks-test.mp4"
+                src={
+                  isDarkTheme
+                    ? '/keepsimple_/assets/leaves/leaves-dark.mp4'
+                    : '/keepsimple_/assets/leaves/leaves.mp4'
+                }
                 muted
                 playsInline
                 preload="auto"
