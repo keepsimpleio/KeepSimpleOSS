@@ -4,8 +4,8 @@ import { FC, useState } from 'react';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
-import LearnMoreIcon from '@icons/longevity/LearnMoreIcon';
-import { StudyCloseIcon } from '@icons/longevity/Study/CloseIcon';
+import LearnMoreIcon from '@icons/longevity/LearnMoreIcon.png';
+import StudyCloseIcon from '@icons/longevity/Study/CloseIcon.svg';
 
 import Heading from '@components/Heading';
 import { BorderedPill } from '@components/longevity/BorderedPill/BorderedPill';
@@ -101,7 +101,14 @@ const StudySection: FC<StudySectionProps> = ({
                   <BorderedPill
                     text={learnMoreText}
                     onClick={() => setOpenModal(true)}
-                    leftIcon={<LearnMoreIcon />}
+                    leftIcon={
+                      <Image
+                        src={LearnMoreIcon}
+                        alt="Learn more"
+                        width={20}
+                        height={20}
+                      />
+                    }
                     dataCy="learn-more-btn"
                   />
                 </div>
