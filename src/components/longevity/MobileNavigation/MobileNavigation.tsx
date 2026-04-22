@@ -219,6 +219,7 @@ const MobileNavigation: FC = () => {
                   alt="new page icon"
                   width={21}
                   height={21}
+                  unoptimized
                 />
               )}
 

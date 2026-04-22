@@ -1,8 +1,7 @@
 import cn from 'classnames';
-import Image from 'next/image';
 import React, { ElementType } from 'react';
 
-import Borders from '@icons/longevity/Borders.png';
+import Borders from '@icons/longevity/Borders';
 
 import type { BorderedPillProps } from './BorderedPill.types';
 
@@ -29,7 +28,7 @@ export function BorderedPill<T extends ElementType = 'button'>({
       {...(rest as any)}
       data-cy={dataCy}
     >
-      <Image src={Borders} alt="" fill className={styles.border} aria-hidden />
+      <Borders className={styles.border} />
       <span className={cn(styles.content, contentClassName)}>
         {leftIcon ? <span className={styles.leftIcon}>{leftIcon}</span> : null}
         {text ? <span className={styles.label}>{text} </span> : children}
