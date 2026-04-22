@@ -8,14 +8,14 @@ import { TRouter } from '@local-types/global';
 
 import longevityData from '@data/longevity';
 
-import { DietIcon } from '@icons/longevity/DietIcon';
-import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
-import NewPageIcon from '@icons/longevity/NewPageIocn';
-import { SleepIcon } from '@icons/longevity/SleepIcon';
-import { StudyIcon } from '@icons/longevity/StudyIcon';
-import { SupplementsIcon } from '@icons/longevity/SupplementsIcon';
-import { TomIcon } from '@icons/longevity/TomIcon';
-import { WorkoutIcon } from '@icons/longevity/WorkoutIcon';
+import DietIcon from '@icons/longevity/DietIcon.svg';
+import LifestyleIcon from '@icons/longevity/LifestyleIcon.svg';
+import NewPageIcon from '@icons/longevity/new-page-icon.png';
+import SleepIcon from '@icons/longevity/SleepIcon.svg';
+import StudyIcon from '@icons/longevity/StudyIcon.svg';
+import SupplementsIcon from '@icons/longevity/SupplementsIcon.svg';
+import TomIcon from '@icons/longevity/TomIcon.svg';
+import WorkoutIcon from '@icons/longevity/WorkoutIcon.svg';
 
 import styles from './Navigation.module.scss';
 
@@ -103,7 +103,14 @@ const Navigation: FC = () => {
               <li className={styles.link}>
                 {item.icon && item.icon}
                 {item.name}
-                {key === 4 && <NewPageIcon />}
+                {key === 4 && (
+                  <Image
+                    src={NewPageIcon}
+                    alt="new page icon"
+                    width={21}
+                    height={21}
+                  />
+                )}
               </li>
             </Link>
           );
