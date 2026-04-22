@@ -107,6 +107,7 @@ const StudySection: FC<StudySectionProps> = ({
                         alt="Learn more"
                         width={20}
                         height={20}
+                        unoptimized
                       />
                     }
                     dataCy="learn-more-btn"
