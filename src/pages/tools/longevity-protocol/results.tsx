@@ -62,7 +62,8 @@ const Results = ({ yearlyResults }) => {
 export default Results;
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const yearlyResults = await getLongevityResults(locale);
+  const fetchLocale = locale === 'hy' ? 'en' : locale;
+  const yearlyResults = await getLongevityResults(fetchLocale);
 
   return {
     props: { yearlyResults },
