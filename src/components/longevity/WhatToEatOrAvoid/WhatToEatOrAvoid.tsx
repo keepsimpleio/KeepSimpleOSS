@@ -171,6 +171,7 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
               onClick={() => setOpenMobileModal(false)}
               size={'full'}
               isLongevityProtocolModal
+              backgroundImageUrl="/keepsimple_/assets/longevity/diet/tooltip-bg.png"
             >
               <AboutTheProduct
                 content={tooltipContent}
@@ -188,6 +189,7 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
         width={868}
         height={2}
         className={styles.divider}
+        unoptimized
       />
     </div>
   );

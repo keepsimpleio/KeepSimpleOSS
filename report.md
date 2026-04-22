@@ -1,7 +1,6 @@
 ● KeepSimpleOSS Codebase Audit Report
 
-1. Stack & Tooling  
-
+1. Stack & Tooling
 
 ┌──────────────────┬───────────────────────────────────────────────────────────────────────┬─────────────────┐  
  │ Category │ Detail │ Version │  
@@ -214,7 +213,7 @@ src/pages/
 ├── tools/longevity-protocol/... # /tools/longevity-protocol/\*
 └── api/auth/[...nextauth].ts # NextAuth API route
 
-Data fetching: Most pages use getStaticProps with ISR (revalidate: 10). Some use getServerSideProps (contributors). Dynamic routes use getStaticPaths with fallback: 'blocking'.
+Data fetching: Most pages use getStaticProps with ISR (revalidate: 10). Dynamic routes use getStaticPaths with fallback: 'blocking'.
 
 Layout pattern: Pages render a layout component that wraps content:
 const Index: FC<PageProps> = ({ landingData }) => (

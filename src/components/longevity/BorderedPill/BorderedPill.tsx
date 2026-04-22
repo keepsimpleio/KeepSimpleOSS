@@ -28,7 +28,7 @@ export function BorderedPill<T extends ElementType = 'button'>({
       {...(rest as any)}
       data-cy={dataCy}
     >
-      <Borders className={styles.border} aria-hidden />
+      <Borders className={styles.border} />
       <span className={cn(styles.content, contentClassName)}>
         {leftIcon ? <span className={styles.leftIcon}>{leftIcon}</span> : null}
         {text ? <span className={styles.label}>{text} </span> : children}

@@ -2,7 +2,7 @@ import cn from 'classnames';
 import Image from 'next/image';
 import { FC } from 'react';
 
-import RedLine from '@icons/longevity/RedLine';
+import RedLine from '@icons/longevity/RedLine.svg';
 
 import { HeadingProps } from './Heading.types';
 
@@ -70,7 +70,7 @@ const Heading: FC<HeadingProps> = ({
           src={'/keepsimple_/assets/articles-blog/line.svg'}
           alt={'line'}
           width={1000}
-          height={2}
+          height={10}
           className={styles.underline}
         />
       )}

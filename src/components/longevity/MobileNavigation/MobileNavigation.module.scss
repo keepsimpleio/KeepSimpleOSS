@@ -72,13 +72,6 @@
         width: 100%;
         max-width: 310px;
       }
-
-      .icon {
-        svg {
-          width: 20px;
-          height: 20px;
-        }
-      }
     }
 
     .li.active {
@@ -122,10 +115,12 @@
       padding-top: 13px;
 
       .icon {
-        svg {
-          width: 28px;
-          height: 20px;
-        }
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
     }
 
@@ -219,6 +214,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(-90deg);
   }
@@ -228,6 +224,7 @@
   from {
     transform: rotate(-90deg);
   }
+
   to {
     transform: rotate(0deg);
   }

@@ -1,5 +1,5 @@
 import { getResultsImageUrls } from '@utils/getLongevityImageUrls';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
@@ -61,10 +61,12 @@ const Results = ({ yearlyResults }) => {
 
 export default Results;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const yearlyResults = await getLongevityResults(locale);
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const fetchLocale = locale === 'hy' ? 'en' : locale;
+  const yearlyResults = await getLongevityResults(fetchLocale);
 
   return {
     props: { yearlyResults },
+    revalidate: 10,
   };
 };

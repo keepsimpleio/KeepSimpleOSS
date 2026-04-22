@@ -1,5 +1,5 @@
 import { getAboutProjectImageUrls } from '@utils/getLongevityImageUrls';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 
 import { ogImage } from '@constants/longevity';
@@ -61,10 +61,11 @@ const AboutProject = ({ aboutTheProject }) => {
 
 export default AboutProject;
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const aboutTheProject = await getAboutProject(locale);
 
   return {
     props: { aboutTheProject },
+    revalidate: 10,
   };
 };
