@@ -109,6 +109,7 @@ const Navigation: FC = () => {
                     alt="new page icon"
                     width={21}
                     height={21}
+                    unoptimized
                   />
                 )}
               </li>
