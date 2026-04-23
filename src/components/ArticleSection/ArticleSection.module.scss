@@ -8,6 +8,7 @@
     flex-wrap: wrap;
     gap: 28px;
     align-items: center;
+    justify-content: center;
   }
 
   .showMoreButtonWrapper {
@@ -50,13 +51,20 @@
   align-items: center;
   background-color: #f4f1eb80;
   padding: 0 0 40px 0;
-  padding-top: 80px;
+  margin-top: 80px;
   padding-bottom: 60px;
 
   .underline {
     width: 100% !important;
     object-fit: cover;
     margin-bottom: 35px;
+  }
+  .wrapper {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 40px 0;
+    h2 {
+    }
   }
 }
 
