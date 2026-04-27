@@ -60,8 +60,8 @@ jobs:
       # Suggested setup:
       # If the environment needs auth headers or cookies to reach the app,
       # add those as repo secrets and wire them through `env:` here.
-      PLAYWRIGHT_STAGING_URL: ${{ vars.PLAYWRIGHT_STAGING_URL }}
-      PLAYWRIGHT_PRODUCTION_URL: ${{ vars.PLAYWRIGHT_PRODUCTION_URL }}
+      PLAYWRIGHT_STAGING_URL: ${{ secrets.PLAYWRIGHT_STAGING_URL }}
+      PLAYWRIGHT_PRODUCTION_URL: ${{ secrets.PLAYWRIGHT_PRODUCTION_URL }}
       # Disable the webServer block in playwright.config.ts — in CI we run
       # against a deployed URL, never against a freshly-spawned `yarn dev`.
       PLAYWRIGHT_NO_SERVER: '1'
@@ -91,7 +91,7 @@ jobs:
             URL="$PLAYWRIGHT_STAGING_URL"
           fi
           if [ -z "$URL" ]; then
-            echo "::error ::Base URL for environment '$ENV_INPUT' is not configured. Set the PLAYWRIGHT_${ENV_INPUT^^}_URL repository variable."
+            echo "::error ::Base URL for environment '$ENV_INPUT' is not configured. Set the PLAYWRIGHT_${ENV_INPUT^^}_URL repository secret."
             exit 1
           fi
           echo "base_url=$URL" >> "$GITHUB_OUTPUT"
