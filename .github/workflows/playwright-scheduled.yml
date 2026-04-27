@@ -74,10 +74,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          # Intentionally NOT caching yarn — a stale runner cache was
+          # leaving @axe-core/playwright out of node_modules even though
+          # it sat in yarn.lock. Mirrors cypress-manual.yml which also
+          # opts out of caching.
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        # Plain `yarn install` (no --frozen-lockfile) — matches the
+        # cypress-manual.yml pattern. Slower per run (~30-60s vs cached)
+        # but guarantees a clean node_modules every time.
+        run: yarn install
 
       - name: Decode prod env file
         if: env.APP_ENV == 'prod'
