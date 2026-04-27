@@ -102,7 +102,9 @@ interface CardProps {
 
 const Card = ({ title, isActive, className }: CardProps) => {
   return (
-    <div className={cn(styles.Card, className, { [styles.active]: isActive })}>
+    <div
+      className={cn(styles.card, className, { [styles.cardItem]: isActive })}
+    >
       {title}
     </div>
   );
@@ -154,7 +156,7 @@ No Tailwind, no CSS-in-JS, no inline styles (except single dynamic properties li
 import cn from 'classnames';
 import styles from './Thing.module.scss';
 
-<div className={cn(styles.Wrapper, { [styles.active]: isActive })} />;
+<div className={cn(styles.wrapper, { [styles.active]: isActive })} />;
 ```
 
 ### Conditional classes
@@ -162,7 +164,7 @@ import styles from './Thing.module.scss';
 Always use `classnames` (imported as `cn`):
 
 ```tsx
-className={cn(styles.Button, {
+className={cn(styles.button, {
   [styles.primary]: variant === 'primary',
   [styles.disabled]: disabled,
 })}
@@ -170,7 +172,7 @@ className={cn(styles.Button, {
 
 ### SCSS class naming
 
-PascalCase for new code: `.Card`, `.Wrapper`, `.Title`. The codebase mixes PascalCase and camelCase — prefer PascalCase going forward.
+camelCase for new code: `.card`, `.cardItem`, `.wrapper`, `.title`. The codebase mixes PascalCase and camelCase — prefer camelCase going forward.
 
 ### Global styles
 

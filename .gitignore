@@ -2,6 +2,7 @@
 .vscode
 .history
 .idea/
+.codex
 
 # Logs
 logs
@@ -119,3 +120,6 @@ package-lock.json
 
 # Playwright
 playwright-report/
+test-results/
+blob-report/
+.playwright/

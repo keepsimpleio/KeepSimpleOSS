@@ -42,5 +42,5 @@
     "cypress/support/commands.d.ts",
     "cypress/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "tests", "playwright.config.ts"]
 }

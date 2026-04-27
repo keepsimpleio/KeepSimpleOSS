@@ -77,7 +77,7 @@ const ContributorsLayout = forwardRef<HTMLElement, ContributorsLayoutProps>(
             isDarkTheme={isDarkTheme}
             locale={locale}
           />
-          <div className={styles.list}>
+          <div className={styles.list} data-testid="contributors-list">
             {contributorsChangedOrder.contributors?.data.map(
               (contributor, index) => {
                 const { name, japaneseLetter, role, socialLink, isActive } =
