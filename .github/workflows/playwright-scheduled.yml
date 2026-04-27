@@ -1,0 +1,137 @@
+name: Playwright scheduled
+
+# Runs the Playwright suite weekly and on manual dispatch.
+# Does NOT gate pull requests — pull-request-check.yml is unrelated.
+# See QA_PLAN.md §5 for the full specification.
+
+on:
+  schedule:
+    # Monday 06:00 UTC = Monday 10:00 Yerevan (UTC+4).
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        type: choice
+        required: true
+        default: staging
+        options:
+          - staging
+          - production
+      scope:
+        description: 'Which tier to run (ignored if spec_path is provided)'
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - P0
+          - P1
+          - P2
+      spec_path:
+        description: 'Optional specific spec file or glob (overrides scope)'
+        type: string
+        required: false
+        default: ''
+      browser:
+        description: 'Browser to run against'
+        type: choice
+        required: true
+        default: chromium
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all
+
+permissions:
+  contents: read
+
+jobs:
+  playwright:
+    name: Playwright (${{ github.event.inputs.environment || 'staging' }} / ${{ github.event.inputs.scope || 'all' }} / ${{ github.event.inputs.browser || 'chromium' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CI: 'true'
+      # scheduled run. Leave unset → the job will fail fast with a clear
+      # message instead of silently hitting localhost.
+      #
+      # Suggested setup:
+      # If the environment needs auth headers or cookies to reach the app,
+      # add those as repo secrets and wire them through `env:` here.
+      PLAYWRIGHT_STAGING_URL: ${{ vars.PLAYWRIGHT_STAGING_URL }}
+      PLAYWRIGHT_PRODUCTION_URL: ${{ vars.PLAYWRIGHT_PRODUCTION_URL }}
+      # Disable the webServer block in playwright.config.ts — in CI we run
+      # against a deployed URL, never against a freshly-spawned `yarn dev`.
+      PLAYWRIGHT_NO_SERVER: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps ${{ github.event.inputs.browser == 'all' && 'chromium firefox webkit' || github.event.inputs.browser || 'chromium' }}
+
+      - name: Resolve base URL
+        id: resolve
+        run: |
+          ENV_INPUT="${{ github.event.inputs.environment || 'staging' }}"
+          if [ "$ENV_INPUT" = "production" ]; then
+            URL="$PLAYWRIGHT_PRODUCTION_URL"
+          else
+            URL="$PLAYWRIGHT_STAGING_URL"
+          fi
+          if [ -z "$URL" ]; then
+            echo "::error ::Base URL for environment '$ENV_INPUT' is not configured. Set the PLAYWRIGHT_${ENV_INPUT^^}_URL repository variable."
+            exit 1
+          fi
+          echo "base_url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve scope path
+        id: scope
+        run: |
+          SPEC_PATH="${{ github.event.inputs.spec_path }}"
+          SCOPE="${{ github.event.inputs.scope || 'all' }}"
+          if [ -n "$SPEC_PATH" ]; then
+            echo "path=$SPEC_PATH" >> "$GITHUB_OUTPUT"
+          else
+            case "$SCOPE" in
+              P0) echo "path=tests/p0/" >> "$GITHUB_OUTPUT" ;;
+              P1) echo "path=tests/p1/" >> "$GITHUB_OUTPUT" ;;
+              P2) echo "path=tests/p2/" >> "$GITHUB_OUTPUT" ;;
+              *)  echo "path=tests/"    >> "$GITHUB_OUTPUT" ;;
+            esac
+          fi
+
+      - name: Resolve Playwright projects
+        id: projects
+        run: |
+          BROWSER="${{ github.event.inputs.browser || 'chromium' }}"
+          if [ "$BROWSER" = "all" ]; then
+            echo "args=--project=chromium --project=firefox --project=webkit" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=--project=$BROWSER" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Playwright
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.resolve.outputs.base_url }}
+        run: |
+          yarn playwright test ${{ steps.scope.outputs.path }} ${{ steps.projects.outputs.args }}
+
+      - name: Upload HTML report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: playwright-report
+          retention-days: 14

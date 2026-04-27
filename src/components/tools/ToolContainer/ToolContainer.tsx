@@ -48,6 +48,8 @@ const ToolContainer: FC<ToolContainerProps> = ({
   return (
     <>
       <div
+        data-testid="tool-card"
+        data-in-development={isInDevelopment ? 'true' : 'false'}
         className={cn(styles.container, {
           [styles.darkTheme]: darkTheme,
         })}
