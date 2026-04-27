@@ -39,13 +39,24 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
+  // Server selection:
+  //   - PLAYWRIGHT_NO_SERVER=1 → don't manage one (e.g. workflow already
+  //     started it, or running against a deployed URL).
+  //   - APP_ENV=staging|prod → pre-built production server (`next start`).
+  //     The CI workflow runs `next build` first, then this block boots
+  //     `next start` against the chosen env file. See
+  //     .github/workflows/playwright-scheduled.yml.
+  //   - else → local `yarn dev`.
   webServer: process.env.PLAYWRIGHT_NO_SERVER
     ? undefined
     : {
-        command: 'yarn dev',
+        command:
+          process.env.APP_ENV === 'staging' || process.env.APP_ENV === 'prod'
+            ? `cross-env NODE_ENV=production APP_ENV=${process.env.APP_ENV} next start -p 3005`
+            : 'yarn dev',
         url: baseURL,
         reuseExistingServer: !isCI,
-        timeout: 120_000,
+        timeout: 180_000,
         stdout: 'ignore',
         stderr: 'pipe',
       },
