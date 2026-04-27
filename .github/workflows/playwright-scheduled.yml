@@ -61,8 +61,14 @@ jobs:
     timeout-minutes: 45
     env:
       CI: 'true'
-      NODE_ENV: production
       APP_ENV: ${{ github.event.inputs.target_env || 'staging' }}
+      # NODE_ENV is intentionally NOT set at the job level — yarn treats
+      # NODE_ENV=production as a signal to skip devDependencies, which
+      # would drop @axe-core/playwright (used by tests/p2/a11y.spec.ts).
+      # The build step and the webServer block in playwright.config.ts
+      # each wrap their own command in `cross-env NODE_ENV=production`,
+      # so production mode is still enforced where it matters.
+      #
       # The webServer block in playwright.config.ts reads APP_ENV and runs
       # `next start` against the freshly-built `.next/`. baseURL stays at
       # the default localhost:3005.
