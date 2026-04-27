@@ -123,3 +123,8 @@ playwright-report/
 test-results/
 blob-report/
 .playwright/
+
+# Local QA planning notes (do not commit)
+QA_PLAN.md
+QA_RECON.md
+TODO.md
