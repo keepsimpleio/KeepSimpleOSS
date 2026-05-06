@@ -1058,3 +1058,33 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   }
 }
 
+/* Touch devices (Android, iOS): :hover sticks after tap until the user
+   taps elsewhere, leaving nodes visually "locked". Neutralize the
+   hover styles where there is no real hover capability. */
+@media (hover: none) {
+  .node:hover {
+    background: var(--paper);
+    box-shadow: none;
+    transform: none;
+  }
+  .node--filled:hover {
+    background: var(--ink-fill);
+  }
+  .node.node--redacted:hover {
+    background: var(--paper);
+    color: inherit;
+  }
+  .ring__label:hover {
+    opacity: 0.85;
+    fill: inherit;
+  }
+  .kv li .v.v--ref:hover { filter: none; }
+  .dossier__link:hover { border-bottom-color: var(--rule-soft); }
+  .dossier__tip:hover { text-decoration-color: var(--rule-soft); }
+  .legend-cta:hover {
+    color: var(--red);
+    letter-spacing: 0.04em;
+  }
+  .view-toggle__btn:hover { color: inherit; }
+}
+
