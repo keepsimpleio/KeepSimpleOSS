@@ -944,9 +944,18 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
    Mobile / narrow viewports — stack rail below canvas, wrap
    header, drop fixed heights. Diagram still readable but small.
    ============================================================ */
+/* Clear the global KeepSimple navbar (position: fixed; height: 55px
+   at <=1140px). Without this top padding, the doc-header metrics row
+   slips behind the navbar on tablet & phone. */
+@media (max-width: 1140px) {
+  .sheet {
+    padding-top: 71px;
+  }
+}
+
 @media (max-width: 900px) {
   .sheet {
-    padding: 16px 14px 20px;
+    padding: 71px 14px 20px;
   }
   .doc-header {
     flex-wrap: wrap;
@@ -975,16 +984,37 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   .meta-tail {
     display: none;
   }
+  /* Mobile reorder: legend → view toggle → canvas → dossier. The rail
+     dissolves (display: contents) so its children participate directly
+     in the workspace flex order. */
   .workspace--v4 {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 18px;
   }
+  .view-stage {
+    order: 3;
+    width: 100%;
+    align-self: stretch;
+  }
+  .canvas--orbital {
+    width: 100%;
+    padding: 14px;
+  }
   .rail {
-    position: static;
-    top: auto;
+    display: contents;
   }
   .rail > .panel:first-child {
+    order: 1;
     min-height: auto;
+  }
+  .rail > .view-toggle {
+    order: 2;
+    justify-self: stretch;
+    width: 100%;
+  }
+  .rail > .panel--dossier {
+    order: 4;
   }
   .doctrine-panel {
     height: auto;

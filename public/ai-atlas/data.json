@@ -367,7 +367,7 @@
         },
         {
           "k": "init audit",
-          "v": "Auto-compaction button. Pulses when context fills; summarizes progress and refreshes CLAUDE.md / AGENTS.md."
+          "v": "Daily sweep across every agent's CLAUDE.md. Spots the highest-leverage fixes, wakes the right agent, and proposes the patch."
         },
         {
           "k": "access table",
@@ -380,10 +380,6 @@
         {
           "k": "byo auth",
           "v": "Slots for extra OAuth tokens (Anthropic, OpenAI Codex). Agents on different billings in one window."
-        },
-        {
-          "k": "self-mod",
-          "v": "If an agent edits the harness itself, it gets a [CRITICAL] system-prompt warning before a restart kills its own session."
         },
         {
           "k": "send-to",
@@ -436,7 +432,7 @@
           "cls": "blue",
           "ref": "lead-elea"
         },
-        { "k": "owns", "v": "whisper · echo · choir" }
+        { "k": "owns", "v": "[CLASSIFIED] · 3 entities" }
       ]
     },
     "agentsforge": {
