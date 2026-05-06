@@ -933,7 +933,23 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 
 @media (max-width: 1100px) {
-  .sec-callout { position: static; width: auto; margin-top: 10px; }
+  /* Stack rings + callouts vertically inside the security canvas. Without
+     this, the canvas keeps its square aspect-ratio while the SVG stretches
+     to height:100% and the static callouts overflow below the canvas,
+     landing on top of the "BY THE NUMBERS" section. */
+  .security-canvas {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .security-canvas .orbital-svg {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 auto;
+  }
+  .sec-callout { position: static; width: auto; margin-top: 0; }
   .sec-stat-grid { grid-template-columns: repeat(2, 1fr); }
   .sec-pattern-grid { grid-template-columns: 1fr; }
   .sec-agent-stage { grid-template-columns: 1fr; }
