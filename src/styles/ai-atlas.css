@@ -1,0 +1,1106 @@
+/* ============================================================
+   ADMINISTRATION.AE — AI Atlas stylesheet (ported into KeepSimple)
+   Scoped under .ai-atlas-root so CSS variables and body styling
+   never leak into the rest of the site.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap");
+
+/* Match KeepSimple's global navbar to the Atlas paper while this
+   page is mounted. Light mode only; dark mode handled separately. */
+body.ai-atlas-page:not(.darkTheme) #__next > header {
+  background: #ece4cf;
+}
+
+/* Atlas-coherent scrollbars while this page is mounted (light mode).
+   Paper track, ink-3 thumb, red on hover — matches the brand palette.
+   html-scoped to override globals.scss scrollbar rules. */
+html.scroll-style-atlas {
+  scrollbar-color: #6a6457 #e6dcc2;
+  scrollbar-width: thin;
+}
+html.scroll-style-atlas::-webkit-scrollbar {
+  width: 10px;
+  border-left: 1px solid #e6dcc2;
+}
+html.scroll-style-atlas::-webkit-scrollbar-track {
+  background: #e6dcc2;
+}
+html.scroll-style-atlas::-webkit-scrollbar-thumb {
+  background: #6a6457;
+  border-radius: 2px;
+  border-left: 1px solid #e6dcc2;
+}
+html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
+  background: #b3392b;
+}
+
+.ai-atlas-root {
+  --paper:        #ece4cf;
+  --paper-2:      #e6dcc2;
+  --rule:         #2a2a2a;
+  --rule-soft:    rgba(42, 42, 42, 0.35);
+  --rule-faint:   rgba(42, 42, 42, 0.16);
+
+  --ink:          #1a1a1a;
+  --ink-2:        #3d3a33;
+  --ink-3:        #6a6457;
+
+  --red:          #b3392b;
+  --red-deep:     #8d2a20;
+  --blue:         #4a6f99;
+  --gold:         #c08a2c;
+  --ink-fill:     #181818;
+
+  --mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --serif: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  --r: 2px;
+  --hairline: 1px;
+
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.01em;
+  min-height: 100vh;
+}
+.ai-atlas-root *, .ai-atlas-root *::before, .ai-atlas-root *::after { box-sizing: border-box; }
+.ai-atlas-root::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 110% 80% at 50% 50%, transparent 60%, rgba(0,0,0,0.08) 100%),
+    radial-gradient(circle at 20% 10%, rgba(255,250,235,0.4), transparent 50%);
+  z-index: 1;
+}
+
+/* ---------- shell ---------- */
+.sheet {
+  position: relative;
+  width: min(1640px, 100%);
+  margin: 0 auto;
+  padding: 24px 28px 28px;
+  z-index: 2;
+}
+
+/* ---------- header ---------- */
+.doc-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 18px; padding-bottom: 14px;
+  border-bottom: var(--hairline) solid var(--rule);
+  font-size: 12px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-2);
+  white-space: nowrap;
+}
+.doc-header .header-left {
+  display: inline-flex; align-items: baseline; gap: 22px; flex-wrap: nowrap;
+}
+.doc-header .meta {
+  display: flex; gap: 22px; flex-wrap: nowrap; align-items: baseline;
+}
+.doc-header .meta b { color: var(--ink); font-weight: 600; letter-spacing: 0.04em; }
+.doc-header .cjk {
+  font-family: var(--serif); font-size: 16px;
+  letter-spacing: 0.32em; color: var(--ink);
+  white-space: nowrap;
+}
+.cjk__kanji { color: var(--red); font-weight: 600; }
+
+/* meta groups: red label + bold value + faded unit/tail.
+   the eye lands on a red anchor, then reads the number, then the unit. */
+.meta-group { display: inline-flex; align-items: baseline; gap: 8px; }
+.meta-label {
+  color: var(--red); font-weight: 600;
+  letter-spacing: 0.22em; font-size: 12px;
+}
+.meta-unit { color: var(--ink-3); opacity: 0.85; letter-spacing: 0.18em; font-size: 12px; }
+.meta-tail { color: var(--ink-3); opacity: 0.7; letter-spacing: 0.14em; font-size: 12px; }
+.meta-sep {
+  color: var(--red); opacity: 0.55;
+  font-size: 12px; letter-spacing: 0;
+  display: inline-block;
+  transform: scale(0.65) translateY(-1px);
+  transform-origin: center;
+}
+.meta-intro {
+  color: var(--red);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+
+/* ---------- workspace: diagram + right rail ---------- */
+.workspace--v4 {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ---------- right rail ---------- */
+.rail {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---------- panel ---------- */
+.panel {
+  position: relative;
+  border: var(--hairline) solid var(--rule);
+  background: rgba(255, 250, 235, 0.25);
+  padding: 22px 16px 16px;
+}
+.panel__title {
+  position: absolute; top: -10px; left: 14px;
+  background: var(--paper); padding: 0 8px;
+  font-size: 14px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--ink);
+  max-width: calc(100% - 56px);
+  line-height: 1.25;
+  display: inline-block;
+}
+.panel__title .cjk {
+  font-family: var(--serif); color: var(--red);
+  margin-left: 6px; letter-spacing: 0;
+  white-space: nowrap;
+}
+.panel__corner-mark {
+  position: absolute; top: -12px; right: 14px;
+  width: 20px; height: 20px;
+  background: var(--red);
+  display: grid; place-items: center;
+  color: var(--paper); font-family: var(--serif); font-size: 14px;
+  z-index: 2;
+}
+.panel--dossier { transition: padding-top 0.25s ease; }
+.panel--dossier .panel__title { top: -9px; }
+
+@keyframes ai-atlas-dossier-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.dossier__body {
+  animation: ai-atlas-dossier-fade 0.32s ease-out both;
+}
+.panel--dossier .panel__title {
+  animation: ai-atlas-dossier-fade 0.32s ease-out both;
+}
+.legend-kv li, .panel--dossier .kv li {
+  transition: color 0.25s ease;
+}
+
+/* ---------- key/value list ---------- */
+.kv { list-style: none; padding: 0; margin: 0; font-size: 14px; }
+.kv li { display: flex; gap: 10px; padding: 5px 0; color: var(--ink-2); }
+.kv li .k { color: var(--ink-3); flex: 0 0 110px; text-transform: lowercase; display: flex; align-items: center; }
+.kv li .v { color: var(--ink); flex: 1; min-width: 0; word-break: break-word; }
+.kv li .v.red  { color: var(--red); }
+.kv li .v.blue { color: var(--blue); }
+.kv li .v.gold { color: var(--gold); }
+.kv li .v.v--ref { cursor: pointer; transition: filter 0.15s ease; }
+.kv li .v.v--ref:hover { filter: brightness(1.15); }
+.legend-kv li { padding: 8px 0; }
+
+/* ---------- diamond ---------- */
+.dmd {
+  display: inline-block; width: 10px; height: 10px;
+  background: var(--red);
+  transform: rotate(45deg) translateY(-1px);
+  margin-right: 7px; flex: none;
+}
+.dmd.blue { background: var(--blue); }
+.dmd.gold { background: var(--gold); }
+
+/* ---------- canvas ---------- */
+.canvas--orbital {
+  position: relative;
+  border: var(--hairline) solid var(--rule);
+  background:
+    linear-gradient(rgba(236, 228, 207, 0.70), rgba(236, 228, 207, 0.70)),
+    url("/ai-atlas/bg.webp") center / 100% 100% no-repeat,
+    radial-gradient(ellipse 70% 60% at 50% 50%, var(--paper-2) 0%, var(--paper) 75%);
+  aspect-ratio: 1500 / 1500;
+  padding: 24px;
+  isolation: isolate;
+}
+.canvas--orbital::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0 0.05  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  z-index: 0;
+}
+.canvas--orbital::after {
+  content: "";
+  position: absolute;
+  bottom: 14px; right: 14px;
+  width: 150px; height: 150px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='82' font-family='serif' font-size='96' font-weight='400' fill='%231a1a1a' text-anchor='middle'>%E5%9B%B3</text></svg>");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.035;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.orbital-svg { width: 100%; height: 100%; display: block; overflow: visible; position: relative; z-index: 1; }
+
+/* ---------- canvas stats overlay (top-left) ---------- */
+.canvas-stats {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  opacity: 0.78;
+  pointer-events: none;
+  z-index: 2;
+  user-select: none;
+}
+.canvas-stats__row { display: flex; gap: 8px; padding: 1px 0; }
+.canvas-stats__row .k { color: var(--ink-3); }
+.canvas-stats__row .v { color: var(--ink); font-feature-settings: 'tnum'; }
+
+/* corner ticks */
+.corner {
+  position: absolute; width: 14px; height: 14px;
+  border: 1px solid var(--ink); pointer-events: none;
+}
+.corner--tl { top: 6px;    left: 6px;    border-right: 0; border-bottom: 0; }
+.corner--tr { top: 6px;    right: 6px;   border-left: 0;  border-bottom: 0; }
+.corner--bl { bottom: 6px; left: 6px;    border-right: 0; border-top: 0; }
+.corner--br { bottom: 6px; right: 6px;   border-left: 0;  border-top: 0; }
+
+/* center mark */
+.center-mark { transition: opacity 0.2s ease; }
+.center-mark.is-dim { opacity: 0.35; }
+.center-mark.is-active circle:first-child {
+  fill: #fff8e6;
+}
+@keyframes ai-atlas-center-pulse {
+  0%, 100% { stroke-width: 1.4; }
+  50%      { stroke-width: 5; }
+}
+.center-mark.is-glow circle:first-child {
+  animation: ai-atlas-center-pulse 1.4s ease-in-out infinite;
+}
+.center-mark__label {
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: 0.32em;
+  fill: var(--ink);
+}
+.center-mark__sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  fill: var(--ink-3);
+  letter-spacing: 0.04em;
+}
+
+/* territory label */
+.territory__label {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.32em;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  fill: var(--ink-3);
+  text-transform: uppercase;
+}
+
+/* ring label */
+.ring__label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.36em;
+  fill: var(--ink-3);
+  text-transform: uppercase;
+  opacity: 0.72;
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: opacity 0.18s ease, fill 0.18s ease;
+}
+.ring__label:hover, .ring__label.is-glow { opacity: 1; fill: var(--red); }
+.ring__label.is-dim { opacity: 0.28; }
+
+.ring__circle { transition: stroke 0.18s ease, stroke-width 0.18s ease, opacity 0.18s ease; }
+.ring__circle.is-glow { stroke: var(--red); stroke-width: 1.4; }
+.ring__circle.is-dim { opacity: 0.32; }
+
+.node.node--redacted {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+.node.node--redacted:hover {
+  background: #1a1a1a;
+  color: #d4ffd4;
+}
+.node--redacted.node--filled .node__label small,
+.node--redacted .node__label small { color: rgba(255,255,255,0.6); }
+
+.node__dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  flex: none;
+  box-shadow: 0 0 0 1px var(--paper);
+}
+.node__dot--ok      { background: #2f8a3e; }
+.node__dot--warn    { background: var(--gold); }
+.node__dot--down    { background: var(--red); }
+.node__dot--unknown { background: var(--ink-3); }
+.node--filled .node__dot { box-shadow: 0 0 0 1px var(--ink-fill); }
+
+/* loading state */
+.atlas-loading {
+  padding: 80px 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.atlas-loading code {
+  font-family: var(--mono);
+  color: var(--red);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* wires */
+.wire { transition: opacity 0.2s ease, stroke 0.2s ease; }
+.wire.is-dim { opacity: 0.18; }
+
+/* ---------- node ---------- */
+.node-wrap {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+}
+.node {
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--r);
+  padding: 7px 12px;
+  font-size: 14px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, opacity .2s ease;
+  user-select: none;
+}
+.node small {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+.node__label { display: flex; flex-direction: column; line-height: 1.2; }
+.node:hover {
+  background: #fff8e6;
+  box-shadow: 0 2px 0 var(--ink);
+  transform: translateY(-1px);
+}
+.node.is-active {
+  background: #fff8e6;
+  box-shadow: 0 0 0 1.4px var(--red), 1px 2px 0 -0.5px var(--red-deep);
+}
+.node.is-dim { opacity: 0.45; }
+
+@keyframes ai-atlas-node-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 1px var(--red), 0 0 0 0 rgba(179, 57, 43, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 1px var(--red), 0 0 0 7px rgba(179, 57, 43, 0.27);
+  }
+}
+@keyframes ai-atlas-node-pulse-active {
+  0%, 100% {
+    box-shadow: 0 0 0 1px var(--red), 1px 2px 0 -0.5px var(--red-deep), 0 0 0 0 rgba(179, 57, 43, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 1px var(--red), 1px 2px 0 -0.5px var(--red-deep), 0 0 0 8px rgba(179, 57, 43, 0.27);
+  }
+}
+.node.is-glow {
+  animation: ai-atlas-node-pulse 1.4s ease-in-out infinite;
+}
+.node.is-glow.is-active {
+  animation: ai-atlas-node-pulse-active 1.4s ease-in-out infinite;
+}
+.node--filled {
+  background: var(--ink-fill);
+  color: var(--paper);
+  border-color: var(--ink-fill);
+}
+.node--filled small { color: rgba(255,255,255,0.55); }
+.node--filled:hover { background: #2a2a2a; }
+.node--filled.is-active {
+  background: #2a2a2a;
+  color: var(--paper);
+}
+
+/* ---------- dossier ---------- */
+.dossier__link {
+  color: var(--red);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.dossier__link:hover { border-bottom-color: var(--red); }
+.dossier__tip {
+  text-decoration: underline dotted var(--rule-soft);
+  text-underline-offset: 3px;
+  cursor: help;
+  transition: text-decoration-color 0.15s ease;
+}
+.dossier__tip:hover { text-decoration-color: var(--red); }
+.dossier__desc {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.55;
+  margin: 6px 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--rule-soft);
+}
+
+/* ---------- footer ---------- */
+.doc-footer {
+  margin-top: 26px; padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between;
+  font-size: 14px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.doc-footer .serif {
+  font-family: var(--serif); font-style: italic;
+  text-transform: none; letter-spacing: 0;
+}
+
+/* ---------- ink-consume easter egg ---------- */
+.ink-consume {
+  position: absolute; inset: 0;
+  pointer-events: auto;
+  z-index: 50;
+  background: var(--ink-fill);
+  clip-path: circle(0% at 50% 50%);
+  animation:
+    ai-atlas-ink-grow 7s cubic-bezier(.55, 0, .82, .55) forwards,
+    ai-atlas-ink-fade 9.5s linear forwards;
+}
+@keyframes ai-atlas-ink-grow {
+  0%   { clip-path: circle(0%  at 50% 50%); }
+  100% { clip-path: circle(80% at 50% 50%); }
+}
+@keyframes ai-atlas-ink-fade {
+  0%, 80% { opacity: 1; }
+  100%    { opacity: 0; }
+}
+
+/* hanko stamps */
+.hanko-row { display: inline-flex; gap: 8px; align-items: center; }
+.hanko {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent;
+  color: var(--red);
+  font-family: var(--serif); font-size: 16px;
+  letter-spacing: 0.06em; text-transform: none;
+  padding: 4px 9px;
+  box-shadow: inset 0 0 0 1px var(--red);
+  user-select: none;
+  cursor: default;
+}
+
+.hr-dotted { border: 0; border-top: 1px dashed var(--rule-soft); margin: 10px 0; }
+
+.legend-cta {
+  display: block;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--rule-soft);
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--red);
+  text-decoration: none;
+  transition: color 0.18s ease, letter-spacing 0.18s ease;
+}
+.legend-cta:hover {
+  color: var(--red-deep);
+  letter-spacing: 0.08em;
+}
+.muted { color: var(--ink-3); }
+.serif { font-family: var(--serif); }
+.italic { font-style: italic; }
+.cjk { font-family: var(--serif); color: var(--red); font-size: 14px; letter-spacing: 0.2em; }
+
+/* ============================================================
+   Doctrine panel — swaps in for Legend in Security mode.
+   Single illustration; sized to match the Legend so the rail
+   doesn't jump when toggling.
+   ============================================================ */
+.rail > .panel:first-child {
+  min-height: 307px;
+}
+.doctrine-panel {
+  animation: ai-atlas-dossier-fade 0.32s ease-out both;
+  height: 307px;
+  padding: 0;
+  overflow: hidden;
+}
+.doctrine-panel .panel__title {
+  top: 14px;
+  z-index: 3;
+}
+.doctrine-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.5;
+}
+
+/* ============================================================
+   View toggle (Environment | Security) — sits in the rail.
+   Sliding ink indicator moves between halves on toggle.
+   ============================================================ */
+.view-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: var(--hairline) solid var(--rule);
+  background: var(--paper);
+  overflow: hidden;
+  isolation: isolate;
+}
+.view-toggle::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 50%; height: 100%;
+  background: var(--ink-fill);
+  z-index: 0;
+  transition: transform 0.42s cubic-bezier(0.5, 0.05, 0.2, 1);
+  transform: translateX(0%);
+}
+.view-toggle[data-mode="security"]::before {
+  transform: translateX(100%);
+}
+.view-toggle__btn {
+  position: relative;
+  z-index: 1;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: transparent;
+  border: 0;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: color 0.32s ease;
+}
+.view-toggle__btn:hover { color: var(--ink); }
+.view-toggle__btn.is-active {
+  color: var(--paper);
+}
+
+/* ============================================================
+   View stage — fades the active view in on every toggle.
+   Keyed by viewMode so React remounts and the animation replays.
+   ============================================================ */
+.view-stage {
+  animation: ai-atlas-stage-in 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+  min-width: 0;
+}
+@keyframes ai-atlas-stage-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ============================================================
+   Security view — same paper aesthetic, six-ring diagram + sections.
+   ============================================================ */
+.security-view {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.security-canvas { position: relative; }
+
+.sec-callout {
+  position: absolute;
+  width: 240px;
+  background: var(--paper);
+  border: var(--hairline) solid var(--rule);
+  padding: 12px 14px;
+  z-index: 3;
+  box-shadow: 1px 2px 0 -0.5px rgba(42,42,42,0.18);
+  cursor: default;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.sec-callout.is-glow {
+  border-color: var(--red);
+  box-shadow: 1px 2px 0 -0.5px var(--red);
+}
+.sec-callout__num {
+  display: inline-block;
+  width: 22px; height: 22px;
+  background: var(--red);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 12px; font-weight: 600;
+  text-align: center;
+  line-height: 22px;
+  margin-right: 9px;
+  vertical-align: middle;
+}
+.sec-callout__title {
+  display: inline;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+}
+.sec-callout__what {
+  margin: 9px 0 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.sec-callout__why {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.5;
+  padding-left: 8px;
+  border-left: 2px solid var(--red);
+}
+.sec-callout__why b { color: var(--ink); font-weight: 600; }
+
+/* center mark in security mode pulses red ring */
+.security-canvas .center-mark circle:first-child {
+  animation: ai-atlas-center-pulse 1.4s ease-in-out infinite;
+}
+.security-pulse { transform-origin: center; }
+
+/* hovered ring breathes; arc label flips to red — security canvas only */
+@keyframes ai-atlas-ring-pulse {
+  0%, 100% { stroke-width: 1.4; }
+  50%      { stroke-width: 2.6; }
+}
+.security-canvas .ring__circle.is-glow {
+  animation: ai-atlas-ring-pulse 1.4s ease-in-out infinite;
+}
+.security-canvas .ring__label.is-glow {
+  fill: var(--red);
+  opacity: 1;
+}
+
+.security-section {
+  border: var(--hairline) solid var(--rule);
+  background: rgba(255, 250, 235, 0.25);
+  padding: 28px 28px 26px;
+  position: relative;
+}
+.security-h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+.security-h2 .cjk {
+  margin-left: 10px;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+}
+.security-sub {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-3);
+  margin: 0 0 22px;
+  line-height: 1.55;
+}
+
+.sec-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.sec-stat {
+  border: var(--hairline) solid var(--rule);
+  background: var(--paper);
+  padding: 18px 16px;
+  position: relative;
+}
+.sec-stat::before {
+  content: "";
+  position: absolute;
+  top: 8px; left: 8px;
+  width: 8px; height: 8px;
+  background: var(--red);
+  transform: rotate(45deg);
+}
+.sec-stat b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 8px 0 8px 18px;
+  font-feature-settings: 'tnum';
+}
+.sec-stat span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-left: 18px;
+}
+
+.sec-agent-stage {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 4px;
+}
+.sec-apex {
+  background: var(--ink-fill);
+  color: var(--paper);
+  padding: 20px 20px 22px;
+  border: var(--hairline) solid var(--ink-fill);
+}
+.sec-apex__role {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(236, 228, 207, 0.55);
+  margin-bottom: 8px;
+}
+.sec-apex__name {
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+.sec-apex__name .cjk {
+  font-family: var(--serif);
+  color: var(--red);
+  margin-left: 8px;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+.sec-apex__creds { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.sec-apex__creds li {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: rgba(236, 228, 207, 0.85);
+}
+.sec-apex__creds li::before {
+  content: "◆ ";
+  color: var(--red);
+  margin-right: 4px;
+}
+
+.sec-sib-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.sec-sib {
+  border: var(--hairline) solid var(--rule);
+  background: var(--paper);
+  padding: 12px 14px;
+}
+.sec-sib h4 {
+  margin: 0 0 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sec-sib__badge {
+  background: rgba(42,42,42,0.08);
+  color: var(--ink-3);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 6px;
+  letter-spacing: 0.06em;
+  font-family: var(--mono);
+  text-transform: lowercase;
+}
+.sec-sib p {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  line-height: 1.55;
+}
+
+.security-punch {
+  margin: 22px 0 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.security-punch b {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.sec-pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.sec-pattern {
+  border: var(--hairline) solid var(--rule);
+  background: var(--paper);
+  padding: 18px 18px 20px;
+  position: relative;
+}
+.sec-pattern__marker {
+  display: inline-block;
+  width: 9px; height: 9px;
+  background: var(--red);
+  transform: rotate(45deg);
+  margin-bottom: 12px;
+}
+.sec-pattern h3 {
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.sec-pattern p {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+
+@media (max-width: 1100px) {
+  /* Stack rings + callouts vertically inside the security canvas. Without
+     this, the canvas keeps its square aspect-ratio while the SVG stretches
+     to height:100% and the static callouts overflow below the canvas,
+     landing on top of the "BY THE NUMBERS" section. */
+  .security-canvas {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .security-canvas .orbital-svg {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 auto;
+  }
+  .sec-callout { position: static; width: auto; margin-top: 0; }
+  .sec-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .sec-pattern-grid { grid-template-columns: 1fr; }
+  .sec-agent-stage { grid-template-columns: 1fr; }
+  .sec-sib-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Mobile / narrow viewports — stack rail below canvas, wrap
+   header, drop fixed heights. Diagram still readable but small.
+   ============================================================ */
+/* Clear the global KeepSimple navbar (position: fixed; height: 55px
+   at <=1140px). Without this top padding, the doc-header metrics row
+   slips behind the navbar on tablet & phone. */
+@media (max-width: 1140px) {
+  .sheet {
+    padding-top: 71px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sheet {
+    padding: 71px 14px 20px;
+  }
+  .doc-header {
+    flex-wrap: wrap;
+    white-space: normal;
+    gap: 10px;
+    font-size: 11px;
+  }
+  .doc-header .header-left {
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .doc-header .meta {
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+  }
+  .doc-header .cjk {
+    font-size: 14px;
+    letter-spacing: 0.22em;
+  }
+  .meta-intro {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+  .meta-tail {
+    display: none;
+  }
+  /* Mobile reorder: legend → view toggle → canvas → dossier. The rail
+     dissolves (display: contents) so its children participate directly
+     in the workspace flex order. */
+  .workspace--v4 {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .view-stage {
+    order: 3;
+    width: 100%;
+    align-self: stretch;
+  }
+  .canvas--orbital {
+    width: 100%;
+    padding: 14px;
+  }
+  .rail {
+    display: contents;
+  }
+  .rail > .panel:first-child {
+    order: 1;
+    min-height: auto;
+  }
+  .rail > .view-toggle {
+    order: 2;
+    justify-self: stretch;
+    width: 100%;
+  }
+  .rail > .panel--dossier {
+    order: 4;
+  }
+  .doctrine-panel {
+    height: auto;
+    aspect-ratio: 380 / 307;
+  }
+  .canvas-stats {
+    font-size: 10px;
+    top: 10px;
+    left: 12px;
+  }
+  .doc-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .canvas--orbital {
+    padding: 12px;
+  }
+  .panel {
+    padding: 18px 14px 14px;
+  }
+  .panel__title {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
+  .kv li {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .kv li .k {
+    flex: 0 0 100%;
+  }
+  .kv li .v {
+    flex: 1 1 100%;
+  }
+  .doctrine-panel {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+/* Touch devices (Android, iOS): :hover sticks after tap until the user
+   taps elsewhere, leaving nodes visually "locked". Neutralize the
+   hover styles where there is no real hover capability. */
+@media (hover: none) {
+  .node:hover {
+    background: var(--paper);
+    box-shadow: none;
+    transform: none;
+  }
+  .node--filled:hover {
+    background: var(--ink-fill);
+  }
+  .node.node--redacted:hover {
+    background: var(--paper);
+    color: inherit;
+  }
+  .ring__label:hover {
+    opacity: 0.85;
+    fill: inherit;
+  }
+  .kv li .v.v--ref:hover { filter: none; }
+  .dossier__link:hover { border-bottom-color: var(--rule-soft); }
+  .dossier__tip:hover { text-decoration-color: var(--rule-soft); }
+  .legend-cta:hover {
+    color: var(--red);
+    letter-spacing: 0.04em;
+  }
+  .view-toggle__btn:hover { color: inherit; }
+}
+

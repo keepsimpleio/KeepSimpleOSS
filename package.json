@@ -18,6 +18,12 @@
     "test:firefox": "cypress run --browser firefox",
     "test:edge": "cypress run --browser edge",
     "test:all": "npm run test:chrome && npm run test:firefox && npm run test:edge",
+    "test:e2e": "playwright test --project=chromium",
+    "test:e2e:ui": "playwright test --project=chromium --ui",
+    "test:e2e:p0": "playwright test tests/p0 --project=chromium",
+    "test:e2e:p1": "playwright test tests/p1 --project=chromium",
+    "test:e2e:p2": "playwright test tests/p2 --project=chromium",
+    "test:e2e:report": "playwright show-report",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -67,9 +73,11 @@
     ]
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.2",
     "@babel/core": "7.19.3",
     "@cypress/react": "^9.0.1",
     "@cypress/vite-dev-server": "^6.0.3",
+    "@playwright/test": "^1.59.1",
     "@types/amplitude-js": "8.16.2",
     "@types/classnames": "2.2.11",
     "@types/lodash.debounce": "4.0.7",

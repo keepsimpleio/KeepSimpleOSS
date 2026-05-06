@@ -19,6 +19,7 @@ const Contributor: FC<ContributorProps> = ({
 }) => {
   return (
     <div
+      data-testid="contributor-card"
       className={cn(styles.contributorCard, {
         [styles.active]: isActive,
         [styles.inactive]: !isActive,

@@ -2,6 +2,7 @@
 .vscode
 .history
 .idea/
+.codex
 
 # Logs
 logs
@@ -116,6 +117,16 @@ dist
 package-lock.json
 
 .claude/settings.local.json
+CLAUDE.local.md
 
 # Playwright
 playwright-report/
+test-results/
+blob-report/
+.playwright/
+.playwright-mcp/
+
+# Local QA planning notes (do not commit)
+QA_PLAN.md
+QA_RECON.md
+TODO.md
