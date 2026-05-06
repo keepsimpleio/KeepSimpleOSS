@@ -5,6 +5,7 @@ const ru = {
   contributorsTxt: 'участники',
   tools: 'Инструменты',
   longevity: 'Протокол Долголетия',
+  aiAtlas: 'AI Атлас',
 };
 
 export default ru;

@@ -5,6 +5,7 @@ const hy = {
   contributorsTxt: 'contributors',
   tools: 'Tools',
   longevity: 'Longevity Protocol',
+  aiAtlas: 'AI Atlas',
 };
 
 export default hy;

@@ -18,6 +18,7 @@ import { LongevityProvider, useLongevity } from '../context/LongevityContext';
 
 import '../styles/globals.scss';
 import '../styles/vibesuite.scss';
+import '../styles/ai-atlas.css';
 // import '../styles/tom.scss';
 
 type TApp = {

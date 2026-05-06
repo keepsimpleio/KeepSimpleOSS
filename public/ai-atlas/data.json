@@ -1,0 +1,686 @@
+{
+  "brand": {
+    "title": "AI Atlas",
+    "kanji": "天",
+    "subtitle": "single host empire · class K5"
+  },
+  "ringLabels": {
+    "order": { "label": "I · Orchestrators", "theta": 270, "offset": 0.1 },
+    "devEnv": { "label": "II · Dev Environment", "theta": 270 },
+    "projects": {
+      "label": "III · Core Products",
+      "theta": 270,
+      "offset": 0.085
+    },
+    "territories": { "label": "IV · Impact", "theta": 270 }
+  },
+
+  "apex": {
+    "id": "wolf",
+    "label": "WOLF",
+    "cjk": "天",
+    "sub": "founder",
+    "diamond": "gold"
+  },
+
+  "order": {
+    "r": 0.2,
+    "member": {
+      "id": "order",
+      "label": "The Order",
+      "diamond": "blue",
+      "theta": 270,
+      "status": "ok"
+    }
+  },
+
+  "devEnv": {
+    "r": 0.4,
+    "members": [
+      {
+        "id": "voice",
+        "label": "Voice Agent",
+        "diamond": "blue",
+        "theta": 330,
+        "status": "ok"
+      },
+      {
+        "id": "qa",
+        "label": "QA",
+        "diamond": "blue",
+        "theta": 30,
+        "status": "ok"
+      },
+      {
+        "id": "researcher",
+        "label": "Researcher",
+        "diamond": "blue",
+        "theta": 210,
+        "status": "ok"
+      },
+      {
+        "id": "devops",
+        "label": "DevOps",
+        "diamond": "blue",
+        "theta": 150,
+        "status": "ok"
+      },
+      {
+        "id": "tools",
+        "label": "Tools and Tweaks",
+        "sub": "infra · memory · tweaks",
+        "diamond": "red",
+        "theta": 90,
+        "status": "ok"
+      }
+    ]
+  },
+
+  "projects": {
+    "r": 0.6,
+    "leadDeg": 5,
+    "members": [
+      {
+        "id": "terminal",
+        "label": "Terminal",
+        "sub": "everything builder",
+        "diamond": "red",
+        "theta": 215,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "territoryArc": 0,
+        "children": [],
+        "territoryLabel": ""
+      },
+      {
+        "id": "multimove",
+        "label": "Multimove",
+        "sub": "social media",
+        "diamond": "red",
+        "theta": 0,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "territoryArc": 70,
+        "children": [
+          {
+            "id": "orchestrator",
+            "label": "Orchestrator",
+            "diamond": "gold",
+            "status": "ok"
+          },
+          {
+            "id": "telegram",
+            "label": "Telegram",
+            "diamond": "blue",
+            "status": "ok"
+          },
+          {
+            "id": "linkedin",
+            "label": "LinkedIn",
+            "diamond": "blue",
+            "status": "ok"
+          },
+          {
+            "id": "twitter",
+            "label": "Twitter",
+            "diamond": "blue",
+            "status": "ok"
+          },
+          {
+            "id": "medium",
+            "label": "Medium",
+            "diamond": "blue",
+            "status": "ok"
+          }
+        ],
+        "territoryLabel": "CONTENT · PR"
+      },
+      {
+        "id": "agentsforge",
+        "label": "AgentsForge",
+        "sub": "AI personalities development",
+        "diamond": "red",
+        "theta": 270,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "leadDeg": 0,
+        "leadR": 0.54,
+        "territoryArc": 36,
+        "children": [
+          {
+            "id": "af-redacted-2",
+            "label": "EMBER",
+            "kind": "filled",
+            "status": "ok",
+            "redacted": true
+          }
+        ],
+        "territoryLabel": "B2C | B2B2C"
+      },
+      {
+        "id": "elea",
+        "label": "elea",
+        "sub": "intelligence",
+        "diamond": "red",
+        "theta": 90,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "leadDeg": 0,
+        "leadR": 0.54,
+        "territoryArc": 36,
+        "children": [
+          {
+            "id": "choir",
+            "label": "Choir",
+            "kind": "filled",
+            "status": "ok",
+            "redacted": true
+          },
+          {
+            "id": "echo",
+            "label": "Echo",
+            "kind": "filled",
+            "status": "ok",
+            "redacted": true
+          },
+          {
+            "id": "whisper",
+            "label": "Whisper",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          }
+        ],
+        "territoryLabel": "B2B SAAS"
+      },
+      {
+        "id": "keepsimple",
+        "label": "KeepSimple",
+        "sub": "open-source wing",
+        "diamond": "red",
+        "theta": 180,
+        "status": "ok",
+        "leadDiamond": "gold",
+        "territoryArc": 70,
+        "children": [
+          {
+            "id": "vibecode",
+            "label": "Vibecode Group",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "ks-group",
+            "label": "KeepSimple Channel",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "nasa",
+            "label": "NASA",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "arc",
+            "label": "Arc Of Self",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "ks-io",
+            "label": "KeepSimple.io",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "ks-soc",
+            "label": "UX Core",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          }
+        ],
+        "territoryLabel": "EDUCATION",
+        "territoryReverse": true
+      }
+    ]
+  },
+
+  "territoryR": 0.82,
+
+  "dossiers": {
+    "wolf": {
+      "title": "WOLF · APEX",
+      "cjk": "天",
+      "desc": "Sole sovereign. Sits alone at the empire's center; every ring radiates outward.",
+      "rows": [
+        { "k": "kind", "v": "human", "cls": "gold" },
+        { "k": "ring", "v": "0 — apex" },
+        { "k": "successor", "v": "the order", "cls": "blue" }
+      ]
+    },
+
+    "order": {
+      "title": "THE ORDER",
+      "cjk": "令",
+      "desc": "Sole inhabitant of Ring I. Holds the keys; dispatches authority outward.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "chief of staff" },
+        { "k": "authority", "v": "full · secrets · infra · ingress" },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "I — orchestrators" }
+      ]
+    },
+
+    "tools": {
+      "title": "TOOLS AND TWEAKS",
+      "cjk": "工具",
+      "desc": "Shared infrastructure that gives every agent on this server its hands, eyes, and memory. Four layers below, plus a set of smaller tweaks that shape how agents behave day-to-day.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "ring", "v": "II — dev environment" },
+        {
+          "k": "surfaces",
+          "v": "Apex Launcher (live dashboard) + Wolf's Terminal (agent-shell)."
+        },
+        { "k": "bots", "v": "Various bots of narrow and general purpose." },
+        {
+          "k": "memory",
+          "v": "[MemPalace](https://github.com/mksglu/context-mode) (project-keyed long-term wings) · [context-mode](https://github.com/mksglu/context-mode) (98 KB → 1.3 KB, ~99% reduction)."
+        },
+        {
+          "k": "tweaks",
+          "v": "[CLAUDE.md cascade](tip:Static rules layered global → project → sub-project; the constitution every agent reads at startup.) · [QA Officer](tip:Shared QA brain across projects: change-aware fingerprint memory, accessibility, web vitals, visual regression.) · [gitops wrapper](tip:One PAT, one locked identity; every agent's git and GitHub op routes through it.)."
+        }
+      ]
+    },
+
+    "voice": {
+      "title": "VOICE AGENT",
+      "cjk": "声",
+      "desc": "All-purpose voice gateway. Routes spoken commands, transcribes (Whisper), synthesizes replies (ElevenLabs), hardened against impersonation.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "voice surface" },
+        { "k": "authority", "v": "read host · binary confirmations" },
+        { "k": "reports", "v": "the order", "cls": "blue" },
+        { "k": "ring", "v": "II — dev environment" }
+      ]
+    },
+
+    "qa": {
+      "title": "QA",
+      "cjk": "験",
+      "desc": "Shared QA brain across projects: change-aware fingerprint memory, accessibility checks, web vitals, visual regression. Reads every product as a user would, files reports.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "quality control" },
+        { "k": "authority", "v": "browse · test · report" },
+        { "k": "reports", "v": "the order", "cls": "blue" },
+        { "k": "ring", "v": "II — dev environment" }
+      ]
+    },
+
+    "researcher": {
+      "title": "RESEARCHER",
+      "cjk": "究",
+      "desc": "Eyes and hands on the open web. Drives a real browser like a human user, runs deep research across the internet, and handles research tasks for the other agents.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "external intelligence" },
+        { "k": "authority", "v": "web · social · digest only" },
+        { "k": "reports", "v": "the order", "cls": "blue" },
+        { "k": "ring", "v": "II — dev environment" }
+      ]
+    },
+
+    "devops": {
+      "title": "DEVOPS",
+      "cjk": "運",
+      "desc": "An extension of The Order's hands for container hygiene: builds, restarts, healthchecks. Touches images, never secrets.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "ops hands" },
+        { "k": "authority", "v": "containers · builds · logs" },
+        { "k": "reports", "v": "the order", "cls": "blue" },
+        { "k": "ring", "v": "II — dev environment" }
+      ]
+    },
+
+    "terminal": {
+      "title": "TERMINAL — EVERYTHING BUILDER",
+      "cjk": "端末",
+      "desc": "Successor of the [Wolf's Basement](https://github.com/manager/wolfs-basement) open-source project. Highly-optimized CLI multiplexer that runs 6+ agents (Claude, ChatGPT, any) simultaneously. Designed to make agent collaboration dead simple.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "ring", "v": "III — core products" },
+        {
+          "k": "lead",
+          "v": "AI engineering agent",
+          "cls": "blue",
+          "ref": "lead-terminal"
+        },
+        {
+          "k": "init audit",
+          "v": "Auto-compaction button. Pulses when context fills; summarizes progress and refreshes CLAUDE.md / AGENTS.md."
+        },
+        {
+          "k": "access table",
+          "v": "Live blast-radius map: who can read or write what across containers and projects."
+        },
+        {
+          "k": "auto-warm",
+          "v": "Cross-tab coordinated keep-alive; one ping per target, never N tabs × M agents."
+        },
+        {
+          "k": "byo auth",
+          "v": "Slots for extra OAuth tokens (Anthropic, OpenAI Codex). Agents on different billings in one window."
+        },
+        {
+          "k": "self-mod",
+          "v": "If an agent edits the harness itself, it gets a [CRITICAL] system-prompt warning before a restart kills its own session."
+        },
+        {
+          "k": "send-to",
+          "v": "Forward one agent's full response to another with a fresh instruction — one click, payload included."
+        }
+      ]
+    },
+    "multimove": {
+      "title": "MULTIMOVE",
+      "cjk": "動",
+      "desc": "Automates work with the KeepSimple Team's social-media assets across every public channel.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "ring", "v": "III — core products" },
+        {
+          "k": "lead",
+          "v": "AI engineering agent",
+          "cls": "blue",
+          "ref": "lead-multimove"
+        },
+        { "k": "owns", "v": "content / pr territory" }
+      ]
+    },
+    "keepsimple": {
+      "title": "KEEPSIMPLE — OPEN SOURCE WING",
+      "cjk": "公",
+      "desc": "Founded in 2019. Open-source movement at the intersection of cognitive science, product, and engineering — tools, frameworks, and writing used by 300,000+ people worldwide.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "ring", "v": "III — core products" },
+        {
+          "k": "lead",
+          "v": "human · engineering lead",
+          "cls": "gold",
+          "ref": "lead-keepsimple"
+        },
+        { "k": "owns", "v": "public impact constellation" }
+      ]
+    },
+    "elea": {
+      "title": "ELEA",
+      "cjk": "子",
+      "desc": "Lawful cyber intelligence work.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "ring", "v": "III — core products" },
+        {
+          "k": "lead",
+          "v": "AI engineering agent",
+          "cls": "blue",
+          "ref": "lead-elea"
+        },
+        { "k": "owns", "v": "whisper · echo · choir" }
+      ]
+    },
+    "agentsforge": {
+      "title": "AGENTSFORGE",
+      "cjk": "鍛",
+      "desc": "Agentic AI personalities, grounded in behavioral science.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "ring", "v": "III — core products" },
+        {
+          "k": "lead",
+          "v": "AI engineering agent",
+          "cls": "blue",
+          "ref": "lead-agentsforge"
+        },
+        { "k": "owns", "v": "[CLASSIFIED] · 1 entity" },
+        { "k": "url", "v": "agentsforge.com" }
+      ]
+    },
+    "af-redacted-2": {
+      "title": "[REDACTED]",
+      "cjk": "秘",
+      "desc": "Stealth-mode AgentsForge product. Decoding intercepted.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "owner", "v": "agentsforge", "cls": "red" },
+        { "k": "status", "v": "in forge" }
+      ]
+    },
+
+    "lead-keepsimple": {
+      "title": "ENGINEERING LEAD · KEEPSIMPLE",
+      "cjk": "長",
+      "desc": "Human custodian of the open-source wing.",
+      "rows": [
+        { "k": "kind", "v": "human", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" },
+        { "k": "pairs", "v": "keepsimple", "cls": "red" }
+      ]
+    },
+
+    "lead-terminal": {
+      "title": "ENGINEERING LEAD · TERMINAL",
+      "cjk": "長",
+      "desc": "Engineering lead attached to the project Terminal.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "engineering lead" },
+        { "k": "authority", "v": "terminal codebase · escalates infra" },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" }
+      ]
+    },
+
+    "lead-multimove": {
+      "title": "ENGINEERING LEAD · MULTIMOVE",
+      "cjk": "長",
+      "desc": "Engineering lead attached to the project Multimove.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "engineering lead" },
+        { "k": "authority", "v": "multimove codebase · channel orchestration" },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" }
+      ]
+    },
+
+    "lead-elea": {
+      "title": "ENGINEERING LEAD · ELEA",
+      "cjk": "長",
+      "desc": "Engineering lead attached to the project elea.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "engineering lead" },
+        { "k": "authority", "v": "elea codebase · escalates infra" },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" }
+      ]
+    },
+
+    "lead-agentsforge": {
+      "title": "ENGINEERING LEAD · AGENTSFORGE",
+      "cjk": "長",
+      "desc": "Engineering lead attached to the project AgentsForge.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "engineering lead" },
+        { "k": "authority", "v": "agentsforge codebase · escalates infra" },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" }
+      ]
+    },
+
+    "orchestrator": {
+      "title": "ORCHESTRATOR",
+      "cjk": "指",
+      "desc": "Human coordinator within Multimove territory.",
+      "rows": [
+        { "k": "kind", "v": "human", "cls": "gold" },
+        { "k": "owner", "v": "multimove", "cls": "red" }
+      ]
+    },
+
+    "whisper": {
+      "title": "WHISPER",
+      "cjk": "囁",
+      "desc": "B2B SaaS — quiet listening tier (elea territory).",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "owner", "v": "elea", "cls": "red" }
+      ]
+    },
+    "echo": {
+      "title": "[REDACTED]",
+      "cjk": "秘",
+      "desc": "Stealth-mode product. Decoding intercepted.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "owner", "v": "elea", "cls": "red" },
+        { "k": "status", "v": "in stealth" }
+      ]
+    },
+    "choir": {
+      "title": "[REDACTED]",
+      "cjk": "秘",
+      "desc": "Stealth-mode product. Decoding intercepted.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "owner", "v": "elea", "cls": "red" },
+        { "k": "status", "v": "in stealth" }
+      ]
+    },
+
+    "vibecode": {
+      "title": "VIBECODE GROUP",
+      "cjk": "波",
+      "desc": "Telegram group where the KeepSimple team answers questions live.",
+      "rows": [
+        { "k": "kind", "v": "group" },
+        { "k": "owner", "v": "keepsimple", "cls": "red" },
+        { "k": "url", "v": "https://t.me/vibecodearmenia" }
+      ]
+    },
+    "ks-group": {
+      "title": "KEEPSIMPLE CHANNEL",
+      "cjk": "群",
+      "desc": "Curated Telegram channel on cognitive & behavioral sciences.",
+      "rows": [
+        { "k": "kind", "v": "channel" },
+        { "k": "owner", "v": "keepsimple", "cls": "red" },
+        { "k": "url", "v": "https://t.me/keepsimple" }
+      ]
+    },
+    "ks-io": {
+      "title": "KEEPSIMPLE.IO",
+      "cjk": "簡",
+      "desc": "The KeepSimple movement's home on the web. Hosts UX Core, the Pyramids management framework, and a library of original articles on cognitive science, product, and engineering. Free, accessible to everyone.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "owner", "v": "keepsimple", "cls": "red" },
+        { "k": "url", "v": "keepsimple.io" }
+      ]
+    },
+    "ks-soc": {
+      "title": "UX CORE",
+      "cjk": "型",
+      "desc": "World's largest open-source library of cognitive biases & nudging strategies. Used by leading institutions and companies worldwide — Duke University, Harvard Business School, MIT, Google, Yandex, Amazon, and others.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "owner", "v": "keepsimple", "cls": "red" },
+        { "k": "url", "v": "uxcore.io" }
+      ]
+    },
+    "nasa": {
+      "title": "NASA",
+      "cjk": "星",
+      "desc": "Launchpad for flash vibecoding hackathons.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "owner", "v": "keepsimple", "cls": "red" },
+        { "k": "url", "v": "nasa.am" }
+      ]
+    },
+    "arc": {
+      "title": "ARC OF SELF",
+      "cjk": "弧",
+      "desc": "A recursive theory of identity — 17 years in the making. Releasing soon.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "owner", "v": "keepsimple", "cls": "red" },
+        { "k": "url", "v": "arc-of-self.com" }
+      ]
+    },
+
+    "telegram": {
+      "title": "TELEGRAM",
+      "cjk": "電",
+      "desc": "Multimove's Telegram outpost — posts and listens.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "distribution channel" },
+        { "k": "authority", "v": "post · reply · ingest" },
+        { "k": "reports", "v": "orchestrator", "cls": "gold" },
+        { "k": "ring", "v": "IV — impact" }
+      ]
+    },
+
+    "linkedin": {
+      "title": "LINKEDIN",
+      "cjk": "連",
+      "desc": "Multimove's LinkedIn outpost — professional surface.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "distribution channel" },
+        { "k": "authority", "v": "post · reply · ingest" },
+        { "k": "reports", "v": "orchestrator", "cls": "gold" },
+        { "k": "ring", "v": "IV — impact" }
+      ]
+    },
+
+    "twitter": {
+      "title": "TWITTER",
+      "cjk": "鳥",
+      "desc": "Multimove's X outpost — fast, public, conversational.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "distribution channel" },
+        { "k": "authority", "v": "post · reply · ingest" },
+        { "k": "reports", "v": "orchestrator", "cls": "gold" },
+        { "k": "ring", "v": "IV — impact" }
+      ]
+    },
+
+    "medium": {
+      "title": "MEDIUM",
+      "cjk": "誌",
+      "desc": "Multimove's long-form outpost — essays and articles.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "long-form channel" },
+        { "k": "authority", "v": "publish · update" },
+        { "k": "reports", "v": "orchestrator", "cls": "gold" },
+        { "k": "ring", "v": "IV — impact" }
+      ]
+    }
+  }
+}
