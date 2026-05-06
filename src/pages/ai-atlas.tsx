@@ -644,7 +644,7 @@ function NodeBody({
       height={h}
       style={{ overflow: 'visible' }}
     >
-      <div xmlns="http://www.w3.org/1999/xhtml" className="node-wrap">
+      <div className="node-wrap">
         <div
           className={klass}
           onClick={() => onSelect(node.id)}
