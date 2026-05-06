@@ -123,6 +123,7 @@ playwright-report/
 test-results/
 blob-report/
 .playwright/
+.playwright-mcp/
 
 # Local QA planning notes (do not commit)
 QA_PLAN.md
