@@ -20,6 +20,21 @@ const POL = (r: number, theta: number) => ({
   y: Math.sin(RAD(theta)) * r * HALF,
 });
 
+/* On touch devices Mouse* events fire synthetically on tap but never
+   get a leave — without this, hover state would lock on Android. */
+function useHasHover() {
+  const [hasHover, setHasHover] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setHasHover(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
+  return hasHover;
+}
+
 type Lang = 'en' | 'ru';
 const pickLang = (locale: string | undefined): Lang =>
   locale === 'ru' ? 'ru' : 'en';
@@ -1328,8 +1343,11 @@ function SecurityCallout({
   );
 }
 
-function SecurityView({ t }: { t: T }) {
-  const [hoveredLayer, setHoveredLayer] = useState<number | null>(null);
+function SecurityView({ t, hasHover }: { t: T; hasHover: boolean }) {
+  const [hoveredLayer, setHoveredLayerRaw] = useState<number | null>(null);
+  const setHoveredLayer = (n: number | null) => {
+    if (hasHover) setHoveredLayerRaw(n);
+  };
   const leftLayers = t.securityLayers.filter(l => l.side === 'left');
   const rightLayers = t.securityLayers.filter(l => l.side === 'right');
   const calloutTops = ['4%', '38%', '72%'];
@@ -1448,6 +1466,7 @@ function AiAtlasApp() {
   const [hoverNode, setHoverNode] = useState<string | null>(null);
   const [linkHoverNode, setLinkHoverNode] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('environment');
+  const hasHover = useHasHover();
 
   /* mark <body> while AI Atlas is mounted so the global navbar can
      match the page's paper background (light mode only for now).
@@ -1651,9 +1670,11 @@ function AiAtlasApp() {
   const pinnedSolo = !!focusedNode && !hoverNode && !linkHoverNode;
 
   const onSelect = (id: string | null, mode?: string) => {
-    if (mode === 'hover') setHoverNode(id);
-    else if (mode === 'link-hover') setLinkHoverNode(id);
-    else {
+    if (mode === 'hover') {
+      if (hasHover) setHoverNode(id);
+    } else if (mode === 'link-hover') {
+      if (hasHover) setLinkHoverNode(id);
+    } else {
       setLinkHoverNode(null);
       setFocusedNode(id === focusedNode ? null : id);
     }
@@ -2126,7 +2147,9 @@ function AiAtlasApp() {
             </div>
           )}
 
-          {viewMode === 'security' && <SecurityView t={t} />}
+          {viewMode === 'security' && (
+            <SecurityView t={t} hasHover={hasHover} />
+          )}
         </div>
 
         <aside className="rail">

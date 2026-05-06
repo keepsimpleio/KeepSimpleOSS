@@ -123,9 +123,14 @@ const Header: FC = () => {
           <Link href="/" locale={locale} shallow={false} legacyBehavior>
             <Image
               onClick={e => {
-                if (router.pathname !== '/') {
-                  !isSmallScreen && handleClick(e, '/');
+                const goingToLanding = router.pathname !== '/';
+                if (isSmallScreen) {
+                  e.preventDefault();
+                  if (isOpenedSidebar) toggleSidebar();
+                  if (goingToLanding) router.push('/');
+                  return;
                 }
+                if (goingToLanding) handleClick(e, '/');
               }}
               src={
                 isDarkTheme
