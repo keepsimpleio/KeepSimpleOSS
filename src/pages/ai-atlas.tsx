@@ -1788,12 +1788,6 @@ function AiAtlasApp() {
                     <span className="meta-unit">{t.metricLoc}</span>
                   </>
                 )}
-                {metrics.services != null && (
-                  <>
-                    <b>{metrics.services}</b>
-                    <span className="meta-unit">{t.metricServices}</span>
-                  </>
-                )}
               </span>
             </>
           )}
