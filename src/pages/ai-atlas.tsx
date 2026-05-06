@@ -1,4 +1,4 @@
- 
+import { useRouter } from 'next/router';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -20,8 +20,469 @@ const POL = (r: number, theta: number) => ({
   y: Math.sin(RAD(theta)) * r * HALF,
 });
 
-const DATA_URL = '/ai-atlas/data.json';
+type Lang = 'en' | 'ru';
+const pickLang = (locale: string | undefined): Lang =>
+  locale === 'ru' ? 'ru' : 'en';
+const dataUrlFor = (lang: Lang) =>
+  lang === 'ru' ? '/ai-atlas/data-ru.json' : '/ai-atlas/data.json';
 const METRICS_URL = 'https://metrics.administration.ae/metrics.json';
+
+/* ============================================================
+   Locale strings — every user-facing piece of text in EN + RU.
+   Both shapes are identical so consumers can index off `t`.
+   ============================================================ */
+type SecurityLayer = {
+  n: number;
+  side: 'left' | 'right';
+  label: string;
+  title: string;
+  what: string;
+  why: string;
+};
+
+const STRINGS = {
+  en: {
+    seoTitle: 'AI Atlas — KeepSimple',
+    seoDescription:
+      "An orbital map of KeepSimple's people, AI agents, and products — founders, dev environment, core projects and territories — visualized live.",
+    seoKeywords:
+      'AI Atlas, KeepSimple, AI agents, dev environment, organizational map, orbital diagram, knowledge map, Wolf Alexanyan',
+    ogImageAlt: 'AI Atlas — orbital map of KeepSimple operations',
+    loading: 'Loading…',
+    failedToLoad: 'Failed to load data — ',
+    welcomeBanner: "Welcome to the heart of KeepSimple Team's operations",
+    day: 'DAY',
+    daySinceTail: 'since the beginning of our movement',
+    thisWeek: 'THIS WEEK',
+    metricCommits: 'commits',
+    metricLoc: 'loc',
+    metricServices: 'services',
+    apexFounderFallback: 'founder',
+    redactedPlaceholder: 'REDACTED',
+    engLeadLabel: 'Eng. Lead',
+    claudeMdLabel: 'claude.md',
+    linesValue: (n: number) => `${n.toLocaleString()} lines`,
+    canvasStats: {
+      humans: 'humans',
+      agents: 'ai agents',
+      products: 'products',
+    },
+    introDossierTitle: 'THIS ATLAS',
+    introDossierCjk: '此地図',
+    introQuestionsBefore: 'Got questions? Drop those to our',
+    introQuestionsLink: 'Telegram',
+    introQuestionsAfter: '.',
+    introDepthLabel: 'depth',
+    introDepthValue: '5 rings · 3 actor types',
+    introInhabitantsLabel: 'inhabitants',
+    introInhabitantsTpl: (h: number, a: number, p: number) =>
+      `${h} humans · ${a} ai agents · ${p} products`,
+    introPrincipleLabel: 'principle',
+    principles: [
+      'single host · single source · single owner',
+      'ship daily · fail loud · fix faster',
+      'discipline before tools',
+      'the atlas earns trust by being literally true',
+      'strengthen self · co-exist · co-prosper',
+    ],
+    legendTitle: 'Legend',
+    legendCjk: '凡例',
+    legendHumanLabel: 'human',
+    legendHumanDesc: 'direction · final judgment',
+    legendAgentLabel: 'ai agent',
+    legendAgentDesc: 'dedicated AI · custom memory · CLAUDE.md persona',
+    legendProductLabel: 'product',
+    legendProductDesc: 'products we build',
+    legendSolidLabel: '— solid',
+    legendSolidDesc: 'authority',
+    legendFilledLabel: 'filled tile',
+    legendFilledDesc: 'subsystem · scoped to a parent product',
+    legendArticleCta: 'Read why do you need this',
+    legendArticleUrl:
+      'https://keepsimple.io/articles/agent-orchestration-for-career',
+    toggleEnvironment: 'Environment',
+    toggleSecurity: 'Security',
+    doctrineTitle: 'Doctrine',
+    doctrineCjk: '守則',
+    doctrineImageAlt: 'Doctrine — six-fold defense',
+    securityIntroTitle: 'THIS STACK',
+    securityIntroCjk: '此守り',
+    securityIntroDesc:
+      'A request reaches the data only after passing through six independent layers — each cheap on its own, expensive in combination.',
+    securityIntroRows: [
+      { k: 'depth', v: '6 layers · outside-in' },
+      { k: 'open ports', v: '0' },
+      { k: 'credentials', v: 'one process holds them all' },
+      { k: 'principle', v: 'defense in depth · rehearsed, not prayed about' },
+    ],
+    securityLayers: [
+      {
+        n: 1,
+        side: 'left',
+        label: 'cloudflare edge',
+        title: 'Cloudflare Edge',
+        what: 'TLS, DDoS, WAF, bot-management at every CDN POP.',
+        why: 'handled in someone else’s NIC, not ours.',
+      },
+      {
+        n: 2,
+        side: 'right',
+        label: 'cloudflare access',
+        title: 'Cloudflare Access',
+        what: 'Identity gate per app: email OTP for humans, service tokens for agents, allowlists per surface.',
+        why: 'SSO without running an SSO.',
+      },
+      {
+        n: 3,
+        side: 'left',
+        label: 'cloudflare tunnel',
+        title: 'Cloudflare Tunnel',
+        what: 'An outbound-only daemon dials home to Cloudflare. The tunnel carries every request inward.',
+        why: 'there is no inbound port. The host is unreachable from the internet at the IP layer.',
+      },
+      {
+        n: 4,
+        side: 'right',
+        label: 'network isolation',
+        title: 'Network isolation',
+        what: 'Host firewall denies all incoming except SSH; every web service binds the loopback interface.',
+        why: 'two redundant mechanisms hold the same line.',
+      },
+      {
+        n: 5,
+        side: 'left',
+        label: 'passkey gate',
+        title: 'Passkey Gate',
+        what: 'Each app re-prompts for a synced WebAuthn passkey — the iCloud-synced kind, used with Face ID.',
+        why: 'phishable creds simply do not exist in this stack.',
+      },
+      {
+        n: 6,
+        side: 'right',
+        label: 'authority gate',
+        title: 'Authority Gate',
+        what: 'Write actions route through a forced-command SSH gate with a six-verb allowlist.',
+        why: 'compromise the UI — you get six verbs, not root.',
+      },
+    ] as SecurityLayer[],
+    securityWhyWeLikeIt: 'Why we like it:',
+    securityCenterCore: 'CORE',
+    securityCenterKanji: '守',
+    statsHeading: 'By the numbers',
+    statsCjk: '数',
+    securityStats: [
+      { v: '0', k: 'open web ports' },
+      { v: '6', k: 'allowlisted write verbs' },
+      { v: '2', k: 'off-machine backup destinations' },
+      { v: '100%', k: 'services bound to loopback' },
+    ],
+    agentsHeading: 'Agents share the box',
+    agentsCjk: '共棲',
+    agentsSubtitle:
+      'Several AI workers run on this server. One holds every credential; the rest hold none and request access through The Order.',
+    authorityAgentRole: 'Authority Agent',
+    orderName: 'The Order',
+    orderCjk: '序',
+    orderCreds: [
+      'Source-host PAT',
+      'CDN + ingress token',
+      'Host SSH',
+      'Backup repository keys',
+    ],
+    securityAgents: [
+      {
+        name: 'Voice',
+        badge: '0 creds',
+        desc: 'Hands-free command surface. Cannot reach the host; speaks only through The Order.',
+      },
+      {
+        name: 'QA',
+        badge: 'service token',
+        desc: 'Probes deploys, fingerprints routes, files reports. One scoped token; nothing else.',
+      },
+      {
+        name: 'Researcher',
+        badge: '0 creds',
+        desc: 'Reads the field, drafts digests, posts results. Session cookies only, never tokens.',
+      },
+      {
+        name: 'DevOps',
+        badge: '0 creds',
+        desc: 'Container hygiene: builds, restarts, healthchecks. Touches images, never secrets.',
+      },
+    ],
+    agentsPunchline:
+      'Compromise a sibling — no privilege escalation. Add a sibling — no new credential ceremony. The blast radius for secrets is exactly one process, and we know which one.',
+    patternsHeading: 'Patterns we like',
+    patternsCjk: '型',
+    patternsSubtitle:
+      'Defense in depth gets the headline. These are the quieter ideas behind it.',
+    securityPatterns: [
+      {
+        title: 'Nested backups, rehearsed',
+        desc: 'Encrypted offsite repo at one provider, plus a daily mirror of the source-of-truth Git account. The mirror runs thirty minutes before the offsite snapshot — so the mirror lands inside the backup. We rehearse it; we don’t pray about it.',
+      },
+      {
+        title: 'CVE alerts that don’t cry wolf',
+        desc: 'Vulnerability scans run nightly across every running image, but the inbox only sees deltas above an accepted baseline. Yesterday’s known set stays silent. Tomorrow’s new entries page out.',
+      },
+      {
+        title: 'Local agent memory',
+        desc: 'Long-lived agent context lives on disk, file-backed, project-segmented, exposed over MCP. No cloud round-trip to remember what we decided last Tuesday.',
+      },
+      {
+        title: 'Three-call ingress',
+        desc: 'Adding a public hostname is exactly three idempotent API calls: DNS, tunnel route, access policy. No console clicks, no hand-edited config, replayable from a script.',
+      },
+      {
+        title: 'Source-of-truth on the box',
+        desc: 'Source lives on the server, bind-mounted into containers; the laptop is a sync target, not a deploy trigger. Edits go live on refresh. Rebuilds only when dependencies change.',
+      },
+      {
+        title: 'Read-only Docker socket',
+        desc: 'The dashboard reads container state through a tightly scoped read-only proxy. Anything mutating routes through the Authority Gate’s verb list. Two paths in. One of them can change the world.',
+      },
+      {
+        title: 'Per-container egress',
+        desc: 'Workloads that need a controlled exit point share one isolated tunnel sidecar — a single WireGuard hop into a different jurisdiction. Members opt in via registry; no host-network changes, no leakage between projects.',
+      },
+      {
+        title: 'Self-modification, handled',
+        desc: 'The dashboard can’t escalate to host root. The terminal can’t auto-restart while you’re still typing in it. The passkey gate mounts before the auth gate, not after.',
+      },
+    ],
+    footerEnd: 'END · ATLAS',
+    hankoSelfTitle: 'self-strengthening without rest',
+    hankoCoTitle: 'co-exist, co-prosper',
+  },
+  ru: {
+    seoTitle: 'ИИ Атлас — KeepSimple',
+    seoDescription:
+      'Орбитальная карта людей, ИИ-агентов и продуктов KeepSimple — основатели, среда разработки, ключевые проекты и территории — в реальном времени.',
+    seoKeywords:
+      'ИИ Атлас, KeepSimple, ИИ-агенты, среда разработки, организационная карта, орбитальная диаграмма, карта знаний, Wolf Alexanyan',
+    ogImageAlt: 'ИИ Атлас — орбитальная карта операций KeepSimple',
+    loading: 'Загрузка…',
+    failedToLoad: 'Ошибка загрузки данных — ',
+    welcomeBanner: 'Добро пожаловать в сердце операций команды KeepSimple',
+    day: 'ДЕНЬ',
+    daySinceTail: 'с начала нашего движения',
+    thisWeek: 'НА НЕДЕЛЕ',
+    metricCommits: 'коммитов',
+    metricLoc: 'loc',
+    metricServices: 'сервисов',
+    apexFounderFallback: 'основатель',
+    redactedPlaceholder: 'СКРЫТО',
+    engLeadLabel: 'Тех. Лид',
+    claudeMdLabel: 'claude.md',
+    linesValue: (n: number) => {
+      const m10 = n % 10;
+      const m100 = n % 100;
+      let unit = 'строк';
+      if (m10 === 1 && m100 !== 11) unit = 'строка';
+      else if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14))
+        unit = 'строки';
+      return `${n.toLocaleString('ru-RU')} ${unit}`;
+    },
+    canvasStats: {
+      humans: 'людей',
+      agents: 'ИИ-агентов',
+      products: 'продуктов',
+    },
+    introDossierTitle: 'ЭТОТ АТЛАС',
+    introDossierCjk: '此地図',
+    introQuestionsBefore: 'Есть вопросы? Пишите нам в',
+    introQuestionsLink: 'Telegram',
+    introQuestionsAfter: '.',
+    introDepthLabel: 'глубина',
+    introDepthValue: '5 колец · 3 типа сущностей',
+    introInhabitantsLabel: 'обитатели',
+    introInhabitantsTpl: (h: number, a: number, p: number) =>
+      `${h} людей · ${a} ИИ-агентов · ${p} продуктов`,
+    introPrincipleLabel: 'принцип',
+    principles: [
+      'один хост · один источник · один владелец',
+      'релизы каждый день · фейлим громко · чиним быстрее',
+      'дисциплина важнее инструментов',
+      'атлас заслуживает доверия, потому что он буквально правдив',
+      'усиливай себя · сосуществуй · процветай вместе',
+    ],
+    legendTitle: 'Легенда',
+    legendCjk: '凡例',
+    legendHumanLabel: 'человек',
+    legendHumanDesc: 'направление · финальное решение',
+    legendAgentLabel: 'ИИ-агент',
+    legendAgentDesc: 'выделенный ИИ · своя память · персона CLAUDE.md',
+    legendProductLabel: 'продукт',
+    legendProductDesc: 'продукты, которые мы строим',
+    legendSolidLabel: '— сплошная',
+    legendSolidDesc: 'полномочия',
+    legendFilledLabel: 'залитый блок',
+    legendFilledDesc: 'подсистема · в рамках родительского продукта',
+    legendArticleCta: 'Прочитайте, зачем это нужно',
+    legendArticleUrl:
+      'https://keepsimple.io/ru/articles/agent-orchestration-for-career',
+    toggleEnvironment: 'Среда',
+    toggleSecurity: 'Защита',
+    doctrineTitle: 'Доктрина',
+    doctrineCjk: '守則',
+    doctrineImageAlt: 'Доктрина — шестислойная защита',
+    securityIntroTitle: 'ЭТОТ СТЕК',
+    securityIntroCjk: '此守り',
+    securityIntroDesc:
+      'Запрос достигает ядра, только пройдя шесть независимых слоёв — каждый дёшев по отдельности, дорог в комбинации.',
+    securityIntroRows: [
+      { k: 'глубина', v: '6 слоёв · снаружи внутрь' },
+      { k: 'открытых портов', v: '0' },
+      { k: 'учётки', v: 'хранит один процесс' },
+      {
+        k: 'принцип',
+        v: 'эшелонированная защита · отрепетирована, не выпрошена',
+      },
+    ],
+    securityLayers: [
+      {
+        n: 1,
+        side: 'left',
+        label: 'cloudflare edge',
+        title: 'Cloudflare Edge',
+        what: 'TLS, DDoS, WAF и bot-management на каждой CDN POP.',
+        why: 'обрабатывается на чужой сетевой карте, не на нашей.',
+      },
+      {
+        n: 2,
+        side: 'right',
+        label: 'cloudflare access',
+        title: 'Cloudflare Access',
+        what: 'Гейт идентификации на каждое приложение: email OTP для людей, сервис-токены для агентов, allow-листы по поверхности.',
+        why: 'SSO без поднятия собственного SSO.',
+      },
+      {
+        n: 3,
+        side: 'left',
+        label: 'cloudflare tunnel',
+        title: 'Cloudflare Tunnel',
+        what: 'Демон с исходящим соединением сам звонит в Cloudflare. Туннель несёт каждый запрос внутрь.',
+        why: 'входящего порта нет. Хост недоступен из интернета на IP-уровне.',
+      },
+      {
+        n: 4,
+        side: 'right',
+        label: 'network isolation',
+        title: 'Сетевая изоляция',
+        what: 'Хост-фаервол блокирует всё входящее, кроме SSH; каждый веб-сервис слушает только loopback.',
+        why: 'два независимых механизма держат одну и ту же линию.',
+      },
+      {
+        n: 5,
+        side: 'left',
+        label: 'passkey gate',
+        title: 'Passkey Gate',
+        what: 'Каждое приложение требует синхронизированный WebAuthn passkey — iCloud-вариант, через Face ID.',
+        why: 'уязвимых для фишинга креденшалов в этом стеке просто нет.',
+      },
+      {
+        n: 6,
+        side: 'right',
+        label: 'authority gate',
+        title: 'Гейт полномочий',
+        what: 'Записи проходят через forced-command SSH-гейт с allow-листом из шести команд.',
+        why: 'скомпрометировал UI — получил шесть команд, не root.',
+      },
+    ] as SecurityLayer[],
+    securityWhyWeLikeIt: 'Почему нам нравится:',
+    securityCenterCore: 'ЯДРО',
+    securityCenterKanji: '守',
+    statsHeading: 'В цифрах',
+    statsCjk: '数',
+    securityStats: [
+      { v: '0', k: 'открытых портов' },
+      { v: '6', k: 'разрешённых команд записи' },
+      { v: '2', k: 'внешних точек резервного копирования' },
+      { v: '100%', k: 'сервисов слушают только loopback' },
+    ],
+    agentsHeading: 'Агенты делят коробку',
+    agentsCjk: '共棲',
+    agentsSubtitle:
+      'На этом сервере живут несколько ИИ-работников. Один держит все учётки; остальные не держат ничего и запрашивают доступ через Орден.',
+    authorityAgentRole: 'Агент полномочий',
+    orderName: 'Орден',
+    orderCjk: '序',
+    orderCreds: [
+      'Source-host PAT',
+      'CDN + ingress токен',
+      'SSH к хосту',
+      'Ключи репозиториев бэкапов',
+    ],
+    securityAgents: [
+      {
+        name: 'Голос',
+        badge: '0 учёток',
+        desc: 'Голосовая поверхность управления. До хоста не дотягивается; говорит только через Орден.',
+      },
+      {
+        name: 'QA',
+        badge: 'сервис-токен',
+        desc: 'Прощупывает деплои, снимает фингерпринты с маршрутов, шлёт отчёты. Один scoped-токен и больше ничего.',
+      },
+      {
+        name: 'Исследователь',
+        badge: '0 учёток',
+        desc: 'Читает поле, готовит сводки, постит результаты. Только сессионные куки, никаких токенов.',
+      },
+      {
+        name: 'DevOps',
+        badge: '0 учёток',
+        desc: 'Гигиена контейнеров: сборки, рестарты, healthcheck. Трогает образы, не секреты.',
+      },
+    ],
+    agentsPunchline:
+      'Скомпрометируй одного из них — никаких эскалаций привилегий. Добавь нового — никакой церемонии с креденшалами. Радиус поражения секретов — ровно один процесс, и мы знаем какой.',
+    patternsHeading: 'Паттерны, которые нам нравятся',
+    patternsCjk: '型',
+    patternsSubtitle:
+      'Эшелонированная защита берёт заголовок. А вот тихие идеи, на которых держится всё остальное.',
+    securityPatterns: [
+      {
+        title: 'Вложенные бэкапы, отрепетированные',
+        desc: 'Зашифрованный оффсайт-репозиторий у одного провайдера плюс ежедневное зеркало source-of-truth Git-аккаунта. Зеркало срабатывает за тридцать минут до оффсайт-снапшота — так что зеркало попадает внутрь бэкапа. Мы это репетируем; мы не молимся об этом.',
+      },
+      {
+        title: 'CVE-алерты, которые не кричат «волки»',
+        desc: 'Сканы уязвимостей бегут ночью по каждому запущенному образу, но в инбокс попадают только дельты выше принятого baseline. Вчерашний известный набор молчит. Завтрашние новые записи будят оперативку.',
+      },
+      {
+        title: 'Локальная память агентов',
+        desc: 'Долгоживущий контекст агентов лежит на диске, по файлам, по проектам, доступ через MCP. Никаких облачных round-trip’ов, чтобы вспомнить, что мы решили в прошлый вторник.',
+      },
+      {
+        title: 'Ingress в три вызова',
+        desc: 'Добавление публичного хостнейма — ровно три идемпотентных API-вызова: DNS, маршрут туннеля, политика доступа. Никаких кликов в консоли, никаких правок конфигов руками, всё повторяемо из скрипта.',
+      },
+      {
+        title: 'Source-of-truth на самой машине',
+        desc: 'Исходники живут на сервере, монтируются в контейнеры; ноутбук — точка синхронизации, не триггер деплоя. Правки идут в продакшен по обновлению. Пересборка — только когда меняются зависимости.',
+      },
+      {
+        title: 'Read-only Docker-сокет',
+        desc: 'Дашборд читает состояние контейнеров через жёстко ограниченный read-only прокси. Всё, что меняет — идёт через allow-лист команд Гейта полномочий. Два пути внутрь. Только один из них может изменить мир.',
+      },
+      {
+        title: 'Egress на контейнер',
+        desc: 'Воркоуды, которым нужна управляемая точка выхода, делят один изолированный туннельный сайдкар — один WireGuard-хоп в другую юрисдикцию. Подключение — opt-in через реестр; никаких изменений host-сети, никаких утечек между проектами.',
+      },
+      {
+        title: 'Самомодификация, под контролем',
+        desc: 'Дашборд не может эскалироваться до root на хосте. Терминал не может авто-рестартануться, пока ты в нём ещё печатаешь. Passkey-гейт встаёт перед auth-гейтом, не после.',
+      },
+    ],
+    footerEnd: 'КОНЕЦ · АТЛАС',
+    hankoSelfTitle: 'непрерывное самоусиление',
+    hankoCoTitle: 'сосуществование и совместное процветание',
+  },
+};
+
+type T = (typeof STRINGS)['en'];
 
 /* ---------- diamond ---------- */
 function Diamond({ kind = 'red' }: { kind?: string }) {
@@ -163,11 +624,11 @@ function NodeBody({
   w = 150,
   h = 50,
   showStatus = false,
+  redactedPlaceholder,
 }: any) {
   const klass = [
     'node',
     node.kind === 'filled' && 'node--filled',
-    node.role === 'lead' && 'node--lead',
     node.redacted && 'node--redacted',
     active && 'is-active',
     highlighted && 'is-glow',
@@ -194,7 +655,10 @@ function NodeBody({
           <span className="node__label">
             <span>
               {node.redacted ? (
-                <TypewriterReveal hovered={!!hovered} />
+                <TypewriterReveal
+                  hovered={!!hovered}
+                  placeholder={redactedPlaceholder}
+                />
               ) : (
                 node.label
               )}
@@ -270,7 +734,7 @@ function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
         : kind === 'lead'
           ? 'var(--ink-3)'
           : 'var(--ink)';
-  const dash = kind === 'advisory' ? '4 3' : kind === 'lead' ? '2 3' : '0';
+  const dash = kind === 'advisory' ? '4 3' : '0';
   return (
     <line
       x1={from.x}
@@ -351,7 +815,16 @@ function TerritoryLabel({ project, R }: any) {
   );
 }
 
-const DOSSIER_REF_KEYS = new Set(['reports', 'owner', 'pairs', 'successor']);
+const DOSSIER_REF_KEYS = new Set([
+  'reports',
+  'owner',
+  'pairs',
+  'successor',
+  'подчиняется',
+  'владелец',
+  'пара',
+  'преемник',
+]);
 function resolveDossierRef(value: string, validIds: Set<string>) {
   if (!value || !validIds) return null;
   const lower = value.toLowerCase();
@@ -360,6 +833,45 @@ function resolveDossierRef(value: string, validIds: Set<string>) {
   if (validIds.has(stripped)) return stripped;
   return null;
 }
+function renderDossierValue(v: string) {
+  /* Parse inline tags inside row values:
+       [text](https://...)        → external link
+       [text](tip:description)    → underlined term with hover tooltip
+     Everything else stays plain text. */
+  if (typeof v !== 'string' || !v.includes('](')) return v;
+  const re = /\[([^\]]+)\]\(((?:tip:[^)]+)|(?:https?:\/\/[^)]+))\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(v)) !== null) {
+    if (m.index > lastIndex) parts.push(v.slice(lastIndex, m.index));
+    const text = m[1];
+    const url = m[2];
+    if (url.startsWith('tip:')) {
+      parts.push(
+        <span key={m.index} className="dossier__tip" title={url.slice(4)}>
+          {text}
+        </span>,
+      );
+    } else {
+      parts.push(
+        <a
+          key={m.index}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="dossier__link"
+        >
+          {text}
+        </a>,
+      );
+    }
+    lastIndex = re.lastIndex;
+  }
+  if (lastIndex < v.length) parts.push(v.slice(lastIndex));
+  return <>{parts}</>;
+}
+
 function Dossier({ data, onSelect, dossiers }: any) {
   const validIds = useMemo(
     () => new Set(Object.keys(dossiers || {})),
@@ -378,7 +890,9 @@ function Dossier({ data, onSelect, dossiers }: any) {
         {data.title} <span className="cjk">{data.cjk}</span>
       </span>
       <div className="dossier__body" key={data.title}>
-        {data.desc && <div className="dossier__desc">{data.desc}</div>}
+        {data.desc && (
+          <div className="dossier__desc">{renderDossierValue(data.desc)}</div>
+        )}
         <ul className="kv">
           {data.rows.map((r: any, i: number) => {
             const isUrl = r.k === 'url';
@@ -421,7 +935,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
                       {r.v}
                     </a>
                   ) : (
-                    r.v
+                    renderDossierValue(r.v)
                   )}
                 </span>
               </li>
@@ -433,41 +947,33 @@ function Dossier({ data, onSelect, dossiers }: any) {
   );
 }
 
-const PRINCIPLES = [
-  'single host · single source · single owner',
-  'ship daily · fail loud · fix faster',
-  'discipline before tools',
-  'the atlas earns trust by being literally true',
-  'strengthen self · co-exist · co-prosper',
-];
-
-function buildIntroDossier(data: any, now: Date) {
+function buildIntroDossier(data: any, now: Date, t: T) {
   const { humans, agents, products } = tallyDiamonds(data);
-  const idx = Math.floor(now.getTime() / 60000) % PRINCIPLES.length;
+  const idx = Math.floor(now.getTime() / 60000) % t.principles.length;
   return {
-    title: 'THIS ATLAS',
-    cjk: '此地図',
+    title: t.introDossierTitle,
+    cjk: t.introDossierCjk,
     desc: (
       <>
-        Got questions? Drop those to our{' '}
+        {t.introQuestionsBefore}{' '}
         <a
           className="dossier__link"
           href="https://t.me/vibecodearmenia"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Telegram
+          {t.introQuestionsLink}
         </a>
-        .
+        {t.introQuestionsAfter}
       </>
     ),
     rows: [
-      { k: 'depth', v: '5 rings · 3 actor types' },
+      { k: t.introDepthLabel, v: t.introDepthValue },
       {
-        k: 'inhabitants',
-        v: `${humans} humans · ${agents} ai agents · ${products} products`,
+        k: t.introInhabitantsLabel,
+        v: t.introInhabitantsTpl(humans, agents, products),
       },
-      { k: 'principle', v: PRINCIPLES[idx] },
+      { k: t.introPrincipleLabel, v: t.principles[idx] },
     ],
   };
 }
@@ -494,66 +1000,60 @@ function tallyDiamonds(data: any) {
   return { humans, agents, products };
 }
 
-function CanvasStats({ data }: { data: any }) {
+function CanvasStats({ data, t }: { data: any; t: T }) {
   const { humans, agents, products } = tallyDiamonds(data);
   return (
     <div className="canvas-stats" aria-hidden="true">
       <div className="canvas-stats__row">
-        <span className="k">humans</span>
+        <span className="k">{t.canvasStats.humans}</span>
         <span className="v">{humans}</span>
       </div>
       <div className="canvas-stats__row">
-        <span className="k">ai agents</span>
+        <span className="k">{t.canvasStats.agents}</span>
         <span className="v">{agents}</span>
       </div>
       <div className="canvas-stats__row">
-        <span className="k">products</span>
+        <span className="k">{t.canvasStats.products}</span>
         <span className="v">{products}+</span>
       </div>
     </div>
   );
 }
 
-function Legend() {
+function Legend({ t }: { t: T }) {
   return (
     <div className="panel">
       <span className="panel__title">
-        Legend <span className="cjk">凡例</span>
+        {t.legendTitle} <span className="cjk">{t.legendCjk}</span>
       </span>
       <ul className="kv legend-kv">
         <li>
           <span className="k">
             <Diamond kind="gold" />
-            human
+            {t.legendHumanLabel}
           </span>
-          <span className="v">direction · final judgment</span>
+          <span className="v">{t.legendHumanDesc}</span>
         </li>
         <li>
           <span className="k">
             <Diamond kind="blue" />
-            ai agent
+            {t.legendAgentLabel}
           </span>
-          <span className="v">
-            dedicated AI · custom memory · CLAUDE.md persona
-          </span>
+          <span className="v">{t.legendAgentDesc}</span>
         </li>
         <li>
           <span className="k">
             <Diamond kind="red" />
-            product
+            {t.legendProductLabel}
           </span>
-          <span className="v">products we build</span>
+          <span className="v">{t.legendProductDesc}</span>
         </li>
       </ul>
       <hr className="hr-dotted" />
       <ul className="kv">
         <li>
-          <span className="k">— solid</span>
-          <span className="v">authority</span>
-        </li>
-        <li>
-          <span className="k">··· dashed</span>
-          <span className="v">lead pairing</span>
+          <span className="k">{t.legendSolidLabel}</span>
+          <span className="v">{t.legendSolidDesc}</span>
         </li>
         <li>
           <span className="k">
@@ -567,11 +1067,19 @@ function Legend() {
                 verticalAlign: 'middle',
               }}
             />
-            filled tile
+            {t.legendFilledLabel}
           </span>
-          <span className="v">subsystem · scoped to a parent product</span>
+          <span className="v">{t.legendFilledDesc}</span>
         </li>
       </ul>
+      <a
+        className="legend-cta"
+        href={t.legendArticleUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {t.legendArticleCta}
+      </a>
     </div>
   );
 }
@@ -582,16 +1090,16 @@ function InkConsume() {
 
 type ViewMode = 'environment' | 'security';
 
-function DoctrinePanel() {
+function DoctrinePanel({ t }: { t: T }) {
   return (
     <div className="panel doctrine-panel">
       <span className="panel__title">
-        Doctrine <span className="cjk">守則</span>
+        {t.doctrineTitle} <span className="cjk">{t.doctrineCjk}</span>
       </span>
       <img
         className="doctrine-image"
         src="/ai-atlas/doctrine.webp"
-        alt="Doctrine — six-fold defense"
+        alt={t.doctrineImageAlt}
       />
     </div>
   );
@@ -600,9 +1108,11 @@ function DoctrinePanel() {
 function ViewToggle({
   mode,
   setMode,
+  t,
 }: {
   mode: ViewMode;
   setMode: (m: ViewMode) => void;
+  t: T;
 }) {
   return (
     <div
@@ -620,7 +1130,7 @@ function ViewToggle({
         }
         onClick={() => setMode('environment')}
       >
-        Environment
+        {t.toggleEnvironment}
       </button>
       <button
         type="button"
@@ -631,151 +1141,29 @@ function ViewToggle({
         }
         onClick={() => setMode('security')}
       >
-        Security
+        {t.toggleSecurity}
       </button>
     </div>
   );
 }
 
-const SECURITY_INTRO_DOSSIER = {
-  title: 'THIS STACK',
-  cjk: '此守り',
-  desc: (
-    <>
-      A request reaches the data only after passing through six independent
-      layers — each cheap on its own, expensive in combination.
-    </>
-  ),
-  rows: [
-    { k: 'depth', v: '6 layers · outside-in' },
-    { k: 'open ports', v: '0' },
-    { k: 'credentials', v: 'one process holds them all' },
-    { k: 'principle', v: 'defense in depth · rehearsed, not prayed about' },
-  ],
-};
-
-const SECURITY_LAYERS = [
-  {
-    n: 1,
-    side: 'left',
-    label: 'cloudflare edge',
-    title: 'Cloudflare Edge',
-    what: 'TLS, DDoS, WAF, bot-management at every CDN POP.',
-    why: 'handled in someone else’s NIC, not ours.',
-  },
-  {
-    n: 2,
-    side: 'right',
-    label: 'cloudflare access',
-    title: 'Cloudflare Access',
-    what: 'Identity gate per app: email OTP for humans, service tokens for agents, allowlists per surface.',
-    why: 'SSO without running an SSO.',
-  },
-  {
-    n: 3,
-    side: 'left',
-    label: 'cloudflare tunnel',
-    title: 'Cloudflare Tunnel',
-    what: 'An outbound-only daemon dials home to Cloudflare. The tunnel carries every request inward.',
-    why: 'there is no inbound port. The host is unreachable from the internet at the IP layer.',
-  },
-  {
-    n: 4,
-    side: 'right',
-    label: 'network isolation',
-    title: 'Network isolation',
-    what: 'Host firewall denies all incoming except SSH; every web service binds the loopback interface.',
-    why: 'two redundant mechanisms hold the same line.',
-  },
-  {
-    n: 5,
-    side: 'left',
-    label: 'passkey gate',
-    title: 'Passkey Gate',
-    what: 'Each app re-prompts for a synced WebAuthn passkey — the iCloud-synced kind, used with Face ID.',
-    why: 'phishable creds simply do not exist in this stack.',
-  },
-  {
-    n: 6,
-    side: 'right',
-    label: 'authority gate',
-    title: 'Authority Gate',
-    what: 'Write actions route through a forced-command SSH gate with a six-verb allowlist.',
-    why: 'compromise the UI — you get six verbs, not root.',
-  },
-];
-
-const SECURITY_STATS = [
-  { v: '0', k: 'open web ports' },
-  { v: '6', k: 'allowlisted write verbs' },
-  { v: '2', k: 'off-machine backup destinations' },
-  { v: '100%', k: 'services bound to loopback' },
-];
-
-const SECURITY_AGENTS = [
-  {
-    name: 'Voice',
-    badge: '0 creds',
-    desc: 'Hands-free command surface. Cannot reach the host; speaks only through The Order.',
-  },
-  {
-    name: 'QA',
-    badge: 'service token',
-    desc: 'Probes deploys, fingerprints routes, files reports. One scoped token; nothing else.',
-  },
-  {
-    name: 'Researcher',
-    badge: '0 creds',
-    desc: 'Reads the field, drafts digests, posts results. Session cookies only, never tokens.',
-  },
-  {
-    name: 'DevOps',
-    badge: '0 creds',
-    desc: 'Container hygiene: builds, restarts, healthchecks. Touches images, never secrets.',
-  },
-];
-
-const SECURITY_PATTERNS = [
-  {
-    title: 'Nested backups, rehearsed',
-    desc: 'Encrypted offsite repo at one provider, plus a daily mirror of the source-of-truth Git account. The mirror runs thirty minutes before the offsite snapshot — so the mirror lands inside the backup. We rehearse it; we don’t pray about it.',
-  },
-  {
-    title: 'CVE alerts that don’t cry wolf',
-    desc: 'Vulnerability scans run nightly across every running image, but the inbox only sees deltas above an accepted baseline. Yesterday’s known set stays silent. Tomorrow’s new entries page out.',
-  },
-  {
-    title: 'Local agent memory',
-    desc: 'Long-lived agent context lives on disk, file-backed, project-segmented, exposed over MCP. No cloud round-trip to remember what we decided last Tuesday.',
-  },
-  {
-    title: 'Three-call ingress',
-    desc: 'Adding a public hostname is exactly three idempotent API calls: DNS, tunnel route, access policy. No console clicks, no hand-edited config, replayable from a script.',
-  },
-  {
-    title: 'Source-of-truth on the box',
-    desc: 'Source lives on the server, bind-mounted into containers; the laptop is a sync target, not a deploy trigger. Edits go live on refresh. Rebuilds only when dependencies change.',
-  },
-  {
-    title: 'Read-only Docker socket',
-    desc: 'The dashboard reads container state through a tightly scoped read-only proxy. Anything mutating routes through the Authority Gate’s verb list. Two paths in. One of them can change the world.',
-  },
-  {
-    title: 'Per-container egress',
-    desc: 'Workloads that need a controlled exit point share one isolated tunnel sidecar — a single WireGuard hop into a different jurisdiction. Members opt in via registry; no host-network changes, no leakage between projects.',
-  },
-  {
-    title: 'Self-modification, handled',
-    desc: 'The dashboard can’t escalate to host root. The terminal can’t auto-restart while you’re still typing in it. The passkey gate mounts before the auth gate, not after.',
-  },
-];
+function buildSecurityIntroDossier(t: T) {
+  return {
+    title: t.securityIntroTitle,
+    cjk: t.securityIntroCjk,
+    desc: <>{t.securityIntroDesc}</>,
+    rows: t.securityIntroRows,
+  };
+}
 
 function SecurityRings({
   hoveredLayer,
   onHover,
+  t,
 }: {
   hoveredLayer: number | null;
   onHover: (n: number | null) => void;
+  t: T;
 }) {
   /* Six concentric rings + 12 tick marks per ring + arc labels.
      Mirrors the Atlas's Ring component aesthetic so the toggle feels
@@ -785,6 +1173,7 @@ function SecurityRings({
   const CY = 0;
   const ringRs = [0.95, 0.8, 0.65, 0.5, 0.36, 0.22];
   const radius = (r: number) => (r * VS) / 2;
+  const layers = t.securityLayers;
   return (
     <svg
       viewBox={`${-VS / 2} ${-VS / 2 - TOP_PAD} ${VS} ${VS + TOP_PAD + BOT_PAD}`}
@@ -825,7 +1214,7 @@ function SecurityRings({
       })}
 
       {/* arc labels just inside each ring, top arc */}
-      {SECURITY_LAYERS.map((layer, i) => {
+      {layers.map((layer, i) => {
         const r = ringRs[i] - 0.03;
         const id = `sec-ring-${i}`;
         const charPx = 14;
@@ -855,7 +1244,7 @@ function SecurityRings({
         );
       })}
 
-      {/* center mark — DATA */}
+      {/* center mark — CORE */}
       <g className="center-mark">
         <circle
           cx={CX}
@@ -873,7 +1262,7 @@ function SecurityRings({
           fontSize="40"
           fill="var(--red)"
         >
-          守
+          {t.securityCenterKanji}
         </text>
         <text
           x={CX}
@@ -882,7 +1271,7 @@ function SecurityRings({
           className="center-mark__label"
           style={{ fill: 'var(--paper)' }}
         >
-          CORE
+          {t.securityCenterCore}
         </text>
       </g>
 
@@ -914,11 +1303,13 @@ function SecurityCallout({
   position,
   isHovered,
   onHover,
+  whyLabel,
 }: {
-  layer: (typeof SECURITY_LAYERS)[number];
+  layer: SecurityLayer;
   position: { left?: string; right?: string; top: string };
   isHovered: boolean;
   onHover: (n: number | null) => void;
+  whyLabel: string;
 }) {
   return (
     <div
@@ -931,22 +1322,26 @@ function SecurityCallout({
       <h4 className="sec-callout__title">{layer.title}</h4>
       <p className="sec-callout__what">{layer.what}</p>
       <p className="sec-callout__why">
-        <b>Why we like it:</b> {layer.why}
+        <b>{whyLabel}</b> {layer.why}
       </p>
     </div>
   );
 }
 
-function SecurityView() {
+function SecurityView({ t }: { t: T }) {
   const [hoveredLayer, setHoveredLayer] = useState<number | null>(null);
-  const leftLayers = SECURITY_LAYERS.filter(l => l.side === 'left');
-  const rightLayers = SECURITY_LAYERS.filter(l => l.side === 'right');
+  const leftLayers = t.securityLayers.filter(l => l.side === 'left');
+  const rightLayers = t.securityLayers.filter(l => l.side === 'right');
   const calloutTops = ['4%', '38%', '72%'];
   return (
     <div className="security-view">
       {/* layer 1: rings, mirrors the Atlas canvas */}
       <div className="canvas--orbital security-canvas">
-        <SecurityRings hoveredLayer={hoveredLayer} onHover={setHoveredLayer} />
+        <SecurityRings
+          hoveredLayer={hoveredLayer}
+          onHover={setHoveredLayer}
+          t={t}
+        />
         {leftLayers.map((layer, i) => (
           <SecurityCallout
             key={layer.n}
@@ -954,6 +1349,7 @@ function SecurityView() {
             position={{ left: '2%', top: calloutTops[i] }}
             isHovered={hoveredLayer === layer.n}
             onHover={setHoveredLayer}
+            whyLabel={t.securityWhyWeLikeIt}
           />
         ))}
         {rightLayers.map((layer, i) => (
@@ -963,6 +1359,7 @@ function SecurityView() {
             position={{ right: '2%', top: calloutTops[i] }}
             isHovered={hoveredLayer === layer.n}
             onHover={setHoveredLayer}
+            whyLabel={t.securityWhyWeLikeIt}
           />
         ))}
         <span className="corner corner--tl" />
@@ -974,10 +1371,10 @@ function SecurityView() {
       {/* layer 2: stats */}
       <div className="security-section">
         <h2 className="security-h2">
-          By the numbers <span className="cjk">数</span>
+          {t.statsHeading} <span className="cjk">{t.statsCjk}</span>
         </h2>
         <div className="sec-stat-grid">
-          {SECURITY_STATS.map(s => (
+          {t.securityStats.map(s => (
             <div key={s.k} className="sec-stat">
               <b>{s.v}</b>
               <span>{s.k}</span>
@@ -989,27 +1386,23 @@ function SecurityView() {
       {/* layer 3: agents share the box */}
       <div className="security-section">
         <h2 className="security-h2">
-          Agents share the box <span className="cjk">共棲</span>
+          {t.agentsHeading} <span className="cjk">{t.agentsCjk}</span>
         </h2>
-        <p className="security-sub">
-          Several AI workers run on this server. One holds every credential; the
-          rest hold none and request access through The Order.
-        </p>
+        <p className="security-sub">{t.agentsSubtitle}</p>
         <div className="sec-agent-stage">
           <div className="sec-apex">
-            <div className="sec-apex__role">Authority Agent</div>
+            <div className="sec-apex__role">{t.authorityAgentRole}</div>
             <div className="sec-apex__name">
-              The Order <span className="cjk">序</span>
+              {t.orderName} <span className="cjk">{t.orderCjk}</span>
             </div>
             <ul className="sec-apex__creds">
-              <li>Source-host PAT</li>
-              <li>CDN + ingress token</li>
-              <li>Host SSH</li>
-              <li>Backup repository keys</li>
+              {t.orderCreds.map(c => (
+                <li key={c}>{c}</li>
+              ))}
             </ul>
           </div>
           <div className="sec-sib-grid">
-            {SECURITY_AGENTS.map(a => (
+            {t.securityAgents.map(a => (
               <div key={a.name} className="sec-sib">
                 <h4>
                   {a.name}
@@ -1020,24 +1413,17 @@ function SecurityView() {
             ))}
           </div>
         </div>
-        <p className="security-punch">
-          Compromise a sibling — no privilege escalation. Add a sibling — no new
-          credential ceremony. The blast radius for secrets is exactly one
-          process, and we know which one.
-        </p>
+        <p className="security-punch">{t.agentsPunchline}</p>
       </div>
 
       {/* layer 4: patterns */}
       <div className="security-section">
         <h2 className="security-h2">
-          Patterns we like <span className="cjk">型</span>
+          {t.patternsHeading} <span className="cjk">{t.patternsCjk}</span>
         </h2>
-        <p className="security-sub">
-          Defense in depth gets the headline. These are the quieter ideas behind
-          it.
-        </p>
+        <p className="security-sub">{t.patternsSubtitle}</p>
         <div className="sec-pattern-grid">
-          {SECURITY_PATTERNS.map(p => (
+          {t.securityPatterns.map(p => (
             <div key={p.title} className="sec-pattern">
               <span className="sec-pattern__marker" />
               <h3>{p.title}</h3>
@@ -1051,6 +1437,10 @@ function SecurityView() {
 }
 
 function AiAtlasApp() {
+  const router = useRouter();
+  const lang: Lang = pickLang(router.locale);
+  const t = STRINGS[lang];
+
   const [data, setData] = useState<any>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [now, setNow] = useState<Date>(() => new Date());
@@ -1058,6 +1448,20 @@ function AiAtlasApp() {
   const [hoverNode, setHoverNode] = useState<string | null>(null);
   const [linkHoverNode, setLinkHoverNode] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('environment');
+
+  /* mark <body> while AI Atlas is mounted so the global navbar can
+     match the page's paper background (light mode only for now).
+     Also mark <html> so the page-scoped scrollbar style takes effect
+     (the existing scrollbar rules in globals.scss are html-scoped). */
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.body.classList.add('ai-atlas-page');
+    document.documentElement.classList.add('scroll-style-atlas');
+    return () => {
+      document.body.classList.remove('ai-atlas-page');
+      document.documentElement.classList.remove('scroll-style-atlas');
+    };
+  }, []);
 
   /* hash → view mode (initial load + back/forward) */
   useEffect(() => {
@@ -1084,8 +1488,10 @@ function AiAtlasApp() {
 
   useEffect(() => {
     let cancelled = false;
+    const url = dataUrlFor(lang);
+    setData(null);
     const load = () => {
-      fetch(DATA_URL, { cache: 'no-store' })
+      fetch(url, { cache: 'no-store' })
         .then(r => {
           if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.json();
@@ -1106,7 +1512,7 @@ function AiAtlasApp() {
       cancelled = true;
       clearInterval(id);
     };
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60000);
@@ -1181,7 +1587,7 @@ function AiAtlasApp() {
         ring: 'projects',
         node: {
           id: leadId,
-          label: 'Eng. Lead',
+          label: t.engLeadLabel,
           diamond: p.leadDiamond,
           role: 'lead',
         },
@@ -1200,7 +1606,7 @@ function AiAtlasApp() {
       });
     });
     return m;
-  }, [data]);
+  }, [data, t.engLeadLabel]);
 
   if (!data) {
     return (
@@ -1208,10 +1614,11 @@ function AiAtlasApp() {
         <div className="atlas-loading">
           {fetchError ? (
             <>
-              Failed to load data — <code>{fetchError}</code>
+              {t.failedToLoad}
+              <code>{fetchError}</code>
             </>
           ) : (
-            'Loading…'
+            t.loading
           )}
         </div>
       </div>
@@ -1220,10 +1627,26 @@ function AiAtlasApp() {
 
   const focusId = hoverNode || focusedNode;
   const focusedDossier = focusId && data.dossiers[focusId];
-  const dossier =
+  let dossier =
     viewMode === 'security'
-      ? SECURITY_INTRO_DOSSIER
-      : focusedDossier || buildIntroDossier(data, now);
+      ? buildSecurityIntroDossier(t)
+      : focusedDossier || buildIntroDossier(data, now, t);
+
+  /* When a focused entity has a CLAUDE.md count from the metrics feed,
+     append it as the last row of the dossier. */
+  const claudeLines =
+    focusId && metrics?.claudeMdLines?.[focusId] != null
+      ? metrics.claudeMdLines[focusId]
+      : null;
+  if (claudeLines != null) {
+    dossier = {
+      ...dossier,
+      rows: [
+        ...dossier.rows,
+        { k: t.claudeMdLabel, v: t.linesValue(claudeLines) },
+      ],
+    };
+  }
   const highlightId = linkHoverNode || focusId;
   const pinnedSolo = !!focusedNode && !hoverNode && !linkHoverNode;
 
@@ -1327,13 +1750,11 @@ function AiAtlasApp() {
               </>
             )}
           </div>
-          <span className="meta-intro">
-            Welcome to the heart of KeepSimple Team&apos;s operations
-          </span>
+          <span className="meta-intro">{t.welcomeBanner}</span>
         </div>
         <div className="meta">
           <span className="meta-group">
-            <span className="meta-label">DAY</span>
+            <span className="meta-label">{t.day}</span>
             <b>
               {(() => {
                 const start = Date.UTC(2019, 5, 29);
@@ -1348,31 +1769,29 @@ function AiAtlasApp() {
                 ).toLocaleString();
               })()}
             </b>
-            <span className="meta-tail">
-              since the beginning of our movement
-            </span>
+            <span className="meta-tail">{t.daySinceTail}</span>
           </span>
           {metrics && (
             <>
               <span className="meta-sep">◆</span>
               <span className="meta-group">
-                <span className="meta-label">THIS WEEK</span>
+                <span className="meta-label">{t.thisWeek}</span>
                 {metrics.commitsWeek != null && (
                   <>
                     <b>{metrics.commitsWeek.toLocaleString()}</b>
-                    <span className="meta-unit">commits</span>
+                    <span className="meta-unit">{t.metricCommits}</span>
                   </>
                 )}
                 {metrics.totalLines != null && (
                   <>
                     <b>{metrics.totalLines.toLocaleString()}</b>
-                    <span className="meta-unit">loc</span>
+                    <span className="meta-unit">{t.metricLoc}</span>
                   </>
                 )}
                 {metrics.services != null && (
                   <>
                     <b>{metrics.services}</b>
-                    <span className="meta-unit">services</span>
+                    <span className="meta-unit">{t.metricServices}</span>
                   </>
                 )}
               </span>
@@ -1389,7 +1808,7 @@ function AiAtlasApp() {
               onMouseLeave={() => setHoverNode(null)}
             >
               {consuming && <InkConsume />}
-              <CanvasStats data={data} />
+              <CanvasStats data={data} t={t} />
               <svg
                 viewBox={`${-HALF} ${-HALF - TOP_PAD} ${VIEW} ${VIEW + TOP_PAD + BOT_PAD}`}
                 xmlns="http://www.w3.org/2000/svg"
@@ -1563,7 +1982,7 @@ function AiAtlasApp() {
                     textAnchor="middle"
                     className="center-mark__sub"
                   >
-                    {(data.apex && data.apex.sub) || 'founder'}
+                    {(data.apex && data.apex.sub) || t.apexFounderFallback}
                   </text>
                 </g>
 
@@ -1633,7 +2052,9 @@ function AiAtlasApp() {
 
                 {data.projects.members.flatMap((p: any) =>
                   p.children.map((c: any) => {
-                    const labelForWidth = c.redacted ? 'REDACTED' : c.label;
+                    const labelForWidth = c.redacted
+                      ? t.redactedPlaceholder
+                      : c.label;
                     return (
                       <NodeBody
                         key={c.id}
@@ -1647,6 +2068,7 @@ function AiAtlasApp() {
                         onSelect={onSelect}
                         w={labelForWidth.length > 12 ? 190 : 165}
                         h={42}
+                        redactedPlaceholder={t.redactedPlaceholder}
                       />
                     );
                   }),
@@ -1679,7 +2101,9 @@ function AiAtlasApp() {
                     w = 210;
                     h = node.sub ? 72 : 52;
                   } else {
-                    const lw = node.redacted ? 'REDACTED' : node.label;
+                    const lw = node.redacted
+                      ? t.redactedPlaceholder
+                      : node.label;
                     w = lw.length > 12 ? 190 : 165;
                     h = 42;
                   }
@@ -1695,6 +2119,7 @@ function AiAtlasApp() {
                       onSelect={onSelect}
                       w={w}
                       h={h}
+                      redactedPlaceholder={t.redactedPlaceholder}
                     />
                   );
                 })()}
@@ -1707,12 +2132,12 @@ function AiAtlasApp() {
             </div>
           )}
 
-          {viewMode === 'security' && <SecurityView />}
+          {viewMode === 'security' && <SecurityView t={t} />}
         </div>
 
         <aside className="rail">
-          {viewMode === 'security' ? <DoctrinePanel /> : <Legend />}
-          <ViewToggle mode={viewMode} setMode={setViewMode} />
+          {viewMode === 'security' ? <DoctrinePanel t={t} /> : <Legend t={t} />}
+          <ViewToggle mode={viewMode} setMode={setViewMode} t={t} />
           <Dossier
             data={dossier}
             onSelect={onSelect}
@@ -1723,42 +2148,39 @@ function AiAtlasApp() {
 
       <footer className="doc-footer">
         <span className="hanko-row">
-          <span className="hanko" title="self-strengthening without rest">
+          <span className="hanko" title={t.hankoSelfTitle}>
             自強不息
           </span>
-          <span className="hanko" title="co-exist, co-prosper">
+          <span className="hanko" title={t.hankoCoTitle}>
             共存共栄
           </span>
         </span>
-        <span>END · ATLAS</span>
+        <span>{t.footerEnd}</span>
       </footer>
     </div>
   );
 }
 
-const AI_ATLAS_TITLE = 'AI Atlas — KeepSimple';
-const AI_ATLAS_DESCRIPTION =
-  "An orbital map of KeepSimple's people, AI agents, and products — founders, dev environment, core projects and territories — visualized live.";
-const AI_ATLAS_KEYWORDS =
-  'AI Atlas, KeepSimple, AI agents, dev environment, organizational map, orbital diagram, knowledge map, Wolf Alexanyan';
-
 export default function AiAtlasPage() {
+  const router = useRouter();
+  const lang: Lang = pickLang(router.locale);
+  const t = STRINGS[lang];
   return (
     <>
       <SeoGenerator
         strapiSEO={{
-          title: AI_ATLAS_TITLE,
-          pageTitle: AI_ATLAS_TITLE,
-          seoTitle: AI_ATLAS_TITLE,
-          description: AI_ATLAS_DESCRIPTION,
-          keywords: AI_ATLAS_KEYWORDS,
+          title: t.seoTitle,
+          pageTitle: t.seoTitle,
+          seoTitle: t.seoTitle,
+          description: t.seoDescription,
+          keywords: t.seoKeywords,
         }}
         type="WebPage"
         ogTags={{
-          ogTitle: AI_ATLAS_TITLE,
-          ogDescription: AI_ATLAS_DESCRIPTION,
+          ogTitle: t.seoTitle,
+          ogDescription: t.seoDescription,
           ogType: 'website',
-          ogImageAlt: 'AI Atlas — orbital map of KeepSimple operations',
+          ogImageAlt: t.ogImageAlt,
           ogImage: {
             data: {
               attributes: {

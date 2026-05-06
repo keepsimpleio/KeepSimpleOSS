@@ -6,6 +6,35 @@
 
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap");
 
+/* Match KeepSimple's global navbar to the Atlas paper while this
+   page is mounted. Light mode only; dark mode handled separately. */
+body.ai-atlas-page:not(.darkTheme) #__next > header {
+  background: #ece4cf;
+}
+
+/* Atlas-coherent scrollbars while this page is mounted (light mode).
+   Paper track, ink-3 thumb, red on hover — matches the brand palette.
+   html-scoped to override globals.scss scrollbar rules. */
+html.scroll-style-atlas {
+  scrollbar-color: #6a6457 #e6dcc2;
+  scrollbar-width: thin;
+}
+html.scroll-style-atlas::-webkit-scrollbar {
+  width: 10px;
+  border-left: 1px solid #e6dcc2;
+}
+html.scroll-style-atlas::-webkit-scrollbar-track {
+  background: #e6dcc2;
+}
+html.scroll-style-atlas::-webkit-scrollbar-thumb {
+  background: #6a6457;
+  border-radius: 2px;
+  border-left: 1px solid #e6dcc2;
+}
+html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
+  background: #b3392b;
+}
+
 .ai-atlas-root {
   --paper:        #ece4cf;
   --paper-2:      #e6dcc2;
@@ -311,7 +340,7 @@
   -webkit-user-select: none;
   transition: opacity 0.18s ease, fill 0.18s ease;
 }
-.ring__label:hover, .ring__label.is-glow { opacity: 1; fill: var(--ink); }
+.ring__label:hover, .ring__label.is-glow { opacity: 1; fill: var(--red); }
 .ring__label.is-dim { opacity: 0.28; }
 
 .ring__circle { transition: stroke 0.18s ease, stroke-width 0.18s ease, opacity 0.18s ease; }
@@ -436,12 +465,6 @@
   background: #2a2a2a;
   color: var(--paper);
 }
-.node--lead {
-  border-style: dashed;
-  font-size: 14px;
-  padding: 5px 10px;
-  color: var(--ink-2);
-}
 
 /* ---------- dossier ---------- */
 .dossier__link {
@@ -450,6 +473,13 @@
   border-bottom: 1px solid var(--rule-soft);
 }
 .dossier__link:hover { border-bottom-color: var(--red); }
+.dossier__tip {
+  text-decoration: underline dotted var(--rule-soft);
+  text-underline-offset: 3px;
+  cursor: help;
+  transition: text-decoration-color 0.15s ease;
+}
+.dossier__tip:hover { text-decoration-color: var(--red); }
 .dossier__desc {
   font-family: var(--mono);
   font-size: 14px;
@@ -508,6 +538,24 @@
 }
 
 .hr-dotted { border: 0; border-top: 1px dashed var(--rule-soft); margin: 10px 0; }
+
+.legend-cta {
+  display: block;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--rule-soft);
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--red);
+  text-decoration: none;
+  transition: color 0.18s ease, letter-spacing 0.18s ease;
+}
+.legend-cta:hover {
+  color: var(--red-deep);
+  letter-spacing: 0.08em;
+}
 .muted { color: var(--ink-3); }
 .serif { font-family: var(--serif); }
 .italic { font-style: italic; }
@@ -890,5 +938,93 @@
   .sec-pattern-grid { grid-template-columns: 1fr; }
   .sec-agent-stage { grid-template-columns: 1fr; }
   .sec-sib-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Mobile / narrow viewports — stack rail below canvas, wrap
+   header, drop fixed heights. Diagram still readable but small.
+   ============================================================ */
+@media (max-width: 900px) {
+  .sheet {
+    padding: 16px 14px 20px;
+  }
+  .doc-header {
+    flex-wrap: wrap;
+    white-space: normal;
+    gap: 10px;
+    font-size: 11px;
+  }
+  .doc-header .header-left {
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .doc-header .meta {
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+  }
+  .doc-header .cjk {
+    font-size: 14px;
+    letter-spacing: 0.22em;
+  }
+  .meta-intro {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+  .meta-tail {
+    display: none;
+  }
+  .workspace--v4 {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .rail {
+    position: static;
+    top: auto;
+  }
+  .rail > .panel:first-child {
+    min-height: auto;
+  }
+  .doctrine-panel {
+    height: auto;
+    aspect-ratio: 380 / 307;
+  }
+  .canvas-stats {
+    font-size: 10px;
+    top: 10px;
+    left: 12px;
+  }
+  .doc-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .canvas--orbital {
+    padding: 12px;
+  }
+  .panel {
+    padding: 18px 14px 14px;
+  }
+  .panel__title {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
+  .kv li {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .kv li .k {
+    flex: 0 0 100%;
+  }
+  .kv li .v {
+    flex: 1 1 100%;
+  }
+  .doctrine-panel {
+    aspect-ratio: 1 / 1;
+  }
 }
 

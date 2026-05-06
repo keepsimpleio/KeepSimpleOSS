@@ -67,8 +67,8 @@
       },
       {
         "id": "tools",
-        "label": "Tools",
-        "sub": "APEX · bots · vpn",
+        "label": "Tools and Tweaks",
+        "sub": "infra · memory · tweaks",
         "diamond": "red",
         "theta": 90,
         "status": "ok"
@@ -278,19 +278,32 @@
     },
 
     "tools": {
-      "title": "TOOLS",
+      "title": "TOOLS AND TWEAKS",
       "cjk": "工具",
-      "desc": "APEX · bots · VPNs. The administration's working hands.",
+      "desc": "Shared infrastructure that gives every agent on this server its hands, eyes, and memory. Four layers below, plus a set of smaller tweaks that shape how agents behave day-to-day.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
-        { "k": "ring", "v": "II — dev environment" }
+        { "k": "ring", "v": "II — dev environment" },
+        {
+          "k": "surfaces",
+          "v": "Apex Launcher (live dashboard) + Wolf's Terminal (agent-shell)."
+        },
+        { "k": "bots", "v": "Various bots of narrow and general purpose." },
+        {
+          "k": "memory",
+          "v": "[MemPalace](https://github.com/mksglu/context-mode) (project-keyed long-term wings) · [context-mode](https://github.com/mksglu/context-mode) (98 KB → 1.3 KB, ~99% reduction)."
+        },
+        {
+          "k": "tweaks",
+          "v": "[CLAUDE.md cascade](tip:Static rules layered global → project → sub-project; the constitution every agent reads at startup.) · [QA Officer](tip:Shared QA brain across projects: change-aware fingerprint memory, accessibility, web vitals, visual regression.) · [gitops wrapper](tip:One PAT, one locked identity; every agent's git and GitHub op routes through it.)."
+        }
       ]
     },
 
     "voice": {
       "title": "VOICE AGENT",
       "cjk": "声",
-      "desc": "Hands-free command surface — Wolf speaks, the empire moves.",
+      "desc": "All-purpose voice gateway. Routes spoken commands, transcribes (Whisper), synthesizes replies (ElevenLabs), hardened against impersonation.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "voice surface" },
@@ -303,7 +316,7 @@
     "qa": {
       "title": "QA",
       "cjk": "験",
-      "desc": "Reads every product as a user would. Files the verdict.",
+      "desc": "Shared QA brain across projects: change-aware fingerprint memory, accessibility checks, web vitals, visual regression. Reads every product as a user would, files reports.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "quality control" },
@@ -316,7 +329,7 @@
     "researcher": {
       "title": "RESEARCHER",
       "cjk": "究",
-      "desc": "Reads the field. Feeds digests upstream.",
+      "desc": "Eyes and hands on the open web. Drives a real browser like a human user, runs deep research across the internet, and handles research tasks for the other agents.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "external intelligence" },
@@ -329,7 +342,7 @@
     "devops": {
       "title": "DEVOPS",
       "cjk": "運",
-      "desc": "Routine plumbing — container hygiene, builds, healthchecks.",
+      "desc": "An extension of The Order's hands for container hygiene: builds, restarts, healthchecks. Touches images, never secrets.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "ops hands" },
@@ -342,7 +355,7 @@
     "terminal": {
       "title": "TERMINAL — EVERYTHING BUILDER",
       "cjk": "端末",
-      "desc": "Universal entrypoint for engineering. Compiles intent into shipped systems.",
+      "desc": "Successor of the [Wolf's Basement](https://github.com/manager/wolfs-basement) open-source project. Highly-optimized CLI multiplexer that runs 6+ agents (Claude, ChatGPT, any) simultaneously. Designed to make agent collaboration dead simple.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
         { "k": "ring", "v": "III — core products" },
@@ -351,13 +364,37 @@
           "v": "AI engineering agent",
           "cls": "blue",
           "ref": "lead-terminal"
+        },
+        {
+          "k": "init audit",
+          "v": "Auto-compaction button. Pulses when context fills; summarizes progress and refreshes CLAUDE.md / AGENTS.md."
+        },
+        {
+          "k": "access table",
+          "v": "Live blast-radius map: who can read or write what across containers and projects."
+        },
+        {
+          "k": "auto-warm",
+          "v": "Cross-tab coordinated keep-alive; one ping per target, never N tabs × M agents."
+        },
+        {
+          "k": "byo auth",
+          "v": "Slots for extra OAuth tokens (Anthropic, OpenAI Codex). Agents on different billings in one window."
+        },
+        {
+          "k": "self-mod",
+          "v": "If an agent edits the harness itself, it gets a [CRITICAL] system-prompt warning before a restart kills its own session."
+        },
+        {
+          "k": "send-to",
+          "v": "Forward one agent's full response to another with a fresh instruction — one click, payload included."
         }
       ]
     },
     "multimove": {
       "title": "MULTIMOVE",
       "cjk": "動",
-      "desc": "Bridge to Content Generation, PR and Marketing. Routes signal outward.",
+      "desc": "Automates work with the KeepSimple Team's social-media assets across every public channel.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
         { "k": "ring", "v": "III — core products" },
@@ -373,7 +410,7 @@
     "keepsimple": {
       "title": "KEEPSIMPLE — OPEN SOURCE WING",
       "cjk": "公",
-      "desc": "Public-facing wing. Carries the empire's tools into open ground.",
+      "desc": "Founded in 2019. Open-source movement at the intersection of cognitive science, product, and engineering — tools, frameworks, and writing used by 300,000+ people worldwide.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
         { "k": "ring", "v": "III — core products" },
@@ -389,7 +426,7 @@
     "elea": {
       "title": "ELEA",
       "cjk": "子",
-      "desc": "Custodied by an AI engineering agent. Owns the B2B SaaS surface.",
+      "desc": "Lawful cyber intelligence work.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
         { "k": "ring", "v": "III — core products" },
@@ -444,7 +481,7 @@
     "lead-terminal": {
       "title": "ENGINEERING LEAD · TERMINAL",
       "cjk": "長",
-      "desc": "Builds the everything-builder itself.",
+      "desc": "Engineering lead attached to the project Terminal.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },
@@ -457,7 +494,7 @@
     "lead-multimove": {
       "title": "ENGINEERING LEAD · MULTIMOVE",
       "cjk": "長",
-      "desc": "Builds the content & PR platform; commands the channels below.",
+      "desc": "Engineering lead attached to the project Multimove.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },
@@ -470,7 +507,7 @@
     "lead-elea": {
       "title": "ENGINEERING LEAD · ELEA",
       "cjk": "長",
-      "desc": "Builds the B2B SaaS surface.",
+      "desc": "Engineering lead attached to the project elea.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },
@@ -483,7 +520,7 @@
     "lead-agentsforge": {
       "title": "ENGINEERING LEAD · AGENTSFORGE",
       "cjk": "長",
-      "desc": "Forges stealth-mode products under custody.",
+      "desc": "Engineering lead attached to the project AgentsForge.",
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },
@@ -556,7 +593,7 @@
     "ks-io": {
       "title": "KEEPSIMPLE.IO",
       "cjk": "簡",
-      "desc": "Rare tooling for CogSci enthusiasts and tech leadership.",
+      "desc": "The KeepSimple movement's home on the web. Hosts UX Core, the Pyramids management framework, and a library of original articles on cognitive science, product, and engineering. Free, accessible to everyone.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
         { "k": "owner", "v": "keepsimple", "cls": "red" },
@@ -566,7 +603,7 @@
     "ks-soc": {
       "title": "UX CORE",
       "cjk": "型",
-      "desc": "World's largest open-source library of cognitive biases & nudging strategies.",
+      "desc": "World's largest open-source library of cognitive biases & nudging strategies. Used by leading institutions and companies worldwide — Duke University, Harvard Business School, MIT, Google, Yandex, Amazon, and others.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
         { "k": "owner", "v": "keepsimple", "cls": "red" },

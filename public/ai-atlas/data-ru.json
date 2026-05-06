@@ -1,0 +1,747 @@
+{
+  "brand": {
+    "title": "ИИ Атлас",
+    "kanji": "天",
+    "subtitle": "империя одного хоста · класс K5"
+  },
+  "ringLabels": {
+    "order": { "label": "I · Оркестраторы", "theta": 270, "offset": 0.1 },
+    "devEnv": { "label": "II · Среда разработки", "theta": 270 },
+    "projects": {
+      "label": "III · Ключевые продукты",
+      "theta": 270,
+      "offset": 0.085
+    },
+    "territories": { "label": "IV · Влияние", "theta": 270 }
+  },
+
+  "apex": {
+    "id": "wolf",
+    "label": "WOLF",
+    "cjk": "天",
+    "sub": "основатель",
+    "diamond": "gold"
+  },
+
+  "order": {
+    "r": 0.2,
+    "member": {
+      "id": "order",
+      "label": "Орден",
+      "diamond": "blue",
+      "theta": 270,
+      "status": "ok"
+    }
+  },
+
+  "devEnv": {
+    "r": 0.4,
+    "members": [
+      {
+        "id": "voice",
+        "label": "Голосовой Агент",
+        "diamond": "blue",
+        "theta": 330,
+        "status": "ok"
+      },
+      {
+        "id": "qa",
+        "label": "QA",
+        "diamond": "blue",
+        "theta": 30,
+        "status": "ok"
+      },
+      {
+        "id": "researcher",
+        "label": "Исследователь",
+        "diamond": "blue",
+        "theta": 210,
+        "status": "ok"
+      },
+      {
+        "id": "devops",
+        "label": "DevOps",
+        "diamond": "blue",
+        "theta": 150,
+        "status": "ok"
+      },
+      {
+        "id": "tools",
+        "label": "Инструменты и Твики",
+        "sub": "инфра · память · твики",
+        "diamond": "red",
+        "theta": 90,
+        "status": "ok"
+      }
+    ]
+  },
+
+  "projects": {
+    "r": 0.6,
+    "leadDeg": 5,
+    "members": [
+      {
+        "id": "terminal",
+        "label": "Terminal",
+        "sub": "сборщик всего",
+        "diamond": "red",
+        "theta": 215,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "territoryArc": 0,
+        "children": [],
+        "territoryLabel": ""
+      },
+      {
+        "id": "multimove",
+        "label": "Multimove",
+        "sub": "соц. медиа",
+        "diamond": "red",
+        "theta": 0,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "territoryArc": 70,
+        "children": [
+          {
+            "id": "orchestrator",
+            "label": "Оркестратор",
+            "diamond": "gold",
+            "status": "ok"
+          },
+          {
+            "id": "telegram",
+            "label": "Telegram",
+            "diamond": "blue",
+            "status": "ok"
+          },
+          {
+            "id": "linkedin",
+            "label": "LinkedIn",
+            "diamond": "blue",
+            "status": "ok"
+          },
+          {
+            "id": "twitter",
+            "label": "Twitter",
+            "diamond": "blue",
+            "status": "ok"
+          },
+          {
+            "id": "medium",
+            "label": "Medium",
+            "diamond": "blue",
+            "status": "ok"
+          }
+        ],
+        "territoryLabel": "КОНТЕНТ · PR"
+      },
+      {
+        "id": "agentsforge",
+        "label": "AgentsForge",
+        "sub": "разработка AI-персон",
+        "diamond": "red",
+        "theta": 270,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "leadDeg": 0,
+        "leadR": 0.54,
+        "territoryArc": 36,
+        "children": [
+          {
+            "id": "af-redacted-2",
+            "label": "EMBER",
+            "kind": "filled",
+            "status": "ok",
+            "redacted": true
+          }
+        ],
+        "territoryLabel": "B2C | B2B2C"
+      },
+      {
+        "id": "elea",
+        "label": "elea",
+        "sub": "разведка",
+        "diamond": "red",
+        "theta": 90,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "leadDeg": 0,
+        "leadR": 0.54,
+        "territoryArc": 36,
+        "children": [
+          {
+            "id": "choir",
+            "label": "Choir",
+            "kind": "filled",
+            "status": "ok",
+            "redacted": true
+          },
+          {
+            "id": "echo",
+            "label": "Echo",
+            "kind": "filled",
+            "status": "ok",
+            "redacted": true
+          },
+          {
+            "id": "whisper",
+            "label": "Whisper",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          }
+        ],
+        "territoryLabel": "B2B SAAS"
+      },
+      {
+        "id": "keepsimple",
+        "label": "KeepSimple",
+        "sub": "open-source крыло",
+        "diamond": "red",
+        "theta": 180,
+        "status": "ok",
+        "leadDiamond": "gold",
+        "territoryArc": 70,
+        "children": [
+          {
+            "id": "vibecode",
+            "label": "Vibecode Group",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "ks-group",
+            "label": "KeepSimple Channel",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "nasa",
+            "label": "NASA",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "arc",
+            "label": "Arc Of Self",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "ks-io",
+            "label": "KeepSimple.io",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          },
+          {
+            "id": "ks-soc",
+            "label": "UX Core",
+            "diamond": "red",
+            "kind": "filled",
+            "status": "ok"
+          }
+        ],
+        "territoryLabel": "ОБРАЗОВАНИЕ",
+        "territoryReverse": true
+      }
+    ]
+  },
+
+  "territoryR": 0.82,
+
+  "dossiers": {
+    "wolf": {
+      "title": "WOLF",
+      "cjk": "天",
+      "desc": "Владелец системы. Управляет сетью через агента Орден. Строит продукты через Терминал.",
+      "rows": [
+        { "k": "тип", "v": "человек", "cls": "gold" },
+        { "k": "кольцо", "v": "0 — вершина" },
+        { "k": "преемник", "v": "Орден", "cls": "blue", "ref": "order" }
+      ]
+    },
+
+    "order": {
+      "title": "ОРДЕН",
+      "cjk": "令",
+      "desc": "Единственный обитатель Кольца I. Хранит ключи; распределяет полномочия наружу.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "руководитель штаба" },
+        { "k": "полномочия", "v": "полные · секреты · инфра · ingress" },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "I — оркестраторы" }
+      ]
+    },
+
+    "tools": {
+      "title": "ИНСТРУМЕНТЫ И ТВИКИ",
+      "cjk": "工具",
+      "desc": "Общая инфраструктура, которая даёт каждому агенту на этом сервере руки, глаза и память. Ниже — четыре слоя плюс набор твиков, формирующих повседневное поведение агентов.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "II — среда разработки" },
+        {
+          "k": "поверхности",
+          "v": "Apex Launcher (живой дашборд) + Wolf's Terminal (шелл агентов)."
+        },
+        { "k": "боты", "v": "Различные боты узкого и общего назначения." },
+        {
+          "k": "память",
+          "v": "[MemPalace](https://github.com/mksglu/context-mode) (долгосрочная по проектам) · [context-mode](https://github.com/mksglu/context-mode) (98 КБ → 1.3 КБ, ~99% сокращение шума)."
+        },
+        {
+          "k": "твики",
+          "v": "[каскад CLAUDE.md](tip:Статичные правила, наслаиваемые глобально → проект → подпроект; конституция, которую каждый агент читает при старте.) · [QA Officer](tip:Общий QA-мозг для всех проектов: память отпечатков с учётом изменений, доступность, web vitals, визуальная регрессия.) · [gitops-обёртка](tip:Один PAT, одна закреплённая идентичность; все git- и GitHub-операции каждого агента идут через неё.)."
+        }
+      ]
+    },
+
+    "voice": {
+      "title": "ГОЛОСОВОЙ АГЕНТ",
+      "cjk": "声",
+      "desc": "Универсальный голосовой шлюз. Маршрутизирует команды, транскрибирует речь (Whisper), синтезирует ответы (ElevenLabs), защищён от имитации голоса.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "голосовой интерфейс" },
+        { "k": "полномочия", "v": "чтение хоста · бинарные подтверждения" },
+        { "k": "подчиняется", "v": "Орден", "cls": "blue", "ref": "order" },
+        { "k": "кольцо", "v": "II — среда разработки" }
+      ]
+    },
+
+    "qa": {
+      "title": "QA",
+      "cjk": "験",
+      "desc": "Общий QA-мозг для всех проектов: память отпечатков с учётом изменений, проверки доступности, web vitals, визуальная регрессия. Читает каждый продукт глазами пользователя, шлёт отчёты.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "контроль качества" },
+        { "k": "полномочия", "v": "обзор · тесты · отчёты" },
+        { "k": "подчиняется", "v": "Орден", "cls": "blue", "ref": "order" },
+        { "k": "кольцо", "v": "II — среда разработки" }
+      ]
+    },
+
+    "researcher": {
+      "title": "ИССЛЕДОВАТЕЛЬ",
+      "cjk": "究",
+      "desc": "Глаза и руки в открытом вебе. Управляет реальным браузером как живой пользователь, проводит углублённый ресёрч по интернету и выполняет ресёрч-задачи других агентов.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "внешняя разведка" },
+        { "k": "полномочия", "v": "веб · соц. сети · только сводки" },
+        { "k": "подчиняется", "v": "Орден", "cls": "blue", "ref": "order" },
+        { "k": "кольцо", "v": "II — среда разработки" }
+      ]
+    },
+
+    "devops": {
+      "title": "DEVOPS",
+      "cjk": "運",
+      "desc": "Продолжение рук Ордена в части гигиены контейнеров: сборки, рестарты, healthcheck'и. Трогает образы, не секреты.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "ops руки" },
+        { "k": "полномочия", "v": "контейнеры · сборки · логи" },
+        { "k": "подчиняется", "v": "Орден", "cls": "blue", "ref": "order" },
+        { "k": "кольцо", "v": "II — среда разработки" }
+      ]
+    },
+
+    "terminal": {
+      "title": "TERMINAL — СБОРЩИК ВСЕГО",
+      "cjk": "端末",
+      "desc": "Преемник open-source проекта [Wolf's Basement](https://github.com/manager/wolfs-basement). Высокооптимизированный CLI-мультиплексор, позволяющий запускать 6+ агентов (Claude, ChatGPT и любых других) одновременно. Спроектирован, чтобы сделать совместную работу агентов максимально простой.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        {
+          "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-terminal"
+        },
+        {
+          "k": "init audit",
+          "v": "Авто-компактификация. Пульсирует при заполнении контекста; суммирует прогресс и освежает CLAUDE.md / AGENTS.md."
+        },
+        {
+          "k": "access table",
+          "v": "Живая карта зоны поражения: кто и куда может читать/писать между контейнерами и проектами."
+        },
+        {
+          "k": "auto-warm",
+          "v": "Согласованный keep-alive между вкладками; один пинг на цель, не N вкладок × M агентов."
+        },
+        {
+          "k": "byo auth",
+          "v": "Слоты для своих OAuth-токенов (Anthropic, OpenAI Codex). Агенты на разных биллингах в одном окне."
+        },
+        {
+          "k": "self-mod",
+          "v": "Если агент редактирует сам терминал, он получает [CRITICAL] предупреждение в системный промпт — рестарт убьёт его же сессию."
+        },
+        {
+          "k": "send-to",
+          "v": "Перешли полный ответ одного агента другому с новой инструкцией — один клик, payload едет с письмом."
+        }
+      ]
+    },
+    "multimove": {
+      "title": "MULTIMOVE",
+      "cjk": "動",
+      "desc": "Автоматизирует работу с соц.медиа активами команды KeepSimple на всех публичных каналах.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        {
+          "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-multimove"
+        },
+        { "k": "владеет", "v": "контент / PR-территория" }
+      ]
+    },
+    "keepsimple": {
+      "title": "KEEPSIMPLE — OPEN SOURCE КРЫЛО",
+      "cjk": "公",
+      "desc": "Основано в 2019. Open-source движение на стыке когнитивной науки, продукта и инженерии — инструменты, фреймворки и материалы, которыми пользуются 300 000+ человек по всему миру.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        {
+          "k": "лид",
+          "v": "человек · технический лид",
+          "cls": "gold",
+          "ref": "lead-keepsimple"
+        },
+        { "k": "владеет", "v": "созвездие публичного влияния" }
+      ]
+    },
+    "elea": {
+      "title": "ELEA",
+      "cjk": "子",
+      "desc": "Легальная киберразведка.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        {
+          "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-elea"
+        },
+        { "k": "владеет", "v": "whisper · echo · choir" }
+      ]
+    },
+    "agentsforge": {
+      "title": "AGENTSFORGE",
+      "cjk": "鍛",
+      "desc": "Агентные ИИ-персоны, основанные на поведенческой науке.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        {
+          "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-agentsforge"
+        },
+        { "k": "владеет", "v": "[ЗАСЕКРЕЧЕНО] · 1 сущность" },
+        { "k": "url", "v": "agentsforge.com" }
+      ]
+    },
+    "af-redacted-2": {
+      "title": "[ЗАСЕКРЕЧЕНО]",
+      "cjk": "秘",
+      "desc": "Stealth-mode продукт AgentsForge. Декодирование перехвачено.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        {
+          "k": "владелец",
+          "v": "AgentsForge",
+          "cls": "red",
+          "ref": "agentsforge"
+        },
+        { "k": "статус", "v": "в кузнице" }
+      ]
+    },
+
+    "lead-keepsimple": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · KEEPSIMPLE",
+      "cjk": "長",
+      "desc": "Человек-куратор open-source крыла.",
+      "rows": [
+        { "k": "тип", "v": "человек", "cls": "gold" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        { "k": "пара", "v": "KeepSimple", "cls": "red", "ref": "keepsimple" }
+      ]
+    },
+
+    "lead-terminal": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · TERMINAL",
+      "cjk": "長",
+      "desc": "Технический лид, прикреплён к проекту Terminal.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "технический лид" },
+        { "k": "полномочия", "v": "кодовая база terminal · эскалация инфры" },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "lead-multimove": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · MULTIMOVE",
+      "cjk": "長",
+      "desc": "Технический лид, прикреплён к проекту Multimove.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "технический лид" },
+        {
+          "k": "полномочия",
+          "v": "кодовая база multimove · оркестрация каналов"
+        },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "lead-elea": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · ELEA",
+      "cjk": "長",
+      "desc": "Технический лид, прикреплён к проекту elea.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "технический лид" },
+        { "k": "полномочия", "v": "кодовая база elea · эскалация инфры" },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "lead-agentsforge": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · AGENTSFORGE",
+      "cjk": "長",
+      "desc": "Технический лид, прикреплён к проекту AgentsForge.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "технический лид" },
+        {
+          "k": "полномочия",
+          "v": "кодовая база agentsforge · эскалация инфры"
+        },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "orchestrator": {
+      "title": "ОРКЕСТРАТОР",
+      "cjk": "指",
+      "desc": "Человек-координатор внутри территории Multimove.",
+      "rows": [
+        { "k": "тип", "v": "человек", "cls": "gold" },
+        { "k": "владелец", "v": "Multimove", "cls": "red", "ref": "multimove" }
+      ]
+    },
+
+    "whisper": {
+      "title": "WHISPER",
+      "cjk": "囁",
+      "desc": "B2B SaaS — тихий слушающий слой (территория elea).",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "владелец", "v": "elea", "cls": "red", "ref": "elea" }
+      ]
+    },
+    "echo": {
+      "title": "[ЗАСЕКРЕЧЕНО]",
+      "cjk": "秘",
+      "desc": "Stealth-mode продукт. Декодирование перехвачено.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "владелец", "v": "elea", "cls": "red", "ref": "elea" },
+        { "k": "статус", "v": "в стелсе" }
+      ]
+    },
+    "choir": {
+      "title": "[ЗАСЕКРЕЧЕНО]",
+      "cjk": "秘",
+      "desc": "Stealth-mode продукт. Декодирование перехвачено.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "владелец", "v": "elea", "cls": "red", "ref": "elea" },
+        { "k": "статус", "v": "в стелсе" }
+      ]
+    },
+
+    "vibecode": {
+      "title": "VIBECODE GROUP",
+      "cjk": "波",
+      "desc": "Telegram-группа, где команда KeepSimple отвечает на вопросы в прямом эфире.",
+      "rows": [
+        { "k": "тип", "v": "группа" },
+        {
+          "k": "владелец",
+          "v": "KeepSimple",
+          "cls": "red",
+          "ref": "keepsimple"
+        },
+        { "k": "url", "v": "https://t.me/vibecodearmenia" }
+      ]
+    },
+    "ks-group": {
+      "title": "KEEPSIMPLE CHANNEL",
+      "cjk": "群",
+      "desc": "Курируемый Telegram-канал по когнитивным и поведенческим наукам.",
+      "rows": [
+        { "k": "тип", "v": "канал" },
+        {
+          "k": "владелец",
+          "v": "KeepSimple",
+          "cls": "red",
+          "ref": "keepsimple"
+        },
+        { "k": "url", "v": "https://t.me/keepsimple" }
+      ]
+    },
+    "ks-io": {
+      "title": "KEEPSIMPLE.IO",
+      "cjk": "簡",
+      "desc": "Дом движения KeepSimple в вебе. Хостит UX Core, фреймворк управления Pyramids и библиотеку оригинальных статей по когнитивной науке, продукту и инженерии. Бесплатно и доступно для всех.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        {
+          "k": "владелец",
+          "v": "KeepSimple",
+          "cls": "red",
+          "ref": "keepsimple"
+        },
+        { "k": "url", "v": "keepsimple.io" }
+      ]
+    },
+    "ks-soc": {
+      "title": "UX CORE",
+      "cjk": "型",
+      "desc": "Крупнейшая в мире open-source библиотека когнитивных искажений и nudging-стратегий. Используется ведущими университетами и компаниями: Duke University, Harvard Business School, MIT, Google, Yandex, Amazon и другими.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        {
+          "k": "владелец",
+          "v": "KeepSimple",
+          "cls": "red",
+          "ref": "keepsimple"
+        },
+        { "k": "url", "v": "uxcore.io" }
+      ]
+    },
+    "nasa": {
+      "title": "NASA",
+      "cjk": "星",
+      "desc": "Стартовая площадка для флэш-хакатонов по vibecoding'у.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        {
+          "k": "владелец",
+          "v": "KeepSimple",
+          "cls": "red",
+          "ref": "keepsimple"
+        },
+        { "k": "url", "v": "nasa.am" }
+      ]
+    },
+    "arc": {
+      "title": "ARC OF SELF",
+      "cjk": "弧",
+      "desc": "Рекурсивная теория идентичности — 17 лет в работе. Скоро релиз.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        {
+          "k": "владелец",
+          "v": "KeepSimple",
+          "cls": "red",
+          "ref": "keepsimple"
+        },
+        { "k": "url", "v": "arc-of-self.com" }
+      ]
+    },
+
+    "telegram": {
+      "title": "TELEGRAM",
+      "cjk": "電",
+      "desc": "Telegram-форпост Multimove — публикует и слушает.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "канал дистрибуции" },
+        { "k": "полномочия", "v": "пост · ответ · сбор" },
+        {
+          "k": "подчиняется",
+          "v": "Оркестратор",
+          "cls": "gold",
+          "ref": "orchestrator"
+        },
+        { "k": "кольцо", "v": "IV — влияние" }
+      ]
+    },
+
+    "linkedin": {
+      "title": "LINKEDIN",
+      "cjk": "連",
+      "desc": "LinkedIn-форпост Multimove — профессиональная поверхность.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "канал дистрибуции" },
+        { "k": "полномочия", "v": "пост · ответ · сбор" },
+        {
+          "k": "подчиняется",
+          "v": "Оркестратор",
+          "cls": "gold",
+          "ref": "orchestrator"
+        },
+        { "k": "кольцо", "v": "IV — влияние" }
+      ]
+    },
+
+    "twitter": {
+      "title": "TWITTER",
+      "cjk": "鳥",
+      "desc": "X-форпост Multimove — быстрый, публичный, разговорный.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "канал дистрибуции" },
+        { "k": "полномочия", "v": "пост · ответ · сбор" },
+        {
+          "k": "подчиняется",
+          "v": "Оркестратор",
+          "cls": "gold",
+          "ref": "orchestrator"
+        },
+        { "k": "кольцо", "v": "IV — влияние" }
+      ]
+    },
+
+    "medium": {
+      "title": "MEDIUM",
+      "cjk": "誌",
+      "desc": "Long-form форпост Multimove — эссе и статьи.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "long-form канал" },
+        { "k": "полномочия", "v": "публикация · обновление" },
+        {
+          "k": "подчиняется",
+          "v": "Оркестратор",
+          "cls": "gold",
+          "ref": "orchestrator"
+        },
+        { "k": "кольцо", "v": "IV — влияние" }
+      ]
+    }
+  }
+}
