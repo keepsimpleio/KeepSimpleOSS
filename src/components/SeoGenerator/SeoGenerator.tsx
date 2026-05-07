@@ -111,7 +111,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=2"
+          content="width=device-width, initial-scale=1, maximum-scale=2, viewport-fit=cover"
         />
         <title>keep-simple | Error Page</title>
         <meta name="description" content={'404 page - page not found'} />
@@ -183,7 +183,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         <meta charSet="UTF-8" />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=2"
+          content="width=device-width, initial-scale=1, maximum-scale=2, viewport-fit=cover"
         />
         <link
           rel="preload"

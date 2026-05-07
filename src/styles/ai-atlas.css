@@ -218,6 +218,22 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .dmd.blue { background: var(--blue); }
 .dmd.gold { background: var(--gold); }
 
+/* iOS Safari renders foreignObject HTML at native CSS px instead of
+   scaling it with the SVG viewBox, so a 10 px diamond appears huge
+   relative to the down-scaled diagram. Shrink it on iOS only — the
+   diamond stays in line with its label (it is still inside .node)
+   and stops dwarfing the orbital geometry. macOS Safari (no touch)
+   and Chrome (does not recognise -webkit-touch-callout) are skipped. */
+@media (hover: none) and (pointer: coarse) {
+  @supports (-webkit-touch-callout: none) {
+    .canvas--orbital .dmd {
+      width: 4px;
+      height: 4px;
+      margin-right: 3px;
+    }
+  }
+}
+
 /* ---------- canvas ---------- */
 .canvas--orbital {
   position: relative;

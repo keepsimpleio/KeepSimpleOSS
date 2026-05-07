@@ -21,13 +21,19 @@ const POL = (r: number, theta: number) => ({
 });
 
 /* On touch devices Mouse* events fire synthetically on tap but never
-   get a leave — without this, hover state would lock on Android. */
+   get a leave — without this, hover state would lock on Android.
+   Also: any touch capability disqualifies hover so a tap on iPad / a
+   touch laptop doesn't accidentally pin-solo (which suppresses the
+   related-entity highlight ring users expect from desktop hover). */
 function useHasHover() {
   const [hasHover, setHasHover] = useState(false);
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
     const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const update = () => setHasHover(mq.matches);
+    const hasTouch =
+      'ontouchstart' in window ||
+      (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+    const update = () => setHasHover(mq.matches && !hasTouch);
     update();
     mq.addEventListener?.('change', update);
     return () => mq.removeEventListener?.('change', update);
@@ -1482,8 +1488,12 @@ function AiAtlasApp() {
     };
   }, []);
 
-  /* hash → view mode (initial load + back/forward) */
-  useEffect(() => {
+  /* hash → view mode (initial load + back/forward).
+     useLayoutEffect runs synchronously after hydration commit and
+     before paint, so a deep-link to /ai-atlas#security shows the
+     correct tab on first paint instead of flashing 'environment'
+     for one frame and then snapping. */
+  useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
     const sync = () => {
       const hash = window.location.hash.replace(/^#/, '').toLowerCase();
@@ -1667,7 +1677,10 @@ function AiAtlasApp() {
     };
   }
   const highlightId = linkHoverNode || focusId;
-  const pinnedSolo = !!focusedNode && !hoverNode && !linkHoverNode;
+  /* On touch devices there is no hover, so a tap should reveal the same
+     entity-plus-connections highlight that hovering shows on desktop.
+     Solo-pin only applies when real hover is available. */
+  const pinnedSolo = hasHover && !!focusedNode && !hoverNode && !linkHoverNode;
 
   const onSelect = (id: string | null, mode?: string) => {
     if (mode === 'hover') {

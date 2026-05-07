@@ -163,9 +163,12 @@
   .aside {
     position: fixed;
     top: 4rem;
+    /* dvw avoids layout snap when iOS Safari URL bar collapses. */
     left: -100vw;
+    left: -100dvw;
     height: calc(100% - 4rem);
     width: 100vw;
+    width: 100dvw;
     z-index: 1;
     background-color: #ffffff;
     background-image: url('/keepsimple_/assets/white-navbar-bg.png');
