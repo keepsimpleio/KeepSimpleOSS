@@ -651,6 +651,7 @@ function NodeBody({
     'node',
     node.kind === 'filled' && 'node--filled',
     node.redacted && 'node--redacted',
+    node.diamond && `node--dmd-${node.diamond}`,
     active && 'is-active',
     highlighted && 'is-glow',
     dimmed && 'is-dim',

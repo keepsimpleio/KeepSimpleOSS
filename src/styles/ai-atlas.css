@@ -218,18 +218,24 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .dmd.blue { background: var(--blue); }
 .dmd.gold { background: var(--gold); }
 
-/* iOS Safari renders foreignObject HTML at native CSS px instead of
-   scaling it with the SVG viewBox, so a 10 px diamond appears huge
-   relative to the down-scaled diagram. Shrink it on iOS only — the
-   diamond stays in line with its label (it is still inside .node)
-   and stops dwarfing the orbital geometry. macOS Safari (no touch)
-   and Chrome (does not recognise -webkit-touch-callout) are skipped. */
+/* iOS Safari mangles the rotated-div diamond inside foreignObject.
+   On touch iOS, drop the diamond marker entirely and color the card
+   outline in the diamond's color instead — same signal, reliable
+   rendering. Desktop (and non-iOS touch) keep the diamond. */
 @media (hover: none) and (pointer: coarse) {
   @supports (-webkit-touch-callout: none) {
-    .canvas--orbital .dmd {
-      width: 4px;
-      height: 4px;
-      margin-right: 3px;
+    .canvas--orbital .dmd { display: none; }
+    .canvas--orbital .node--dmd-red {
+      outline: 2px solid var(--red);
+      outline-offset: -1px;
+    }
+    .canvas--orbital .node--dmd-blue {
+      outline: 2px solid var(--blue);
+      outline-offset: -1px;
+    }
+    .canvas--orbital .node--dmd-gold {
+      outline: 2px solid var(--gold);
+      outline-offset: -1px;
     }
   }
 }
@@ -1077,6 +1083,13 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 /* Touch devices (Android, iOS): :hover sticks after tap until the user
    taps elsewhere, leaving nodes visually "locked". Neutralize the
    hover styles where there is no real hover capability. */
+/* Touch devices: never dim node cards. Selecting one card must not
+   make others vanish — keep the full constellation visible at all
+   times. Wires and ring labels still dim for focus guidance. */
+@media (hover: none) and (pointer: coarse) {
+  .canvas--orbital .node.is-dim { opacity: 1; }
+}
+
 @media (hover: none) {
   .node:hover {
     background: var(--paper);
