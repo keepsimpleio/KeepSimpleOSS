@@ -26,11 +26,13 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: |
           echo ${{ secrets.ENV_PRODUCTION }} | base64 -d > .env
+          cp .env .env.staging
 
     - name: Copy staging env file
       if: github.ref == 'refs/heads/dev'
       run: |
-          echo ${{ secrets.ENV_STAGING }} | base64 -d > .env
+          echo ${{ secrets.ENV_STAGING }} | base64 -d > .env.staging
+          cp .env.staging .env
 
 
     - name: Production Deploy
