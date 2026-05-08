@@ -14,6 +14,7 @@ type ArticlesHeroProps = {
   isDarkTheme?: boolean;
   locale?: string;
   hasThoughtsArticles?: boolean;
+  hasAIArticles?: boolean;
 };
 const ArticlesHero: FC<ArticlesHeroProps> = ({
   title,
@@ -22,10 +23,13 @@ const ArticlesHero: FC<ArticlesHeroProps> = ({
   isDarkTheme,
   locale,
   hasThoughtsArticles,
+  hasAIArticles,
 }) => {
-  const visibleCategories = hasThoughtsArticles
-    ? categories
-    : categories.filter(category => category.tagId !== 'Thoughts');
+  const visibleCategories = categories.filter(category => {
+    if (category.tagId === 'Thoughts') return hasThoughtsArticles;
+    if (category.tagId === 'AI') return hasAIArticles;
+    return true;
+  });
 
   return (
     <section
