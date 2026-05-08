@@ -218,6 +218,28 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .dmd.blue { background: var(--blue); }
 .dmd.gold { background: var(--gold); }
 
+/* iOS Safari mangles the rotated-div diamond inside foreignObject.
+   On touch iOS, drop the diamond marker entirely and color the card
+   outline in the diamond's color instead — same signal, reliable
+   rendering. Desktop (and non-iOS touch) keep the diamond. */
+@media (hover: none) and (pointer: coarse) {
+  @supports (-webkit-touch-callout: none) {
+    .canvas--orbital .dmd { display: none; }
+    .canvas--orbital .node--dmd-red {
+      outline: 2px solid var(--red);
+      outline-offset: -1px;
+    }
+    .canvas--orbital .node--dmd-blue {
+      outline: 2px solid var(--blue);
+      outline-offset: -1px;
+    }
+    .canvas--orbital .node--dmd-gold {
+      outline: 2px solid var(--gold);
+      outline-offset: -1px;
+    }
+  }
+}
+
 /* ---------- canvas ---------- */
 .canvas--orbital {
   position: relative;
@@ -1077,6 +1099,13 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 /* Touch devices (Android, iOS): :hover sticks after tap until the user
    taps elsewhere, leaving nodes visually "locked". Neutralize the
    hover styles where there is no real hover capability. */
+/* Touch devices: never dim node cards. Selecting one card must not
+   make others vanish — keep the full constellation visible at all
+   times. Wires and ring labels still dim for focus guidance. */
+@media (hover: none) and (pointer: coarse) {
+  .canvas--orbital .node.is-dim { opacity: 1; }
+}
+
 @media (hover: none) {
   .node:hover {
     background: var(--paper);
