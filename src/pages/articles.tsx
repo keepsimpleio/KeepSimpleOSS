@@ -74,6 +74,7 @@ type ArticleProps = {
 };
 const Articles: FC<ArticleProps> = ({ articleBlog }) => {
   const uxCoreRef = useRef<HTMLElement>(null);
+  const aiRef = useRef<HTMLElement>(null);
   const thoughtsRef = useRef<HTMLElement>(null);
   const pmRef = useRef<HTMLElement>(null);
   const router = useRouter();
@@ -81,7 +82,7 @@ const Articles: FC<ArticleProps> = ({ articleBlog }) => {
   const chosenLocale = locale === 'ru' ? 'ru' : 'en';
   const [{}, { isDarkTheme }] = useGlobals();
 
-  const { uxcore, thoughts, pm, thoughtsId, uxcoreId, pmId } =
+  const { uxcore, ai, thoughts, pm, thoughtsId, uxcoreId, aiId, pmId } =
     articlesBlog[chosenLocale];
   const { title, description } = articleBlog.attributes;
   const { pageTitle, keywords, seoDescription, seoTitle } =
@@ -98,8 +99,9 @@ const Articles: FC<ArticleProps> = ({ articleBlog }) => {
   const allArticles = articleBlog.articles;
   const categories = [
     { id: 1, name: uxcore, scrollToRef: uxCoreRef, tagId: uxcoreId },
-    { id: 2, name: thoughts, scrollToRef: thoughtsRef, tagId: thoughtsId },
-    { id: 3, name: pm, scrollToRef: pmRef, tagId: pmId },
+    { id: 2, name: ai, scrollToRef: aiRef, tagId: aiId },
+    { id: 3, name: thoughts, scrollToRef: thoughtsRef, tagId: thoughtsId },
+    { id: 4, name: pm, scrollToRef: pmRef, tagId: pmId },
   ];
 
   const groupedArticles = categories.map(category => ({
@@ -109,12 +111,16 @@ const Articles: FC<ArticleProps> = ({ articleBlog }) => {
     tagId: category.tagId,
   }));
 
-  const hasThoughtsArticles = groupedArticles.some(
-    category =>
-      category.tagId === 'Thoughts' &&
-      Array.isArray(category.articles) &&
-      category.articles.length > 0,
-  );
+  const hasArticlesForTag = (tagId: string) =>
+    groupedArticles.some(
+      category =>
+        category.tagId === tagId &&
+        Array.isArray(category.articles) &&
+        category.articles.length > 0,
+    );
+
+  const hasThoughtsArticles = hasArticlesForTag('Thoughts');
+  const hasAIArticles = hasArticlesForTag('AI');
 
   return (
     <>
@@ -133,6 +139,7 @@ const Articles: FC<ArticleProps> = ({ articleBlog }) => {
       <ArticlesLayout
         title={title}
         hasThoughtsArticles={hasThoughtsArticles}
+        hasAIArticles={hasAIArticles}
         categories={categories}
         description={description}
         groupedArticles={groupedArticles}
