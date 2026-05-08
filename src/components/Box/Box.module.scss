@@ -1,6 +1,9 @@
 .content {
   position: fixed;
-  bottom: 15px;
+  /* Lift above the iPhone home-indicator on notched devices.
+     env() is 0 on devices without a safe area, so desktop layout is
+     unchanged. Pairs with `viewport-fit=cover` in SeoGenerator. */
+  bottom: max(15px, env(safe-area-inset-bottom));
   right: 15px;
   position: -webkit-fixed;
   height: auto;
@@ -61,5 +64,6 @@
     margin: 0 15px;
     max-width: unset;
     width: unset;
+    bottom: max(15px, env(safe-area-inset-bottom));
   }
 }

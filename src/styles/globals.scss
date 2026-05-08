@@ -2,6 +2,9 @@ body,
 html {
   padding: 0;
   margin: 0;
+  /* Kill the default grey iOS / Android tap flash. Each interactive
+     component owns its own pressed state via :active or aria-pressed. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
