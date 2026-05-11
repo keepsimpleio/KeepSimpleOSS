@@ -20,6 +20,8 @@ export const handleMixpanelClick = (
   location: string,
   element: string,
 ) => {
+  if (!MIXPANEL_TOKEN) return;
+
   mixpanel.track(eventName, {
     path: path,
     location: location,
@@ -30,6 +32,8 @@ export const handleMixpanelClick = (
 let bounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 export const trackPageView = (url: string) => {
+  if (!MIXPANEL_TOKEN) return;
+
   if (bounceTimer) {
     clearTimeout(bounceTimer);
     bounceTimer = null;
