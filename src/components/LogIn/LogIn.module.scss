@@ -15,6 +15,18 @@
     padding: 0;
     margin: 0;
   }
+  .errorBanner {
+    width: 100%;
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #f5c2c7;
+    background: #fde8e8;
+    color: #b42318;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+  }
   .btnWrapper {
     display: flex;
     flex-direction: column;
@@ -44,7 +56,22 @@
     .discordBtn {
       background-color: #5865f2;
       color: white;
-      margin-bottom: 114px;
+    }
+    .linkedinBtn {
+      background-color: #0177b5;
+      color: white;
+    }
+    .twitterBtn {
+      background-color: #000;
+      color: white;
+    }
+    .mailruBtn {
+      background-color: #168de2;
+      color: white;
+    }
+    .yandexBtn {
+      background-color: #fc3f1d;
+      color: white;
     }
   }
 }

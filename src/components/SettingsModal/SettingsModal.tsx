@@ -30,6 +30,7 @@ type SettingsModalProps = {
   linkedinStatus?: boolean;
   changeTitlePermission?: boolean;
   usernameIsTakenError?: string;
+  provider?: string;
   setUsernameIsTakenError: (usernameIsTakenError: string) => void;
   setChangedTitle: (selected: boolean) => void;
   handleSaveClick: (
@@ -38,6 +39,7 @@ type SettingsModalProps = {
     isEmailPublic: string,
     isLinkedinPublic: string,
     title?: string,
+    email?: string,
   ) => void;
 };
 
@@ -54,10 +56,13 @@ const SettingsModal: FC<SettingsModalProps> = ({
   defaultSelectedTitle,
   changeTitlePermission,
   setChangedTitle,
+  provider,
 }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const isTwitterUser = provider === 'twitter';
+  const initialEmail = isValidEmail(currentEmail) ? currentEmail : '';
   const [isEmailPublic, setIsEmailPublic] = useState(
     !!mailStatus ? 'everyone' : 'onlyMe',
   );
@@ -66,8 +71,13 @@ const SettingsModal: FC<SettingsModalProps> = ({
   );
   const [username, setUsername] = useState(currentUsername);
   const [linkedInUrl, setLinkedInUrl] = useState(linkedin);
+  const [emailValue, setEmailValue] = useState(initialEmail);
   const [selectedTitle] = useState(defaultSelectedTitle);
-  const [isValid, setIsValid] = useState({ username: true, linkedin: true });
+  const [isValid, setIsValid] = useState({
+    username: true,
+    linkedin: true,
+    email: true,
+  });
 
   const {
     title,
@@ -81,6 +91,8 @@ const SettingsModal: FC<SettingsModalProps> = ({
     cancelBtn,
     usernameValidationMessage,
     invalidLinkedIn,
+    invalidEmail,
+    emailPlaceholder,
   } = settingsData[currentLocale];
 
   const closeSettings = () => {
@@ -100,7 +112,7 @@ const SettingsModal: FC<SettingsModalProps> = ({
   };
 
   const handleValidation = useCallback(
-    (value: boolean, type: 'username' | 'linkedin') => {
+    (value: boolean, type: 'username' | 'linkedin' | 'email') => {
       setIsValid(prevIsValid => ({
         ...prevIsValid,
         [type]: value,
@@ -110,13 +122,14 @@ const SettingsModal: FC<SettingsModalProps> = ({
   );
 
   const handleSave = () => {
-    if (isValid.username && isValid.linkedin) {
+    if (isValid.username && isValid.linkedin && isValid.email) {
       handleSaveClick(
         username,
         linkedInUrl,
         isEmailPublic,
         isLinkedinPublic,
         changeTitlePermission ? selectedTitle : undefined,
+        isTwitterUser && emailValue !== initialEmail ? emailValue : undefined,
       );
     }
     setChangedTitle && setChangedTitle(true);
@@ -157,10 +170,22 @@ const SettingsModal: FC<SettingsModalProps> = ({
         <div className={styles.FieldGroupWithVisibility}>
           <div className={styles.FieldGroup}>
             <span className={styles.Label}>{email}</span>
-            <Input
-              disabled
-              placeholder={isValidEmail(currentEmail) ? currentEmail : ''}
-            />
+            {isTwitterUser ? (
+              <Input
+                value={initialEmail}
+                placeholder={emailPlaceholder}
+                onChange={value => setEmailValue(value)}
+                validationFunction={isValidEmail}
+                isValidCallback={v => handleValidation(v, 'email')}
+                showMessage={!isValid.email}
+                errorMessage={invalidEmail}
+              />
+            ) : (
+              <Input
+                disabled
+                placeholder={isValidEmail(currentEmail) ? currentEmail : ''}
+              />
+            )}
           </div>
           <Checkbox
             visibleTxt={visible}
@@ -206,7 +231,12 @@ const SettingsModal: FC<SettingsModalProps> = ({
           }}
           variant="black"
           className={styles.SaveBtn}
-          disabled={!isValid.username || !isValid.linkedin || !username}
+          disabled={
+            !isValid.username ||
+            !isValid.linkedin ||
+            !isValid.email ||
+            !username
+          }
         />
       </div>
     </Modal>
