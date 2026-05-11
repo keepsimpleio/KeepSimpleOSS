@@ -2,6 +2,8 @@ import NextAuth from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
 import LinkedInProvider from 'next-auth/providers/linkedin';
+import TwitterProvider from 'next-auth/providers/twitter';
+import YandexProvider from 'next-auth/providers/yandex';
 
 const GOOGLE_AUTHORIZATION_URL =
   'https://accounts.google.com/o/oauth2/v2/auth?' +
@@ -31,6 +33,9 @@ async function refreshAccessToken(token) {
       url = 'https://www.linkedin.com/oauth/v2/accessToken';
       searchParams.append('client_id', process.env.LINKEDIN_CLIENT_ID);
       searchParams.append('client_secret', process.env.LINKEDIN_CLIENT_SECRET);
+    } else if (token.provider === 'twitter') {
+      url = 'https://api.twitter.com/2/oauth2/token';
+      searchParams.append('client_id', process.env.TWITTER_CLIENT_ID);
     } else {
       return token;
     }
@@ -38,8 +43,18 @@ async function refreshAccessToken(token) {
     searchParams.append('grant_type', 'refresh_token');
     searchParams.append('refresh_token', token.refreshToken);
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    if (token.provider === 'twitter') {
+      const basic = Buffer.from(
+        `${process.env.TWITTER_CLIENT_ID}:${process.env.TWITTER_CLIENT_SECRET}`,
+      ).toString('base64');
+      headers.Authorization = `Basic ${basic}`;
+    }
+
     const response = await fetch(url, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers,
       method: 'POST',
       body: searchParams.toString(),
     });
@@ -94,6 +109,46 @@ export default NextAuth({
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    }),
+    {
+      id: 'mailru',
+      name: 'Mail.ru',
+      type: 'oauth',
+      authorization: {
+        url: 'https://oauth.mail.ru/login',
+        params: { scope: 'userinfo', response_type: 'code' },
+      },
+      token: 'https://oauth.mail.ru/token',
+      userinfo: 'https://oauth.mail.ru/userinfo',
+      clientId: process.env.MAILRU_CLIENT_ID,
+      clientSecret: process.env.MAILRU_CLIENT_SECRET,
+      client: { token_endpoint_auth_method: 'client_secret_post' },
+      profile(profile) {
+        return {
+          id: String(profile.id ?? profile.sub),
+          name:
+            profile.name ||
+            `${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() ||
+            profile.email,
+          email: profile.email,
+          image: profile.image ?? null,
+        };
+      },
+    },
+    TwitterProvider({
+      clientId: process.env.TWITTER_CLIENT_ID || '',
+      clientSecret: process.env.TWITTER_CLIENT_SECRET || '',
+      version: '2.0',
+      authorization: {
+        params: { scope: 'users.read tweet.read offline.access' },
+      },
+    }),
+    YandexProvider({
+      clientId: process.env.YANDEX_CLIENT_ID,
+      clientSecret: process.env.YANDEX_CLIENT_SECRET,
+      authorization: {
+        params: { scope: 'login:info login:email login:avatar' },
+      },
     }),
   ],
   callbacks: {

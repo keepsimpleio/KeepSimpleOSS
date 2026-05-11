@@ -8,6 +8,7 @@ export const userInfoUpdate = async (
   gender?: string,
   npsScore?: number,
   isModalShown?: boolean,
+  email?: string,
 ) => {
   const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/user/me`;
   const body = JSON.stringify({
@@ -19,6 +20,7 @@ export const userInfoUpdate = async (
     ...(gender !== undefined && { gender }),
     ...(npsScore !== undefined && { npsScore }),
     ...(isModalShown !== undefined && { isModalShown }),
+    ...(email !== undefined && { email }),
   });
   const headers = {
     'Content-Type': 'application/json',

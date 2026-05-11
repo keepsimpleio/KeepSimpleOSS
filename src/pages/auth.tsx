@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import { FC, useContext, useEffect } from 'react';
 
 import { deleteRedirectCookie, getRedirectCookie } from '@lib/cookies';
@@ -56,8 +56,27 @@ const Auth: FC = () => {
       }
 
       if (status === 'authenticated' && !localStorage.getItem('accessToken')) {
-        //@ts-ignore
-        await authenticate(data.accessToken, setAccountData, setToken);
+        const result = await authenticate(
+          //@ts-ignore
+          data.accessToken,
+          setAccountData,
+          setToken,
+        );
+
+        // strict mode is off in this project, so the union doesn't narrow on
+        // `ok`. `'code' in result` narrows to the failure variant.
+        if ('code' in result) {
+          // Tear down the next-auth session so the user can retry cleanly,
+          // then bounce them back with an error code the LogIn modal renders.
+          await signOut({ redirect: false });
+          localStorage.removeItem('provider');
+          const returnTo = getRedirectCookie() || '/';
+          deleteRedirectCookie();
+          const separator = returnTo.includes('?') ? '&' : '?';
+          window.location.href = `${returnTo}${separator}authError=${result.code}`;
+          return;
+        }
+
         const redirectUrl = getRedirectCookie() || '/uxcore';
         deleteRedirectCookie();
         window.location.href = redirectUrl;
