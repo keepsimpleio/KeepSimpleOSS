@@ -1,6 +1,6 @@
 import { expect, test } from '../fixtures/base';
 
-// 390x844 = existing Cypress convention (see QA_RECON.md §5).
+// 390x844 = standard mobile viewport (see QA_RECON.md §5).
 test.use({ viewport: { width: 390, height: 844 } });
 
 // ---------------------------------------------------------------------------

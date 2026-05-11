@@ -1,3 +1,8 @@
+> **TODO (2026-05-01):** Cypress was removed and replaced by Playwright + the QA-agent setup
+> (`tests/`, `.claude/keepsimple-qa/`). This report still references Cypress as the test
+> framework (see §1 stack table and §10). Review and refresh against the current state of
+> the repo before relying on it.
+
 ● KeepSimpleOSS Codebase Audit Report
 
 1. Stack & Tooling
