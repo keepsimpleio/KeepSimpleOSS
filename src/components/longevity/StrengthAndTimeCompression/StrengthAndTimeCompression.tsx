@@ -3,6 +3,8 @@ import React, { FC, useMemo, useState } from 'react';
 
 import { ACTIVITY_LEVELS } from '@constants/longevity';
 
+import useAnimatedNumber from '@hooks/useAnimatedNumber';
+
 import longevityData from '@data/longevity';
 
 import Heading from '@components/Heading';
@@ -24,6 +26,10 @@ const StrengthAndTimeCompression: FC<StrengthAndTimeCompressionProps> = ({
   const selectedLevel = useMemo(
     () => ACTIVITY_LEVELS[selectedIndex],
     [selectedIndex],
+  );
+
+  const animatedTotalMinutes = useAnimatedNumber(
+    selectedLevel.totalMinutesPerWeek,
   );
 
   return (
@@ -64,8 +70,12 @@ const StrengthAndTimeCompression: FC<StrengthAndTimeCompressionProps> = ({
             stops[selectedIndex] === 3 || stops[selectedIndex] === 4,
         })}
       >
-        <span className={styles.totalMins} data-cy="strength-total-mins">
-          {selectedLevel.totalMinutesPerWeek}
+        <span
+          className={styles.totalMins}
+          data-cy="strength-total-mins"
+          data-value={selectedLevel.totalMinutesPerWeek}
+        >
+          {animatedTotalMinutes}
         </span>
         <span className={styles.staticBigText}> {totalWeeklyActivity.min}</span>
         <span className={styles.staticSmallText}>
