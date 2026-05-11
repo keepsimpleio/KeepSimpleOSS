@@ -68,6 +68,7 @@
         clip-path: inset(0 100% 0 0);
         animation: drawRedLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         animation-delay: 0.2s;
+        animation-iteration-count: 1;
       }
     }
 
@@ -247,5 +248,15 @@
 
   100% {
     filter: drop-shadow(0px 0px 18px rgba(53, 35, 13, 0.2));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subSection {
+    .habitTooltip,
+    .habitTooltip::after,
+    .dateTxt::after {
+      animation: none !important;
+    }
   }
 }
