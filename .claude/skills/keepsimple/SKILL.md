@@ -106,7 +106,7 @@ Use path aliases for cross-folder imports. Relative imports only within the same
 - Tailwind, styled-components, CSS-in-JS
 - Named exports in `index.ts` barrels
 - State management libraries
-- Testing frameworks beyond Cypress
+- Testing frameworks beyond Playwright
 - Import global CSS outside `_app.tsx`
 - Invent design values — read `keepsimple-style.md`
 

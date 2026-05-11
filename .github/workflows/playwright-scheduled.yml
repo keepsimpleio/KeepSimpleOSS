@@ -1,32 +1,24 @@
-name: Playwright scheduled
+name: Playwright Tests (scheduled)
 
-# Runs the Playwright suite weekly and on manual dispatch.
-# Does NOT gate pull requests — pull-request-check.yml is unrelated.
-# See QA_PLAN.md §5 for the full specification.
-#
-# Mirrors the cypress-manual.yml pattern: the workflow builds *this branch's
-# source* with the chosen environment's `.env.<target>` file, starts a local
-# `next start` server, and runs Playwright against `http://localhost:3005`.
-# This decouples the test from whatever is currently deployed at staging /
-# prod URLs — newly added selectors, fixtures, and components are exercised
-# against real Strapi data without waiting for a deploy.
+# Weekly scheduled run on main + on-demand via workflow_dispatch.
+# Does NOT run on PRs (by design — see QA_PLAN.md §7).
 
 on:
   schedule:
-    # Monday 06:00 UTC = Monday 10:00 Yerevan (UTC+4).
+    # Monday 06:00 UTC = 10:00 Yerevan (UTC+4)
     - cron: '0 6 * * 1'
   workflow_dispatch:
     inputs:
-      target_env:
-        description: 'Which env file to build with (controls Strapi backend, OAuth IDs, etc.)'
+      environment:
+        description: Environment to test against
         type: choice
         required: true
         default: staging
         options:
           - staging
-          - prod
+          - production
       scope:
-        description: 'Which tier to run (ignored if spec_path is provided)'
+        description: Which tier to run
         type: choice
         required: true
         default: all
@@ -36,12 +28,12 @@ on:
           - P1
           - P2
       spec_path:
-        description: 'Optional specific spec file or glob (overrides scope)'
+        description: 'Override: specific test path or grep pattern (leave blank to use scope)'
         type: string
         required: false
         default: ''
       browser:
-        description: 'Browser to run against'
+        description: Browser to use
         type: choice
         required: true
         default: chromium
@@ -56,91 +48,90 @@ permissions:
 
 jobs:
   playwright:
-    name: Playwright (${{ github.event.inputs.target_env || 'staging' }} / ${{ github.event.inputs.scope || 'all' }} / ${{ github.event.inputs.browser || 'chromium' }})
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    env:
-      CI: 'true'
-      APP_ENV: ${{ github.event.inputs.target_env || 'staging' }}
-      # NODE_ENV is intentionally NOT set at the job level — yarn treats
-      # NODE_ENV=production as a signal to skip devDependencies, which
-      # would drop @axe-core/playwright (used by tests/p2/a11y.spec.ts).
-      # The build step and the webServer block in playwright.config.ts
-      # each wrap their own command in `cross-env NODE_ENV=production`,
-      # so production mode is still enforced where it matters.
-      #
-      # The webServer block in playwright.config.ts reads APP_ENV and runs
-      # `next start` against the freshly-built `.next/`. baseURL stays at
-      # the default localhost:3005.
+    timeout-minutes: 30
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
+          # Aligned with Dockerfile (node:20.19.0-alpine). README's 18.18.0
+          # is stale; Node 20 is the canonical runtime for this repo.
           node-version: 20
-          # Intentionally NOT caching yarn — a stale runner cache was
-          # leaving @axe-core/playwright out of node_modules even though
-          # it sat in yarn.lock. Mirrors cypress-manual.yml which also
-          # opts out of caching.
 
       - name: Install dependencies
-        # Plain `yarn install` (no --frozen-lockfile) — matches the
-        # cypress-manual.yml pattern. Slower per run (~30-60s vs cached)
-        # but guarantees a clean node_modules every time.
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
-      - name: Decode prod env file
-        if: env.APP_ENV == 'prod'
-        run: echo "${{ secrets.ENV_PRODUCTION }}" | base64 -d > .env.prod
-
-      - name: Decode staging env file
-        if: env.APP_ENV == 'staging'
-        run: echo "${{ secrets.ENV_STAGING }}" | base64 -d > .env.staging
-
-      - name: Install Playwright browsers
-        run: yarn playwright install --with-deps ${{ github.event.inputs.browser == 'all' && 'chromium firefox webkit' || github.event.inputs.browser || 'chromium' }}
-
-      - name: Build app
-        run: yarn cross-env NODE_ENV=production APP_ENV=${{ env.APP_ENV }} next build
-
-      - name: Resolve scope path
+      - name: Resolve test path from scope
         id: scope
+        shell: bash
         run: |
-          SPEC_PATH="${{ github.event.inputs.spec_path }}"
-          SCOPE="${{ github.event.inputs.scope || 'all' }}"
-          if [ -n "$SPEC_PATH" ]; then
-            echo "path=$SPEC_PATH" >> "$GITHUB_OUTPUT"
+          spec_path="${{ inputs.spec_path }}"
+          scope="${{ inputs.scope || 'all' }}"
+
+          if [ -n "$spec_path" ]; then
+            echo "path=$spec_path" >> "$GITHUB_OUTPUT"
           else
-            case "$SCOPE" in
-              P0) echo "path=tests/p0/" >> "$GITHUB_OUTPUT" ;;
-              P1) echo "path=tests/p1/" >> "$GITHUB_OUTPUT" ;;
-              P2) echo "path=tests/p2/" >> "$GITHUB_OUTPUT" ;;
-              *)  echo "path=tests/"    >> "$GITHUB_OUTPUT" ;;
+            case "$scope" in
+              P0) echo "path=tests/p0" >> "$GITHUB_OUTPUT" ;;
+              P1) echo "path=tests/p1" >> "$GITHUB_OUTPUT" ;;
+              P2) echo "path=tests/p2" >> "$GITHUB_OUTPUT" ;;
+              *)  echo "path=tests"    >> "$GITHUB_OUTPUT" ;;
             esac
           fi
 
-      - name: Resolve Playwright projects
-        id: projects
+      - name: Resolve browser flag
+        id: browser
+        shell: bash
         run: |
-          BROWSER="${{ github.event.inputs.browser || 'chromium' }}"
-          if [ "$BROWSER" = "all" ]; then
-            echo "args=--project=chromium --project=firefox --project=webkit" >> "$GITHUB_OUTPUT"
+          browser="${{ inputs.browser || 'chromium' }}"
+          if [ "$browser" = "all" ]; then
+            # Empty flag → Playwright runs every project in config.
+            echo "flag=" >> "$GITHUB_OUTPUT"
+            echo "install=chromium firefox webkit" >> "$GITHUB_OUTPUT"
           else
-            echo "args=--project=$BROWSER" >> "$GITHUB_OUTPUT"
+            echo "flag=--project=$browser" >> "$GITHUB_OUTPUT"
+            echo "install=$browser" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run Playwright
-        # webServer block in playwright.config.ts spawns `next start` itself
-        # (because APP_ENV is set), waits for http://localhost:3005, runs
-        # the suite, and tears the server down at the end.
-        run: yarn playwright test ${{ steps.scope.outputs.path }} ${{ steps.projects.outputs.args }}
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps ${{ steps.browser.outputs.install }}
 
-      - name: Upload HTML report
+      - name: Resolve base URL
+        id: url
+        shell: bash
+        run: |
+          env="${{ inputs.environment || 'staging' }}"
+          case "$env" in
+            production) echo "base=${{ secrets.PLAYWRIGHT_PRODUCTION_URL }}" >> "$GITHUB_OUTPUT" ;;
+            *)          echo "base=${{ secrets.PLAYWRIGHT_STAGING_URL }}"    >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Verify base URL is configured
+        shell: bash
+        run: |
+          if [ -z "${{ steps.url.outputs.base }}" ]; then
+            echo "::error::Base URL is empty. Configure PLAYWRIGHT_STAGING_URL / PLAYWRIGHT_PRODUCTION_URL as repo secrets." >&2
+            exit 1
+          fi
+
+      - name: Run Playwright tests
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.url.outputs.base }}
+          # Staging is behind HTTP Basic Auth; production is public.
+          PLAYWRIGHT_HTTP_USERNAME: ${{ (inputs.environment || 'staging') != 'production' && secrets.PLAYWRIGHT_STAGING_USERNAME || '' }}
+          PLAYWRIGHT_HTTP_PASSWORD: ${{ (inputs.environment || 'staging') != 'production' && secrets.PLAYWRIGHT_STAGING_PASSWORD || '' }}
+          PLAYWRIGHT_NO_SERVER: '1'
+          CI: 'true'
+        run: yarn playwright test ${{ steps.scope.outputs.path }} ${{ steps.browser.outputs.flag }}
+
+      - name: Upload Playwright HTML report
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ github.run_id }}
-          path: playwright-report
+          name: playwright-report
+          path: playwright-report/
           retention-days: 14

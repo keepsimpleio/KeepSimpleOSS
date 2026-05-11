@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 // eslint-disable-next-line import/no-anonymous-default-export
 export default [
   {
-    ignores: ['.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
+    ignores: ['.next/**', 'out/**', 'build/**', 'next-env.d.ts', '.claude/keepsimple-qa/**'],
   },
 
   ...compat.extends('next/core-web-vitals', 'next/typescript'),

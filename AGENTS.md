@@ -18,7 +18,7 @@ How to work in this codebase. Read this before writing code.
 | Auth            | NextAuth v4                                     | 4.23.2                      |
 | CMS             | Strapi (external)                               | —                           |
 | State           | React Context only                              | —                           |
-| Testing         | Cypress E2E only                                | 14.5.2                      |
+| Testing         | Playwright E2E only                             | 1.59.1                      |
 | Linting         | ESLint flat config + simple-import-sort         | 9.x                         |
 | Formatting      | Prettier                                        | 3.x                         |
 | Git hooks       | Husky + lint-staged                             | 9.x                         |
