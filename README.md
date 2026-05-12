@@ -18,7 +18,7 @@ KeepSimple was founded in 2019 by Wolf Alexanyan as a free, public initiative ex
 
 - SCSS modules
 
-- Node.js version: 18.18.0
+- Node.js version: 20.19.0 (see `.nvmrc`)
 
 ### Additional tooling:
 
@@ -81,7 +81,7 @@ There are **two ways** of creating a branch:
 
 ## 📝Folder Structure and Naming Conventions
 
-- cypress - contains all the e2e tests
+- tests - contains all the Playwright e2e tests, organized by priority tier (`tests/p0/`, `tests/p1/`, `tests/p2/`) with shared `tests/fixtures/` and `tests/helpers/`. Run with `yarn test:e2e` (or `:p0` / `:p1` / `:p2` for a single tier).
 - public - contains static assets like images, icons, etc.
 - src - contains the main application code
   - api - contains API requests and related code

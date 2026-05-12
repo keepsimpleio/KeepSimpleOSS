@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["cypress", "node", "./cypress/support/commands"],
+    "types": ["node"],
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -34,13 +34,6 @@
     },
     "incremental": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "cypress",
-    "cypress/support/commands.d.ts",
-    "cypress/**/*.ts"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "tests", "playwright.config.ts"]
 }

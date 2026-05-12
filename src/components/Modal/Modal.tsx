@@ -1,6 +1,12 @@
 import cn from 'classnames';
 import Image from 'next/image';
-import React, { FC, KeyboardEvent, ReactNode, useEffect } from 'react';
+import React, {
+  FC,
+  KeyboardEvent,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import styles from './Modal.module.scss';
@@ -26,6 +32,7 @@ type ModalProps = {
   grayTitle?: boolean;
   dataCy?: string;
   backgroundImageUrl?: string;
+  hasHr?: boolean;
 };
 
 const Modal: FC<ModalProps> = ({
@@ -49,9 +56,16 @@ const Modal: FC<ModalProps> = ({
   dataCy,
   isLongevityProtocolModal,
   backgroundImageUrl,
+  hasHr,
 }) => {
+  const [closing, setClosing] = useState(false);
+
   const handleClose = () => {
-    onClick();
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      onClick();
+    }, 180);
   };
 
   useEffect(() => {
@@ -68,10 +82,10 @@ const Modal: FC<ModalProps> = ({
 
       if (!close) {
         document.documentElement.style.overflowY = 'hidden';
-        document.body.classList.add('hide-body-move');
+        document.documentElement.classList.add('hide-body-move');
       } else {
         document.documentElement.style.overflowY = overflowDefaultValue;
-        document.body.classList.remove('hide-body-move');
+        document.documentElement.classList.remove('hide-body-move');
       }
 
       // @ts-ignore
@@ -79,7 +93,7 @@ const Modal: FC<ModalProps> = ({
 
       return () => {
         document.documentElement.style.overflowY = overflowDefaultValue;
-        document.body.classList.remove('hide-body-move');
+        document.documentElement.classList.remove('hide-body-move');
         // @ts-ignore
         document.removeEventListener('keydown', handleKeyDown);
       };
@@ -90,6 +104,7 @@ const Modal: FC<ModalProps> = ({
     <div
       className={cn(styles.overlay, {
         [className]: className,
+        [styles.overlayClosing]: closing,
       })}
       data-cy={dataCy}
     >
@@ -107,6 +122,7 @@ const Modal: FC<ModalProps> = ({
           [styles.fullSizeMobile]: fullSizeMobile,
           [styles.isLongevityProtocolModal]: isLongevityProtocolModal,
           [styles.withBackgroundImage]: backgroundImageUrl,
+          [styles.wrapperClosing]: closing,
         })}
         style={{
           backgroundImage: backgroundImageUrl
@@ -130,6 +146,7 @@ const Modal: FC<ModalProps> = ({
             >
               {title}
             </span>
+            {hasHr && <hr className={styles.hr} />}
             <div
               className={styles.closeIconWrapper}
               onClick={onClick}

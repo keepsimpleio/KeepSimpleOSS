@@ -8,19 +8,21 @@ import type { TRouter } from '@local-types/global';
 
 import styles from './UsedBy.module.scss';
 
+type StrapiImage = {
+  data?: {
+    attributes: {
+      url: string;
+    };
+  };
+};
+
 type UsedByProps = {
   darkTheme?: boolean;
   title?: string;
-  usedBy: {
-    icon: {
-      data: {
-        attributes: {
-          url: string;
-        };
-      };
-    };
-    name: string;
-  }[];
+  usedBy?: {
+    dark_image?: StrapiImage;
+    image?: StrapiImage;
+  };
 };
 
 const UsedBy: FC<UsedByProps> = ({ usedBy, darkTheme, title }) => {
@@ -30,6 +32,17 @@ const UsedBy: FC<UsedByProps> = ({ usedBy, darkTheme, title }) => {
     triggerOnce: true,
     threshold: 0.2,
   });
+  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI;
+  const darkImageUrl = usedBy?.dark_image?.data?.attributes?.url;
+  const imageUrl = usedBy?.image?.data?.attributes?.url;
+  const src =
+    darkTheme && darkImageUrl
+      ? `${strapiUrl}${darkImageUrl}`
+      : imageUrl
+        ? `${strapiUrl}${imageUrl}`
+        : '';
+
+  if (!src) return null;
 
   return (
     <section
@@ -53,11 +66,7 @@ const UsedBy: FC<UsedByProps> = ({ usedBy, darkTheme, title }) => {
               width={1920}
               height={250}
               className={styles.img}
-              src={
-                darkTheme
-                  ? '/keepsimple_/assets/logos-line-large-dark.png'
-                  : '/keepsimple_/assets/logos-line-large.png'
-              }
+              src={src}
               alt={'Logos'}
             />
           </div>
@@ -67,11 +76,7 @@ const UsedBy: FC<UsedByProps> = ({ usedBy, darkTheme, title }) => {
               width={1920}
               alt={'Logos'}
               className={styles.img}
-              src={
-                darkTheme
-                  ? '/keepsimple_/assets/logos-line-large-dark.png'
-                  : '/keepsimple_/assets/logos-line-large.png'
-              }
+              src={src}
             />
           </div>
         </div>

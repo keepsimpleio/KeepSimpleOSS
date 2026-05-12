@@ -15,12 +15,10 @@ that aren’t available as static fonts. Not all apps support variable fonts, an
 in those cases you can use the static font files for Cormorant Garamond:
   Cormorant_Garamond/static/CormorantGaramond-Light.ttf
   Cormorant_Garamond/static/CormorantGaramond-Regular.ttf
-  Cormorant_Garamond/static/CormorantGaramond-Medium.ttf
   Cormorant_Garamond/static/CormorantGaramond-SemiBold.ttf
   Cormorant_Garamond/static/CormorantGaramond-Bold.ttf
   Cormorant_Garamond/static/CormorantGaramond-LightItalic.ttf
   Cormorant_Garamond/static/CormorantGaramond-Italic.ttf
-  Cormorant_Garamond/static/CormorantGaramond-MediumItalic.ttf
   Cormorant_Garamond/static/CormorantGaramond-SemiBoldItalic.ttf
   Cormorant_Garamond/static/CormorantGaramond-BoldItalic.ttf
 

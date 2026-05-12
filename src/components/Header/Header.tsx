@@ -1,33 +1,63 @@
 import cn from 'classnames';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { FC, Fragment, useCallback, useContext } from 'react';
+import React, {
+  FC,
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { flushSync } from 'react-dom';
 
-// import UserProfile from '@components/UserProfile';
-// import LogIn from '@components/LogIn';
 import type { TRouter } from '@local-types/global';
 
 import useGlobals from '@hooks/useGlobals';
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
+import { userInfoUpdate } from '@api/settings';
+import { getMyInfo } from '@api/strapi';
+
 import { GlobalContext } from '@components/Context/GlobalContext';
+import LogIn from '@components/LogIn';
 import Navbar from '@components/Navbar';
 import Link from '@components/NextLink';
+import UserProfile from '@components/UserProfile';
 
 import styles from './Header.module.scss';
+
+const SettingsModal = dynamic(() => import('@components/SettingsModal'), {
+  ssr: false,
+});
 
 const Header: FC = () => {
   const router = useRouter();
   const { locale, locales } = router as TRouter;
   const { setShowLoader, videoRef } = useContext(GlobalContext);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [usernameIsTakenError, setUsernameIsTakenError] = useState('');
+  const [token, setToken] = useState<string | null>(null);
   const isSmallScreen = useIsWidthLessThan(1141);
-  // const [openLogin, setOpenLogin] = useState(false);
-  // const { accountData, setAccountData } = useContext(GlobalContext);
+  const [openLogin, setOpenLogin] = useState(false);
+  const { accountData, setAccountData } = useContext(GlobalContext);
   const [
     { toggleIsDarkTheme, toggleSidebar },
     { isDarkTheme, isOpenedSidebar },
   ] = useGlobals();
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('accessToken');
+    setToken(storedToken);
+  }, []);
+
+  useEffect(() => {
+    if (router.query.authError) {
+      setOpenLogin(true);
+    }
+  }, [router.query.authError]);
+
   const handleToggleTheme = useCallback(() => {
     toggleIsDarkTheme();
   }, []);
@@ -36,6 +66,43 @@ const Header: FC = () => {
     toggleSidebar();
   }, []);
 
+  const handleOpenSettings = useCallback(() => {
+    setOpenSettings(true);
+  }, []);
+
+  const handleSaveClick = async (
+    username: string,
+    linkedInUrl: string,
+    isEmailPublic: string,
+    isLinkedinPublic: string,
+    title?: string,
+    email?: string,
+  ) => {
+    const mailIsPublic = isEmailPublic === 'everyone';
+    const linkedInIsPublic = isLinkedinPublic === 'everyone';
+    try {
+      await userInfoUpdate(
+        token,
+        username,
+        linkedInUrl,
+        mailIsPublic,
+        linkedInIsPublic,
+        title,
+        undefined,
+        undefined,
+        undefined,
+        email,
+      );
+
+      const data = await getMyInfo();
+      setAccountData(data);
+      setOpenSettings(false);
+      setUsernameIsTakenError('');
+    } catch (error) {
+      setOpenSettings(true);
+      setUsernameIsTakenError('Username is already taken');
+    }
+  };
   const handleClick = (e, path: string) => {
     e.preventDefault();
     flushSync(() => {
@@ -67,9 +134,14 @@ const Header: FC = () => {
           <Link href="/" locale={locale} shallow={false} legacyBehavior>
             <Image
               onClick={e => {
-                if (router.pathname !== '/') {
-                  !isSmallScreen && handleClick(e, '/');
+                const goingToLanding = router.pathname !== '/';
+                if (isSmallScreen) {
+                  e.preventDefault();
+                  if (isOpenedSidebar) toggleSidebar();
+                  if (goingToLanding) router.push('/');
+                  return;
                 }
+                if (goingToLanding) handleClick(e, '/');
               }}
               src={
                 isDarkTheme
@@ -88,6 +160,21 @@ const Header: FC = () => {
           <div />
           <div />
         </div>
+        {isSmallScreen && (
+          <div className={styles.mobileUserProfile}>
+            <UserProfile
+              setAccountData={setAccountData}
+              isLoggedIn={!!accountData}
+              isDarkTheme={isDarkTheme}
+              username={accountData?.username}
+              setOpenLoginModal={setOpenLogin}
+              userImage={accountData?.picture}
+              handleOpenSettings={handleOpenSettings}
+              hideDropdown={isOpenedSidebar}
+              hideUsername
+            />
+          </div>
+        )}
         <div>
           <Navbar
             handleToggleSidebar={handleToggleSidebar}
@@ -157,18 +244,37 @@ const Header: FC = () => {
                 </Link>
               )}
             </div>
-            {/*<UserProfile*/}
-            {/*  showDropdown*/}
-            {/*  setAccountData={setAccountData}*/}
-            {/*  isLoggedIn={!!accountData}*/}
-            {/*  username={accountData?.username}*/}
-            {/*  setOpenLoginModal={setOpenLogin}*/}
-            {/*/>*/}
+            {!isSmallScreen && (
+              <UserProfile
+                setAccountData={setAccountData}
+                isLoggedIn={!!accountData}
+                isDarkTheme={isDarkTheme}
+                username={accountData?.username}
+                setOpenLoginModal={setOpenLogin}
+                userImage={accountData?.picture}
+                handleOpenSettings={handleOpenSettings}
+              />
+            )}
           </div>
         </div>
         <div className={styles.closeButton} onClick={handleToggleSidebar} />
       </header>
-      {/*{openLogin && <LogIn setShowLogIn={setOpenLogin} />}*/}
+      {openLogin && <LogIn setShowLogIn={setOpenLogin} />}
+      {openSettings && (
+        <SettingsModal
+          setOpenSettings={setOpenSettings}
+          currentUsername={accountData?.username}
+          currentEmail={accountData?.email}
+          mailStatus={accountData?.publicEmail}
+          linkedin={accountData?.linkedIn}
+          linkedinStatus={accountData?.publicLinkedin}
+          provider={accountData?.provider}
+          handleSaveClick={handleSaveClick}
+          setUsernameIsTakenError={setUsernameIsTakenError}
+          usernameIsTakenError={usernameIsTakenError}
+          setChangedTitle={() => {}}
+        />
+      )}
     </Fragment>
   );
 };

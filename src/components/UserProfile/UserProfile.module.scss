@@ -1,0 +1,113 @@
+.userContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-right: 24px;
+  padding-left: 24px;
+
+  .user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .userName {
+    font-family: 'Sarabun-Regular', serif;
+    font-size: 14px;
+    color: #252626;
+  }
+
+  .image {
+    border-radius: 50%;
+  }
+
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 24px;
+    min-width: 180px;
+    background-image: url('/keepsimple_/assets/user-dropdown/white-bg.png');
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #c4c4c4;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .userNameDropdown {
+    font-family: 'Sarabun-Regular', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #252626;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #c4c4c4;
+    margin-bottom: 4px;
+  }
+
+  .menuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Sarabun-Regular', serif;
+    font-size: 14px;
+    color: #252626;
+    transition: background-color 0.2s;
+
+    &:first-of-type {
+      border-bottom: 1px solid #c4c4c4;
+      border-radius: 6px 6px 0 0;
+      padding-bottom: 12px;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+      border-radius: 0;
+    }
+  }
+
+  .menuIcon {
+    flex-shrink: 0;
+  }
+
+  .menuIconDark {
+    filter: invert(1);
+  }
+}
+
+.userContainer.darkTheme {
+  .userName {
+    color: #fff;
+  }
+
+  .dropdown {
+    background-image: url('/keepsimple_/assets/user-dropdown/black-bg.png');
+    border-color: #c4c4c4;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .userNameDropdown {
+    color: #fff;
+    border-bottom-color: #c4c4c4;
+  }
+
+  .menuItem {
+    color: #fff;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+@media (max-width: 1110px) {
+  .userContainer {
+    padding-right: 0;
+  }
+}

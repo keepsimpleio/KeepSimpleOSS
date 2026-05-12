@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import Image from 'next/image';
-import { FC, useContext } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 
 import { GlobalContext } from '@components/Context/GlobalContext';
 import Heading from '@components/Heading';
@@ -22,12 +22,22 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
   basicStatsTitle,
   isIntroPage,
 }) => {
-  const { setHeroReady } = useContext(GlobalContext);
+  const { setHeroReady, overlayOn } = useContext(GlobalContext);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (imageLoaded && !overlayOn) {
+      setIsVisible(true);
+    }
+  }, [imageLoaded, overlayOn]);
+
   return (
     <section
       className={cn(styles.mainInfoSection, {
         [styles.introPage]: isIntroPage,
         [styles.mainInfoSectionRu]: locale === 'ru',
+        [styles.visible]: isVisible,
       })}
     >
       <Image
@@ -40,7 +50,10 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
         layout="fill"
         objectFit="cover"
         priority
-        onLoadingComplete={() => setHeroReady(true)}
+        onLoadingComplete={() => {
+          setImageLoaded(true);
+          setHeroReady(true);
+        }}
       />
       <div className={styles.wrapper}>
         <Heading

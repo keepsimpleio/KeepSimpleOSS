@@ -1,7 +1,12 @@
 .overlay {
   display: flex;
+  /* dvh/dvw track the live viewport on iOS Safari (URL-bar collapse
+     doesn't snap layout). Falls back to vh/vw on browsers without
+     dvh support. */
   width: 100vw;
+  width: 100dvw;
   height: 100vh;
+  height: 100dvh;
   position: fixed;
   top: 0;
   left: 0;
@@ -10,9 +15,19 @@
   background-color: rgba(0, 0, 0, 0.35);
   align-items: center;
   justify-content: center;
-  z-index: 45;
+  z-index: 200;
+  animation: overlayFadeIn 0.2s ease-out;
+
+  &.overlayClosing {
+    animation: overlayFadeOut 0.18s ease-in forwards;
+  }
+
+  .wrapperClosing {
+    animation: wrapperOut 0.18s ease-in forwards;
+  }
 
   .wrapper {
+    animation: wrapperIn 0.2s ease-out;
     display: flex;
     width: 100%;
     background-color: #fff;
@@ -20,7 +35,7 @@
     position: relative;
     z-index: 80;
     border-radius: 4px;
-    background-image: url('/keepsimple_/assets/landingPage/landing-bg.png');
+    background-image: url('/keepsimple_/assets/landingPage/landing-bg.webp');
 
     .header {
       .hadBorder {
@@ -89,6 +104,10 @@
         display: block;
         width: 24px;
         height: 24px;
+
+        :global(.darkTheme) & {
+          filter: invert(1);
+        }
       }
 
       .blackTitle {
@@ -104,6 +123,23 @@
         cursor: pointer;
         width: 16px;
         height: 34px;
+      }
+    }
+
+    .hr {
+      border: none;
+      background-image: url('/keepsimple_/assets/longevity/environment/line.png');
+      background-size: cover;
+      height: 1px;
+      width: clamp(319px, 50vw, 466px);
+      margin: 0;
+      position: absolute;
+      top: 55px;
+      left: 14px;
+
+      :global(.darkTheme) & {
+        background-image: none;
+        background-color: #5b5b5b;
       }
     }
 
@@ -151,7 +187,9 @@
 .background {
   display: flex;
   width: 100vw;
+  width: 100dvw;
   height: 100vh;
+  height: 100dvh;
   position: fixed;
   top: 0;
   left: 0;
@@ -159,7 +197,6 @@
   bottom: 0;
   align-items: center;
   justify-content: center;
-  z-index: 46;
 }
 
 @media (max-width: 965px) {
@@ -214,5 +251,45 @@
         padding: 0;
       }
     }
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes wrapperIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes wrapperOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
   }
 }

@@ -1,0 +1,168 @@
+.FieldsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.FieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.FieldGroupWithVisibility {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.Label {
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-size: 14px;
+  line-height: 1.371;
+  color: #000;
+}
+
+.BtnWrapper {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.CancelBtn {
+  border: 1px solid #242424 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  color: #242424 !important;
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-size: 14px !important;
+  line-height: 1.4;
+  height: 40px !important;
+  padding: 9px 16px !important;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: #242424 !important;
+    color: #fff !important;
+  }
+
+  &:active {
+    background-color: #111 !important;
+    color: #fff !important;
+  }
+}
+
+.SaveBtn {
+  background-color: #242424 !important;
+  border: 1px solid #242424 !important;
+  border-radius: 0 !important;
+  color: #fff !important;
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-size: 16px !important;
+  line-height: 1.4;
+  height: 40px !important;
+  padding: 6px 23px;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:hover {
+    background-color: #111 !important;
+    border-color: #111 !important;
+  }
+
+  &:active {
+    background-color: #000 !important;
+    border-color: #000 !important;
+  }
+}
+
+.ModalBody {
+  padding: 24px 28px 16px 28px !important;
+}
+
+.ModalWrapper {
+  max-width: 480px !important;
+  width: 480px !important;
+  border-radius: 0;
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.webp') !important;
+
+  > div:first-child > span:first-child {
+    text-transform: uppercase;
+    font-family: 'Aboreto-Regular', sans-serif;
+    font-size: 20px;
+    padding: 20px 28px 10px 28px !important;
+  }
+
+  &.RuLocale > div:first-child > span:first-child {
+    font-family: 'Source-Serif-Regular', sans-serif;
+  }
+}
+
+// Dark mode
+:global(.darkTheme) {
+  .ModalWrapper {
+    background-image: url('/keepsimple_/assets/landingPage/landing-dark-bg.webp') !important;
+
+    > div:first-child > span:first-child {
+      color: #fff;
+    }
+  }
+
+  .Label {
+    color: #fff;
+  }
+
+  .CancelBtn {
+    border-color: #fff !important;
+    color: #fff !important;
+
+    &:hover {
+      background-color: #fff !important;
+      color: rgba(0, 0, 0, 0.85) !important;
+    }
+
+    &:active {
+      background-color: #ddd !important;
+      color: rgba(0, 0, 0, 0.85) !important;
+    }
+  }
+
+  .SaveBtn {
+    background-color: #fff !important;
+    border-color: #fff !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+
+    &:hover {
+      background-color: #e8e8e8 !important;
+      border-color: #e8e8e8 !important;
+    }
+
+    &:active {
+      background-color: #ddd !important;
+      border-color: #ddd !important;
+    }
+  }
+}
+
+@media (max-width: 750px) {
+  .ModalWrapper {
+    max-width: 343px !important;
+    width: 343px !important;
+  }
+
+  .FieldGroupWithVisibility {
+    gap: 12px;
+  }
+
+  .BtnWrapper {
+    justify-content: center;
+
+    .CancelBtn,
+    .SaveBtn {
+      flex: 1;
+    }
+  }
+}

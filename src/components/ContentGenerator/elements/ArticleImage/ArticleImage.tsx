@@ -17,7 +17,6 @@ type TImage = {
 
 const ArticleImage: FC<TImage> = ({ styles, src, alt }) => {
   const router = useRouter();
-
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
   const data = imageModuleData[currentLocale];
@@ -25,17 +24,20 @@ const ArticleImage: FC<TImage> = ({ styles, src, alt }) => {
   const [{ setZoomedImage, setPinnedImage }, { pinnedImage }] =
     useImageModule();
 
+  const strapiBase = process.env.NEXT_PUBLIC_STRAPI ?? '';
+  const imageSrc = src.includes(strapiBase) ? src : `${strapiBase}${src}`;
+
   const handleZoom = useCallback(() => {
-    setZoomedImage(src);
-  }, [src]);
+    setZoomedImage(imageSrc);
+  }, [imageSrc]);
 
   const handleTogglePin = useCallback(() => {
-    setPinnedImage(pinnedImage === src ? undefined : src);
-  }, [pinnedImage, src]);
+    setPinnedImage(pinnedImage === imageSrc ? undefined : imageSrc);
+  }, [pinnedImage, imageSrc]);
 
   const handleOpenInNewWindow = useCallback(() => {
-    window.open(src);
-  }, [src]);
+    window.open(imageSrc);
+  }, [imageSrc]);
 
   return (
     <div className={styles.image}>
@@ -43,7 +45,7 @@ const ArticleImage: FC<TImage> = ({ styles, src, alt }) => {
         <div className={styles.zoom} onClick={handleZoom} title={zoomTitle} />
         <div
           className={cn(styles.pin, {
-            [styles.unpin]: pinnedImage === src,
+            [styles.unpin]: pinnedImage === imageSrc,
           })}
           onClick={handleTogglePin}
           title={pinnedImage ? unpinTitle : pinTitle}
@@ -59,7 +61,7 @@ const ArticleImage: FC<TImage> = ({ styles, src, alt }) => {
         height={0}
         sizes="100vw"
         style={{ width: 'inherit', height: 'auto' }}
-        src={src}
+        src={imageSrc}
         alt={alt}
         onClick={handleZoom}
         data-cy="zoom-trigger"

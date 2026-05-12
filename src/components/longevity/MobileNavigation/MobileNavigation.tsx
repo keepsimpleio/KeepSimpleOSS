@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FC, useState } from 'react';
@@ -9,16 +10,15 @@ import { useClickOutside } from '@lib/useClickOutside';
 
 import longevityData from '@data/longevity';
 
-import { DietIcon } from '@icons/longevity/DietIcon';
-import Divider from '@icons/longevity/Divider';
-import { LifestyleIcon } from '@icons/longevity/LifestyleIcon';
-import NavigationIcon from '@icons/longevity/NavigationIcon';
-import NewPageIcon from '@icons/longevity/NewPageIocn';
-import { SleepIcon } from '@icons/longevity/SleepIcon';
-import { StudyIcon } from '@icons/longevity/StudyIcon';
-import { SupplementsIcon } from '@icons/longevity/SupplementsIcon';
-import { TomIcon } from '@icons/longevity/TomIcon';
-import { WorkoutIcon } from '@icons/longevity/WorkoutIcon';
+import DietIcon from '@icons/longevity/DietIcon.svg';
+import LifestyleIcon from '@icons/longevity/LifestyleIcon.svg';
+import NavigationIcon from '@icons/longevity/NavigationIcon.svg';
+import NewPageIcon from '@icons/longevity/new-page-icon.png';
+import SleepIcon from '@icons/longevity/SleepIcon.svg';
+import StudyIcon from '@icons/longevity/StudyIcon.svg';
+import SupplementsIcon from '@icons/longevity/SupplementsIcon.svg';
+import TomIcon from '@icons/longevity/TomIcon.svg';
+import WorkoutIcon from '@icons/longevity/WorkoutIcon.svg';
 
 import BorderedPill from '@components/longevity/BorderedPill';
 
@@ -213,9 +213,21 @@ const MobileNavigation: FC = () => {
                   />
                 )}
               </span>
-              {item.icon && <NewPageIcon />}
+              {item.icon && (
+                <Image
+                  src={NewPageIcon}
+                  alt="new page icon"
+                  width={21}
+                  height={21}
+                  unoptimized
+                />
+              )}
 
-              <Divider className={styles.divider} />
+              <img
+                src="/keepsimple_/assets/longevity/general-assets/divider.png"
+                alt="divider"
+                className={styles.divider}
+              />
               {isHabitsItem(item) && (
                 <ul
                   className={cn(styles.subNav, {

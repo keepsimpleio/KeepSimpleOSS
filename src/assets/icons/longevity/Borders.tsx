@@ -1,4 +1,8 @@
-const Borders = ({ className }) => (
+interface BordersProps {
+  className?: string;
+}
+
+const Borders = ({ className }: BordersProps) => (
   <svg
     className={className}
     viewBox="0 0 321 42"

@@ -2,6 +2,7 @@
 .vscode
 .history
 .idea/
+.codex
 
 # Logs
 logs
@@ -115,3 +116,31 @@ dist
 # Package lock file
 package-lock.json
 
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+.playwright-mcp/
+
+# Local QA planning notes (do not commit)
+QA_PLAN.md
+QA_RECON.md
+TODO.md
+marys-notes.md
+
+# Playwright MCP cache
+.playwright-mcp/
+
+# Loose QA screenshots at repo root (they belong in reports/screenshots/<date>/)
+/qa-*.png
+/uxcore-*.png
+
+# QA agent runtime artifacts (regenerable; never commit)
+qa-runs/state/
+qa-runs/baselines/
+qa-runs/screenshots/
+qa-runs/auth/

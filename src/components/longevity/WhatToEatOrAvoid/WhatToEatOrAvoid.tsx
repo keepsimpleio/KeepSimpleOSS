@@ -7,8 +7,6 @@ import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
 import longevityData from '@data/longevity';
 
-import Divider from '@icons/longevity/Divider';
-
 import Heading from '@components/Heading';
 import ShinyStars from '@components/longevity/ShinyStars';
 import AboutTheProduct from '@components/longevity/WhatToEatOrAvoid/AboutTheProduct';
@@ -173,6 +171,7 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
               onClick={() => setOpenMobileModal(false)}
               size={'full'}
               isLongevityProtocolModal
+              backgroundImageUrl="/keepsimple_/assets/longevity/diet/tooltip-bg.png"
             >
               <AboutTheProduct
                 content={tooltipContent}
@@ -184,7 +183,14 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
           )}
         </div>
       )}
-      <Divider className={styles.divider} />
+      <Image
+        src="/keepsimple_/assets/longevity/general-assets/divider.png"
+        alt=""
+        width={868}
+        height={2}
+        className={styles.divider}
+        unoptimized
+      />
     </div>
   );
 };

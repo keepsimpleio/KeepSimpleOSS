@@ -111,7 +111,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=2"
+          content="width=device-width, initial-scale=1, maximum-scale=2, viewport-fit=cover"
         />
         <title>keep-simple | Error Page</title>
         <meta name="description" content={'404 page - page not found'} />
@@ -166,11 +166,10 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
   const originalUrl =
     process.env.NEXT_PUBLIC_DOMAIN + localePath + cleanURL(alternateLink);
   const favIcon = `${process.env.NEXT_PUBLIC_DOMAIN}${favIconPath}`;
-  const pageUrl = `${process.env.NEXT_PUBLIC_DOMAIN}${router.asPath}`;
   const schema = generateSchema(
     title,
     stripHTML(description),
-    pageUrl,
+    originalUrl,
     favIcon,
     createdDate,
     modifiedDate,
@@ -183,7 +182,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         <meta charSet="UTF-8" />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=2"
+          content="width=device-width, initial-scale=1, maximum-scale=2, viewport-fit=cover"
         />
         <link
           rel="preload"
@@ -290,10 +289,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
               : ogTags?.ogImage?.data?.attributes?.staticUrl
           }
         />
-        <meta
-          name="twitter:url"
-          content={`https://keepsimple.io/${localePath}${alternateLink}`}
-        />
+        <meta name="twitter:url" content={originalUrl} />
         <meta name="twitter:label1" content="Written by" />
         <meta name="twitter:data1" content="Wolf Alexanyan" />
         <script

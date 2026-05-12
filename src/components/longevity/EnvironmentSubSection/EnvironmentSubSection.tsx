@@ -1,5 +1,8 @@
+import cn from 'classnames';
 import Image from 'next/image';
 import { FC } from 'react';
+
+import useInView from '@hooks/useInView';
 
 import { EnvironmentSubSectionProps } from './EnvironmentSubSection.types';
 
@@ -10,9 +13,15 @@ const EnvironmentSubSection: FC<EnvironmentSubSectionProps> = ({
   description,
   iconUrl,
 }) => {
-  // TODO: Add alt text
+  const { ref, inView } = useInView<HTMLDivElement>();
+
   return (
-    <div className={styles.environmentSubSection}>
+    <div
+      ref={ref}
+      className={cn(styles.environmentSubSection, {
+        [styles.visible]: inView,
+      })}
+    >
       <div className={styles.titleAndIcon}>
         <Image src={iconUrl} alt={''} width={24} height={24} unoptimized />
         <span className={styles.title}> {name}</span>

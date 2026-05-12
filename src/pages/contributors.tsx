@@ -55,11 +55,12 @@ const Contributors: FC<ContributorLocaleData> = ({ contributors }) => {
 
 export default Contributors;
 
-export async function getServerSideProps({ locale }) {
+export async function getStaticProps({ locale }) {
   const contributors = await getContributors(locale);
   return {
     props: {
       contributors,
     },
+    revalidate: 30,
   };
 }

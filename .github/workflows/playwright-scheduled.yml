@@ -1,0 +1,137 @@
+name: Playwright Tests (scheduled)
+
+# Weekly scheduled run on main + on-demand via workflow_dispatch.
+# Does NOT run on PRs (by design — see QA_PLAN.md §7).
+
+on:
+  schedule:
+    # Monday 06:00 UTC = 10:00 Yerevan (UTC+4)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to test against
+        type: choice
+        required: true
+        default: staging
+        options:
+          - staging
+          - production
+      scope:
+        description: Which tier to run
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - P0
+          - P1
+          - P2
+      spec_path:
+        description: 'Override: specific test path or grep pattern (leave blank to use scope)'
+        type: string
+        required: false
+        default: ''
+      browser:
+        description: Browser to use
+        type: choice
+        required: true
+        default: chromium
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all
+
+permissions:
+  contents: read
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Aligned with Dockerfile (node:20.19.0-alpine). README's 18.18.0
+          # is stale; Node 20 is the canonical runtime for this repo.
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Resolve test path from scope
+        id: scope
+        shell: bash
+        run: |
+          spec_path="${{ inputs.spec_path }}"
+          scope="${{ inputs.scope || 'all' }}"
+
+          if [ -n "$spec_path" ]; then
+            echo "path=$spec_path" >> "$GITHUB_OUTPUT"
+          else
+            case "$scope" in
+              P0) echo "path=tests/p0" >> "$GITHUB_OUTPUT" ;;
+              P1) echo "path=tests/p1" >> "$GITHUB_OUTPUT" ;;
+              P2) echo "path=tests/p2" >> "$GITHUB_OUTPUT" ;;
+              *)  echo "path=tests"    >> "$GITHUB_OUTPUT" ;;
+            esac
+          fi
+
+      - name: Resolve browser flag
+        id: browser
+        shell: bash
+        run: |
+          browser="${{ inputs.browser || 'chromium' }}"
+          if [ "$browser" = "all" ]; then
+            # Empty flag → Playwright runs every project in config.
+            echo "flag=" >> "$GITHUB_OUTPUT"
+            echo "install=chromium firefox webkit" >> "$GITHUB_OUTPUT"
+          else
+            echo "flag=--project=$browser" >> "$GITHUB_OUTPUT"
+            echo "install=$browser" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps ${{ steps.browser.outputs.install }}
+
+      - name: Resolve base URL
+        id: url
+        shell: bash
+        run: |
+          env="${{ inputs.environment || 'staging' }}"
+          case "$env" in
+            production) echo "base=${{ secrets.PLAYWRIGHT_PRODUCTION_URL }}" >> "$GITHUB_OUTPUT" ;;
+            *)          echo "base=${{ secrets.PLAYWRIGHT_STAGING_URL }}"    >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Verify base URL is configured
+        shell: bash
+        run: |
+          if [ -z "${{ steps.url.outputs.base }}" ]; then
+            echo "::error::Base URL is empty. Configure PLAYWRIGHT_STAGING_URL / PLAYWRIGHT_PRODUCTION_URL as repo secrets." >&2
+            exit 1
+          fi
+
+      - name: Run Playwright tests
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.url.outputs.base }}
+          # Staging is behind HTTP Basic Auth; production is public.
+          PLAYWRIGHT_HTTP_USERNAME: ${{ (inputs.environment || 'staging') != 'production' && secrets.PLAYWRIGHT_STAGING_USERNAME || '' }}
+          PLAYWRIGHT_HTTP_PASSWORD: ${{ (inputs.environment || 'staging') != 'production' && secrets.PLAYWRIGHT_STAGING_PASSWORD || '' }}
+          PLAYWRIGHT_NO_SERVER: '1'
+          CI: 'true'
+        run: yarn playwright test ${{ steps.scope.outputs.path }} ${{ steps.browser.outputs.flag }}
+
+      - name: Upload Playwright HTML report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

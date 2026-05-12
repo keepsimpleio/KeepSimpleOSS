@@ -1,0 +1,116 @@
+# QA agent configuration — read by .claude/skills/keepsimple-qa/SKILL.md
+# The agent re-reads this every run; edit freely.
+
+environment:
+  production: https://keepsimple.io
+  staging: # leave empty for now, fill in when we have one
+
+# Locales to test. The first locale is the default.
+# hy falls back to en at runtime, so test it anyway.
+locales:
+  - en
+  - ru
+  - hy
+
+# How locales appear in URLs:
+#   - default-unprefixed: en routes are /uxcore, ru routes are /ru/uxcore
+#   - all-prefixed: every route has a locale segment
+#   - no-prefix: single-locale, no locale segments
+locale_url_strategy: default-unprefixed
+
+# Browser viewports.
+viewports:
+  desktop: { width: 1920, height: 1080 }
+  mobile: { width: 390, height: 844 }
+
+# Timezone for report timestamps.
+report_timezone: Asia/Yerevan
+
+# Design-system reference. Skill reads this and flags violations as
+# `design-system` findings.
+design_system: uxcore-visual-design-system.md
+
+# Sections — groups of routes that conceptually belong together.
+# The smoke profile runs against the section marked `default: true`.
+# Each section may declare:
+#   - primary_interaction: the main thing to exercise on the hub route
+#                          during the fixed pass.
+#   - auth_required:       list of routes that need authentication; the
+#                          agent records them in coverage as
+#                          "skipped — auth required (configured)" and
+#                          does not attempt to reach them.
+
+sections:
+
+  site:
+    default: true
+    routes:
+      - /
+      - /tools
+      - /contributors
+      - /company-management
+      - /auth
+    primary_interaction: "Click the primary CTA in the hero on / and confirm navigation works."
+
+  uxcore:
+    routes:
+      - /uxcore
+      - /uxcore/96-conjunction-fallacy
+      - /uxcore/75-barnum-effect
+    primary_interaction: "Open the bias detail modal on a card and verify it opens without console errors and shows the bias content."
+
+  uxcg:
+    routes:
+      - /uxcg
+      - /uxcg/what-causes-users-to-make-mistakes-when-using-our-product
+      - /uxcg/what-to-consider-when-adding-new-functionality-into-product
+      - /uxcg/how-to-involve-users-into-product-testing
+      - /uxcg/involving-users-in-product-development
+      - /uxcg/what-if-our-team-members-dont-share-their-opinion
+    primary_interaction: "Use the stage selector on /uxcg and verify the question list updates to match the selected stage."
+
+  uxcp:
+    routes:
+      - /uxcp
+    primary_interaction: "Apply the priority filter and verify the visible cards change accordingly."
+
+  uxcat:
+    routes:
+      - /uxcat
+      - /uxcat/ongoing
+      - /uxcat/start-test
+      - /uxcat/test-result
+    auth_required:
+      - /uxcat/ongoing
+      - /uxcat/start-test
+      - /uxcat/test-result
+    primary_interaction: "Click the primary CTA on the hub /uxcat and verify it routes correctly. Do NOT submit the test (creates real data)."
+
+  uxcore-api:
+    routes:
+      - /uxcore-api
+    # primary_interaction omitted — agent clicks the most prominent element
+
+  longevity-protocol:
+    # No hub route exists; first route below is treated as the hub.
+    routes:
+      - /tools/longevity-protocol/about-project
+      - /tools/longevity-protocol/environment
+      - /tools/longevity-protocol/habits/diet
+      - /tools/longevity-protocol/habits/lifestyle
+      - /tools/longevity-protocol/habits/sleep
+      - /tools/longevity-protocol/habits/study
+      - /tools/longevity-protocol/habits/supplements
+      - /tools/longevity-protocol/habits/workout
+      - /tools/longevity-protocol/results
+    primary_interaction: "Click a habit link in the side nav from /tools/longevity-protocol/about-project and verify the destination habit page loads without console errors."
+
+  articles:
+    routes:
+      - /articles
+      - /articles/create-behavioral-user-personas
+      - /articles/table-of-contents
+      - /articles/what-is-a-project
+      - /articles/awareness-test
+      - /articles/summarize-like-your-job-depends-on-it
+    primary_interaction: "From /articles, click the first article in the listing and verify it navigates to a working article page that renders without errors."

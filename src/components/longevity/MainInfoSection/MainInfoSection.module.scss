@@ -10,6 +10,16 @@
   max-width: 868px;
   margin: 40px 0 16px 0;
   display: flex;
+  opacity: 50%;
+  transition: opacity 0.4s ease-out;
+
+  &.visible {
+    opacity: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
   .wrapper {
     position: relative;
@@ -42,6 +52,7 @@
     z-index: 5;
   }
 }
+
 .mainInfoSectionRu {
   .heading {
     h2 {
@@ -76,6 +87,7 @@
       font-size: 16px;
     }
   }
+
   .introPage {
     background-position: unset;
   }

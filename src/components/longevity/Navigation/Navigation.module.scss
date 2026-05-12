@@ -37,7 +37,7 @@
       background-repeat: no-repeat;
       background-size: cover;
       opacity: 0;
-      transition: opacity 200ms ease;
+      transition: opacity 320ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     &:hover::after {
@@ -46,11 +46,27 @@
   }
 
   .subItem {
+    position: relative;
     background-image: url('/keepsimple_/assets/longevity/nav-sub-bg.png');
 
-    &:hover {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
       background-image: url('/keepsimple_/assets/longevity/nav-sub-bg-hover.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      opacity: 0;
+      transition: opacity 320ms cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 0;
+    }
 
+    &:hover::before {
+      opacity: 1;
+    }
+
+    &:hover {
       .link,
       .subLink {
         color: #b67636;
@@ -116,6 +132,13 @@
     justify-content: center;
     align-items: center;
     gap: 8px;
+    transition: color 320ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    svg {
+      path {
+        transition: fill 320ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    }
   }
 }
 
@@ -150,12 +173,12 @@
     justify-content: center;
     align-items: center;
     gap: 4px;
-    transition: color 200ms ease;
+    transition: color 320ms cubic-bezier(0.4, 0, 0.2, 1);
 
     svg {
       path {
         fill: #bdbdbd;
-        transition: fill 200ms ease;
+        transition: fill 320ms cubic-bezier(0.4, 0, 0.2, 1);
       }
     }
   }
@@ -183,5 +206,27 @@
 @media (max-width: 1170px) {
   .nav {
     margin: 0 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ul,
+  .subUl {
+    .item::after,
+    .subItem::before,
+    .link,
+    .subLink,
+    .link svg path,
+    .subLink svg path {
+      transition: none !important;
+    }
+  }
+
+  .subNav {
+    .curtains,
+    .subLink,
+    .subLink svg path {
+      transition: none !important;
+    }
   }
 }

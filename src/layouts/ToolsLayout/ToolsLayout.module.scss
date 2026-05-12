@@ -68,6 +68,12 @@
   }
 }
 
+@media (min-width: 1921px) {
+  .contentInner {
+    gap: 26px;
+  }
+}
+
 @media (max-width: 768px) {
   .layout {
     margin-top: 54px;

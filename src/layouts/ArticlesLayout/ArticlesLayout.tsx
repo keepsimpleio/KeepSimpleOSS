@@ -18,6 +18,7 @@ type ArticlesProps = {
   locale: string;
   isDarkTheme?: boolean;
   hasThoughtsArticles?: boolean;
+  hasAIArticles?: boolean;
 };
 
 const ArticlesLayout: FC<ArticlesProps> = ({
@@ -29,6 +30,7 @@ const ArticlesLayout: FC<ArticlesProps> = ({
   locale,
   isDarkTheme,
   hasThoughtsArticles,
+  hasAIArticles,
 }) => {
   const articleRef = useRef<HTMLElement>(null);
 
@@ -51,6 +53,7 @@ const ArticlesLayout: FC<ArticlesProps> = ({
         isDarkTheme={isDarkTheme}
         locale={locale}
         hasThoughtsArticles={hasThoughtsArticles}
+        hasAIArticles={hasAIArticles}
       />
       <div
         className={cn(styles.mainContent, {

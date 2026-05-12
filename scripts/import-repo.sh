@@ -8,7 +8,7 @@ set -e
 # Example: ./scripts/import-repo.sh https://github.com/someone/vibesuite.git tools/vibesuite
 #
 # What it does:
-#   1. Creates a branch from main
+#   1. Creates a branch from dev
 #   2. Clones the external repo into _incoming/
 #   3. Hands off to Claude Code with a detailed migration prompt
 #   4. Claude restructures everything to match keepsimple conventions
@@ -25,9 +25,10 @@ fi
 
 FEATURE_NAME=$(basename "$TARGET_PATH")
 
-# 1. Branch from main
-git checkout main
-git pull origin main
+# 1. Branch from dev
+git fetch origin
+git checkout dev
+git pull origin dev
 BRANCH="feat/import-$FEATURE_NAME"
 git checkout -b "$BRANCH" 2>/dev/null || git checkout "$BRANCH"
 
@@ -64,6 +65,38 @@ Do NOT change any visual design. Do NOT modify keepsimple's existing styles.
 The only changes are structural: different file layout, SCSS Modules instead of
 inline/Tailwind/CSS, Pages Router instead of App Router. The user must not see
 any visual difference.
+
+IMPORTANT: if source components already match our project style, just move them
+as-is. Do NOT refactor working code for the sake of refactoring. Only change
+what needs changing.
+
+──────────────────────────────────────────────────────────────────────
+ADDITIONAL RULES
+──────────────────────────────────────────────────────────────────────
+
+- Reuse existing keepsimple components (Button, Modal, Input, Heading, etc.)
+  wherever the source has equivalents. If a source style doesn't match any
+  existing variant, ADD a new variant to our component instead of inlining
+  custom styles.
+
+- Use our Heading component for all h1/h2/h3 — never raw heading tags.
+
+- Validate HTML semantics. No invalid nesting, no nested interactive elements,
+  use semantic tags.
+
+- Extract types into sibling files named ComponentName.types.ts with a
+  ComponentNameProps interface.
+
+- SVGs: never inline. Imported into components → src/assets/icons/<feature>/.
+  Used in SCSS or <Image> tags → keepsimple_/public/assets/<feature>/.
+  Reuse existing folders if names match, otherwise create.
+
+- SEO: import SeoGenerator on new pages but pass NO values (content comes from
+  backend later). Don't add separate schema.org — SeoGenerator already handles it.
+
+- Localization: if Russian or Armenian (hy) files contain broken unicode escapes
+  that should be readable Cyrillic/Armenian, decode the entire file. Don't touch
+  JSON files where \\\\uXXXX escapes are valid.
 
 ──────────────────────────────────────────────────────────────────────
 PHASE 1: UNDERSTAND THE SOURCE
