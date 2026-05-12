@@ -23,6 +23,65 @@ module.exports = withBundleAnalyzer({
       { source: '/robots.txt', destination: '/keepsimple_/robots.txt' },
     ];
   },
+  async headers() {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const scriptSrc = [
+      "'self'",
+      "'unsafe-inline'",
+      // Next.js dev mode (Fast Refresh) requires eval.
+      isDev ? "'unsafe-eval'" : '',
+      'https://analytics.ahrefs.com',
+      'https://www.googletagmanager.com',
+      'https://www.google-analytics.com',
+      'https://cdn.mxpnl.com',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    const connectSrc = [
+      "'self'",
+      // Next.js dev HMR uses ws:// to localhost.
+      isDev ? 'ws:' : '',
+      'https://*.keepsimple.io',
+      'https://metrics.administration.ae',
+      'https://api.mixpanel.com',
+      'https://www.google-analytics.com',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              `script-src ${scriptSrc}`,
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://lh3.googleusercontent.com https://cdn.discordapp.com https://strapi.keepsimple.io https://staging-strapi.keepsimple.io https://www.google-analytics.com",
+              "font-src 'self' data:",
+              `connect-src ${connectSrc}`,
+              "frame-ancestors 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; '),
+          },
+        ],
+      },
+    ];
+  },
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },

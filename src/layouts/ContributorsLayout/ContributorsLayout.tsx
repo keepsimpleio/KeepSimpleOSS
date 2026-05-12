@@ -5,6 +5,8 @@ import { TRouter } from '@local-types/global';
 
 import useMobile from '@hooks/useMobile';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import contributors from '@data/contributors';
 
 import Contributor from '@components/contributors/Contributor/Contributor';
@@ -56,7 +58,9 @@ const ContributorsLayout = forwardRef<HTMLElement, ContributorsLayoutProps>(
           locale={locale}
         />
         <div
-          dangerouslySetInnerHTML={{ __html: contributorsData.description }}
+          dangerouslySetInnerHTML={{
+            __html: sanitizeHtml(contributorsData.description),
+          }}
           className={styles.description}
         />
         {!isMobile && (

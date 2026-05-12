@@ -76,7 +76,6 @@ const Header: FC = () => {
     isEmailPublic: string,
     isLinkedinPublic: string,
     title?: string,
-    email?: string,
   ) => {
     const mailIsPublic = isEmailPublic === 'everyone';
     const linkedInIsPublic = isLinkedinPublic === 'everyone';
@@ -88,10 +87,6 @@ const Header: FC = () => {
         mailIsPublic,
         linkedInIsPublic,
         title,
-        undefined,
-        undefined,
-        undefined,
-        email,
       );
 
       const data = await getMyInfo();
@@ -269,6 +264,7 @@ const Header: FC = () => {
           linkedin={accountData?.linkedIn}
           linkedinStatus={accountData?.publicLinkedin}
           provider={accountData?.provider}
+          token={token}
           handleSaveClick={handleSaveClick}
           setUsernameIsTakenError={setUsernameIsTakenError}
           usernameIsTakenError={usernameIsTakenError}

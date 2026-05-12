@@ -4,6 +4,8 @@ import { FC, useState } from 'react';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import LearnMoreIcon from '@icons/longevity/LearnMoreIcon.png';
 import StudyCloseIcon from '@icons/longevity/Study/CloseIcon.svg';
 
@@ -92,7 +94,9 @@ const StudySection: FC<StudySectionProps> = ({
                 />
               ) : (
                 <div
-                  dangerouslySetInnerHTML={{ __html: description || '' }}
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(description),
+                  }}
                   className={styles.description}
                 />
               )}

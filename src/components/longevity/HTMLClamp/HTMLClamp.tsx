@@ -1,6 +1,8 @@
 import cn from 'classnames';
 import React, { FC, useEffect, useRef, useState } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import { HTMLClampTypes } from '@components/longevity/HTMLClamp/HTMLClamp.types';
 
 import styles from './HTMLClamp.module.scss';
@@ -55,7 +57,7 @@ const HtmlClamp: FC<HTMLClampTypes> = ({
           className={cn(styles.htmlContent, className, {
             [styles.clamped]: !expanded,
           })}
-          dangerouslySetInnerHTML={{ __html: html || '' }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
           data-cy="html-clamp-content"
           data-expanded={expanded}
         />
