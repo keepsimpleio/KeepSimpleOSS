@@ -1,5 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import longevityData from '@data/longevity';
 
 import BrainAgeActivity from '@components/BrainAgeActivity';
@@ -88,14 +90,16 @@ const WorkoutLayout: FC<WorkoutLayoutProps> = ({ locale, data }) => {
       >
         {parts.firstUlHtml && (
           <div
-            dangerouslySetInnerHTML={{ __html: parts.firstUlHtml }}
+            dangerouslySetInnerHTML={{
+              __html: sanitizeHtml(parts.firstUlHtml),
+            }}
             className={styles.list}
           />
         )}
         <StrengthAndTimeCompression locale={locale} />
         {parts.restUlHtml && (
           <div
-            dangerouslySetInnerHTML={{ __html: parts.restUlHtml }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(parts.restUlHtml) }}
             className={styles.list}
           />
         )}

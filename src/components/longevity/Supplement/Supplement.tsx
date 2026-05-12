@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { FC } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import { SupplementProps } from './Supplement.types';
 
 import styles from './Supplement.module.scss';
@@ -35,7 +37,7 @@ const Supplement: FC<SupplementProps> = ({ name, description, categories }) => {
         </div>
       )}
       <div
-        dangerouslySetInnerHTML={{ __html: description }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
         className={styles.description}
       />
     </div>

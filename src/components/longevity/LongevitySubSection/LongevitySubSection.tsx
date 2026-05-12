@@ -5,6 +5,8 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import longevityData from '@data/longevity';
 
 import Heading from '@components/Heading';
@@ -96,7 +98,7 @@ const LongevitySubSection: FC<LongevitySubSectionProps> = ({
 
           {description ? (
             <div
-              dangerouslySetInnerHTML={{ __html: description || '' }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
               className={cn(styles.content, {
                 [styles.foodChoicesContent]: isFoodChoices,
               })}

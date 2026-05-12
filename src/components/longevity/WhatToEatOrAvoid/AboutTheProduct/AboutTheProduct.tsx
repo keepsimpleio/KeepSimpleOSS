@@ -2,6 +2,8 @@ import cn from 'classnames';
 import Image from 'next/image';
 import React, { FC } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import Heading from '@components/Heading';
 
 import { AboutTheProductProps } from './AboutTheProduct.types';
@@ -37,7 +39,7 @@ const AboutTheProduct: FC<AboutTheProductProps> = ({
         className={styles.divider}
       />
       <div
-        dangerouslySetInnerHTML={{ __html: content }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
         className={styles.content}
       />
     </div>

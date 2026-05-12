@@ -294,7 +294,12 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         <meta name="twitter:data1" content="Wolf Alexanyan" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schema)
+              .replace(/</g, '\\u003c')
+              .replace(/>/g, '\\u003e')
+              .replace(/&/g, '\\u0026'),
+          }}
         />
       </Head>
       <Script

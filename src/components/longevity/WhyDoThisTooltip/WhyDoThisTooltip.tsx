@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { FC } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import Heading from '@components/Heading';
 
 import { WhyDoThisTooltipProps } from './WhyDoThisTooltip.types';
@@ -41,7 +43,7 @@ const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
 
     return (
       <div
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
         className={styles.content}
       />
     );
