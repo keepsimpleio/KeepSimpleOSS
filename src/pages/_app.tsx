@@ -1,3 +1,4 @@
+import UXCoreLayoutShell from '@uxcore/layouts/Layout';
 import { useRouter } from 'next/router';
 import { SessionProvider } from 'next-auth/react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -226,6 +227,13 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
     };
   }, []);
 
+  const isUxcoreRoute =
+    router.pathname.startsWith('/uxcore') ||
+    router.pathname.startsWith('/uxcg') ||
+    router.pathname.startsWith('/uxcat') ||
+    router.pathname.startsWith('/uxcp') ||
+    router.pathname.startsWith('/uxcore-api');
+
   useEffect(() => {
     if (!accountData?.id || !accountData?.createdAt) return;
 
@@ -297,9 +305,15 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
           preload="none"
           loop
         />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        {isUxcoreRoute ? (
+          <UXCoreLayoutShell>
+            <Component {...pageProps} />
+          </UXCoreLayoutShell>
+        ) : (
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        )}
       </GlobalContext.Provider>
     </SessionProvider>
   );
