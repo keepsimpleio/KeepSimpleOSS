@@ -1,0 +1,26 @@
+.modalBody {
+  text-align: center;
+  padding: 38px 0;
+
+  .title {
+    color: #000000a6;
+    font-size: 36px;
+    margin-bottom: 0;
+  }
+
+  .button {
+    margin-top: 30px;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    top: -20%;
+    opacity: 0;
+  }
+  to {
+    top: 20%;
+    transform: translateY(-50%);
+    opacity: 1;
+  }
+}

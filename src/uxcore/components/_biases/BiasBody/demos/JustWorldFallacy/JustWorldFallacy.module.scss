@@ -1,0 +1,128 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.alertIcon {
+  font-size: 28px;
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  align-self: flex-start;
+  background: $tag-olive;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  padding: $space-xs $space-sm;
+  border-radius: 20px;
+}
+
+.heading {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.blunt {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.body {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.subtext {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+  margin: 0;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  padding: $space-sm 0;
+  border-bottom: 1px solid $border-color;
+}
+
+.planLabel {
+  font-size: $font-size-base;
+  color: $text-secondary;
+}
+
+.newPrice {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.pct {
+  font-weight: 600;
+  color: $color-primary;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+  font-weight: 500;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}

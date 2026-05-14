@@ -1,0 +1,18 @@
+.pageTitle {
+  margin-top: 64px;
+  margin-bottom: 32px;
+  font-size: 16px;
+  color: #000000a6;
+  font-weight: 700;
+}
+
+.bigFont {
+  font-size: 24px;
+}
+
+@media (max-width: 800px) {
+  .pageTitle {
+    margin-bottom: 8px;
+    margin-top: 40px;
+  }
+}

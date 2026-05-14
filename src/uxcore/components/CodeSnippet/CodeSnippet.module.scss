@@ -1,0 +1,100 @@
+.codeSnippet {
+  border: 1px solid #d9d9d9;
+  background-color: rgba(0, 0, 0, 0.85);
+  border-radius: 4px;
+  height: 121px;
+  max-height: 100%;
+
+  .copyField {
+    text-align: right;
+    padding-right: 10px;
+    background-color: #060606;
+
+    .copyText {
+      font-size: 14px;
+      line-height: 17px;
+      padding-left: 8px;
+    }
+
+    .copy {
+      cursor: pointer;
+      color: #fff;
+      padding: 10px 8px 10px 0;
+
+      > svg {
+        fill: #fff;
+      }
+    }
+
+    .copied {
+      color: #00a825;
+
+      > svg {
+        fill: #00a825;
+      }
+    }
+
+    .notCopied {
+      animation: fadeIn 1s;
+      -webkit-animation: fadeIn 1s;
+      -moz-animation: fadeIn 1s;
+      -o-animation: fadeIn 1s;
+      -ms-animation: fadeIn 1s;
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 30%;
+    }
+    100% {
+      opacity: 100%;
+    }
+  }
+
+  .copyCode {
+    .code {
+      border: none;
+      background: transparent;
+      color: #fff;
+      width: -webkit-fill-available;
+      padding-left: 20px;
+      padding-right: 10px;
+      padding-top: 10px;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 19px;
+      resize: none;
+      cursor: auto;
+      min-height: 200px;
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 950px) {
+  .codeSnippet {
+    .copyCode {
+      .code {
+        min-height: 64px !important;
+        max-height: 60px;
+      }
+    }
+  }
+}
+
+@media (max-width: 350px) {
+  .codeSnippet {
+    height: 180px;
+    .copyCode {
+      .code {
+        min-height: 100px !important;
+        max-height: 60px;
+      }
+    }
+  }
+}

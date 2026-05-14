@@ -1,0 +1,129 @@
+.PriorityFilter {
+  display: flex;
+  align-items: center;
+  background-color: #fafafa;
+  padding: 10px 14px;
+  margin-top: 8px;
+  position: relative;
+  z-index: 2;
+
+  & .TitleContainer {
+    font-size: 16px;
+    white-space: nowrap;
+    margin-right: 10px;
+    font-weight: 700;
+
+    & .Title {
+      margin-right: 4px;
+    }
+
+    & .TitleMarkContainer {
+      position: relative;
+      top: 2px;
+      cursor: help;
+    }
+  }
+
+  & .Buttons {
+    display: flex;
+    width: 100%;
+
+    & .Button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      width: 25%;
+      font-size: 14px;
+      background-color: #fff;
+      border: 1px solid #cbcbcb;
+      height: 24px;
+      cursor: pointer;
+      border-right-width: 0px;
+
+      & > img {
+        margin-right: 6px;
+      }
+
+      &:nth-child(1) {
+        border-radius: 4px 0 0 4px;
+      }
+
+      &:nth-child(4) {
+        border-radius: 0 4px 4px 0;
+        border-right-width: 1px;
+      }
+    }
+
+    &.Active-all {
+      & .Button:nth-child(1) {
+        border-color: #28587b;
+        background-color: #28587b;
+        color: #fff;
+      }
+
+      & .Button:nth-child(2) {
+        border-left-color: #28587b;
+      }
+    }
+
+    &.Active-high {
+      & .Button:nth-child(2) {
+        border-color: #28587b;
+        background-color: #28587b;
+        color: #fff;
+      }
+
+      & .Button:nth-child(3) {
+        border-left-color: #28587b;
+      }
+    }
+
+    &.Active-medium {
+      & .Button:nth-child(3) {
+        border-color: #28587b;
+        background-color: #28587b;
+        color: #fff;
+      }
+
+      & .Button:nth-child(4) {
+        border-left-color: #28587b;
+      }
+    }
+
+    &.Active-low {
+      & .Button:nth-child(4) {
+        border-color: #28587b;
+        background-color: #28587b;
+        color: #fff;
+      }
+    }
+  }
+}
+
+.PriorityFilterHy {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (max-width: 1440px) {
+  .PriorityFilter {
+    & .TitleContainer {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .PriorityFilter {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 10px;
+
+    & .TitleContainer {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+  }
+}

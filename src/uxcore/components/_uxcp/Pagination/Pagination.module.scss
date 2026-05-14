@@ -1,0 +1,44 @@
+.Pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0;
+
+  & .Title {
+    font-size: 14px;
+    color: #28587b;
+    margin-right: 6px;
+  }
+
+  & .Pages {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    & .Page {
+      font-size: 14px;
+      color: #28587b;
+      padding: 0 6px;
+      background-color: #fff;
+      border-radius: 2px;
+      cursor: pointer;
+
+      &.Active {
+        cursor: default;
+        background-color: #28587b;
+        color: #fff;
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .Pagination {
+    & .Pages {
+      & .Page {
+        padding: 8px 14px;
+        margin-right: 2px;
+      }
+    }
+  }
+}

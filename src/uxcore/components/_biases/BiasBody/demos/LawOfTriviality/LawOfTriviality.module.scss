@@ -1,0 +1,127 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.head {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.thread {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.msg {
+  border-left: 3px solid $color-primary;
+  padding-left: $space-sm;
+}
+
+.author {
+  font-size: 11px;
+  font-weight: 700;
+  color: $color-primary;
+  margin-bottom: 2px;
+}
+
+.text {
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.dots {
+  text-align: center;
+  color: $text-secondary;
+  letter-spacing: 6px;
+}
+
+.summaryBad {
+  font-size: $font-size-sm;
+  color: $tag-orange;
+  font-weight: 600;
+  border-top: 1px dashed $border-color;
+  padding-top: $space-sm;
+}
+
+.summaryGood {
+  font-size: $font-size-sm;
+  color: $tag-green;
+  font-weight: 600;
+  background: lighten(#42c256, 47%);
+  border: 1px solid $tag-green;
+  padding: $space-sm $space-md;
+  border-radius: $border-radius;
+}
+
+.agenda {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.agendaItem {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: $space-sm;
+  align-items: center;
+
+  &.itemBig {
+    border-left: 4px solid $color-primary;
+  }
+
+  &.itemSmall {
+    border-left: 4px solid $text-secondary;
+  }
+}
+
+.timeBox {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: 4px;
+  text-align: center;
+}
+
+.itemBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.itemTitle {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.itemNote {
+  font-size: 11px;
+  color: $text-secondary;
+}
+
+.kindLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: $text-secondary;
+}

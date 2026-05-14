@@ -1,0 +1,128 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px;
+  gap: $space-sm;
+  padding: $space-xs $space-sm;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  border-bottom: 1px solid $border-color;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px;
+  gap: $space-sm;
+  padding: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  border-bottom: 1px solid $border-color;
+  align-items: center;
+  background: $bg-card;
+
+  &:first-of-type {
+    border-top: none;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px $space-sm;
+  background: #e6f9eb;
+  color: #2a6b2a;
+  border-radius: 10px;
+  font-size: $font-size-sm;
+  font-weight: 600;
+}
+
+.badgeMuted {
+  display: inline-block;
+  padding: 2px $space-sm;
+  background: $bg-alt;
+  color: $text-secondary;
+  border-radius: 10px;
+  font-size: $font-size-sm;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+}
+
+.btn {
+  padding: $space-xs $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-family: $font-family;
+  cursor: pointer;
+  color: $text-primary;
+}
+
+.tooltip {
+  display: flex;
+  gap: $space-sm;
+  padding: $space-md;
+  background: #fffbea;
+  border: 1px solid #f0d060;
+  border-radius: $border-radius;
+  margin-top: $space-xs;
+}
+
+.tooltipIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.tooltipTitle {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+  margin-bottom: $space-xs;
+}
+
+.tooltipBody {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.5;
+}
+
+.tooltipLink {
+  background: none;
+  border: none;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-family: $font-family;
+  cursor: pointer;
+  padding: 0;
+  margin-top: $space-xs;
+  display: block;
+  font-weight: 600;
+}
+
+.hint {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  font-style: italic;
+}

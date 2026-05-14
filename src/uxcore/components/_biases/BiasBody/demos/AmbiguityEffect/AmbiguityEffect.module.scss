@@ -1,0 +1,102 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+  text-align: center;
+}
+
+.plans {
+  display: flex;
+  gap: $space-sm;
+}
+
+.plan {
+  flex: 1;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  &.featured {
+    border-color: $color-primary;
+    box-shadow: $shadow-card;
+  }
+}
+
+.planName {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.price {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-primary;
+
+  span {
+    font-size: $font-size-sm;
+    font-weight: 400;
+    color: $text-secondary;
+  }
+}
+
+.features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  li {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    padding-left: $space-md;
+    position: relative;
+
+    &::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: $tag-green;
+      font-weight: 700;
+    }
+  }
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}

@@ -1,0 +1,174 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.appBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.appName {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.updateBadge {
+  font-size: $font-size-sm;
+  background: $color-primary;
+  color: $color-white;
+  padding: 2px $space-sm;
+  border-radius: $border-radius;
+}
+
+// Before
+.hero {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+  text-align: center;
+}
+
+.heroIcon {
+  font-size: 32px;
+}
+
+.heroValue {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.heroSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.goalRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-sm;
+}
+
+.goalCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  text-align: center;
+}
+
+.goalLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.goalValue {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin-top: $space-xs;
+}
+
+.note {
+  font-size: $font-size-sm;
+  color: $tag-orange;
+  background: #fff8f0;
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  margin: 0;
+}
+
+// After
+.updateCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.updateTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.comparison {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.compBefore {
+  flex: 1;
+  text-align: center;
+}
+
+.compAfter {
+  flex: 1;
+  text-align: center;
+}
+
+.compLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.compValue {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+  margin: $space-xs 0;
+}
+
+.compNote {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.arrow {
+  font-size: $font-size-lg;
+  color: $color-primary;
+  font-weight: 700;
+}
+
+.explanation {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.learnMore {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: $text-link;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}

@@ -1,0 +1,29 @@
+.panelHeader {
+  border: 1px solid #c4c4c4;
+  border-radius: 1px;
+  padding: 15px 0;
+  text-align: center;
+  background-color: #ffffff;
+  margin: 24px 0;
+  gap: 8px;
+  display: flex;
+  justify-content: center;
+
+  .text {
+    text-transform: uppercase;
+    font-size: 18px;
+    font-family:
+      IBM Plex Mono,
+      sans-serif;
+    font-weight: 600;
+  }
+}
+
+:global(body.darkTheme) .panelHeader {
+  background-color: #151a26 !important;
+  border-color: #303338 !important;
+
+  .text {
+    color: #dadada !important;
+  }
+}

@@ -1,0 +1,115 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-2xl $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  text-align: center;
+}
+
+// Before
+.errorCode {
+  font-size: $font-size-display;
+  font-weight: 700;
+  color: $border-dark;
+  line-height: 1;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.body {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.linkBtn {
+  display: inline-block;
+  padding: $space-sm $space-xl;
+  background: $color-primary;
+  color: $color-white;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+// After
+.illustration {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: 28px;
+}
+
+.character {
+  font-size: 48px;
+  animation: wander 3s ease-in-out infinite;
+}
+
+.trail {
+  font-size: 24px;
+  color: $text-secondary;
+  letter-spacing: 4px;
+}
+
+@keyframes wander {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  33% {
+    transform: translateX(6px) rotate(5deg);
+  }
+  66% {
+    transform: translateX(-4px) rotate(-3deg);
+  }
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  width: 100%;
+  max-width: 300px;
+}
+
+.suggestion {
+  display: block;
+  padding: $space-sm $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  text-decoration: none;
+  text-align: left;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+.linkBtnSoft {
+  display: inline-block;
+  padding: $space-sm $space-xl;
+  background: none;
+  color: $text-link;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  text-decoration: none;
+}

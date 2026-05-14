@@ -1,0 +1,104 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.feedTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-xs;
+}
+
+.post {
+  display: flex;
+  gap: $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.postHighlighted {
+  border-color: $color-primary;
+  background: #f0f6fb;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-round;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-secondary;
+  flex-shrink: 0;
+}
+
+.avatarInGroup {
+  background: $color-primary;
+  color: $color-white;
+  border-color: $color-primary;
+}
+
+.postBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.postMeta {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  flex-wrap: wrap;
+}
+
+.userName {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: $color-primary;
+  background: #ddeef8;
+  border: 1px solid $color-primary;
+  border-radius: $border-radius;
+  padding: 1px $space-xs;
+}
+
+.time {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-left: auto;
+}
+
+.communityLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: $tag-olive;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.postText {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+}

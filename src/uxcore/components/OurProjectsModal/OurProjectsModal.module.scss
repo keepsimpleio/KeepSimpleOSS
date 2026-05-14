@@ -1,0 +1,92 @@
+@import '@styles/_variables.scss';
+
+.inDevelopment {
+  .projectInfo {
+    .name {
+      opacity: 0.6;
+      filter: grayscale(70%);
+      cursor: default;
+
+      .openLinkIcon {
+        opacity: 0.6;
+        filter: grayscale(70%);
+      }
+    }
+
+    .projectIcon {
+      opacity: 0.6;
+      filter: grayscale(70%);
+    }
+  }
+
+  .description > p {
+    opacity: 0.6;
+    filter: grayscale(70%);
+  }
+}
+
+.projectInfo {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+
+  .name {
+    font-size: 16px;
+    color: #000000d9;
+    text-decoration: underline dotted;
+    text-underline-offset: 5px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+}
+
+.linksWrapper {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 40px;
+  padding-top: 20px;
+}
+
+.buttonStyleLink {
+  background-color: unset;
+  border: 1px solid #000000;
+  width: 100%;
+  padding: 4px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.2s;
+  gap: 6px;
+  color: #000000d9;
+  font-size: 16px;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #000000;
+    color: #ffffff;
+
+    .darkIcon {
+      display: none;
+    }
+
+    .lightIcon {
+      display: inline-block;
+    }
+  }
+
+  .lightIcon {
+    display: none;
+  }
+}
+
+.doneBtn {
+  text-align: right;
+}
+
+.tooltip {
+  @extend .defaultTooltip;
+  background: #fff !important;
+  color: #0b0921 !important;
+}

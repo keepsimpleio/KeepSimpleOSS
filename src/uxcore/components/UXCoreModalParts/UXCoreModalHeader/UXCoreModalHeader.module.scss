@@ -1,0 +1,327 @@
+.modalHeader {
+  display: flex;
+  padding: 15px 20px 10px;
+  border-bottom: 1px solid #cbcbcb;
+  flex-direction: column;
+
+  .headerTop {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+    .modalHeaderArticleInfo {
+      font-size: 0;
+      display: flex;
+      align-items: baseline;
+
+      & span {
+        margin-right: 6px;
+        font-size: 16px;
+      }
+
+      & img {
+        margin-right: 3px;
+      }
+    }
+
+    .modalHeaderTitleContainer {
+      width: 100%;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+
+      .modalHeaderTitle {
+        color: #000;
+        font-size: 18px;
+        margin: 0;
+        font-weight: 300;
+        text-decoration: none;
+        display: inline-block;
+
+        & img {
+          position: relative;
+          top: 2px;
+        }
+      }
+
+      .wikiLink {
+        display: contents;
+      }
+    }
+    .longTxt {
+      align-items: baseline;
+      padding: 0 15px;
+    }
+
+    .LangAndCloseBtn {
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+
+      .closeBtn {
+        cursor: pointer;
+        padding: 0 5px 5px 5px;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+    .LangAndCloseBtnLongTxt {
+      align-items: baseline;
+    }
+  }
+
+  & .modalHeaderLeft {
+    width: 100%;
+
+    & .ModalHeaderLeftTop {
+      display: flex;
+    }
+
+    & .modalHeaderLeftBottom {
+      margin-top: 6px;
+
+      & > div,
+      .span {
+        font-size: 14px;
+        color: #5b88bd;
+        position: relative;
+        display: inline-block;
+        margin-right: 10px;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        & .tooltip {
+          visibility: hidden;
+          opacity: 0;
+          z-index: 1;
+          transition: 0.3s;
+          position: absolute;
+          background-color: #fff;
+          color: #000;
+          border-radius: 2px;
+          box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.3);
+
+          &:after {
+            position: absolute;
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            transform: rotate(45deg);
+            background-color: #fff;
+            z-index: -1;
+          }
+        }
+
+        &.copy {
+          & .tooltip {
+            top: -2px;
+            right: calc(100% + 8px);
+            padding: 2px 8px;
+            opacity: 0;
+            visibility: hidden;
+
+            &:after {
+              top: calc(50% - 3px);
+              left: calc(100% - 3px);
+            }
+
+            &.visible {
+              opacity: 1;
+              visibility: visible;
+            }
+          }
+        }
+
+        &.share {
+          & .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            display: flex;
+            padding: 2px;
+            top: calc(100% + 4px);
+            right: calc(50% - 38px);
+
+            &:after {
+              top: -3px;
+              left: calc(50% - 3px);
+            }
+
+            & a {
+              padding: 1px;
+              font-size: 0;
+              border: 1px solid transparent;
+              border-radius: 2px;
+            }
+
+            & a:hover {
+              padding: 1px;
+              font-size: 0;
+              border-color: #cecece;
+            }
+
+            & a img {
+              width: 20px;
+              height: 20px;
+            }
+          }
+
+          &:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+
+  & .ModalHeaderCloseButtonContainer {
+    width: 75px;
+    display: flex;
+    justify-content: flex-end;
+
+    & .ModalHeaderCloseButton {
+      text-align: right;
+      margin-top: 2px;
+
+      & img {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .modalHeader {
+    .headerTop {
+      .modalHeaderTitleContainer {
+        .modalHeaderTitle {
+          font-size: 16px;
+        }
+      }
+    }
+
+    & .modalHeaderLeft {
+      & .modalHeaderLeftBottom {
+        & > div,
+        .span {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme: modal header on dark surface. SVG icons (wiki-logo, cross,
+// p-rounded, m-rounded) are inked for light backgrounds — invert them so
+// they read on dark.
+:global(body.darkTheme) .modalHeader {
+  border-bottom-color: #303338 !important;
+
+  .headerTop {
+    .modalHeaderTitleContainer .modalHeaderTitle {
+      color: #dadada !important;
+    }
+
+    .modalHeaderArticleInfo img,
+    .modalHeaderTitleContainer img,
+    .wikiLink img,
+    .closeBtn,
+    .closeBtn img {
+      filter: invert(1) brightness(2) saturate(0);
+    }
+  }
+
+  & .modalHeaderLeft .modalHeaderLeftBottom {
+    & > div,
+    .span {
+      color: #7fb3d5 !important;
+
+      & .tooltip {
+        background-color: #1b1e26 !important;
+        color: #dadada !important;
+        border: 1px solid #303338 !important;
+
+        &:after {
+          background-color: #1b1e26 !important;
+        }
+      }
+    }
+  }
+
+  & .ModalHeaderCloseButtonContainer img {
+    filter: invert(1) brightness(2) saturate(0);
+  }
+}
+
+@media (max-width: 800px) {
+  .modalHeader {
+    .headerTop {
+      flex-direction: column;
+
+      .modalHeaderTitleContainer {
+        justify-content: flex-start;
+        margin-top: 6px;
+      }
+
+      .LangAndCloseBtn {
+        justify-content: flex-end;
+
+        .closeBtn {
+          position: absolute;
+        }
+
+        .closeBtn {
+          position: absolute;
+          right: 20px;
+          top: 16px;
+        }
+      }
+    }
+
+    & .modalHeaderLeft {
+      & .ModalHeaderLeftTop {
+        justify-content: center;
+        flex-direction: column;
+
+        & .modalHeaderTitleContainer {
+          text-align: left;
+          margin-top: 6px;
+          justify-content: flex-start;
+        }
+      }
+
+      & .modalHeaderLeftBottom {
+        & > div.copy .tooltip {
+          top: -24px;
+          left: 0;
+          right: auto;
+
+          &::after {
+            top: 15px;
+            left: 8px;
+          }
+        }
+
+        & > div,
+        .span {
+          font-size: 14px;
+        }
+
+        & > span.share .tooltip {
+          right: calc(50% - 53px);
+
+          & a img {
+            width: 30px;
+            height: 30px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+@import '@styles/_animations.scss';
+
+.modalWrapper {
+  @extend .animate-slideDown;
+  position: relative;
+}
+
+.modalBody {
+  .fancyBadges {
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+    color: #000000;
+    padding-bottom: 16px;
+  }
+
+  .container {
+    display: flex;
+
+    .genderSelect {
+      color: #00000073;
+      margin-right: 8px;
+    }
+
+    .selection {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-right: 16px;
+      position: relative;
+
+      .container {
+        display: block;
+        cursor: pointer;
+        margin-right: 8px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      .container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 1px solid #d9d9d9;
+      }
+
+      .container input:checked ~ .checkmark {
+        border: 1px solid #5b88bd;
+      }
+
+      .checkmark:after {
+        content: '';
+        position: absolute;
+        display: none;
+      }
+
+      .container input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      .container .checkmark:after {
+        left: 4px;
+        top: 4px;
+        width: 8px;
+        height: 8px;
+        background: #5b88bd;
+        border-radius: 50%;
+      }
+    }
+
+    .selection:last-child {
+      margin-right: unset;
+    }
+  }
+
+  .btnWrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 80px;
+  }
+}

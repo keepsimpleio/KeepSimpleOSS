@@ -1,0 +1,84 @@
+.Textarea {
+  font-size: 16px;
+  color: #000;
+  margin-bottom: 20px;
+
+  .Label {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+
+  & .TextareaWrapper {
+    position: relative;
+    font-size: 0;
+
+    textarea {
+      resize: none;
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid #cbcbcb;
+      padding: 6px 10px;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+      height: 80px;
+
+      &::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: #ababab;
+        opacity: 1; /* Firefox */
+      }
+
+      &:focus {
+        border-color: #6d6d6d;
+        outline: none;
+      }
+    }
+
+    & .ErrorMessage {
+      position: absolute;
+      bottom: 0;
+      left: 10px;
+      color: red;
+      font-size: 14px;
+      z-index: 0;
+      transition: 0.2s;
+    }
+  }
+
+  &.Error {
+    & .TextareaWrapper {
+      .ErrorMessage {
+        bottom: -16px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .Textarea {
+    font-size: 14px;
+
+    .Label {
+      font-size: 14px;
+    }
+
+    & .ErrorMessage {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 901px) {
+  .Textarea {
+    font-size: 16px;
+
+    .Label {
+      font-size: 16px;
+    }
+
+    & .ErrorMessage {
+      font-size: 14px;
+    }
+  }
+}

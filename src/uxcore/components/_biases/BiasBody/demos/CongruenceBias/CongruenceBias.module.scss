@@ -1,0 +1,85 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.label {
+  font-size: $font-size-sm;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.quote {
+  font-size: $font-size-md;
+  font-style: italic;
+  color: $text-primary;
+  background: $bg-card;
+  padding: $space-sm $space-md;
+  border-left: 3px solid $color-primary;
+  border-radius: $border-radius;
+}
+
+.variants {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.variant {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+
+  &.disconfirm {
+    border-color: $tag-orange;
+    background: lighten(#cd7232, 38%);
+  }
+}
+
+.varTag {
+  font-weight: 700;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  min-width: 32px;
+}
+
+.varDesc {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.varKind {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $tag-orange;
+  font-weight: 700;
+}
+
+.verdict {
+  margin-top: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.check {
+  color: $tag-green;
+  font-weight: 700;
+  font-size: $font-size-md;
+}

@@ -13,14 +13,13 @@ module.exports = withBundleAnalyzer({
     locales: ['en', 'ru', 'hy'],
     defaultLocale: 'en',
   },
-  assetPrefix: process.env.NODE_ENV === 'development' ? '' : '/keepsimple_next',
   async rewrites() {
     return [
-      { source: '/assets/:path*', destination: '/keepsimple_/assets/:path*' },
-      { source: '/fonts/:path*', destination: '/keepsimple_/fonts/:path*' },
-      { source: '/audio/:path*', destination: '/keepsimple_/audio/:path*' },
-      { source: '/static/:path*', destination: '/keepsimple_/static/:path*' },
-      { source: '/robots.txt', destination: '/keepsimple_/robots.txt' },
+      // Legacy prefix strip — both repos used to namespace public/ with
+      // /keepsimple_/* and /uxcore_/* respectively. Public is now flat, so any
+      // straggler path with those prefixes resolves to the bare equivalent.
+      { source: '/keepsimple_/:path*', destination: '/:path*' },
+      { source: '/uxcore_/:path*', destination: '/:path*' },
     ];
   },
   async headers() {

@@ -1,0 +1,121 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl $space-lg;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.cardIcon {
+  font-size: $font-size-xl;
+  text-align: center;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+  text-align: center;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+
+  strong {
+    color: $text-primary;
+  }
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-lg;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $tag-green;
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.statDivider {
+  width: 1px;
+  height: 36px;
+  background: $border-color;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+  margin-top: $space-xs;
+}
+
+.btnSecondary {
+  flex: 1;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+.btnPrimary {
+  flex: 1;
+  padding: $space-sm;
+  border: none;
+  border-radius: $border-radius;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

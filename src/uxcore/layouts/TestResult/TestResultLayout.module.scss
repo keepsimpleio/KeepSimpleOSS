@@ -1,0 +1,310 @@
+.testResult,
+.testResultLayoutWithCode {
+  .sectionHeader {
+    height: 396px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+  }
+
+  .sectionBody {
+    width: 900px;
+    max-width: 100%;
+    margin: 24px auto 0 auto;
+    max-height: 100%;
+
+    .encourage {
+      text-align: center;
+
+      .encourageTxt {
+        padding: 16px 0 14px 0;
+        display: block;
+      }
+
+      .encourageTxt,
+      .clickOnBob {
+        font-size: 16px;
+      }
+
+      .clickOnBob {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2px;
+        margin: 0;
+        padding-bottom: 16px;
+      }
+    }
+
+    .encourage,
+    .additionalInf,
+    .additionalInfo {
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      background: #fff;
+      border: 1px solid #d9d9d9;
+    }
+
+    .additionalInfo {
+      margin-bottom: 26px;
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 5%;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        width: 1px;
+        height: 90%;
+        background: #d9d9d9;
+      }
+
+      .links {
+        padding: 15px 0 23px 29px;
+
+        .readingList {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          .link {
+            display: block;
+            width: 100%;
+            max-width: 380px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            text-decoration: none;
+            color: #000;
+            font-size: 16px;
+            border-radius: 2px;
+          }
+        }
+
+        .title {
+          text-decoration: none;
+          color: #000;
+          display: block;
+          font-size: 16px;
+          margin-bottom: 16px;
+        }
+      }
+
+      .reminder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        justify-content: center;
+        width: 50%;
+        padding: 15px 0 29px 0;
+
+        .btn,
+        .finalTestBtn {
+          width: 218px;
+        }
+
+        .finalTestBtn {
+          margin-top: 4px;
+        }
+
+        .startTestBtn,
+        .availableNow {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+
+        .date {
+          color: #a36aa4;
+          padding: 5px 0 16px 0;
+        }
+
+        .dateSkeleton {
+          margin: 5px 0 16px 0;
+        }
+
+        .availableNow {
+          flex-direction: row;
+        }
+      }
+
+      .calendar {
+        position: absolute;
+        right: -85px;
+        padding-top: 50px;
+      }
+    }
+  }
+
+  .badgesWrapper {
+    position: fixed;
+    right: 0;
+    top: 20px;
+    z-index: 10;
+  }
+
+  .sectionFooter {
+    margin-top: 61px;
+    margin-bottom: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    .btn {
+      width: 218px;
+      margin-bottom: 50px;
+    }
+  }
+}
+
+.finalTestResultHeader {
+  background-image: url(/assets/uxcat/final-test-cover.png);
+  background-repeat: round;
+}
+
+.mobileHeader {
+  display: none;
+}
+
+.badgesWrapper {
+  position: fixed;
+  right: 0;
+  top: 20px;
+  z-index: 10;
+}
+
+.testResultLayoutWithCode {
+  padding: 0 15px;
+
+  .whyAreYouHere {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (max-width: 1440px) {
+  .testResult {
+    .sectionBody {
+      .encourage {
+        .encourageTxt,
+        .clickOnBob {
+          font-size: 14px;
+        }
+      }
+
+      .additionalInfo {
+        .links {
+          .readingList {
+            .link {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 901px) {
+  .mobileHeader {
+    display: block;
+  }
+
+  .desktopHeader {
+    display: none;
+  }
+
+  .testResult {
+    .sectionBody {
+      width: unset;
+      margin: 0 8px;
+
+      .encourage {
+        .encourageTxt,
+        .clickOnBob {
+          font-size: 16px;
+        }
+      }
+
+      .additionalInfo {
+        flex-direction: column;
+        align-items: center;
+        padding: 27px 8px 24px 8px;
+
+        &::after {
+          display: none;
+        }
+
+        .links {
+          padding: 0 0 10px 0;
+
+          .readingList {
+            .link {
+              max-width: unset;
+              width: -webkit-fill-available;
+              width: -moz-available;
+              white-space: unset;
+              font-size: 16px;
+            }
+          }
+        }
+
+        .linksSkeleton {
+          width: -webkit-fill-available;
+          width: -moz-available;
+
+          .readingList {
+            .readingListSkeleton {
+              width: 100% !important;
+            }
+          }
+        }
+
+        .reminder {
+          gap: 10px;
+          margin-top: 54px;
+          width: 100%;
+
+          .btn,
+          .finalTestBtn {
+            max-width: 333px;
+            width: 100%;
+          }
+        }
+
+        .date {
+          padding: unset;
+        }
+
+        .calendar {
+          position: absolute;
+          left: 50%;
+          transform: translate(-50%, 0);
+          bottom: -22px;
+          right: unset;
+        }
+      }
+
+      .encourage {
+        margin-top: 16px;
+      }
+    }
+
+    .sectionFooter {
+      margin: 30px 8px 24px 8px;
+
+      .btn {
+        max-width: 333px;
+        width: 100%;
+      }
+    }
+  }
+}

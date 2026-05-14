@@ -1,0 +1,120 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.title {
+  font-size: $font-size-sm;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.bigBlob {
+  background: $bg-card;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  text-align: center;
+}
+
+.blobLabel {
+  font-size: $font-size-md;
+  color: $text-primary;
+  font-weight: 600;
+}
+
+.blobCount {
+  font-size: $font-size-display;
+  font-weight: 800;
+  color: $text-secondary;
+  letter-spacing: -0.02em;
+}
+
+.message {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.messageHead {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.messageBody {
+  font-size: $font-size-sm;
+  font-style: italic;
+  color: $text-primary;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.metricBad {
+  color: $tag-orange;
+  font-weight: 700;
+}
+
+.metricGood {
+  color: $tag-green;
+  font-weight: 700;
+}
+
+.segments {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.segment {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-left-width: 4px;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.segmentHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.segmentName {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.segmentCount {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.segmentMessage {
+  font-size: 12px;
+  font-style: italic;
+  color: $text-primary;
+}

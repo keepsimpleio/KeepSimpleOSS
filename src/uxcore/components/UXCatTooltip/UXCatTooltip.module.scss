@@ -1,0 +1,188 @@
+@import '@styles/_animations.scss';
+
+.tooltip {
+  transition:
+    visibility 0s,
+    opacity 0.2s linear;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15%;
+    height: 100%;
+
+    transform: skew(-10deg, 0deg);
+    -webkit-transform: skew(-10deg, 0deg);
+    -moz-transform: skew(-10deg, 0deg);
+
+    animation: move 2s;
+    animation-iteration-count: infinite;
+
+    -moz-animation: move 2s;
+    -moz-animation-iteration-count: infinite;
+
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.03) 1%,
+      rgba(255, 255, 255, 0.6) 30%,
+      rgba(255, 255, 255, 0.85) 50%,
+      rgba(255, 255, 255, 0.85) 70%,
+      rgba(255, 255, 255, 0.85) 71%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}
+
+.childrenWrapper {
+  position: relative;
+}
+
+.achievementInfo {
+  display: flex;
+  align-items: center;
+  width: 556px;
+  min-height: 122px;
+  height: 100%;
+  @extend .animate-fadeIn;
+  z-index: 100;
+
+  .imgWrapper {
+    width: 20%;
+  }
+
+  .infoContainer {
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .txtWrapper {
+      padding-top: 16px;
+
+      .title {
+        padding-right: unset;
+        color: #000000a6;
+        font-size: 16px;
+        font-weight: bold;
+      }
+    }
+
+    .pointsToNextLevel {
+      color: #5e62a7;
+      font-size: 14px;
+      display: inline-block;
+      width: auto;
+    }
+
+    .top {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .unlocked {
+      display: flex;
+      align-items: center;
+
+      .txtWrapper {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    .unlockedTxt,
+    .statisticsTxt {
+      color: #a6a6a6;
+      font-size: 12px;
+    }
+
+    .description {
+      font-size: 16px;
+      color: #000000d9;
+    }
+
+    .withoutStatistics {
+      padding-bottom: 41px;
+    }
+
+    .statisticsTxt {
+      display: block;
+      text-align: right;
+      width: 100%;
+      padding-bottom: 9px;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.milestoneLevel {
+  top: 50px;
+}
+
+@media (max-width: 800px) {
+  .tooltip {
+    display: none;
+  }
+}
+
+@keyframes move {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0;
+  }
+
+  48% {
+    opacity: 0.2;
+  }
+
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    left: 82%;
+    opacity: 0;
+  }
+}
+
+@-moz-keyframes move {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0;
+  }
+
+  48% {
+    opacity: 0.2;
+  }
+
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    left: 82%;
+    opacity: 0;
+  }
+}

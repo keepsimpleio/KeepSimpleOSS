@@ -1,0 +1,65 @@
+const hy = {
+  title: 'Որոշումների աղյուսակ',
+  biasNameTxt: 'Հակման անունը:',
+  placeHolderTxt: 'Placeholder',
+  learnHowToUse: 'Սովորել ինչպես օգտագործել այս գործիքը',
+  tableExampleText: 'Որոշումների աղյուսակի օրինակ',
+  article: 'Հոդված',
+  image: 'Նկար',
+  addBiasToUseIt:
+    'Այս ֆունկցիան օգտագործելու համար վերևում ավելացրեք որևէ հակում ',
+  iUnderstandBtn: 'Հասկանալի է',
+  tableTitles: [
+    {
+      toolTipContent: 'Առաջարկվող լուծում',
+      title: 'Ի՞նչ ենք անում',
+    },
+    {
+      toolTipContent: 'Լուծման հիմնավորումը',
+      title: 'Ինչու՞ (հակում)',
+    },
+    {
+      toolTipContent: 'Հակումները նկատելու մեթոդներ',
+      title: 'Ինչու՞',
+    },
+    {
+      toolTipContent:
+        'Մեթոդներ, որոնք օգտագործվում են հակումները հայտնաբերելու համար։',
+      title: 'Վավերացման մեթոդ',
+    },
+  ],
+  exportBtnText: 'ներբեռնել',
+  fullScreenBtn: 'Դիտել ամբողջ էկրանով',
+  saveBtn: 'Պահպանել ձեր պրոֆիլում',
+  saveTxt: 'Պահպանել',
+  savedState: 'Պահպանված է',
+  loginToEdit: 'Մուտք գործել խմբագրելու համար',
+  login: 'Մուտք',
+  logoutText: 'Ելք',
+  closeBtn: 'Փակել',
+  savedPersonasTitles: [
+    'Պերսոնայի անունը',
+    'Ստեղծման ամսաթիվ',
+    'Վերջին փոփոխությունը',
+    'Գործողություններ',
+  ],
+  open: 'Բացել',
+  deleteBtn: 'Ջնջել',
+  loginText: 'Այս գործիքը օգտագործելու համար անհրաժեշտ է մուտք գործել։',
+  singInWithGoogle: 'Մուտք գործել Google-ով',
+  signInWithLinkedIn: 'Մուտք գործել LinkedIn-ով',
+  signInWithDiscord: 'Մուտք գործել Discord-ով',
+  signInWithTwitter: 'Մուտք գործել X-ով',
+  signInWithMailRu: 'Մուտք գործել Mail.ru-ով',
+  signInWithYandex: 'Մուտք գործել Yandex-ով',
+  copyLink: 'Պատճենել URL-ը',
+  copiedTxt: 'Պատճենված է',
+  cancelBtn: 'Չեղարկել',
+  availablePersonasTxt: 'Հասանելի Պերսոնաների քանակը։',
+  personasIsFull:
+    'Ձեր պերսոնաների ցանկը լցված է։\n Կարող եք ազատել տեղ՝ ջնջելով ձեր պահված պերսոնաներից մեկը։',
+  overWriteText: 'Վերագրել ',
+  savedPersonasText: 'Պահպանված պերսոնաներ',
+  pleaseInputName: 'Խնդրում ենք մուտքագրել Պերսոնայի անունը',
+};
+export default hy;

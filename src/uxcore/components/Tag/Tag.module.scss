@@ -1,0 +1,25 @@
+.Tag {
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 17px;
+  border-radius: 2px;
+  display: inline-block;
+  border: none;
+
+  &.Large {
+    font-size: 14px;
+    height: 32px;
+    padding: 3px 17px;
+  }
+
+  &Button {
+    cursor: pointer;
+    opacity: 0.3;
+    box-sizing: border-box;
+    border: none;
+
+    &.TagButtonActive {
+      opacity: 1;
+    }
+  }
+}

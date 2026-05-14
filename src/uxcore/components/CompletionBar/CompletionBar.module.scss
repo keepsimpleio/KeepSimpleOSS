@@ -1,0 +1,526 @@
+@import '@styles/_animations.scss';
+
+.mainTitle {
+  margin-top: 32px;
+  font-size: 16px;
+  color: #000000a6;
+  font-weight: 700;
+}
+
+.bigFont {
+  font-size: 24px;
+}
+
+.completionBar {
+  border-radius: 8px;
+  border: none;
+  background-color: #fff;
+  padding: 10px 24px 15px 24px;
+  height: 91px;
+
+  .points,
+  .milestoneTotalPoints {
+    visibility: hidden;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #f90 0%, #ffbf00 61.98%, #ffa800 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 12px;
+    margin: 0 0 12px 0;
+  }
+
+  .passedLevelWrapper {
+    .passedLevel,
+    .passedLevelRu,
+    .passedLevelMilestone,
+    .passedLevelMilestoneRu {
+      @extend .animate-fadeIn;
+      position: absolute;
+      top: -45px;
+      left: -53px;
+      background-image: url('/assets/uxcat/levelUp.svg');
+      background-repeat: no-repeat;
+      width: 128px;
+      height: 43px;
+      z-index: 40;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20%;
+        height: 100%;
+
+        transform: skew(-52deg, 0deg);
+        -webkit-transform: skew(-52deg, 0deg);
+        -moz-transform: skew(-52deg, 0deg);
+
+        animation: move 2s;
+        animation-iteration-count: infinite;
+
+        -moz-animation: move 2s;
+        -moz-animation-iteration-count: infinite;
+
+        background: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.03) 1%,
+          rgba(255, 255, 255, 0.6) 30%,
+          rgba(255, 255, 255, 0.85) 50%,
+          rgba(255, 255, 255, 0.85) 70%,
+          rgba(255, 255, 255, 0.85) 71%,
+          rgba(255, 255, 255, 0) 100%
+        );
+      }
+
+      .levelUp {
+        font-weight: 800;
+        font-style: italic;
+        text-transform: uppercase;
+        font-size: 16px;
+        color: #462d0f;
+        display: inline-block;
+        margin: 10px 3px 0 20px;
+      }
+    }
+
+    .passedLevelMilestone,
+    .passedLevelMilestoneRu {
+      top: -28px;
+      left: -37px;
+
+      .levelUp {
+        color: #fff;
+        margin: 4px 3px 0 13px;
+      }
+    }
+
+    .passedLevelRu {
+      background-image: url('/assets/uxcat/levelUpRu.svg');
+      width: 360px;
+      left: -114px;
+
+      .levelUp {
+        margin: 10px 3px 0 20px;
+      }
+    }
+
+    .passedLevelMilestone {
+      background-image: url('/assets/uxcat/level-up-milestone.svg');
+    }
+
+    .passedLevelMilestoneRu {
+      background-image: url('/assets/uxcat/level-up-milestone-ru.svg');
+      left: -109px;
+      top: -32px;
+    }
+  }
+
+  .milestoneTotalPoints {
+    background: linear-gradient(
+      180deg,
+      #d253ff 25%,
+      #7c67ce 54.41%,
+      #246dc4 85.71%
+    );
+    background-clip: text;
+  }
+
+  .disabled {
+    visibility: hidden;
+  }
+
+  .totalPoints {
+    visibility: visible;
+  }
+}
+
+.withBorders {
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+}
+
+.withShadow {
+  box-shadow:
+    0px 8px 17px 0px rgba(0, 0, 0, 0.05),
+    0px 30px 30px 0px rgba(0, 0, 0, 0.04),
+    0px 68px 41px 0px rgba(0, 0, 0, 0.03),
+    0px 122px 49px 0px rgba(0, 0, 0, 0.01),
+    0px 190px 53px 0px rgba(0, 0, 0, 0);
+}
+
+.progressBarWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+
+  .tooltipContainer {
+    z-index: 99999;
+    background: linear-gradient(
+        94deg,
+        rgba(231, 233, 255, 0.61) 23.62%,
+        rgba(210, 215, 255, 0.61) 99.75%
+      ),
+      #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    max-width: unset !important;
+
+    > div {
+      border: none;
+      filter: unset;
+      box-shadow: unset;
+
+      &:nth-child(2) {
+        border-bottom: 1px solid #d9d9d9;
+        border-right: 1px solid #d9d9d9;
+        margin-top: -1px;
+      }
+    }
+  }
+}
+
+.progressBar {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 779px;
+  max-width: 100%;
+
+  .point-1,
+  .point-2,
+  .point-3,
+  .point-4,
+  .point-5,
+  .point-6,
+  .point-7,
+  .point-8,
+  .point-9,
+  .point-10 {
+    position: relative;
+  }
+
+  .levelTxt {
+    position: absolute;
+    top: 35px;
+    font-size: 12px;
+    color: #00000059;
+  }
+
+  .completedTxt,
+  .hoveredTxtOnGuestMode {
+    color: #ff9900;
+    background: linear-gradient(
+        180deg,
+        #ff9900 0%,
+        #ffbf00 83.33%,
+        #ffc700 100%
+      ),
+      linear-gradient(0deg, #ffa001, #ffa001);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-weight: 800;
+  }
+
+  .completedMilestonTxt {
+    color: #ff9900;
+    background: linear-gradient(
+      180deg,
+      #de80ff 25%,
+      #a993ff 54.41%,
+      #246dc4 85.71%
+    );
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-weight: 800;
+  }
+
+  .milestoneLevelTxt {
+    top: 42px;
+    left: 4px;
+  }
+}
+
+.step {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  color: #868686;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/assets/icons/level-icon.svg');
+  background-repeat: no-repeat;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.milestoneStep {
+  width: 32px;
+  height: 32px;
+  background-size: 32px;
+  bottom: -6px;
+  left: 2px;
+}
+
+.level {
+  font-size: 12px;
+}
+
+.finalLevel {
+  width: 32px;
+  height: 32px;
+  bottom: -6px;
+  left: 2px;
+  background-image: url('/assets/icons/milestone-lvl-icon.svg');
+}
+
+.step.finalLevel.completed {
+  background-image: url('/assets/icons/milestone-lvl-icon.svg');
+}
+
+.disableZIndex {
+  z-index: 0;
+}
+
+.step.completed {
+  background-image: url('/assets/icons/level-icon-completed.svg');
+  color: #fff;
+}
+
+.step.completedMilestone {
+  background-image: url('/assets/icons/milestone-completed-level.svg');
+  color: #fff;
+}
+
+.singleHoveredLvl {
+  background-image: url('/assets/icons/level-icon-completed.svg');
+  color: #fff;
+}
+
+.singleMilstoneHoveredLvl {
+  background-image: url('/assets/icons/level-icon.svg');
+  color: #868686;
+}
+
+.step.hoveredLvl {
+  background-image: url('/assets/icons/level-icon-completed.svg');
+  color: #fff;
+}
+
+.finalLevel.hoveredLvl {
+  background-image: url('/assets/icons/milestone-lvl-icon.svg');
+  color: red;
+}
+
+.bar {
+  position: absolute;
+  bottom: 8px;
+  left: 18px;
+  width: 752px;
+  height: 4px;
+  background-color: #d9d9d9;
+}
+
+.levelWrapper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding-top: 15px;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(180deg, #f90 0%, #ffbf00 61.98%, #ffa800 100%);
+  width: 0;
+  position: relative;
+
+  .shinyIndicator {
+    position: absolute;
+    top: -23px;
+    width: 50px;
+    left: 100%;
+    height: 50px;
+    border-radius: 50%;
+    animation: pulsate 2s infinite;
+    z-index: 1;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 45px;
+      height: 122px;
+      background-image: url('/assets/uxcat/shinyStar.svg');
+      background-repeat: round;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      animation: shine 2s infinite;
+    }
+
+    &:before {
+      left: -24px;
+    }
+
+    &::after {
+      top: 25px;
+      left: -24px;
+      transform: rotate(90deg);
+    }
+  }
+
+  .milestoneShinyIndicator {
+    &::before {
+      background-image: url('/assets/uxcat/purpleShinyStar.svg');
+    }
+  }
+}
+
+.milestoneLine {
+  background: linear-gradient(
+    180deg,
+    #df85ff -0.04%,
+    #a993ff 45.6%,
+    #246dc4 94.18%
+  );
+}
+
+.smoothTransition {
+  transition: width 0.5s ease-out;
+}
+
+.hovered {
+  background: linear-gradient(180deg, #f90 0%, #ffbf00 61.98%, #ffa800 100%);
+}
+
+.removeHover {
+  background: #d9d9d9;
+  transition: 0.5s ease-out;
+}
+
+@media (max-width: 800px) {
+  .completionBar {
+    padding: 10px 36px 15px 36px;
+  }
+
+  .step.finalLevel.completed {
+    background-image: url('/assets/icons/level-icon-completed.svg');
+    color: #fff;
+  }
+
+  .bar {
+    width: -webkit-fill-available;
+    width: -moz-available;
+  }
+
+  .bar {
+    left: 0;
+  }
+  .progressBar {
+    width: 100%;
+
+    .pointWrapper-2,
+    .pointWrapper-4,
+    .pointWrapper-5,
+    .pointWrapper-7,
+    .pointWrapper-8,
+    .pointWrapper-9 {
+      visibility: hidden;
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .step:last-child {
+      margin-right: -2px;
+    }
+
+    .milestoneWrapper-5 {
+      visibility: visible !important;
+      width: 32px;
+      height: 32px;
+      background-size: 32px;
+      bottom: -6px;
+      left: 2px;
+      position: unset;
+      overflow: unset;
+    }
+
+    .milestoneWrapper-1 {
+      .milestoneStep,
+      .levelTxt {
+        left: -5px;
+      }
+    }
+
+    .milestoneMobile {
+      display: block;
+    }
+  }
+
+  .progressBarWrapper {
+    .tooltipContainer {
+      display: none;
+    }
+  }
+}
+
+@keyframes shine {
+  0% {
+    opacity: 50%;
+  }
+
+  50% {
+    opacity: 100%;
+  }
+
+  100% {
+    opacity: 50%;
+  }
+}
+
+@keyframes move {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0;
+  }
+
+  48% {
+    opacity: 0.2;
+  }
+
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    left: 82%;
+    opacity: 0;
+  }
+}

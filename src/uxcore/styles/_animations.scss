@@ -1,0 +1,211 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+}
+
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes fadeInRightToLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeInLeft {
+  animation: fadeInLeft 0.3s ease-in-out forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.3s ease-in-out forwards;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+}
+
+.animate-slowFadeIn {
+  animation: fadeIn 1s ease-in-out forwards;
+}
+.animate-fadeInRightToLeft {
+  animation: fadeInRightToLeft 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeInAndOut {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-fadeInAndOut {
+  animation: fadeInAndOut 2s linear infinite;
+}
+
+@keyframes rotateFadeIn {
+  0% {
+    opacity: 60%;
+    transform: rotate(0deg);
+  }
+
+  50% {
+    opacity: 100%;
+    transform: rotate(359deg);
+  }
+
+  100% {
+    opacity: 60%;
+    transform: rotate(359deg);
+  }
+}
+
+.animate-rotateFadeIn {
+  animation: rotateFadeIn 5s ease-in infinite;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideInFromLeft {
+  animation: slideInFromLeft 1s ease-in-out forwards;
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideInFromRight {
+  display: block;
+  opacity: 0;
+  animation: slideInFromRight 1s ease-in-out forwards;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    top: -100%;
+    opacity: 0;
+  }
+
+  100% {
+    top: 50px;
+    opacity: 1;
+  }
+}
+
+.animate-slideInFromTop {
+  animation: slideInFromTop 1s ease-in-out forwards;
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    bottom: -100%;
+    opacity: 0;
+  }
+
+  100% {
+    bottom: 50px;
+    opacity: 1;
+  }
+}
+
+.animate-slideInFromBottom {
+  animation: slideInFromBottom 1s ease-in-out forwards;
+}
+
+@keyframes slideDown {
+  from {
+    top: -200px;
+    opacity: 0;
+  }
+
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 1s ease forwards;
+}
+
+@keyframes pulsate {
+  0% {
+    opacity: 0.9;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.9;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+.animate_pulsate {
+  -webkit-animation: pulsate 1.5s ease-out;
+  animation: pulsate 1.5s ease-out;
+  opacity: 1;
+  transform: scale(1);
+}

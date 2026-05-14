@@ -1,0 +1,272 @@
+.EmptyState {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.Globe {
+  display: inline-block;
+  cursor: default;
+  user-select: none;
+  margin-bottom: 16px;
+  font-size: 48px;
+  line-height: 1;
+}
+
+.EmptyText {
+  font-size: 15px;
+  color: #94a3b8;
+}
+
+.UnderlineWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.EmptyHint {
+  margin-top: 8px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #337ab7;
+}
+
+.Root {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 16px 64px;
+}
+
+.Card {
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.Header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 24px 28px;
+}
+
+.HeaderFlag {
+  margin-top: 4px;
+  border-radius: 4px;
+}
+
+.HeaderBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.TitleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.Title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.ConfidenceWrap {
+  position: relative;
+}
+
+.ConfidenceBadge {
+  flex-shrink: 0;
+  cursor: default;
+  border-radius: 9999px;
+  padding: 2px 10px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.HelpPopover {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  z-index: 50;
+  width: 340px;
+  max-width: 90vw;
+  transform: translateX(-50%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 16px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  @media (min-width: 640px) {
+    width: 400px;
+  }
+}
+
+.HelpLabel {
+  margin: 0 0 6px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #337ab7;
+}
+
+.HelpText {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.HelpFootnote {
+  margin-top: 8px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 8px;
+
+  p {
+    margin: 0;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+}
+
+.Rationale {
+  margin: 4px 0 0;
+  max-width: 500px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+.RegionTag {
+  flex-shrink: 0;
+  border-radius: 9999px;
+  padding: 4px 14px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+.BiasGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 10px;
+  padding: 24px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.BiasChip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fafbfc;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #337ab7;
+    background: rgba(51, 122, 183, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.BiasNumber {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 14px;
+  letter-spacing: 0.025em;
+  color: #337ab7;
+}
+
+.BiasName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.BiasShort {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #64748b;
+  max-height: calc(1.6em * 8);
+  overflow-y: auto;
+
+  p {
+    margin: 0;
+
+    & + p {
+      margin-top: 6px;
+    }
+  }
+
+  span {
+    background-color: transparent !important;
+    color: inherit !important;
+  }
+}
+
+.Footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #f1f5f9;
+  padding: 16px 28px;
+}
+
+.FooterMeta {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.UseButton {
+  display: inline-block;
+  border: none;
+  border-radius: 8px;
+  background: #337ab7;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: #2868a3;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}

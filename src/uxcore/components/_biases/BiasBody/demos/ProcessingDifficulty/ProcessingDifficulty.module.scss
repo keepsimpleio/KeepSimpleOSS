@@ -1,0 +1,143 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  text-align: center;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-round;
+  background: #f0ad4e;
+  color: $color-white;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconDanger {
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-round;
+  background: #c0392b;
+  color: $color-white;
+  font-size: $font-size-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heading {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.impactBox {
+  background: #fdf2f2;
+  border: 1px solid #f5c6cb;
+  border-radius: $border-radius;
+  padding: $space-md;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.impactRow {
+  display: flex;
+  align-items: baseline;
+  gap: $space-sm;
+}
+
+.impactNum {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: #c0392b;
+  min-width: 48px;
+  text-align: right;
+}
+
+.impactLabel {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  text-align: left;
+}
+
+.confirmLabel {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.confirmInput {
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  padding: $space-xs $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+  width: 100%;
+}
+
+.btn {
+  flex: 1;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Danger {
+    background: #c0392b;
+    color: $color-white;
+    border-color: #c0392b;
+
+    &:disabled {
+      background: $border-color;
+      border-color: $border-color;
+      color: $text-secondary;
+      cursor: not-allowed;
+    }
+  }
+}

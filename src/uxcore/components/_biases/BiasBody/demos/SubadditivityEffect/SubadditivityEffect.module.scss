@@ -1,0 +1,123 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  justify-content: center;
+}
+
+.cardBig {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  width: 100%;
+  max-width: 320px;
+}
+
+.planName {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.bigPrice {
+  font-size: $font-size-display;
+  font-weight: 800;
+  color: $text-primary;
+  line-height: 1;
+}
+
+.bigUnit {
+  font-size: $font-size-md;
+  font-weight: 500;
+  color: $text-secondary;
+}
+
+.lump {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.cta {
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  padding: $space-sm;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: $space-xs;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
+  padding: $space-sm 0;
+}
+
+.part {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+}
+
+.partLabel {
+  color: $text-secondary;
+}
+
+.partValue {
+  color: $text-primary;
+  font-weight: 600;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: $space-xs;
+}
+
+.totalLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.totalValue {
+  font-size: $font-size-xl;
+  font-weight: 800;
+  color: $color-primary;
+}
+
+.unit {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $text-secondary;
+  margin-left: 4px;
+}
+
+.savings {
+  font-size: $font-size-sm;
+  color: $tag-green;
+  font-weight: 700;
+  text-align: center;
+  background: lighten(#42c256, 47%);
+  padding: 4px;
+  border-radius: $border-radius;
+}

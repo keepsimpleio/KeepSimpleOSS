@@ -1,0 +1,81 @@
+.BiasSearch {
+  margin-bottom: 14px;
+
+  & .SearchContainer {
+    background: #fbfbfb;
+    display: flex;
+    align-items: center;
+    padding: 12px 12px 20px;
+
+    & .SearchTipContainer {
+      cursor: help;
+      margin-left: 8px;
+    }
+  }
+
+  & .Table {
+    margin-top: 14px;
+    padding: 0 12px;
+    height: 330px;
+    overflow: auto;
+    transition: height 0.3s;
+
+    /* width */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: rgba(40, 88, 123, 0.5);
+      border-radius: 5px;
+    }
+
+    &.Expanded {
+      height: 364px;
+      padding: 0 7px 0 12px;
+    }
+  }
+
+  & .ShowAllButtonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 34px;
+    transition: 0.3s;
+    overflow: hidden;
+    white-space: nowrap;
+
+    & .ShowAllButton {
+      cursor: pointer;
+      color: #28587b;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &.Hidden {
+      height: 0;
+      margin-top: 0;
+    }
+  }
+}
+
+.SectionTitle {
+  font-size: 16px;
+  text-align: center;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+@media (max-width: 1440px) {
+  .SectionTitle {
+    font-size: 14px;
+  }
+}

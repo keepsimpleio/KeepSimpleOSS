@@ -1,0 +1,142 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+  text-align: center;
+}
+
+.form {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.row2 {
+  display: flex;
+  gap: $space-sm;
+
+  .field {
+    flex: 1;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  input,
+  select,
+  textarea {
+    font-family: $font-family;
+    font-size: $font-size-sm;
+    padding: $space-xs $space-sm;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    background: $bg-alt;
+    color: $text-primary;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.tip {
+  font-weight: 400;
+  color: $text-secondary;
+  font-size: 11px;
+  margin-left: $space-xs;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  margin-bottom: $space-md;
+}
+
+.step {
+  font-size: 11px;
+  font-weight: 600;
+  color: $text-secondary;
+  white-space: nowrap;
+
+  &.active {
+    color: $color-primary;
+  }
+
+  &.done {
+    color: $tag-green;
+  }
+}
+
+.stepLine {
+  flex: 1;
+  height: 1px;
+  background: $border-color;
+  margin: 0 $space-xs;
+}
+
+.stepCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.stepLabel {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $color-primary;
+  margin: 0;
+}
+
+.stepHint {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+  justify-content: flex-end;
+  margin-top: $space-xs;
+}
+
+.btn {
+  padding: $space-xs $space-lg;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+  }
+}

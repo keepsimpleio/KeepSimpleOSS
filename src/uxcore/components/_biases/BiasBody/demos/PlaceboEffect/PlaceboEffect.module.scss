@@ -1,0 +1,165 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.iconRow {
+  display: flex;
+  justify-content: center;
+}
+
+.icon {
+  font-size: 32px;
+}
+
+.title {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+  text-align: center;
+}
+
+.statusBanner {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  background: #fff8e1;
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: darken(#cd7232, 5%);
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $tag-orange;
+  flex-shrink: 0;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.speed {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: $space-xs;
+}
+
+.speedValue {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.speedUnit {
+  font-size: $font-size-base;
+  color: $text-secondary;
+}
+
+// After
+.optimizeBtn {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.progressWrap {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.progressBar {
+  height: 6px;
+  background: $bg-alt;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  width: 75%;
+  background: $color-primary;
+  border-radius: 3px;
+  animation: fill 1.5s ease-in-out forwards;
+}
+
+@keyframes fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 75%;
+  }
+}
+
+.progressSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.done {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+
+  &::before {
+    content: '✓ ';
+    color: $tag-green;
+    font-weight: 700;
+  }
+}
+
+.active {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  font-weight: 600;
+
+  &::before {
+    content: '⟳ ';
+    color: $color-primary;
+  }
+}
+
+.result {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $tag-green;
+  text-align: center;
+  padding: $space-sm;
+  background: #e8f5e9;
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+}

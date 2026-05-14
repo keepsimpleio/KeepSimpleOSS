@@ -1,0 +1,65 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-lg;
+  padding-bottom: $space-md;
+  border-bottom: 1px solid $border-color;
+}
+
+.version {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.date {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.notesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.notesItem {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  border-left: 3px solid $border-color;
+
+  &Bad {
+    border-left-color: #e53e3e;
+    color: #c53030;
+    background: #fff5f5;
+  }
+
+  &Good {
+    border-left-color: $tag-green;
+    color: #276749;
+    background: #f0fff4;
+  }
+}

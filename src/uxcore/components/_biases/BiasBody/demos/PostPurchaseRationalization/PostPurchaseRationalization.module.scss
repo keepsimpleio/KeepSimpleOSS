@@ -1,0 +1,182 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.email {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.emailMeta {
+  background: $bg-alt;
+  border-bottom: 1px solid $border-color;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.from {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.subject {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.emailBody {
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.greeting {
+  font-size: $font-size-base;
+  color: $text-primary;
+  margin: 0;
+}
+
+.emailBody p {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.heroImg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  background: $bg-alt;
+  border-radius: $border-radius;
+}
+
+.heroEmoji {
+  font-size: 36px;
+}
+
+.greetingBold {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.socialProof {
+  font-size: $font-size-sm;
+  color: $tag-green;
+  font-weight: 600;
+  text-align: center;
+  padding: $space-xs;
+}
+
+.orderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  padding: $space-sm 0;
+  border-top: 1px solid $border-color;
+}
+
+.price {
+  font-weight: 700;
+}
+
+.muted {
+  color: $text-secondary;
+}
+
+.exclusivity {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.badge {
+  background: $tag-purple;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  padding: 2px $space-sm;
+  border-radius: 20px;
+}
+
+.quoteBlock {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  font-style: italic;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-left: 3px solid $color-primary;
+  border-radius: 0 $border-radius $border-radius 0;
+}
+
+.quoteAuthor {
+  font-style: normal;
+  font-weight: 600;
+  color: $text-secondary;
+  margin-top: $space-xs;
+  font-size: $font-size-sm;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnPrimary {
+  background: $color-primary;
+  color: $color-white;
+  border-color: $color-primary;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+}
+
+.labelGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}

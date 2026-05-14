@@ -1,0 +1,228 @@
+.userProfile {
+  max-width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background-repeat: round;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  align-items: center;
+
+  .wrapper {
+    display: flex;
+
+    .badgeWrapper {
+      .badge {
+        margin-right: 16px;
+      }
+
+      .badgeTooltip {
+        background: #fff;
+        color: #000;
+        z-index: 444;
+        border: 1px solid #cbcbcb;
+        transition: opacity 0.2s ease-in-out;
+        max-width: 500px;
+
+        > div {
+          border: none;
+          filter: unset;
+          box-shadow: unset;
+
+          &:nth-child(2) {
+            border-bottom: 1px solid #d9d9d9;
+            border-right: 1px solid #d9d9d9;
+            margin-top: -1px;
+          }
+        }
+      }
+    }
+
+    .nameAndTitle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .title,
+      .userName {
+        font-size: 18px;
+        margin-bottom: 5px;
+        margin-top: 30px;
+        font-weight: 700;
+      }
+
+      .title {
+        color: #8f4fc2;
+      }
+
+      .userName {
+        color: #313131;
+      }
+    }
+
+    .level {
+      color: #313131;
+      font-size: 16px;
+    }
+
+    .userInfo {
+      display: flex;
+      flex-direction: column;
+
+      .myProfileBtn {
+        margin-top: 21px;
+        width: 175px;
+      }
+    }
+
+    .awarenessPoints {
+      display: block;
+      padding-top: 18px;
+      color: #bb704c;
+      font-size: 16px;
+    }
+  }
+
+  .btnWrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .userStatistic {
+      color: #6165aa;
+      text-transform: uppercase;
+      font-size: 14px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .userStatistic + .userStatistic {
+      margin-bottom: 2px;
+    }
+  }
+
+  .startTestBtns {
+    display: flex;
+
+    button {
+      width: -webkit-fill-available; /* For WebKit browsers */
+      width: -moz-available; /* For Firefox */
+    }
+  }
+
+  .withGap {
+    gap: 8px;
+
+    button {
+      width: auto;
+    }
+  }
+
+  .guestMode {
+    height: unset;
+    padding-top: unset;
+  }
+}
+
+.guestMode {
+  height: 144px;
+  padding: 0 35px 0 20px;
+
+  .wrapper {
+    .nameAndTitle {
+      .userName,
+      .title {
+        margin-top: 14px;
+        margin-bottom: 4px;
+      }
+    }
+  }
+}
+
+.withFinalTestBtn {
+  padding: 0 20px 18px 20px;
+}
+
+.btnWrapper > .userStatistic {
+  padding-bottom: 10px;
+}
+
+@media (max-width: 1440px) {
+  .userProfile {
+    .wrapper {
+      .level {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 901px) {
+  .userProfile {
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    .wrapper {
+      .level {
+        font-size: 16px;
+      }
+
+      .badgeWrapper {
+        .badge {
+          width: 72px;
+          height: 72px;
+        }
+      }
+
+      .awarenessPoints {
+        padding-top: 7px;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .userProfile {
+    max-width: unset;
+
+    .wrapper {
+      .userInfo {
+        justify-content: center;
+      }
+
+      .nameAndTitle {
+        flex-direction: column;
+        align-items: baseline;
+        gap: 0;
+
+        .title {
+          margin: 0;
+        }
+
+        .userName {
+          margin: 0 0 5px 0;
+        }
+      }
+    }
+  }
+
+  .startBtn,
+  .finalTestBtn {
+    width: 100%;
+    margin-top: 16px;
+    height: 40px;
+  }
+
+  .finalTestBtn {
+    margin-top: 8px;
+  }
+
+  .btnWrapperMobile {
+    width: 97vw;
+    margin: 0 12px;
+  }
+}

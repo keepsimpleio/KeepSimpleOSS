@@ -1,0 +1,79 @@
+.SectionTitle {
+  position: relative;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 16px;
+  font-weight: 700;
+
+  & .DynamicButtonWrapper {
+    position: absolute;
+    right: 16px;
+    top: -2px;
+  }
+}
+
+.SectionTitleHy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  .DynamicButtonWrapper {
+    position: relative;
+  }
+}
+
+.Table {
+  position: relative;
+  min-height: 374px;
+
+  & > *:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  & .NoData {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    color: #bfbfbf;
+    font-size: 24px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+}
+
+.Placeholder {
+  box-sizing: border-box;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  font-size: 24px;
+  color: #bfbfbf;
+  padding: 140px 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  & > img {
+    margin-top: 5px;
+    margin-right: 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  .Placeholder {
+    position: static;
+    height: 130px;
+    padding: 0px 10px;
+    justify-content: center;
+
+    & > img {
+      display: none;
+    }
+  }
+}

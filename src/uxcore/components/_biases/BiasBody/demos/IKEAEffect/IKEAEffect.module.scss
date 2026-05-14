@@ -1,0 +1,197 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.templateGrid {
+  display: flex;
+  gap: $space-sm;
+}
+
+.template {
+  flex: 1;
+  padding: $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-xs;
+  cursor: pointer;
+}
+
+.templateActive {
+  border-color: $color-primary;
+  box-shadow: $shadow-card;
+}
+
+.templateThumb {
+  font-size: 24px;
+}
+
+.templateName {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.progressBar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.stepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: $border-radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  background: $bg-alt;
+  color: $text-secondary;
+  border: 2px solid $border-color;
+
+  &.done {
+    background: $tag-green;
+    color: $color-white;
+    border-color: $tag-green;
+  }
+
+  &.active {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+  }
+}
+
+.stepLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  white-space: nowrap;
+}
+
+.stepLine {
+  flex: 1;
+  height: 2px;
+  background: $border-color;
+  margin: 0 $space-xs;
+  margin-bottom: 18px;
+}
+
+.siteNameWrap {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.input {
+  padding: $space-sm $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  background: $bg-card;
+  color: $text-primary;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+}
+
+.previewCard {
+  background: $color-dark;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  align-items: center;
+}
+
+.previewDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $text-secondary;
+  display: inline-block;
+
+  & + & {
+    margin-left: $space-xs;
+  }
+}
+
+.previewBar {
+  width: 80%;
+  height: 6px;
+  background: $text-secondary;
+  border-radius: 3px;
+  opacity: 0.4;
+}
+
+.previewHero {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $color-white;
+}
+
+.tagline {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-primary;
+  margin: 0;
+  text-align: center;
+}
+
+.btnPrimary {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

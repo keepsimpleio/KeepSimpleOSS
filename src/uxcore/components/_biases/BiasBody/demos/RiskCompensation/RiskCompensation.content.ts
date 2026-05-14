@@ -1,0 +1,73 @@
+const content = {
+  en: {
+    header: 'Admin Panel',
+    backupTitle: 'Auto-backup is ON',
+    before: {
+      backupSub: 'Your data is fully protected.',
+      actionLabel: 'Bulk Actions',
+      recordCount: '1,204 records selected',
+      deleteBtn: 'Delete Selected Records',
+    },
+    after: {
+      backupSub: 'Last backup: 4 minutes ago',
+      warnHeader: 'Review Before Proceeding',
+      warnStart: 'You are about to delete ',
+      warnRecords: '1,204 records',
+      restoreStart: 'Restoring from backup takes ',
+      restoreBold: 'up to 4 hours',
+      unrecoverableStart: 'Deleted records are ',
+      unrecoverableBold: 'unrecoverable',
+      unrecoverableEnd: ' after 30 days',
+      cancel: 'Cancel',
+      confirm: 'Yes, Delete 1,204 Records',
+    },
+  },
+  ru: {
+    header: 'Админ-панель',
+    backupTitle: 'Автобэкап включён',
+    before: {
+      backupSub: 'Ваши данные полностью защищены.',
+      actionLabel: 'Массовые действия',
+      recordCount: 'Выбрано 1 204 записи',
+      deleteBtn: 'Удалить выбранные записи',
+    },
+    after: {
+      backupSub: 'Последний бэкап: 4 минуты назад',
+      warnHeader: 'Проверьте перед продолжением',
+      warnStart: 'Вы собираетесь удалить ',
+      warnRecords: '1 204 записи',
+      restoreStart: 'Восстановление из бэкапа занимает ',
+      restoreBold: 'до 4 часов',
+      unrecoverableStart: 'Удалённые записи ',
+      unrecoverableBold: 'нельзя восстановить',
+      unrecoverableEnd: ' через 30 дней',
+      cancel: 'Отмена',
+      confirm: 'Да, удалить 1 204 записи',
+    },
+  },
+  hy: {
+    header: 'Ադմին վահանակ',
+    backupTitle: 'Ավտոպահեստավորումը միացված է',
+    before: {
+      backupSub: 'Ձեր տվյալները լիովին պաշտպանված են։',
+      actionLabel: 'Զանգվածային գործողություններ',
+      recordCount: 'Ընտրված է 1,204 գրառում',
+      deleteBtn: 'Ջնջել ընտրված գրառումները',
+    },
+    after: {
+      backupSub: 'Վերջին պահեստավորումը՝ 4 րոպե առաջ',
+      warnHeader: 'Ստուգեք շարունակելուց առաջ',
+      warnStart: 'Դուք պատրաստվում եք ջնջել ',
+      warnRecords: '1,204 գրառում',
+      restoreStart: 'Պահեստից վերականգնումը տևում է ',
+      restoreBold: 'մինչև 4 ժամ',
+      unrecoverableStart: 'Ջնջված գրառումները ',
+      unrecoverableBold: 'անվերականգնելի են',
+      unrecoverableEnd: ' 30 օր հետո',
+      cancel: 'Չեղարկել',
+      confirm: 'Այո, ջնջել 1,204 գրառում',
+    },
+  },
+};
+
+export default content;

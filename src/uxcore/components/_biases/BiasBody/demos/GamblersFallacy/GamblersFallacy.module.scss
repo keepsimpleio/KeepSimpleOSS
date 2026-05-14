@@ -1,0 +1,140 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.box {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl $space-2xl;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-xs;
+  width: 100%;
+}
+
+.boxIcon {
+  font-size: 40px;
+  color: $text-secondary;
+}
+
+.boxIconGlow {
+  font-size: 40px;
+  filter: drop-shadow(0 0 8px gold);
+}
+
+.boxTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.boxSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.btnPlain {
+  width: 100%;
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.streakBadge {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  border-radius: $border-radius;
+  padding: $space-xs $space-md;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+}
+
+.progressSection {
+  width: 100%;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.progressLabel {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  text-align: center;
+}
+
+.progressTrack {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  justify-content: center;
+}
+
+.pip {
+  width: 22px;
+  height: 22px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+}
+
+.pipEmpty {
+  width: 22px;
+  height: 22px;
+  border-radius: $border-radius-round;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+}
+
+.pipGold {
+  width: 26px;
+  height: 26px;
+  border-radius: $border-radius-round;
+  background: gold;
+  border: 2px solid #b8860b;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+.progressHint {
+  font-size: $font-size-sm;
+  color: $tag-orange;
+  text-align: center;
+  font-weight: 600;
+}
+
+.btnGlow {
+  width: 100%;
+  padding: $space-sm $space-lg;
+  background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+  color: $color-dark;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: $font-family;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}

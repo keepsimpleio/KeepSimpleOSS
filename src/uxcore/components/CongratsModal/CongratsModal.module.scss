@@ -1,0 +1,101 @@
+.wrapper {
+  width: 820px !important;
+
+  .canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 72px;
+    width: 100%;
+    height: 1px;
+    background: #cbcbcb;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #000000d9;
+
+    .mainInfo {
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 28px;
+      margin: 4px 0 32px 0;
+    }
+
+    .description {
+      margin: 0 0 24px 0;
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .downloadOption {
+      border: 1px solid #0000001a;
+      background: #fafafa;
+      padding: 9px 16px;
+      display: flex;
+      align-items: center;
+      gap: 37px;
+      margin-bottom: 27px;
+
+      .downloadTxt {
+        color: #000000a6;
+      }
+    }
+  }
+
+  .btnWrapper {
+    padding-top: 16px;
+    text-align: end;
+
+    .firstBtn {
+      margin-right: 14px;
+    }
+  }
+}
+
+@media (max-width: 901px) {
+  .wrapper {
+    max-width: unset !important;
+
+    &::after {
+      content: unset;
+    }
+
+    .content {
+      .mobileTitle {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 24px 0 0 0;
+      }
+
+      .mainInfo {
+        font-size: 14px;
+        line-height: 22px;
+        font-weight: 700;
+        margin: 11px 8px 16px 8px;
+      }
+
+      .description {
+        font-size: 14px;
+        line-height: 21px;
+      }
+
+      .downloadOption {
+        gap: 24px;
+
+        .downloadTxt {
+          font-size: 14px;
+          width: 50%;
+        }
+      }
+    }
+  }
+}

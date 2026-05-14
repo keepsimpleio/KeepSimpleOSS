@@ -1,0 +1,116 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.notification {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  gap: $space-md;
+  align-items: flex-start;
+  box-shadow: $shadow-card;
+}
+
+.notifIcon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.notifBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.notifTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.notifDesc {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  line-height: 1.4;
+}
+
+.expires {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.valueTag {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $tag-green;
+  background: #f0f9f0;
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-xs $space-sm;
+  display: inline-block;
+}
+
+.creditRow {
+  display: flex;
+  gap: $space-sm;
+}
+
+.creditItem {
+  flex: 1;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-sm;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.creditNum {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $color-primary;
+  display: block;
+}
+
+.creditLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  display: block;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+  font-weight: 500;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+    font-weight: 600;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}

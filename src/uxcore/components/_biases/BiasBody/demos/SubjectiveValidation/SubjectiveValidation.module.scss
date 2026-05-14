@@ -1,0 +1,124 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.input {
+  width: 100%;
+  padding: $space-sm $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-family: $font-family;
+  background: $bg-card;
+  color: $text-primary;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $text-secondary;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  cursor: pointer;
+  padding: $space-sm $space-md;
+  background: #eaf7ec;
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: $tag-green;
+}
+
+.checkboxLabel {
+  font-size: $font-size-sm;
+  color: #1a7a2e;
+  font-weight: 500;
+}
+
+.btn {
+  padding: $space-sm;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  margin-top: $space-xs;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.confirmation {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  background: #eaf7ec;
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-md $space-lg;
+}
+
+.confirmIcon {
+  font-size: $font-size-xl;
+  line-height: 1;
+}
+
+.confirmText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: $font-size-base;
+    color: #1a7a2e;
+  }
+
+  span {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}

@@ -1,0 +1,151 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+  text-align: center;
+}
+
+.products {
+  display: flex;
+  gap: 0;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.product {
+  flex: 1;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.productMuted {
+  background: $bg-alt;
+  opacity: 0.7;
+}
+
+.divider {
+  width: 1px;
+  background: $border-color;
+  flex-shrink: 0;
+}
+
+.productName {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.stars {
+  color: #f59e0b;
+  font-size: $font-size-sm;
+}
+
+.starsMuted {
+  color: $text-secondary;
+}
+
+.ratingNum {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.ratingMuted {
+  color: $text-secondary;
+}
+
+.reviewCount {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.confidenceBadge {
+  font-size: $font-size-sm;
+  color: $tag-orange;
+  font-weight: 600;
+  padding: 2px $space-sm;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 3px;
+  align-self: flex-start;
+}
+
+.verifiedBadge {
+  font-size: $font-size-sm;
+  color: $tag-green;
+  font-weight: 600;
+  padding: 2px $space-sm;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 3px;
+  align-self: flex-start;
+}
+
+.confidenceBar {
+  height: 6px;
+  background: $bg-alt;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidenceFill {
+  height: 100%;
+  width: 92%;
+  background: $tag-green;
+  border-radius: 3px;
+}
+
+.price {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $color-primary;
+  margin-top: auto;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnMuted {
+  color: $text-secondary;
+  background: $bg-alt;
+}
+
+.btnPrimary {
+  background: $color-primary;
+  color: $color-white;
+  border-color: $color-primary;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

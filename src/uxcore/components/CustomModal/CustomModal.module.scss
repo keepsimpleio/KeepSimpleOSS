@@ -1,0 +1,94 @@
+.ModalOverlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 106;
+
+  & .Modal {
+    position: relative;
+    background: #fff;
+    width: 560px;
+    border: 1px solid #cbcbcb;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+
+    & .ModalHeader {
+      display: flex;
+      padding: 15px 20px 10px;
+      border-bottom: 1px solid #cbcbcb;
+
+      & .ModalHeaderBody {
+        width: 100%;
+        color: #28587b;
+        font-size: 16px;
+      }
+
+      & .ModalHeaderCloseButtonContainer {
+        width: 75px;
+
+        & .ModalHeaderCloseButton {
+          text-align: right;
+          margin-top: 2px;
+
+          & img {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    & .ModalBody {
+      padding: 14px 20px 20px;
+      max-height: calc(100vh - 315px);
+      overflow: auto;
+      box-sizing: border-box;
+
+      /* width */
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.5);
+        border-radius: 5px;
+      }
+    }
+  }
+  .hyLang {
+    * {
+      font-family: 'NotoSansArmenian-Regular', sans-serif;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .ModalOverlay {
+    z-index: 10;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    & .Modal {
+      width: 100%;
+
+      & .ModalBody {
+        height: calc(100vh - 120px) !important;
+        height: calc((var(--vh, 1vh) * 100) - 120px) !important;
+        max-height: none;
+      }
+    }
+  }
+}

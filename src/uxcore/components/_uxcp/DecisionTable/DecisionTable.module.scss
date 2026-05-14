@@ -1,0 +1,222 @@
+$font-color: rgba(0, 0, 0, 0.65);
+.mainTitle {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 29px;
+  text-align: center;
+  color: $font-color;
+  margin-bottom: 0;
+  padding-top: 24px;
+}
+
+.mobileView {
+  width: auto;
+  height: 90px;
+  border: 1px solid #d9d9d9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wrapper {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 856px;
+  margin-top: 25px;
+  position: relative;
+
+  .disabledTable {
+    position: absolute;
+    border-radius: 4px;
+    background: rgba(227, 227, 227, 0.5);
+    backdrop-filter: blur(1.5px);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+
+    td {
+      cursor: pointer;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #f1f1f1;
+      width: 200px;
+      height: 62px;
+    }
+
+    th {
+      background-color: #f1f1f1;
+      font-weight: bold;
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #e2e2e2;
+    }
+
+    .tableText,
+    .tableTextEmpty {
+      height: 44px;
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 400;
+      margin: 0;
+      display: flex;
+      max-width: 200px;
+      width: 100%;
+      padding: 9px 16px 0 9px;
+      overflow: hidden;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      display: -webkit-box;
+    }
+
+    .tableText {
+      background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0) 60.23%,
+          #ffffff 92.05%
+        ),
+        rgba(0, 0, 0, 0.85);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tableTextEmpty {
+      color: #c4c4c4;
+      cursor: default;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 16px;
+  }
+
+  .btnWrapper {
+    border-top: 1px solid #f1f1f1;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+
+    .saveBtn {
+      background: #fafafa;
+      border: 1px solid #9e9e9e;
+      color: #9e9e9e;
+      opacity: 0.5;
+      animation: fadeIn 1s;
+      -webkit-animation: fadeIn 0.5s;
+      width: 147px;
+      -moz-animation: fadeIn 0.5s;
+      -o-animation: fadeIn 0.5s;
+      -ms-animation: fadeIn 0.5s;
+    }
+
+    .saveBtnHy {
+      width: auto;
+    }
+
+    .saveBtnIcon {
+      fill: #9e9e9e;
+    }
+
+    .rightSideBtns {
+      display: flex;
+      gap: 4px;
+    }
+  }
+
+  .errorMessage {
+    position: absolute;
+    right: 40px;
+    border-radius: 4px;
+    background-color: #fff;
+    border: 1px solid #fb1717;
+    padding: 8px;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.decision {
+  display: flex;
+  gap: 16px;
+}
+
+.decisionTableWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toolTipWrapper {
+  padding-bottom: 15px;
+}
+
+.textArea {
+  height: 119px !important;
+  margin-bottom: 18px;
+}
+
+.modalBtns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.biasName {
+  display: block;
+  padding-top: 16px;
+}
+
+.tableWrapper {
+  width: 800px;
+}
+
+.exportedStyle {
+  .tableText {
+    -webkit-text-fill-color: #252626 !important;
+    background: unset !important;
+    -webkit-background-clip: unset !important;
+  }
+}
+
+@media (max-width: 1440px) {
+  .wrapper {
+    .table {
+      .tableText,
+      .tableTextEmpty {
+        font-size: 14px;
+      }
+    }
+  }
+}

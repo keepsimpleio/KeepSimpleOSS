@@ -1,0 +1,345 @@
+@import '@styles/_animations.scss';
+
+$background-color: #c7a674;
+
+.badgeContainer,
+.textContainer,
+.wrapper {
+  display: flex;
+}
+
+.badgeContainer {
+  position: relative;
+  z-index: 99999;
+  border-radius: 15px;
+  padding-right: 20px;
+  border: none;
+  background-color: transparent;
+  align-items: center;
+  justify-content: right;
+  height: 140px;
+  width: 420px;
+  padding-bottom: 30px;
+
+  &:before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 0px;
+    right: 6px;
+    z-index: 10;
+    background: url(/assets/star-glow.png) repeat-x center center;
+    background-size: 40px;
+    @extend .animate-rotateFadeIn;
+  }
+
+  .star {
+    position: absolute;
+    @extend .animate-fadeInAndOut;
+    z-index: 10;
+    bottom: 0;
+    top: unset;
+    left: 12%;
+  }
+
+  .wrapper {
+    align-items: center;
+    overflow: hidden;
+    gap: 18px;
+    padding-left: 10px;
+    background-color: rgb(177, 136, 56);
+    width: 320px;
+    height: 100px;
+    border-radius: 10px;
+    border-top: 5px solid rgb(216, 188, 131);
+    border-right: 5px solid rgb(168, 130, 53);
+    border-bottom: 5px solid rgb(177, 134, 53);
+    position: relative;
+    z-index: 0;
+    justify-content: inherit;
+
+    .holder {
+      position: absolute;
+      top: 0px;
+
+      .left,
+      .right,
+      .top,
+      .bottom {
+        background: transparent;
+        box-shadow:
+          0px 0px 0 rgb(252, 249, 218),
+          0px 0px 4px rgb(252, 249, 218),
+          0px 0px 8px rgb(252, 249, 218),
+          0px 0px 16px rgb(252, 249, 218);
+        border-radius: 4px;
+        position: absolute;
+        z-index: 10;
+      }
+
+      .top {
+        height: 4px;
+        -webkit-animation: topLine 4s ease infinite;
+      }
+
+      .right {
+        width: 4px;
+        -webkit-animation: rightLine 3s ease infinite;
+      }
+
+      .bottom {
+        height: 4px;
+        -webkit-animation: bottomLine 4s ease infinite;
+      }
+    }
+
+    .textContainer {
+      z-index: 3;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(
+        -23deg,
+        #9e7931,
+        #cb9d4a 39%,
+        #cb9d4a 43%,
+        #d1ad66 51%,
+        #d1ad66 51%
+      );
+      width: 100%;
+      height: 100%;
+
+      .title {
+        opacity: 90%;
+        font-size: 15px;
+        text-transform: uppercase;
+        background-color: rgb(151, 100, 0);
+        border: 2px solid rgb(166, 128, 53);
+        display: block;
+        width: 100%;
+        text-align: center;
+        color: #fff;
+        padding: 5px;
+      }
+
+      .badgeName {
+        color: #fff;
+        font-size: 24px;
+        font-family: 'Oswald', serif;
+        width: 72%;
+        height: 100%;
+        opacity: 75%;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+
+  .badgeImg {
+    position: absolute;
+    z-index: 1;
+    left: -55px;
+  }
+
+  .starOnImg {
+    position: absolute;
+    animation: fadeInAndOut 2s linear infinite;
+    z-index: 10;
+    top: -3px;
+    left: -2px;
+  }
+
+  &:hover {
+    .holder {
+      .left,
+      .right,
+      .top,
+      .bottom {
+        box-shadow:
+          0px 0px 0 #fcf9dafd,
+          0px 0px 8px #fcf9dafd,
+          0px 0px 12px #fcf9dafd,
+          0px 0px 20px #fcf9dafd;
+      }
+    }
+  }
+}
+// TODO - Mary - test it and delete it
+.leftTop {
+  @extend .animate-slideInFromLeft;
+  top: 50px;
+  left: 50px;
+}
+
+.rightTop {
+  @extend .animate-slideInFromRight;
+  right: 20px;
+  top: 50px;
+}
+
+.closing {
+  animation: slideOutToRight 0.5s forwards;
+}
+
+.rightBottom {
+  @extend .animate-slideInFromRight;
+  bottom: 50px;
+  right: 20px;
+}
+
+.leftBottom {
+  @extend .animate-slideInFromLeft;
+  bottom: 50px;
+  left: 50px;
+}
+
+.centerTop {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  @extend .animate-slideInFromTop;
+}
+
+.centerBottom {
+  @extend .animate-slideInFromBottom;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes topLine {
+  0% {
+    width: 0;
+    top: -6px;
+    left: -320px;
+  }
+
+  20% {
+    width: 0;
+    top: -7px;
+    left: -320px;
+  }
+
+  40% {
+    width: 370px;
+    top: -7px;
+    left: -320px;
+  }
+
+  60% {
+    width: 0;
+    top: -7px;
+    left: 380px;
+  }
+}
+
+@keyframes bottomLine {
+  0% {
+    width: 0;
+    top: 100px;
+    right: 0px;
+  }
+
+  60% {
+    width: 0;
+    top: 100px;
+    right: 0px;
+  }
+
+  80% {
+    width: 330px;
+    top: 100px;
+    right: 0;
+  }
+
+  100% {
+    width: 0;
+    top: 100px;
+    right: 300px;
+  }
+}
+
+@keyframes rightLine {
+  0% {
+    height: 0;
+    top: 0;
+    left: 3px;
+  }
+
+  40% {
+    height: 0;
+    top: 0;
+    left: 3px;
+  }
+
+  60% {
+    height: 105px;
+    top: 0;
+    left: 3px;
+  }
+
+  80% {
+    height: 0;
+    top: 105px;
+    left: 3px;
+  }
+}
+
+@keyframes slideOutToRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 901px) {
+  .badgeContainer {
+    padding-right: 10px;
+
+    .wrapper {
+      width: 270px;
+      height: 75px;
+
+      .textContainer {
+        .title {
+          font-size: 12px;
+        }
+
+        .badgeName {
+          font-size: 20px;
+        }
+      }
+    }
+
+    .badgeImg {
+      width: 120px;
+      height: 120px;
+      left: 60px;
+    }
+  }
+  .rightTop {
+    right: 0;
+    top: 0;
+  }
+}
+
+@media (max-width: 370px) {
+  .badgeContainer {
+    padding-right: 5px;
+
+    .wrapper {
+      width: 250px;
+    }
+
+    .badgeImg {
+      left: 85px;
+    }
+  }
+}

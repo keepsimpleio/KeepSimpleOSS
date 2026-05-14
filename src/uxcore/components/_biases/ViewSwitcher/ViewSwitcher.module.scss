@@ -1,0 +1,197 @@
+$default-border-color: #c4c4c4;
+$active-border-color: #000000d9;
+$default-color: #515151;
+$active-color: #fff;
+$active-bg-color: #ffffff;
+
+.ViewSwitcher {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .Label {
+    color: #333333;
+    font-size: 14px;
+    margin: 0;
+    margin-bottom: 8px;
+  }
+
+  .ViewSwitcherButtons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ViewSwitcherButton {
+      width: 79px;
+      height: 32px;
+      background: #ffffff;
+      text-transform: uppercase;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid $default-border-color;
+      cursor: pointer;
+      gap: 6px;
+
+      .ViewSwitcherText {
+        width: 28px;
+        height: 18px;
+        padding-top: 1px;
+        color: #000000d9;
+      }
+
+      > svg {
+        fill: $default-color;
+      }
+
+      &:nth-child(1) {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-right-width: 0 !important;
+        background-color: #f4f4f4;
+      }
+
+      &:nth-child(2) {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-left: 1px solid #000000d9;
+        background-color: #f4f4f4;
+      }
+    }
+  }
+
+  &.CoreView {
+    .ViewSwitcherButtons {
+      .ViewSwitcherButton {
+        &:nth-child(2) {
+          color: $active-color;
+          background-color: $active-bg-color;
+          border: 1px solid $active-border-color;
+
+          svg {
+            fill: $active-border-color;
+          }
+        }
+      }
+    }
+  }
+}
+
+.FolderView {
+  .ViewSwitcherButtons {
+    .ViewSwitcherButton {
+      &:nth-child(1) {
+        color: $active-color;
+        background-color: $active-bg-color;
+        border: 1px solid $active-border-color;
+
+        svg {
+          fill: $active-border-color;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1360px) {
+  .ViewSwitcher {
+    margin-bottom: 10px;
+
+    .Label {
+      margin-bottom: 5px;
+    }
+
+    .ViewSwitcherButtons {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+
+      .ViewSwitcherButton {
+        border-radius: 5px;
+        width: 63px;
+        height: 28px;
+        border: 1px solid $active-border-color;
+
+        &:nth-child(1) {
+          border-right-width: 1px !important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1010px) {
+  .ViewSwitcher {
+    margin-bottom: unset;
+
+    .ViewSwitcherButtons {
+      flex-direction: unset;
+      gap: unset;
+
+      .ViewSwitcherButton {
+        width: 100%;
+        margin-bottom: 28px;
+        padding: 8px 0;
+        height: unset;
+        border: 1px solid $default-border-color;
+
+        &:nth-child(1) {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          border-right: 1px solid #000000d9;
+          border-right-width: 0 !important;
+          border-top-left-radius: 0;
+        }
+
+        &:nth-child(2) {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+          border-left: 1px solid #000000d9;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme: repaint switcher buttons. Inactive buttons sit on page bg,
+// active button mirrors header surface for clear contrast. Restores the
+// right wall the legacy row-layout CSS strips off (`border-right-width: 0`
+// on nth-child(1)) — harmless on light because the fill mask hides it,
+// but visible on dark.
+:global(body.darkTheme) .ViewSwitcher {
+  .Label {
+    color: #9aa0aa;
+  }
+
+  .ViewSwitcherButtons .ViewSwitcherButton {
+    background-color: #151a26;
+    border: 1px solid #303338 !important;
+    border-radius: 5px !important;
+
+    .ViewSwitcherText {
+      color: #dadada;
+    }
+
+    > svg {
+      fill: #9aa0aa;
+    }
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      background-color: #151a26;
+      border: 1px solid #303338 !important;
+      border-radius: 5px !important;
+    }
+  }
+
+  &.CoreView .ViewSwitcherButtons .ViewSwitcherButton:nth-child(2),
+  &.FolderView .ViewSwitcherButtons .ViewSwitcherButton:nth-child(1) {
+    background-color: #0e1219;
+    border: 1px solid #dadada !important;
+
+    svg {
+      fill: #dadada;
+    }
+  }
+}

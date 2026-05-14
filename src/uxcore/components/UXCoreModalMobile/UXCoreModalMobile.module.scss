@@ -1,0 +1,280 @@
+.ModalOverlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  .slick-slide .slick-cloned {
+    display: none !important;
+  }
+
+  & .Modal {
+    color: #000;
+    position: relative;
+    background: #fff;
+    width: 650px;
+    border: 1px solid #cbcbcb;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+
+    & .ModalBody {
+      font-size: 16px;
+      padding: 15px 20px;
+      max-height: calc(100vh - 315px);
+      overflow: auto;
+      overflow-y: overlay;
+
+      /* width */
+      &::-webkit-scrollbar {
+        width: 8px;
+        border-left: 1px solid #fff;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.5);
+        border-radius: 5px;
+        border-left: 1px solid #fff;
+      }
+
+      & p {
+        margin-top: 0;
+      }
+
+      & .ModalBodyTitle {
+        margin-top: 20px;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 0;
+
+        &:first-of-type {
+          margin-top: 0;
+        }
+
+        .metaTitle {
+          display: initial;
+          font-weight: 300;
+        }
+
+        & span,
+        .metaTitle {
+          color: #ffffff;
+          font-size: 14px;
+          background-color: #2a2a2a;
+          font-weight: 300;
+          padding: 0 8px;
+          text-transform: uppercase;
+          letter-spacing: -0.01em;
+          line-height: 18.2px;
+          font-family:
+            IBM Plex Mono,
+            sans-serif;
+          text-align: center;
+        }
+
+        &.mentionedIn {
+          padding: 15px 0;
+          background-color: #fafafa;
+          margin-bottom: unset;
+          opacity: 50%;
+
+          span {
+            background-color: unset;
+            color: #000000a6;
+            font-family: Lato, sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 16.8px;
+            text-transform: unset;
+          }
+        }
+
+        &.QuestionHovered {
+          opacity: 100%;
+        }
+      }
+
+      .ModalBodyContent {
+        .switcher {
+          display: flex;
+          margin-bottom: 10px;
+
+          .switcherItem {
+            width: 50%;
+            text-align: center;
+            height: 100%;
+            border: 1px solid #c4c4c4;
+            padding: 8px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+          }
+
+          .activeProduct,
+          .activeHr {
+            border: 1px solid #5b88bd;
+            color: #5b88bd;
+
+            svg {
+              fill: #5b88bd;
+            }
+          }
+
+          .activeProduct {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+          }
+
+          .activeHr {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif !important;
+  }
+}
+@media (max-width: 800px) {
+  .ModalOverlay {
+    z-index: 10;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    & .Modal {
+      width: 100%;
+
+      .ModalButtons {
+        .disableArrows {
+          -webkit-animation: fadeOut 1s;
+          animation: fadeOut 1s;
+          animation-fill-mode: forwards;
+        }
+
+        .arrowRight {
+          position: absolute;
+          cursor: pointer;
+          border-width: 0 3px 3px 0;
+          display: inline-block;
+          padding: 10px;
+          top: 50%;
+          z-index: 50;
+          transform: rotate(180deg);
+          -webkit-transform: rotate(180deg);
+          left: 89%;
+
+          > svg {
+            fill: #28587b;
+            opacity: 35%;
+          }
+        }
+
+        .arrowLeft {
+          cursor: pointer;
+          border-width: 0 3px 3px 0;
+          display: inline-block;
+          padding: 10px;
+          z-index: 50;
+          position: absolute;
+          top: 50%;
+          left: 21px;
+
+          > svg {
+            fill: #28587b;
+            opacity: 35%;
+          }
+        }
+      }
+
+      & .ModalBody {
+        padding: 15px 20px 0 20px;
+        height: calc(100vh - 230px) !important;
+        max-height: none;
+      }
+    }
+  }
+}
+
+.a {
+  color: #252626 !important;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.span {
+  font-size: 18px;
+  margin-left: 1.5625rem;
+  display: block;
+  border-left: 0.0625rem solid #808080;
+  padding-left: 1.5625rem;
+  margin-bottom: 0.625rem;
+}
+
+@media (min-width: 851px) and (max-width: 1200px) {
+  .p {
+    line-height: 1.5rem;
+  }
+}
+
+@media (max-width: 851px) {
+  .p {
+    line-height: 1.5rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .ModalOverlay {
+    .Modal {
+      .ModalButtons {
+        .arrowRight {
+          left: 85%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .ModalOverlay {
+    .Modal {
+      .ModalButtons {
+        .arrowRight {
+          left: 80%;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

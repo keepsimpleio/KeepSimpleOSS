@@ -1,0 +1,144 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-md;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.count {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  background: $bg-alt;
+  padding: 2px $space-sm;
+  border-radius: $border-radius;
+}
+
+.pageLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-primary;
+  background: $bg-alt;
+  padding: 2px $space-sm;
+  border-radius: $border-radius;
+}
+
+.progressBar {
+  height: 4px;
+  background: $bg-alt;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: $space-md;
+}
+
+.progressFill {
+  height: 100%;
+  background: $color-primary;
+  border-radius: 2px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+}
+
+.itemDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  flex-shrink: 0;
+}
+
+.itemName {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  font-family: monospace;
+}
+
+.itemMeta {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.moreHint {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm;
+  font-style: italic;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $space-md;
+  padding-top: $space-md;
+  border-top: 1px solid $border-color;
+}
+
+.pageBtn {
+  padding: $space-xs $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &Active {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}
+
+.pageInfo {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}

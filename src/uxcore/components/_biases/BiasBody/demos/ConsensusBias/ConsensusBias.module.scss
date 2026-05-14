@@ -1,0 +1,119 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.pollHead {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.pollSubhead {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.poll {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 110px 1fr 36px;
+  gap: $space-sm;
+  align-items: center;
+  font-size: 12px;
+}
+
+.barLabel {
+  color: $text-primary;
+  font-weight: 600;
+}
+
+.barTrack {
+  height: 14px;
+  background: $bg-alt;
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 7px;
+  transition: width 0.3s ease;
+}
+
+.barValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: $text-primary;
+  text-align: right;
+}
+
+.decision {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  background: lighten(#42c256, 47%);
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-sm;
+}
+
+.column {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.colLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: $text-secondary;
+  margin-bottom: 2px;
+}
+
+.gap {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  background: lighten(#cd7232, 38%);
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.gapIcon,
+.checkIcon {
+  font-size: $font-size-md;
+  flex-shrink: 0;
+}

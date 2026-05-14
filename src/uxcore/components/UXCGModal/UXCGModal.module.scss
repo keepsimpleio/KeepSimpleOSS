@@ -1,0 +1,433 @@
+.ModalOverlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0 !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  & .Modal {
+    position: relative;
+    background: #fff;
+    width: 650px;
+    border: 1px solid #cbcbcb;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+
+    & .ModalHeader {
+      padding: 15px 20px 10px;
+      border-bottom: 1px solid #cbcbcb;
+
+      .ModalHeaderTop {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .Number {
+          padding-right: 10px;
+          padding-bottom: 4px;
+        }
+
+        .ModalHeaderTags {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          gap: 2px;
+
+          & div {
+            margin-left: 5px;
+            margin-bottom: 5px;
+          }
+        }
+      }
+
+      .ModalHeaderTitle {
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
+        margin: 0;
+      }
+
+      .ModalHeaderLinks {
+        margin-top: 6px;
+
+        .CopyText {
+          font-size: 14px;
+          color: #5b88bd;
+          position: relative;
+          display: inline-block;
+          text-decoration: none;
+          margin-right: 10px;
+          cursor: pointer;
+
+          .Tooltip {
+            z-index: 1;
+            transition: 0.3s;
+            position: absolute;
+            background-color: #fff;
+            color: #000;
+            border-radius: 2px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+
+            top: -2px;
+            right: calc(100% + 8px);
+            padding: 2px 8px;
+            opacity: 0;
+            visibility: hidden;
+
+            &:after {
+              top: calc(50% - 3px);
+              left: calc(100% - 3px);
+            }
+
+            &.Visible {
+              opacity: 1;
+              visibility: visible;
+            }
+          }
+        }
+
+        & > a,
+        & > span {
+          font-size: 14px;
+          color: #5b88bd;
+          position: relative;
+          display: inline-block;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        & .DownloadLink {
+          display: inline-flex;
+          align-items: center;
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          & > img {
+            margin-right: 6px;
+          }
+        }
+      }
+
+      & .ModalHeaderCloseButtonContainer {
+        width: 75px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        gap: 24px;
+
+        & .ModalHeaderCloseButton {
+          text-align: right;
+          margin-top: 2px;
+
+          & img {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    & .ModalBody {
+      font-size: 16xp;
+      padding: 15px 20px 40px;
+      height: calc(98vh - 300px) !important;
+      overflow: auto;
+      overflow-y: overlay;
+      background-color: #f1f1f1;
+
+      /* width */
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.5);
+        border-radius: 5px;
+      }
+
+      .PossibleAnswers,
+      .RelatedQuestionTitle {
+        margin: 0;
+        font-size: 16px;
+        display: inline-block;
+        padding-bottom: 5px;
+        font-weight: 300;
+      }
+
+      .RelatedQuestionTitle {
+        padding-bottom: 8px;
+        padding-top: 8px;
+      }
+
+      & p {
+        margin-top: 0;
+      }
+
+      .ModalBodyContent {
+        line-height: 21px;
+
+        & .AnswerItem {
+          display: flex;
+          align-items: center;
+          position: relative;
+          z-index: 1;
+          color: #000;
+          border: 1px solid #d9d9d9;
+          background: #fff;
+          margin-bottom: 8px;
+          padding: 5px;
+
+          & > div:nth-child(1) {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+            cursor: pointer;
+          }
+
+          & .AnswerLink {
+            color: #28587b;
+            white-space: nowrap;
+            position: relative;
+            text-decoration: none;
+            z-index: 1;
+
+            &:hover {
+              text-decoration: underline;
+            }
+
+            &:after {
+              position: absolute;
+              z-index: -1;
+              top: 0;
+              left: -1px;
+              width: calc(100% + 2px);
+              height: 100%;
+              content: '';
+              background: #f1f1f1;
+              border-radius: 4px;
+              transition: 1s;
+            }
+          }
+
+          & + .AnswerItem {
+            margin-top: 1px;
+          }
+
+          &::after {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: -6px;
+            width: calc(100% + 12px);
+            height: 100%;
+            content: '';
+            background: transparent;
+            border: 1px solid transparent;
+            box-sizing: border-box;
+            border-radius: 4px;
+            transition: 1s;
+          }
+
+          &.Higlighted {
+            &:after {
+              background: #fff0b9;
+              border-color: #f8dd7e;
+            }
+
+            & .AnswerLink::after {
+              background: transparent;
+            }
+          }
+        }
+
+        & .QuestionLink {
+          cursor: pointer;
+          color: #28587b;
+          font-size: 16px;
+          font-weight: 400;
+          text-decoration: none;
+          line-height: 150%;
+          display: flex;
+
+          .questionNumber {
+            display: inline-block;
+            width: 3ch;
+            text-align: right;
+          }
+
+          .title {
+            margin: 0 0 0 8px;
+            padding: 0;
+          }
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          & + .QuestionLink {
+            margin-top: 15px;
+          }
+        }
+      }
+    }
+
+    & .ModalButtons {
+      & .ModalButton {
+        width: 72px;
+        height: 72px;
+        position: absolute;
+        top: calc(50% - 36px);
+        cursor: pointer;
+        padding: 18px;
+        box-sizing: border-box;
+
+        &.Disabled {
+          opacity: 0.4;
+        }
+
+        & img {
+          height: 36px;
+        }
+
+        &:nth-of-type(1) {
+          left: -100px;
+        }
+
+        &:nth-of-type(2) {
+          right: -100px;
+        }
+      }
+    }
+  }
+}
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+@media (max-width: 1440px) {
+  .ModalOverlay {
+    & .Modal {
+      & .ModalHeader {
+        .ModalHeaderLinks {
+          .CopyText {
+            font-size: 14px;
+          }
+
+          & > a,
+          & > span {
+            font-size: 14px;
+          }
+        }
+      }
+
+      & .ModalBody {
+        font-size: 14px;
+
+        .PossibleAnswers,
+        .RelatedQuestionTitle {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme: UXCG modal — same palette as bias modal.
+:global(body.darkTheme) .ModalOverlay {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+
+  .Modal {
+    background: #1b1e26 !important;
+    border-color: #303338 !important;
+    color: #dadada !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  .ModalHeader {
+    border-bottom-color: #303338 !important;
+
+    .ModalHeaderTitle {
+      color: #dadada !important;
+    }
+
+    .ModalHeaderLinks {
+      .CopyText {
+        color: #7fb3d5 !important;
+
+        .Tooltip {
+          background-color: #1b1e26 !important;
+          color: #dadada !important;
+          border: 1px solid #303338 !important;
+        }
+      }
+
+      & > a,
+      & > span {
+        color: #7fb3d5 !important;
+      }
+    }
+
+    .ModalHeaderCloseButtonContainer img {
+      filter: invert(1) brightness(2) saturate(0);
+    }
+  }
+
+  .ModalBody {
+    background-color: #151a26 !important;
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(127, 179, 213, 0.5) !important;
+    }
+
+    .PossibleAnswers,
+    .RelatedQuestionTitle {
+      color: #dadada !important;
+    }
+
+    .ModalBodyContent {
+      .AnswerItem {
+        background: #1b1e26 !important;
+        border-color: #303338 !important;
+        color: #dadada !important;
+
+        .AnswerLink {
+          color: #7fb3d5 !important;
+
+          &:after {
+            background: #0e1219 !important;
+          }
+        }
+
+        &.Higlighted:after {
+          background: rgba(248, 221, 126, 0.18) !important;
+          border-color: #b58f1c !important;
+        }
+      }
+
+      .QuestionLink {
+        color: #7fb3d5 !important;
+      }
+    }
+  }
+}

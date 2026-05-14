@@ -1,0 +1,136 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+  text-align: center;
+}
+
+// Before — aggregate stats
+.aggregate {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.statValue {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.barWrap {
+  height: 6px;
+  background: $bg-alt;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: $color-primary;
+  border-radius: 3px;
+}
+
+.note {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-top: $space-md;
+  text-align: center;
+}
+
+// After — testimonial card
+.testimonialCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  box-shadow: $shadow-card;
+}
+
+.quoteIcon {
+  font-size: 40px;
+  color: $color-primary;
+  line-height: 1;
+  margin-bottom: $space-xs;
+}
+
+.quote {
+  font-size: $font-size-base;
+  color: $text-primary;
+  line-height: 1.6;
+  margin: 0 0 $space-lg;
+  font-style: italic;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.personInfo {
+  flex: 1;
+}
+
+.personName {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.personRole {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.logo {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-secondary;
+  border: 1px solid $border-color;
+  padding: 2px $space-sm;
+  border-radius: $border-radius;
+
+  span {
+    color: $color-primary;
+  }
+}

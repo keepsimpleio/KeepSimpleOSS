@@ -1,0 +1,161 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.email {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.emailMeta {
+  background: $bg-alt;
+  border-bottom: 1px solid $border-color;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.from {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.subject {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.emailBody {
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.greeting {
+  font-size: $font-size-base;
+  color: $text-primary;
+  margin: 0;
+}
+
+.emailBody p {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.priceBox {
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  text-align: center;
+}
+
+.price {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.priceSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.resolvedBanner {
+  background: #eafaf1;
+  border: 1px solid #a9dfbf;
+  border-radius: $border-radius;
+  padding: $space-md;
+  font-size: $font-size-sm;
+  color: #1e8449;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.resolvedDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+  flex-shrink: 0;
+}
+
+.byTheWay {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+  padding-top: $space-xs;
+  border-top: 1px solid $border-color;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-md;
+  border: none;
+  border-radius: $border-radius;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.btnSoft {
+  background: $bg-alt;
+  color: $color-primary;
+  border: 1px solid $border-color;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+.footer {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  margin: 0;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+}
+
+.labelGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}

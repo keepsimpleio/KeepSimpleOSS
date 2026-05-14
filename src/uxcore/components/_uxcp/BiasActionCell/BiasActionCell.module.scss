@@ -1,0 +1,92 @@
+.BiasActionCell {
+  padding: 0 6px 0 10px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  height: 32px;
+  border-bottom: 1px solid #d9d9d9;
+  font-weight: 700;
+  background-color: #daeef5;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: 0.3s;
+
+  & .Title {
+    width: 100%;
+    cursor: help;
+
+    & .Number {
+      color: #28587b;
+      margin-right: 4px;
+      display: inline-block;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .TooltipHy {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 250px;
+    max-width: 100%;
+    margin-bottom: -4px;
+  }
+
+  & .Actions {
+    height: 32px;
+    position: relative;
+
+    & .AddButton {
+      transition: 0.3s;
+      position: absolute;
+      right: 0;
+      top: 3px;
+      font-size: 14px;
+      background: #ffffff;
+      border: 1px solid #cbcbcb;
+      padding: 0 10px;
+      border-radius: 2px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    & .RemoveButton {
+      transition: 0.3s;
+      position: absolute;
+      right: -100px;
+      top: 8px;
+      cursor: pointer;
+
+      & > img {
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+
+  &.Selected {
+    background-color: #f1f1f1;
+
+    & .Actions {
+      & .AddButton {
+        right: -100px;
+      }
+
+      & .RemoveButton {
+        right: 5px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .BiasActionCell {
+    font-size: 14px;
+  }
+}

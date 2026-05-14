@@ -1,0 +1,134 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-xs;
+}
+
+.comment {
+  display: flex;
+  gap: $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.userName {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.time {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-left: auto;
+}
+
+.text {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.replyBtn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: $text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+  padding: 0;
+
+  &:hover {
+    color: $text-primary;
+  }
+}
+
+.reactions {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  flex-wrap: wrap;
+  margin-top: $space-xs;
+}
+
+.reactionBtn {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: $space-xs $space-sm;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: 20px;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+  color: $text-primary;
+
+  span {
+    font-size: 11px;
+  }
+
+  &:hover {
+    background: $bg-hover;
+    border-color: $border-dark;
+  }
+}
+
+.replyLink {
+  background: none;
+  border: none;
+  color: $text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+  padding: 0;
+  margin-left: $space-xs;
+
+  &:hover {
+    color: $text-primary;
+  }
+}

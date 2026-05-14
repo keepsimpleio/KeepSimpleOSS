@@ -1,0 +1,62 @@
+.mainContainer {
+  text-align: center;
+  padding-bottom: 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .greenContainer {
+    background: linear-gradient(180deg, #123a22 0%, #1c5a3b 100%);
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    line-height: 28px;
+    width: 100%;
+
+    p {
+      padding: 0 25px;
+    }
+  }
+
+  .thankYouTxt {
+    line-height: 28px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .candies {
+    position: absolute;
+  }
+
+  .happyNewYearTxt {
+    border-radius: 4px;
+    background: #b71a1c;
+    box-shadow: 0px 4px 20px 0px rgba(28, 54, 89, 0.15);
+    padding: 10px 6px 10px 6px;
+    line-height: 22px;
+    color: #fff;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    cursor: pointer;
+  }
+}
+
+.disableModal {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .modalContainer {
+    > div {
+    }
+  }
+  .catSquad {
+    width: 320px;
+    height: 138px;
+  }
+}

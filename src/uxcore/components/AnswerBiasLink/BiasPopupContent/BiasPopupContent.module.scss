@@ -1,0 +1,120 @@
+$mobile-padding: 8px 12px;
+$mobile-border-radius: 4px;
+
+.BiasPopupContent {
+  max-width: 310px;
+  padding: 0 5px;
+  box-sizing: border-box;
+
+  & * {
+    font-size: 14px;
+  }
+
+  & .Description {
+    & p {
+      margin: 0;
+    }
+  }
+
+  & .LinkSection {
+    margin: 7px 0;
+    display: flex;
+    align-items: center;
+
+    & a {
+      color: #28587b;
+      margin-right: 6px;
+    }
+
+    & .Tip {
+      font-size: 12px;
+      color: #9e9e9e;
+    }
+  }
+
+  .LinkSectionHy {
+    & a {
+      width: 218px;
+    }
+  }
+
+  &.Mobile {
+    padding: 0 10px;
+    width: 100vw;
+    max-width: fit-content;
+
+    & .Title {
+      font-weight: 700;
+      width: 100%;
+      padding: $mobile-padding;
+      box-sizing: border-box;
+      text-align: center;
+      font-size: 16px;
+      margin: 10px 0;
+      background-color: #fff;
+      border-radius: $mobile-border-radius;
+    }
+
+    & .Description {
+      padding: $mobile-padding;
+      background-color: #fff;
+      border-radius: $mobile-border-radius;
+      margin-bottom: 10px;
+      height: fit-content !important;
+
+      & p {
+        font-size: 16px;
+      }
+    }
+
+    & .LinkSection {
+      flex-direction: row;
+      align-items: flex-start;
+      position: relative;
+
+      & a {
+        height: 48px;
+        padding: 8px 16px 20px;
+        background-color: #fff;
+        border-radius: $mobile-border-radius;
+        margin-right: 10px;
+        width: calc(100% - 10px - 48px);
+        box-sizing: border-box;
+      }
+
+      & .Tip {
+        position: absolute;
+        bottom: 4px;
+        left: 50px;
+      }
+
+      & .CloseButton {
+        width: 48px;
+        height: 48px;
+        background-color: #fff;
+        border-radius: $mobile-border-radius;
+        position: relative;
+
+        &::after,
+        &::before {
+          content: '';
+          height: 4px;
+          width: calc(100% - 8px);
+          position: absolute;
+          top: calc(50% - 2px);
+          right: 4px;
+          background-color: gray;
+          border-radius: 4px;
+        }
+
+        &::after {
+          transform: rotate(45deg);
+        }
+
+        &::before {
+          transform: rotate(-45deg);
+        }
+      }
+    }
+  }
+}

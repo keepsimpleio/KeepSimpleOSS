@@ -1,0 +1,127 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $tag-orange;
+
+  &Ok {
+    background: $tag-green;
+  }
+}
+
+.message {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.author {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-primary;
+  margin-bottom: 4px;
+}
+
+.text {
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.assumption {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  background: lighten(#cd7232, 38%);
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  font-style: italic;
+}
+
+.assumeIcon {
+  font-size: $font-size-md;
+}
+
+.template {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.tplTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.tplFields {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.tplField {
+  border-left: 3px solid $color-primary;
+  padding-left: $space-sm;
+}
+
+.tplLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-secondary;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.tplValue {
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.checkBack {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  background: lighten(#42c256, 47%);
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.checkIcon {
+  font-size: $font-size-md;
+}

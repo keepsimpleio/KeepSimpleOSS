@@ -1,0 +1,28 @@
+@import '@styles/_variables.scss';
+
+.modalBtns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.toolTipWrapper {
+  width: fit-content;
+  cursor: default;
+
+  .tooltip {
+    @extend .defaultTooltip;
+  }
+}
+
+.biasNameWrapper {
+  margin-top: 0;
+
+  .biasNameTxt {
+    color: #000000a6;
+  }
+
+  .biasName {
+    color: #000000a6;
+  }
+}

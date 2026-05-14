@@ -1,0 +1,160 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.header {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.table {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 60px 1fr 80px 70px;
+  align-items: center;
+  padding: $space-sm $space-md;
+  border-bottom: 1px solid $border-color;
+  gap: $space-sm;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.rowAlert {
+    background: #fff3f3;
+  }
+}
+
+.ticker {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.shares {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.price {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+  text-align: right;
+}
+
+.changeUp {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $tag-olive;
+  text-align: right;
+}
+
+.changeDown {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: #d32f2f;
+  text-align: right;
+}
+
+// After
+.warningBanner {
+  background: #fff3f3;
+  border: 1px solid #d32f2f;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.warnIcon {
+  font-size: $font-size-xl;
+  color: #d32f2f;
+  flex-shrink: 0;
+}
+
+.warnTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: #b71c1c;
+}
+
+.warnSub {
+  font-size: $font-size-sm;
+  color: #d32f2f;
+}
+
+.stopLossBox {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.slLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.slOptions {
+  display: flex;
+  gap: $space-sm;
+}
+
+.slBtn {
+  flex: 1;
+  padding: $space-xs $space-sm;
+  background: $bg-alt;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Active {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+  }
+}
+
+.autoBtn {
+  padding: $space-sm;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-xs;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

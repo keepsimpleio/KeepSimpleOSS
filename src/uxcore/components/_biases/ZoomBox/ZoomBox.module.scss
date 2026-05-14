@@ -1,0 +1,125 @@
+.ZoomBox {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  z-index: 11111;
+  flex-direction: column;
+  width: fit-content;
+
+  &Label {
+    position: relative;
+    font-size: 14px;
+    white-space: nowrap;
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    padding: 2px 6px;
+    height: 18px;
+    background-color: gray;
+
+    & > * {
+      margin: 0 2px;
+      color: #000;
+    }
+
+    &:nth-of-type(1),
+    &:nth-of-type(3) {
+      margin: 0 20px;
+      opacity: 0.5;
+    }
+
+    &:nth-of-type(2) {
+      margin: 0 10px;
+      border-top: 1px solid;
+      border-bottom: 1px solid;
+      border-right: 1px solid;
+      border-left: 0px solid;
+    }
+
+    &:nth-of-type(2)::after {
+      border: 1px solid;
+    }
+
+    &.Section {
+      &1 {
+        &:nth-of-type(2),
+        &:nth-of-type(2)::after {
+          border-color: #4c8cc1;
+        }
+      }
+
+      &2 {
+        &:nth-of-type(2),
+        &:nth-of-type(2)::after {
+          border-color: #75b3b3;
+        }
+      }
+
+      &3 {
+        &:nth-of-type(2),
+        &:nth-of-type(2)::after {
+          border-color: #80739b;
+        }
+      }
+
+      &4 {
+        &:nth-of-type(2),
+        &:nth-of-type(2)::after {
+          border-color: #8073ff;
+        }
+      }
+
+      &1::after,
+      &2::after,
+      &3::after,
+      &4::after {
+        position: absolute;
+        content: '';
+        left: -8px;
+        top: calc(50% - 8px);
+        width: 14px;
+        height: 14px;
+        transform: rotate(45deg);
+        z-index: -1;
+      }
+
+      &1,
+      &1::after {
+        background-color: #c7ebf8;
+      }
+
+      &2,
+      &2::after {
+        background-color: #abebd9;
+      }
+
+      &3,
+      &3::after {
+        background-color: #f3cfdd;
+      }
+
+      &4,
+      &4::after {
+        background-color: #d6d0ff;
+      }
+    }
+  }
+
+  &.Right {
+    text-align: right;
+    align-items: flex-end;
+
+    & .ZoomBoxLabel {
+      &::after {
+        left: auto;
+        right: -8px;
+      }
+
+      &:nth-of-type(2) {
+        border-right-width: 0px !important;
+        border-left-width: 1px !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,298 @@
+@import '@styles/_variables.scss';
+
+@keyframes viewFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.coreView {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding-top: 15px;
+  animation: viewFadeIn 0.28s ease-out both;
+
+  .hexagonWrapper {
+    position: relative;
+    width: clamp(220px, 25vw, 386px);
+    height: clamp(190px, 22vw, 335px);
+
+    .hexagon {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: clamp(220px, 25vw, 386px);
+      height: clamp(190px, 22vw, 335px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      aspect-ratio: 1 / cos(30deg);
+      clip-path: polygon(50% -50%, 100% 50%, 50% 150%, 0 50%);
+      background: #fff;
+      z-index: 2;
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        --b: 1px;
+        width: clamp(220px, 25vw, 386px);
+        height: clamp(190px, 22vw, 335px);
+        aspect-ratio: 1 / cos(30deg);
+        clip-path: polygon(
+          0 50%,
+          50% -50%,
+          100% 50%,
+          50% 150%,
+          0 50%,
+          var(--b) 50%,
+          calc(25% + var(--b) * cos(60deg)) calc(100% - var(--b) * sin(60deg)),
+          calc(75% - var(--b) * cos(60deg)) calc(100% - var(--b) * sin(60deg)),
+          calc(100% - var(--b)) 50%,
+          calc(75% - var(--b) * cos(60deg)) calc(var(--b) * sin(60deg)),
+          calc(25% + var(--b) * cos(60deg)) calc(var(--b) * sin(60deg)),
+          var(--b) 50%
+        );
+        background: #d9d9d9;
+      }
+
+      .copyTooltip {
+        @extend .defaultTooltip;
+        width: auto;
+        opacity: 1;
+      }
+
+      .heading {
+        font-size: 36px;
+        text-transform: uppercase;
+        font-family: RedHatDisplay, sans-serif;
+        margin: 0;
+        font-weight: 300;
+      }
+
+      .link {
+        color: #9e9e9e;
+        cursor: pointer;
+      }
+
+      .description {
+        width: 218px;
+        font-size: 14px;
+        color: #000000a6;
+        line-height: 1.3;
+        text-align: center;
+        margin: 0;
+        padding: 12px 0 63px 0;
+      }
+
+      .moto {
+        font-size: 14px;
+        color: #9e9e9e;
+        line-height: 1;
+      }
+    }
+  }
+
+  .biasList {
+    display: flex;
+    flex-direction: column;
+    row-gap: 3px;
+  }
+}
+
+.scaled {
+  transform: scale(0.8);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.biasList {
+  position: absolute;
+  top: 0%;
+  left: 100%;
+  transform: translate(-21%, -57%);
+}
+
+.biasListSecond {
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  transform: translate(-21.5%, -40%);
+}
+
+.biasListThird {
+  position: absolute;
+  top: 0%;
+  right: 100%;
+  transform: translate(21%, -55%);
+}
+
+.biasListForth {
+  position: absolute;
+  bottom: 0%;
+  right: 100%;
+  transform: translate(21%, 61%);
+}
+
+// Dark theme: repaint hexagon chrome only. Bias cards keep their category
+// colors (set by BiasLabel) — we never touch those here.
+:global(body.darkTheme) .coreView {
+  .hexagonWrapper .hexagon {
+    background: #151a26;
+
+    &:after {
+      background: #4d5566;
+    }
+
+    .heading {
+      color: #dadada;
+    }
+
+    .description {
+      color: rgba(218, 218, 218, 0.7);
+    }
+
+    .moto,
+    .link {
+      color: #9aa0aa;
+    }
+  }
+}
+
+@media (max-width: 1550px) {
+  .coreView {
+    .hexagonWrapper {
+      width: 25vw;
+      height: 21vw;
+
+      .hexagon {
+        position: relative;
+        width: 25vw;
+        height: 21vw;
+
+        &:after {
+          width: 25vw;
+          height: 21vw;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1155px) {
+  .coreView {
+    .hexagonWrapper {
+      .hexagon {
+        .heading {
+          font-size: 25px;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 2500px) {
+  .coreView {
+    .hexagonWrapper {
+      width: 16.5vw;
+      height: 13vw;
+
+      .hexagon {
+        width: 16.5vw;
+        height: 13vw;
+
+        &:after {
+          width: 16.5vw;
+          height: 13vw;
+        }
+
+        .heading {
+          font-size: 35px;
+        }
+
+        .link,
+        .description,
+        .moto {
+          font-size: 20px;
+        }
+
+        .description {
+          width: 300px;
+        }
+      }
+    }
+
+    .biasList {
+      transform: translate(-22%, -59%);
+    }
+
+    .biasListSecond {
+      transform: translate(-21.5%, -39%);
+    }
+
+    .biasListThird {
+      transform: translate(21%, -58%);
+    }
+  }
+}
+
+@media (min-width: 3500px) {
+  .coreView {
+    .hexagonWrapper {
+      width: 16.5vw;
+      height: 14vw;
+
+      .hexagon {
+        width: 16.5vw;
+        height: 14vw;
+
+        &:after {
+          width: 16.5vw;
+          height: 14vw;
+        }
+
+        .heading {
+          font-size: 4vh;
+        }
+
+        .link,
+        .description,
+        .moto {
+          font-size: 1.5vh;
+        }
+
+        .description {
+          width: 375px;
+        }
+      }
+    }
+
+    .biasList {
+      transform: translate(-22%, -59%);
+    }
+
+    .biasListSecond {
+      transform: translate(-22%, -45.5%);
+    }
+
+    .biasListThird {
+      transform: translate(22%, -56%);
+    }
+
+    .biasListForth {
+      transform: translate(21%, 57%);
+    }
+  }
+}

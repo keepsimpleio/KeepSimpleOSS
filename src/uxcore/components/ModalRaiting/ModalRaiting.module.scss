@@ -1,0 +1,219 @@
+.ModalRaiting {
+  padding: 18px 20px;
+  color: #1e56a0;
+  font-size: 12px;
+  display: flex;
+
+  & .Rating {
+    text-align: center;
+    flex-direction: column;
+    width: 100%;
+
+    & .Question {
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #1e56a0;
+    }
+
+    & .Table {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+
+    & .Label {
+      padding: 0 12px;
+      box-sizing: border-box;
+      font-size: 14px;
+      color: #808080;
+      white-space: nowrap;
+
+      &.Mobile {
+        display: none;
+      }
+
+      &:first-of-type {
+        text-align: right;
+      }
+
+      &:last-of-type {
+        text-align: left;
+      }
+    }
+
+    & .Range {
+      display: flex;
+      flex-direction: row;
+      gap: 6px;
+    }
+
+    & .RangeItem {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid #c3c3c3;
+      border-radius: 8px;
+      background-color: #fff;
+      box-sizing: border-box;
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+
+      & .Number {
+        font-size: 14px;
+        font-weight: 600;
+        color: #808080;
+        line-height: 1;
+        transition: color 0.15s ease;
+      }
+
+      &.Hovered {
+        background-color: #5b9bd5;
+        border-color: #5b9bd5;
+
+        & .Number {
+          color: #fff;
+        }
+      }
+    }
+
+    &.Hidden {
+      display: none;
+    }
+  }
+
+  & .ThankYou {
+    display: flex;
+    font-size: 16px;
+    width: 100%;
+    padding-bottom: 15px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    color: #1e56a0;
+
+    &.Hidden {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .ModalRaiting {
+    & .Rating {
+      & .Question {
+        font-size: 13px;
+      }
+
+      & .Table {
+        & .Label {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme: rating row repainted to match the modal.
+:global(body.darkTheme) .ModalRaiting {
+  color: #7fb3d5;
+
+  & .Rating {
+    & .Question {
+      color: #bbe4f2;
+    }
+
+    & .Label {
+      color: #9aa0aa;
+    }
+
+    & .RangeItem {
+      background-color: #151a26;
+      border-color: #303338;
+
+      & .Number {
+        color: rgba(218, 218, 218, 0.85);
+      }
+
+      &.Hovered {
+        background-color: #4c8cc1;
+        border-color: #4c8cc1;
+
+        & .Number {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  & .ThankYou {
+    color: #bbe4f2;
+  }
+}
+
+@media (max-width: 800px) {
+  .ModalRaiting {
+    padding: 14px 16px 12px !important;
+
+    & .Rating {
+      display: flex;
+
+      & .Table {
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      & .Range {
+        width: 100%;
+        gap: 4px;
+        justify-content: space-between;
+      }
+
+      & .Label {
+        display: none;
+      }
+
+      & .Label.Mobile,
+      & .Label.Mobile + .Label {
+        display: block !important;
+        width: 50% !important;
+        margin-top: 6px;
+        padding: 0 !important;
+        font-size: 13px;
+      }
+
+      & .Label.Mobile {
+        text-align: left !important;
+      }
+
+      & .Label.Mobile + .Label {
+        text-align: right !important;
+      }
+
+      & .RangeItem {
+        flex: 1;
+        min-width: 0;
+        height: 32px;
+
+        & .Number {
+          font-size: 13px;
+        }
+      }
+
+      & .Question {
+        margin-bottom: 10px;
+        font-size: 14px;
+      }
+    }
+
+    & .ThankYou {
+      font-size: 20px;
+    }
+  }
+}

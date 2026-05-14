@@ -1,0 +1,153 @@
+.Button {
+  line-height: 2px;
+}
+
+.Button,
+.Orange,
+.OrangeOutline,
+.BlueOutline {
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  padding: 6px 16px;
+  height: 32px;
+  background-color: #fff;
+  cursor: pointer;
+  color: #000;
+  transition: 0.2s;
+  font-size: 14px;
+
+  &.Primary {
+    color: #fff;
+    background-color: #28587b;
+    border-color: #28587b;
+  }
+
+  &.Secondary {
+    height: 100%;
+    min-width: 115px;
+    font-size: 14px;
+    margin-right: 20px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #d9d9d9;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .iconWrapper {
+    margin-right: 5px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  &.Disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &.Big {
+    height: 54px;
+    font-size: 16px;
+  }
+
+  &.DisabledOrange {
+    background: #d9d9d9;
+    color: #c4c4c4;
+    opacity: 100%;
+    border: 1px solid #d9d9d9;
+
+    &:hover {
+      background: #d9d9d9 !important;
+      color: #c4c4c4 !important;
+      opacity: 100% !important;
+      border: 1px solid #d9d9d9 !important;
+    }
+  }
+
+  &:not(.Disabled):hover {
+    border-color: #28587b;
+    color: #28587b;
+
+    .iconWrapper {
+      > svg {
+        path {
+          // TODO - recheck it, Mary
+          //fill: #28587b;
+        }
+      }
+    }
+  }
+
+  &.Primary:not(.Disabled):hover {
+    background-color: #28587b;
+    border-color: #28587b;
+    color: #fff;
+  }
+
+  .Loader {
+    animation-name: spin;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    margin-right: 5px;
+    margin-bottom: -2px;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.Orange {
+  background: #de915b;
+  border-color: #de915b;
+  color: #fff;
+
+  &:hover {
+    background: #cd7232 !important;
+    border-color: #cd7232 !important;
+    color: #fff !important;
+  }
+}
+
+.OrangeOutline {
+  background: #fff;
+  border-color: #de915b;
+  color: #de915b;
+
+  &:hover {
+    background: #cd7232 !important;
+    border-color: #cd7232 !important;
+    color: #fff !important;
+  }
+}
+
+.BlueOutline {
+  background: #fff;
+  border-color: #5b88bd;
+  color: #28587b;
+
+  &:hover {
+    background: #28587b !important;
+    border-color: #5b88bd !important;
+    color: #fff !important;
+  }
+}
+
+.Text {
+  all: unset;
+  cursor: pointer;
+}
+
+@media (max-width: 901px) {
+  .Button {
+    &.Big {
+      height: 45px;
+    }
+  }
+}

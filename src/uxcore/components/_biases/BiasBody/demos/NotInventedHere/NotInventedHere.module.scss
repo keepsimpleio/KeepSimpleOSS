@@ -1,0 +1,137 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.tagBuild,
+.tagIntegrate {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  padding: 3px $space-sm;
+  border-radius: 3px;
+  color: $color-white;
+}
+
+.tagBuild {
+  background: $tag-orange;
+}
+
+.tagIntegrate {
+  background: $tag-green;
+}
+
+.cardTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  display: flex;
+  gap: $space-sm;
+  align-items: flex-start;
+  border-bottom: 1px solid $border-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.bullet {
+  color: $tag-orange;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.bulletOk {
+  color: $tag-green;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cost {
+  display: flex;
+  justify-content: space-between;
+  background: $bg-alt;
+  padding: $space-sm $space-md;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.costBad {
+  color: $tag-orange;
+  font-weight: 700;
+  font-size: $font-size-md;
+}
+
+.costGood {
+  color: $tag-green;
+  font-weight: 700;
+  font-size: $font-size-md;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timelineLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.timelineBar {
+  height: 8px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.timelineFillRed {
+  height: 100%;
+  background: $tag-orange;
+}
+
+.timelineFillGreen {
+  height: 100%;
+  background: $tag-green;
+}
+
+.timelineSub {
+  font-size: 11px;
+  color: $text-secondary;
+}

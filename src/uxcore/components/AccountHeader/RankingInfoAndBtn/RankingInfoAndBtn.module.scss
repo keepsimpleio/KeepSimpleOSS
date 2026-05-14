@@ -1,0 +1,174 @@
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .btnWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .btn {
+    min-width: 218px;
+  }
+
+  .ruBtn {
+    min-width: 260px;
+  }
+
+  .statisticsWrapper {
+    flex-direction: row;
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    cursor: default;
+
+    .locker {
+      font-size: 28px;
+    }
+  }
+
+  .unlockAt {
+    background: #fff;
+    color: #000;
+    z-index: 444;
+    border: 1px solid #cbcbcb;
+
+    > div {
+      border: none;
+      filter: unset;
+      box-shadow: unset;
+
+      &:nth-child(2) {
+        border-bottom: 1px solid #d9d9d9;
+        border-right: 1px solid #d9d9d9;
+        margin-top: -1px;
+      }
+    }
+  }
+
+  .userTop,
+  .userRank {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 71px;
+    height: 85px;
+
+    > span {
+      color: #373737;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-family: 'DelaGothicOne-Regular', serif !important;
+      text-shadow:
+        -0.5px 0 #ffffff9c,
+        0.5px 0 #ffffff9c,
+        0 0.5px #ffffff9c,
+        0 -0.5px #ffffff9c;
+      font-weight: 400;
+      z-index: 1;
+      position: relative;
+    }
+
+    > span:first-child {
+      margin-top: 17px;
+      width: 100%;
+      text-align: center;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 73px;
+      height: 85px;
+      background-repeat: no-repeat;
+    }
+  }
+
+  .userTop {
+    &:after {
+      background-image: url('/assets/uxcat/topRank.svg');
+    }
+  }
+
+  .userRank {
+    &:after {
+      background-image: url('/assets/uxcat/rank.svg');
+    }
+  }
+}
+
+.iconSmall {
+  gap: 8px;
+
+  .statisticsWrapper {
+    gap: 15px;
+
+    .locker {
+      font-size: 23px;
+    }
+  }
+
+  .userTop {
+    &:after {
+      background-image: url('/assets/uxcat/topRankSmall.svg');
+    }
+  }
+
+  .userRank {
+    &:after {
+      background-image: url('/assets/uxcat/rankSmall.svg');
+    }
+  }
+
+  .userTop,
+  .userRank {
+    width: 57px;
+
+    &:after {
+      width: 56px;
+      height: 70px;
+    }
+
+    > span {
+      font-size: 9.14px;
+    }
+
+    > span:first-child {
+      margin-top: 9px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .contentWrapper {
+    align-items: center;
+    margin-right: unset;
+
+    .statisticsWrapper {
+      padding-bottom: 20px;
+    }
+
+    .btnWrapper {
+      width: 333px;
+      max-width: 100%;
+      margin: 0 8px;
+      text-align: center;
+      display: unset;
+      position: absolute;
+      bottom: -46px;
+
+      .btn {
+        width: 90%;
+      }
+    }
+
+    .withFinalTestBtn {
+      bottom: -85px;
+    }
+  }
+}
