@@ -214,8 +214,16 @@ const UXCoreIds: FC<UXCoreProps> = ({
 export default UXCoreIds;
 
 export const getStaticPaths: GetStaticPaths = async ({ locales }) => {
+  // BUILD-TIME SAFETY (uxcore-merge): a Strapi fetch can return HTML
+  // (Cloudflare bot challenge against GH Actions runners). Return empty
+  // paths so the build doesn't abort; fallback: 'blocking' below makes
+  // requests render on-demand at runtime where Strapi is reachable.
+  try {
   const newPaths = await getUXCoreTextPaths(locales);
-  return { paths: [...newPaths], fallback: 'blocking' };
+  return { paths: [...newPaths], fallback: 'blocking' };  } catch (err) {
+    console.warn('[getStaticPaths] build-time fetch failed, empty paths fallback:', err);
+    return { paths: [], fallback: 'blocking' };
+  }
 };
 
 export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
