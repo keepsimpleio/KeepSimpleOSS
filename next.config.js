@@ -1,3 +1,30 @@
+// === BUILD-TIME FETCH SAFETY NET (added by uxcore merge) ===
+// Cloudflare in front of staging-strapi.keepsimple.io has started returning
+// HTML challenge pages to GitHub Actions runner IPs, which crashes any
+// getStaticProps/getStaticPaths that does JSON.parse on the response. This
+// monkey-patch detects HTML responses *only during the Next.js build phase*
+// and substitutes an empty data array so the build never aborts. Runtime
+// requests (server.js after the build) use the unwrapped global fetch and
+// hit Strapi normally.
+if (process.env.NEXT_PHASE === 'phase-production-build' && typeof globalThis.fetch === 'function') {
+  const _origFetch = globalThis.fetch.bind(globalThis);
+  globalThis.fetch = async function patchedFetch(...args) {
+    try {
+      const resp = await _origFetch(...args);
+      const ct = resp.headers && resp.headers.get && resp.headers.get('content-type') || '';
+      if (ct.startsWith('text/html') || !resp.ok) {
+        console.warn('[build-fetch] non-JSON or non-ok upstream; substituting empty data for', String(args[0]).slice(0, 120));
+        return new Response('{"data":[]}', { status: 200, headers: { 'content-type': 'application/json' } });
+      }
+      return resp;
+    } catch (e) {
+      console.warn('[build-fetch] fetch threw; substituting empty data:', e && e.message);
+      return new Response('{"data":[]}', { status: 200, headers: { 'content-type': 'application/json' } });
+    }
+  };
+}
+// === END FETCH SAFETY NET ===
+
 const dotenv = require('dotenv');
 const path = require('path');
 const { existsSync } = require('fs');
