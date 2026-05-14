@@ -1,29 +1,34 @@
-// === BUILD-TIME FETCH SAFETY NET (added by uxcore merge) ===
+// === STRAPI HTML-CHALLENGE FETCH SAFETY NET (uxcore merge, 2026-05-14) ===
 // Cloudflare in front of staging-strapi.keepsimple.io has started returning
 // HTML challenge pages to GitHub Actions runner IPs, which crashes any
-// getStaticProps/getStaticPaths that does JSON.parse on the response. This
-// monkey-patch detects HTML responses *only during the Next.js build phase*
-// and substitutes an empty data array so the build never aborts. Runtime
-// requests (server.js after the build) use the unwrapped global fetch and
-// hit Strapi normally.
-if (process.env.NEXT_PHASE === 'phase-production-build' && typeof globalThis.fetch === 'function') {
+// getStaticProps/getStaticPaths that JSON.parses the response. This monkey-
+// patch is scoped to *.keepsimple.io hostnames and replaces HTML or non-200
+// responses with empty-data JSON so the build never aborts. Runtime fetches
+// inside the running container reach Strapi cleanly and unwrap normally.
+(function patchStrapiFetch() {
+  if (typeof globalThis.fetch !== 'function') return;
+  if (globalThis.__strapiFetchPatched) return;
+  globalThis.__strapiFetchPatched = true;
   const _origFetch = globalThis.fetch.bind(globalThis);
-  globalThis.fetch = async function patchedFetch(...args) {
+  globalThis.fetch = async function patchedFetch(input, init) {
+    const url = typeof input === 'string' ? input : (input && input.url) || '';
+    const isStrapi = /keepsimple\.io/.test(url);
+    if (!isStrapi) return _origFetch(input, init);
     try {
-      const resp = await _origFetch(...args);
-      const ct = resp.headers && resp.headers.get && resp.headers.get('content-type') || '';
-      if (ct.startsWith('text/html') || !resp.ok) {
-        console.warn('[build-fetch] non-JSON or non-ok upstream; substituting empty data for', String(args[0]).slice(0, 120));
+      const resp = await _origFetch(input, init);
+      const ct = (resp.headers && resp.headers.get && resp.headers.get('content-type')) || '';
+      if (!resp.ok || ct.startsWith('text/html')) {
+        if (typeof console !== 'undefined') console.warn('[strapi-fetch] HTML/!ok upstream (', resp.status, ct, ') — empty data fallback for', url.slice(0, 100));
         return new Response('{"data":[]}', { status: 200, headers: { 'content-type': 'application/json' } });
       }
       return resp;
     } catch (e) {
-      console.warn('[build-fetch] fetch threw; substituting empty data:', e && e.message);
+      if (typeof console !== 'undefined') console.warn('[strapi-fetch] threw — empty data fallback:', e && e.message);
       return new Response('{"data":[]}', { status: 200, headers: { 'content-type': 'application/json' } });
     }
   };
-}
-// === END FETCH SAFETY NET ===
+})();
+// === END STRAPI FETCH SAFETY NET ===
 
 const dotenv = require('dotenv');
 const path = require('path');
