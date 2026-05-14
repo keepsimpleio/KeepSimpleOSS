@@ -10,7 +10,7 @@
     "generate:llms:pages": "ts-node --compiler-options '{\"module\":\"commonjs\",\"target\":\"es2020\"}' scripts/generate-llms-pages.ts",
     "start": "cross-env NODE_ENV=production APP_ENV=production yarn build && next start -p 4033",
     "start:staging": "cross-env NODE_ENV=production APP_ENV=staging next start -p 3005",
-    "build:staging": "cross-env NODE_ENV=production APP_ENV=staging next build",
+    "build:staging": "cross-env NODE_OPTIONS=--require=./build-fetch-patch.js NODE_ENV=production APP_ENV=staging next build",
     "test:e2e": "playwright test --project=chromium",
     "test:e2e:ui": "playwright test --project=chromium --ui",
     "test:e2e:p0": "playwright test tests/p0 --project=chromium",
