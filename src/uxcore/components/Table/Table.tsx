@@ -14,7 +14,7 @@ import {
 import type { QuestionType, TagType } from '@uxcore/local-types/data';
 import { TRouter } from '@uxcore/local-types/global';
 
-import tableIntl from '@data/table';
+import tableIntl from '@uxcore/data/table';
 
 import Button from '@uxcore/components/Button';
 import Tag, { TTag } from '@uxcore/components/Tag';

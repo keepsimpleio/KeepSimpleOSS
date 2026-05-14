@@ -3,7 +3,7 @@ import type { FC } from 'react';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import uxcpLocalization from '@data/uxcp';
+import uxcpLocalization from '@uxcore/data/uxcp';
 
 import styles from './UXCPDescription.module.scss';
 

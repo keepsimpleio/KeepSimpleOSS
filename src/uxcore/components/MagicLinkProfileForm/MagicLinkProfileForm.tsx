@@ -6,7 +6,7 @@ import { deleteRedirectCookie, getRedirectCookie } from '@uxcore/lib/cookies';
 
 import { completeMagicLinkRegistration, storeJwtSession } from '@uxcore/api/auth';
 
-import auth from '@data/auth';
+import auth from '@uxcore/data/auth';
 
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 

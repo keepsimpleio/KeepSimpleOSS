@@ -4,7 +4,7 @@ import { Player } from 'react-simple-player/lib/components/Player';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import podcast from '@data/podcast';
+import podcast from '@uxcore/data/podcast';
 
 import styles from './UXCorePopup.module.scss';
 

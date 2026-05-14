@@ -10,11 +10,11 @@ import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 
 import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
 
-import modalIntl from '@data/modal';
+import modalIntl from '@uxcore/data/modal';
 
-import HrIcon from '@icons/HrIcon';
-import ProductIcon from '@icons/ProductIcon';
-import ThreeLineArrow from '@icons/ThreeLineArrow';
+import HrIcon from '@uxcore/assets/icons/HrIcon';
+import ProductIcon from '@uxcore/assets/icons/ProductIcon';
+import ThreeLineArrow from '@uxcore/assets/icons/ThreeLineArrow';
 
 import BiasBody from '@uxcore/components/_biases/BiasBody';
 import ContentParser from '@uxcore/components/ContentParser';

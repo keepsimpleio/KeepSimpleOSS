@@ -8,7 +8,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { deletePersona } from '@uxcore/api/personas';
 
-import decisionTable from '@data/decisionTable';
+import decisionTable from '@uxcore/data/decisionTable';
 
 import PersonaDeleteModal from '@uxcore/components/_uxcp/PersonaDeleteModal';
 import Button from '@uxcore/components/Button';

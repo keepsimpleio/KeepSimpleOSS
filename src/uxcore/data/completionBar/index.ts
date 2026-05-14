@@ -1,4 +1,4 @@
-import hy from '@data/addQuestion/hy';
+import hy from '@uxcore/data/addQuestion/hy';
 
 import en from './en';
 import ru from './ru';

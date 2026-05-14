@@ -11,7 +11,7 @@ import {
   providedProps,
 } from './AchievementBoard.types';
 
-import styles from '../../pages/user/[userId]/userId.module.scss';
+import styles from '../../../pages/user/[userId]/userId.module.scss';
 
 const AchievementsBoard: FC<AchievementsBoardProps> = ({
   achievements,

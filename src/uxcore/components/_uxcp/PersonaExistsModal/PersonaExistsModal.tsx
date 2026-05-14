@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import personaModals from '@data/personaModals';
+import personaModals from '@uxcore/data/personaModals';
 
 import Button from '@uxcore/components/Button';
 import Modal from '@uxcore/components/Modal';

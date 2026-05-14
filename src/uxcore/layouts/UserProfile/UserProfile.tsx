@@ -16,10 +16,10 @@ import { updateBackgroundImage, updateCoverImage } from '@uxcore/api/strapi';
 import { sendRef } from '@uxcore/api/uxcat/sendRef';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 
-import decisionTable from '@data/decisionTable';
-import uxcatData from '@data/uxcat';
-import modalData from '@data/uxcat/imageSelectModal';
-import userProfileData from '@data/uxcat/userProfile';
+import decisionTable from '@uxcore/data/decisionTable';
+import uxcatData from '@uxcore/data/uxcat';
+import modalData from '@uxcore/data/uxcat/imageSelectModal';
+import userProfileData from '@uxcore/data/uxcat/userProfile';
 
 import LogInModal from '@uxcore/components/_uxcp/LogInModal';
 import SavedPersonas from '@uxcore/components/_uxcp/SavedPersonas';

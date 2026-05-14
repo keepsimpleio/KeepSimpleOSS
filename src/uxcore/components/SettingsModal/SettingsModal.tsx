@@ -5,7 +5,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { isValidEmail, linkedInRegex, usernameRegex } from '@uxcore/lib/uxcat-helpers';
 
-import settingsData from '@data/uxcat/settings';
+import settingsData from '@uxcore/data/uxcat/settings';
 
 import Button from '@uxcore/components/Button';
 import Checkbox from '@uxcore/components/Checkbox';

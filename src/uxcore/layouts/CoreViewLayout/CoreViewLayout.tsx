@@ -11,8 +11,8 @@ import { useBrowserScale } from '@uxcore/hooks/useBrowserScale';
 
 import { copyToClipboard } from '@uxcore/lib/helpers';
 
-import biasesLocalization from '@data/biases';
-import copyButtonData from '@data/copyButton';
+import biasesLocalization from '@uxcore/data/biases';
+import copyButtonData from '@uxcore/data/copyButton';
 
 import BiasEnvironment from '@uxcore/components/_biases/BiasEnvironment/BiasEnvironment';
 import BiasLabel from '@uxcore/components/_biases/BiasLabel';

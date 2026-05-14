@@ -5,7 +5,7 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import tableData from '@data/table';
+import tableData from '@uxcore/data/table';
 
 import styles from './TableSearch.module.scss';
 

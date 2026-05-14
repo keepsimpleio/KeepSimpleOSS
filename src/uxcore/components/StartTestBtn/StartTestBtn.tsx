@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import Button from '@uxcore/components/Button';
 

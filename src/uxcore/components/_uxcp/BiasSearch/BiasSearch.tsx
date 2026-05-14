@@ -8,7 +8,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import { getSearchResultsUxcp } from '@uxcore/lib/helpers';
 
-import uxcpLocalization from '@data/uxcp';
+import uxcpLocalization from '@uxcore/data/uxcp';
 
 import BiasActionCell from '@uxcore/components/_uxcp/BiasActionCell';
 import Input from '@uxcore/components/Input';

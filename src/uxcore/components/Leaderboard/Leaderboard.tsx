@@ -7,7 +7,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import useMobile from '@uxcore/hooks/useMobile';
 
-import leaderboardPlaceholder from '@data/leaderboard';
+import leaderboardPlaceholder from '@uxcore/data/leaderboard';
 
 import Tooltip from '@uxcore/components/Tooltip';
 import UXCatPageTitle from '@uxcore/components/UXCatPageTitle';

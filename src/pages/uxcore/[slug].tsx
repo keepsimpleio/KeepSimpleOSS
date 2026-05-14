@@ -21,7 +21,7 @@ import UXCoreModalMobile from '@uxcore/components/UXCoreModalMobile';
 
 import UXCoreLayout from '@uxcore/layouts/UXCoreLayout';
 
-import { getRedirectMap } from '../../../lib/getUXCoreRedirects';
+import { getRedirectMap } from '@uxcore/lib/getUXCoreRedirects';
 
 import styles from './uxcoreId.module.scss';
 

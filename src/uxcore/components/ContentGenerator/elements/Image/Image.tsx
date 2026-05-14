@@ -6,7 +6,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import useImageModule from '@uxcore/hooks/useImageModule';
 
-import imageModuleData from '@data/imageModule';
+import imageModuleData from '@uxcore/data/imageModule';
 
 type TImage = {
   styles: any;

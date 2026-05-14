@@ -22,8 +22,8 @@ import { calculateData, generateUXCPLink } from '@uxcore/lib/uxcp-helpers';
 
 import { addPersona, getPersonaList, updatePersona } from '@uxcore/api/personas';
 
-import decisionTable from '@data/decisionTable';
-import uxcpLocalization from '@data/uxcp';
+import decisionTable from '@uxcore/data/decisionTable';
+import uxcpLocalization from '@uxcore/data/uxcp';
 
 import BiasSearch from '@uxcore/components/_uxcp/BiasSearch';
 import CountryBiasMap from '@uxcore/components/_uxcp/CountryBiasMap';

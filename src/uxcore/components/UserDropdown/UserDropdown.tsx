@@ -9,7 +9,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { logout } from '@uxcore/api/auth';
 
-import decisionTable from '@data/decisionTable';
+import decisionTable from '@uxcore/data/decisionTable';
 
 import LogInModal from '@uxcore/components/_uxcp/LogInModal';
 

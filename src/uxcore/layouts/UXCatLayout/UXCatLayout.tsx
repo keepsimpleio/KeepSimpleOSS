@@ -15,7 +15,7 @@ import useKonamiCode from '@uxcore/hooks/useKonamiCode';
 
 import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import LogInModal from '@uxcore/components/_uxcp/LogInModal';
 import Accordion from '@uxcore/components/Accordion';

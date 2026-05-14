@@ -6,7 +6,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { sanitizeHtml } from '@uxcore/lib/sanitizeHtml';
 
-import decisionTable from '@data/decisionTable';
+import decisionTable from '@uxcore/data/decisionTable';
 
 import Button from '@uxcore/components/Button';
 import Modal from '@uxcore/components/Modal';

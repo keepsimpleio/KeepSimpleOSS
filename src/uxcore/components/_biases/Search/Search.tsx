@@ -18,9 +18,9 @@ import useMobile from '@uxcore/hooks/useMobile';
 
 import { getSearchResults } from '@uxcore/lib/helpers';
 
-import biasesSearchData from '@data/biasesSearch';
+import biasesSearchData from '@uxcore/data/biasesSearch';
 
-import SearchIcon from '@icons/SearchIcon';
+import SearchIcon from '@uxcore/assets/icons/SearchIcon';
 
 import styles from './Search.module.scss';
 

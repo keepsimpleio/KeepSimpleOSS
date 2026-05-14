@@ -1,6 +1,6 @@
 import { ComponentType, useEffect, useState } from 'react';
 
-import { biasesByLocale } from '@data/biasList';
+import { biasesByLocale } from '@uxcore/data/biasList';
 
 import DemoErrorBoundary from './DemoErrorBoundary';
 import { demoRegistry } from './demoRegistry';

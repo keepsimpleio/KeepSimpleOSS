@@ -21,9 +21,9 @@ import useUXCGGlobals from '@uxcore/hooks/useUXCGGlobals';
 
 import { copyToClipboard, generateSocialLinks, updateVH } from '@uxcore/lib/helpers';
 
-import modalIntl from '@data/modal';
+import modalIntl from '@uxcore/data/modal';
 
-import ThreeLineArrow from '@icons/ThreeLineArrow';
+import ThreeLineArrow from '@uxcore/assets/icons/ThreeLineArrow';
 
 import AnswerContentGenerator from '@uxcore/components/AnswerContentGenerator';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';

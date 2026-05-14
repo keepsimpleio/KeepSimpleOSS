@@ -29,7 +29,7 @@ import { getUXCatLastTest } from '@uxcore/api/uxcat/last-test';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 import { getUXCatData } from '@uxcore/api/uxcat/uxcat';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import CongratsModal from '@uxcore/components/CongratsModal';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';

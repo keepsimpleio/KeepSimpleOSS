@@ -9,7 +9,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { sanitizeHtml } from '@uxcore/lib/sanitizeHtml';
 
-import ourProjectsData from '@data/ourProjects';
+import ourProjectsData from '@uxcore/data/ourProjects';
 
 import Button from '@uxcore/components/Button';
 import Modal from '@uxcore/components/Modal';

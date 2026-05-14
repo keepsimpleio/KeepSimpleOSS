@@ -7,8 +7,8 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import { generateSchema } from '@uxcore/lib/schema';
 
-import hrSeoDescriptionEn from '@data/seo/hrDescription-en';
-import hrSeoDescriptionRu from '@data/seo/hrDescription-ru';
+import hrSeoDescriptionEn from '@uxcore/data/seo/hrDescription-en';
+import hrSeoDescriptionRu from '@uxcore/data/seo/hrDescription-ru';
 
 interface SeoGeneratorProps {
   questionsSeo?: any;

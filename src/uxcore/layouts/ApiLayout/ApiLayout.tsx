@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import uxcoreApi from '@data/uxcoreApi/uxcoreapi';
+import uxcoreApi from '@uxcore/data/uxcoreApi/uxcoreapi';
 
 import BorderedContainer from '@uxcore/components/BorderedContainer';
 import CodeSnippet from '@uxcore/components/CodeSnippet';

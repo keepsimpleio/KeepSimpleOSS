@@ -9,7 +9,7 @@ import useMobile from '@uxcore/hooks/useMobile';
 
 import { calculatePercentage } from '@uxcore/lib/uxcp-helpers';
 
-import uxcpLocalization from '@data/uxcp';
+import uxcpLocalization from '@uxcore/data/uxcp';
 
 import PieLegend from '@uxcore/components/_uxcp/PieChartSection/PieLegend';
 import PieTooltip from '@uxcore/components/_uxcp/PieChartSection/PieTooltip';

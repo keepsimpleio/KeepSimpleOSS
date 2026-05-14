@@ -2,11 +2,11 @@ import cn from 'classnames';
 import Image from 'next/image';
 import { FC } from 'react';
 
-import { Development } from '@icons/uxcgIcons/Development';
-import { Marketing } from '@icons/uxcgIcons/Marketing';
-import { Monitoring } from '@icons/uxcgIcons/Monitoring';
-import { Released } from '@icons/uxcgIcons/Released';
-import { TeamAssemblyIcon } from '@icons/uxcgIcons/TeamAssembly';
+import { Development } from '@uxcore/assets/icons/uxcgIcons/Development';
+import { Marketing } from '@uxcore/assets/icons/uxcgIcons/Marketing';
+import { Monitoring } from '@uxcore/assets/icons/uxcgIcons/Monitoring';
+import { Released } from '@uxcore/assets/icons/uxcgIcons/Released';
+import { TeamAssemblyIcon } from '@uxcore/assets/icons/uxcgIcons/TeamAssembly';
 
 import { TagContainerProps } from './TagContainer.types';
 

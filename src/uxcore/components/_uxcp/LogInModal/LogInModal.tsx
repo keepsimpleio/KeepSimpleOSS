@@ -6,14 +6,14 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { setRedirectCookie } from '@uxcore/lib/cookies';
 
-import decisionTable from '@data/decisionTable';
+import decisionTable from '@uxcore/data/decisionTable';
 
-import DiscordIcon from '@icons/DiscordIcon';
-import GoogleIcon from '@icons/GoogleIcon';
-import LinkedInIcon from '@icons/LinkedInIcon';
-import MailRuIcon from '@icons/MailRuIcon';
-import XIcon from '@icons/XIcon';
-import YandexIcon from '@icons/YandexIcon';
+import DiscordIcon from '@uxcore/assets/icons/DiscordIcon';
+import GoogleIcon from '@uxcore/assets/icons/GoogleIcon';
+import LinkedInIcon from '@uxcore/assets/icons/LinkedInIcon';
+import MailRuIcon from '@uxcore/assets/icons/MailRuIcon';
+import XIcon from '@uxcore/assets/icons/XIcon';
+import YandexIcon from '@uxcore/assets/icons/YandexIcon';
 
 import Button from '@uxcore/components/Button';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
@@ -22,7 +22,7 @@ import Modal from '@uxcore/components/Modal';
 import {
   handleMixpanelSignUp,
   trackLogInSource,
-} from '../../../../lib/mixpanel';
+} from '@uxcore/lib/mixpanel';
 
 import styles from './LogInModal.module.scss';
 

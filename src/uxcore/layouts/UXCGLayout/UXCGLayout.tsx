@@ -14,7 +14,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import useSpinner from '@uxcore/hooks/useSpinner';
 
-import uxcgDescriptionData from '@data/uxcgDescriptionData';
+import uxcgDescriptionData from '@uxcore/data/uxcgDescriptionData';
 
 import Table from '@uxcore/components/Table';
 import ToolFooter from '@uxcore/components/ToolFooter';

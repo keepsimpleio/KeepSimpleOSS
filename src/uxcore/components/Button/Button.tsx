@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { FC, useCallback } from 'react';
 
-import Loader from '@icons/Loader';
+import Loader from '@uxcore/assets/icons/Loader';
 
 import styles from './Button.module.scss';
 

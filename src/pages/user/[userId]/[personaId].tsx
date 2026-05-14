@@ -11,7 +11,7 @@ import { getPersona } from '@uxcore/api/personas';
 import { getStrapiQuestions } from '@uxcore/api/questions';
 import { getTags } from '@uxcore/api/tags';
 
-import pageNotFoundData from '@data/404';
+import pageNotFoundData from '@uxcore/data/404';
 
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import Spinner from '@uxcore/components/Spinner';

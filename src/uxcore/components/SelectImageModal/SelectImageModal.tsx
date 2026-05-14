@@ -5,7 +5,7 @@ import { FC, useState } from 'react';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import modalData from '@data/uxcat/imageSelectModal';
+import modalData from '@uxcore/data/uxcat/imageSelectModal';
 
 import Button from '@uxcore/components/Button';
 import Modal from '@uxcore/components/Modal';

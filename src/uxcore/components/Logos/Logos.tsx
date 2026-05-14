@@ -4,13 +4,13 @@ import { FC } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import biasesLogoDescription from '@data/biasesLogoDescription';
+import biasesLogoDescription from '@uxcore/data/biasesLogoDescription';
 
-import AmazonLogo from '@icons/AmazonLogo';
-import DukeLogo from '@icons/DukeLogo';
-import GoogleLogo from '@icons/GoogleLogo';
-import HarvardBusinessSchoolLogo from '@icons/HarvardBusinessSchoolLogo';
-import XLogo from '@icons/XLogo';
+import AmazonLogo from '@uxcore/assets/icons/AmazonLogo';
+import DukeLogo from '@uxcore/assets/icons/DukeLogo';
+import GoogleLogo from '@uxcore/assets/icons/GoogleLogo';
+import HarvardBusinessSchoolLogo from '@uxcore/assets/icons/HarvardBusinessSchoolLogo';
+import XLogo from '@uxcore/assets/icons/XLogo';
 
 import styles from './Logos.module.scss';
 

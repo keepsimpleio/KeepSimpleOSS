@@ -4,7 +4,7 @@ import { FC, useCallback, useMemo } from 'react';
 import type { TagType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
 
-import uxcpLocalization from '@data/uxcp';
+import uxcpLocalization from '@uxcore/data/uxcp';
 
 import Tooltip from '@uxcore/components/Tooltip';
 

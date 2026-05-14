@@ -13,9 +13,9 @@ import { mergeBiasesLocalization } from '@uxcore/lib/helpers';
 import { getAchievement } from '@uxcore/api/uxcat/get-achievement';
 import { getUXCatSubmitTest } from '@uxcore/api/uxcat/submit-test';
 
-import ongoingTestData from '@data/uxcat/ongoingTest';
+import ongoingTestData from '@uxcore/data/uxcat/ongoingTest';
 
-import ArrowRight from '@icons/ArrowRight';
+import ArrowRight from '@uxcore/assets/icons/ArrowRight';
 
 import Button from '@uxcore/components/Button';
 import ContentParser from '@uxcore/components/ContentParser';

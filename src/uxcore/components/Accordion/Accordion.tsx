@@ -8,7 +8,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import useMobile from '@uxcore/hooks/useMobile';
 
-import ccordionIntl from '@data/accordion';
+import ccordionIntl from '@uxcore/data/accordion';
 
 import styles from './Accordion.module.scss';
 

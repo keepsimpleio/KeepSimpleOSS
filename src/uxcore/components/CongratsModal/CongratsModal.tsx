@@ -7,7 +7,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import useMobile from '@uxcore/hooks/useMobile';
 
-import congratulationsModal from '@data/uxcat/congratulationsModal';
+import congratulationsModal from '@uxcore/data/uxcat/congratulationsModal';
 
 import Button from '@uxcore/components/Button';
 import Modal from '@uxcore/components/Modal';

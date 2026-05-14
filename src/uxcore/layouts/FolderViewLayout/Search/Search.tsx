@@ -18,7 +18,7 @@ import useMobile from '@uxcore/hooks/useMobile';
 
 import { getSearchResults } from '@uxcore/lib/helpers';
 
-import biasesSearchData from '@data/biasesSearch';
+import biasesSearchData from '@uxcore/data/biasesSearch';
 
 import styles from './Search.module.scss';
 

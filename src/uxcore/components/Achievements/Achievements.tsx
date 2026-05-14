@@ -9,7 +9,7 @@ import { AchievementsTypes } from '@uxcore/local-types/uxcat-types/types';
 
 import { sortAchievements } from '@uxcore/lib/uxcat-helpers';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import Achievement from '@uxcore/components/Achievement';
 import UnlockMeter from '@uxcore/components/UnlockMeter';

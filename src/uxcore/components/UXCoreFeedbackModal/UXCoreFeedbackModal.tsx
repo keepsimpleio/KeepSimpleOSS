@@ -6,7 +6,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import feedbackData from '@data/feedbackData';
+import feedbackData from '@uxcore/data/feedbackData';
 
 import styles from './UXCoreFeedbackModal.module.scss';
 

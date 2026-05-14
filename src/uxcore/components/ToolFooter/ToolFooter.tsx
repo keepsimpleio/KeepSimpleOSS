@@ -6,7 +6,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import toolFooterData from '@data/toolFooter';
+import toolFooterData from '@uxcore/data/toolFooter';
 
 import CustomModal from '@uxcore/components/CustomModal';
 

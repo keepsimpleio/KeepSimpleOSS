@@ -5,7 +5,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 
-import genderModalData from '@data/genderModalData';
+import genderModalData from '@uxcore/data/genderModalData';
 
 import Button from '@uxcore/components/Button';
 import Modal from '@uxcore/components/Modal';

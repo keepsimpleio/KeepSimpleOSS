@@ -3,9 +3,9 @@ import { FC } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import statisticsData from '@data/statistics';
+import statisticsData from '@uxcore/data/statistics';
 
-import LastTestResultIcon from '@icons/LastTestResultIcon';
+import LastTestResultIcon from '@uxcore/assets/icons/LastTestResultIcon';
 
 import UXCatPageTitle from '@uxcore/components/UXCatPageTitle';
 

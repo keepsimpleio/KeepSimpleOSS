@@ -6,7 +6,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { useClickOutside } from '@uxcore/hooks/useClickOutside';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import styles from './Dropdown.module.scss';
 

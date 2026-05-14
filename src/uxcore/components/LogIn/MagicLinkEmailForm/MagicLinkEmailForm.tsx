@@ -4,7 +4,7 @@ import { FC, FormEvent, useState } from 'react';
 
 import { requestMagicLink } from '@uxcore/api/auth';
 
-import auth from '@data/auth';
+import auth from '@uxcore/data/auth';
 
 import styles from './MagicLinkEmailForm.module.scss';
 

@@ -21,15 +21,15 @@ import useBiasSearch from '@uxcore/hooks/useBiasSearch';
 
 import { groupFilteredData } from '@uxcore/lib/helpers';
 
-import biasesMetadata from '@data/biases';
-import biasesCategories from '@data/biasesCategories';
-import toolHeaderData from '@data/toolHeader';
+import biasesMetadata from '@uxcore/data/biases';
+import biasesCategories from '@uxcore/data/biasesCategories';
+import toolHeaderData from '@uxcore/data/toolHeader';
 
-import DiamondIcon from '@icons/DiamondIcon';
-import { HRIconBlue } from '@icons/HRIconBlue';
-import { HRIconGrey } from '@icons/HRIconGrey';
-import { PMIcon } from '@icons/PMIcon';
-import { PMIconGrey } from '@icons/PMIconGrey';
+import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
+import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
+import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
+import { PMIcon } from '@uxcore/assets/icons/PMIcon';
+import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
 
 import MobileHeader from '@uxcore/components/_biases/MobileHeader';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';

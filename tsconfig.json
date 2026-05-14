@@ -87,6 +87,15 @@
       ],
       "@uxcore/assets/*": [
         "src/uxcore/assets/*"
+      ],
+      "@uxcore/constants/*": [
+        "src/uxcore/constants/*"
+      ],
+      "@uxcore/utils/*": [
+        "src/uxcore/utils/*"
+      ],
+      "@uxcore/assets/icons/*": [
+        "src/uxcore/assets/icons/*"
       ]
     },
     "incremental": true

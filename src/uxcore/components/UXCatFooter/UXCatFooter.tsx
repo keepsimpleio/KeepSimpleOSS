@@ -3,7 +3,7 @@ import { FC } from 'react';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import TelegramIcon from '@icons/TelegramIcon';
+import TelegramIcon from '@uxcore/assets/icons/TelegramIcon';
 
 import styles from './UXCatFooter.module.scss';
 

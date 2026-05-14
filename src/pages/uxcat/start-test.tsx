@@ -9,7 +9,7 @@ import { UXCatConfigs } from '@uxcore/api/uxcat/configs';
 import { getUXCatStatistics } from '@uxcore/api/uxcat/statistics';
 import { getUXCatData } from '@uxcore/api/uxcat/uxcat';
 
-import startTestData from '@data/startTest';
+import startTestData from '@uxcore/data/startTest';
 
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import GenderModal from '@uxcore/components/GenderModal';

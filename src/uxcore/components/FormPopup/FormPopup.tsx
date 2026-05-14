@@ -6,7 +6,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import useFormPopup from '@uxcore/hooks/useFormPopup';
 
-import formPopupIntl from '@data/formPopup';
+import formPopupIntl from '@uxcore/data/formPopup';
 
 import Button from '@uxcore/components/Button';
 

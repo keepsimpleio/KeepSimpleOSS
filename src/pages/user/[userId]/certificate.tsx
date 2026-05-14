@@ -5,7 +5,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import { getCertificate } from '@uxcore/api/uxcat/certificate';
 
-import pageNotFoundData from '@data/404';
+import pageNotFoundData from '@uxcore/data/404';
 
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import Spinner from '@uxcore/components/Spinner';

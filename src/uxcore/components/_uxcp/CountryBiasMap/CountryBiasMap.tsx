@@ -4,7 +4,7 @@ import { type FC, useEffect, useRef, useState } from 'react';
 import type { StrapiBiasType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
 
-import { type Country, countryBiasByLocale } from '@data/countryBias';
+import { type Country, countryBiasByLocale } from '@uxcore/data/countryBias';
 
 import BiasPanel from './BiasPanel';
 import CountryList from './CountryList';

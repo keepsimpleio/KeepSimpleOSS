@@ -6,7 +6,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import { copyToClipboard } from '@uxcore/lib/helpers';
 
-import copyButtonData from '@data/copyButton';
+import copyButtonData from '@uxcore/data/copyButton';
 
 import styles from './CopyButton.module.scss';
 

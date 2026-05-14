@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import testResultData from '@data/uxcat/testResult';
+import testResultData from '@uxcore/data/uxcat/testResult';
 
 import styles from './CalculatingResults.module.scss';
 

@@ -7,7 +7,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import useMobile from '@uxcore/hooks/useMobile';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import RankingInfoAndBtn from '@uxcore/components/AccountHeader/RankingInfoAndBtn';
 import Button from '@uxcore/components/Button';

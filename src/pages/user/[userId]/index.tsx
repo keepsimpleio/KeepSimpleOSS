@@ -30,9 +30,9 @@ import { getPublicUserInfo } from '@uxcore/api/uxcat/getUser';
 import { getUXCatStatistics } from '@uxcore/api/uxcat/statistics';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 
-import pageNotFoundData from '@data/404';
+import pageNotFoundData from '@uxcore/data/404';
 
-import UXCoreIcon from '@icons/UXCoreIcon';
+import UXCoreIcon from '@uxcore/assets/icons/UXCoreIcon';
 
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import SeoGenerator from '@uxcore/components/SeoGenerator';

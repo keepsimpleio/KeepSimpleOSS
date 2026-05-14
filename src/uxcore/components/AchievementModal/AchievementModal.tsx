@@ -5,7 +5,7 @@ import { FC } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import Modal from '@uxcore/components/Modal';
 

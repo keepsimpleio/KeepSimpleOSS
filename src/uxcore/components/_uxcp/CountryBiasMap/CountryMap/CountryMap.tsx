@@ -20,7 +20,7 @@ import type { GeometryCollection, Topology } from 'topojson-specification';
 
 import type { TRouter } from '@uxcore/local-types/global';
 
-import { countryBiasByLocale, REGION_COLORS } from '@data/countryBias';
+import { countryBiasByLocale, REGION_COLORS } from '@uxcore/data/countryBias';
 
 import FlagImage from '../FlagImage';
 

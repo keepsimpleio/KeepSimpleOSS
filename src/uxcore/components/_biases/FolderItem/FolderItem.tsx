@@ -5,7 +5,7 @@ import React, { useCallback } from 'react';
 import { StrapiBiasType } from '@uxcore/local-types/data';
 import { TRouter } from '@uxcore/local-types/global';
 
-import biasesFolderViewIntl from '@data/biasesFolderView';
+import biasesFolderViewIntl from '@uxcore/data/biasesFolderView';
 
 import ContentParser from '@uxcore/components/ContentParser';
 

@@ -16,14 +16,14 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import useMobile from '@uxcore/hooks/useMobile';
 
-import decisionTable from '@data/decisionTable';
-import placeholderText from '@data/decisionTable/placeholder';
+import decisionTable from '@uxcore/data/decisionTable';
+import placeholderText from '@uxcore/data/decisionTable/placeholder';
 
-import Checkmark from '@icons/Checkmark';
-import ExportIcon from '@icons/ExportIcon';
-import FullScreenIcon from '@icons/FullScreenIcon';
-import InfoIcon from '@icons/InfoIcon';
-import PictureIcon from '@icons/PictureIcon';
+import Checkmark from '@uxcore/assets/icons/Checkmark';
+import ExportIcon from '@uxcore/assets/icons/ExportIcon';
+import FullScreenIcon from '@uxcore/assets/icons/FullScreenIcon';
+import InfoIcon from '@uxcore/assets/icons/InfoIcon';
+import PictureIcon from '@uxcore/assets/icons/PictureIcon';
 
 import DecisionTableModal from '@uxcore/components/_uxcp/DecisionTableModal/DecisionTableModal';
 import LogInModal from '@uxcore/components/_uxcp/LogInModal';

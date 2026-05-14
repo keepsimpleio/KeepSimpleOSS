@@ -7,7 +7,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { mergeBiasesLocalization } from '@uxcore/lib/helpers';
 
-import questionAnalyseData from '@data/uxcat/questionAnalyse';
+import questionAnalyseData from '@uxcore/data/uxcat/questionAnalyse';
 
 import ContentParser from '@uxcore/components/ContentParser';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';

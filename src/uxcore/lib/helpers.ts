@@ -4,7 +4,7 @@ import type { BiasType, QuestionType, StrapiBiasType } from '@uxcore/local-types
 
 import { downloadLinksEn, downloadLinksRu } from '@uxcore/api/questions';
 
-import biasesCategories from '@data/biasesCategories';
+import biasesCategories from '@uxcore/data/biasesCategories';
 
 export function scrollToImage(src: string) {
   function getOffset(el: HTMLImageElement) {

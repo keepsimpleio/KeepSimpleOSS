@@ -25,11 +25,11 @@ import { getMyInfo } from '@uxcore/api/strapi';
 import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 
-import toolHeaderData from '@data/toolHeader';
+import toolHeaderData from '@uxcore/data/toolHeader';
 
-import CloseIcon from '@icons/CloseIcon';
-import DiamondIcon from '@icons/DiamondIcon';
-import PodcastIcon from '@icons/PodcastIcon';
+import CloseIcon from '@uxcore/assets/icons/CloseIcon';
+import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
+import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
 
 import MobileHeader from '@uxcore/components/_biases/MobileHeader';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';

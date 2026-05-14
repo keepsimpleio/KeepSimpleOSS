@@ -2,7 +2,7 @@ import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import { FC } from 'react';
 
-import UxCatLogo from '@icons/UxCatLogo';
+import UxCatLogo from '@uxcore/assets/icons/UxCatLogo';
 
 import Button from '@uxcore/components/Button';
 

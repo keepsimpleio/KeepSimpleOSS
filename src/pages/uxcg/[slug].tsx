@@ -34,7 +34,7 @@ import UXCGModalMobile from '@uxcore/components/UXCGModalMobile';
 
 import UXCGLayout from '@uxcore/layouts/UXCGLayout';
 
-import { getUXCGRedirects } from '../../../lib/getUXCGRedirects';
+import { getUXCGRedirects } from '@uxcore/lib/getUXCGRedirects';
 
 import styles from './UxcgId.module.scss';
 

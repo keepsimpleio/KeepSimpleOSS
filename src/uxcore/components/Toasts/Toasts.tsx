@@ -7,7 +7,7 @@ import { TRouter } from '@uxcore/local-types/global';
 
 import { SendNotification } from '@uxcore/api/uxcat/notification';
 
-import testResult from '@data/uxcat/testResult';
+import testResult from '@uxcore/data/uxcat/testResult';
 
 import BadgeBox from '@uxcore/components/BadgeBox';
 

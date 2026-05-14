@@ -8,7 +8,7 @@ import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
 
 import { getPersonaList } from '@uxcore/api/personas';
 
-import decisionTable from '@data/decisionTable';
+import decisionTable from '@uxcore/data/decisionTable';
 
 import SavedPersonas from '@uxcore/components/_uxcp/SavedPersonas';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';

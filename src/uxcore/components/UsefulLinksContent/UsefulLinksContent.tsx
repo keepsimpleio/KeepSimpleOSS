@@ -5,7 +5,7 @@ import { FC, Fragment, useState } from 'react';
 import type { TagType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
 
-import toolHeaderData from '@data/toolHeader';
+import toolHeaderData from '@uxcore/data/toolHeader';
 
 import CustomModal from '@uxcore/components/CustomModal';
 

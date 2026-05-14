@@ -11,7 +11,7 @@ import { validateEmail } from '@uxcore/lib/helpers';
 
 import { addQuestionRequest } from '@uxcore/api/addQuestion';
 
-import addQuestionData from '@data/addQuestion';
+import addQuestionData from '@uxcore/data/addQuestion';
 
 import Button from '@uxcore/components/Button';
 import Input from '@uxcore/components/Input';

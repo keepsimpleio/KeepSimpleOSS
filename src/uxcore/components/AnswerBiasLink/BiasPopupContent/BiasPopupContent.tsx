@@ -4,7 +4,7 @@ import { FC } from 'react';
 
 import useMobile from '@uxcore/hooks/useMobile';
 
-import biasPopupIntl from '@data/biasPopup';
+import biasPopupIntl from '@uxcore/data/biasPopup';
 
 import ContentParser from '@uxcore/components/ContentParser';
 

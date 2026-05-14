@@ -6,8 +6,8 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StrapiBiasType } from '@uxcore/local-types/data';
 import { TRouter } from '@uxcore/local-types/global';
 
-import biasesCategoriesIntl from '@data/biasesCategories';
-import biasesFolderViewIntl from '@data/biasesFolderView';
+import biasesCategoriesIntl from '@uxcore/data/biasesCategories';
+import biasesFolderViewIntl from '@uxcore/data/biasesFolderView';
 
 import FolderItem from '@uxcore/components/_biases/FolderItem';
 import ContentGenerator from '@uxcore/components/ContentGenerator';

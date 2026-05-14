@@ -8,15 +8,15 @@ import type { TRouter } from '@uxcore/local-types/global';
 import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
 
-import biasesLocalization from '@data/biases';
-import biasesMobile from '@data/biasesMobile';
+import biasesLocalization from '@uxcore/data/biases';
+import biasesMobile from '@uxcore/data/biasesMobile';
 
-import CoreIcon from '@icons/CoreIcon';
-import FolderIcon from '@icons/FolderIcon';
-import { HRIconBlue } from '@icons/HRIconBlue';
-import { HRIconGrey } from '@icons/HRIconGrey';
-import { PMIcon } from '@icons/PMIcon';
-import { PMIconGrey } from '@icons/PMIconGrey';
+import CoreIcon from '@uxcore/assets/icons/CoreIcon';
+import FolderIcon from '@uxcore/assets/icons/FolderIcon';
+import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
+import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
+import { PMIcon } from '@uxcore/assets/icons/PMIcon';
+import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
 
 import Search from '@uxcore/components/_biases/Search';
 import Logos from '@uxcore/components/Logos';

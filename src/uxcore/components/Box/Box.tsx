@@ -4,7 +4,7 @@ import { FC } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import cookieData from '@data/cookies';
+import cookieData from '@uxcore/data/cookies';
 
 import Button from '@uxcore/components/Button';
 

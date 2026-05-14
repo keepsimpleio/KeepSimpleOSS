@@ -4,7 +4,7 @@ import { memo, useCallback } from 'react';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import biasesViewSwitcherIntl from '@data/biasesViewSwitcher';
+import biasesViewSwitcherIntl from '@uxcore/data/biasesViewSwitcher';
 
 import styles from './ViewSwitcher.module.scss';
 

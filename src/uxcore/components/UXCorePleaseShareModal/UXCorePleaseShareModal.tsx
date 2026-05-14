@@ -8,10 +8,10 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
 
-import sharePopupData from '@data/sharePopupData';
+import sharePopupData from '@uxcore/data/sharePopupData';
 
-import Checkmark from '@icons/Checkmark';
-import CopyIcon from '@icons/CopyIcon';
+import Checkmark from '@uxcore/assets/icons/Checkmark';
+import CopyIcon from '@uxcore/assets/icons/CopyIcon';
 
 import styles from './UXCorePleaseShareModal.module.scss';
 

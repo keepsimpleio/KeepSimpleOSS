@@ -5,7 +5,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import useMobile from '@uxcore/hooks/useMobile';
 
-import uxcpLocalization from '@data/uxcp';
+import uxcpLocalization from '@uxcore/data/uxcp';
 
 import TeamMemberSwitcher from '@uxcore/components/_uxcp/TeamMemberSwitcher';
 import Input from '@uxcore/components/Input';

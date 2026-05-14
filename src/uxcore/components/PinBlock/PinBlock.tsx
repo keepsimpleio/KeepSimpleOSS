@@ -7,7 +7,7 @@ import useImageModule from '@uxcore/hooks/useImageModule';
 
 import { scrollToImage } from '@uxcore/lib/helpers';
 
-import imageModuleData from '@data/imageModule';
+import imageModuleData from '@uxcore/data/imageModule';
 
 import styles from './PinBlock.module.scss';
 

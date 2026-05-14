@@ -11,9 +11,9 @@ import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
 
 import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 
-import testResultData from '@data/uxcat/testResult';
+import testResultData from '@uxcore/data/uxcat/testResult';
 
-import BobIconWhite from '@icons/BobIconWhite';
+import BobIconWhite from '@uxcore/assets/icons/BobIconWhite';
 
 import AddToCalendar from '@uxcore/components/AddToCalendar';
 import Button from '@uxcore/components/Button';

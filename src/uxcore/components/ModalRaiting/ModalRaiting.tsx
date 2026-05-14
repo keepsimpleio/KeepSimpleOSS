@@ -10,7 +10,7 @@ import { getRatedItems, saveInLocalStorage, updateVH } from '@uxcore/lib/helpers
 
 import { rateRequest } from '@uxcore/api/rating';
 
-import modalIntl from '@data/modalRaiting';
+import modalIntl from '@uxcore/data/modalRaiting';
 
 import styles from './ModalRaiting.module.scss';
 

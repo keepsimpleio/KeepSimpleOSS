@@ -14,10 +14,10 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
 
-import modalIntl from '@data/modal';
+import modalIntl from '@uxcore/data/modal';
 
-import HrIcon from '@icons/HrIcon';
-import ProductIcon from '@icons/ProductIcon';
+import HrIcon from '@uxcore/assets/icons/HrIcon';
+import ProductIcon from '@uxcore/assets/icons/ProductIcon';
 
 import BiasBody from '@uxcore/components/_biases/BiasBody';
 import ContentParser from '@uxcore/components/ContentParser';

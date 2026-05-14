@@ -11,7 +11,7 @@ import { useClickOutside } from '@uxcore/hooks/useClickOutside';
 
 import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import styles from './AccountInfo.module.scss';
 

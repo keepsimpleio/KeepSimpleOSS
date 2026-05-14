@@ -5,7 +5,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { TRouter } from '@uxcore/local-types/global';
 
-import uxcatData from '@data/uxcat';
+import uxcatData from '@uxcore/data/uxcat';
 
 import StartTestBtn from '@uxcore/components/StartTestBtn';
 import Tooltip from '@uxcore/components/Tooltip';

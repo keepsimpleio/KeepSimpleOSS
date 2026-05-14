@@ -20,7 +20,7 @@ import useTooltip from '@uxcore/hooks/useTooltip';
 
 import { copyToClipboard, generateSocialLinks, updateVH } from '@uxcore/lib/helpers';
 
-import modalIntl from '@data/modal';
+import modalIntl from '@uxcore/data/modal';
 
 import AnswerContentGenerator from '@uxcore/components/AnswerContentGenerator';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';

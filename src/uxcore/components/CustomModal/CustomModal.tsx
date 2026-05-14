@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import type { TagType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
 
-import customModalData from '@data/customModal';
+import customModalData from '@uxcore/data/customModal';
 
 import { AddQuestion, ContactUs } from './contentTypes';
 

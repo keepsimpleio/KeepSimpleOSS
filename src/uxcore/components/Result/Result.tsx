@@ -7,7 +7,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 
 import { getBiasNumber } from '@uxcore/lib/uxcat-helpers';
 
-import BobIcon from '@icons/BobIcon';
+import BobIcon from '@uxcore/assets/icons/BobIcon';
 
 import Tooltip from '@uxcore/components/Tooltip';
 

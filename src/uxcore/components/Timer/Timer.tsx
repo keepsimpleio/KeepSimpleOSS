@@ -9,7 +9,7 @@ import useMobile from '@uxcore/hooks/useMobile';
 
 import { getForceStop } from '@uxcore/api/uxcat/force-stop';
 
-import timerData from '@data/uxcat/timeIsUp';
+import timerData from '@uxcore/data/uxcat/timeIsUp';
 
 import Modal from '@uxcore/components/Modal';
 import ModalBody from '@uxcore/components/Timer/ModalBody';

@@ -1,10 +1,10 @@
 import { FC, useContext, useState } from 'react';
 import { usePDF } from 'react-to-pdf';
 
-import copyButtonData from '@data/copyButton';
-import downloadButtonData from '@data/downloadButton';
+import copyButtonData from '@uxcore/data/copyButton';
+import downloadButtonData from '@uxcore/data/downloadButton';
 
-import CopyLinkIcon from '@icons/CopyLinkIcon';
+import CopyLinkIcon from '@uxcore/assets/icons/CopyLinkIcon';
 
 import Button from '@uxcore/components/Button';
 import CertificateContainer from '@uxcore/components/CertificateContainer';

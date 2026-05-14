@@ -11,7 +11,7 @@ import { validateEmail } from '@uxcore/lib/helpers';
 
 import { contactUsRequest } from '@uxcore/api/contactUs';
 
-import contactUsData from '@data/contactUs';
+import contactUsData from '@uxcore/data/contactUs';
 
 import Button from '@uxcore/components/Button';
 import Input from '@uxcore/components/Input';

@@ -10,7 +10,7 @@ import { getUXCatStartTest } from '@uxcore/api/uxcat/start-test';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 import { getUXCatData } from '@uxcore/api/uxcat/uxcat';
 
-import { achievementSlugs } from '@data/uxcat/ongoingTest/realTimeAchievements';
+import { achievementSlugs } from '@uxcore/data/uxcat/ongoingTest/realTimeAchievements';
 
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import Spinner from '@uxcore/components/Spinner';

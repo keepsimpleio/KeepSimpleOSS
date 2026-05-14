@@ -12,9 +12,9 @@ import { getMyInfo } from '@uxcore/api/strapi';
 import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 
-import toolHeaderData from '@data/toolHeader';
+import toolHeaderData from '@uxcore/data/toolHeader';
 
-import PodcastIcon from '@icons/PodcastIcon';
+import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
 
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';

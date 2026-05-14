@@ -7,7 +7,7 @@ import type { TRouter } from '@uxcore/local-types/global';
 import { useClickOutside } from '@uxcore/hooks/useClickOutside';
 import useMobile from '@uxcore/hooks/useMobile';
 
-import calendar from '@data/uxcat/calendar';
+import calendar from '@uxcore/data/uxcat/calendar';
 
 import CalendarItems from '@uxcore/components/CalendarItems';
 import Modal from '@uxcore/components/Modal';
