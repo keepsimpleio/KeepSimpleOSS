@@ -20,6 +20,7 @@ import { LongevityProvider, useLongevity } from '../context/LongevityContext';
 import '../styles/globals.scss';
 import '../styles/vibesuite.scss';
 import '../styles/ai-atlas.css';
+import '../uxcore/styles/uxcore-fonts.scss';
 // import '../styles/tom.scss';
 
 type TApp = {
@@ -233,6 +234,10 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
     router.pathname.startsWith('/uxcat') ||
     router.pathname.startsWith('/uxcp') ||
     router.pathname.startsWith('/uxcore-api');
+
+  useEffect(() => {
+    document.body.classList.toggle('uxcorePage', isUxcoreRoute);
+  }, [isUxcoreRoute]);
 
   useEffect(() => {
     if (!accountData?.id || !accountData?.createdAt) return;
