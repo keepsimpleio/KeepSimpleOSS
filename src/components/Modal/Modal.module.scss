@@ -330,6 +330,14 @@
     background-color: #1b1e26;
     background-image: none;
     border: 1px solid #303338;
+
+    .body {
+      scrollbar-color: rgba(127, 179, 213, 0.4) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(127, 179, 213, 0.4);
+      }
+    }
   }
 
   .header {

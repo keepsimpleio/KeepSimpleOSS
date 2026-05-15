@@ -75,6 +75,22 @@
     .body {
       padding: 16px 28px;
       overflow: auto;
+
+      // Slim styled scrollbar so the inside of the modal does not look
+      // like a Windows-95 widget when the content overflows.
+      scrollbar-width: thin;
+      scrollbar-color: rgba(40, 88, 123, 0.4) transparent;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.4);
+        border-radius: 5px;
+      }
     }
   }
 
@@ -245,6 +261,14 @@
   .wrapper {
     background-color: #1b1e26 !important;
     border: 1px solid #303338;
+
+    .body {
+      scrollbar-color: rgba(127, 179, 213, 0.4) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(127, 179, 213, 0.4);
+      }
+    }
   }
 
   .header {

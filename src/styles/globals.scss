@@ -10,6 +10,12 @@ html {
 html {
   overflow-y: overlay;
   overflow-x: hidden;
+  // Reserve the scrollbar gutter at all times. Modals lock body scroll by
+  // setting overflow-y: hidden on <html>; without a stable gutter, the
+  // scrollbar disappears and content jumps ~15px sideways on every modal
+  // open. Stable applies to auto / scroll / hidden per CSS spec, so this
+  // covers the locked state too.
+  scrollbar-gutter: stable;
 
   /* width */
   &::-webkit-scrollbar {
@@ -49,6 +55,9 @@ html.scroll-style-articles::-webkit-scrollbar-thumb {
 html.scroll-style-longevity::-webkit-scrollbar-thumb {
   background: #e2d0b1;
 }
+// (Stable gutter is now unconditional on <html> above; this rule kept as
+// a no-op hook in case future modal logic needs to target the locked
+// state from CSS.)
 html.hide-body-move {
   scrollbar-gutter: stable;
 }

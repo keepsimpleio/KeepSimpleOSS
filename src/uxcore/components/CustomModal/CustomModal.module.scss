@@ -60,6 +60,8 @@
       max-height: calc(100vh - 315px);
       overflow: auto;
       box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(40, 88, 123, 0.4) transparent;
 
       /* width */
       &::-webkit-scrollbar {
@@ -73,7 +75,7 @@
 
       /* Handle */
       &::-webkit-scrollbar-thumb {
-        background: rgba(40, 88, 123, 0.5);
+        background: rgba(40, 88, 123, 0.4);
         border-radius: 5px;
       }
     }
@@ -162,8 +164,12 @@
       }
     }
 
-    .ModalBody::-webkit-scrollbar-thumb {
-      background: rgba(127, 179, 213, 0.5);
+    .ModalBody {
+      scrollbar-color: rgba(127, 179, 213, 0.4) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(127, 179, 213, 0.4);
+      }
     }
   }
 }
