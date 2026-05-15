@@ -108,3 +108,15 @@
     }
   }
 }
+
+// Dark theme: the stage-indicator pill renders with a saturated brand
+// color bg; in dark mode the inherited cascade can dim the white label.
+// Force white text + slightly mute the bg so the label stays legible.
+:global(body.darkTheme) .DynamicButton {
+  color: #fff !important;
+
+  & .Titles,
+  & .Title {
+    color: #fff;
+  }
+}

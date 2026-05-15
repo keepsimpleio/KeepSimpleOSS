@@ -257,12 +257,15 @@ $font-color: rgba(0, 0, 0, 0.65);
         background-color: rgba(127, 179, 213, 0.12);
       }
 
+      // The light-theme rule uses background-clip:text + a gradient that
+      // fades the bottom of long cells to white. That trick is fragile on
+      // dark — short text ends up entirely inside the fade band and the
+      // cell reads as a blurred gray smudge. Disable the clip and paint
+      // solid text instead.
       .tableText {
-        // Original light-theme value fades the bottom of long cells to
-        // white; on dark that fade goes to the panel bg instead.
-        background:
-          linear-gradient(180deg, rgba(27, 30, 38, 0) 60.23%, #1b1e26 92.05%),
-          rgba(218, 218, 218, 0.95);
+        background: none !important;
+        -webkit-text-fill-color: #dadada !important;
+        color: #dadada !important;
       }
 
       .tableTextEmpty {

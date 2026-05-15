@@ -42,3 +42,48 @@
     }
   }
 }
+
+// Dark theme: in light mode the active page is dark-blue on white; on a
+// dark page bg an inactive WHITE pill reads as "selected" while the
+// actual selected one disappears. Invert: inactive pages get a dark
+// surface, active gets a brighter blue pill that pops. Also pad more
+// generously so the clickable area is comfortable.
+:global(body.darkTheme) .Pagination {
+  & .Title {
+    color: rgba(218, 218, 218, 0.7);
+    margin-right: 8px;
+  }
+
+  & .Pages {
+    gap: 4px;
+
+    & .Page {
+      color: #dadada;
+      background-color: #151a26;
+      border: 1px solid #303338;
+      padding: 2px 10px;
+      min-width: 24px;
+      text-align: center;
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+
+      &:hover {
+        border-color: #7fb3d5;
+        color: #7fb3d5;
+      }
+
+      &.Active {
+        background-color: #5396d3;
+        border-color: #5396d3;
+        color: #fff;
+
+        &:hover {
+          background-color: #5396d3;
+          border-color: #5396d3;
+          color: #fff;
+        }
+      }
+    }
+  }
+}
