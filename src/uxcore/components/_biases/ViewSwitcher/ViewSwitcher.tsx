@@ -1,10 +1,8 @@
+import biasesViewSwitcherIntl from '@uxcore/data/biasesViewSwitcher';
+import { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { memo, useCallback } from 'react';
-
-import { TRouter } from '@uxcore/local-types/global';
-
-import biasesViewSwitcherIntl from '@uxcore/data/biasesViewSwitcher';
 
 import styles from './ViewSwitcher.module.scss';
 
@@ -47,19 +45,23 @@ const ViewSwitcher = ({
   const { locale } = router as TRouter;
   const { label, labelViewerTeam } = biasesViewSwitcherIntl[locale];
 
-  const handlePageViewChange = useCallback(
-    e => {
-      const { type } = e.currentTarget.dataset;
-      if ((type === defaultViewLabel) !== isSecondView) {
-        toggleIsCoreView();
-      }
-    },
+  // Activate the *opposite* side of the current view. Previously this was a
+  // dataset.type === defaultViewLabel comparison, which silently no-op'd
+  // whenever defaultViewLabel was undefined (the case for the "View type"
+  // pair) because both buttons read the same dataset value.
+  const handleFirstClick = useCallback(() => {
+    if (isSecondView) toggleIsCoreView?.();
+  }, [isSecondView, toggleIsCoreView]);
 
-    [isSecondView, toggleIsCoreView, defaultViewLabel],
-  );
+  const handleSecondClick = useCallback(() => {
+    if (!isSecondView) toggleIsCoreView?.();
+  }, [isSecondView, toggleIsCoreView]);
 
   const switchATeamView = () => {
-    if (defaultViewLabel === 'Product' || secondViewLabel === 'hr') {
+    if (
+      (defaultViewLabel === 'Product' || secondViewLabel === 'hr') &&
+      handleSnackbarOpening
+    ) {
       handleSnackbarOpening();
     }
   };
@@ -78,8 +80,8 @@ const ViewSwitcher = ({
           data-cy={dataCy}
           className={styles.ViewSwitcherButton}
           data-type={defaultViewLabel}
-          onClick={e => {
-            handlePageViewChange(e);
+          onClick={() => {
+            handleFirstClick();
             switchATeamView();
           }}
         >
@@ -92,8 +94,8 @@ const ViewSwitcher = ({
           data-cy={dataCySecondView}
           className={styles.ViewSwitcherButton}
           data-type={secondViewLabel}
-          onClick={e => {
-            handlePageViewChange(e);
+          onClick={() => {
+            handleSecondClick();
             switchATeamView();
           }}
         >
