@@ -1,17 +1,13 @@
+import RankingInfoAndBtn from '@uxcore/components/AccountHeader/RankingInfoAndBtn';
+import Button from '@uxcore/components/Button';
+import StartTestBtn from '@uxcore/components/StartTestBtn';
+import uxcatData from '@uxcore/data/uxcat';
+import useMobile from '@uxcore/hooks/useMobile';
+import { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import React, { FC } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-
-import { TRouter } from '@uxcore/local-types/global';
-
-import useMobile from '@uxcore/hooks/useMobile';
-
-import uxcatData from '@uxcore/data/uxcat';
-
-import RankingInfoAndBtn from '@uxcore/components/AccountHeader/RankingInfoAndBtn';
-import Button from '@uxcore/components/Button';
-import StartTestBtn from '@uxcore/components/StartTestBtn';
 
 import styles from './UserProfile.module.scss';
 
