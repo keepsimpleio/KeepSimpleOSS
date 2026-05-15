@@ -7,6 +7,10 @@ html {
 html {
   overflow-y: overlay;
   overflow-x: hidden;
+  // Reserve the scrollbar gutter at all times so modals (which set
+  // overflow-y: hidden on <html>) do not cause the page to jump sideways
+  // when the scrollbar disappears.
+  scrollbar-gutter: stable;
 
   /* width */
   &::-webkit-scrollbar {
@@ -55,9 +59,12 @@ body.darkTheme {
   color: #dadada;
 }
 
+// Modal scroll-lock marker. Width compensation is now handled by
+// `scrollbar-gutter: stable` on <html>, so this rule no longer needs to
+// push the body sideways — kept as a hook in case future modal logic
+// needs to target the locked state from CSS.
 .hide-body-move {
-  margin-right: 8px;
-  background-color: rgba(0, 0, 0, 0.35);
+  // intentionally empty
 }
 
 .Toastify__toast-container {

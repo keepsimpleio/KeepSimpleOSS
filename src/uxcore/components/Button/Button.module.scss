@@ -151,3 +151,18 @@
     }
   }
 }
+
+// Dark theme: re-skin only the default neutral button (white bg / black
+// text). Primary / Orange / OrangeOutline / BlueOutline variants keep
+// their own brand colors.
+:global(body.darkTheme)
+  .Button:not(.Primary):not(.Orange):not(.OrangeOutline):not(.BlueOutline) {
+  background-color: #151a26;
+  border-color: #303338;
+  color: #dadada;
+
+  &:not(.Disabled):hover {
+    border-color: #7fb3d5;
+    color: #7fb3d5;
+  }
+}

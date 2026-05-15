@@ -90,3 +90,35 @@
   background: #fff !important;
   color: #0b0921 !important;
 }
+
+// Dark theme: project list rows, description text, divider, and the
+// GitHub / API outline buttons all need to flip from a light-on-white
+// palette to a light-on-dark one.
+:global(body.darkTheme) {
+  .projectInfo {
+    .name {
+      color: #dadada !important;
+    }
+  }
+
+  .description,
+  .description :global(p) {
+    color: rgba(218, 218, 218, 0.75) !important;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #303338;
+  }
+
+  .buttonStyleLink {
+    border-color: #303338;
+    color: #dadada;
+    background-color: transparent;
+
+    &:hover {
+      background-color: #dadada;
+      color: #1b1e26;
+    }
+  }
+}

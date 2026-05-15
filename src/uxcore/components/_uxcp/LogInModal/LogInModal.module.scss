@@ -53,3 +53,26 @@
     line-height: 10px !important;
   }
 }
+
+// Dark theme: re-skin the provider buttons (which are white-on-light by
+// default) and the supporting copy so the whole login modal reads on a
+// dark surface.
+:global(body.darkTheme) .contentWrapper {
+  .title {
+    color: #7fb3d5;
+  }
+
+  .description {
+    color: rgba(218, 218, 218, 0.7);
+  }
+
+  .link {
+    background-color: #151a26;
+    border-color: #303338;
+    color: #dadada;
+
+    &:hover {
+      background-color: #232a3a;
+    }
+  }
+}

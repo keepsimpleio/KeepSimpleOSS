@@ -188,3 +188,40 @@
     }
   }
 }
+
+// Dark theme: re-skin the base modal chrome (wrapper bg, header divider,
+// title, close button). Modal renders through a portal under <body>, so a
+// descendant selector from body.darkTheme still matches.
+:global(body.darkTheme) .overlay {
+  background-color: rgba(0, 0, 0, 0.55);
+
+  .wrapper {
+    background-color: #1b1e26 !important;
+    border: 1px solid #303338;
+  }
+
+  .header {
+    .title {
+      color: #7fb3d5 !important;
+    }
+
+    .blackTitle {
+      color: #dadada !important;
+    }
+
+    .grayTitle {
+      color: rgba(218, 218, 218, 0.55) !important;
+    }
+
+    .closeBtn,
+    .closeBtnWithoutHeader {
+      // The close icon is a dark SVG — invert it so it reads against the
+      // dark modal chrome.
+      filter: invert(0.85);
+    }
+  }
+
+  .hasBorder {
+    border-bottom-color: #303338 !important;
+  }
+}
