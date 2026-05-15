@@ -98,6 +98,12 @@
     background-color: #1b1e26;
     border-color: #303338;
 
+    // The collapse/expand chevron is /assets/icons/caret.svg — a dark
+    // SVG that's invisible against the dark title bar. Invert to white.
+    & > img {
+      filter: invert(0.9);
+    }
+
     & .DownloadButton {
       color: #7fb3d5;
     }

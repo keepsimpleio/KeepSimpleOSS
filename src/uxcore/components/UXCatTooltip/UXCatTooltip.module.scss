@@ -186,3 +186,27 @@
     opacity: 0;
   }
 }
+
+// Dark theme: tooltip body copy. The wrapper .tooltipContainer got a
+// dark surface in Achievement.module.scss / CompletionBar.module.scss,
+// but the text rendered inside this component (title, description,
+// unlocked/statistics labels, points-to-next-level) was still
+// hard-coded dark on dark.
+:global(body.darkTheme) .achievementInfo .infoContainer {
+  .txtWrapper .title {
+    color: #dadada;
+  }
+
+  .pointsToNextLevel {
+    color: #9da3e1;
+  }
+
+  .unlockedTxt,
+  .statisticsTxt {
+    color: rgba(218, 218, 218, 0.55);
+  }
+
+  .description {
+    color: #dadada;
+  }
+}
