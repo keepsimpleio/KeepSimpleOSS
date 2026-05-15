@@ -127,3 +127,29 @@
     }
   }
 }
+
+// Dark theme: the "Relevance level / All / High / Medium / Low" filter
+// strip was a hard white horizontal bar on top of the dark column.
+:global(body.darkTheme) .PriorityFilter {
+  background-color: transparent;
+  color: #dadada;
+
+  .TitleContainer {
+    color: #dadada;
+  }
+
+  .Buttons .Button {
+    background-color: #151a26;
+    border-color: #303338;
+    color: #dadada;
+  }
+
+  // The active state already paints #28587b bg + white text — keep it,
+  // it reads on dark too. Just lift the un-selected sibling border so it
+  // matches the active button's left border in dark.
+  .Buttons.Active-all .Button:nth-child(2),
+  .Buttons.Active-high .Button:nth-child(3),
+  .Buttons.Active-medium .Button:nth-child(4) {
+    border-left-color: #28587b;
+  }
+}

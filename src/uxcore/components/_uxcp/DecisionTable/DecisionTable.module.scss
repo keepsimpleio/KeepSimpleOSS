@@ -91,11 +91,8 @@ $font-color: rgba(0, 0, 0, 0.65);
     }
 
     .tableText {
-      background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0) 60.23%,
-          #ffffff 92.05%
-        ),
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0) 60.23%, #ffffff 92.05%),
         rgba(0, 0, 0, 0.85);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -217,6 +214,80 @@ $font-color: rgba(0, 0, 0, 0.65);
       .tableTextEmpty {
         font-size: 14px;
       }
+    }
+  }
+}
+
+// Dark theme: re-skin the whole Decision Table — wrapper border, header
+// row, body row zebra striping, row hover, gradient text fade endpoint,
+// empty-cell color, divider above the footer buttons, error message
+// callout.
+:global(body.darkTheme) {
+  .mainTitle {
+    color: #dadada;
+  }
+
+  .mobileView {
+    border-color: #303338;
+  }
+
+  .wrapper {
+    border-color: #303338;
+
+    .disabledTable {
+      background: rgba(27, 30, 38, 0.55);
+    }
+
+    .table {
+      th,
+      td {
+        border-bottom-color: #303338;
+      }
+
+      th {
+        background-color: rgba(127, 179, 213, 0.06);
+        color: #dadada;
+      }
+
+      tr:nth-child(even) {
+        background-color: rgba(127, 179, 213, 0.04);
+      }
+
+      tr:hover {
+        background-color: rgba(127, 179, 213, 0.12);
+      }
+
+      .tableText {
+        // Original light-theme value fades the bottom of long cells to
+        // white; on dark that fade goes to the panel bg instead.
+        background:
+          linear-gradient(180deg, rgba(27, 30, 38, 0) 60.23%, #1b1e26 92.05%),
+          rgba(218, 218, 218, 0.95);
+      }
+
+      .tableTextEmpty {
+        color: rgba(218, 218, 218, 0.35);
+      }
+    }
+
+    .btnWrapper {
+      border-top-color: #303338;
+
+      .saveBtn {
+        background: #151a26;
+        border-color: #303338;
+        color: rgba(218, 218, 218, 0.6);
+      }
+
+      .saveBtnIcon {
+        fill: rgba(218, 218, 218, 0.6);
+      }
+    }
+
+    .errorMessage {
+      background-color: #1b1e26;
+      border-color: #fb1717;
+      color: #f5c2c7;
     }
   }
 }

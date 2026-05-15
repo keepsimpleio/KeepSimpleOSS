@@ -77,3 +77,24 @@
     }
   }
 }
+
+// Dark theme: zebra-stripe rows + "select stage to begin" placeholder.
+:global(body.darkTheme) {
+  .Table {
+    & > *:nth-child(even) {
+      background-color: rgba(127, 179, 213, 0.05);
+    }
+
+    & .NoData {
+      color: rgba(218, 218, 218, 0.45);
+    }
+  }
+
+  .Placeholder {
+    color: rgba(218, 218, 218, 0.55);
+
+    & > img {
+      filter: invert(0.85);
+    }
+  }
+}

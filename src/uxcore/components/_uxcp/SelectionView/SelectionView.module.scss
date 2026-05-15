@@ -71,3 +71,23 @@
     }
   }
 }
+
+// Dark theme: persona-name header, list metadata, "Add bias to begin"
+// placeholder.
+:global(body.darkTheme) .SelectionView {
+  .PersonaName {
+    color: #dadada;
+  }
+
+  .BiasList .selectedBiasesNum {
+    color: rgba(218, 218, 218, 0.55);
+  }
+
+  .Placeholder {
+    color: rgba(218, 218, 218, 0.55);
+
+    & > img {
+      filter: invert(0.85);
+    }
+  }
+}
