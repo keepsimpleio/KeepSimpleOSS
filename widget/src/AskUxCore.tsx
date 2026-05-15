@@ -256,6 +256,7 @@ const TEXT: Record<Lang, Record<string, string>> = {
     serverErr: 'Something broke. Try again.',
     empty: "We'll walk you through",
     retry: 'Retry',
+    yourPick: 'Your pick',
     landingLabel: 'On this page',
     navLabel: 'Now viewing',
     viewedLabel: 'Viewed',
@@ -2373,7 +2374,10 @@ export function AskUxCore({ lang }: { lang: Lang }) {
                                 return (
                                   <a
                                     key={c.url || i}
-                                    className="ks-aux-card"
+                                    className={
+                                      'ks-aux-card' +
+                                      (c.picked ? ' ks-aux-card-picked' : '')
+                                    }
                                     href={href}
                                     onMouseEnter={onHoverIn}
                                     onMouseLeave={onHoverOut}
@@ -2384,6 +2388,11 @@ export function AskUxCore({ lang }: { lang: Lang }) {
                                       onCardClick(c);
                                     }}
                                   >
+                                    {c.picked && (
+                                      <span className="ks-aux-card-pick-badge">
+                                        {t.yourPick}
+                                      </span>
+                                    )}
                                     <span className="ks-aux-card-head">
                                       {info && (
                                         <span

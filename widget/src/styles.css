@@ -1066,6 +1066,36 @@
 .ks-aux-card:nth-child(2) { animation-delay: 480ms; }
 .ks-aux-card:nth-child(3) { animation-delay: 580ms; }
 
+.ks-aux-card:hover {
+  border-color: #c75d3e;
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(199, 93, 62, 0.12);
+}
+
+.ks-aux-card-picked {
+  position: relative;
+  border-color: #c75d3e;
+  background: #fdf1ea;
+  box-shadow: inset 3px 0 0 #c75d3e;
+}
+
+.ks-aux-card-pick-badge {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  padding: 2px 8px;
+  background: #faf6ef;
+  color: #c75d3e;
+  border: 1px solid #c75d3e;
+  font-family: 'Jost-Medium', 'Jost', inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
 @keyframes ks-aux-card-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1474,8 +1504,21 @@
   border-color: #3a342d;
   color: #ece3d2;
 }
+.ks-aux-dark .ks-aux-card:hover {
+  background: #322d26;
+  border-color: #c75d3e;
+}
 .ks-aux-dark .ks-aux-card-title {
   color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-card-picked {
+  background: rgba(199, 93, 62, 0.12);
+  border-color: #c75d3e;
+}
+.ks-aux-dark .ks-aux-card-pick-badge {
+  background: transparent;
+  color: #e07d5e;
+  border-color: #e07d5e;
 }
 .ks-aux-dark .ks-aux-suggestion {
   background: #29251f;
