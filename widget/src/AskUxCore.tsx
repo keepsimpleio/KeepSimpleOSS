@@ -1226,20 +1226,33 @@ export function AskUxCore({ lang }: { lang: Lang }) {
               return null;
             }
           })();
+          const turnId = `land-${Date.now()}`;
           setTurns(cur => [
             ...cur,
             {
-              id: `land-${Date.now()}`,
+              id: turnId,
               query: '',
-              answer: text,
+              answer: '',
               citations: [],
               suggestions: [],
               mode: 'answer',
-              isStreaming: false,
+              isStreaming: true,
               kind: 'landing',
               navTitle: urlTitle || cleanPageTitle(rawTitle),
             },
           ]);
+          const finalText = text;
+          const typer = createTypewriter(turnId);
+          typer.push(finalText);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === turnId
+                  ? { ...tt, answer: finalText, isStreaming: false }
+                  : tt,
+              ),
+            );
+          });
         })
         .catch(() => {
           /* aborted or upstream fail — silent */
@@ -1406,6 +1419,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         })();
         const placeholderId = pending.placeholderId;
         justNavigatedRef.current = true;
+        let landingTurnId: string | null = null;
         setTurns(cur => {
           /* Replace the optimistic placeholder we dropped on click;
              back-compat fallback appends a fresh turn for old
@@ -1420,32 +1434,51 @@ export function AskUxCore({ lang }: { lang: Lang }) {
                  don't leave a permanent skeleton. */
               return cur.filter((_, i) => i !== idx);
             }
+            landingTurnId = cur[idx].id;
             const next = cur.slice();
             next[idx] = {
               ...next[idx],
-              answer: text,
-              isStreaming: false,
-              /* H1 wins over the optimistic card-title seed. */
+              /* Keep isStreaming true — the typewriter below fills
+                 the text in and clears the flag on completion. */
+              isStreaming: true,
+              answer: '',
               navTitle: resolvedTitle || next[idx].navTitle,
             };
             return next;
           }
           if (!text) return cur;
+          const freshId = `land-${Date.now()}`;
+          landingTurnId = freshId;
           return [
             ...cur,
             {
-              id: `land-${Date.now()}`,
+              id: freshId,
               query: '',
-              answer: text,
+              answer: '',
               citations: [],
               suggestions: [],
               mode: 'answer',
-              isStreaming: false,
+              isStreaming: true,
               kind: 'landing',
               navTitle: resolvedTitle,
             },
           ];
         });
+        if (landingTurnId && text) {
+          const finalText = text;
+          const targetId = landingTurnId;
+          const typer = createTypewriter(targetId);
+          typer.push(finalText);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === targetId
+                  ? { ...tt, answer: finalText, isStreaming: false }
+                  : tt,
+              ),
+            );
+          });
+        }
       })
       .catch(() => {
         /* landing line is best-effort — clear placeholder skeleton */
@@ -1523,11 +1556,76 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     };
   }, [turns]);
 
+  /* Typewriter constants — every bit of bot-authored text in the
+     widget (concierge stream, homepage starters, landing turns) runs
+     through the same throttle so the panel reads at one consistent
+     tempo. ~3 chars / 14ms ≈ 215 chars/sec, the feel of a fast LLM
+     stream. */
+  const STREAM_CHUNK = 3;
+  const STREAM_TICK = 14;
+  const SETTLE_MS = 160;
+
+  /* Streaming typewriter — accepts a growing target via push() and
+     drips it into the named turn at the typewriter tempo. finish()
+     marks the target final and runs onDone once the displayed text
+     has caught up. Works for both live server streams (where the
+     target keeps growing) and pre-canned text (single push). */
+  const createTypewriter = (turnId: string) => {
+    let target = '';
+    let displayed = '';
+    let timerActive = false;
+    let streamDone = false;
+    let pendingDone: (() => void) | null = null;
+
+    const advance = () => {
+      if (displayed.length < target.length) {
+        const next = Math.min(displayed.length + STREAM_CHUNK, target.length);
+        displayed = target.slice(0, next);
+        setTurns(prev =>
+          prev.map(tt =>
+            tt.id === turnId ? { ...tt, answer: displayed } : tt,
+          ),
+        );
+      }
+      if (displayed.length < target.length) {
+        window.setTimeout(advance, STREAM_TICK);
+        return;
+      }
+      timerActive = false;
+      if (streamDone && pendingDone) {
+        const cb = pendingDone;
+        pendingDone = null;
+        window.setTimeout(cb, SETTLE_MS);
+      }
+    };
+    const kick = () => {
+      if (timerActive) return;
+      if (displayed.length >= target.length) return;
+      timerActive = true;
+      advance();
+    };
+
+    return {
+      push: (next: string) => {
+        target = next;
+        kick();
+      },
+      finish: (onDone: () => void) => {
+        streamDone = true;
+        if (displayed.length >= target.length) {
+          window.setTimeout(onDone, SETTLE_MS);
+        } else {
+          pendingDone = onDone;
+          kick();
+        }
+      },
+    };
+  };
+
   /* Homepage carve-out: render a starter Q&A as a local Turn.
      Mimics the real concierge pipeline visually — a short "thinking"
-     beat with the streaming caret, then the answer types in chunks,
-     then the cards land. Without the beat + stream it reads as
-     pre-canned junk, not a live agent. */
+     beat with the streaming caret, then the answer types in chunks
+     through the shared typewriter, then the cards land. */
   const runStarter = (starter: HomepageStarter) => {
     trackEvent('homepage_starter_clicked', { lang, q: starter.q });
     const id = `${Date.now()}-starter`;
@@ -1543,46 +1641,27 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     justSubmittedRef.current = true;
     setTurns(prev => [...prev, emptyTurn]);
 
-    /* Beat 1 — "thinking" pause with the caret on but no text yet.
-       Tuned to the real concierge's average latency so the carve-out
-       reads at the same tempo as a live LLM round-trip. */
+    /* Thinking pause tuned to the real concierge's average latency
+       so the carve-out reads at the same tempo as a live round-trip. */
     const THINK_MS = 1500;
-    /* Beat 2 — type the answer in word-ish chunks. ~14ms per ~3
-       chars lands in the same feel as a real LLM stream. */
-    const STREAM_CHUNK = 3;
-    const STREAM_TICK = 14;
-    /* Beat 3 — short hold after the last char so the eye finishes,
-       then attach cards and end the stream. */
-    const SETTLE_MS = 160;
 
     window.setTimeout(() => {
-      let cursor = 0;
-      const tick = () => {
-        cursor = Math.min(cursor + STREAM_CHUNK, starter.a.length);
-        const partial = starter.a.slice(0, cursor);
+      const typer = createTypewriter(id);
+      typer.push(starter.a);
+      typer.finish(() => {
         setTurns(prev =>
-          prev.map(tt => (tt.id === id ? { ...tt, answer: partial } : tt)),
+          prev.map(tt =>
+            tt.id === id
+              ? {
+                  ...tt,
+                  answer: starter.a,
+                  citations: starter.cards,
+                  isStreaming: false,
+                }
+              : tt,
+          ),
         );
-        if (cursor < starter.a.length) {
-          window.setTimeout(tick, STREAM_TICK);
-        } else {
-          window.setTimeout(() => {
-            setTurns(prev =>
-              prev.map(tt =>
-                tt.id === id
-                  ? {
-                      ...tt,
-                      answer: starter.a,
-                      citations: starter.cards,
-                      isStreaming: false,
-                    }
-                  : tt,
-              ),
-            );
-          }, SETTLE_MS);
-        }
-      };
-      tick();
+      });
     }, THINK_MS);
   };
 
@@ -1655,13 +1734,13 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         }
         return null;
       })();
+      /* Server tokens often arrive in bursts; route them through the
+         shared typewriter so every answer types in at the same steady
+         tempo as the homepage starters. Cards/suggestions attach in
+         finish() once the displayed text catches up. */
+      const typer = createTypewriter(id);
       const onChunk = (current: string) => {
-        const cleanedPartial = stripMarkers(current);
-        setTurns(prev =>
-          prev.map(tt =>
-            tt.id === id ? { ...tt, answer: cleanedPartial } : tt,
-          ),
-        );
+        typer.push(stripMarkers(current));
       };
       const result = await askConcierge(
         query,
@@ -1673,25 +1752,27 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         lastPick,
       );
       const cleaned = stripMarkers(result.answer);
-
-      setTurns(prev =>
-        prev.map(tt =>
-          tt.id === id
-            ? {
-                ...tt,
-                answer: cleaned,
-                citations: result.citations,
-                suggestions: result.suggestions,
-                mode: result.mode,
-                isStreaming: false,
-              }
-            : tt,
-        ),
-      );
-      trackEvent('answer_received', {
-        lang,
-        citations: result.citations.length,
-        mode: result.mode,
+      typer.push(cleaned);
+      typer.finish(() => {
+        setTurns(prev =>
+          prev.map(tt =>
+            tt.id === id
+              ? {
+                  ...tt,
+                  answer: cleaned,
+                  citations: result.citations,
+                  suggestions: result.suggestions,
+                  mode: result.mode,
+                  isStreaming: false,
+                }
+              : tt,
+          ),
+        );
+        trackEvent('answer_received', {
+          lang,
+          citations: result.citations.length,
+          mode: result.mode,
+        });
       });
     } catch (e) {
       const code = errCode(e);
