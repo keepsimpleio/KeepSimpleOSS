@@ -45,16 +45,15 @@ const ViewSwitcher = ({
   const { locale } = router as TRouter;
   const { label, labelViewerTeam } = biasesViewSwitcherIntl[locale];
 
-  // Activate the *opposite* side of the current view. Previously this was a
-  // dataset.type === defaultViewLabel comparison, which silently no-op'd
-  // whenever defaultViewLabel was undefined (the case for the "View type"
-  // pair) because both buttons read the same dataset value.
+  // First button is the "active" side when isSecondView=true (the
+  // .FolderView class is applied then), second button is active when
+  // isSecondView=false. Toggle only when the inactive side is clicked.
   const handleFirstClick = useCallback(() => {
-    if (isSecondView) toggleIsCoreView?.();
+    if (!isSecondView) toggleIsCoreView?.();
   }, [isSecondView, toggleIsCoreView]);
 
   const handleSecondClick = useCallback(() => {
-    if (!isSecondView) toggleIsCoreView?.();
+    if (isSecondView) toggleIsCoreView?.();
   }, [isSecondView, toggleIsCoreView]);
 
   const switchATeamView = () => {
