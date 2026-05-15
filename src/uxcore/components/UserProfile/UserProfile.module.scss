@@ -227,7 +227,20 @@
   }
 }
 
-// Dark theme: user-profile header colors.
+// Dark theme: user-profile header colors. Cover image is set inline via
+// JS so override with !important + dark fill + darken any image that's
+// rendered behind to keep the panel readable.
+:global(body.darkTheme) .userProfile {
+  background-image: none !important;
+  background-color: #1b1e26 !important;
+  border: 1px solid #303338;
+  border-radius: 4px;
+
+  &.guestMode {
+    background-color: #15181f !important;
+  }
+}
+
 :global(body.darkTheme) .userProfile {
   .wrapper {
     .badgeWrapper .badgeTooltip {

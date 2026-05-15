@@ -548,16 +548,25 @@
   .removeHover {
     background-color: #303338;
   }
+}
 
-  .progressBarWrapper .tooltipContainer {
-    background:
-      linear-gradient(
-        94deg,
-        rgba(35, 42, 58, 0.85) 23.62%,
-        rgba(45, 50, 75, 0.85) 99.75%
-      ),
-      #1b1e26;
-    border-color: #303338;
-    color: #dadada;
+// react-tooltip portals the popup to <body>, so it sits OUTSIDE
+// .progressBarWrapper — the previous descendant-scoped rule never
+// matched. Target the class globally so the level-hover tooltip on the
+// CompletionBar gets a dark surface like the rest of the page.
+:global(body.darkTheme) .tooltipContainer {
+  background:
+    linear-gradient(
+      94deg,
+      rgba(35, 42, 58, 0.85) 23.62%,
+      rgba(45, 50, 75, 0.85) 99.75%
+    ),
+    #1b1e26;
+  border-color: #303338;
+  color: #dadada;
+
+  > div:nth-child(2) {
+    border-bottom-color: #303338;
+    border-right-color: #303338;
   }
 }

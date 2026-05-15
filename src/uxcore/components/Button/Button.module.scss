@@ -166,3 +166,10 @@
     color: #7fb3d5;
   }
 }
+
+// Dark theme: outline variants — keep the brand border + text but drop
+// the white surface fill so the button reads on dark.
+:global(body.darkTheme) .OrangeOutline,
+:global(body.darkTheme) .BlueOutline {
+  background: transparent;
+}

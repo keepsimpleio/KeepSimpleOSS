@@ -88,6 +88,28 @@
   }
 }
 
+// Dark theme: the legacy `&.darkTheme` modifier only kicks in when the
+// component sets a `darkTheme` class on itself; on /uxcat it doesn't,
+// so the Rules accordion stayed white-on-light. Auto-apply via body
+// class so every accordion picks up dark without per-component plumbing.
+:global(body.darkTheme) .Accordion {
+  & .Title {
+    color: #dadada;
+    background-color: #1b1e26;
+    border-color: #303338;
+
+    & .DownloadButton {
+      color: #7fb3d5;
+    }
+  }
+
+  & .Content {
+    background-color: #1b1e26;
+    border-color: #303338;
+    color: #dadada;
+  }
+}
+
 @media (max-width: 800px) {
   .Accordion {
     & .Title {
