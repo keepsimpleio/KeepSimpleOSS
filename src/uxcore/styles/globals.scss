@@ -57,6 +57,13 @@ body {
 body.darkTheme {
   background: linear-gradient(180deg, #1b1e26 0%, #151a26 100%), #1b1e26;
   color: #dadada;
+
+  // Default divider on the dark site — used by modals (Our Projects etc.)
+  // and any other surface that renders a bare <hr>.
+  hr {
+    border: none;
+    border-top: 1px solid #303338;
+  }
 }
 
 // Modal scroll-lock marker. Width compensation is now handled by
