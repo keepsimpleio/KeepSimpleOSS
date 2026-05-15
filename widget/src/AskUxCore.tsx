@@ -504,6 +504,295 @@ const HOMEPAGE_STARTERS: Record<Lang, HomepageStarter[]> = {
   ],
 };
 
+type PageLanding = {
+  message: string;
+  cards: Citation[];
+};
+
+/* Curated per-page landings. When the visitor lands on one of these
+   paths (organic nav OR following a card click) and we haven't already
+   shown this page's curated landing this session, the widget renders
+   a hand-crafted message + cards locally instead of asking the server
+   landing endpoint. Server landing keeps running for everything else.
+
+   Once-per-session is keyed off canonical pathname (locale-stripped)
+   in sessionStorage — clears on tab close. Revisits within the same
+   session get no landing turn at all (not curated, not server) so
+   the visitor isn't nagged by repeated greetings. */
+const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
+  en: {
+    '/uxcore': {
+      message:
+        "You're in **UX Core** — our open library of cognitive biases, each mapped to real product and HR scenarios with debiasing strategies. If you're not sure where to start, the 10-minute Awareness Test gives you a personal pulse on which biases bend your decisions today.",
+      cards: [
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'The only science-backed awareness test. <7 minutes of your time needed',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: '1000+ nudging examples for your org/startup',
+        },
+        {
+          title: 'Persona Map',
+          url: '/uxcp',
+          type: 'project',
+          nominated: true,
+          blurb: 'Find your nationality and learn more about your neighbours',
+        },
+      ],
+    },
+    '/tools/longevity-protocol': {
+      message:
+        "You're in the **Longevity Protocol** — our take on long-haul health, distilled into a small set of practices we actually run on ourselves. Same principle as the rest of keepsimple: smart defaults beat willpower.",
+      cards: [
+        {
+          title: 'Tools',
+          url: '/tools',
+          type: 'project',
+          nominated: true,
+          blurb: 'Other small utilities we built and opened up',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Cognitive backbone behind the protocol',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on decisions and discipline',
+        },
+      ],
+    },
+    '/tools': {
+      message:
+        '**Tools** is the workshop — small utilities we built for ourselves and opened up. Each one solves a sharp, real problem we hit; nothing here for showroom reasons.',
+      cards: [],
+    },
+    '/ai-atlas': {
+      message:
+        "You're in the **AI Atlas** — the orbital map of everything we run, who runs it, and how the agents talk to each other. Open transparency layer; nothing hidden, nothing aspirational.",
+      cards: [
+        {
+          title: 'Terminal',
+          url: '/ai-atlas#terminal',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'Plenty of tips and tricks are in hands of the Terminal',
+        },
+        {
+          title: 'Tools',
+          url: '/ai-atlas#tools',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'And a bunch of tweaks here',
+        },
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'All humans behind the project',
+        },
+      ],
+    },
+    '/articles': {
+      message:
+        '**Articles** — the long-form ledger, mostly Wolf, public since 2014. Cognitive science, product, project management — written when we have something to say, not on a publishing schedule.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'The bias library that grew out of these notes',
+        },
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: 'Find your own biases first',
+        },
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Who chips in alongside Wolf',
+        },
+      ],
+    },
+  },
+  ru: {
+    '/uxcore': {
+      message:
+        'Ты в **UX Core** — открытой библиотеке когнитивных искажений, каждое привязано к реальным продуктовым и HR-сценариям и снабжено стратегиями дебайзинга. Если не знаешь с чего начать — 10-минутный тест осознанности даст персональный срез: какие искажения гнут твои решения сегодня.',
+      cards: [
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'Единственный научно-обоснованный тест осознанности. Меньше 7 минут твоего времени',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: '1000+ примеров нуджинга для твоей компании или стартапа',
+        },
+        {
+          title: 'Persona Map',
+          url: '/uxcp',
+          type: 'project',
+          nominated: true,
+          blurb: 'Найди свою национальность и узнай больше про своих соседей',
+        },
+      ],
+    },
+    '/tools/longevity-protocol': {
+      message:
+        'Ты в **Longevity Protocol** — это наш взгляд на долгое здоровье, упакованный в небольшой набор практик, которые мы сами на себе и используем. Тот же принцип что и в остальном keepsimple: умные дефолты бьют силу воли.',
+      cards: [
+        {
+          title: 'Tools',
+          url: '/tools',
+          type: 'project',
+          nominated: true,
+          blurb: 'Другие маленькие утилиты которые мы собрали и открыли',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Когнитивный костяк за протоколом',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про решения и дисциплину',
+        },
+      ],
+    },
+    '/tools': {
+      message:
+        '**Tools** — это мастерская: маленькие утилиты, которые мы собрали для себя и открыли наружу. Каждая решает реальную острую проблему; ничего здесь не лежит "для витрины".',
+      cards: [],
+    },
+    '/ai-atlas': {
+      message:
+        'Ты в **AI Atlas** — это орбитальная карта всего, что мы запускаем: кто что делает и как наши агенты общаются друг с другом. Открытый слой прозрачности; ничего не спрятано, ничего вымышленного.',
+      cards: [
+        {
+          title: 'Терминал',
+          url: '/ai-atlas#terminal',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'Куча подсказок и фишек в руках Терминала',
+        },
+        {
+          title: 'Tools',
+          url: '/ai-atlas#tools',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'И целая куча твиков вот здесь',
+        },
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Все люди за этим проектом',
+        },
+      ],
+    },
+    '/articles': {
+      message:
+        '**Статьи** — длинный публичный журнал, в основном Wolf, открыт с 2014. Когнитивная наука, продукт, проект-менеджмент — пишется когда есть что сказать, а не по расписанию.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Библиотека искажений, выросшая из этих заметок',
+        },
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: 'Сначала найди собственные искажения',
+        },
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Кто пишет вместе с Wolf-ом',
+        },
+      ],
+    },
+  },
+};
+
+const CURATED_LANDING_FIRED_KEY = 'ks_aux_curated_landing_v1';
+const curatedLandingPathKey = (rawUrl: string): string | null => {
+  try {
+    const u = new URL(rawUrl, window.location.origin);
+    let p = u.pathname.replace(/^\/(ru|hy|en)(?=\/|$)/, '');
+    p = p.replace(/\/+$/, '');
+    return p || '/';
+  } catch {
+    return null;
+  }
+};
+const getCuratedLandingFor = (
+  rawUrl: string,
+  lang: Lang,
+): { key: string; entry: PageLanding } | null => {
+  const key = curatedLandingPathKey(rawUrl);
+  if (!key) return null;
+  const entry = PAGE_LANDINGS[lang][key];
+  return entry ? { key, entry } : null;
+};
+const hasCuratedLandingFired = (key: string): boolean => {
+  try {
+    const raw = sessionStorage.getItem(CURATED_LANDING_FIRED_KEY) || '{}';
+    return !!JSON.parse(raw)[key];
+  } catch {
+    return false;
+  }
+};
+const markCuratedLandingFired = (key: string) => {
+  try {
+    const raw = sessionStorage.getItem(CURATED_LANDING_FIRED_KEY) || '{}';
+    const obj = JSON.parse(raw);
+    obj[key] = Date.now();
+    sessionStorage.setItem(CURATED_LANDING_FIRED_KEY, JSON.stringify(obj));
+  } catch {
+    /* sessionStorage disabled — fall through; landing will fire each visit */
+  }
+};
+
 type TypeKey =
   | 'bias'
   | 'article'
@@ -1203,6 +1492,60 @@ export function AskUxCore({ lang }: { lang: Lang }) {
        Aborts in flight if another nav happens before the response. */
     const fireOrganicLanding = (rawUrl: string, rawTitle: string) => {
       organicAbortRef.current?.abort();
+
+      /* Curated-landing carve-out (PAGE_LANDINGS): on the listed
+         pages we render a hand-crafted message + cards locally and
+         skip the server landing entirely. Once-per-session — revisit
+         within the same tab gets nothing (no curated, no server). */
+      const curated = getCuratedLandingFor(rawUrl, lang);
+      if (curated) {
+        if (hasCuratedLandingFired(curated.key)) return;
+        markCuratedLandingFired(curated.key);
+        justNavigatedRef.current = true;
+        const urlTitle = (() => {
+          try {
+            return deriveSpatialTitleFromUrl(new URL(rawUrl).pathname);
+          } catch {
+            return null;
+          }
+        })();
+        const turnId = `land-${Date.now()}`;
+        setTurns(cur => [
+          ...cur,
+          {
+            id: turnId,
+            query: '',
+            answer: '',
+            citations: [],
+            suggestions: [],
+            mode: 'answer',
+            isStreaming: true,
+            kind: 'landing',
+            navTitle: urlTitle || cleanPageTitle(rawTitle),
+          },
+        ]);
+        const { message, cards } = curated.entry;
+        window.setTimeout(() => {
+          const typer = createTypewriter(turnId);
+          typer.push(message);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === turnId
+                  ? {
+                      ...tt,
+                      answer: message,
+                      citations: cards,
+                      isStreaming: false,
+                    }
+                  : tt,
+              ),
+            );
+          });
+        }, 2200);
+        return;
+      }
+
       const ctrl = new AbortController();
       organicAbortRef.current = ctrl;
       fetch('/api/concierge-landing', {
@@ -1388,6 +1731,93 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       return;
     }
     pendingLandingRef.current = null;
+
+    /* Curated-landing carve-out (PAGE_LANDINGS): same logic as
+       organic landing — if the destination has a curated entry and
+       it hasn't fired this session, replace the click-time placeholder
+       with the curated message + cards locally and skip the server.
+       If it already fired this session, drop the placeholder silently. */
+    {
+      const curated = getCuratedLandingFor(window.location.href, lang);
+      if (curated) {
+        const placeholderId = pending.placeholderId;
+        if (hasCuratedLandingFired(curated.key)) {
+          if (placeholderId !== undefined) {
+            setTurns(cur => cur.filter(tt => tt.id !== placeholderId));
+          }
+          return;
+        }
+        markCuratedLandingFired(curated.key);
+        justNavigatedRef.current = true;
+        const resolvedTitle = (() => {
+          if (/^\/(?:ru|hy|en)?\/?$/i.test(window.location.pathname)) {
+            return 'Keep Simple';
+          }
+          const urlTitle = deriveSpatialTitleFromUrl(window.location.pathname);
+          if (urlTitle) return urlTitle.slice(0, 200);
+          const h1 = document
+            .querySelector('h1')
+            ?.textContent?.replace(/\s+/g, ' ')
+            .trim();
+          if (h1) return h1.slice(0, 200);
+          return cleanPageTitle(pending.title) || '';
+        })();
+        let landingTurnId = `land-${Date.now()}`;
+        setTurns(cur => {
+          const idx =
+            placeholderId !== undefined
+              ? cur.findIndex(tt => tt.id === placeholderId)
+              : -1;
+          if (idx >= 0) {
+            landingTurnId = cur[idx].id;
+            const next = cur.slice();
+            next[idx] = {
+              ...next[idx],
+              isStreaming: true,
+              answer: '',
+              navTitle: resolvedTitle || next[idx].navTitle,
+            };
+            return next;
+          }
+          return [
+            ...cur,
+            {
+              id: landingTurnId,
+              query: '',
+              answer: '',
+              citations: [],
+              suggestions: [],
+              mode: 'answer',
+              isStreaming: true,
+              kind: 'landing',
+              navTitle: resolvedTitle,
+            },
+          ];
+        });
+        const { message, cards } = curated.entry;
+        const targetId = landingTurnId;
+        window.setTimeout(() => {
+          const typer = createTypewriter(targetId);
+          typer.push(message);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === targetId
+                  ? {
+                      ...tt,
+                      answer: message,
+                      citations: cards,
+                      isStreaming: false,
+                    }
+                  : tt,
+              ),
+            );
+          });
+        }, 2200);
+        return;
+      }
+    }
+
     let cancelled = false;
     fetch('/api/concierge-landing', {
       method: 'POST',
