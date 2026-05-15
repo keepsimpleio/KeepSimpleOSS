@@ -439,6 +439,14 @@
     .SelectionTxt {
       color: rgba(218, 218, 218, 0.7) !important;
     }
+
+    // "All Questions" button uses inline backgroundColor: #282828, which is
+    // basically the dark page bg. Override with a lighter neutral so it reads
+    // as a real button.
+    .AllQuestionsButton {
+      background-color: #2f3441 !important;
+      color: #dadada !important;
+    }
   }
 
   .TableRow {
