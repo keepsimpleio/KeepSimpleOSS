@@ -160,3 +160,11 @@
 :global(body.darkTheme) .iconAndTitle .title {
   color: rgba(218, 218, 218, 0.85) !important;
 }
+
+// Dark theme: the unselected tile uses a light grey PNG as its background,
+// which leaks light-theme look in dark mode. Invert + darken just the
+// unselected image so the texture survives and contrast holds. Selected tile
+// keeps its colored background untouched.
+:global(body.darkTheme) .tagContainer:not(.selected) .backgroundImage {
+  filter: invert(1) brightness(0.55) contrast(1.05);
+}
