@@ -2,6 +2,7 @@ import { getOurProjects } from '@uxcore/api/our-projects';
 import { GlobalContext as UXCoreGlobalContext } from '@uxcore/components/Context/GlobalContext';
 import UXCoreLayoutShell from '@uxcore/layouts/Layout';
 import { useRouter } from 'next/router';
+import Script from 'next/script';
 import { SessionProvider } from 'next-auth/react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -381,6 +382,15 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
             <Component {...pageProps} />
           </Layout>
         )}
+        {/* Global concierge widget — Vite-bundled IIFE, built by the
+            `prebuild:widget` script and served from /ask-ux-core-dev.js.
+            afterInteractive: load after hydration so the script does not
+            block page-time-to-interactive (it is a chat widget, not
+            critical path). */}
+        <Script
+          src={`/ask-ux-core-dev.js?v=${process.env.NEXT_PUBLIC_BUILD_ID ?? Date.now()}`}
+          strategy="afterInteractive"
+        />
       </GlobalContext.Provider>
     </SessionProvider>
   );
