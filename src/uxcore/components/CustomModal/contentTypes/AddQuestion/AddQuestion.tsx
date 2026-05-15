@@ -1,22 +1,16 @@
-import { useRouter } from 'next/router';
-import { FC, useCallback, useState } from 'react';
-
-import type { TagType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useFormPopup from '@uxcore/hooks/useFormPopup';
-import useSpinner from '@uxcore/hooks/useSpinner';
-
-import { validateEmail } from '@uxcore/lib/helpers';
-
 import { addQuestionRequest } from '@uxcore/api/addQuestion';
-
-import addQuestionData from '@uxcore/data/addQuestion';
-
 import Button from '@uxcore/components/Button';
 import Input from '@uxcore/components/Input';
 import Tag from '@uxcore/components/Tag';
 import Textarea from '@uxcore/components/Textarea';
+import addQuestionData from '@uxcore/data/addQuestion';
+import useFormPopup from '@uxcore/hooks/useFormPopup';
+import useSpinner from '@uxcore/hooks/useSpinner';
+import { validateEmail } from '@uxcore/lib/helpers';
+import type { TagType } from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
+import { useRouter } from 'next/router';
+import { FC, useCallback, useState } from 'react';
 
 import styles from './AddQuestion.module.scss';
 

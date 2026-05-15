@@ -1,3 +1,5 @@
+import { countryBiasByLocale, REGION_COLORS } from '@uxcore/data/countryBias';
+import type { TRouter } from '@uxcore/local-types/global';
 import {
   geoGraticule10,
   geoNaturalEarth1,
@@ -17,10 +19,6 @@ import {
 } from 'react';
 import { feature } from 'topojson-client';
 import type { GeometryCollection, Topology } from 'topojson-specification';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { countryBiasByLocale, REGION_COLORS } from '@uxcore/data/countryBias';
 
 import FlagImage from '../FlagImage';
 

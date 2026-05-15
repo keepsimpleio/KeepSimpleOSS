@@ -1,3 +1,7 @@
+import { countryBiasByLocale, REGION_COLORS } from '@uxcore/data/countryBias';
+import { sanitizeHtml } from '@uxcore/lib/sanitizeHtml';
+import type { StrapiBiasType } from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
@@ -9,13 +13,6 @@ import {
   useRef,
   useState,
 } from 'react';
-
-import type { StrapiBiasType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { sanitizeHtml } from '@uxcore/lib/sanitizeHtml';
-
-import { countryBiasByLocale, REGION_COLORS } from '@uxcore/data/countryBias';
 
 import FlagImage from '../FlagImage';
 

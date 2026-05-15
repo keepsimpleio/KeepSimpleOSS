@@ -1,21 +1,15 @@
-import cn from 'classnames';
-import { useRouter } from 'next/router';
-import { FC, useCallback, useState } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useFormPopup from '@uxcore/hooks/useFormPopup';
-import useSpinner from '@uxcore/hooks/useSpinner';
-
-import { validateEmail } from '@uxcore/lib/helpers';
-
 import { contactUsRequest } from '@uxcore/api/contactUs';
-
-import contactUsData from '@uxcore/data/contactUs';
-
 import Button from '@uxcore/components/Button';
 import Input from '@uxcore/components/Input';
 import Textarea from '@uxcore/components/Textarea';
+import contactUsData from '@uxcore/data/contactUs';
+import useFormPopup from '@uxcore/hooks/useFormPopup';
+import useSpinner from '@uxcore/hooks/useSpinner';
+import { validateEmail } from '@uxcore/lib/helpers';
+import type { TRouter } from '@uxcore/local-types/global';
+import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { FC, useCallback, useState } from 'react';
 
 import styles from './ContactUs.module.scss';
 
