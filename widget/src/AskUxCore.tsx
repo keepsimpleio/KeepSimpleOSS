@@ -323,7 +323,7 @@ const HOMEPAGE_STARTERS: Record<Lang, HomepageStarter[]> = {
   en: [
     {
       q: 'What does keepsimple actually make?',
-      a: "keepsimple is an open-source movement at the intersection of cognitive science, product, and engineering — running since 2019. The flagship is **UX Core**, the world's largest free library of cognitive biases and nudging strategies (used at Duke, Harvard, MIT, Google, Amazon). Around it: a designer's guide, an awareness self-test, persona maps, articles, small tools, and an orbital map of the wider work.",
+      a: "keepsimple is an open-source movement at the intersection of cognitive science, product, and engineering — running since 2019. The flagship is **UX Core**, the world's largest free library of cognitive biases and nudging strategies (used at Duke, Harvard, MIT, Google, Amazon).",
       cards: [
         {
           title: 'UX Core',
@@ -414,7 +414,7 @@ const HOMEPAGE_STARTERS: Record<Lang, HomepageStarter[]> = {
   ru: [
     {
       q: 'Чем занимается keepsimple?',
-      a: 'keepsimple — open-source движение на стыке когнитивной науки, продукта и инженерии, с 2019 года. Флагман — **UX Core**, крупнейшая в мире бесплатная библиотека когнитивных искажений и стратегий нуджинга (её используют в Duke, Harvard, MIT, Google, Amazon). Вокруг: гайд для дизайнеров, тест осознанности, персона-карты, статьи, утилиты и орбитальная карта всего проекта.',
+      a: 'keepsimple — open-source движение на стыке когнитивной науки, продукта и инженерии, с 2019 года. Флагман — **UX Core**, крупнейшая в мире бесплатная библиотека когнитивных искажений и стратегий нуджинга (её используют в Duke, Harvard, MIT, Google, Amazon).',
       cards: [
         {
           title: 'UX Core',
@@ -1643,7 +1643,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
 
     /* Thinking pause tuned to the real concierge's average latency
        so the carve-out reads at the same tempo as a live round-trip. */
-    const THINK_MS = 1500;
+    const THINK_MS = 2200;
 
     window.setTimeout(() => {
       const typer = createTypewriter(id);

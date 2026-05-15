@@ -1066,12 +1066,6 @@
 .ks-aux-card:nth-child(2) { animation-delay: 480ms; }
 .ks-aux-card:nth-child(3) { animation-delay: 580ms; }
 
-.ks-aux-card:hover {
-  border-color: #c75d3e;
-  transform: translateX(2px);
-  box-shadow: 0 2px 8px rgba(199, 93, 62, 0.12);
-}
-
 @keyframes ks-aux-card-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1479,10 +1473,6 @@
   background: #29251f;
   border-color: #3a342d;
   color: #ece3d2;
-}
-.ks-aux-dark .ks-aux-card:hover {
-  background: #322d26;
-  border-color: #c75d3e;
 }
 .ks-aux-dark .ks-aux-card-title {
   color: #ece3d2;
