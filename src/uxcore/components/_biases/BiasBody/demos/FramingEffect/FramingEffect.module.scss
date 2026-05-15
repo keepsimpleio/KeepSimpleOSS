@@ -1,0 +1,170 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  box-shadow: $shadow-card;
+}
+
+.iconWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.iconWarning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-round;
+  background: #fdecea;
+  color: #c0392b;
+  font-size: $font-size-lg;
+  font-weight: 700;
+}
+
+.iconSuccess {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-round;
+  background: #eafaf1;
+  color: $tag-green;
+  font-size: $font-size-lg;
+  font-weight: 700;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+  text-align: center;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  text-align: center;
+}
+
+.riskBox {
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.riskLabel {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: #c0392b;
+}
+
+.riskValue {
+  font-size: $font-size-sm;
+  color: #a93226;
+}
+
+.successBox {
+  background: #eafaf1;
+  border: 1px solid #a9dfbf;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.successLabel {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: #1e8449;
+}
+
+.successValue {
+  font-size: $font-size-sm;
+  color: #1e8449;
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+}
+
+.btnSecondary {
+  flex: 1;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnPrimary {
+  flex: 1;
+  padding: $space-sm;
+  border: none;
+  border-radius: $border-radius;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+}
+
+.labelGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}

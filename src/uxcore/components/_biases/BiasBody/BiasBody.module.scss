@@ -1,0 +1,151 @@
+@use './tokens' as *;
+
+.Body {
+  flex: 1;
+}
+
+.MetaTitle {
+  display: inline-block;
+  color: #ffffff;
+  font-size: 14px;
+  background-color: #2a2a2a;
+  font-weight: 300;
+  padding: 0 8px;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 18.2px;
+  font-family:
+    IBM Plex Mono,
+    sans-serif;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 18px;
+}
+
+.Scenario {
+  font-size: $font-size-base;
+  color: #000000;
+  margin-bottom: $space-xl;
+  line-height: 1.5;
+}
+
+.ScenarioLabel {
+  opacity: 0.5;
+}
+
+.Demos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-xl;
+  margin-bottom: $space-xl;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.DemoPanel {
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.PanelLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  text-align: center;
+  color: $text-secondary;
+}
+
+.PanelContent {
+  padding: $space-lg;
+  min-height: 150px;
+}
+
+.PanelDescription {
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  border-top: 1px solid $border-color;
+  line-height: 1.5;
+}
+
+.Explanation {
+  background: #eef4ff;
+  border-left: 2px solid #5b9bd5;
+  padding: 8px 16px;
+}
+
+.ExplanationLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1e56a0;
+  margin-bottom: 8px;
+}
+
+.Explanation p {
+  font-size: $font-size-base;
+  line-height: 1.6;
+  color: #000000e5;
+}
+
+.Loading,
+.Missing {
+  padding: 20px;
+  color: $text-secondary;
+  text-align: center;
+}
+
+// Dark theme: align BiasBody to the main UX Core palette. Explicit-
+// descendant form because the wrapper-only :global() pattern can drop
+// the CSS-module hashing on nested classes.
+:global(body.darkTheme) .Body {
+  .MetaTitle {
+    color: #ffffff;
+    background-color: rgba(127, 179, 213, 0.32);
+  }
+
+  .Scenario {
+    color: rgba(218, 218, 218, 0.92);
+  }
+
+  .DemoPanel {
+    border-color: #303338;
+    background-color: #151a26;
+  }
+
+  .PanelLabel {
+    color: rgba(218, 218, 218, 0.7);
+    background-color: #0e1219;
+  }
+
+  .PanelContent {
+    background-color: #151a26;
+  }
+
+  .PanelDescription {
+    color: rgba(218, 218, 218, 0.75);
+    border-top-color: #303338;
+    background-color: #151a26;
+  }
+
+  .Explanation {
+    background: rgba(76, 140, 193, 0.12);
+    border-left-color: #4c8cc1;
+  }
+
+  .ExplanationLabel {
+    color: #bbe4f2;
+  }
+
+  .Explanation p {
+    color: rgba(218, 218, 218, 0.92);
+  }
+
+  .Loading,
+  .Missing {
+    color: rgba(218, 218, 218, 0.7);
+  }
+}

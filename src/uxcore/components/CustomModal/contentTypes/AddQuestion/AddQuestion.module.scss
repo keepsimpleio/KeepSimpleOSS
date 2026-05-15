@@ -1,0 +1,49 @@
+.AddQuestion {
+  & .Label,
+  & .Content {
+    font-size: 14px;
+    color: #000;
+    margin-bottom: 20px;
+  }
+
+  & .Label {
+    margin-bottom: 15px;
+  }
+
+  & .TagsContainer {
+    margin-bottom: 20px;
+
+    & div + div {
+      margin-left: 5px;
+    }
+  }
+
+  & .Tag {
+    margin-right: 4px;
+    margin-bottom: 5px;
+  }
+
+  & .Footer {
+    margin-top: 40px;
+
+    & .Buttons {
+      text-align: right;
+
+      & button + button {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .AddQuestion {
+    & .Footer {
+      & .Buttons {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  }
+}

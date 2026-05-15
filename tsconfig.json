@@ -30,7 +30,19 @@
       "@local-types/*": ["src/local-types/*"],
       "@utils/*": ["src/utils/*"],
       "@icons/*": ["src/assets/icons/*"],
-      "react": ["node_modules/@types/react"]
+      "react": ["node_modules/@types/react"],
+      "@uxcore/components/*": ["src/uxcore/components/*"],
+      "@uxcore/data/*": ["src/uxcore/data/*"],
+      "@uxcore/hooks/*": ["src/uxcore/hooks/*"],
+      "@uxcore/layouts/*": ["src/uxcore/layouts/*"],
+      "@uxcore/lib/*": ["src/uxcore/lib/*"],
+      "@uxcore/api/*": ["src/uxcore/api/*"],
+      "@uxcore/styles/*": ["src/uxcore/styles/*"],
+      "@uxcore/local-types/*": ["src/uxcore/local-types/*"],
+      "@uxcore/assets/*": ["src/uxcore/assets/*"],
+      "@uxcore/constants/*": ["src/uxcore/constants/*"],
+      "@uxcore/utils/*": ["src/uxcore/utils/*"],
+      "@uxcore/assets/icons/*": ["src/uxcore/assets/icons/*"]
     },
     "incremental": true
   },

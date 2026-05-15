@@ -2,6 +2,8 @@ import cn from 'classnames';
 import Image from 'next/image';
 import { FC } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import styles from './SupporterContainer.module.scss';
 
 type SupporterContainerProps = {
@@ -38,7 +40,7 @@ const SupporterContainer: FC<SupporterContainerProps> = ({
           <span className={styles.quoteMark}>“</span>
           <div
             className={styles.quote}
-            dangerouslySetInnerHTML={{ __html: quote }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(quote) }}
           />
         </div>
         <div className={styles.supporterInfo}>
@@ -52,7 +54,7 @@ const SupporterContainer: FC<SupporterContainerProps> = ({
           <h4 className={styles.name}>{name} </h4>
           <div
             className={styles.about}
-            dangerouslySetInnerHTML={{ __html: about }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(about) }}
           />
         </div>
       </div>

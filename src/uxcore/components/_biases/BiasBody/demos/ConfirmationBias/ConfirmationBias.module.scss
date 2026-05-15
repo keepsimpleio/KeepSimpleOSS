@@ -1,0 +1,137 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.pageTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.settingsList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md $space-lg;
+}
+
+.settingLabel {
+  font-size: $font-size-base;
+  color: $text-primary;
+}
+
+.btn {
+  padding: $space-xs $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.toggle {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: $border-color;
+  cursor: pointer;
+}
+
+// After styles
+.statusBanner {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  background: #eaf7ec;
+  border: 1px solid #42c256;
+  border-radius: $border-radius;
+  padding: $space-md $space-lg;
+}
+
+.statusIcon {
+  font-size: $font-size-lg;
+  line-height: 1;
+}
+
+.statusText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statusTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: #1a7a2e;
+}
+
+.statusSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.indicators {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md $space-lg;
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+  flex-shrink: 0;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+}
+
+.link {
+  color: $text-link;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.sep {
+  color: $text-secondary;
+}

@@ -1,0 +1,143 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  box-shadow: $shadow-card;
+}
+
+.heading {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.subtext {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.invoiceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-sm 0;
+}
+
+.invoiceLabel {
+  font-size: $font-size-base;
+  color: $text-secondary;
+}
+
+.invoiceAmount {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.invoiceDivider {
+  height: 1px;
+  background: $border-color;
+  margin: $space-xs 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-xs 0;
+
+  span:first-child {
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.total {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.breakdownRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+}
+
+.breakdownIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.breakdownInfo {
+  flex: 1;
+}
+
+.breakdownTitle {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.breakdownDesc {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.breakdownPrice {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+  font-weight: 500;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}

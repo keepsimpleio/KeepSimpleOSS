@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { FC, useContext } from 'react';
 import { flushSync } from 'react-dom';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import { GlobalContext } from '@components/Context/GlobalContext';
 
 import { handleMixpanelClick } from '../../../lib/mixpanel';
@@ -112,7 +114,7 @@ const ToolContainer: FC<ToolContainerProps> = ({
           <h4 className={styles.name}>{name}</h4>
           <div
             className={styles.quote}
-            dangerouslySetInnerHTML={{ __html: description }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
           />
         </div>
       </div>

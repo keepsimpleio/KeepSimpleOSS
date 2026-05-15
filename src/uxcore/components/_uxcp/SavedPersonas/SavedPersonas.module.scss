@@ -1,0 +1,83 @@
+.savedPersonasTxt {
+  color: #000000a6;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  tr,
+  td {
+    border-bottom: 1px solid #f1f1f1;
+    width: 200px;
+    height: 40px;
+  }
+
+  td {
+    cursor: pointer;
+    padding: 9px 16px;
+    height: 30px;
+  }
+
+  td:last-child {
+    width: unset;
+    color: #28587b;
+    padding: 9px 16px 9px 0;
+  }
+
+  th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 16px;
+  }
+
+  .deleteBtn,
+  .copyBtn {
+    all: unset;
+  }
+
+  .openLink {
+    margin-right: 5px;
+    text-decoration: none;
+    color: #28587b;
+  }
+
+  tr:hover {
+    background-color: #e2e2e2;
+  }
+
+  .tableText {
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 400;
+    margin: 0;
+    display: flex;
+    width: 100%;
+  }
+
+  .btnWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+}
+
+.cancelBtn {
+  text-align: right;
+  padding-top: 20px;
+}
+
+@media (max-width: 800px) {
+  .table {
+    td:last-child {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: unset;
+    }
+  }
+}

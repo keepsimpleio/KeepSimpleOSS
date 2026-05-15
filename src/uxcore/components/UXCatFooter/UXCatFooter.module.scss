@@ -1,0 +1,65 @@
+.footerContainer,
+.contactInfo,
+.mailInfo,
+.telegramInfo {
+  display: flex;
+}
+
+.footerContainer {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 80px;
+
+  .contactUsTxt {
+    color: #000000a6;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: normal;
+    padding-bottom: 23px;
+  }
+
+  .contactInfo {
+    gap: 40px;
+
+    .mail,
+    .telegram {
+      text-decoration: none;
+      color: #000000d9;
+      font-size: 16px;
+      display: flex;
+      gap: 12px;
+
+      align-items: center;
+    }
+  }
+
+  .motto {
+    font-size: 20px;
+    color: #28587b;
+    padding-bottom: 30px;
+    padding-top: 66px;
+  }
+}
+
+@media (max-width: 800px) {
+  .footerContainer {
+    padding-top: 18px;
+
+    .contactUsTxt {
+      padding-bottom: 26px;
+    }
+
+    .contactInfo {
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .motto {
+      padding-top: 62px;
+    }
+  }
+}

@@ -1,0 +1,134 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.companyName {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.metric {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $tag-green;
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.metricArrow {
+  font-size: $font-size-lg;
+}
+
+.quote {
+  font-size: 12px;
+  font-style: italic;
+  color: $text-secondary;
+}
+
+.takeaway {
+  background: lighten(#42c256, 47%);
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+  text-align: center;
+}
+
+.distRow {
+  display: flex;
+  align-items: flex-end;
+  gap: $space-sm;
+  height: 140px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md $space-md $space-sm;
+}
+
+.distItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.distBar {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.distFill {
+  width: 100%;
+  border-radius: $border-radius $border-radius 0 0;
+  min-height: 4px;
+}
+
+.distPct {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+  margin-top: 4px;
+}
+
+.distLabel {
+  font-size: 11px;
+  color: $text-secondary;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.honestSection {
+  background: lighten(#cd7232, 38%);
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.honestHead {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $tag-orange;
+  margin-bottom: 2px;
+}
+
+.honestBody {
+  font-size: $font-size-sm;
+  color: $text-primary;
+}

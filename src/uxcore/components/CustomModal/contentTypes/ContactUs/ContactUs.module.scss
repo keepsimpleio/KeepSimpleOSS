@@ -1,0 +1,53 @@
+.ContactUs {
+  & .Footer {
+    & .Content {
+      font-size: 16px;
+      color: #000;
+      line-height: 150%;
+      padding-bottom: 30px;
+
+      & a {
+        color: inherit;
+      }
+    }
+
+    & .Buttons {
+      text-align: right;
+
+      & button + button {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+@media (max-width: 1440px) {
+  .ContactUs {
+    & .Footer {
+      & .Content {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .ContactUs {
+    & .Footer {
+      & .Content {
+        font-size: 16px;
+      }
+
+      & .Buttons {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  }
+}

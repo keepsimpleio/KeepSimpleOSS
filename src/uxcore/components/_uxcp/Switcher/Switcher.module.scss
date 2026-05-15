@@ -1,0 +1,41 @@
+$primary-color: #c4c4c4;
+$active-color: #5b88bd;
+
+.Switcher {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & .Button {
+    color: #000;
+    width: 60px;
+    box-sizing: border-box;
+    font-size: 14px;
+    border: 1px solid $primary-color;
+    text-align: center;
+    padding: 6px 0px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #359eff1f;
+    }
+
+    &.Active {
+      color: $active-color;
+      border-color: $active-color;
+      background-color: #fff;
+    }
+
+    &:nth-child(1) {
+      border-right-width: 0px;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+
+    &:nth-child(2) {
+      border-left-color: $active-color;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+  }
+}

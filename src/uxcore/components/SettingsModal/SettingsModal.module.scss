@@ -1,0 +1,60 @@
+.usernameEdit {
+  height: 32px !important;
+}
+
+.dropdownArrow {
+  right: 39px !important;
+}
+
+.title,
+.username,
+.email,
+.linkedin {
+  margin: 24px 0 10px 0;
+  color: #000;
+}
+
+.title:first-child {
+  margin: 0 0 10px 0;
+}
+
+.btnWrapper {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 40px;
+  position: relative;
+  padding-top: 16px;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    background-color: #cbcbcb;
+    height: 1px;
+    right: -28px;
+    width: 560px;
+  }
+}
+
+@media (max-width: 800px) {
+  .modalBody {
+    padding: 0px 16px 24px 16px !important;
+
+    .title:first-child {
+      margin: 16px 0 10px 0;
+    }
+  }
+
+  .btnWrapper {
+    justify-content: center;
+
+    &:before {
+      content: unset;
+    }
+
+    .btn {
+      width: 154px;
+    }
+  }
+}

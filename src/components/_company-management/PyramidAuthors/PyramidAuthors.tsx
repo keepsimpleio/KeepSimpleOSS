@@ -3,6 +3,8 @@ import { type FC } from 'react';
 
 import useMobile from '@hooks/useMobile';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import styles from './PyramidAuthors.module.scss';
 
 interface PyramidAuthorsProps {
@@ -14,7 +16,7 @@ const PyramidAuthors: FC<PyramidAuthorsProps> = ({ contributors }) => {
 
   return (
     <div className={cn(styles.container, { [styles.mobile]: isMobile })}>
-      <div dangerouslySetInnerHTML={{ __html: contributors }} />
+      <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(contributors) }} />
     </div>
   );
 };

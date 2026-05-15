@@ -1,0 +1,31 @@
+.Question {
+  display: flex;
+  align-items: flex-start;
+  font-size: 16px;
+  margin-top: 14px;
+
+  & .Priority {
+    margin-right: 10px;
+  }
+
+  & a {
+    color: #28587b;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .Question {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1440px) {
+  .Question {
+    font-size: 16px;
+  }
+}

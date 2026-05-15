@@ -1,0 +1,58 @@
+const content = {
+  en: {
+    title: 'Create a Group',
+    nameLabel: 'Group Name',
+    namePlaceholder: 'e.g. Design Team',
+    inviteLabel: 'Invite Members',
+    invitePlaceholder: 'Enter email addresses',
+    submitBtn: 'Create Group',
+    after: {
+      missionLabel: 'Group Mission',
+      missionRequired: '*',
+      missionPlaceholder: 'What does your group stand for?',
+      valuesLabel: 'Shared Values Tagline',
+      valuesPlaceholder: 'e.g. We ship bold, human-first design',
+      badgeName: 'The Innovators',
+      badgeCount: '12 members strong',
+      badgeHint: 'Auto-generated identity badge',
+    },
+  },
+  ru: {
+    title: 'Создать группу',
+    nameLabel: 'Название группы',
+    namePlaceholder: 'напр. Команда дизайна',
+    inviteLabel: 'Пригласить участников',
+    invitePlaceholder: 'Введите email-адреса',
+    submitBtn: 'Создать группу',
+    after: {
+      missionLabel: 'Миссия группы',
+      missionRequired: '*',
+      missionPlaceholder: 'За что выступает ваша группа?',
+      valuesLabel: 'Слоган общих ценностей',
+      valuesPlaceholder: 'напр. Мы создаём смелый, человечный дизайн',
+      badgeName: 'Новаторы',
+      badgeCount: '12 участников',
+      badgeHint: 'Автосозданный бейдж идентичности',
+    },
+  },
+  hy: {
+    title: 'Ստեղծել խումբ',
+    nameLabel: 'Խմբի անվանում',
+    namePlaceholder: 'օր. Դիզայնի թիմ',
+    inviteLabel: 'Հրավիրել անդամներին',
+    invitePlaceholder: 'Մուտքագրեք էլ. փոստի հասցեները',
+    submitBtn: 'Ստեղծել խումբ',
+    after: {
+      missionLabel: 'Խմբի առաքելությունը',
+      missionRequired: '*',
+      missionPlaceholder: 'Ինչի՞ն է նվիրված ձեր խումբը։',
+      valuesLabel: 'Ընդհանուր արժեքների կարգախոս',
+      valuesPlaceholder: 'օր. Մենք ստեղծում ենք համարձակ, մարդակենտրոն դիզայն',
+      badgeName: 'Նորարարները',
+      badgeCount: '12 անդամ',
+      badgeHint: 'Ավտոմատ ստեղծված ինքնության նշան',
+    },
+  },
+};
+
+export default content;

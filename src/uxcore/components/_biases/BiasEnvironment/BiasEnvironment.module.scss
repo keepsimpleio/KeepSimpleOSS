@@ -1,0 +1,186 @@
+.container {
+  position: absolute;
+  left: 20px;
+  top: 88px;
+
+  .title {
+    font-size: 14px;
+    line-height: 30.5px;
+    color: #000000d9;
+  }
+
+  .nameRow {
+    display: flex;
+    align-items: center;
+  }
+
+  .arrow {
+    display: inline-block;
+    width: 19px;
+    height: 14px;
+    margin-right: 10px;
+    clip-path: polygon(0% 0%, 73% 0%, 100% 50%, 73% 100%, 0% 100%, 29% 50%);
+  }
+
+  .nameText {
+    color: #000000a6;
+    line-height: 30.5px;
+    font-size: 14px;
+    padding-bottom: 4px;
+  }
+
+  .purple {
+    background-color: #cdc8fc;
+  }
+
+  .pink {
+    background-color: #dbcad1;
+  }
+
+  .blue {
+    background-color: #bbe4f2;
+  }
+
+  .green {
+    background-color: #c5eadd;
+  }
+
+  .hr {
+    border: 1px solid #d9d9d9;
+  }
+
+  .linkWrapper {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+
+    .square {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      background-color: #328af2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .linkText {
+      text-decoration: none;
+      color: #000000d9;
+      line-height: 30.5px;
+      padding-top: 8px;
+    }
+  }
+}
+
+@media (max-width: 1360px) {
+  .container {
+    .title,
+    .nameText,
+    .linkWrapper,
+    .linkText {
+      font-size: 12px;
+    }
+
+    .linkWrapper {
+      .linkText {
+        line-height: 24.5px;
+        padding-top: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 1750px) {
+  .container {
+    left: 15px;
+    top: 60px;
+  }
+  .textHy {
+    width: 140px;
+    display: inline-block;
+  }
+}
+
+@media (max-width: 1440px) {
+  .container {
+    left: 15px;
+    top: 60px;
+  }
+  .textHy {
+    width: 140px;
+    display: inline-block;
+  }
+}
+
+@media (max-width: 1098px) {
+  .container {
+    .arrow {
+      width: 15px;
+      height: 10px;
+      margin-right: 6px;
+    }
+
+    .title,
+    .nameText,
+    .linkWrapper,
+    .linkText {
+      font-size: 10px;
+      line-height: 25px;
+    }
+
+    .linkWrapper {
+      .linkText {
+        line-height: 20px;
+        padding-top: 0;
+      }
+
+      .square {
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+}
+
+// Dark theme: lift sidebar text + recolor the four category arrow chips so they
+// stay distinct on the dark page.
+:global(body.darkTheme) .container {
+  .title {
+    color: #dadada;
+  }
+
+  .nameText {
+    color: rgba(218, 218, 218, 0.78);
+  }
+
+  .purple {
+    background-color: #8073ff;
+  }
+
+  .pink {
+    background-color: #b58fa9;
+  }
+
+  .blue {
+    background-color: #4c8cc1;
+  }
+
+  .green {
+    background-color: #75b3b3;
+  }
+
+  .hr {
+    border-color: #303338;
+  }
+
+  .linkWrapper {
+    .linkText {
+      color: #7fb3d5;
+    }
+
+    .square {
+      background-color: #4c8cc1;
+    }
+  }
+}

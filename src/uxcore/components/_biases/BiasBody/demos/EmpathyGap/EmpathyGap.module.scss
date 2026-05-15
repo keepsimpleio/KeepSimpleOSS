@@ -1,0 +1,113 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: $space-sm;
+  border-bottom: 1px solid $border-color;
+}
+
+.botDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.bubble {
+  max-width: 85%;
+  padding: $space-sm $space-md;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  line-height: 1.5;
+}
+
+.user {
+  align-self: flex-end;
+  background: $color-primary;
+  color: $color-white;
+  border-bottom-right-radius: 2px;
+}
+
+.bot {
+  align-self: flex-start;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  color: $text-primary;
+  border-bottom-left-radius: 2px;
+}
+
+// Before form
+.formPrompt {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  width: 85%;
+}
+
+.input {
+  padding: $space-sm $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  background: $bg-card;
+  color: $text-secondary;
+}
+
+// After quick actions
+.quickActions {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  width: 85%;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.actionLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  margin-bottom: $space-xs;
+}
+
+.actionBtn {
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}

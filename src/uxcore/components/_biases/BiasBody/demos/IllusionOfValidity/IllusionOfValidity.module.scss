@@ -1,0 +1,124 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  align-items: stretch;
+}
+
+.cardTitle {
+  font-size: $font-size-sm;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.bigNumber {
+  font-size: $font-size-display;
+  font-weight: 800;
+  color: $color-primary;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.bigUnit {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $text-secondary;
+  margin-left: 4px;
+}
+
+.bigLabel {
+  font-size: $font-size-base;
+  color: $text-primary;
+}
+
+.metaRow {
+  display: flex;
+  gap: $space-sm;
+}
+
+.metaPill {
+  font-size: 11px;
+  font-weight: 600;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  color: $text-secondary;
+  padding: 4px $space-sm;
+  border-radius: 12px;
+
+  &.warn {
+    background: lighten(#cd7232, 38%);
+    border-color: $tag-orange;
+    color: $tag-orange;
+  }
+}
+
+.cta {
+  margin-top: $space-sm;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.range {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.rangeLow,
+.rangeHigh {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-secondary;
+}
+
+.rangeBar {
+  flex: 1;
+  height: 14px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 7px;
+  position: relative;
+  overflow: hidden;
+}
+
+.rangeFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(90deg, $tag-orange, $color-primary, $tag-orange);
+  opacity: 0.45;
+}
+
+.rangePoint {
+  position: absolute;
+  left: 38%;
+  top: -3px;
+  bottom: -3px;
+  width: 4px;
+  background: $color-primary;
+  border-radius: 2px;
+}
+
+.warning {
+  background: lighten(#cd7232, 38%);
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}

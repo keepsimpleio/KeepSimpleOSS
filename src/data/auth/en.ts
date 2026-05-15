@@ -53,6 +53,50 @@ const en = {
       'Your registration session has expired. Please request a new sign-in link.',
     requestNewLink: 'Request a new link',
   },
+  emailChange: {
+    settings: {
+      description:
+        "Twitter doesn't share your email with us. Add one to enable email-based sign-in.",
+      submit: 'Send confirmation link',
+      submitting: 'Sending…',
+      sent: 'We sent a confirmation link to {email}. Click it within 15 minutes to finish.',
+      invalidEmail: 'Please enter a valid email address.',
+      sameEmail: 'Please enter a different email address.',
+      emailAlreadyRegistered:
+        'That email is already used by another KeepSimple account.',
+      limitReached:
+        'Email confirmation is temporarily unavailable. Please try again later.',
+      notAllowed: 'Email change is no longer available for this account.',
+      generic: 'Something went wrong. Please try again.',
+    },
+    confirmPage: {
+      success: {
+        title: 'Email confirmed',
+        body: 'Your email has been confirmed. You can now sign in with this address.',
+        cta: 'Go to home',
+      },
+      invalidToken: {
+        title: 'This link is no longer valid',
+        body: 'Confirmation links expire after 15 minutes and can only be used once. Please request a new one from your settings.',
+        cta: 'Go to home',
+      },
+      notAllowed: {
+        title: 'Email already set',
+        body: 'This account already has a confirmed email. No further action is needed.',
+        cta: 'Go to home',
+      },
+      emailAlreadyRegistered: {
+        title: 'Email already in use',
+        body: 'That email is already used by another KeepSimple account.',
+        cta: 'Go to home',
+      },
+      blocked: {
+        title: 'Sign-in unavailable',
+        body: '',
+        cta: 'Go to home',
+      },
+    },
+  },
 };
 
 export default en;

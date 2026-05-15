@@ -1,0 +1,18 @@
+.readingProgressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  transition: 0.2s;
+  transition-timing-function: linear;
+  transition-delay: 0ms;
+  background-color: #808080;
+  height: 3px;
+  z-index: 9;
+}
+
+@media (max-width: 851px) {
+  .readingProgressBar {
+    display: none !important;
+  }
+}

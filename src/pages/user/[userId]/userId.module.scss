@@ -1,0 +1,92 @@
+.userId {
+  margin: 0;
+  padding: 0;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  .imgUpload {
+    all: unset;
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    top: 33%;
+  }
+
+  .settings {
+    position: absolute;
+    right: 27px;
+    cursor: pointer;
+    top: 56px;
+  }
+
+  .body {
+    transition: 0.1s;
+    margin: 50px auto 0;
+    max-width: 900px;
+    position: relative;
+
+    .achievementsList {
+      cursor: pointer;
+    }
+
+    .achievementsWrapper {
+      display: flex;
+      justify-content: space-between;
+
+      .dropdownWrapper {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+    }
+
+    .testBtnWrapper {
+      margin-top: 64px;
+      text-align: center;
+    }
+
+    .motto {
+      margin: 64px 0 24px 0;
+      font-size: 20px;
+      color: #28587b;
+      text-align: center;
+    }
+  }
+}
+
+.achievementsDraggable:first-child {
+  position: relative;
+  z-index: 2;
+
+  &:hover {
+    z-index: 7;
+  }
+}
+
+.achievementsDraggable:last-child {
+  position: relative;
+  z-index: 5;
+
+  &:hover {
+    z-index: 9;
+  }
+}
+
+@media (max-width: 800px) {
+  .userId {
+    .imgUpload {
+      top: unset;
+      bottom: 48%;
+    }
+
+    .body {
+      margin-right: 8px;
+      margin-left: 8px;
+
+      .achievementsWrapper {
+        flex-direction: column;
+      }
+    }
+  }
+}

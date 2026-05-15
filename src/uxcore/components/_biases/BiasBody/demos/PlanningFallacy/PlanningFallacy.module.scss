@@ -1,0 +1,185 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.taskTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.fieldRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.input {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $color-primary;
+  font-family: $font-family;
+}
+
+.cta {
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.aftermath {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  background: lighten(#cd7232, 38%);
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.warnIcon {
+  font-size: $font-size-md;
+}
+
+.threePoint {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-xs;
+}
+
+.point {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+
+  &.optimistic {
+    border-top: 3px solid $tag-green;
+  }
+
+  &.realistic {
+    border-top: 3px solid $color-primary;
+  }
+
+  &.pessimistic {
+    border-top: 3px solid $tag-orange;
+  }
+}
+
+.pointLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.pointValue {
+  font-size: $font-size-lg;
+  font-weight: 800;
+  color: $text-primary;
+}
+
+.pointMeta {
+  font-size: 10px;
+  color: $text-secondary;
+}
+
+.history {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.historyHead {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  font-weight: 700;
+  margin-bottom: $space-xs;
+}
+
+.historyBars {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.historyRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px;
+  gap: $space-sm;
+  align-items: center;
+  font-size: 11px;
+}
+
+.historyName {
+  color: $text-primary;
+  font-weight: 600;
+}
+
+.historyBarWrap {
+  position: relative;
+  height: 18px;
+  background: $bg-alt;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.historyEst {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: $color-primary;
+  opacity: 0.5;
+}
+
+.historyActual {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: $tag-orange;
+  border-right: 2px solid darken(#cd7232, 10%);
+  mix-blend-mode: multiply;
+}
+
+.historyLabel {
+  font-size: 10px;
+  color: $text-secondary;
+  text-align: right;
+}

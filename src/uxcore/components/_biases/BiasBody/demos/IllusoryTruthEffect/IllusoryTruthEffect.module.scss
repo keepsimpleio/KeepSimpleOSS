@@ -1,0 +1,87 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl $space-lg;
+}
+
+.badge {
+  display: inline-block;
+  align-self: flex-start;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  padding: $space-xs $space-sm;
+  border-radius: $border-radius;
+}
+
+.headline {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cta {
+  align-self: flex-start;
+  padding: $space-sm $space-xl;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  margin-top: $space-xs;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.testimonial {
+  background: $bg-alt;
+  border-left: 3px solid $color-primary;
+  border-radius: $border-radius;
+  padding: $space-md $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.quote {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  font-style: italic;
+}
+
+.author {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}

@@ -1,0 +1,113 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.header {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.metricRow {
+  display: flex;
+  gap: $space-sm;
+}
+
+.metricCard {
+  flex: 1;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.metricLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metricValueBad {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: #d32f2f;
+}
+
+.metricValueOk {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $tag-olive;
+}
+
+.metricSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.4;
+}
+
+.collapseLink {
+  color: $text-link;
+  cursor: pointer;
+  font-size: $font-size-sm;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.alertBox {
+  background: #fff3f3;
+  border: 1px solid #d32f2f;
+  border-radius: $border-radius;
+  padding: $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: #b71c1c;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.alertIcon {
+  font-size: $font-size-base;
+  flex-shrink: 0;
+}
+
+.softBox {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.softIcon {
+  font-size: $font-size-xl;
+  flex-shrink: 0;
+}
+
+.softTitle {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.softSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}

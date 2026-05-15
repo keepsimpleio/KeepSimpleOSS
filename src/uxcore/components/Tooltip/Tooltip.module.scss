@@ -1,0 +1,75 @@
+.Tooltip {
+  display: inline-block;
+
+  &.Clickable > * {
+    cursor: pointer;
+  }
+}
+
+.Popup {
+  visibility: hidden;
+  box-sizing: border-box;
+  z-index: 10;
+  font-size: 14px;
+  color: #000;
+  position: fixed;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #cbcbcb;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  max-width: 380px;
+
+  &::after {
+    position: absolute;
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    bottom: -5px;
+    right: calc(50% - 4px);
+    transform: rotate(45deg);
+    background-color: #fff;
+    border-right: 1px solid #cbcbcb;
+    border-bottom: 1px solid #cbcbcb;
+    z-index: 5;
+  }
+
+  &.Bottom::after {
+    bottom: auto;
+    top: -5px;
+    border-left: 1px solid #cbcbcb;
+    border-top: 1px solid #cbcbcb;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+  }
+
+  &.Active {
+    visibility: visible;
+  }
+
+  &.Dark {
+    color: #fff;
+    background-color: #000;
+    padding: 2px 6px;
+    font-size: 12px;
+    border-color: #000;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+.HyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+@media (max-width: 851px) {
+  .Popup {
+    width: 100%;
+    left: 50%;
+    max-width: 380px;
+  }
+}

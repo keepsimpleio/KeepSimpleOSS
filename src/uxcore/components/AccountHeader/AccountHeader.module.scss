@@ -1,0 +1,114 @@
+.accountHeader {
+  width: 100vw;
+  height: 256px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 47px;
+  position: relative;
+  background-size: cover;
+}
+
+.wrapper {
+  display: flex;
+  align-items: inherit;
+  margin: 0 auto 0;
+  width: 1440px;
+  justify-content: space-between;
+  position: relative;
+}
+
+.btnWrapper {
+  margin: 0 auto 0;
+  padding-right: 8px;
+  max-width: 1440px;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+
+  .imgUpload {
+    all: unset;
+    position: absolute;
+    right: 8px;
+    top: 54px;
+    cursor: pointer;
+    z-index: 1;
+  }
+}
+
+.desktopMode {
+  margin-right: 120px;
+}
+
+.mobileMode {
+  display: none;
+}
+
+@media (max-width: 1270px) {
+  .desktopMode {
+    margin-right: 25px;
+  }
+  .accountHeader {
+    .contentWrapper {
+      margin-right: 20px;
+    }
+  }
+}
+
+@media (max-width: 1080px) {
+  .accountHeader {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 1080px) {
+  .btnWrapper {
+    max-width: unset;
+    width: 100%;
+
+    .imgUpload {
+      top: 8px;
+      right: 16px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .btnWrapper {
+    display: none;
+  }
+  .accountHeader {
+    flex-direction: column;
+    height: unset;
+    background-repeat: no-repeat;
+    margin-top: unset;
+    background-size: cover;
+    background-position: top;
+
+    .wrapper {
+      width: unset;
+    }
+
+    .statisticsWrapper {
+      padding-top: 16px;
+    }
+  }
+
+  .desktopMode {
+    display: none;
+  }
+
+  .mobileMode {
+    display: block;
+
+    &:last-child {
+      button:last-child {
+        margin-top: 8px;
+      }
+    }
+  }
+
+  .isFinalTest {
+    bottom: -135px;
+  }
+}

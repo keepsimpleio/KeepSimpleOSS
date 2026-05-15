@@ -1,0 +1,128 @@
+.startTestWrapper {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+
+  .backgroundImg {
+    position: absolute;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+  }
+
+  .duration {
+    position: absolute;
+    top: 155px;
+    color: #c4c4c4;
+    font-size: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 44;
+  }
+}
+
+.modal {
+  background-color: unset !important;
+  z-index: 0 !important;
+
+  > div {
+    box-shadow:
+      0px 8px 17px 0px rgba(0, 0, 0, 0.05),
+      0px 30px 30px 0px rgba(0, 0, 0, 0.04),
+      0px 68px 41px 0px rgba(0, 0, 0, 0.03),
+      0px 122px 49px 0px rgba(0, 0, 0, 0.01),
+      0px 190px 53px 0px rgba(0, 0, 0, 0);
+  }
+
+  .catLogo {
+    text-align: center;
+    padding-top: 52px;
+  }
+
+  .title {
+    font-size: 36px;
+    color: #de915b;
+    text-align: center;
+    margin-top: 0;
+    font-weight: bold;
+    padding-top: 6px;
+  }
+
+  .description {
+    font-size: 16px;
+    padding: 0px 25px 0 25px;
+    line-height: 22px;
+    text-align: center;
+  }
+
+  .goodLuckTxt {
+    font-weight: bold;
+  }
+
+  .btnWrapper {
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 35px;
+  }
+}
+
+@media (max-height: 900px) {
+  .startTestWrapper {
+    .duration {
+      top: 100px;
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .description {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 901px) {
+  .startTestWrapper {
+    height: calc(100vh - 45px);
+
+    .backgroundImg {
+      height: calc(100vh - 45px);
+    }
+
+    .duration {
+      border-radius: 4px;
+      right: 8px;
+      top: 8px;
+      transform: unset;
+      border: 1px solid #c4c4c4;
+      width: 59px;
+      left: unset;
+      padding: 2px 0px 2px 7px;
+      background-color: #fff;
+    }
+
+    .backgroundImg {
+      object-fit: cover;
+      object-position: right;
+    }
+  }
+
+  .modal {
+    top: 90px !important;
+    align-items: flex-start !important;
+
+    .modalWrapper {
+      box-shadow: unset;
+      border: 1px solid #d9d9d9;
+      margin: 8px !important;
+
+      .description {
+        padding: unset;
+      }
+
+      .btnWrapper {
+        padding-top: 14px;
+      }
+    }
+  }
+}

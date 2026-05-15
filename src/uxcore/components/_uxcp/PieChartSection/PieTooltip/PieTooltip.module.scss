@@ -1,0 +1,14 @@
+.PieTooltip {
+  position: fixed;
+  font-size: 12px;
+  padding: 1px 4px;
+  color: #fff;
+  background-color: #000;
+  border-radius: 4px;
+  visibility: hidden;
+  z-index: 10;
+
+  &.Active {
+    visibility: visible;
+  }
+}

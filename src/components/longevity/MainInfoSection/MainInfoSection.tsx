@@ -2,6 +2,8 @@ import cn from 'classnames';
 import Image from 'next/image';
 import { FC, useContext, useEffect, useState } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import { GlobalContext } from '@components/Context/GlobalContext';
 import Heading from '@components/Heading';
 import BasicStats from '@components/longevity/BasicStats';
@@ -66,7 +68,7 @@ const MainInfoSection: FC<MainInfoSectionProps> = ({
           className={styles.heading}
         />
         <div
-          dangerouslySetInnerHTML={{ __html: description }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
           className={styles.description}
         />
         {hasBasicStats ? (

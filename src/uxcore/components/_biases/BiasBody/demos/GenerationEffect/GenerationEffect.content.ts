@@ -1,0 +1,73 @@
+const content = {
+  en: {
+    badge: 'Vocabulary Review',
+    before: {
+      lang: 'German → English',
+      word: 'Hund = Dog',
+      exampleStart: 'Der ',
+      exampleBoldWord: 'Hund',
+      exampleEnd: ' bellt laut.',
+      btnWrong: '✗ Wrong',
+      btnRight: '✓ Got it',
+      hint: 'Answer shown — just tap to continue',
+    },
+    after: {
+      lang: 'German → English',
+      word: 'H___',
+      exampleStart: 'Der ',
+      exampleBoldWord: '___',
+      exampleEnd: ' bellt laut. (The ___ barks loudly.)',
+      inputPlaceholder: 'Type the English word...',
+      btnCheck: 'Check',
+      hint: "Recall strengthens memory — passive reading doesn't",
+    },
+  },
+  ru: {
+    badge: 'Повторение слов',
+    before: {
+      lang: 'Немецкий → Русский',
+      word: 'Hund = Собака',
+      exampleStart: 'Der ',
+      exampleBoldWord: 'Hund',
+      exampleEnd: ' bellt laut.',
+      btnWrong: '✗ Не знаю',
+      btnRight: '✓ Знаю',
+      hint: 'Ответ показан — просто нажмите, чтобы продолжить',
+    },
+    after: {
+      lang: 'Немецкий → Русский',
+      word: 'С___',
+      exampleStart: 'Der ',
+      exampleBoldWord: '___',
+      exampleEnd: ' bellt laut. (___ громко лает.)',
+      inputPlaceholder: 'Введите слово на русском...',
+      btnCheck: 'Проверить',
+      hint: 'Вспоминание укрепляет память — пассивное чтение нет',
+    },
+  },
+  hy: {
+    badge: 'Բառապաշարի կրկնություն',
+    before: {
+      lang: 'Գերմաներեն → Հայերեն',
+      word: 'Hund = Շուն',
+      exampleStart: 'Der ',
+      exampleBoldWord: 'Hund',
+      exampleEnd: ' bellt laut.',
+      btnWrong: '✗ Չգիտեմ',
+      btnRight: '✓ Գիտեմ',
+      hint: 'Պատասխանը ցուցադրված է — պարզապես սեղմեք շարունակելու համար',
+    },
+    after: {
+      lang: 'Գերմաներեն → Հայերեն',
+      word: 'Շ___',
+      exampleStart: 'Der ',
+      exampleBoldWord: '___',
+      exampleEnd: ' bellt laut. (___ ը բարձր հաչում է։)',
+      inputPlaceholder: 'Մուտքագրեք հայերեն բառը...',
+      btnCheck: 'Ստուգել',
+      hint: 'Վերհիշումը ամրապնդում է հիշողությունը — պասիվ ընթերցումը՝ ոչ',
+    },
+  },
+};
+
+export default content;

@@ -1,0 +1,131 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  gap: $space-md;
+  align-items: flex-start;
+  box-shadow: $shadow-card;
+}
+
+.cardBizarre {
+  border-color: $tag-purple;
+  background: linear-gradient(135deg, #fdf4ff 0%, $bg-card 60%);
+}
+
+.cardIcon {
+  flex-shrink: 0;
+}
+
+.iconPlain {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-secondary;
+}
+
+.iconOctopus {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius;
+  background: linear-gradient(135deg, $tag-purple, $tag-dark-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.cardName {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.cardMeta {
+  display: flex;
+  gap: $space-xs;
+  align-items: center;
+}
+
+.badge {
+  background: $tag-green;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  padding: 2px $space-sm;
+  border-radius: 3px;
+}
+
+.category {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.cardDesc {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.5;
+}
+
+.cardDescBizarre {
+  color: $text-primary;
+  font-style: italic;
+}
+
+.cardRating {
+  font-size: $font-size-sm;
+  color: #f59e0b;
+}
+
+.btn {
+  padding: $space-xs $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+  align-self: flex-start;
+}
+
+.btnBizarre {
+  background: $tag-purple;
+  color: $color-white;
+  border-color: $tag-purple;
+  font-weight: 600;
+
+  &:hover {
+    background: $tag-dark-purple;
+  }
+}

@@ -1,0 +1,53 @@
+// ── Primary ──
+$color-primary: #28587b;
+$color-primary-hover: #5b88bd;
+$color-dark: #1e2023;
+$color-black: #000000;
+$color-white: #ffffff;
+
+// ── Backgrounds ──
+$bg-page: #f9fafb;
+$bg-page-gradient: linear-gradient(180deg, #f9fafb, #e8e8e8);
+$bg-card: #ffffff;
+$bg-hover: #f1f1f1;
+$bg-alt: #f5f5f5;
+
+// ── Borders ──
+$border-color: #d9d9d9;
+$border-dark: #cbcbcb;
+$border-radius: 4px;
+$border-radius-round: 50%;
+
+// ── Text ──
+$text-primary: #000000;
+$text-secondary: #9e9e9e;
+$text-link: #28587b;
+$text-disabled: rgba(0, 0, 0, 0.65);
+
+// ── Tag/Badge Colors ──
+$tag-green: #42c256;
+$tag-olive: #77a34b;
+$tag-purple: #a36aa4;
+$tag-orange: #cd7232;
+$tag-dark-purple: #662369;
+
+// ── Effects ──
+$shadow-card: 0 4px 16px rgba(0, 0, 0, 0.15);
+$overlay-bg: rgba(0, 0, 0, 0.35);
+
+// ── Typography ──
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-size-sm: 12px;
+$font-size-base: 14px;
+$font-size-md: 16px;
+$font-size-lg: 20px;
+$font-size-xl: 26px;
+$font-size-display: 36px;
+
+// ── Spacing ──
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 12px;
+$space-lg: 16px;
+$space-xl: 20px;
+$space-2xl: 28px;

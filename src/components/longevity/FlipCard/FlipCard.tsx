@@ -2,6 +2,8 @@ import cn from 'classnames';
 import Image from 'next/image';
 import { FC } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import Heading from '@components/Heading';
 import { FlipCardProps } from '@components/longevity/FlipCard/FlipCard.types';
 
@@ -30,7 +32,7 @@ const FlipCard: FC<FlipCardProps> = ({
       {isHacks ? (
         <div>
           <div
-            dangerouslySetInnerHTML={{ __html: hacksQuote || '' }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(hacksQuote) }}
             className={styles.quote}
           />
           <span className={styles.separator}> - </span>
@@ -75,7 +77,7 @@ const FlipCard: FC<FlipCardProps> = ({
           <div className={styles.painTextWrapper}>
             <div className={styles.diamond} />
             <div
-              dangerouslySetInnerHTML={{ __html: painText || '' }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(painText) }}
               className={styles.painText}
             />
             <div className={styles.diamond} />

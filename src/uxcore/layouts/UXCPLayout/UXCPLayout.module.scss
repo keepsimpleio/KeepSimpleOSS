@@ -1,0 +1,142 @@
+.body {
+  margin: 0;
+  padding: 0;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.Content {
+  width: 900px;
+  max-width: 100%;
+  margin: 94px auto 0;
+  transition: 0.1s;
+  position: relative;
+  padding-bottom: 10vh;
+
+  .Heading {
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .Title,
+  .ShortName {
+    font-family: 'RedHatDisplay';
+    text-align: center;
+  }
+
+  .Title {
+    font-size: 36px;
+    color: #28587b;
+    font-weight: 300;
+    margin: 0;
+  }
+
+  .ShortName {
+    font-size: 18px;
+    color: #9e9e9e;
+    margin-bottom: 30px;
+    font-weight: 300;
+  }
+
+  & .ShiftedContent {
+    min-height: calc(100vh - 130px - 48px - 54px - 68px);
+  }
+
+  & .Motto {
+    font-size: 20px;
+    color: #28587b;
+    text-align: center;
+    padding: 22px 0px;
+  }
+
+  & .PersonaGrid {
+    display: flex;
+    margin-top: 25px;
+
+    & > * {
+      width: 50%;
+      margin: 4px;
+    }
+  }
+
+  & .RelevantQuestionsGrid {
+    display: flex;
+  }
+
+  & .LinkSection {
+    display: flex;
+
+    & > * {
+      width: 50%;
+      padding: 4px;
+    }
+
+    & .LinkWrapper {
+      display: flex;
+
+      & > * + * {
+        margin-left: 4px;
+      }
+    }
+
+    & .SaveButtonWrapper {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+@media (max-width: 1010px) {
+  .Content {
+    margin: 28px auto 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .body {
+    overflow-y: auto;
+  }
+
+  .Content {
+    width: 100%;
+    height: auto !important;
+    padding: unset;
+    margin: unset;
+
+    .Heading {
+      margin-top: 40px;
+    }
+
+    .Title {
+      font-weight: 600;
+      font-size: 24px;
+      margin: 35px auto 0;
+    }
+    .ShortName {
+      font-size: 16px;
+      margin-top: 0;
+    }
+
+    & .ShiftedContent {
+      padding: 0 16px;
+    }
+
+    & .PersonaGrid {
+      & > * {
+        width: 100%;
+      }
+    }
+
+    & .RelevantQuestionsGrid {
+      display: block;
+    }
+  }
+}

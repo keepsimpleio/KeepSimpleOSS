@@ -1,0 +1,123 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.formTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.candidate {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  background: $bg-card;
+  padding: $space-xs $space-sm;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  width: fit-content;
+}
+
+.textarea {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm;
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  resize: none;
+  min-height: 90px;
+}
+
+.scoreRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.scoreVal {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.disclaimer {
+  font-size: 11px;
+  font-style: italic;
+  color: $text-secondary;
+}
+
+.rubric {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.criterion {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 2px $space-md;
+  align-items: center;
+}
+
+.criterionLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.criterionScore {
+  display: flex;
+  gap: 3px;
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.dotOn,
+.dotOff {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dotOn {
+  background: $color-primary;
+}
+
+.dotOff {
+  background: $border-color;
+}
+
+.criterionEvidence {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: $text-secondary;
+}
+
+.counterPrompt {
+  background: lighten(#42c256, 45%);
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}

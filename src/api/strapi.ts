@@ -112,29 +112,39 @@ export const getRecommendedArticles = (
 };
 
 export const getArticleNewPaths = async () => {
-  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/articles?locale=all&populate=*`;
+  try {
+    const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/articles?locale=all&populate=*`;
 
-  const articles = await fetch(url)
-    .then(resp => resp.json())
-    .then(json => json?.data || []);
+    const articles = await fetch(url)
+      .then(resp => resp.json())
+      .then(json => json?.data || []);
 
-  const filteredArticles = articles.filter(
-    article => article.attributes?.newUrl !== 'company-management',
-  );
-  const strapiPaths = filteredArticles
-    .map((article: TArticle) => ({
-      params: {
-        page: article.attributes?.newUrl || '',
-      },
-      locale: article?.attributes?.locale,
-    }))
-    .filter(
-      (path: any) =>
-        !path?.params?.page?.[0]?.includes('http') &&
-        path?.params?.page?.[0] !== 'uxeducation',
+    const filteredArticles = articles.filter(
+      article => article.attributes?.newUrl !== 'company-management',
     );
+    const strapiPaths = filteredArticles
+      .map((article: TArticle) => ({
+        params: {
+          page: article.attributes?.newUrl || '',
+        },
+        locale: article?.attributes?.locale,
+      }))
+      .filter(
+        (path: any) =>
+          !path?.params?.page?.[0]?.includes('http') &&
+          path?.params?.page?.[0] !== 'uxeducation',
+      );
 
-  return strapiPaths;
+    return strapiPaths;
+  } catch (err) {
+    // Build-time Strapi fetch can return HTML (502/maintenance) — don't fail
+    // the whole build; rely on fallback: 'blocking' to SSG-on-demand at runtime.
+    console.warn(
+      '[getArticleNewPaths] build-time fetch failed, returning empty paths:',
+      err,
+    );
+    return [];
+  }
 };
 
 export const getPyramids = async (locale: TLocales) => {

@@ -1,0 +1,252 @@
+body,
+html {
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  overflow-y: overlay;
+  overflow-x: hidden;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 8px;
+    border-left: 1px solid #fafafa;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    border-left: 1px solid #fafafa;
+  }
+}
+
+html::-webkit-scrollbar-thumb {
+  background: rgba(40, 88, 123, 0.5);
+}
+
+html.scroll-style-home::-webkit-scrollbar-thumb {
+  background-color: #262626;
+}
+
+html.scroll-style-articles::-webkit-scrollbar-thumb {
+  background-color: #262626;
+}
+
+body {
+  background: linear-gradient(180deg, #f9fafb 0%, #e8e8e8 100%), #f9fafb;
+  color: #252626;
+
+  ol {
+    & li {
+      font-size: 18px;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+body.darkTheme {
+  background: linear-gradient(180deg, #1b1e26 0%, #151a26 100%), #1b1e26;
+  color: #dadada;
+}
+
+.hide-body-move {
+  margin-right: 8px;
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.Toastify__toast-container {
+  width: unset !important;
+  cursor: default !important;
+}
+
+.Toastify__toast {
+  background: unset;
+  background-color: unset !important;
+  box-shadow: unset !important;
+  overflow: unset !important;
+  cursor: default !important;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url('/fonts/Lato/Lato-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url('/fonts/Lato/Lato-Semibold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/biases/IBMPlexMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-display: swap;
+}
+
+// Oswald is being used in BadgeBox aka Achievement Box
+@font-face {
+  font-family: 'Oswald';
+  src: url('/fonts/biases/Oswald-Bold') format('truetype');
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'RedHatDisplay';
+  src: url('/fonts/biases/RedHatDisplay.ttf');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tomorrow-Regular';
+  src: url('/fonts/Tomorrow/Tomorrow-Light.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// This is only for mobile
+@font-face {
+  font-family: 'Tomorrow';
+  src: url('/fonts/Tomorrow/Tomorrow-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Tomorrow mediumru
+@font-face {
+  font-family: 'Tomorrow-Medium';
+  src: url('/fonts/Tomorrow/Tomorrow-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+// For user information of uxcat. Ranking and Top
+@font-face {
+  font-family: 'DelaGothicOne-Regular';
+  src: url('/fonts/DelaGothicOne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// For UXCat certificate
+@font-face {
+  font-family: 'Manrope-ExtraLight.ttf';
+  src: url('/fonts/Manrope-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+// For UXCat certificate
+@font-face {
+  font-family: 'IBMPlexSans-Regular.ttf';
+  src: url('/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// For UXCat certificate
+@font-face {
+  font-family: 'IBMPlexSans-SemiBold.ttf';
+  src: url('/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Armenian
+@font-face {
+  font-family: 'NotoSansArmenian-Regular';
+  src: url('/fonts/NotoSansArmenian/NotoSansArmenian-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Aboreto-Regular for Article titles
+@font-face {
+  font-family: 'Aboreto-Regular';
+  src: url('/fonts/Aboreto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Cormorant_Garamond-Bold for ArticlesLayout [for russian version]
+@font-face {
+  font-family: 'Cormorant_Garamond-Regular';
+  src: url('/fonts/Cormorant_Garamond/static/CormorantGaramond-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Cormorant_Garamond-Medium for ArticlesLayout [for russian version]
+@font-face {
+  font-family: 'Cormorant-Garamond-Medium';
+  src: url('/fonts/Cormorant_Garamond/static/CormorantGaramond-Medium.ttf')
+    format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Source Serif 4 for ArticlesLayout
+@font-face {
+  font-family: 'Source-Serif-Regular';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Source Serif 4 for ArticlesLayout
+@font-face {
+  font-family: 'Source-Serif-Bold';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-Bold.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Source Serif 4 for ArticlesLayout
+@font-face {
+  font-family: 'Source-Serif-SemiBold';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-SemiBold.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  font-family: 'Lato', 'NotoSansArmenian-Regular', Arial, serif;
+}
+
+@media (max-width: 961px) {
+  body {
+    background-size: contain;
+  }
+}

@@ -1,0 +1,115 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.hero {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-2xl $space-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  text-align: center;
+}
+
+.productLogo {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.logoMark {
+  width: 36px;
+  height: 36px;
+  background: $color-primary;
+  color: $color-white;
+  border-radius: $border-radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  font-weight: 700;
+}
+
+.logoName {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.tagline {
+  font-size: $font-size-base;
+  color: $text-secondary;
+}
+
+.btn {
+  padding: $space-sm $space-2xl;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnPrimary {
+  background: $color-primary;
+  color: $color-white;
+  border-color: $color-primary;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.trustedSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.trustedLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.logoRow {
+  display: flex;
+  gap: $space-2xl;
+  align-items: center;
+}
+
+.brandLogo {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-secondary;
+  letter-spacing: -0.02em;
+}
+
+.brandG {
+  color: #4285f4;
+}
+
+.brandS {
+  color: #6772e5;
+}
+
+.brandN {
+  color: #0b3d91;
+}

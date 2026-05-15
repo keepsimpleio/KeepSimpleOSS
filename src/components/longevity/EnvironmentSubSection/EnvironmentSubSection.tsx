@@ -4,6 +4,8 @@ import { FC } from 'react';
 
 import useInView from '@hooks/useInView';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import { EnvironmentSubSectionProps } from './EnvironmentSubSection.types';
 
 import styles from './EnvironmentSubSection.module.scss';
@@ -28,7 +30,7 @@ const EnvironmentSubSection: FC<EnvironmentSubSectionProps> = ({
       </div>
       <hr className={styles.hr} />
       <div
-        dangerouslySetInnerHTML={{ __html: description }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
         className={styles.description}
       />
     </div>

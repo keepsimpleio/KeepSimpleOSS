@@ -16,6 +16,8 @@ import { TRouter } from '@local-types/global';
 import useImageModule from '@hooks/useImageModule';
 import useMobile from '@hooks/useMobile';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import containerData from '@data/companyManagement';
 
 import ZoomBlock from '@components/ZoomBlock';
@@ -210,9 +212,11 @@ const PyramidInfoSection: FC<PyramidInfoSectionProps> = ({
                 <div
                   ref={contentRef}
                   dangerouslySetInnerHTML={{
-                    __html: onlyPyramidInfo
-                      ? selectedPyramid.attributes.description
-                      : description,
+                    __html: sanitizeHtml(
+                      onlyPyramidInfo
+                        ? selectedPyramid.attributes.description
+                        : description,
+                    ),
                   }}
                 />
                 <p className={styles.psNote}>

@@ -1,0 +1,147 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 6px;
+  background: $bg-alt;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $color-primary;
+  border-radius: 3px;
+}
+
+.progressLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: right;
+}
+
+.stepList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+}
+
+.active {
+  border-color: $color-primary;
+  background: #f0f6fc;
+}
+
+.pending {
+  opacity: 0.6;
+}
+
+.stepNum {
+  width: 22px;
+  height: 22px;
+  border-radius: $border-radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  background: $bg-alt;
+  color: $text-secondary;
+  flex-shrink: 0;
+
+  .active & {
+    background: $color-primary;
+    color: $color-white;
+  }
+}
+
+.stepLabel {
+  flex: 1;
+  color: $text-primary;
+}
+
+.stepCurrent {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-primary;
+  background: #daeaf7;
+  padding: 2px $space-sm;
+  border-radius: 10px;
+}
+
+.currentStep {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.currentLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+  margin: 0;
+}
+
+.input {
+  padding: $space-sm $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  background: $bg-card;
+  color: $text-primary;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+}
+
+.btnPrimary {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

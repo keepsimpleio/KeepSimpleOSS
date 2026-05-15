@@ -1,0 +1,155 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+// Before — forced overlay modal
+.overlay {
+  position: relative;
+  background: rgba($color-dark, 0.6);
+  border-radius: $border-radius;
+  padding: $space-xl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+}
+
+.modal {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  text-align: center;
+}
+
+.lockIcon {
+  font-size: 32px;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btnForced {
+  width: 100%;
+  padding: $space-md $space-lg;
+  background: #c0392b;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.noEscape {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+// After — low-pressure banner over content
+.pageMock {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageContent {
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  min-height: 140px;
+  justify-content: center;
+}
+
+.contentLine {
+  height: 12px;
+  background: $bg-alt;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-md;
+  padding: $space-md $space-lg;
+  background: $bg-alt;
+  border-top: 1px solid $border-color;
+  flex-wrap: wrap;
+}
+
+.bannerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bannerTitle {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.bannerSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.bannerRight {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  align-items: flex-end;
+}
+
+.btnSoft {
+  padding: $space-xs $space-md;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnDismiss {
+  background: none;
+  border: none;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}

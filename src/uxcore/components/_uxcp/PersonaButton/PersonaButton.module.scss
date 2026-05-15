@@ -1,0 +1,119 @@
+$text-color: #000;
+$hover-color: #1890ff;
+
+$text-color: #000;
+$hover-color: #1890ff;
+
+.PersonaButton {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 6px 16px;
+  height: 32px;
+  background-color: #fff;
+  cursor: pointer;
+  color: $text-color;
+  transition: 0.2s;
+  white-space: nowrap;
+  min-width: 110px;
+  position: relative;
+
+  &.Disabled {
+    cursor: default;
+  }
+
+  & svg {
+    position: relative;
+    top: 2px;
+
+    & path {
+      transition: 0.2s;
+      fill: $text-color;
+    }
+  }
+
+  & svg[type='copy'] {
+    margin-right: 8px;
+  }
+
+  & svg[type='check'] {
+    margin-left: 8px;
+
+    & path {
+      fill: #fff !important;
+    }
+  }
+
+  &:not(.Disabled):hover {
+    border-color: $hover-color;
+    color: $hover-color;
+
+    & path {
+      fill: $hover-color;
+    }
+  }
+
+  &.Inverted {
+    border: 1px solid #28587b;
+    background-color: #28587b;
+    color: #fff;
+
+    & svg {
+      & path {
+        fill: #28587b;
+      }
+    }
+
+    &:not(.Disabled):hover {
+      border-color: #5396d3;
+      background-color: #5396d3;
+      color: #fff;
+
+      & svg {
+        & path {
+          fill: #5396d3;
+          stroke: #5396d3;
+        }
+      }
+    }
+  }
+
+  & > span {
+    position: relative;
+    text-align: initial;
+  }
+
+  & .Countdowner {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: rgba(91, 136, 189, 0.2);
+    border-right: 1px solid #d9d9d9;
+    z-index: 0;
+    opacity: 0;
+
+    &.Animate {
+      animation: copy-animation infinite 2.5s linear;
+    }
+  }
+}
+.PersonaButtonHy {
+  width: inherit;
+}
+
+@keyframes copy-animation {
+  0% {
+    opacity: 1;
+  }
+  90% {
+    width: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}

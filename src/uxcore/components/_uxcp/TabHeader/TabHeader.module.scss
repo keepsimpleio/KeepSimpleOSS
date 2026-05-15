@@ -1,0 +1,119 @@
+.TabHeader {
+  display: flex;
+  position: relative;
+  width: 420px;
+  height: 65px;
+  background-color: #f0f4f8;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 25px;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #e2e9f0;
+  }
+
+  .description {
+    margin: auto 0 auto -10px;
+    color: #5396d3;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      transform: scaleX(0);
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: #5396d3;
+      transform-origin: bottom right;
+      transition: transform 0.25s ease-out;
+    }
+  }
+
+  .icons {
+    width: 25%;
+    display: inline-block;
+    border-left: 0 solid transparent;
+    border-right: 85px solid transparent;
+    border-top: 65px solid #c4d4e6;
+    z-index: 2;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+
+    .iconWrapper {
+      z-index: 3;
+      padding-left: 32px;
+      padding-top: 9px;
+      position: absolute;
+      top: 0;
+      opacity: 1;
+
+      .insideIcon {
+        position: absolute;
+        top: 32%;
+        z-index: 5;
+        display: flex;
+        width: 39px;
+        justify-content: center;
+        align-items: center;
+
+        > svg {
+          fill: #5b88bd;
+        }
+      }
+    }
+  }
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: flex-end;
+  padding-right: 8px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  .title {
+    z-index: 8;
+    position: relative;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    border-bottom: 22px solid #326da3;
+    border-left: 30px solid transparent;
+    height: 0;
+    width: 57px;
+    right: 0;
+    z-index: 1;
+    box-shadow: 5px 0 5px -2px rgba(83, 150, 211, 0.29);
+    border-bottom-right-radius: 4px;
+  }
+}
+
+.pink {
+  background-color: #f5f2f5;
+
+  &:hover {
+    background-color: #e9e6e9;
+  }
+
+  .icons {
+    border-top: 65px solid #a36aa44a;
+  }
+
+  .titleWrapper {
+    &:before {
+      border-bottom: 22px solid #a36aa4;
+      box-shadow: 5px 0 5px -2px rgba(163, 106, 164, 0.29);
+    }
+  }
+}

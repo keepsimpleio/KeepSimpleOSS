@@ -1,0 +1,146 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  text-align: center;
+  box-shadow: $shadow-card;
+}
+
+// Before
+.checkIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+  color: $color-white;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0 0 $space-md;
+}
+
+.orderNum {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-family: monospace;
+}
+
+// After
+.checkIconBig {
+  font-size: 40px;
+  margin-bottom: $space-sm;
+}
+
+.deliveryEta {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+  margin-bottom: $space-md;
+}
+
+.etaLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.etaDate {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+  margin-bottom: $space-md;
+  text-align: left;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.5;
+}
+
+.noteIcon {
+  font-size: $font-size-md;
+  flex-shrink: 0;
+}
+
+.discountBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-md;
+  border: 2px dashed $color-primary;
+  border-radius: $border-radius;
+  padding: $space-md;
+  margin-bottom: $space-md;
+}
+
+.discountLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.discountCode {
+  font-family: monospace;
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $color-primary;
+  background: $bg-alt;
+  padding: 2px $space-sm;
+  border-radius: $border-radius;
+}
+
+.discountValue {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $tag-green;
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: $space-sm;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 2px $space-sm;
+}

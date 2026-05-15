@@ -1,0 +1,71 @@
+.UsefulLinksContent {
+  position: absolute;
+  display: none;
+  right: 0;
+  top: 100%;
+  width: 280px;
+  padding: 10px 0;
+  background-color: #ffffff;
+  border: 1px solid #cbcbcb;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+
+  & .Section {
+    & + .Section {
+      margin-top: 12px;
+    }
+    &:last-child {
+      border-top: 1px solid #f1f1f1;
+      padding-top: 8px;
+    }
+  }
+
+  & .Title {
+    padding: 2px 16px;
+    font-weight: 700;
+    font-size: 12px;
+    color: #c4c4c4;
+  }
+
+  & .Link {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 14px;
+    color: #000;
+    height: 32px;
+    text-decoration: none;
+
+    & > img {
+      margin-left: 5px;
+    }
+
+    &.Active,
+    &:hover {
+      background-color: #f1f1f1;
+    }
+  }
+}
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+@media (max-width: 800px) {
+  .UsefulLinksContent {
+    & .Section {
+      border-bottom: 1px solid #f1f1f1;
+      padding-bottom: 6px;
+
+      &:last-child {
+        border-top: unset;
+        padding-top: unset;
+      }
+      &:last-of-type {
+        border-bottom-width: 0px;
+      }
+    }
+  }
+}

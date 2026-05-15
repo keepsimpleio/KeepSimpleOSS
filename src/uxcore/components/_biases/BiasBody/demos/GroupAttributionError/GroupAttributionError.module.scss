@@ -1,0 +1,110 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.required {
+  color: #e53e3e;
+  margin-left: 2px;
+}
+
+.input {
+  width: 100%;
+  padding: $space-sm $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-family: $font-family;
+  background: $bg-card;
+  color: $text-primary;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $text-secondary;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+}
+
+.badgePreview {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border: 1px dashed $border-dark;
+  border-radius: $border-radius;
+}
+
+.identityBadge {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  background: $color-primary;
+  color: $color-white;
+  border-radius: $border-radius;
+  padding: $space-xs $space-sm;
+}
+
+.badgeIcon {
+  font-size: $font-size-base;
+}
+
+.badgeName {
+  font-size: $font-size-sm;
+  font-weight: 700;
+}
+
+.badgeCount {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.badgeHint {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-style: italic;
+}
+
+.btn {
+  padding: $space-sm;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  margin-top: $space-xs;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

@@ -1,0 +1,120 @@
+.LoadingWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 64px 16px;
+}
+
+.LoadingInner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #94a3b8;
+}
+
+.Spinner {
+  width: 20px;
+  height: 20px;
+  animation: countryMapSpin 1s linear infinite;
+}
+
+.SpinnerTrack {
+  opacity: 0.25;
+}
+
+.SpinnerHead {
+  opacity: 0.75;
+}
+
+@keyframes countryMapSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.Root {
+  position: relative;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 8px 16px;
+}
+
+.Svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.CountryPath {
+  cursor: pointer;
+  transition:
+    fill 0.2s,
+    stroke 0.2s,
+    stroke-width 0.2s;
+}
+
+.LabelGroup {
+  pointer-events: none;
+}
+
+.LabelDot {
+  transition: all 0.2s;
+}
+
+.LabelText {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  transition: all 0.2s;
+  text-shadow:
+    0 0 3px white,
+    0 0 6px white,
+    0 0 9px white;
+}
+
+.Tooltip {
+  pointer-events: none;
+  position: fixed;
+  z-index: 100;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 16px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.TooltipHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.TooltipName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.TooltipMeta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.TooltipHint {
+  margin-top: 6px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.025em;
+  color: #337ab7;
+}

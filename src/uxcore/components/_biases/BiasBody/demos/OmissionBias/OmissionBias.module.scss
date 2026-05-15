@@ -1,0 +1,127 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.breadcrumb {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.planInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.planName {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.planPrice {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+}
+
+.menuList {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.subMenu {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.subTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  padding: $space-xs $space-md;
+  background: $bg-alt;
+  border-bottom: 1px solid $border-color;
+}
+
+.menuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  border-bottom: 1px solid $border-color;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.active {
+    background: rgba($color-primary, 0.07);
+    color: $color-primary;
+    font-weight: 600;
+  }
+
+  &.danger {
+    color: #c0392b;
+  }
+}
+
+.chevron {
+  color: $text-secondary;
+  font-size: $font-size-base;
+}
+
+.btn {
+  padding: $space-sm $space-lg;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+  flex: 1;
+
+  &Danger {
+    background: #c0392b;
+    color: $color-white;
+    border-color: #c0392b;
+  }
+}

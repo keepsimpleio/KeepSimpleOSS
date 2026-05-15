@@ -1,0 +1,86 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.nav {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-xl;
+}
+
+.logo {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+  flex-shrink: 0;
+}
+
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  flex-wrap: wrap;
+}
+
+.navItem {
+  padding: $space-xs $space-sm;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  border-radius: $border-radius;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  white-space: nowrap;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text-primary;
+  }
+}
+
+.navItemHighlight {
+  background: $color-primary;
+  color: $color-white;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+    color: $color-white;
+  }
+}
+
+.newBadge {
+  background: #f59e0b;
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+.pageBody {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.placeholder {
+  height: 48px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+}

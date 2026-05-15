@@ -1,0 +1,162 @@
+export const downloadLinksEn = [
+  `/static/uxcg/en/uxcg_1_Our product or company has a reputation issue. How did this happen.pdf`,
+  `/static/uxcg/en/uxcg_2_What could be the reason for our users’ dissatisfaction with the product quality.pdf`,
+  `/static/uxcg/en/uxcg_3_Our users do not use the product features they have requested. What could be the reason.pdf`,
+  `/static/uxcg/en/uxcg_4_We are unable to create the correct associations with our product on the market.pdf`,
+  `/static/uxcg/en/uxcg_5_Our users are complaining about product updates. What could be the reason.pdf`,
+  `/static/uxcg/en/uxcg_6_New users complain that the product does not meet their expectations.pdf`,
+  `/static/uxcg/en/uxcg_7_Our users are gradually becoming disappointed with the product. What could be the reason.pdf`,
+  `/static/uxcg/en/uxcg_8_What could be the reason for users’ high sensitivity to product changes.pdf`,
+  `/static/uxcg/en/uxcg_9_Our users accuse us of being obsessive. What could be the reason.pdf`,
+  `/static/uxcg/en/uxcg_10_Users complain about the quality of our support.pdf`,
+  `/static/uxcg/en/uxcg_11_Our users accuse us of problems that have arisen because of their carelessness..pdf`,
+  `/static/uxcg/en/uxcg_12_Potential users exaggerate the risks of using our product. What could be the reason.pdf`,
+  `/static/uxcg/en/uxcg_13_Our users do not follow the safety rules. What could be the reason.pdf`,
+  `/static/uxcg/en/uxcg_14_We were accused of a careless approach to business.pdf`,
+  `/static/uxcg/en/uxcg_15_Users say the product has become boring.pdf`,
+  `/static/uxcg/en/uxcg_16_Our promotional activities are not bringing good results.pdf`,
+  `/static/uxcg/en/uxcg_17_Our users use only one feature of the product among many others.pdf`,
+  `/static/uxcg/en/uxcg_18_Our users pay too much attention to the secondary components of the product.pdf`,
+  `/static/uxcg/en/uxcg_19_Potential users only see the weak points of our product. What could be the reason.pdf`,
+  `/static/uxcg/en/uxcg_20_How to stimulate sales on our project.pdf`,
+  `/static/uxcg/en/uxcg_21_Users do not like our communication.pdf`,
+  `/static/uxcg/en/uxcg_22_Our users have not appreciated or downplayed the latest product updates.pdf`,
+  `/static/uxcg/en/uxcg_23_How to popularize one of our products among others.pdf`,
+  `/static/uxcg/en/uxcg_24_How to nudge our users to take the actions we need at the lowest cost.pdf`,
+  `/static/uxcg/en/uxcg_25_How to reduce the amount of money withdrawn by users from our project.pdf`,
+  `/static/uxcg/en/uxcg_26_How to make bonuses and promotions more attractive to users.pdf`,
+  `/static/uxcg/en/uxcg_27_We want to launch in a market full of negative associations.pdf`,
+  `/static/uxcg/en/uxcg_28_What mistakes do we make when evaluating the effectiveness of marketing.pdf`,
+  `/static/uxcg/en/uxcg_29_How to provide the best purchasing experience for users.pdf`,
+  `/static/uxcg/en/uxcg_30_What mistakes do we make when working with product analytics.pdf`,
+  `/static/uxcg/en/uxcg_31_How to protect yourself from information wars (e.g. Disinformation).pdf`,
+  `/static/uxcg/en/uxcg_32_How to make the product as comfortable as possible.pdf`,
+  `/static/uxcg/en/uxcg_33_What to do if user tells us about a case that according to the system never happened.pdf`,
+  `/static/uxcg/en/uxcg_34_How to give the product a more modern look at minimal cost.pdf`,
+  `/static/uxcg/en/uxcg_35_How to work with gambling in a product.pdf`,
+  `/static/uxcg/en/uxcg_36_How to create an atmosphere of trust in a social project.pdf`,
+  `/static/uxcg/en/uxcg_37_What are the risks of significantly changing the product.pdf`,
+  `/static/uxcg/en/uxcg_38_What to consider when creating moderation mechanisms.pdf`,
+  `/static/uxcg/en/uxcg_39_How to increase the responsibility of our users when using our product.pdf`,
+  `/static/uxcg/en/uxcg_40_How to efficiently show the content to our users.pdf`,
+  `/static/uxcg/en/uxcg_41_The stubbornness of our colleagues is damaging the teamwork process. What to do.pdf`,
+  `/static/uxcg/en/uxcg_42_How to create new products or services “out of nothing” with minimal costs.pdf`,
+  `/static/uxcg/en/uxcg_43_What to consider when planning releases.pdf`,
+  `/static/uxcg/en/uxcg_44_What to consider when working with user feedback.pdf`,
+  `/static/uxcg/en/uxcg_45_What to do if our team members do not share their opinion.pdf`,
+  `/static/uxcg/en/uxcg_46_How to simplify our product.pdf`,
+  `/static/uxcg/en/uxcg_47_What to consider when contacting a user directly.pdf`,
+  `/static/uxcg/en/uxcg_48_User involvement in product development.pdf`,
+  `/static/uxcg/en/uxcg_49_What to do if our users are asking for changes that we cannot do.pdf`,
+  `/static/uxcg/en/uxcg_50_How to deal with an incompetent colleague - manager.pdf`,
+  `/static/uxcg/en/uxcg_51_Why our users make mistakes when using the product.pdf`,
+  `/static/uxcg/en/uxcg_52_How to involve users in the beta testing of our product - feature.pdf`,
+  `/static/uxcg/en/uxcg_53_What should be considered when removing unnecessary functionality from the product.pdf`,
+  `/static/uxcg/en/uxcg_54_What should be considered when adding new functionality to the product.pdf`,
+  `/static/uxcg/en/uxcg_55_Which components of the product are most sensitive to change.pdf`,
+  `/static/uxcg/en/uxcg_56_What to consider when working with lists (any).pdf`,
+  `/static/uxcg/en/uxcg_57_How to add additional value to a product “out of nothing” at minimal cost.pdf`,
+  `/static/uxcg/en/uxcg_58_Work with users’ attention. How can we make sure that users see information that is important to us.pdf`,
+  `/static/uxcg/en/uxcg_59_What to consider when mentioning political, social, or economic events in a company’s texts.pdf`,
+  `/static/uxcg/en/uxcg_60_Users have difficulties on the product or service selection page. What to do.pdf`,
+  `/static/uxcg/en/uxcg_61_Our team spends too much time discussing irrelevantminor details.pdf`,
+  `/static/uxcg/en/uxcg_62_What to consider when creating a “Persona” for a product.pdf`,
+  `/static/uxcg/en/uxcg_63_What to do if we made a big mistake in the latest release.pdf`,
+];
+
+export const downloadLinksRu = [
+  `/static/uxcg/ru/uxcg_1_U nashego produkta problemy s reputaciei. Kak eto sluchilos.pdf`,
+  `/static/uxcg/ru/uxcg_2_Nashi polzovateli nedovolny kachestvom produkta.pdf`,
+  `/static/uxcg/ru/uxcg_3_Nashi polzovateli ne ispolzuyut funkcii produkta kotorie sami prosili.pdf`,
+  `/static/uxcg/ru/uxcg_4_Nam ne udaetsya zakrepit neobhodimie associacii s nashim produktom na rinke.pdf`,
+  `/static/uxcg/ru/uxcg_5_Nashi polzovateli zhaluyutsya na obnovlenia produkta.pdf`,
+  `/static/uxcg/ru/uxcg_6_Novie polzovateli zhaluyutysya na nesootvetstvie produkta ix ozhidaniyam.pdf`,
+  `/static/uxcg/ru/uxcg_7_Nashi polzovateli postepenno razocharovuvayutsya v produkte.pdf`,
+  `/static/uxcg/ru/uxcg_8_Nashi polzovateli ochen ostro vosprinimayut izmeneniya v produkte.pdf`,
+  `/static/uxcg/ru/uxcg_9_Nashi polzovateli uprekayut nas v navyazchivosti.pdf`,
+  `/static/uxcg/ru/uxcg_10_Polzovateli zhaluyutsya na kachestvo nashei sluzhbi podderzhki.pdf`,
+  `/static/uxcg/ru/uxcg_11_Nashi polzovateli obvinyayut nas v problemax voznikshix izza ix nevnimatelnosti.pdf`,
+  `/static/uxcg/ru/uxcg_12_Potencialnie polzovateli preuvelichivayut riski ispolzovaniya nashego produkta.pdf`,
+  `/static/uxcg/ru/uxcg_13_Nashi polzovateli ne sleduyut pravilam bezopasnosti.pdf`,
+  `/static/uxcg/ru/uxcg_14_Nas uprekayut v neseryoznom otnoshenii k delu.pdf`,
+  `/static/uxcg/ru/uxcg_15_Polzovateli govoryat chto product stal skuchnim.pdf`,
+  `/static/uxcg/ru/uxcg_16_Nashi deystviya po prodvizheniyu produkta ne prinostyat xoroshix rezulxtatov.pdf`,
+  `/static/uxcg/ru/uxcg_17_Nashi polzovateli ispolzuyut tolko odnu funkciyu produkta sredi mnozhestva drugih.pdf`,
+  `/static/uxcg/ru/uxcg_18_Nashi polzovateli obrashayut slishkom mnogo vnimaniya na vtorostepennie komponenty produkta.pdf`,
+  `/static/uxcg/ru/uxcg_19_Potencialnye polzovateli vidyat tolko slabye storony nashego produkta.pdf`,
+  `/static/uxcg/ru/uxcg_20_Kak stimulirovat rost prodazh.pdf`,
+  `/static/uxcg/ru/uxcg_21_Polzovatelyam ne nravitsya nasha kommunikaciya.pdf`,
+  `/static/uxcg/ru/uxcg_22_Polzovateli ne ocenili libo preumehsnili znachmost poslednix obnovleniy.pdf`,
+  `/static/uxcg/ru/uxcg_23_Kak popularizirovat odin konkretniy servisny plan ili produkt.pdf`,
+  `/static/uxcg/ru/uxcg_24_Kak podtolknut polzovateley k prinyatiyu nuzhnih nam deistviy.pdf`,
+  `/static/uxcg/ru/uxcg_25_kak umenshit kolichestvo vivodimix deneg s proekta.pdf`,
+  `/static/uxcg/ru/uxcg_26_Kak sdelat bonusi i akcii bolee privlekatelnimi.pdf`,
+  `/static/uxcg/ru/uxcg_27_Mi xotim zapustit produkt na rynke polnom negativnix associaciy.pdf`,
+  `/static/uxcg/ru/uxcg_28_Kakie oshibki mi sovershaem pri analize effektivnosti marketinga.pdf`,
+  `/static/uxcg/ru/uxcg_29_Kak obespechit luchshiy opyt pokupki dlya polzovatelei.pdf`,
+  `/static/uxcg/ru/uxcg_30_Kakie oshybki mi dopuskaem v rabote s analiticheskimi dannimi po produktu.pdf`,
+  `/static/uxcg/ru/uxcg_31_Kak zashishatsya ot informacionnyx atak.pdf`,
+  `/static/uxcg/ru/uxcg_32_Kak sdelat produkt maksimalno komfortnym.pdf`,
+  `/static/uxcg/ru/uxcg_33_Nash polzovatel rasskazivaet o sluchae kotorogo ne proisxodilo.pdf`,
+  `/static/uxcg/ru/uxcg_34_Kak pridat produktu bolee sovremennyi vid.pdf`,
+  `/static/uxcg/ru/uxcg_35_Kak rabotat s chusvstvom azarta.pdf`,
+  `/static/uxcg/ru/uxcg_36_Kak sozdat atmosferu doveriya.pdf`,
+  `/static/uxcg/ru/uxcg_37_Mi sobiraemsya znachitelno izmenit produkt. V chem riski.pdf`,
+  `/static/uxcg/ru/uxcg_38_Chto uchitivat pri sozdanii mexanizmov moderacii.pdf`,
+  `/static/uxcg/ru/uxcg_39_Kak uvelichit otvetstvennost polzovatelei.pdf`,
+  `/static/uxcg/ru/uxcg_40_U nas mnogo kontenta. Kak pokazat ego polzovatelyam pravilno.pdf`,
+  `/static/uxcg/ru/uxcg_41_Principialnost nashix kolleg nanosit vred rabochemu processu.pdf`,
+  `/static/uxcg/ru/uxcg_42_Kak sozdavat novie tovary ili uslugi 'iz nichego'.pdf`,
+  `/static/uxcg/ru/uxcg_43_Chto uchitivat pri planirovanii relizov.pdf`,
+  `/static/uxcg/ru/uxcg_44_Chto uchitivat pri rabote s polzovatelskim feedbackom.pdf`,
+  `/static/uxcg/ru/uxcg_45_Chto delat esli nekotorye uchastniki nashei komandi ne vyskazyvayut svoe mnenie.pdf`,
+  `/static/uxcg/ru/uxcg_46_Kak uprostit' nash product.pdf`,
+  `/static/uxcg/ru/uxcg_47_Chto uchitivat pri pryamom kontakte s polzovatelem.pdf`,
+  `/static/uxcg/ru/uxcg_48_Vovlechenie polzovatelei v zhizn produkta.pdf`,
+  `/static/uxcg/ru/uxcg_49_Polzovateli prosyat izmeneniy kotorye my ne mozhem sebe pozvolit.pdf`,
+  `/static/uxcg/ru/uxcg_50_Kak rabotat s nekompetentnym kollegoi - nachalnikom.pdf`,
+  `/static/uxcg/ru/uxcg_51_Pochemu polzovateli dopuskayut oshibki v ispolzovanii produkta.pdf`,
+  `/static/uxcg/ru/uxcg_52_Kak ubedit polzovatelei stat beta testerami nashego tovara ili feature.pdf`,
+  `/static/uxcg/ru/uxcg_53_Chto uchitivat pri udalenii funkcionala iz produkta.pdf`,
+  `/static/uxcg/ru/uxcg_54_Mi xotim dobavit v produkt novyi funkcional. Chto uchitivat.pdf`,
+  `/static/uxcg/ru/uxcg_55_Kakie komponenty produkta naibolee chuvstvitelni k izmeneniyam.pdf`,
+  `/static/uxcg/ru/uxcg_56_Chto uchitivat pri rabote so spiskami (lyubimi).pdf`,
+  `/static/uxcg/ru/uxcg_57_Kak dobavit dopolnitelnuyu cennost produktu 'iz nichego'.pdf`,
+  `/static/uxcg/ru/uxcg_58_Rabota s vnimaniem polzovateley.pdf`,
+  `/static/uxcg/ru/uxcg_59_Chto uchitivat pri upominanii politicheskix, socialnix ili ekonomicheskix sobitiy v produkte.pdf`,
+  `/static/uxcg/ru/uxcg_60_Polzovateli zatrudnyayutsya v vibore tovara ili servisa.pdf`,
+  `/static/uxcg/ru/uxcg_61_Nasha komanda tratit slishkom mnogo vremeni na vtorostepennie voprosy.pdf`,
+  `/static/uxcg/ru/uxcg_62_Chto uchityvat pri sozdanii Persony produkta.pdf`,
+  `/static/uxcg/ru/uxcg_63_V poslednem relize my dopustili grubuyu oshibku.pdf`,
+];
+
+let cachedQuestions: any = null;
+const LOCALES = ['en', 'ru', 'hy'];
+
+export const getStrapiQuestions = async () => {
+  if (cachedQuestions) return cachedQuestions;
+
+  const urls = LOCALES.map(
+    locale =>
+      `${process.env.NEXT_PUBLIC_STRAPI}/api/questions?locale=${locale}&sort=number&pagination[pageSize]=100&pagination[page]=1&populate[OGTags][populate]=ogImage`,
+  );
+
+  const responses = await Promise.all(
+    urls.map(url => fetch(url).then(res => res.json())),
+  );
+
+  const data = responses.map(res => res.data);
+
+  const result = {
+    en: [],
+    ru: [],
+    hy: [],
+  };
+
+  LOCALES.forEach((locale, index) => {
+    result[locale] = data[index];
+  });
+
+  cachedQuestions = result;
+  return result;
+};

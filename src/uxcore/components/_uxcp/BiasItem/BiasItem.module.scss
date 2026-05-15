@@ -1,0 +1,100 @@
+.BiasItem {
+  overflow: hidden;
+  white-space: nowrap;
+  transition: 0.15s;
+  transition-delay: 0.15s;
+  height: 32px;
+  margin-bottom: 3px;
+
+  & .Title {
+    width: 100%;
+    cursor: help;
+
+    & div {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 322px;
+      max-width: 100%;
+      margin-bottom: -4px;
+    }
+
+    & .Number {
+      color: #28587b;
+      margin-right: 4px;
+      display: inline-block;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  & .Action {
+    position: relative;
+    top: 2px;
+
+    & .RemoveButton {
+      cursor: pointer;
+
+      & > img {
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+
+  & .BiasItemWrapper {
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    height: 32px;
+    background-color: #ededed;
+    border-radius: 2px;
+
+    position: relative;
+    top: 0px;
+    transform: scale(1);
+  }
+
+  &.Hidden {
+    height: 0;
+    margin-bottom: 0px;
+    overflow: hidden;
+
+    & .BiasItemWrapper {
+      animation: hiding 0.3s 0s ease-in-out;
+      margin-bottom: 0px;
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .BiasItem {
+    & .BiasItemWrapper {
+      font-size: 14px;
+    }
+  }
+}
+@keyframes hiding {
+  50% {
+    transform: scale(0.95);
+    opacity: 0.5;
+    top: 0px;
+  }
+  100% {
+    opacity: 0;
+    top: -50px;
+    transform: scale(0.95);
+  }
+}
+
+@media (max-width: 800px) {
+  .BiasItem {
+    & .Action {
+      display: none;
+    }
+  }
+}

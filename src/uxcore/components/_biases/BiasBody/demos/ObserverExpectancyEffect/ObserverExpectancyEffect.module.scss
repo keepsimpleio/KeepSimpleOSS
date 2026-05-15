@@ -1,0 +1,85 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.scriptHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $tag-orange;
+  display: inline-block;
+}
+
+.script {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.script li {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-left-width: 3px;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  display: flex;
+  gap: $space-sm;
+  align-items: flex-start;
+
+  &.leading {
+    border-left-color: $tag-orange;
+  }
+
+  &.neutral {
+    border-left-color: $tag-green;
+  }
+}
+
+.tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  background: $tag-orange;
+  color: $color-white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &Ok {
+    background: $tag-green;
+  }
+}
+
+.outcome {
+  margin-top: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  background: $bg-alt;
+  padding: $space-sm $space-md;
+  border-radius: $border-radius;
+}

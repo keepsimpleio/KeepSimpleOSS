@@ -1,0 +1,65 @@
+const ru = {
+  title: 'Таблица решений',
+  biasNameTxt: 'Имя искажения: ',
+  placeHolderTxt: 'Заполнитель',
+  learnHowToUse: 'Узнайте, как использовать этот инструмент',
+  tableExampleText: 'Пример таблицы решений',
+  article: 'Статья',
+  image: 'Картинка',
+  addBiasToUseIt:
+    'Чтобы использовать таблицу, добавьте искажение сверху страницы',
+  iUnderstandBtn: 'Я понял',
+  tableTitles: [
+    {
+      toolTipContent: 'Предложенное решение',
+      title: 'Что мы делаем?',
+    },
+    {
+      toolTipContent: 'Объяснение предлагаемого решения',
+      title: 'Почему (искажение)?',
+    },
+    {
+      toolTipContent: 'Объяснение предлагаемого решения',
+      title: 'Почему?',
+    },
+    {
+      toolTipContent: 'Методы, используемые для идентификации искажений',
+      title: 'Методы валидации',
+    },
+  ],
+  exportBtnText: 'Экспорт',
+  fullScreenBtn: 'Во весь экран',
+  saveBtn: 'Сохранить в профиль',
+  saveTxt: 'Сохранить',
+  savedState: 'Сохранено',
+  loginToEdit: 'Войдите, чтобы редактировать',
+  login: 'Войти',
+  logoutText: 'Выйти',
+  closeBtn: 'Закрыть',
+  savedPersonasTitles: [
+    'Имя персоны',
+    'Дата создания',
+    'Последнее изменение',
+    'Действия',
+  ],
+  open: 'Открыть',
+  deleteBtn: 'Удалить',
+  loginText: 'Чтобы использовать эту функцию, вам необходимо войти в систему.',
+  singInWithGoogle: 'Войти с через Google',
+  signInWithLinkedIn: 'Войти с через LinkedIn',
+  signInWithDiscord: 'Войти с через Discord',
+  signInWithTwitter: 'Войти через X',
+  signInWithMailRu: 'Войти через Mail.ru',
+  signInWithYandex: 'Войти через Yandex',
+  copyLink: 'Скопировать',
+  copiedTxt: 'Скопировано!',
+  cancelBtn: 'Отмена',
+  availablePersonasTxt: 'Создано персон:',
+  personasIsFull:
+    'Вы достигли лимита допустимых Персон.\n Вы можете удалить одну из персон на странице “Сохраненные Персоны”',
+  overWriteText: 'Перезаписать',
+  savedPersonasText: 'Сохраненные Персоны',
+  pleaseInputName: 'Пожалуйста, введите имя Персоны',
+};
+
+export default ru;

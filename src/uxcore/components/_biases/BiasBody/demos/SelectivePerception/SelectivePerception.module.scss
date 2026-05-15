@@ -1,0 +1,102 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius $border-radius 0 0;
+  padding: $space-xs $space-sm;
+  flex-wrap: wrap;
+}
+
+.tool {
+  padding: $space-xs $space-sm;
+  border: 1px solid transparent;
+  border-radius: $border-radius;
+  background: transparent;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+  min-width: 28px;
+  text-align: center;
+
+  &:hover {
+    background: $bg-hover;
+    border-color: $border-color;
+  }
+
+  &Bold {
+    font-weight: 700;
+    font-size: $font-size-base;
+  }
+
+  &Italic {
+    font-style: italic;
+    font-size: $font-size-base;
+  }
+
+  &Underline {
+    text-decoration: underline;
+    font-size: $font-size-base;
+  }
+}
+
+.toolMore {
+  padding: $space-xs $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-alt;
+  color: $text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: $border-color;
+  margin: 0 $space-xs;
+  flex-shrink: 0;
+}
+
+.editorBody {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-top: none;
+  border-radius: 0 0 $border-radius $border-radius;
+  padding: $space-lg;
+  min-height: 120px;
+}
+
+.placeholder {
+  color: $text-secondary;
+  font-size: $font-size-base;
+  margin: 0 0 $space-sm;
+}
+
+.hint {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-style: italic;
+  margin: 0;
+  border-top: 1px dashed $border-color;
+  padding-top: $space-sm;
+}

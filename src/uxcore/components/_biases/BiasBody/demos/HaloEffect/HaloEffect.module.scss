@@ -1,0 +1,198 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.editorBadge {
+  background: #f59e0b;
+  color: #000;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  padding: $space-xs $space-md;
+  border-radius: 3px;
+  align-self: flex-start;
+  letter-spacing: 0.02em;
+}
+
+.listing {
+  display: flex;
+  gap: $space-md;
+  align-items: center;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.iconPlain {
+  width: 52px;
+  height: 52px;
+  border-radius: $border-radius;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconGradient {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #28587b, #5b88bd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(40, 88, 123, 0.4);
+}
+
+.iconLetter {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-white;
+}
+
+.appMeta {
+  flex: 1;
+}
+
+.appName {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.appDev {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  margin-top: 2px;
+}
+
+.stars {
+  color: #f59e0b;
+  font-size: $font-size-sm;
+}
+
+.ratingNum {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.ratingCount {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.videoPreview {
+  background: linear-gradient(135deg, #1e2023, #28587b);
+  border-radius: $border-radius;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+  cursor: pointer;
+}
+
+.playBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-round;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-white;
+  font-size: $font-size-base;
+}
+
+.videoLabel {
+  font-size: $font-size-sm;
+  color: $color-white;
+  font-weight: 600;
+}
+
+.screenshots {
+  display: flex;
+  gap: $space-sm;
+}
+
+.screenshotPlain {
+  flex: 1;
+  height: 60px;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+}
+
+.screenshotPolished {
+  flex: 1;
+  height: 60px;
+  border-radius: $border-radius;
+  background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
+  border: 1px solid #b0caf9;
+}
+
+.awardBanner {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border: 1px solid #f59e0b;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: #92400e;
+  text-align: center;
+}
+
+.featureList {
+  display: flex;
+  gap: $space-sm;
+  flex-wrap: wrap;
+}
+
+.featureItem {
+  padding: $space-xs $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnPrimary {
+  background: $color-primary;
+  color: $color-white;
+  border-color: $color-primary;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

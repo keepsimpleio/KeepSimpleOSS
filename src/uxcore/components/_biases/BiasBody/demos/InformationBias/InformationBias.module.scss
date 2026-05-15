@@ -1,0 +1,127 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.productName {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.price {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.rating {
+  font-size: $font-size-sm;
+  color: $tag-orange;
+}
+
+.keySpecs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-xs;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.spec {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  span {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+
+  strong {
+    font-size: $font-size-sm;
+    color: $text-primary;
+  }
+}
+
+.specTable {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow-y: auto;
+  max-height: 220px;
+}
+
+.specRow {
+  display: flex;
+  justify-content: space-between;
+  padding: $space-xs $space-md;
+  border-bottom: 1px solid $border-color;
+  font-size: $font-size-sm;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span {
+    color: $text-secondary;
+  }
+
+  strong {
+    color: $text-primary;
+  }
+}
+
+.compareBar {
+  padding: $space-xs 0;
+}
+
+.compareLink {
+  font-size: $font-size-sm;
+  color: $text-link;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.btn {
+  padding: $space-sm $space-lg;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+  }
+
+  &Buried {
+    background: $bg-alt;
+    color: $text-secondary;
+    border-color: $border-color;
+    margin-top: $space-xs;
+    width: 100%;
+  }
+}

@@ -179,3 +179,52 @@ export const completeMagicLinkRegistration = async ({
     return { ok: false, code: 'NETWORK_ERROR', status: 0, message: e?.message };
   }
 };
+
+const twitterEmailChangeUrl = (path: string) =>
+  `${process.env.NEXT_PUBLIC_STRAPI}/api/auth/twitter/email-change/${path}`;
+
+export const requestTwitterEmailChange = async ({
+  email,
+  locale,
+  token,
+}: {
+  email: string;
+  locale: MagicLinkLocale;
+  token: string;
+}): Promise<MagicLinkResult<null>> => {
+  try {
+    const response = await fetch(twitterEmailChangeUrl('request'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ email, locale }),
+    });
+    if (!response.ok) {
+      return { ok: false, ...(await parseError(response)) };
+    }
+    return { ok: true, data: null };
+  } catch (e: any) {
+    return { ok: false, code: 'NETWORK_ERROR', status: 0, message: e?.message };
+  }
+};
+
+export const confirmTwitterEmailChange = async (
+  token: string,
+): Promise<MagicLinkResult<{ email: string }>> => {
+  try {
+    const response = await fetch(twitterEmailChangeUrl('confirm'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    if (!response.ok) {
+      return { ok: false, ...(await parseError(response)) };
+    }
+    const data = await response.json();
+    return { ok: true, data };
+  } catch (e: any) {
+    return { ok: false, code: 'NETWORK_ERROR', status: 0, message: e?.message };
+  }
+};

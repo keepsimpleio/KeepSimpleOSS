@@ -15,6 +15,8 @@ import { socialMediaLinks } from '@constants/common';
 
 import { TRouter } from '@local-types/global';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import contributors from '@data/contributors';
 
 import AudioPlayer from '@components/AudioPlayer';
@@ -264,7 +266,9 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
                   [styles.fadeOut]: fadeOutIndexes.includes(1),
                   [styles.fadeIn]: fadeInIndexes.includes(1),
                 })}
-                dangerouslySetInnerHTML={{ __html: highlightedText }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(highlightedText),
+                }}
               ></p>
             )}
             {title && secondDescription && (
@@ -277,7 +281,9 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
                   [styles.fadeIn]:
                     fadeInIndexes.includes(2) && !fadeOutIndexes.includes(2),
                 })}
-                dangerouslySetInnerHTML={{ __html: secondDescription }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(secondDescription),
+                }}
               ></p>
             )}
             {title && lastDescription && (
@@ -290,7 +296,9 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
                     fadeOutIndexes.includes(3) && !fadeInIndexes.includes(3),
                   [styles.fadeIn]: fadeInIndexes.includes(3),
                 })}
-                dangerouslySetInnerHTML={{ __html: lastDescription }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(lastDescription),
+                }}
               ></p>
             )}
           </div>

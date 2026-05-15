@@ -2,6 +2,8 @@ import cn from 'classnames';
 import { FC } from 'react';
 import { useInView } from 'react-intersection-observer';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import styles from './AboutProjects.module.scss';
 
 type projectsProps = {
@@ -35,7 +37,11 @@ const AboutProjects: FC<AboutProjectsProps> = ({ projects, darkTheme }) => {
           })}
         >
           <h3 className={styles.name}>{project.project_name}</h3>
-          <div dangerouslySetInnerHTML={{ __html: project.description }} />
+          <div
+            dangerouslySetInnerHTML={{
+              __html: sanitizeHtml(project.description),
+            }}
+          />
         </div>
       ))}
     </section>

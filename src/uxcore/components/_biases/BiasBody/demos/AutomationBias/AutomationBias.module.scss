@@ -1,0 +1,116 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.sectionLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $space-xs;
+}
+
+.comment {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.authorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $border-dark;
+  flex-shrink: 0;
+}
+
+.author {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.line {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-left: auto;
+}
+
+.commentBody {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+// After — AI comment
+.aiComment {
+  border-color: $tag-green;
+  background: linear-gradient(135deg, #f0faf2, #ffffff);
+  order: -1;
+}
+
+.aiHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.shield {
+  width: 20px;
+  height: 20px;
+  background: $tag-green;
+  border-radius: $border-radius;
+  color: $color-white;
+  font-size: $font-size-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.aiLabel {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: darken(#42c256, 18%);
+}
+
+.confidence {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $tag-green;
+}
+
+.checkmark {
+  margin-left: auto;
+  color: $tag-green;
+  font-weight: 700;
+  font-size: $font-size-base;
+}
+
+.aiFooter {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  border-top: 1px solid lighten(#42c256, 30%);
+  padding-top: $space-sm;
+}

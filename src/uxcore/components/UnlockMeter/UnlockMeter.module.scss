@@ -1,0 +1,30 @@
+.unlockMeter {
+  width: 203px;
+  height: 5px;
+  background-color: #f3f3f3;
+  border-radius: 50px;
+  overflow: hidden;
+  margin-right: 8px;
+}
+
+.fill {
+  height: 100%;
+  background-color: orange;
+}
+
+.value {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  // TODO- bring back when the container is draggable again
+  //margin-right: 16px;
+}
+
+@media (max-width: 500px) {
+  .unlockMeter {
+    width: 98px;
+  }
+  .value {
+    margin-right: 0;
+  }
+}

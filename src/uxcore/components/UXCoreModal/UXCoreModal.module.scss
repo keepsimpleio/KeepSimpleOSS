@@ -1,0 +1,567 @@
+.ModalOverlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  & .Modal {
+    color: #000;
+    position: relative;
+    background: #fff;
+    width: 900px;
+    border: 1px solid #cbcbcb;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+
+    & .ModalBody {
+      font-size: 14px;
+      padding: 15px 20px;
+      max-height: calc(100vh - 315px);
+      overflow: auto;
+      overflow-y: overlay;
+
+      /* width */
+      &::-webkit-scrollbar {
+        width: 8px;
+        border-left: 1px solid #fafafa;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.5);
+        border-radius: 5px;
+        border-left: 1px solid #fafafa;
+      }
+
+      & p {
+        margin-top: 0;
+      }
+
+      & .ModalBodyTitle {
+        margin-top: 20px;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 0;
+
+        &:first-of-type {
+          margin-top: 0;
+        }
+
+        .metaTitle {
+          display: initial;
+        }
+
+        & span,
+        .metaTitle {
+          color: #ffffff;
+          font-size: 14px;
+          background-color: #2a2a2a;
+          font-weight: 300;
+          padding: 0 8px;
+          text-transform: uppercase;
+          letter-spacing: -0.01em;
+          line-height: 18.2px;
+          font-family:
+            IBM Plex Mono,
+            sans-serif;
+          text-align: center;
+          border-radius: 4px;
+        }
+
+        &.mentionedIn {
+          padding: 15px 0;
+          background-color: #fafafa;
+          margin-bottom: unset;
+          opacity: 50%;
+
+          span {
+            background-color: unset;
+            color: #000000a6;
+            font-family: Lato, sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 16.8px;
+            text-transform: unset;
+          }
+        }
+
+        &.QuestionHovered {
+          opacity: 100%;
+        }
+      }
+
+      .ModalBodyContent {
+        .switcher {
+          position: relative;
+          display: flex;
+          margin-bottom: 10px;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          background-color: #fff;
+          isolation: isolate;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            bottom: -1px;
+            left: -1px;
+            width: calc(50% + 1px);
+            background-color: #e8f0fb;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transform: translateX(0);
+            transition: transform 450ms cubic-bezier(0.22, 0.95, 0.35, 1);
+            will-change: transform;
+            pointer-events: none;
+            z-index: 0;
+          }
+
+          &:has(.activeHr)::before {
+            transform: translateX(calc(100% - 2px));
+          }
+
+          .switcherItem {
+            position: relative;
+            z-index: 1;
+            width: 50%;
+            text-align: center;
+            height: 100%;
+            padding: 8px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #000000a6;
+            transition: color 300ms ease;
+
+            svg {
+              transition: fill 300ms ease;
+            }
+          }
+
+          .activeProduct,
+          .activeHr {
+            color: #1e56a0;
+
+            svg {
+              fill: #1e56a0;
+            }
+          }
+        }
+      }
+    }
+
+    & .ModalButtons {
+      & .ModalButton {
+        width: 72px;
+        height: 72px;
+        position: absolute;
+        top: calc(50% - 36px);
+        cursor: pointer;
+        padding: 18px;
+        box-sizing: border-box;
+
+        &.Disabled {
+          opacity: 0.4;
+        }
+
+        & img {
+          height: 36px;
+        }
+
+        &:nth-of-type(1) {
+          left: -100px;
+        }
+
+        &:nth-of-type(2) {
+          right: -100px;
+        }
+      }
+    }
+  }
+}
+
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+.a {
+  color: #252626 !important;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.p {
+  font-size: 16px;
+  margin-bottom: 14px;
+  line-height: 150%;
+}
+
+.h1 {
+  font-weight: 400;
+  color: #28587b;
+  text-align: center;
+  font-size: 36px;
+  margin: 0 0 30px;
+}
+
+.ul {
+  & .li {
+    font-size: 16px !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+ol {
+  & .li {
+    font-size: 16px !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+.span {
+  font-size: 18px;
+  margin-left: 1.5625rem;
+  display: block;
+  border-left: 0.0625rem solid #808080;
+  padding-left: 1.5625rem;
+  margin-bottom: 0.625rem;
+}
+
+.email {
+  text-align: right;
+
+  & .a {
+    font-weight: 300 !important;
+  }
+}
+
+.smIcons {
+  text-align: right;
+  padding-top: 0.5rem;
+
+  & .smIcon {
+    margin-left: 0.375rem;
+    display: inline-block;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    width: 1.375rem;
+    height: 1.375rem;
+    transition: 0.3s;
+
+    &.facebook {
+      background-image: url(/assets/icons/facebook-outlined-light.svg);
+    }
+
+    &.linkedIn {
+      background-image: url(/assets/icons/linkedin-outlined-light.svg);
+    }
+  }
+}
+
+.quote {
+  margin-left: 0;
+  border: none;
+  padding: 0;
+
+  & a {
+    color: #252626;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Image
+.imageLink img {
+  max-width: 100%;
+  max-height: calc(100vh - 2.5rem);
+}
+
+/* Main */
+.image {
+  text-align: center;
+  position: relative;
+
+  & .imageActions {
+    opacity: 0;
+    transition: 0.3s;
+    position: absolute;
+    top: 0.625rem;
+    left: 0.625rem;
+    height: 1.875rem;
+    background-color: #fff;
+    box-shadow: 0rem 0rem 0.25rem -0.0625rem;
+    border-radius: 0.3125rem;
+    padding: 0.75rem;
+
+    & .newWindow,
+    & .zoom,
+    & .pin {
+      display: inline-block;
+      width: 1.875rem;
+      height: 1.875rem;
+      margin-left: 0.625rem;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      cursor: pointer;
+    }
+
+    & .newWindow {
+      background-image: url(/assets/new-window.png);
+      background-size: 84%;
+      background-position: right center;
+    }
+
+    & .zoom {
+      background-image: url(/assets/zoom.png);
+      margin-left: 0rem;
+    }
+
+    & .pin {
+      background-image: url(/assets/pin.png);
+    }
+
+    & .unpin {
+      background-image: url(/assets/unpin.png);
+    }
+  }
+
+  &:hover .imageActions {
+    opacity: 1;
+  }
+
+  & img {
+    max-width: 100%;
+    max-height: 18.75rem;
+  }
+}
+
+.darkTheme {
+  .a,
+  .quote a {
+    color: #dadada;
+  }
+}
+
+@media (max-width: 1440px) {
+  .ModalBody {
+    .p {
+      font-size: 14px;
+    }
+  }
+
+  .ul {
+    & .li {
+      font-size: 14px !important;
+    }
+  }
+
+  ol {
+    & .li {
+      font-size: 14px !important;
+    }
+  }
+}
+
+@media (max-width: 901px) {
+  .ModalBody {
+    .p {
+      font-size: 16px;
+    }
+  }
+
+  .ul {
+    & .li {
+      font-size: 16px !important;
+    }
+  }
+
+  ol {
+    & .li {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@media (min-width: 851px) and (max-width: 1200px) {
+  .p {
+    line-height: 1.5rem;
+  }
+}
+
+.smIcon.darkTheme.facebook {
+  background-image: url(/assets/icons/facebook-outlined-dark.svg);
+}
+
+.smIcon.darkTheme.linkedIn {
+  background-image: url(/assets/icons/linkedin-outlined-dark.svg);
+}
+
+.TrelloButton,
+.DownloadButton {
+  align-items: center;
+  text-decoration: none;
+  color: #28587b;
+  font-size: 14px;
+
+  &.darkTheme {
+    color: #fff;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  & > img {
+    margin-right: 6px;
+  }
+}
+
+.DownloadButton {
+  display: flex;
+}
+
+.TrelloButton {
+  display: inline-flex;
+  position: relative;
+  top: 3px;
+
+  & > img {
+    width: 13px;
+  }
+}
+
+// Dark theme: bias modal — same palette as main UX Core (#1b1e26
+// page / #151a26 panel / #303338 border / brand-blue accent).
+// !important on color + background-color because the base CSS for
+// the switcher and ModalBodyContent is nested 5 levels deep, which
+// out-specifics any reasonable dark selector chain.
+:global(body.darkTheme) .ModalOverlay {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+
+  .Modal {
+    background: #1b1e26 !important;
+    color: #dadada;
+    border-color: #303338 !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  .ModalBody::-webkit-scrollbar {
+    border-left-color: #1b1e26 !important;
+  }
+
+  .ModalBody::-webkit-scrollbar-thumb {
+    background: rgba(127, 179, 213, 0.5) !important;
+    border-left-color: #1b1e26 !important;
+  }
+
+  .ModalBodyTitle {
+    span,
+    .metaTitle {
+      color: #ffffff !important;
+      background-color: rgba(127, 179, 213, 0.32) !important;
+    }
+
+    &.mentionedIn {
+      background-color: #151a26 !important;
+      opacity: 0.85;
+
+      span {
+        color: rgba(218, 218, 218, 0.7) !important;
+        background-color: transparent !important;
+      }
+    }
+  }
+
+  // Body text (description + usage). Strapi inline HTML can carry
+  // raw backgrounds and colors — neutralize all descendants.
+  .ModalBodyContent,
+  .ModalBodyContent p,
+  .ModalBodyContent p *,
+  .ModalBodyContent li,
+  .ModalBodyContent li *,
+  .ModalBodyContent ul,
+  .ModalBodyContent ol,
+  .ModalBodyContent strong,
+  .ModalBodyContent em,
+  .ModalBodyContent span:not(.switcherItemText),
+  .ModalBodyContent mark,
+  .ModalBodyContent u {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: rgba(218, 218, 218, 0.92) !important;
+  }
+
+  .ModalBodyContent a {
+    color: #7fb3d5 !important;
+    background-color: transparent !important;
+  }
+
+  // Product / People Management toggle.
+  .ModalBodyContent .switcher {
+    background-color: #151a26 !important;
+    border-color: #303338 !important;
+  }
+
+  .ModalBodyContent .switcher::before {
+    background-color: #0e1219 !important;
+    border-color: #4c8cc1 !important;
+  }
+
+  .ModalBodyContent .switcher .switcherItem {
+    color: rgba(218, 218, 218, 0.7) !important;
+  }
+
+  .ModalBodyContent .switcher .switcherItem svg {
+    fill: rgba(218, 218, 218, 0.7) !important;
+  }
+
+  .ModalBodyContent .switcher .activeProduct,
+  .ModalBodyContent .switcher .activeHr {
+    color: #bbe4f2 !important;
+  }
+
+  .ModalBodyContent .switcher .activeProduct svg,
+  .ModalBodyContent .switcher .activeHr svg {
+    fill: #bbe4f2 !important;
+  }
+}
+
+:global(body.darkTheme) .h1 {
+  color: #dadada;
+}
+
+:global(body.darkTheme) .a,
+:global(body.darkTheme) .quote a {
+  color: #7fb3d5 !important;
+}
+
+:global(body.darkTheme) .span {
+  border-left-color: #4d5566;
+}

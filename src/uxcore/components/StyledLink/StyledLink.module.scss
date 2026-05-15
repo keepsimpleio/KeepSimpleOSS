@@ -1,0 +1,26 @@
+.StyledLink {
+  color: #5b88bd;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 800px) {
+  .StyledLink {
+    color: #5b88bd;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 11px 10px;
+    background-color: #daeef5;
+    display: inline-block;
+    margin-right: 8px;
+    margin-bottom: 10px;
+
+    &:hover {
+    }
+  }
+}

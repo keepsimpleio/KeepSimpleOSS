@@ -1,0 +1,93 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.blogCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+}
+
+.category {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: $space-sm;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+  line-height: 1.3;
+}
+
+.excerpt {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0 0 $space-lg;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  margin-bottom: $space-lg;
+}
+
+.btn {
+  padding: $space-sm $space-lg;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}
+
+.social {
+  font-size: $font-size-sm;
+  color: $text-link;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.tags {
+  display: flex;
+  gap: $space-xs;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: $font-size-sm;
+  padding: 2px $space-sm;
+  border-radius: 20px;
+  border: 1px solid $border-color;
+  color: $text-secondary;
+  background: $bg-alt;
+}

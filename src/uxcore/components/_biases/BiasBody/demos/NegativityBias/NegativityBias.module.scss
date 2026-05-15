@@ -1,0 +1,185 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  box-shadow: $shadow-card;
+}
+
+.incidentHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+}
+
+.incidentIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-round;
+  background: #fdecea;
+  color: #c0392b;
+  font-size: $font-size-md;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.incidentTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: #c0392b;
+}
+
+.incidentTime {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.uptimeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+}
+
+.uptimeLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.uptimeValue {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.divider {
+  height: 1px;
+  background: $border-color;
+}
+
+.detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detailLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.detailValue {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.maintenanceHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+}
+
+.maintenanceIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-round;
+  background: #eafaf1;
+  color: $tag-green;
+  font-size: $font-size-md;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.maintenanceTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: #1e8449;
+}
+
+.maintenanceTime {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.safetyBanner {
+  background: #eafaf1;
+  border: 1px solid #a9dfbf;
+  border-radius: $border-radius;
+  padding: $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: #1e8449;
+  text-align: center;
+}
+
+.improvTitle {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.improvList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.improvItem {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  line-height: 1.4;
+}
+
+.check {
+  color: $tag-green;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+}
+
+.labelGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}

@@ -1,0 +1,33 @@
+$white: #fafafa;
+
+.audioWrapper {
+  position: absolute;
+  left: 24px;
+  top: 72px;
+}
+
+.timerWrapper {
+  position: absolute;
+  right: 24px;
+  top: 72px;
+}
+
+@media (max-width: 800px) {
+  .timeAndAudioWrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background: $white;
+    border-bottom: 1px solid $white;
+    padding: 9px 8px;
+
+    .audioWrapper,
+    .timerWrapper {
+      position: unset;
+    }
+
+    .timerWrapper {
+      padding-right: 15px;
+    }
+  }
+}
