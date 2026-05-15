@@ -78,9 +78,10 @@
 }
 
 // Dark theme: the dropdown sits on its own #fff panel by default, which
-// looks like a light-mode leak inside the dark bias modal and washes out
-// the colored flag SVGs by sheer brightness contrast. Match the modal
-// palette instead.
+// looks like a light-mode leak inside the dark bias modal. Match the modal
+// palette and keep the flag SVGs in full colour (some parent modal-header
+// rules apply a saturate(0)/invert filter to images — explicitly null it
+// out on the flag icons so the colour stripes survive).
 :global(body.darkTheme) .languageSwitcher {
   &:hover .dropdown {
     background: #1b1e26;
@@ -97,5 +98,10 @@
 
   .switcher {
     color: #dadada;
+  }
+
+  .flag,
+  .switcher img {
+    filter: none !important;
   }
 }
