@@ -82,3 +82,26 @@
     }
   }
 }
+
+// Dark theme: re-skin the textarea chrome (bg, border, text, placeholder).
+:global(body.darkTheme) .Textarea {
+  color: #dadada;
+
+  .Label {
+    color: #dadada;
+  }
+
+  .TextareaWrapper textarea {
+    background-color: #151a26;
+    border-color: #303338;
+    color: #dadada;
+
+    &::placeholder {
+      color: rgba(218, 218, 218, 0.45);
+    }
+
+    &:focus {
+      border-color: #7fb3d5;
+    }
+  }
+}

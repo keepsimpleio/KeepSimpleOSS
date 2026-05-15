@@ -92,3 +92,31 @@
     }
   }
 }
+
+// Dark theme: re-skin the CustomModal chrome (used by Contact Us /
+// Add Question). Modal is portaled under <body>, so the descendant
+// selector from body.darkTheme still matches.
+:global(body.darkTheme) .ModalOverlay {
+  background-color: rgba(0, 0, 0, 0.55);
+
+  .Modal {
+    background: #1b1e26;
+    border-color: #303338;
+
+    .ModalHeader {
+      border-bottom-color: #303338;
+
+      .ModalHeaderBody {
+        color: #7fb3d5;
+      }
+
+      .ModalHeaderCloseButton img {
+        filter: invert(0.85);
+      }
+    }
+
+    .ModalBody::-webkit-scrollbar-thumb {
+      background: rgba(127, 179, 213, 0.5);
+    }
+  }
+}
