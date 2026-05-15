@@ -677,6 +677,20 @@ const isHighlightEnabledPage = (): boolean => {
    over the generic nav tab pointing at /ai-atlas. Falls back to plain
    pathname-matching anchors when no hash is present or no specific
    element is found. */
+/* True for any node living inside the widget's own DOM (panel, pill,
+   cards, suggestions, …). Used to keep the host-page highlighter
+   from glowing the widget's own card anchors — they all live under
+   ancestors whose classes start with `ks-aux-`. */
+const isInsideWidget = (el: Element | null): boolean => {
+  let cur: Element | null = el;
+  while (cur) {
+    const cls = cur.className;
+    if (typeof cls === 'string' && /(?:^|\s)ks-aux-/.test(cls)) return true;
+    cur = cur.parentElement;
+  }
+  return false;
+};
+
 const findHostMatches = (cardUrl: string): HTMLElement[] => {
   if (typeof document === 'undefined') return [];
   const targetPath = canonicalPathOf(cardUrl);
@@ -684,8 +698,10 @@ const findHostMatches = (cardUrl: string): HTMLElement[] => {
   if (targetHash) {
     const out: HTMLElement[] = [];
     const idMatch = document.getElementById(targetHash);
-    if (idMatch instanceof HTMLElement) out.push(idMatch);
+    if (idMatch instanceof HTMLElement && !isInsideWidget(idMatch))
+      out.push(idMatch);
     document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(a => {
+      if (isInsideWidget(a)) return;
       if (hashOf(a.href) !== targetHash) return;
       if (
         targetPath &&
@@ -700,6 +716,7 @@ const findHostMatches = (cardUrl: string): HTMLElement[] => {
   if (!targetPath) return [];
   const out: HTMLAnchorElement[] = [];
   document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(a => {
+    if (isInsideWidget(a)) return;
     if (canonicalPathOf(a.href) === targetPath) out.push(a);
   });
   return out;
