@@ -144,3 +144,9 @@ qa-runs/state/
 qa-runs/baselines/
 qa-runs/screenshots/
 qa-runs/auth/
+
+# Concierge widget build output (built by `yarn prebuild:widget` before
+# next build; serve via CI, never commit the bundle).
+/public/ask-ux-core-dev.js
+/widget/dist/
+/widget/node_modules/

@@ -1,0 +1,1572 @@
+.ks-aux-root {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2147483600;
+  font-family: 'Jost-Regular', 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: #1f1d1a;
+  pointer-events: none;
+}
+
+.ks-aux-root > * {
+  pointer-events: auto;
+}
+
+@keyframes ks-aux-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.16);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 6px 32px rgba(199, 93, 62, 0.78),
+      0 0 0 6px rgba(199, 93, 62, 0.18);
+    transform: scale(1.035);
+  }
+}
+
+.ks-aux-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 22px;
+  background: #1f1d1a;
+  color: #faf6ef;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(31, 29, 26, 0.14);
+  animation: ks-aux-pulse 2.6s ease-in-out infinite;
+  transition:
+    transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow 280ms ease,
+    background 220ms ease,
+    padding 280ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    gap 280ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.ks-aux-pill:hover {
+  transform: translateY(-1px) scale(1.02);
+  animation: none;
+  box-shadow: 0 6px 22px rgba(31, 29, 26, 0.22);
+}
+
+.ks-aux-pill-open {
+  animation: none;
+  transform: scale(0.92);
+  padding: 0 14px;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(31, 29, 26, 0.18);
+  background: #2c2926;
+}
+
+@keyframes ks-aux-pulse-relevance {
+  0%, 100% {
+    box-shadow: 0 4px 14px rgba(199, 93, 62, 0.32);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 6px 28px rgba(199, 93, 62, 0.7);
+    transform: scale(1.045);
+  }
+}
+
+.ks-aux-pill-relevance:not(.ks-aux-pill-open) {
+  background: #c75d3e;
+  color: #faf6ef;
+  animation: ks-aux-pulse-relevance 1.6s ease-in-out infinite;
+}
+
+.ks-aux-pill-relevance:not(.ks-aux-pill-open) .ks-aux-pill-icon {
+  color: #faf6ef;
+}
+
+.ks-aux-pill-relevance:not(.ks-aux-pill-open):hover {
+  background: #b04d31;
+  animation: none;
+}
+
+.ks-aux-pill-open:hover {
+  transform: scale(0.94);
+}
+
+.ks-aux-pill-icon {
+  color: #c75d3e;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.ks-aux-pill-text {
+  letter-spacing: 0.01em;
+}
+
+.ks-aux-panel {
+  position: absolute;
+  right: 0;
+  bottom: 56px;
+  width: 480px;
+  height: 660px;
+  display: flex;
+  flex-direction: column;
+  background: #faf6ef;
+  border: 1px solid #e8dfce;
+  border-radius: 12px;
+  box-shadow: 0 24px 48px rgba(31, 29, 26, 0.18);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px) scale(0.88);
+  transform-origin: bottom right;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity 220ms cubic-bezier(0.4, 0, 1, 1),
+    transform 260ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 0s linear 260ms;
+}
+
+.ks-aux-panel-open {
+  opacity: var(--ks-aux-idle-opacity, 0.55);
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  visibility: visible;
+  transition:
+    opacity 280ms cubic-bezier(0.2, 0.9, 0.25, 1),
+    transform 360ms cubic-bezier(0.34, 1.45, 0.64, 1),
+    visibility 0s linear 0s;
+}
+
+/* Stay translucent when idle so the host page breathes through, snap
+   to full clarity the moment the visitor reaches for the panel or
+   while they're typing. focus-within keeps it solid during composition
+   even if the cursor briefly leaves the rect. */
+.ks-aux-panel-open:hover,
+.ks-aux-panel-open:focus-within {
+  opacity: 1;
+}
+
+.ks-aux-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #ece2d0;
+  background: #f5ede0;
+  flex-shrink: 0;
+}
+
+.ks-aux-title {
+  font-family: 'Jost-Medium', 'Jost', inherit;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  color: #1f1d1a;
+}
+
+/* Live awareness row: warm dot + "READING: <page H1>". Whole row is
+   one cohesive label — same color, same size, same weight — so the
+   eye reads it as a single live status, not two competing pieces.
+   Slow opacity breathe on the entire row, dot pulses independently
+   to add a hint of "sensor on". */
+.ks-aux-reading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px 0 6px;
+  flex: 0 0 auto;
+  animation: ks-aux-reading-breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes ks-aux-reading-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.ks-aux-reading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c75d3e;
+  box-shadow:
+    0 0 0 2px rgba(199, 93, 62, 0.3),
+    0 0 5px rgba(199, 93, 62, 0.55);
+  flex: 0 0 auto;
+  align-self: center;
+  position: relative;
+  top: 0;
+  animation: ks-aux-reading-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ks-aux-reading-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(199, 93, 62, 0.3),
+      0 0 5px rgba(199, 93, 62, 0.55);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(199, 93, 62, 0.5),
+      0 0 10px rgba(199, 93, 62, 0.75);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-aux-reading,
+  .ks-aux-reading-dot {
+    animation: none;
+  }
+}
+
+.ks-aux-reading-label,
+.ks-aux-reading-title {
+  font: inherit;
+  color: inherit;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.ks-aux-reading-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ks-aux-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.ks-aux-action-btn {
+  background: transparent;
+  border: 1px solid #d8cfbd;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b665e;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background 180ms ease;
+}
+
+.ks-aux-action-btn:hover:not(:disabled) {
+  border-color: #c75d3e;
+  color: #c75d3e;
+  background: rgba(199, 93, 62, 0.06);
+}
+
+.ks-aux-action-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ks-aux-clear-btn {
+  justify-self: end;
+}
+
+/* Immersion control — small opacity-style icon next to CLEAR.
+   The icon's left half fills with the current opacity, so the glyph
+   itself reports the state. Click opens a tiny dropdown with three
+   choices (Low / Medium / High → 0.85 / 0.55 / 0.30). */
+.ks-aux-immersion {
+  position: relative;
+  display: inline-flex;
+  justify-self: end;
+}
+
+.ks-aux-immersion-icon-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: #6b665e;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.ks-aux-immersion-icon-btn:hover {
+  color: #c75d3e;
+  background: rgba(199, 93, 62, 0.08);
+}
+
+.ks-aux-immersion-icon-btn[aria-expanded='true'] {
+  color: #c75d3e;
+  background: rgba(199, 93, 62, 0.12);
+}
+
+.ks-aux-immersion-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  padding: 4px;
+  background: #faf6ef;
+  border: 1px solid #e0d6c2;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(40, 30, 20, 0.12);
+}
+
+.ks-aux-immersion-item {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-family: 'Jost-Medium', 'Jost', inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: left;
+  color: #2a2724;
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.ks-aux-immersion-item:hover {
+  background: rgba(199, 93, 62, 0.1);
+}
+
+.ks-aux-immersion-item-active,
+.ks-aux-immersion-item-active:hover {
+  background: #c75d3e;
+  color: #faf6ef;
+}
+
+.ks-aux-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 22px 6px 24px;
+  min-width: 130px;
+  justify-content: center;
+}
+
+/* Icon-only variant: square button just big enough for the chevron. */
+.ks-aux-collapse-btn-icon {
+  gap: 0;
+  padding: 6px 8px;
+  min-width: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.ks-aux-collapse-btn:hover:not(:disabled) {
+  background: #2c2926;
+  border-color: #2c2926;
+  color: #faf6ef;
+}
+
+.ks-aux-collapse-btn svg {
+  flex: 0 0 auto;
+}
+
+/* Legacy aliases kept so existing/tests don't break. */
+.ks-aux-copy {
+  background: transparent;
+  border: 1px solid #d8cfbd;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b665e;
+  cursor: pointer;
+  transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+}
+
+.ks-aux-copy:hover:not(:disabled) {
+  border-color: #c75d3e;
+  color: #c75d3e;
+}
+
+.ks-aux-copy:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ks-aux-close {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #6b665e;
+  padding: 0 4px;
+}
+
+.ks-aux-close:hover {
+  color: #c75d3e;
+}
+
+.ks-aux-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(199, 93, 62, 0.32) transparent;
+}
+
+/* WebKit scrollbar — slim, rounded, warm terracotta thumb with a
+   transparent track so it floats over the feed. The 2px transparent
+   border + background-clip gives the thumb a "inset" feel without
+   needing an extra wrapper. */
+.ks-aux-feed::-webkit-scrollbar {
+  width: 10px;
+}
+.ks-aux-feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ks-aux-feed::-webkit-scrollbar-thumb {
+  background: rgba(199, 93, 62, 0.32);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background 220ms ease;
+}
+.ks-aux-feed::-webkit-scrollbar-thumb:hover {
+  background: rgba(199, 93, 62, 0.55);
+  background-clip: padding-box;
+}
+.ks-aux-feed::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.ks-aux-feed-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 16px 24px;
+  color: #6b665e;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ks-aux-empty-sugg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 380px;
+}
+
+.ks-aux-feed-empty-text {
+  position: relative;
+  display: inline-block;
+  animation: ks-aux-empty-breathe 4.8s ease-in-out infinite;
+}
+
+.ks-aux-feed-empty-text::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 320px;
+  height: 320px;
+  margin-left: -160px;
+  margin-top: -160px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(199, 93, 62, 0.09) 0%,
+    rgba(199, 93, 62, 0.04) 35%,
+    rgba(199, 93, 62, 0) 65%
+  );
+  animation: ks-aux-empty-pulse 4.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes ks-aux-empty-breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+    letter-spacing: 0.02em;
+  }
+  50% {
+    opacity: 0.95;
+    letter-spacing: 0.06em;
+  }
+}
+
+@keyframes ks-aux-empty-pulse {
+  0% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-aux-feed-empty-text,
+  .ks-aux-feed-empty-text::before {
+    animation: none;
+  }
+}
+
+.ks-aux-turn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ks-aux-q {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 10px 14px;
+  background: #ece2d0;
+  border-radius: 14px 14px 4px 14px;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #1f1d1a;
+  animation: ks-aux-q-in 280ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+  transform-origin: bottom right;
+}
+
+.ks-aux-nav {
+  align-self: stretch;
+  padding: 10px 14px;
+  background: rgba(140, 132, 120, 0.08);
+  border-left: 2px solid #b8b0a1;
+  border-radius: 6px;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #6b665e;
+  animation: ks-aux-fade-in 320ms ease both;
+}
+.ks-aux-nav strong {
+  font-weight: 600;
+  color: #2a2724;
+}
+.ks-aux-nav.ks-aux-spatial-current {
+  background: rgba(199, 93, 62, 0.1);
+  border-left-color: #c75d3e;
+  color: #2a2724;
+}
+.ks-aux-nav.ks-aux-spatial-current strong {
+  color: #1f1d1a;
+}
+
+/* Landing turn — auto-emitted when the visitor clicks a card and we
+   pop a quick team line on the destination page. Reads as a side-note
+   from the team, not a regular bot reply. */
+.ks-aux-turn-landing {
+  position: relative;
+  padding: 10px 12px 12px 14px;
+  margin: 4px 0;
+  background: rgba(140, 132, 120, 0.07);
+  border-left: 2px solid #b8b0a1;
+  border-radius: 0 8px 8px 0;
+  animation: ks-aux-fade-in 320ms ease both;
+}
+.ks-aux-turn-landing.ks-aux-spatial-current {
+  background: rgba(199, 93, 62, 0.08);
+  border-left-color: #c75d3e;
+}
+
+.ks-aux-turn-landing .ks-aux-a {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #2a2724;
+}
+
+.ks-aux-landing-tag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 6px;
+  row-gap: 2px;
+  margin-bottom: 8px;
+  padding: 0;
+  background: transparent;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #6b665e;
+  max-width: 100%;
+}
+
+.ks-aux-turn-landing.ks-aux-spatial-current .ks-aux-landing-tag {
+  background: transparent;
+  color: #8a3a25;
+}
+
+/* Past landing breadcrumb — keep the "Viewed: X" reference but flatten
+   it: no chip, no uppercase, plain weight, aligned with the body text
+   below it. Just a quiet line marking what page this commentary was
+   about. */
+.ks-aux-turn-landing:not(.ks-aux-spatial-current) .ks-aux-landing-tag {
+  display: block;
+  background: transparent;
+  padding: 0;
+  margin-bottom: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #8a857c;
+}
+.ks-aux-turn-landing:not(.ks-aux-spatial-current) .ks-aux-landing-tag .ks-aux-spatial-label {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #8a857c;
+  margin-right: 4px;
+}
+.ks-aux-turn-landing:not(.ks-aux-spatial-current) .ks-aux-landing-tag span:not(.ks-aux-spatial-label) {
+  font-weight: 400;
+  color: #6b665e;
+}
+
+/* Past nav breadcrumb — same flattening, no frame, aligned with the
+   stream. */
+.ks-aux-nav.ks-aux-spatial:not(.ks-aux-spatial-current) {
+  background: transparent;
+  border-left: none;
+  padding: 2px 14px;
+  font-size: 13px;
+  color: #8a857c;
+}
+.ks-aux-nav.ks-aux-spatial:not(.ks-aux-spatial-current) .ks-aux-spatial-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #8a857c;
+  margin-right: 4px;
+}
+.ks-aux-nav.ks-aux-spatial:not(.ks-aux-spatial-current) span:not(.ks-aux-spatial-label) {
+  font-weight: 400;
+  color: #6b665e;
+}
+
+.ks-aux-landing-tag strong {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  font-size: 14px;
+  color: #2a2724;
+  white-space: normal;
+  word-break: break-word;
+  flex: 1 1 auto;
+}
+
+/* Spatial markers (landing block + nav breadcrumb) anchor the
+   transcript to whichever page the visitor is currently on. The most
+   recent marker breathes a soft warm pulse; everything before it
+   slips into the background so the latest spot earns the eye. */
+.ks-aux-spatial-label {
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-size: 11px;
+  flex: 0 0 auto;
+}
+
+.ks-aux-feed > .ks-aux-spatial-current .ks-aux-spatial-label {
+  animation: ks-aux-spatial-label-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes ks-aux-spatial-label-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    text-shadow: 0 0 0 rgba(199, 93, 62, 0);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(199, 93, 62, 0.35);
+  }
+}
+
+/* Host-page tile highlight — two flavours.
+   Default ".ks-aux-host-highlight": outline + breathing box-shadow.
+   Used for ordinary rectangular tiles (Articles index, etc.) where the
+   matched anchor itself renders a real box.
+   ".ks-aux-host-highlight-glow" overlay: switches to filter:drop-shadow
+   for elements that wrap clip-pathed / transformed children (UX Core's
+   bias chips). Outline and box-shadow on those would render at the
+   zero-sized wrapper box; drop-shadow traces the child's polygon. */
+.ks-aux-host-highlight {
+  outline: 6px solid #c75d3e;
+  outline-offset: 4px;
+  border-radius: 6px;
+  animation: ks-aux-host-breathe 2.4s ease-in-out infinite;
+  transition: outline-color 200ms ease;
+}
+
+@keyframes ks-aux-host-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 12px rgba(199, 93, 62, 0.22),
+      0 14px 42px rgba(199, 93, 62, 0.28);
+  }
+  50% {
+    box-shadow:
+      0 0 0 24px rgba(199, 93, 62, 0.38),
+      0 18px 54px rgba(199, 93, 62, 0.48);
+  }
+}
+
+.ks-aux-host-highlight-flash {
+  animation: ks-aux-host-flash 1.6s ease-out 1;
+}
+
+@keyframes ks-aux-host-flash {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(199, 93, 62, 0.85),
+      0 0 0 0 rgba(199, 93, 62, 0.55);
+  }
+  35% {
+    box-shadow:
+      0 0 0 30px rgba(199, 93, 62, 0.3),
+      0 0 0 66px rgba(199, 93, 62, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 12px rgba(199, 93, 62, 0.25),
+      0 14px 42px rgba(199, 93, 62, 0.32);
+  }
+}
+
+/* Glow variant for clip-pathed / box-less wrappers. */
+.ks-aux-host-highlight.ks-aux-host-highlight-glow {
+  outline: none;
+  animation: ks-aux-host-breathe-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes ks-aux-host-breathe-glow {
+  0%,
+  100% {
+    filter:
+      drop-shadow(0 0 12px rgba(199, 93, 62, 0.85))
+      drop-shadow(0 0 42px rgba(199, 93, 62, 0.5));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 24px rgba(199, 93, 62, 1))
+      drop-shadow(0 0 66px rgba(199, 93, 62, 0.7));
+  }
+}
+
+.ks-aux-host-highlight-glow.ks-aux-host-highlight-flash {
+  animation: ks-aux-host-flash-glow 1.6s ease-out 1;
+}
+
+@keyframes ks-aux-host-flash-glow {
+  0% {
+    filter:
+      drop-shadow(0 0 0 rgba(199, 93, 62, 1))
+      drop-shadow(0 0 0 rgba(199, 93, 62, 0.85));
+  }
+  35% {
+    filter:
+      drop-shadow(0 0 36px rgba(199, 93, 62, 1))
+      drop-shadow(0 0 72px rgba(199, 93, 62, 0.7));
+  }
+  100% {
+    filter:
+      drop-shadow(0 0 18px rgba(199, 93, 62, 0.85))
+      drop-shadow(0 0 48px rgba(199, 93, 62, 0.5));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-aux-host-highlight,
+  .ks-aux-host-highlight-flash {
+    animation: none;
+  }
+}
+
+.ks-aux-pre-current {
+  opacity: 0.45;
+  filter: grayscale(0.85);
+  transition:
+    opacity 360ms ease,
+    filter 360ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-aux-feed > .ks-aux-spatial-current .ks-aux-spatial-label {
+    animation: none;
+  }
+}
+
+@keyframes ks-aux-q-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ks-aux-a {
+  font-family: 'Source-Serif-Regular', 'Cormorant_Garamond-Regular', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1f1d1a;
+  word-wrap: break-word;
+  animation: ks-aux-fade-in 320ms ease both;
+}
+
+@keyframes ks-aux-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ks-aux-a > *:first-child { margin-top: 0; }
+.ks-aux-a > *:last-child { margin-bottom: 0; }
+.ks-aux-a p { margin: 0 0 8px; }
+.ks-aux-a h1,
+.ks-aux-a h2,
+.ks-aux-a h3,
+.ks-aux-a h4 {
+  margin: 10px 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #1f1d1a;
+}
+.ks-aux-a strong { font-weight: 700; color: #1f1d1a; }
+.ks-aux-a em { font-style: italic; }
+.ks-aux-a ul,
+.ks-aux-a ol {
+  margin: 4px 0 8px;
+  padding-left: 20px;
+}
+.ks-aux-a li { margin: 2px 0; }
+.ks-aux-a a {
+  color: #c75d3e;
+  text-decoration: underline;
+}
+.ks-aux-a code {
+  background: #ece2d0;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.ks-aux-a pre {
+  background: #ece2d0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+.ks-aux-a blockquote {
+  margin: 6px 0;
+  padding-left: 10px;
+  border-left: 2px solid #c75d3e;
+  color: #6b665e;
+}
+
+.ks-aux-a-stream::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 14px;
+  margin-left: 3px;
+  vertical-align: -2px;
+  background: #c75d3e;
+  border-radius: 2px;
+  animation: ks-aux-blink 1.1s ease-in-out infinite;
+}
+
+/* Token-streaming caret that follows the live text as it arrives. */
+.ks-aux-stream-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: #c75d3e;
+  border-radius: 1px;
+  animation: ks-aux-blink 0.9s ease-in-out infinite;
+}
+
+@keyframes ks-aux-blink {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.ks-aux-err {
+  color: #b04030;
+  font-size: 14px;
+}
+
+.ks-aux-retry {
+  background: transparent;
+  border: 1px solid #b04030;
+  color: #b04030;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.ks-aux-retry:hover {
+  background: #b04030;
+  color: #faf6ef;
+}
+
+.ks-aux-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.ks-aux-card {
+  text-align: left;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #e8dfce;
+  border-radius: 9px;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #1f1d1a;
+  transition: border-color 220ms ease, transform 220ms ease,
+    box-shadow 220ms ease;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: ks-aux-card-in 360ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.ks-aux-card-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  row-gap: 2px;
+}
+
+.ks-aux-card-label {
+  font-family: 'Jost-Medium', 'Jost', inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c75d3e;
+  line-height: 1.35;
+  flex: 0 0 auto;
+}
+
+.ks-aux-card-title {
+  font-size: 16px;
+  line-height: 1.35;
+  color: #1f1d1a;
+  flex: 1 1 auto;
+}
+
+.ks-aux-card-blurb {
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: #6b665e;
+  margin-top: 2px;
+}
+
+.ks-aux-dark .ks-aux-card-blurb {
+  color: #9a9485;
+}
+
+.ks-aux-card-why {
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 12.5px;
+  line-height: 1.35;
+  font-weight: 400;
+  font-style: italic;
+  color: #8a847a;
+  margin-top: 4px;
+  display: block;
+}
+
+.ks-aux-dark .ks-aux-card-why {
+  color: #87806f;
+}
+
+.ks-aux-card-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+.ks-aux-card-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #e1d9cf;
+}
+
+/* Cards wave starts after the answer fade (≈320ms) so the user sees
+   answer first, then the URLs cascade in. */
+.ks-aux-card:nth-child(1) { animation-delay: 380ms; }
+.ks-aux-card:nth-child(2) { animation-delay: 480ms; }
+.ks-aux-card:nth-child(3) { animation-delay: 580ms; }
+
+.ks-aux-card:hover {
+  border-color: #c75d3e;
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(199, 93, 62, 0.12);
+}
+
+.ks-aux-card-picked {
+  position: relative;
+  border-color: #c75d3e;
+  background: #fdf1ea;
+  box-shadow: inset 3px 0 0 #c75d3e;
+}
+
+.ks-aux-card-pick-badge {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  padding: 2px 8px;
+  background: #faf6ef;
+  color: #c75d3e;
+  border: 1px solid #c75d3e;
+  font-family: 'Jost-Medium', 'Jost', inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+@keyframes ks-aux-card-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ks-aux-uxcat-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(199, 93, 62, 0.08);
+  border: 1px solid rgba(199, 93, 62, 0.35);
+  border-radius: 10px;
+  animation: ks-aux-card-in 360ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.ks-aux-uxcat-nudge {
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  color: #5b3a2c;
+  flex: 1 1 160px;
+}
+
+.ks-aux-uxcat-begin {
+  padding: 8px 16px;
+  background: #c75d3e;
+  border: 1px solid #c75d3e;
+  border-radius: 999px;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #faf6ef;
+  cursor: pointer;
+  transition: background 220ms ease, transform 180ms ease;
+}
+
+.ks-aux-uxcat-begin:hover {
+  background: #a74a30;
+  transform: translateY(-1px);
+}
+
+.ks-aux-dark .ks-aux-uxcat-cta {
+  background: rgba(199, 93, 62, 0.15);
+  border-color: rgba(199, 93, 62, 0.55);
+}
+
+.ks-aux-dark .ks-aux-uxcat-nudge {
+  color: #f0e6d6;
+}
+
+.ks-aux-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.ks-aux-suggestion {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid #c75d3e;
+  border-radius: 999px;
+  font-family: 'Jost-Regular', 'Jost', inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #c75d3e;
+  transition: background 220ms ease, color 220ms ease, transform 180ms ease;
+  animation: ks-aux-card-in 360ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.ks-aux-suggestions .ks-aux-suggestion:nth-child(1) { animation-delay: 60ms; }
+.ks-aux-suggestions .ks-aux-suggestion:nth-child(2) { animation-delay: 130ms; }
+.ks-aux-suggestions .ks-aux-suggestion:nth-child(3) { animation-delay: 200ms; }
+.ks-aux-suggestions .ks-aux-suggestion:nth-child(4) { animation-delay: 270ms; }
+
+.ks-aux-suggestion:hover {
+  background: #c75d3e;
+  color: #faf6ef;
+  transform: translateY(-1px);
+}
+
+.ks-aux-form {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid #ece2d0;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.ks-aux-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #e8dfce;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  background: #faf6ef;
+  color: #1f1d1a;
+  line-height: 1.4;
+}
+
+.ks-aux-input:focus {
+  border-color: #c75d3e;
+}
+
+.ks-aux-input:disabled {
+  opacity: 0.5;
+}
+
+.ks-aux-submit {
+  align-self: stretch;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #1f1d1a;
+  color: #faf6ef;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ks-aux-submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ks-aux-submit:hover:not(:disabled) {
+  background: #2c2926;
+}
+
+/* === Mobile usability (≤480px) ===
+   Phone screens can't host a fixed 480×660 panel comfortably. Panel
+   becomes near-full-screen, pill anchors to the bottom-right with a
+   safe-area inset, touch targets bumped to 44px (Apple HIG min). */
+@media (max-width: 480px) {
+  .ks-aux-root {
+    right: 12px;
+    /* Lift the whole widget above the on-screen keyboard: JS sets
+       --ks-aux-bottom-offset to the keyboard's occluded height when
+       open. Defaults to 0 so non-mobile / non-open just sits at base. */
+    bottom: calc(
+      var(--ks-aux-bottom-offset, 0px) +
+        max(12px, env(safe-area-inset-bottom, 12px))
+    );
+    left: 12px;
+  }
+
+  .ks-aux-pill {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 48px;
+    padding: 0 18px;
+    font-size: 15px;
+  }
+
+  .ks-aux-pill-open {
+    padding: 0 14px;
+  }
+
+  .ks-aux-panel {
+    /* Absolute (not fixed) so the panel rides with the root container,
+       which JS lifts above the on-screen keyboard. JS sets
+       --ks-aux-panel-h to the visualViewport-fit height. */
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 60px; /* sits just above the pill */
+    width: auto;
+    height: var(--ks-aux-panel-h, calc(100dvh - 96px));
+    max-height: 640px;
+    border-radius: 14px;
+  }
+
+  /* Mobile: panel is full-width by design, hover doesn't exist,
+     translucency would hurt readability. Keep solid. */
+  .ks-aux-panel-open {
+    opacity: 1;
+  }
+
+  .ks-aux-header {
+    padding: 12px 14px;
+  }
+
+  .ks-aux-title {
+    font-size: 11px;
+  }
+
+  .ks-aux-copy {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .ks-aux-close {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .ks-aux-feed {
+    padding: 14px 14px;
+    gap: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ks-aux-q,
+  .ks-aux-a {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .ks-aux-card {
+    padding: 12px 14px;
+  }
+
+  .ks-aux-card-title {
+    font-size: 14px;
+  }
+
+  .ks-aux-form {
+    padding: 10px 12px 12px;
+    gap: 8px;
+  }
+
+  .ks-aux-input {
+    font-size: 16px; /* prevent iOS zoom-on-focus */
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .ks-aux-submit {
+    min-width: 64px;
+    min-height: 44px;
+    font-size: 14px;
+  }
+}
+
+/* ===== Dark theme ===== Mirrors the host site's `body.darkTheme`.
+   Warm dark palette so the terracotta accent and serif voice keep the
+   keepsimple feel — no flat-grey "dashboard" mood. */
+.ks-aux-dark {
+  color: #ece3d2;
+}
+
+.ks-aux-dark .ks-aux-pill {
+  background: #ece3d2;
+  color: #1f1d1a;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+.ks-aux-dark .ks-aux-pill-open {
+  background: #d6cdb9;
+}
+.ks-aux-dark .ks-aux-pill-icon {
+  color: #c75d3e;
+}
+
+.ks-aux-dark .ks-aux-panel {
+  background: #1f1c19;
+  border-color: #3a342d;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.6);
+}
+
+.ks-aux-dark .ks-aux-header {
+  background: #29251f;
+  border-bottom-color: #3a342d;
+}
+.ks-aux-dark .ks-aux-title {
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-reading {
+  color: #c2bba9;
+}
+.ks-aux-dark .ks-aux-copy,
+.ks-aux-dark .ks-aux-action-btn {
+  border-color: #4a4338;
+  color: #b8b0a1;
+  background: transparent;
+}
+.ks-aux-dark .ks-aux-copy:hover,
+.ks-aux-dark .ks-aux-action-btn:hover:not(:disabled) {
+  background: #2f2a23;
+  color: #ece3d2;
+  border-color: #c75d3e;
+}
+.ks-aux-dark .ks-aux-copy:disabled,
+.ks-aux-dark .ks-aux-action-btn:disabled {
+  opacity: 0.4;
+}
+.ks-aux-dark .ks-aux-immersion-icon-btn {
+  color: #9a9485;
+}
+.ks-aux-dark .ks-aux-immersion-icon-btn:hover,
+.ks-aux-dark .ks-aux-immersion-icon-btn[aria-expanded='true'] {
+  color: #e07d5e;
+  background: rgba(199, 93, 62, 0.12);
+}
+.ks-aux-dark .ks-aux-immersion-menu {
+  background: #29251f;
+  border-color: #3a342d;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.ks-aux-dark .ks-aux-immersion-item {
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-immersion-item:hover {
+  background: rgba(199, 93, 62, 0.18);
+}
+.ks-aux-dark .ks-aux-immersion-item-active,
+.ks-aux-dark .ks-aux-immersion-item-active:hover {
+  background: #c75d3e;
+  color: #1f1c19;
+}
+.ks-aux-dark .ks-aux-close {
+  color: #b8b0a1;
+}
+.ks-aux-dark .ks-aux-close:hover {
+  color: #e07a3a;
+}
+
+.ks-aux-dark .ks-aux-feed-empty {
+  color: #9a9485;
+}
+
+.ks-aux-dark .ks-aux-feed {
+  scrollbar-color: rgba(199, 93, 62, 0.4) transparent;
+}
+.ks-aux-dark .ks-aux-feed::-webkit-scrollbar-thumb {
+  background: rgba(199, 93, 62, 0.32);
+  background-clip: padding-box;
+}
+.ks-aux-dark .ks-aux-feed::-webkit-scrollbar-thumb:hover {
+  background: rgba(199, 93, 62, 0.6);
+  background-clip: padding-box;
+}
+
+.ks-aux-dark .ks-aux-q {
+  background: #3a342d;
+  color: #ece3d2;
+}
+
+.ks-aux-dark .ks-aux-a {
+  color: #d6cdb9;
+}
+
+.ks-aux-dark .ks-aux-nav {
+  background: rgba(140, 132, 120, 0.1);
+  color: #b8b0a1;
+  border-left-color: #6f685b;
+}
+.ks-aux-dark .ks-aux-nav strong {
+  color: #d6cdb9;
+}
+.ks-aux-dark .ks-aux-nav.ks-aux-spatial-current {
+  background: rgba(199, 93, 62, 0.28);
+  border-left-color: #e07a3a;
+  color: #faead8;
+}
+.ks-aux-dark .ks-aux-nav.ks-aux-spatial-current strong {
+  color: #fff5e6;
+}
+.ks-aux-dark .ks-aux-nav.ks-aux-spatial-current .ks-aux-spatial-label {
+  color: #faead8;
+}
+
+.ks-aux-dark .ks-aux-turn-landing {
+  background: rgba(199, 93, 62, 0.1);
+  border-left-color: #c75d3e;
+}
+.ks-aux-dark .ks-aux-turn-landing .ks-aux-a {
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-landing-tag {
+  background: transparent;
+  color: #b8b0a1;
+}
+.ks-aux-dark .ks-aux-landing-tag strong {
+  color: #d6cdb9;
+}
+.ks-aux-dark .ks-aux-turn-landing.ks-aux-spatial-current .ks-aux-landing-tag {
+  background: transparent;
+  color: #faead8;
+}
+.ks-aux-dark
+  .ks-aux-turn-landing.ks-aux-spatial-current
+  .ks-aux-landing-tag
+  strong {
+  color: #fff5e6;
+}
+
+.ks-aux-dark .ks-aux-card {
+  background: #29251f;
+  border-color: #3a342d;
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-card:hover {
+  background: #322d26;
+  border-color: #c75d3e;
+}
+.ks-aux-dark .ks-aux-card-title {
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-card-picked {
+  background: rgba(199, 93, 62, 0.12);
+  border-color: #c75d3e;
+}
+.ks-aux-dark .ks-aux-card-pick-badge {
+  background: transparent;
+  color: #e07d5e;
+  border-color: #e07d5e;
+}
+
+.ks-aux-dark .ks-aux-suggestion {
+  background: #29251f;
+  border-color: #3a342d;
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-suggestion:hover {
+  background: #322d26;
+  border-color: #c75d3e;
+}
+
+.ks-aux-dark .ks-aux-form {
+  background: #1f1c19;
+  border-top-color: #3a342d;
+}
+.ks-aux-dark .ks-aux-input {
+  background: #29251f;
+  border-color: #3a342d;
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-input::placeholder {
+  color: #6f685b;
+}
+.ks-aux-dark .ks-aux-input:focus {
+  border-color: #c75d3e;
+  background: #2e2922;
+}
+.ks-aux-dark .ks-aux-submit {
+  background: #c75d3e;
+  color: #1f1c19;
+}
+.ks-aux-dark .ks-aux-submit:hover:not(:disabled) {
+  background: #d96f4f;
+}
+.ks-aux-dark .ks-aux-submit:disabled {
+  background: #3a342d;
+  color: #6f685b;
+}
+
+.ks-aux-dark .ks-aux-err {
+  color: #e6907d;
+}
+.ks-aux-dark .ks-aux-retry {
+  border-color: #4a4338;
+  color: #ece3d2;
+}
+.ks-aux-dark .ks-aux-retry:hover {
+  background: #322d26;
+}
+
+.ks-aux-dark .ks-aux-card-dot {
+  background: #3a342d;
+}

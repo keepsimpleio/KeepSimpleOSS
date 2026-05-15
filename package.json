@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development APP_ENV=local next dev -p 3005",
+    "prebuild:widget": "cd widget && yarn install --frozen-lockfile && yarn build",
+    "prebuild": "yarn prebuild:widget",
+    "prebuild:staging": "yarn prebuild:widget",
     "build": "cross-env NODE_ENV=production APP_ENV=prod next build",
     "generate:llms": "cross-env LLMS_MODE=curated ts-node --compiler-options '{\"module\":\"commonjs\",\"target\":\"es2020\"}' scripts/generate-llms.ts",
     "generate:llms:full": "cross-env LLMS_MODE=full ts-node --compiler-options '{\"module\":\"commonjs\",\"target\":\"es2020\"}' scripts/generate-llms.ts",
