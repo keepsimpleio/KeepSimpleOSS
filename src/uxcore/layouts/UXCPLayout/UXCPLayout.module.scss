@@ -6,6 +6,27 @@
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
+
+  // Dark theme: page surface + headings.
+  :global(body.darkTheme) & {
+    background-color: transparent;
+
+    .Title {
+      color: #7fb3d5;
+    }
+
+    .ShortName {
+      color: #a8a8a8;
+    }
+
+    .Motto {
+      color: #7fb3d5;
+    }
+
+    .Heading {
+      color: #dadada;
+    }
+  }
 }
 
 .Content {

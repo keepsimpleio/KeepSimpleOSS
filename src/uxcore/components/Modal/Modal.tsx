@@ -1,5 +1,12 @@
 import cn from 'classnames';
-import React, { FC, KeyboardEvent, ReactNode, useEffect } from 'react';
+import React, {
+  FC,
+  KeyboardEvent,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import styles from './Modal.module.scss';
@@ -49,9 +56,24 @@ const Modal: FC<ModalProps> = ({
   dataCy,
   fullHeightMobile,
 }) => {
+  const [closing, setClosing] = useState(false);
+
+  // Trigger the fade-out CSS animation, then unmount on the next tick so
+  // the user sees the modal leave instead of pop out.
   const handleClose = () => {
-    onClick();
+    if (closing) return;
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      onClick();
+    }, 180);
   };
+
+  // Escape listener reads handleClose through a ref so the `closing`
+  // guard sees the latest value on a second press during the 180ms
+  // fade-out window.
+  const handleCloseRef = useRef(handleClose);
+  handleCloseRef.current = handleClose;
 
   useEffect(() => {
     if (!isConfirmationModal) {
@@ -61,7 +83,7 @@ const Modal: FC<ModalProps> = ({
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (!close) {
-          if (e.key === 'Escape') handleClose();
+          if (e.key === 'Escape') handleCloseRef.current();
         }
       };
 
@@ -89,6 +111,7 @@ const Modal: FC<ModalProps> = ({
     <div
       className={cn(styles.overlay, {
         [className]: className,
+        [styles.overlayClosing]: closing,
       })}
       data-cy={dataCy}
     >
@@ -106,6 +129,7 @@ const Modal: FC<ModalProps> = ({
           [wrapperClassName]: wrapperClassName,
           [styles.fullSizeMobile]: fullSizeMobile,
           [styles.fullHeightMobile]: fullHeightMobile,
+          [styles.wrapperClosing]: closing,
         })}
       >
         {!removeHeader && (

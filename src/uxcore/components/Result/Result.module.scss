@@ -247,3 +247,42 @@
     opacity: 0.2;
   }
 }
+
+// Dark theme: result cards + question pills.
+:global(body.darkTheme) .result {
+  .failedResult,
+  .passedResult {
+    background: #1b1e26;
+    border-color: #303338;
+    color: #dadada;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+    .resultList {
+      .list {
+        .question {
+          background-color: rgba(127, 179, 213, 0.06);
+          border-color: #303338;
+          color: #dadada;
+
+          &:hover {
+            background: rgba(127, 179, 213, 0.18);
+            border-color: #7fb3d5;
+          }
+        }
+
+        .imgWrapper {
+          background-color: #303338;
+        }
+      }
+
+      .failed > div {
+        background-color: rgba(255, 57, 57, 0.08);
+        border-color: rgba(255, 57, 57, 0.35);
+      }
+    }
+  }
+
+  .passedResult .resultList .list .imgWrapper .bobIcon {
+    background-color: rgba(127, 179, 213, 0.08);
+  }
+}

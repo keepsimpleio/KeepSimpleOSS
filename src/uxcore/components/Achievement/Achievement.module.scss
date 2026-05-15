@@ -62,7 +62,8 @@
 
   .tooltipContainer {
     z-index: 99999;
-    background: linear-gradient(
+    background:
+      linear-gradient(
         94deg,
         rgba(231, 233, 255, 0.61) 23.62%,
         rgba(210, 215, 255, 0.61) 99.75%
@@ -159,5 +160,25 @@
   100% {
     transform: rotate(360deg);
     opacity: 0.2;
+  }
+}
+
+// Dark theme. react-tooltip portals the popup to <body>, so it does NOT
+// sit inside .achievement — target the class directly without parent
+// scope or the descendant rule never matches.
+:global(body.darkTheme) .tooltipContainer {
+  background:
+    linear-gradient(
+      94deg,
+      rgba(35, 42, 58, 0.85) 23.62%,
+      rgba(45, 50, 75, 0.85) 99.75%
+    ),
+    #1b1e26;
+  border-color: #303338;
+  color: #dadada;
+
+  > div:nth-child(2) {
+    border-bottom-color: #303338;
+    border-right-color: #303338;
   }
 }

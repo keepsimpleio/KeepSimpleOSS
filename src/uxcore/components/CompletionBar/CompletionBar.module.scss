@@ -161,7 +161,8 @@
 
   .tooltipContainer {
     z-index: 99999;
-    background: linear-gradient(
+    background:
+      linear-gradient(
         94deg,
         rgba(231, 233, 255, 0.61) 23.62%,
         rgba(210, 215, 255, 0.61) 99.75%
@@ -216,12 +217,8 @@
   .completedTxt,
   .hoveredTxtOnGuestMode {
     color: #ff9900;
-    background: linear-gradient(
-        180deg,
-        #ff9900 0%,
-        #ffbf00 83.33%,
-        #ffc700 100%
-      ),
+    background:
+      linear-gradient(180deg, #ff9900 0%, #ffbf00 83.33%, #ffc700 100%),
       linear-gradient(0deg, #ffa001, #ffa001);
     -webkit-text-fill-color: transparent;
     -webkit-background-clip: text;
@@ -522,5 +519,54 @@
   100% {
     left: 82%;
     opacity: 0;
+  }
+}
+
+// Dark theme: completion bar surface + dim labels + base track.
+:global(body.darkTheme) {
+  .mainTitle {
+    color: #dadada;
+  }
+
+  .completionBar {
+    background-color: #1b1e26;
+  }
+
+  .withBorders {
+    border-color: #303338;
+  }
+
+  .progressBar .levelTxt {
+    color: rgba(218, 218, 218, 0.55);
+  }
+
+  .step {
+    color: rgba(218, 218, 218, 0.5);
+  }
+
+  .bar,
+  .removeHover {
+    background-color: #303338;
+  }
+}
+
+// react-tooltip portals the popup to <body>, so it sits OUTSIDE
+// .progressBarWrapper — the previous descendant-scoped rule never
+// matched. Target the class globally so the level-hover tooltip on the
+// CompletionBar gets a dark surface like the rest of the page.
+:global(body.darkTheme) .tooltipContainer {
+  background:
+    linear-gradient(
+      94deg,
+      rgba(35, 42, 58, 0.85) 23.62%,
+      rgba(45, 50, 75, 0.85) 99.75%
+    ),
+    #1b1e26;
+  border-color: #303338;
+  color: #dadada;
+
+  > div:nth-child(2) {
+    border-bottom-color: #303338;
+    border-right-color: #303338;
   }
 }

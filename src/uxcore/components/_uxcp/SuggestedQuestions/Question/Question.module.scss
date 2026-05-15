@@ -29,3 +29,12 @@
     font-size: 16px;
   }
 }
+
+// Dark theme: lift link color (hard-coded dark blue reads dim on dark).
+:global(body.darkTheme) .Question {
+  color: #dadada;
+
+  & a {
+    color: #7fb3d5;
+  }
+}

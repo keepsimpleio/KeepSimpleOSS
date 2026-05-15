@@ -81,7 +81,28 @@
   }
 }
 
+// Dark theme: duration badge color + mobile background.
+:global(body.darkTheme) .startTestWrapper {
+  .duration {
+    color: #c8c8c8;
+  }
+}
+
+:global(body.darkTheme) .modal {
+  .description {
+    color: #dadada;
+  }
+}
+
 @media (max-width: 901px) {
+  :global(body.darkTheme) .startTestWrapper {
+    .duration {
+      background-color: rgba(21, 24, 31, 0.85);
+      border-color: #303338;
+      color: #dadada;
+    }
+  }
+
   .startTestWrapper {
     height: calc(100vh - 45px);
 

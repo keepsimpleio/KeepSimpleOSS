@@ -1,6 +1,6 @@
 import { getStrapiBiases } from '@uxcore/api/biases';
+import { getStrapiQuestions } from '@uxcore/api/questions';
 import { getTags } from '@uxcore/api/tags';
-import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import UXCoreModal from '@uxcore/components/UXCoreModal';
 import UXCoreModalMobile from '@uxcore/components/UXCoreModalMobile';
@@ -21,7 +21,7 @@ import type {
 import { TRouter } from '@uxcore/local-types/global';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
-import { FC, useContext, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 
 import styles from './uxcoreId.module.scss';
 
@@ -31,6 +31,7 @@ interface UXCoreProps {
   currentActiveBias?: any;
   languageSwitchSlugs: Record<string, string>;
   biases: Record<string, StrapiBiasType[]>;
+  uxcgLocalizedData: Record<string, QuestionType[]>;
 }
 
 const UXCoreIds: FC<UXCoreProps> = ({
@@ -39,9 +40,8 @@ const UXCoreIds: FC<UXCoreProps> = ({
   currentActiveBias,
   languageSwitchSlugs,
   biases,
+  uxcgLocalizedData,
 }) => {
-  const { uxcgLocalizedData } = useContext(GlobalContext);
-  const [strapiQuestions, setStrapiQuestions] = useState<QuestionType[]>([]);
   const [activeBiasNumber, setActiveBiasNumber] = useState<number>(null);
   const [isModalClosed, setIsModalClosed] = useState<boolean>(true);
   const [{ toggleIsProductView }, { isProductView }] = useUXCoreGlobals();
@@ -53,6 +53,8 @@ const UXCoreIds: FC<UXCoreProps> = ({
     slugEn: `/uxcore/${currentModalData?.slugEn}`,
     slugRu: `/uxcore/${currentModalData?.slugRu}`,
   };
+
+  const strapiQuestions = uxcgLocalizedData?.[locale] ?? [];
 
   const mentionedQuestions = strapiQuestions.filter(({ attributes }) =>
     JSON.parse(currentModalData.mentionedQuestionsIds).includes(
@@ -135,14 +137,6 @@ const UXCoreIds: FC<UXCoreProps> = ({
   useEffect(() => {
     router.prefetch('/uxcore');
   }, []);
-
-  useEffect(() => {
-    if (uxcgLocalizedData) {
-      setStrapiQuestions(uxcgLocalizedData[locale]);
-    } else {
-      setStrapiQuestions([]);
-    }
-  }, [locale, uxcgLocalizedData]);
 
   return (
     <>
@@ -241,7 +235,10 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
 
   const [number] = slug.split('-');
 
-  const strapiBiases = await getStrapiBiases();
+  const [strapiBiases, strapiQuestions] = await Promise.all([
+    getStrapiBiases(),
+    getStrapiQuestions(),
+  ]);
   const biases = mergeBiasesLocalization(
     strapiBiases.en,
     strapiBiases.ru,
@@ -272,6 +269,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
       languageSwitchSlugs,
       currentActiveBias: currentActiveBiasWithLocale.attributes,
       biases: strapiBiases,
+      uxcgLocalizedData: strapiQuestions,
     },
     revalidate: 5,
   };

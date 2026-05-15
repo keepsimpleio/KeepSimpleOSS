@@ -51,3 +51,12 @@
     }
   }
 }
+
+// Dark theme: flip the "You can also write Wolf..." body copy.
+:global(body.darkTheme) .ContactUs .Footer .Content {
+  color: #dadada;
+
+  & a {
+    color: #7fb3d5;
+  }
+}

@@ -213,6 +213,54 @@
   }
 }
 
+// Dark theme: result page — section header, encouragement card, the
+// additionalInfo split panel + divider, reading-list links, and the
+// "next test available" date accent.
+:global(body.darkTheme) {
+  .testResult,
+  .testResultLayoutWithCode {
+    .sectionHeader {
+      background-color: #15181f;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .sectionBody {
+      .encourage,
+      .additionalInf,
+      .additionalInfo {
+        background: #1b1e26;
+        border-color: #303338;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        color: #dadada;
+      }
+
+      .additionalInfo {
+        &::after {
+          background: #303338;
+        }
+
+        .links {
+          .readingList {
+            .link {
+              color: #7fb3d5;
+            }
+          }
+
+          .title {
+            color: #dadada;
+          }
+        }
+
+        .reminder {
+          .date {
+            color: #c79bc8;
+          }
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 901px) {
   .mobileHeader {
     display: block;

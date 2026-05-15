@@ -118,3 +118,32 @@
   letter-spacing: 0.025em;
   color: #337ab7;
 }
+
+// Dark theme: country-map label text-shadow needs to flip (was hard-coded
+// white to glow against the light map; needs dark glow on dark) and the
+// hover tooltip needs a dark surface.
+:global(body.darkTheme) {
+  .LabelText {
+    text-shadow:
+      0 0 3px #1b1e26,
+      0 0 6px #1b1e26,
+      0 0 9px #1b1e26;
+  }
+
+  .Tooltip {
+    background: rgba(27, 30, 38, 0.95);
+    border-color: #303338;
+  }
+
+  .TooltipName {
+    color: #dadada;
+  }
+
+  .TooltipMeta {
+    color: rgba(218, 218, 218, 0.7);
+  }
+
+  .TooltipHint {
+    color: #7fb3d5;
+  }
+}

@@ -1,6 +1,6 @@
 const en = {
   searchPlaceholder: 'Search by your keywords',
-  allQuestionsButtonLabel: 'All questions',
+  allQuestionsButtonLabel: 'All Questions',
   showMoreText: 'Show more',
   showLessText: 'Show less',
   noResultsText: ' No results found',

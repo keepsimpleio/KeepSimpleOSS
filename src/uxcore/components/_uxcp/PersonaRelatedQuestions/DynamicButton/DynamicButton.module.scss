@@ -108,3 +108,32 @@
     }
   }
 }
+
+// Dark theme: the stage-indicator pill renders on a saturated brand
+// color (green / purple / coral / orange). In dark mode the body cascade
+// (#dadada) was overriding the button's intended white label, AND on the
+// brightest two variants (Active3 coral and Active4 orange) even white
+// text was washing out. Lock label to a high-contrast white on every
+// child node AND darken the brand bg ~20-25% so the label has real
+// contrast. Wider specificity (#dadada won via `body.darkTheme` chain
+// before).
+:global(body.darkTheme) .DynamicButton,
+:global(body.darkTheme) .DynamicButton .Titles,
+:global(body.darkTheme) .DynamicButton .Title {
+  color: #ffffff !important;
+}
+
+:global(body.darkTheme) .DynamicButton {
+  &.Active1 {
+    background-color: #5e8a37; // greener / darker than #77a34b
+  }
+  &.Active2 {
+    background-color: #804a82; // darker purple
+  }
+  &.Active3 {
+    background-color: #ad4951; // darker coral
+  }
+  &.Active4 {
+    background-color: #c07f1f; // darker orange
+  }
+}

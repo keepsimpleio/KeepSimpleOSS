@@ -503,3 +503,84 @@ $white: #fafafa;
     opacity: 1;
   }
 }
+
+// Dark theme: re-skin the ongoing-test surface — page bg, question
+// card, question text, the bias info chip, answer rows, skeleton
+// placeholders, the answer prefix tag, and the selected-state border.
+:global(body.darkTheme) .ongoing {
+  background-color: transparent;
+
+  .questionWrapper {
+    background-color: transparent;
+    box-shadow: none;
+
+    .sectionHeader {
+      .questionTxt {
+        color: #dadada;
+      }
+    }
+  }
+
+  .questionAnswers {
+    .iconAndBias {
+      background: rgba(127, 179, 213, 0.06);
+      color: #dadada;
+    }
+
+    .description p span {
+      color: inherit !important;
+    }
+
+    .answerWrapper,
+    .skeleton {
+      background-color: #1b1e26;
+      border-color: #303338;
+      color: #dadada;
+      box-shadow:
+        0px 8px 17px 0px rgba(0, 0, 0, 0.25),
+        0px 30px 30px 0px rgba(0, 0, 0, 0.18),
+        0px 68px 41px 0px rgba(0, 0, 0, 0.12);
+
+      .prefix {
+        color: #ffffff;
+        background: rgba(127, 179, 213, 0.25);
+      }
+
+      .question {
+        color: #dadada;
+      }
+    }
+
+    .skeleton {
+      background-color: #15181f;
+    }
+
+    .selected {
+      border-color: #7fb3d5;
+      background-color: rgba(127, 179, 213, 0.18);
+    }
+  }
+
+  .btnWrapper {
+    .btnIcon > svg {
+      fill: #dadada;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  :global(body.darkTheme) .ongoing {
+    .questionAnswers {
+      .answerWrapper,
+      .quizQuestion {
+        .skeleton {
+          border-color: #303338;
+        }
+
+        .selected {
+          border-color: #7fb3d5;
+        }
+      }
+    }
+  }
+}

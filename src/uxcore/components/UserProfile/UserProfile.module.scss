@@ -226,3 +226,52 @@
     margin: 0 12px;
   }
 }
+
+// Dark theme: user-profile header colors. Cover image is set inline via
+// JS so override with !important + dark fill + darken any image that's
+// rendered behind to keep the panel readable.
+:global(body.darkTheme) .userProfile {
+  background-image: none !important;
+  background-color: #1b1e26 !important;
+  border: 1px solid #303338;
+  border-radius: 4px;
+
+  &.guestMode {
+    background-color: #15181f !important;
+  }
+
+  .wrapper {
+    .badgeWrapper .badgeTooltip {
+      background: #1b1e26;
+      color: #dadada;
+      border-color: #303338;
+
+      > div:nth-child(2) {
+        border-bottom-color: #303338;
+        border-right-color: #303338;
+      }
+    }
+
+    .nameAndTitle {
+      .title {
+        color: #c79bc8;
+      }
+
+      .userName {
+        color: #dadada;
+      }
+    }
+
+    .level {
+      color: #dadada;
+    }
+
+    .awarenessPoints {
+      color: #d49066;
+    }
+  }
+
+  .btnWrapper .userStatistic {
+    color: #9da3e1;
+  }
+}

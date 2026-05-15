@@ -117,3 +117,46 @@
     }
   }
 }
+
+// Dark theme: tab card. The default variant uses a blue accent wedge,
+// the `.pink` variant uses a purple one; both ship pastel light colors
+// that wash out on dark, so darken the wedge color and the hover bg.
+:global(body.darkTheme) .TabHeader {
+  background-color: #1b1e26;
+
+  &:hover {
+    background-color: #232a3a;
+  }
+
+  .description {
+    color: #7fb3d5;
+
+    &::after {
+      background-color: #7fb3d5;
+    }
+  }
+
+  .icons {
+    border-top-color: rgba(127, 179, 213, 0.18);
+  }
+
+  &.pink {
+    background-color: #20182a;
+
+    &:hover {
+      background-color: #2a1f38;
+    }
+
+    .icons {
+      border-top-color: rgba(163, 106, 164, 0.22);
+    }
+
+    .description {
+      color: #c79bc8;
+
+      &::after {
+        background-color: #c79bc8;
+      }
+    }
+  }
+}

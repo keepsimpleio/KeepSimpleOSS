@@ -1,25 +1,19 @@
-import cn from 'classnames';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { FC, useContext, useEffect, useMemo, useState } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
-
-import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
-
 import { getMyInfo } from '@uxcore/api/strapi';
 import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
-
-import toolHeaderData from '@uxcore/data/toolHeader';
-
 import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
-
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
 import SettingsModal from '@uxcore/components/SettingsModal';
 import UserDropdown from '@uxcore/components/UserDropdown';
+import toolHeaderData from '@uxcore/data/toolHeader';
+import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
+import type { TRouter } from '@uxcore/local-types/global';
+import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
+import cn from 'classnames';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { FC, useContext, useEffect, useMemo, useState } from 'react';
 
 import styles from './MobileHeader.module.scss';
 
@@ -166,7 +160,7 @@ const MobileHeader: FC<MobileHeaderProps> = ({
         </a>
       </div>
       <div className={styles.Actions}>
-        {router.asPath === '/uxcore' && locale !== 'hy' && (
+        {router.pathname === '/uxcore' && locale !== 'hy' && (
           <div
             className={cn(styles.PodcastWrapper, {
               [styles.active]: isPodcastOpen,

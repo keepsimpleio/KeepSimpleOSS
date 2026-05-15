@@ -79,3 +79,20 @@
     font-size: 14px;
   }
 }
+
+// Dark theme: bias search container + show-all button.
+:global(body.darkTheme) .BiasSearch {
+  .SearchContainer {
+    background: transparent;
+  }
+
+  .Table {
+    &::-webkit-scrollbar-thumb {
+      background: rgba(127, 179, 213, 0.5);
+    }
+  }
+
+  .ShowAllButtonContainer .ShowAllButton {
+    color: #7fb3d5;
+  }
+}

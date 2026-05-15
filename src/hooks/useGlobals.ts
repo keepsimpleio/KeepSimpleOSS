@@ -36,6 +36,30 @@ const reducer = (newState: any) => {
 
 /* ACTIONS */
 
+// Cross-realm theme sync. The keepsimple side and the UX Core side each
+// ship their own copy of useGlobals (separate module state, separate
+// listener arrays). They share the same localStorage key + body class, so
+// persistence is fine — but in-memory state diverges when the user toggles
+// in one realm and navigates to the other. To keep them in lockstep
+// within a single tab we dispatch a window event on every toggle; both
+// realms subscribe and mirror the new value into their own state.
+const DARK_THEME_EVENT = 'darktheme:change';
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(DARK_THEME_EVENT, (e: Event) => {
+    const next = !!(e as CustomEvent).detail?.isDarkTheme;
+    if (state.isDarkTheme !== next) {
+      // Side effects (body class, articleRef class, localStorage) are
+      // already applied by the dispatcher; we only mirror state so this
+      // realm's listeners re-render with the new value.
+      if (state.articleRef) {
+        state.articleRef.classList.toggle('darkTheme', next);
+      }
+      reducer({ isDarkTheme: next });
+    }
+  });
+}
+
 // dark theme action
 const toggleIsDarkTheme = () => {
   const newThemeState = !state.isDarkTheme;
@@ -45,6 +69,11 @@ const toggleIsDarkTheme = () => {
     state.articleRef.classList.toggle('darkTheme', newThemeState);
   }
   reducer({ isDarkTheme: newThemeState });
+  window.dispatchEvent(
+    new CustomEvent(DARK_THEME_EVENT, {
+      detail: { isDarkTheme: newThemeState },
+    }),
+  );
 };
 
 // sidebar action
@@ -130,14 +159,15 @@ const initUseGlobals = (articleRef: HTMLElement) => {
   // Init articleRef
   setArticleRef(articleRef);
 
-  // Dark theme
+  // Dark theme — apply localStorage value unconditionally (true OR false)
+  // so navigation between realms always re-syncs in-memory state.
   const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
-  if (isDarkTheme) {
-    document.body.classList.add('darkTheme');
-    if (articleRef) {
-      articleRef.classList.add('darkTheme');
-    }
-    reducer({ isDarkTheme: true });
+  document.body.classList.toggle('darkTheme', isDarkTheme);
+  if (articleRef) {
+    articleRef.classList.toggle('darkTheme', isDarkTheme);
+  }
+  if (state.isDarkTheme !== isDarkTheme) {
+    reducer({ isDarkTheme });
   }
 
   window.addEventListener('resize', handleSidebarChanges);

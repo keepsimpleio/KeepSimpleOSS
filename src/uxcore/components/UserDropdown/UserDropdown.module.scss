@@ -151,3 +151,26 @@
     }
   }
 }
+
+// Dark theme: "Log In" / username text was near-invisible because the base
+// color is rgba(0,0,0,0.85). Lift it to the dark-theme foreground.
+:global(body.darkTheme) .userContainer {
+  .user,
+  .active {
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .userName {
+      color: #dadada;
+    }
+  }
+
+  .active {
+    background: rgba(255, 255, 255, 0.06);
+
+    .userName {
+      color: #ffffff;
+    }
+  }
+}

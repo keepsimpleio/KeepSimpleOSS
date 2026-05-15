@@ -117,3 +117,24 @@ $hover-color: #1890ff;
     opacity: 0;
   }
 }
+
+// Dark theme: the neutral "Copy URL" button. Inverted (primary) variant
+// keeps its blue brand color, just leans a hair lighter on hover.
+:global(body.darkTheme) .PersonaButton {
+  background-color: #151a26;
+  border-color: #303338;
+  color: #dadada;
+
+  & svg path {
+    fill: #dadada;
+  }
+
+  &:not(.Disabled):hover {
+    border-color: #7fb3d5;
+    color: #7fb3d5;
+
+    & path {
+      fill: #7fb3d5;
+    }
+  }
+}

@@ -134,3 +134,60 @@
   margin: 0;
   text-align: center;
 }
+
+// Dark theme: flip the "OR SIGN IN WITH EMAIL" divider, label, email
+// input, submit button, banner and confirmation block.
+:global(body.darkTheme) {
+  .divider {
+    color: rgba(218, 218, 218, 0.55);
+
+    &::before,
+    &::after {
+      background: #303338;
+    }
+  }
+
+  .label {
+    color: #dadada;
+  }
+
+  .input {
+    background: #151a26;
+    border-color: #303338;
+    color: #dadada;
+
+    &::placeholder {
+      color: rgba(218, 218, 218, 0.45);
+    }
+
+    &:focus {
+      border-color: #b83232;
+    }
+  }
+
+  .submit {
+    color: #dadada;
+    border-color: #303338;
+    background: transparent;
+
+    &:hover:not(:disabled) {
+      border-color: #b83232;
+      color: #ff8a8a;
+    }
+  }
+
+  .confirmation,
+  .banner {
+    background: rgba(127, 179, 213, 0.08);
+    border-color: #303338;
+    color: rgba(218, 218, 218, 0.85);
+  }
+
+  .confirmationHeading {
+    color: #dadada;
+  }
+
+  .confirmationBody {
+    color: rgba(218, 218, 218, 0.75);
+  }
+}

@@ -110,3 +110,24 @@
     }
   }
 }
+
+// Dark theme: page surface + headings.
+:global(body.darkTheme) .body {
+  background-color: transparent;
+
+  .completionSkeleton {
+    border-color: #303338;
+  }
+
+  .content {
+    background-color: transparent;
+
+    .title {
+      color: #7fb3d5;
+    }
+
+    .shortTitle {
+      color: #a8a8a8;
+    }
+  }
+}

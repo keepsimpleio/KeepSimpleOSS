@@ -16,3 +16,10 @@
     margin-top: 40px;
   }
 }
+
+// Dark theme: this is the section heading shared by "Level Progression",
+// "Achievements", etc. on /uxcat — was rgba(0,0,0,0.65), invisible on
+// dark page bg.
+:global(body.darkTheme) .pageTitle {
+  color: #dadada;
+}

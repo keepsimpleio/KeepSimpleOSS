@@ -1,3 +1,23 @@
+import { getMyInfo } from '@uxcore/api/strapi';
+import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
+import { getUserInfo } from '@uxcore/api/uxcat/users-me';
+import CloseIcon from '@uxcore/assets/icons/CloseIcon';
+import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
+import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
+import MobileHeader from '@uxcore/components/_biases/MobileHeader';
+import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
+import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
+import Link from '@uxcore/components/NextLink';
+import OurProjectsModal from '@uxcore/components/OurProjectsModal';
+import PageSwitcher from '@uxcore/components/PageSwitcher';
+import UserDropdown from '@uxcore/components/UserDropdown';
+import toolHeaderData from '@uxcore/data/toolHeader';
+import useGlobals from '@uxcore/hooks/useGlobals';
+import useMobile from '@uxcore/hooks/useMobile';
+import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
+import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
+import type { TRouter } from '@uxcore/local-types/global';
+import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -12,40 +32,16 @@ import React, {
   useState,
 } from 'react';
 
-import type { TRouter } from '@uxcore/local-types/global';
-import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
-
-import useGlobals from '@uxcore/hooks/useGlobals';
-import useMobile from '@uxcore/hooks/useMobile';
-import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
-
-import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
-
-import { getMyInfo } from '@uxcore/api/strapi';
-import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
-import { getUserInfo } from '@uxcore/api/uxcat/users-me';
-
-import toolHeaderData from '@uxcore/data/toolHeader';
-
-import CloseIcon from '@uxcore/assets/icons/CloseIcon';
-import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
-import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
-
-import MobileHeader from '@uxcore/components/_biases/MobileHeader';
-import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
-import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
-import Link from '@uxcore/components/NextLink';
-import OurProjectsModal from '@uxcore/components/OurProjectsModal';
-import PageSwitcher from '@uxcore/components/PageSwitcher';
-import UserDropdown from '@uxcore/components/UserDropdown';
-
 import { navItems } from './navItems';
 
 import styles from './ToolHeader.module.scss';
 
-const SettingsModal = dynamic(() => import('@uxcore/components/SettingsModal'), {
-  ssr: false,
-});
+const SettingsModal = dynamic(
+  () => import('@uxcore/components/SettingsModal'),
+  {
+    ssr: false,
+  },
+);
 
 type TToolHeader = {
   homepageLinkTarget?: '_blank' | '_self';
@@ -91,7 +87,11 @@ const ToolHeader: FC<TToolHeader> = ({
   hidden,
 }) => {
   const router = useRouter();
-  const { locale, asPath } = router as TRouter;
+  const { locale } = router as TRouter;
+  // Use router.pathname (route template, hash-free) not router.asPath:
+  // asPath contains the URL hash on the client but not on SSR, which
+  // breaks hydration on routes like /uxcore#hr.
+  const pathname = router.pathname;
 
   const { isMobile } = useMobile()[1];
   const [{ toggleIsDarkTheme }, { isDarkTheme }] = useGlobals();
@@ -383,7 +383,7 @@ const ToolHeader: FC<TToolHeader> = ({
               })}
             </div>
 
-            {showUxcgTooltip && asPath === '/uxcore' && (
+            {showUxcgTooltip && pathname === '/uxcore' && (
               <div
                 className={cn(styles.headerTooltipUxCore)}
                 data-cy={'uxcg-informative-tooltip'}
@@ -399,7 +399,7 @@ const ToolHeader: FC<TToolHeader> = ({
                 </button>
               </div>
             )}
-            {showUxcoreTooltip && asPath === '/uxcg' && (
+            {showUxcoreTooltip && pathname === '/uxcg' && (
               <div
                 className={cn(styles.headerTooltipUxcg, {
                   [styles.headerTooltipUxcgHy]: locale === 'hy',
@@ -426,7 +426,7 @@ const ToolHeader: FC<TToolHeader> = ({
               [styles.authorized]: !!accountData,
             })}
           >
-            {isCoreView && asPath === '/uxcore' && locale !== 'hy' && (
+            {isCoreView && pathname === '/uxcore' && locale !== 'hy' && (
               <div
                 onClick={openPodcastHandler}
                 className={cn(styles.MenuItem, {
@@ -458,7 +458,9 @@ const ToolHeader: FC<TToolHeader> = ({
                 type="button"
                 className={styles.themeToggle}
                 onClick={toggleIsDarkTheme}
-                aria-label={isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'}
+                aria-label={
+                  isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'
+                }
                 aria-pressed={isDarkTheme}
                 data-cy="theme-toggle"
               >

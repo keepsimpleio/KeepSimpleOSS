@@ -42,3 +42,15 @@
     }
   }
 }
+
+// Dark theme.
+:global(body.darkTheme) .achievements {
+  background: #1b1e26;
+  border-color: #303338;
+  color: #dadada;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  .achievementTitle {
+    color: #dadada;
+  }
+}

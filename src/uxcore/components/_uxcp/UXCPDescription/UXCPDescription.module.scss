@@ -61,3 +61,18 @@
     }
   }
 }
+
+// Dark theme: page description copy and inline link. Default link color
+// is hard-coded black, which is invisible on dark bg.
+:global(body.darkTheme) .ContentTitle {
+  color: #dadada;
+
+  .ContentTitleDescription,
+  .ContentTitleDescription > b {
+    color: #dadada;
+  }
+
+  .Link {
+    color: #7fb3d5;
+  }
+}

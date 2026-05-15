@@ -44,3 +44,22 @@
     }
   }
 }
+
+// Dark theme: question row text and divider were hard-coded for light.
+:global(body.darkTheme) .RelatedQuestionContainer {
+  border-bottom-color: #303338;
+
+  .RelatedQuestion {
+    .Number {
+      color: #7fb3d5;
+    }
+
+    .Text {
+      color: #dadada;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+}

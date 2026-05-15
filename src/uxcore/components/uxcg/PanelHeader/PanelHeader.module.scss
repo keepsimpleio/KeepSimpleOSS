@@ -26,4 +26,10 @@
   .text {
     color: #dadada !important;
   }
+
+  // Panel-header icons are dark monochrome SVGs designed for the light panel.
+  // Invert them so they read against the dark panel background.
+  .img {
+    filter: invert(0.85);
+  }
 }

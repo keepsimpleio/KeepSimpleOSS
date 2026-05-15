@@ -222,6 +222,21 @@
   max-height: calc(1.6em * 8);
   overflow-y: auto;
 
+  // Slim styled scrollbar inside each bias chip (default OS scrollbar
+  // looks heavy inside the small chip surface).
+  scrollbar-width: thin;
+  scrollbar-color: rgba(40, 88, 123, 0.35) transparent;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(40, 88, 123, 0.35);
+    border-radius: 4px;
+  }
+
   p {
     margin: 0;
 
@@ -268,5 +283,94 @@
     transform: translateY(-2px);
     background: #2868a3;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Dark theme: country-detail card + bias chips + help popover.
+:global(body.darkTheme) {
+  .EmptyText {
+    color: rgba(218, 218, 218, 0.55);
+  }
+
+  .EmptyHint {
+    color: #7fb3d5;
+  }
+
+  .Card {
+    background: #1b1e26;
+    border-color: #303338;
+  }
+
+  .Header,
+  .Footer {
+    border-color: #303338;
+  }
+
+  .Title {
+    color: #dadada;
+  }
+
+  .Rationale {
+    color: #c8c8c8;
+  }
+
+  .HelpPopover {
+    background: #1b1e26;
+    border-color: #303338;
+  }
+
+  .HelpLabel {
+    color: #7fb3d5;
+  }
+
+  .HelpText {
+    color: rgba(218, 218, 218, 0.75);
+  }
+
+  .HelpFootnote {
+    border-color: #303338;
+
+    p {
+      color: rgba(218, 218, 218, 0.45);
+    }
+  }
+
+  .BiasChip {
+    background: #151a26;
+    border-color: #303338;
+
+    &:hover {
+      background: rgba(127, 179, 213, 0.08);
+      border-color: #7fb3d5;
+    }
+  }
+
+  .BiasNumber {
+    color: #7fb3d5;
+  }
+
+  .BiasName {
+    color: #dadada;
+  }
+
+  .BiasShort {
+    color: #c8c8c8;
+
+    scrollbar-color: rgba(127, 179, 213, 0.4) transparent;
+    &::-webkit-scrollbar-thumb {
+      background: rgba(127, 179, 213, 0.4);
+    }
+  }
+
+  .FooterMeta {
+    color: rgba(218, 218, 218, 0.5);
+  }
+
+  .UseButton {
+    background: #28587b;
+
+    &:hover {
+      background: #5396d3;
+    }
   }
 }

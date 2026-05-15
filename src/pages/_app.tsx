@@ -22,7 +22,6 @@ import { LongevityProvider, useLongevity } from '../context/LongevityContext';
 import '../styles/globals.scss';
 import '../styles/vibesuite.scss';
 import '../styles/ai-atlas.css';
-import '../uxcore/styles/uxcore-fonts.scss';
 // import '../styles/tom.scss';
 
 type TApp = {
@@ -120,6 +119,19 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
       clearTimeout(loadingTimer.current);
       setIsVisible(false);
     });
+  }, []);
+
+  // Cold-load dark-theme bootstrap: not every route calls initUseGlobals
+  // on mount (e.g. /uxcore, /uxcg). Read the persisted flag once at the
+  // app root so dark theme applies on any deep-link, and dispatch the
+  // cross-realm sync event so both useGlobals stores see the value.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+    document.body.classList.toggle('darkTheme', isDarkTheme);
+    window.dispatchEvent(
+      new CustomEvent('darktheme:change', { detail: { isDarkTheme } }),
+    );
   }, []);
 
   useEffect(() => {

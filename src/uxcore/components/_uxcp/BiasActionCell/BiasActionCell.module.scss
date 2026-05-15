@@ -90,3 +90,35 @@
     font-size: 14px;
   }
 }
+
+// Dark theme: the bias rows in "Add biases to Persona" used a pale blue
+// surface with a white "Add" button — both blew out against dark. Use a
+// faint blue tint on the row, light text, and a dark "Add" button.
+:global(body.darkTheme) .BiasActionCell {
+  background-color: rgba(127, 179, 213, 0.08);
+  border-bottom-color: #303338;
+  color: #dadada;
+
+  .Title .Number {
+    color: #7fb3d5;
+  }
+
+  .Actions .AddButton {
+    background: #151a26;
+    border-color: #303338;
+    color: #dadada;
+
+    &:hover {
+      border-color: #7fb3d5;
+      color: #7fb3d5;
+    }
+  }
+
+  .Actions .RemoveButton > img {
+    filter: invert(0.85);
+  }
+
+  &.Selected {
+    background-color: rgba(127, 179, 213, 0.18);
+  }
+}

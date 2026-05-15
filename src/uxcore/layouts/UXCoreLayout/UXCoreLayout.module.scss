@@ -22,12 +22,18 @@
   position: absolute;
   top: 65px;
   right: 20px;
+  // The sibling .coreView fills the entire viewport (100vw / 100vh) and is
+  // rendered AFTER the switchers in the DOM, so without a z-index it
+  // stacks on top of them and silently eats every click on the switcher
+  // buttons. Lift the switchers above the core view layer.
+  z-index: 3;
 }
 
 .viewTeamSwitcher {
   position: absolute;
   top: 150px;
   right: 20px;
+  z-index: 3;
 }
 
 .Logos {

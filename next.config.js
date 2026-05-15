@@ -69,7 +69,7 @@ module.exports = withBundleAnalyzer({
               "default-src 'self'",
               `script-src ${scriptSrc}`,
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://lh3.googleusercontent.com https://cdn.discordapp.com https://strapi.keepsimple.io https://staging-strapi.keepsimple.io https://www.google-analytics.com",
+              "img-src 'self' data: blob: https://lh3.googleusercontent.com https://cdn.discordapp.com https://strapi.keepsimple.io https://staging-strapi.keepsimple.io https://www.google-analytics.com https://flagcdn.com",
               "font-src 'self' data:",
               `connect-src ${connectSrc}`,
               "frame-ancestors 'none'",

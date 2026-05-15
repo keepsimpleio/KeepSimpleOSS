@@ -1,19 +1,13 @@
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState } from 'react';
-
-import { TRouter } from '@uxcore/local-types/global';
-
-import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
-
 import { getPersonaList } from '@uxcore/api/personas';
-
-import decisionTable from '@uxcore/data/decisionTable';
-
 import SavedPersonas from '@uxcore/components/_uxcp/SavedPersonas';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import ToolHeader from '@uxcore/components/ToolHeader';
 import UXCorePopup from '@uxcore/components/UXCorePopup';
+import decisionTable from '@uxcore/data/decisionTable';
+import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
+import { TRouter } from '@uxcore/local-types/global';
+import { useRouter } from 'next/router';
+import React, { useContext, useEffect, useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -32,7 +26,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { savedPersonasTitles } = decisionTable[locale];
   const { isUxcoreMobile } = useUCoreMobile()[1];
 
-  const pathName = usePathname() ?? '';
+  // Pages Router: usePathname() from next/navigation is App-Router-only and
+  // returns undefined on SSR but the real path on the client → hydration
+  // mismatch on every UX Core page. router.pathname is the Pages-Router
+  // equivalent and is stable across SSR/client.
+  const pathName = router.pathname ?? '';
   const normalizedPath = pathName.replace(/\/+$/, '');
 
   const pathnameWithBypass = /^\/uxcp$/i.test(normalizedPath)
