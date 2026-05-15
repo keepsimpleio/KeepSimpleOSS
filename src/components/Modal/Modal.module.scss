@@ -36,6 +36,11 @@
     z-index: 80;
     border-radius: 4px;
     background-image: url('/keepsimple_/assets/landingPage/landing-bg.webp');
+    // Constrain wrapper height so a tall children tree (e.g. Log In with
+    // six providers + email form) does not push the modal above and below
+    // the viewport. Body has `overflow: auto`, so content scrolls inside.
+    max-height: calc(100dvh - 32px);
+    overflow: hidden;
 
     .header {
       .hadBorder {
@@ -146,6 +151,10 @@
     .body {
       padding: 16px 28px;
       overflow: auto;
+      // Take remaining flex space and allow shrinking below content so
+      // overflow: auto can engage when wrapper is bounded by max-height.
+      flex: 1 1 auto;
+      min-height: 0;
     }
   }
 
@@ -291,5 +300,35 @@
   to {
     opacity: 0;
     transform: scale(0.97) translateY(8px);
+  }
+}
+
+// Dark theme: re-skin the keepsimple modal chrome (wrapper bg, title,
+// header dividers, close-icon SVGs). The wrapper carries a paper-texture
+// background image on light theme — clear it out so the dark bg reads
+// cleanly.
+:global(body.darkTheme) .overlay {
+  background-color: rgba(0, 0, 0, 0.55);
+
+  .wrapper {
+    background-color: #1b1e26;
+    background-image: none;
+    border: 1px solid #303338;
+  }
+
+  .header {
+    .title,
+    .blackTitle,
+    .grayTitle {
+      color: #dadada;
+    }
+
+    .grayTitle {
+      color: rgba(218, 218, 218, 0.55);
+    }
+  }
+
+  .hasBorder {
+    border-bottom-color: #303338;
   }
 }

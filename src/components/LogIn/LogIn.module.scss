@@ -75,3 +75,29 @@
     }
   }
 }
+
+// Dark theme: flip the heading / subtitle to read on the dark modal bg.
+// The brand-colored provider buttons stay as-is; only the Google button
+// (white bg + dark text) gets a slight border so it doesn't blow out
+// against the dark surface.
+:global(body.darkTheme) .container {
+  .heading h3 {
+    color: #dadada !important;
+  }
+
+  .text {
+    color: rgba(218, 218, 218, 0.75);
+  }
+
+  .errorBanner {
+    background: rgba(180, 35, 24, 0.15);
+    border-color: rgba(245, 194, 199, 0.4);
+    color: #f5c2c7;
+  }
+
+  .btnWrapper {
+    .googleBtn {
+      border: 1px solid #303338;
+    }
+  }
+}
