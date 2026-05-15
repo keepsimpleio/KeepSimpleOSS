@@ -106,3 +106,33 @@ A delta-indexing path (Strapi webhooks + GitHub Action + ingest
 endpoint + safety-net cron) has been designed but is **currently
 deferred** — see `docs/delta-indexing-proposal.md` for the agreed
 direction when we resume.
+
+## Carve-out: homepage first-touch starters
+
+The homepage empty-state chips and the answers + cards they produce are **not** served by the concierge pipeline above. They live entirely on the client, in `HOMEPAGE_STARTERS` inside `widget/src/AskUxCore.tsx`.
+
+Three hand-crafted Q&A objects (en + ru), one per starter chip:
+
+1. _What does keepsimple actually make?_
+2. _How is this project completely free?_
+3. _Where do I start if I'm new here?_
+
+When the visitor clicks one of those chips on the homepage, `runStarter()` synthesizes a finished Turn locally — the answer text and the 3–4 hand-picked cards render immediately, no LLM call, no LightRAG retrieval, no `/api/concierge` round-trip.
+
+The carve-out only fires when:
+
+- the panel is in the empty state (no transcript yet), **and**
+- the visitor is on the homepage (`/`, `/ru`, `/hy`), **and**
+- they click one of the three starter chips.
+
+Anything else — free-form questions on the homepage, follow-ups after a starter, every non-homepage page — goes through the normal pipeline.
+
+**Why this trade-off:** the first impression is the highest-leverage moment in the whole funnel. Pristine brand copy, zero latency, zero hallucination risk on those three questions outweighs the cost of keeping their copy in code (and re-deploying when it changes).
+
+## Carve-out: widget UXCAT begin-test auth-gate
+
+When the widget's in-panel "Begin Test" CTA (rendered on `/uxcat` only) is clicked by an anonymous visitor, it does **not** navigate to `/uxcat/start-test`. Instead, it dispatches a `ks-aux-request-login` `CustomEvent` on the window.
+
+`UXCatLayout` listens for that event and opens its `LogInModal` — the same modal the in-page begin-test CTA opens. After a successful login the visitor can start the test from there. Logged-in visitors get navigated to `/uxcat/start-test` directly.
+
+Reason: matching the in-page CTA behavior so the widget never sends a fresh visitor to a guarded URL that just bounces them back.

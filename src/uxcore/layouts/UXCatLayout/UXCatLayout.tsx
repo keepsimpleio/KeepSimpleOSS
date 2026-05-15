@@ -1,22 +1,3 @@
-import { useRouter } from 'next/router';
-import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
-import ConfettiExplosion from 'react-confetti-explosion';
-import Skeleton from 'react-loading-skeleton';
-
-import type { TRouter } from '@uxcore/local-types/global';
-import {
-  LevelDetailsTypes,
-  userLevels,
-  UserTypes,
-  uxCatLevels,
-} from '@uxcore/local-types/uxcat-types/types';
-
-import useKonamiCode from '@uxcore/hooks/useKonamiCode';
-
-import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
-
-import uxcatData from '@uxcore/data/uxcat';
-
 import LogInModal from '@uxcore/components/_uxcp/LogInModal';
 import Accordion from '@uxcore/components/Accordion';
 import AchievementContainer from '@uxcore/components/AchievementContainer';
@@ -27,6 +8,20 @@ import GenderModal from '@uxcore/components/GenderModal';
 import Toasts from '@uxcore/components/Toasts';
 import UserProfile from '@uxcore/components/UserProfile';
 import UXCatFooter from '@uxcore/components/UXCatFooter';
+import uxcatData from '@uxcore/data/uxcat';
+import useKonamiCode from '@uxcore/hooks/useKonamiCode';
+import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
+import type { TRouter } from '@uxcore/local-types/global';
+import {
+  LevelDetailsTypes,
+  userLevels,
+  UserTypes,
+  uxCatLevels,
+} from '@uxcore/local-types/uxcat-types/types';
+import { useRouter } from 'next/router';
+import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
+import ConfettiExplosion from 'react-confetti-explosion';
+import Skeleton from 'react-loading-skeleton';
 
 import 'react-toastify/dist/ReactToastify.css';
 import styles from './UXCatLayout.module.scss';
@@ -130,6 +125,27 @@ const UXCatLayout: FC<UXCGLayoutProps> = ({
       setOpenAccordion(JSON.parse(getOpenedUXCatRules));
     }
   }, []);
+
+  /* Ask UX Core widget hands us this event when its Begin-Test CTA
+     is clicked by an anonymous visitor. Same path as the in-page
+     CTA: open the LogInModal. Logged-in visitors get navigated to
+     the requested target. */
+  useEffect(() => {
+    const onRequestLogin = (e: Event) => {
+      const detail = ((e as CustomEvent).detail || {}) as { next?: string };
+      if (!accessToken) {
+        setShowLoginModal(true);
+        return;
+      }
+      if (detail.next) {
+        window.location.href = detail.next;
+      }
+    };
+    window.addEventListener('ks-aux-request-login', onRequestLogin);
+    return () => {
+      window.removeEventListener('ks-aux-request-login', onRequestLogin);
+    };
+  }, [accessToken]);
 
   useEffect(() => {
     localStorage.setItem('isOpenedUXCatRules', JSON.stringify(openAccordion));

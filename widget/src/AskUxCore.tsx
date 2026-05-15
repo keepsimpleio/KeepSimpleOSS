@@ -307,6 +307,203 @@ const stripMarkers = (raw: string): string =>
     .replace(/\(Reference:\s*https?:\/\/[^\s)]+\)/gi, '')
     .trim();
 
+type HomepageStarter = {
+  q: string;
+  a: string;
+  cards: Citation[];
+};
+
+/* First-touch homepage starter Q&As. Carve-out from the normal
+   server-driven concierge pipeline (see docs/widget-architecture.md):
+   on the homepage, the empty-state chips are replaced with three
+   hand-crafted questions whose answers + cards render locally — no
+   LLM call, no retrieval. Pristine brand copy, zero latency, zero
+   hallucination risk on the three questions where first-impression
+   storytelling matters most. Pipeline resumes for free-form asks. */
+const HOMEPAGE_STARTERS: Record<Lang, HomepageStarter[]> = {
+  en: [
+    {
+      q: 'What does keepsimple actually make?',
+      a: "keepsimple is an open-source movement at the intersection of cognitive science, product, and engineering — running since 2019. The flagship is **UX Core**, the world's largest free library of cognitive biases and nudging strategies (used at Duke, Harvard, MIT, Google, Amazon). Around it: a designer's guide, an awareness self-test, persona maps, articles, small tools, and an orbital map of the wider work.",
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'UX Core, the flagship bias library',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'long-form on cog sci, product, decisions',
+        },
+      ],
+    },
+    {
+      q: 'How is this project completely free?',
+      a: 'No paywalls, no ads, no investors — keepsimple has been free since day one in 2019. It runs on a small team plus a community of contributors and supporters. The code is open-source, the content is under Creative Commons. The deal is simple: if it helped you, pass it on, contribute, or chip in.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'the people who keep this open',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'our take on the bigger questions',
+        },
+      ],
+    },
+    {
+      q: "Where do I start if I'm new here?",
+      a: "The lowest-friction entry is the **UX Awareness Test** — about 10 minutes, you'll spot a surprising number of biases at play around you. From there: **UX Core** is the bias library, with text and visual examples of how each one shows up. **UXCG** lets you evaluate your own organization for the mistakes those biases drive. And **Articles** is where we lay out our take on the bigger questions.",
+      cards: [
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'take the 10-min Awareness Test and spot numerous biases around us',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'browse the bias library with text + visual examples',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'evaluate your organization for the mistakes biases drive',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'learn our take on critical matters',
+        },
+      ],
+    },
+  ],
+  ru: [
+    {
+      q: 'Чем занимается keepsimple?',
+      a: 'keepsimple — open-source движение на стыке когнитивной науки, продукта и инженерии, с 2019 года. Флагман — **UX Core**, крупнейшая в мире бесплатная библиотека когнитивных искажений и стратегий нуджинга (её используют в Duke, Harvard, MIT, Google, Amazon). Вокруг: гайд для дизайнеров, тест осознанности, персона-карты, статьи, утилиты и орбитальная карта всего проекта.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'флагманская библиотека искажений',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'длинные тексты про когнитивную науку, продукт, решения',
+        },
+      ],
+    },
+    {
+      q: 'Почему всё это бесплатно?',
+      a: 'Никаких пейволлов, рекламы или инвесторов — keepsimple бесплатен с первого дня в 2019. Проект держится на небольшой команде и сообществе контрибьюторов и саппортеров. Код открыт, контент под Creative Commons. Договор простой: если помогло — расскажи дальше, поучаствуй или поддержи.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'люди, которые держат это открытым',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'наша позиция по большим вопросам',
+        },
+      ],
+    },
+    {
+      q: 'С чего начать, если я тут впервые?',
+      a: 'Самый простой вход — **тест осознанности** (UXCAT). Минут 10 — и заметишь удивительно много искажений вокруг себя. Дальше: **UX Core** — библиотека искажений с текстом и визуальными примерами того, как каждое проявляется. **UXCG** даёт оценить собственную организацию на ошибки, которые эти искажения порождают. А **Articles** — место, где мы раскладываем нашу позицию по большим вопросам.',
+      cards: [
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: '10-минутный тест осознанности, заметь искажения вокруг',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'библиотека искажений: текст + визуальные примеры',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'оцени свою организацию на ошибки от искажений',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'наша позиция по критическим вопросам',
+        },
+      ],
+    },
+  ],
+};
+
 type TypeKey =
   | 'bias'
   | 'article'
@@ -719,6 +916,26 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   );
   const onBeginUxcatTest = () => {
     trackEvent('uxcat_begin_test_click', {});
+    let hasToken = false;
+    try {
+      hasToken = !!localStorage.getItem('accessToken');
+    } catch {
+      /* localStorage disabled — fall through to navigation; the
+         server-side page guard will handle it. */
+    }
+    if (!hasToken) {
+      /* Mirror the in-page /uxcat begin-test CTA: when anonymous,
+         open the host page's LogInModal via custom event rather than
+         bounce through /uxcat/start-test → /uxcat. UXCatLayout listens
+         and opens its modal. */
+      trackEvent('uxcat_begin_test_auth_gate', {});
+      window.dispatchEvent(
+        new CustomEvent('ks-aux-request-login', {
+          detail: { source: 'widget-uxcat', next: '/uxcat/start-test' },
+        }),
+      );
+      return;
+    }
     const target = rewriteToCurrentHost('/uxcat/start-test');
     window.location.href = target;
   };
@@ -1307,6 +1524,26 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     };
   }, [turns]);
 
+  /* Homepage carve-out: render a starter Q&A as a local Turn — no
+     server call, no streaming. Synthesizes a finished turn so the
+     transcript scroll, history-to-server on follow-ups, and dedup all
+     work the same way as a real turn. */
+  const runStarter = (starter: HomepageStarter) => {
+    trackEvent('homepage_starter_clicked', { lang, q: starter.q });
+    const id = `${Date.now()}-starter`;
+    const newTurn: Turn = {
+      id,
+      query: starter.q,
+      answer: starter.a,
+      citations: starter.cards,
+      suggestions: [],
+      mode: 'answer',
+      isStreaming: false,
+    };
+    justSubmittedRef.current = true;
+    setTurns(prev => [...prev, newTurn]);
+  };
+
   const runQuery = async (query: string, replaceTurnId?: string) => {
     setLoading(true);
     const id = replaceTurnId ?? `${Date.now()}`;
@@ -1741,6 +1978,28 @@ export function AskUxCore({ lang }: { lang: Lang }) {
           <div className="ks-aux-feed-empty">
             <span className="ks-aux-feed-empty-text">{t.empty}</span>
             {(() => {
+              /* Homepage carve-out: replace server-driven page
+                 suggestions with hand-crafted first-touch starters
+                 (HOMEPAGE_STARTERS). Click → runStarter renders a
+                 local Q&A turn with pre-canned answer + cards. */
+              if (atHome) {
+                const starters = HOMEPAGE_STARTERS[lang];
+                return (
+                  <div className="ks-aux-empty-sugg">
+                    {starters.map((s, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className="ks-aux-suggestion"
+                        onClick={() => runStarter(s)}
+                        tabIndex={open ? 0 : -1}
+                      >
+                        {s.q}
+                      </button>
+                    ))}
+                  </div>
+                );
+              }
               /* Merge the page's own "recommended question" (harvested
                  from the host DOM — bias cards ship one) into the empty-
                  state chips. Leads the list when present so the visitor
