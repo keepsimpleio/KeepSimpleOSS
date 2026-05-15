@@ -44,34 +44,85 @@
       justify-content: center;
       align-items: center;
       gap: 16px;
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        filter 0.15s ease;
+
       svg {
         width: 24px;
         height: 24px;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0px 6px 10px rgba(0, 0, 0, 0.18),
+          0px 2px 4px rgba(0, 0, 0, 0.1);
+        filter: brightness(1.05);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow:
+          0px 1px 2px rgba(0, 0, 0, 0.2) inset,
+          0px 1px 1px rgba(0, 0, 0, 0.08);
+        filter: brightness(0.95);
+        transition-duration: 0.05s;
+      }
+
+      &:focus-visible {
+        outline: 2px solid #b83232;
+        outline-offset: 2px;
       }
     }
     .googleBtn {
       background-color: #fff;
       color: #0000008a;
+
+      &:hover {
+        background-color: #f7f7f7;
+      }
     }
     .discordBtn {
       background-color: #5865f2;
       color: white;
+
+      &:hover {
+        background-color: #4854e0;
+      }
     }
     .linkedinBtn {
       background-color: #0177b5;
       color: white;
+
+      &:hover {
+        background-color: #015d8d;
+      }
     }
     .twitterBtn {
       background-color: #000;
       color: white;
+
+      &:hover {
+        background-color: #1a1a1a;
+      }
     }
     .mailruBtn {
       background-color: #168de2;
       color: white;
+
+      &:hover {
+        background-color: #1078c0;
+      }
     }
     .yandexBtn {
       background-color: #fc3f1d;
       color: white;
+
+      &:hover {
+        background-color: #e0331a;
+      }
     }
   }
 }

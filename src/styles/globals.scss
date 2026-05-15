@@ -68,7 +68,13 @@ body {
   transition: 0.3s;
 
   &.darkTheme {
-    background-color: #1b1e26;
+    // The light-theme rule above sets `background: linear-gradient(...)
+    // #f9fafb` (shorthand: image + color). Setting only background-color
+    // here leaves the LIGHT gradient image rendering on top, so dark mode
+    // ended up showing a light page through everywhere there was no
+    // explicit dark surface. Use the full shorthand to clear the image
+    // and recolor.
+    background: #1b1e26;
     color: #dadada;
 
     &::-webkit-scrollbar {
