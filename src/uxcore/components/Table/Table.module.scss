@@ -505,10 +505,12 @@
     .showLessBtn {
       background-color: #151a26 !important;
       color: #dadada !important;
+      border-color: #303338 !important;
 
       &:hover {
         background-color: #1b1e26 !important;
         color: #ffffff !important;
+        border-color: #303338 !important;
       }
     }
   }

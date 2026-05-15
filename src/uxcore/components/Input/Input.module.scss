@@ -129,3 +129,9 @@
     font-size: 16px;
   }
 }
+
+// Dark theme: the input "clear" (×) icon ships as a dark monochrome SVG
+// for the light theme; invert it so it reads against the dark input bg.
+:global(body.darkTheme) .Input .InputWrapper .Icon {
+  filter: invert(0.85) brightness(1.5);
+}

@@ -76,3 +76,26 @@
     }
   }
 }
+
+// Dark theme: the dropdown sits on its own #fff panel by default, which
+// looks like a light-mode leak inside the dark bias modal and washes out
+// the colored flag SVGs by sheer brightness contrast. Match the modal
+// palette instead.
+:global(body.darkTheme) .languageSwitcher {
+  &:hover .dropdown {
+    background: #1b1e26;
+    border-color: #303338 !important;
+
+    .link {
+      color: #dadada;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+    }
+  }
+
+  .switcher {
+    color: #dadada;
+  }
+}
