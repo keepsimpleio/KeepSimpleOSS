@@ -1426,6 +1426,9 @@
 .ks-aux-dark .ks-aux-a {
   color: #d6cdb9;
 }
+.ks-aux-dark .ks-aux-a strong {
+  color: #faead8;
+}
 
 .ks-aux-dark .ks-aux-nav {
   background: rgba(140, 132, 120, 0.1);

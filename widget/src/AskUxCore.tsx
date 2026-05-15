@@ -1523,24 +1523,65 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     };
   }, [turns]);
 
-  /* Homepage carve-out: render a starter Q&A as a local Turn — no
-     server call, no streaming. Synthesizes a finished turn so the
-     transcript scroll, history-to-server on follow-ups, and dedup all
-     work the same way as a real turn. */
+  /* Homepage carve-out: render a starter Q&A as a local Turn.
+     Mimics the real concierge pipeline visually — a short "thinking"
+     beat with the streaming caret, then the answer types in chunks,
+     then the cards land. Without the beat + stream it reads as
+     pre-canned junk, not a live agent. */
   const runStarter = (starter: HomepageStarter) => {
     trackEvent('homepage_starter_clicked', { lang, q: starter.q });
     const id = `${Date.now()}-starter`;
-    const newTurn: Turn = {
+    const emptyTurn: Turn = {
       id,
       query: starter.q,
-      answer: starter.a,
-      citations: starter.cards,
+      answer: '',
+      citations: [],
       suggestions: [],
       mode: 'answer',
-      isStreaming: false,
+      isStreaming: true,
     };
     justSubmittedRef.current = true;
-    setTurns(prev => [...prev, newTurn]);
+    setTurns(prev => [...prev, emptyTurn]);
+
+    /* Beat 1 — "thinking" pause with the caret on but no text yet. */
+    const THINK_MS = 750;
+    /* Beat 2 — type the answer in word-ish chunks. ~14ms per ~3
+       chars lands in the same feel as a real LLM stream. */
+    const STREAM_CHUNK = 3;
+    const STREAM_TICK = 14;
+    /* Beat 3 — short hold after the last char so the eye finishes,
+       then attach cards and end the stream. */
+    const SETTLE_MS = 160;
+
+    window.setTimeout(() => {
+      let cursor = 0;
+      const tick = () => {
+        cursor = Math.min(cursor + STREAM_CHUNK, starter.a.length);
+        const partial = starter.a.slice(0, cursor);
+        setTurns(prev =>
+          prev.map(tt => (tt.id === id ? { ...tt, answer: partial } : tt)),
+        );
+        if (cursor < starter.a.length) {
+          window.setTimeout(tick, STREAM_TICK);
+        } else {
+          window.setTimeout(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === id
+                  ? {
+                      ...tt,
+                      answer: starter.a,
+                      citations: starter.cards,
+                      isStreaming: false,
+                    }
+                  : tt,
+              ),
+            );
+          }, SETTLE_MS);
+        }
+      };
+      tick();
+    }, THINK_MS);
   };
 
   const runQuery = async (query: string, replaceTurnId?: string) => {
