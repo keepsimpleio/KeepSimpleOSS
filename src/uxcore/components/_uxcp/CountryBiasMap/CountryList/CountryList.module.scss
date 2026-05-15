@@ -175,3 +175,71 @@
 .Spacer {
   padding-bottom: 24px;
 }
+
+// Dark theme: country picker search, cards, more/less buttons.
+:global(body.darkTheme) {
+  .SearchInput {
+    background: #151a26;
+    border-color: #303338;
+    color: #dadada;
+
+    &::placeholder {
+      color: rgba(218, 218, 218, 0.45);
+    }
+
+    &:focus {
+      border-color: #7fb3d5;
+      box-shadow: 0 0 0 2px rgba(127, 179, 213, 0.2);
+    }
+  }
+
+  .Card {
+    background: #151a26;
+    border-color: #303338;
+
+    &:hover {
+      background: #232a3a;
+      border-color: #7fb3d5;
+    }
+  }
+
+  .CardSelected {
+    background: rgba(127, 179, 213, 0.08);
+    border-color: #7fb3d5;
+    box-shadow:
+      0 0 0 1px #7fb3d5,
+      0 4px 20px rgba(127, 179, 213, 0.1);
+
+    &:hover {
+      background: rgba(127, 179, 213, 0.1);
+      border-color: #7fb3d5;
+      box-shadow:
+        0 0 0 1px #7fb3d5,
+        0 4px 20px rgba(127, 179, 213, 0.1);
+    }
+  }
+
+  .CardName {
+    color: #dadada;
+  }
+
+  .CardConfidence {
+    color: #7fb3d5;
+  }
+
+  .MoreButton,
+  .LessButton {
+    background: #151a26;
+    border-color: #303338;
+    color: #7fb3d5;
+
+    &:hover {
+      background: rgba(127, 179, 213, 0.08);
+      border-color: #7fb3d5;
+    }
+  }
+
+  .LessButton {
+    color: rgba(218, 218, 218, 0.65);
+  }
+}

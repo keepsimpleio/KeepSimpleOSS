@@ -155,6 +155,22 @@
       // overflow: auto can engage when wrapper is bounded by max-height.
       flex: 1 1 auto;
       min-height: 0;
+
+      // Slim scrollbar to match the rest of the site (default white/wide
+      // browser scrollbar is jarring inside the modal chrome).
+      scrollbar-width: thin;
+      scrollbar-color: rgba(40, 88, 123, 0.4) transparent;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.4);
+        border-radius: 5px;
+      }
     }
   }
 

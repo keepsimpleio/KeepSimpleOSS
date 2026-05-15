@@ -11,6 +11,11 @@
   align-items: center;
   justify-content: center;
   z-index: 106;
+  animation: cmOverlayFadeIn 0.2s ease-out;
+
+  &.ModalOverlayClosing {
+    animation: cmOverlayFadeOut 0.18s ease-in forwards;
+  }
 
   & .Modal {
     position: relative;
@@ -19,6 +24,11 @@
     border: 1px solid #cbcbcb;
     box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
+    animation: cmWrapperIn 0.2s ease-out;
+
+    &.ModalClosing {
+      animation: cmWrapperOut 0.18s ease-in forwards;
+    }
 
     & .ModalHeader {
       display: flex;
@@ -90,6 +100,43 @@
         max-height: none;
       }
     }
+  }
+}
+
+@keyframes cmOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cmOverlayFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes cmWrapperIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes cmWrapperOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
   }
 }
 

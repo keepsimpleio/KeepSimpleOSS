@@ -270,3 +270,87 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 }
+
+// Dark theme: country-detail card + bias chips + help popover.
+:global(body.darkTheme) {
+  .EmptyText {
+    color: rgba(218, 218, 218, 0.55);
+  }
+
+  .EmptyHint {
+    color: #7fb3d5;
+  }
+
+  .Card {
+    background: #1b1e26;
+    border-color: #303338;
+  }
+
+  .Header,
+  .Footer {
+    border-color: #303338;
+  }
+
+  .Title {
+    color: #dadada;
+  }
+
+  .Rationale {
+    color: rgba(218, 218, 218, 0.7);
+  }
+
+  .HelpPopover {
+    background: #1b1e26;
+    border-color: #303338;
+  }
+
+  .HelpLabel {
+    color: #7fb3d5;
+  }
+
+  .HelpText {
+    color: rgba(218, 218, 218, 0.75);
+  }
+
+  .HelpFootnote {
+    border-color: #303338;
+
+    p {
+      color: rgba(218, 218, 218, 0.45);
+    }
+  }
+
+  .BiasChip {
+    background: #151a26;
+    border-color: #303338;
+
+    &:hover {
+      background: rgba(127, 179, 213, 0.08);
+      border-color: #7fb3d5;
+    }
+  }
+
+  .BiasNumber {
+    color: #7fb3d5;
+  }
+
+  .BiasName {
+    color: #dadada;
+  }
+
+  .BiasShort {
+    color: rgba(218, 218, 218, 0.7);
+  }
+
+  .FooterMeta {
+    color: rgba(218, 218, 218, 0.5);
+  }
+
+  .UseButton {
+    background: #28587b;
+
+    &:hover {
+      background: #5396d3;
+    }
+  }
+}

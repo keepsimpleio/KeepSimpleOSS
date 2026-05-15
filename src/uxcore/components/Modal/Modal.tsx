@@ -1,5 +1,11 @@
 import cn from 'classnames';
-import React, { FC, KeyboardEvent, ReactNode, useEffect } from 'react';
+import React, {
+  FC,
+  KeyboardEvent,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import styles from './Modal.module.scss';
@@ -49,8 +55,17 @@ const Modal: FC<ModalProps> = ({
   dataCy,
   fullHeightMobile,
 }) => {
+  const [closing, setClosing] = useState(false);
+
+  // Trigger the fade-out CSS animation, then unmount on the next tick so
+  // the user sees the modal leave instead of pop out.
   const handleClose = () => {
-    onClick();
+    if (closing) return;
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      onClick();
+    }, 180);
   };
 
   useEffect(() => {
@@ -89,6 +104,7 @@ const Modal: FC<ModalProps> = ({
     <div
       className={cn(styles.overlay, {
         [className]: className,
+        [styles.overlayClosing]: closing,
       })}
       data-cy={dataCy}
     >
@@ -106,6 +122,7 @@ const Modal: FC<ModalProps> = ({
           [wrapperClassName]: wrapperClassName,
           [styles.fullSizeMobile]: fullSizeMobile,
           [styles.fullHeightMobile]: fullHeightMobile,
+          [styles.wrapperClosing]: closing,
         })}
       >
         {!removeHeader && (

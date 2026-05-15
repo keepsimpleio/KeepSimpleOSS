@@ -1,12 +1,10 @@
-import cn from 'classnames';
-import { useRouter } from 'next/router';
-import { FC, KeyboardEvent, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-
+import customModalData from '@uxcore/data/customModal';
 import type { TagType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
-
-import customModalData from '@uxcore/data/customModal';
+import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { FC, KeyboardEvent, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { AddQuestion, ContactUs } from './contentTypes';
 
@@ -29,10 +27,21 @@ const CustomModal: FC<CustomModalProps> = ({
   const router = useRouter();
   const { locale } = router as TRouter;
   const { titles } = customModalData[locale];
+  const [closing, setClosing] = useState(false);
+
+  // Trigger fade-out CSS animation, then unmount on next tick.
+  const handleClose = () => {
+    if (closing) return;
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      onClose();
+    }, 180);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
     };
 
     // @ts-ignore
@@ -66,14 +75,17 @@ const CustomModal: FC<CustomModalProps> = ({
     <>
       {createPortal(
         <div
-          className={styles.ModalOverlay}
-          onClick={onClose}
+          className={cn(styles.ModalOverlay, {
+            [styles.ModalOverlayClosing]: closing,
+          })}
+          onClick={handleClose}
           data-cy={'custom-modal-close'}
         >
           <div
             data-cy={'custom-modal-content'}
             className={cn(styles.Modal, {
               [styles.hyLang]: locale === 'hy',
+              [styles.ModalClosing]: closing,
             })}
             onClick={e => e.stopPropagation()}
           >
@@ -85,7 +97,7 @@ const CustomModal: FC<CustomModalProps> = ({
                 <div className={styles.ModalHeaderCloseButton}>
                   <img
                     src="/assets/biases/cross.svg"
-                    onClick={onClose}
+                    onClick={handleClose}
                     alt="modal close button"
                   />
                 </div>
@@ -93,10 +105,10 @@ const CustomModal: FC<CustomModalProps> = ({
             </div>
             <div className={styles.ModalBody}>
               {contentType === 'addQuestion' && (
-                <AddQuestion closeModal={onClose} tags={tags} />
+                <AddQuestion closeModal={handleClose} tags={tags} />
               )}
               {contentType === 'contactUs' && (
-                <ContactUs closeModal={onClose} />
+                <ContactUs closeModal={handleClose} />
               )}
             </div>
           </div>
