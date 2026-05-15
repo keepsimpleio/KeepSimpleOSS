@@ -1,6 +1,7 @@
 import { type Country, countryBiasByLocale } from '@uxcore/data/countryBias';
 import type { StrapiBiasType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
+import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { type FC, useEffect, useRef, useState } from 'react';
 
@@ -229,7 +230,7 @@ const CyclingSubtitleWord: FC<CyclingSubtitleWordProps> = ({
 
   return (
     <span
-      className={`${styles.CyclingWord} ${isBold ? styles.CyclingWordBold : ''}`}
+      className={cn(styles.CyclingWord, { [styles.CyclingWordBold]: isBold })}
       style={{
         opacity: phase === 'fading' ? 0 : 1,
         transform:

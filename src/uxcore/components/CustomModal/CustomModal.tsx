@@ -3,7 +3,7 @@ import type { TagType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
-import { FC, KeyboardEvent, useEffect, useState } from 'react';
+import { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { AddQuestion, ContactUs } from './contentTypes';
@@ -39,9 +39,15 @@ const CustomModal: FC<CustomModalProps> = ({
     }, 180);
   };
 
+  // Mount-time Escape listener reads handleClose through a ref so the
+  // `closing` guard inside handleClose sees the latest value on a second
+  // press during the 180ms fade-out.
+  const handleCloseRef = useRef(handleClose);
+  handleCloseRef.current = handleClose;
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
+      if (e.key === 'Escape') handleCloseRef.current();
     };
 
     // @ts-ignore

@@ -4,6 +4,7 @@ import React, {
   KeyboardEvent,
   ReactNode,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
@@ -68,6 +69,12 @@ const Modal: FC<ModalProps> = ({
     }, 180);
   };
 
+  // Escape listener reads handleClose through a ref so the `closing`
+  // guard sees the latest value on a second press during the 180ms
+  // fade-out window.
+  const handleCloseRef = useRef(handleClose);
+  handleCloseRef.current = handleClose;
+
   useEffect(() => {
     if (!isConfirmationModal) {
       // @ts-ignore
@@ -76,7 +83,7 @@ const Modal: FC<ModalProps> = ({
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (!close) {
-          if (e.key === 'Escape') handleClose();
+          if (e.key === 'Escape') handleCloseRef.current();
         }
       };
 
