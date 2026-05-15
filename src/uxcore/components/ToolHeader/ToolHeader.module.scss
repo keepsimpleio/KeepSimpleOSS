@@ -527,6 +527,24 @@ $headerHeight: 46px;
         filter: invert(0.95) brightness(1.6);
       }
     }
+
+    // Selected nav items already have their SVG path fill set to a light
+    // colour (#fafafa) by the base rule. Pushing them through the
+    // invert/brightness filter intended for the dark monochrome icons
+    // turns them dark grey on the dark navbar — invisible on hover when
+    // the hover background washes them further. Null the filter on
+    // selected variants so the white fill wins.
+    &.Active,
+    &.ActivePodcast,
+    &.ActiveProjects {
+      & svg {
+        filter: none;
+      }
+
+      &:hover svg {
+        filter: none;
+      }
+    }
   }
 
   .openLink {
