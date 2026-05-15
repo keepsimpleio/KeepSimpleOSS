@@ -1,27 +1,27 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
-import { FC, useContext, useEffect, useMemo, useState } from 'react';
-
-import type { QuestionType, StrapiBiasType, TagType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
-import useMobile from '@uxcore/hooks/useMobile';
-import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
-
-import { getAdjacentBiasTitles, mergeBiasesLocalization } from '@uxcore/lib/helpers';
-import { getUXCoreTextPaths } from '@uxcore/lib/paths';
-
 import { getStrapiBiases } from '@uxcore/api/biases';
 import { getTags } from '@uxcore/api/tags';
-
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import UXCoreModal from '@uxcore/components/UXCoreModal';
 import UXCoreModalMobile from '@uxcore/components/UXCoreModalMobile';
-
+import useMobile from '@uxcore/hooks/useMobile';
+import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import UXCoreLayout from '@uxcore/layouts/UXCoreLayout';
-
 import { getRedirectMap } from '@uxcore/lib/getUXCoreRedirects';
+import {
+  getAdjacentBiasTitles,
+  mergeBiasesLocalization,
+} from '@uxcore/lib/helpers';
+import { getUXCoreTextPaths } from '@uxcore/lib/paths';
+import type {
+  QuestionType,
+  StrapiBiasType,
+  TagType,
+} from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
+import { FC, useContext, useEffect, useMemo, useState } from 'react';
 
 import styles from './uxcoreId.module.scss';
 
@@ -30,6 +30,7 @@ interface UXCoreProps {
   currentModalData?: StrapiBiasType;
   currentActiveBias?: any;
   languageSwitchSlugs: Record<string, string>;
+  biases: Record<string, StrapiBiasType[]>;
 }
 
 const UXCoreIds: FC<UXCoreProps> = ({
@@ -37,11 +38,11 @@ const UXCoreIds: FC<UXCoreProps> = ({
   currentModalData,
   currentActiveBias,
   languageSwitchSlugs,
+  biases,
 }) => {
-  const { uxCoreData, uxcgLocalizedData } = useContext(GlobalContext);
+  const { uxcgLocalizedData } = useContext(GlobalContext);
   const [strapiQuestions, setStrapiQuestions] = useState<QuestionType[]>([]);
   const [activeBiasNumber, setActiveBiasNumber] = useState<number>(null);
-  const [biases, setBiases] = useState<StrapiBiasType[]>([]);
   const [isModalClosed, setIsModalClosed] = useState<boolean>(true);
   const [{ toggleIsProductView }, { isProductView }] = useUXCoreGlobals();
   const router = useRouter();
@@ -136,14 +137,6 @@ const UXCoreIds: FC<UXCoreProps> = ({
   }, []);
 
   useEffect(() => {
-    if (uxCoreData) {
-      setBiases(uxCoreData);
-    } else {
-      setBiases([]);
-    }
-  }, [uxCoreData]);
-
-  useEffect(() => {
     if (uxcgLocalizedData) {
       setStrapiQuestions(uxcgLocalizedData[locale]);
     } else {
@@ -219,9 +212,13 @@ export const getStaticPaths: GetStaticPaths = async ({ locales }) => {
   // paths so the build doesn't abort; fallback: 'blocking' below makes
   // requests render on-demand at runtime where Strapi is reachable.
   try {
-  const newPaths = await getUXCoreTextPaths(locales);
-  return { paths: [...newPaths], fallback: 'blocking' };  } catch (err) {
-    console.warn('[getStaticPaths] build-time fetch failed, empty paths fallback:', err);
+    const newPaths = await getUXCoreTextPaths(locales);
+    return { paths: [...newPaths], fallback: 'blocking' };
+  } catch (err) {
+    console.warn(
+      '[getStaticPaths] build-time fetch failed, empty paths fallback:',
+      err,
+    );
     return { paths: [], fallback: 'blocking' };
   }
 };
@@ -274,6 +271,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
       currentModalData: currentActiveBias,
       languageSwitchSlugs,
       currentActiveBias: currentActiveBiasWithLocale.attributes,
+      biases: strapiBiases,
     },
     revalidate: 5,
   };

@@ -1,6 +1,9 @@
+import { getOurProjects } from '@uxcore/api/our-projects';
+import { GlobalContext as UXCoreGlobalContext } from '@uxcore/components/Context/GlobalContext';
+import UXCoreLayoutShell from '@uxcore/layouts/Layout';
 import { useRouter } from 'next/router';
 import { SessionProvider } from 'next-auth/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import useGlobals from '@hooks/useGlobals';
 import useMobile from '@hooks/useMobile';
@@ -32,6 +35,10 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
   const loadingTimer = useRef(null);
   const [accountData, setAccountData] = useState(null);
   const [token, setToken] = useState(null);
+  const [uxcatUserInfo, setUxcatUserInfo] = useState<any>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>('');
+  const [updatedUsername, setUpdatedUsername] = useState<string>('');
+  const [ourProjectsModalData, setOurProjectsModalData] = useState<any>(null);
 
   const isIndexingOn = process.env.NEXT_PUBLIC_INDEXING === 'on';
   const isProduction = process.env.NEXT_PUBLIC_ENV === 'prod';
@@ -226,6 +233,59 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
     };
   }, []);
 
+  const isUxcoreRoute =
+    router.pathname.startsWith('/uxcore') ||
+    router.pathname.startsWith('/uxcg') ||
+    router.pathname.startsWith('/uxcat') ||
+    router.pathname.startsWith('/uxcp') ||
+    router.pathname.startsWith('/uxcore-api');
+
+  useEffect(() => {
+    document.body.classList.toggle('uxcorePage', isUxcoreRoute);
+  }, [isUxcoreRoute]);
+
+  useEffect(() => {
+    if (!isUxcoreRoute) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getOurProjects(router.locale || 'en');
+        if (!cancelled) setOurProjectsModalData(data || null);
+      } catch (err) {
+        console.warn('[our-projects] fetch failed:', err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isUxcoreRoute, router.locale]);
+
+  const uxcoreContextValue = useMemo(
+    () => ({
+      accountData,
+      setAccountData,
+      setToken,
+      uxcatUserInfo,
+      setUxcatUserInfo,
+      selectedTitle,
+      setSelectedTitle,
+      updatedUsername,
+      setUpdatedUsername,
+      ourProjectsModalData,
+      setOurProjectsModalData,
+      uxCoreData: null,
+      uxcgLocalizedData: null,
+      uxcgData: null,
+    }),
+    [
+      accountData,
+      uxcatUserInfo,
+      selectedTitle,
+      updatedUsername,
+      ourProjectsModalData,
+    ],
+  );
+
   useEffect(() => {
     if (!accountData?.id || !accountData?.createdAt) return;
 
@@ -297,9 +357,17 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
           preload="none"
           loop
         />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        {isUxcoreRoute ? (
+          <UXCoreGlobalContext.Provider value={uxcoreContextValue}>
+            <UXCoreLayoutShell>
+              <Component {...pageProps} />
+            </UXCoreLayoutShell>
+          </UXCoreGlobalContext.Provider>
+        ) : (
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        )}
       </GlobalContext.Provider>
     </SessionProvider>
   );

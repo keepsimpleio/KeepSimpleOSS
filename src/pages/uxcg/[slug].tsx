@@ -1,20 +1,13 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
-import {
-  FC,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-
-import { QuestionType, TagType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
+import { getStrapiBiases } from '@uxcore/api/biases';
+import { getUXCGSeo } from '@uxcore/api/mainPageSeo';
+import { getStrapiQuestions } from '@uxcore/api/questions';
+import { getTags } from '@uxcore/api/tags';
+import SeoGenerator from '@uxcore/components/SeoGenerator';
+import UXCGModal from '@uxcore/components/UXCGModal';
+import UXCGModalMobile from '@uxcore/components/UXCGModalMobile';
 import useMobile from '@uxcore/hooks/useMobile';
-
+import UXCGLayout from '@uxcore/layouts/UXCGLayout';
+import { getUXCGRedirects } from '@uxcore/lib/getUXCGRedirects';
 import {
   copyToClipboard,
   generateQuestionsSeo,
@@ -22,19 +15,15 @@ import {
   mergeQuestionsLocalization,
 } from '@uxcore/lib/helpers';
 import { getUXCGSlugPaths } from '@uxcore/lib/paths';
-
-import { getUXCGSeo } from '@uxcore/api/mainPageSeo';
-import { getStrapiQuestions } from '@uxcore/api/questions';
-import { getTags } from '@uxcore/api/tags';
-
-import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
-import SeoGenerator from '@uxcore/components/SeoGenerator';
-import UXCGModal from '@uxcore/components/UXCGModal';
-import UXCGModalMobile from '@uxcore/components/UXCGModalMobile';
-
-import UXCGLayout from '@uxcore/layouts/UXCGLayout';
-
-import { getUXCGRedirects } from '@uxcore/lib/getUXCGRedirects';
+import {
+  QuestionType,
+  StrapiBiasType,
+  TagType,
+} from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import styles from './UxcgId.module.scss';
 
@@ -51,6 +40,7 @@ interface UXCGIdProps {
   allQuestions: QuestionType;
   id?: number;
   languageSwitchSlugs?: Record<string, string>;
+  biases: Record<string, StrapiBiasType[]>;
 }
 
 const Slug: FC<UXCGIdProps> = ({
@@ -65,6 +55,7 @@ const Slug: FC<UXCGIdProps> = ({
   allQuestions,
   id,
   languageSwitchSlugs,
+  biases,
 }) => {
   const router = useRouter();
   const { asPath, locale } = router as TRouter;
@@ -83,7 +74,6 @@ const Slug: FC<UXCGIdProps> = ({
   const [clickedQuestionId, setClickedQuestionId] = useState<number>(null);
   const [answerId, setAnswerId] = useState<number>(null);
   const [searchValue, setSearchValue] = useState<string>(searchTerm as string);
-  const { uxCoreData } = useContext(GlobalContext);
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const tooltipTimer: { current: any } = useRef();
   const { prev, next } = getAdjacentUXCGTitles(locale, allQuestions, id);
@@ -192,7 +182,7 @@ const Slug: FC<UXCGIdProps> = ({
       {isMobile ? (
         <UXCGModalMobile
           tags={tags}
-          biases={uxCoreData && uxCoreData[locale]}
+          biases={biases?.[locale]}
           answerId={answerId}
           onClose={closeModal}
           questions={questions}
@@ -216,7 +206,7 @@ const Slug: FC<UXCGIdProps> = ({
           setIsModalClosed={setIsModalClosed}
           questionId={questionId}
           answerId={answerId}
-          biases={uxCoreData && uxCoreData[locale]}
+          biases={biases?.[locale]}
           tags={tags}
           totalLength={questionsLength}
           onChangeQuestionId={handleSelectedQuestion}
@@ -251,9 +241,13 @@ export const getStaticPaths: GetStaticPaths = async ({ locales }) => {
   // paths so the build doesn't abort; fallback: 'blocking' below makes
   // requests render on-demand at runtime where Strapi is reachable.
   try {
-  const newPaths = await getUXCGSlugPaths(locales);
-  return { paths: [...newPaths], fallback: 'blocking' };  } catch (err) {
-    console.warn('[getStaticPaths] build-time fetch failed, empty paths fallback:', err);
+    const newPaths = await getUXCGSlugPaths(locales);
+    return { paths: [...newPaths], fallback: 'blocking' };
+  } catch (err) {
+    console.warn(
+      '[getStaticPaths] build-time fetch failed, empty paths fallback:',
+      err,
+    );
     return { paths: [], fallback: 'blocking' };
   }
 };
@@ -276,6 +270,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
 
   const tags = getTags();
   const questions = await getStrapiQuestions();
+  const biases = await getStrapiBiases();
 
   const sortedQuestions = mergeQuestionsLocalization(
     questions.en,
@@ -330,6 +325,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
       questions: sortedQuestions,
       allQuestions: questions,
       id: question?.attributes.number || null,
+      biases,
     },
     revalidate: 5,
   };
