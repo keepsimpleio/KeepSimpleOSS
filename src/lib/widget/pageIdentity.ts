@@ -239,9 +239,9 @@ const EXACT_DEFS: Array<[string, ExactEntry]> = [
       project: 'uxcore-oss',
       kind: 'project-home',
       blurbEn:
-        "UX Core — the world's largest open library of cognitive biases (200+ entries), each with practical product/HR examples, debiasing strategies, and references. The actual core of keepsimple, not Articles.",
+        "UX Core — the world's largest open library of cognitive biases (100+ entries), each with practical product/HR examples, debiasing strategies, and references. The actual core of keepsimple, not Articles.",
       blurbRu:
-        'UX Core — крупнейшая в мире открытая библиотека когнитивных искажений (200+), у каждого — продуктовые/HR-примеры, стратегии дебайзинга и источники. Сердце keepsimple, не «статьи».',
+        'UX Core — крупнейшая в мире открытая библиотека когнитивных искажений (100+), у каждого — продуктовые/HR-примеры, стратегии дебайзинга и источники. Сердце keepsimple, не «статьи».',
     },
   ],
   [
