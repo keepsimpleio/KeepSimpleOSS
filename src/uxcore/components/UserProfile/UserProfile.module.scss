@@ -226,3 +226,41 @@
     margin: 0 12px;
   }
 }
+
+// Dark theme: user-profile header colors.
+:global(body.darkTheme) .userProfile {
+  .wrapper {
+    .badgeWrapper .badgeTooltip {
+      background: #1b1e26;
+      color: #dadada;
+      border-color: #303338;
+
+      > div:nth-child(2) {
+        border-bottom-color: #303338;
+        border-right-color: #303338;
+      }
+    }
+
+    .nameAndTitle {
+      .title {
+        color: #c79bc8;
+      }
+
+      .userName {
+        color: #dadada;
+      }
+    }
+
+    .level {
+      color: #dadada;
+    }
+
+    .awarenessPoints {
+      color: #d49066;
+    }
+  }
+
+  .btnWrapper .userStatistic {
+    color: #9da3e1;
+  }
+}

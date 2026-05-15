@@ -63,3 +63,19 @@
     }
   }
 }
+
+// Dark theme: contact-us footer copy.
+:global(body.darkTheme) .footerContainer {
+  .contactUsTxt {
+    color: #dadada;
+  }
+
+  .contactInfo .mail,
+  .contactInfo .telegram {
+    color: #dadada;
+  }
+
+  .motto {
+    color: #7fb3d5;
+  }
+}
