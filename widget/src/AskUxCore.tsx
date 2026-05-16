@@ -2615,11 +2615,11 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   /* Typewriter constants — every bit of bot-authored text in the
      widget (concierge stream, homepage starters, landing turns) runs
      through the same throttle so the panel reads at one consistent
-     tempo. ~3 chars / 14ms ≈ 215 chars/sec, the feel of a fast LLM
-     stream. */
-  const STREAM_CHUNK = 3;
-  const STREAM_TICK = 14;
-  const SETTLE_MS = 160;
+     tempo. 1 char / 22ms ≈ 45 chars/sec — smooth char-by-char reveal,
+     reads as deliberate rather than firehosed. */
+  const STREAM_CHUNK = 1;
+  const STREAM_TICK = 22;
+  const SETTLE_MS = 200;
 
   /* Streaming typewriter — accepts a growing target via push() and
      drips it into the named turn at the typewriter tempo. finish()
