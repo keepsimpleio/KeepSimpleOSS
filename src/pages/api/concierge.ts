@@ -840,6 +840,40 @@ const TITLE_AI_RE =
   /\b(ai|агент|agent|llm|gpt|claude|automation|automat|искусств|нейрос|prompt)\b/i;
 const TITLE_PM_RE =
   /\b(project management|pm|scrum|agile|sprint|стэндап|standup|канбан|kanban)\b/i;
+/* Project-family grouping. UX Core is the parent of UXCG / UXCP /
+   UXCAT / UX Core main / UX Core API — they all live under the
+   UXCoreOSS umbrella and pivoting between them on a SPATIAL turn
+   reads as "going deeper sideways", not as yanking the visitor out.
+   Standalone surfaces (AI Atlas, Articles, Tools, Pyramids) each get
+   their own family of one. Sub-pages inherit their top segment, so
+   `/uxcg/why-our-company...` → `uxcg` → UX Core family. */
+const PROJECT_FAMILIES: Record<string, string> = {
+  uxcore: 'uxcore-family',
+  uxcg: 'uxcore-family',
+  uxcp: 'uxcore-family',
+  uxcat: 'uxcore-family',
+  'uxcore-api': 'uxcore-family',
+};
+const topSegment = (canonicalPath: string): string => {
+  const p = canonicalPath.toLowerCase().replace(/^\/+/, '');
+  if (!p) return '';
+  if (p.startsWith('tools/longevity-protocol'))
+    return 'tools/longevity-protocol';
+  return p.split('/')[0] || '';
+};
+const familyOf = (canonicalPath: string): string => {
+  const top = topSegment(canonicalPath);
+  return PROJECT_FAMILIES[top] || top;
+};
+const inSameFamily = (cardUrl: string, visitorCanonical: string): boolean => {
+  try {
+    const cardId = resolvePageIdentity(cardUrl);
+    return familyOf(cardId.canonicalPath) === familyOf(visitorCanonical);
+  } catch {
+    return false;
+  }
+};
+
 function projectBiasFor(
   url: string,
   title: string,
@@ -870,8 +904,10 @@ function buildCandidates(
   rawCitations: RawCitation[],
   lang: 'en' | 'ru',
   pageIdentity: PageIdentity,
+  intentTag: IntentTag = 'neutral',
 ): Candidate[] {
   const visitorCanonical = pageIdentity.canonicalPath;
+  const spatial = intentTag === 'spatial';
   const surface: Candidate[] = SURFACE_CARDS.map(c => ({
     source: 'surface' as const,
     title: lang === 'ru' ? c.title_ru : c.title_en,
@@ -884,10 +920,17 @@ function buildCandidates(
        (/ru/uxcore) and trailing slashes can't slip past the filter. */
     try {
       const cardIdentity = resolvePageIdentity(c.url);
-      return cardIdentity.canonicalPath !== visitorCanonical;
+      if (cardIdentity.canonicalPath === visitorCanonical) return false;
     } catch {
-      return true;
+      /* fall through — keep the card if identity resolution failed */
     }
+    /* SPATIAL filter: when the visitor's question is about where they
+       are, off-family surface cards (AI Atlas, Longevity, Articles
+       when standing on UX Core family) are noise — they pull the
+       visitor out of the project they asked about. Restrict surface
+       to same-family only. Wolf flagged this 2026-05-15 on /uxcg. */
+    if (spatial && !inSameFamily(c.url, visitorCanonical)) return false;
+    return true;
   });
 
   const library: Candidate[] = rawCitations
@@ -907,6 +950,10 @@ function buildCandidates(
     })
     /* dedup library entries that point to the same URL as a surface card */
     .filter(c => !surface.some(s => s.url === c.url))
+    /* SPATIAL filter — same rule as surface above: keep only same-family
+       library hits so the LLM can only pivot the visitor INSIDE the
+       project they're standing in. */
+    .filter(c => !spatial || inSameFamily(c.url, visitorCanonical))
     .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
     .slice(0, 25);
 
@@ -1427,7 +1474,16 @@ export default async function handler(
     return true;
   });
 
-  const candidates = buildCandidates(localeFiltered, userLang, pageIdentity);
+  /* Pre-compute visitor intent here so buildCandidates can drop
+     off-family surface/library cards on SPATIAL turns. renderUserPrompt
+     re-derives intent with the same classifier; both stay in sync. */
+  const candidateIntent = detectIntent(userQuery, pageIdentity);
+  const candidates = buildCandidates(
+    localeFiltered,
+    userLang,
+    pageIdentity,
+    candidateIntent.tag,
+  );
 
   const streak = clarifyStreak.get(sid) ?? 0;
   const forceAnswer = streak >= CLARIFY_MAX;
