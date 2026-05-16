@@ -236,6 +236,23 @@
   white-space: nowrap;
 }
 
+.ks-aux-brand {
+  font-family: 'Jost-Medium', 'Jost', inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6f685b;
+  margin-left: 2px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ks-aux-dark .ks-aux-brand {
+  color: #b8b0a1;
+}
+
 .ks-aux-reading-title {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -742,8 +759,8 @@
    bias chips). Outline and box-shadow on those would render at the
    zero-sized wrapper box; drop-shadow traces the child's polygon. */
 .ks-aux-host-highlight {
-  outline: 6px solid #c75d3e;
-  outline-offset: 4px;
+  outline: 2px solid #c75d3e;
+  outline-offset: 3px;
   border-radius: 6px;
   animation: ks-aux-host-breathe 2.4s ease-in-out infinite;
   transition: outline-color 200ms ease;
@@ -753,13 +770,13 @@
   0%,
   100% {
     box-shadow:
-      0 0 0 12px rgba(199, 93, 62, 0.22),
-      0 14px 42px rgba(199, 93, 62, 0.28);
+      0 0 0 4px rgba(199, 93, 62, 0.14),
+      0 6px 18px rgba(199, 93, 62, 0.18);
   }
   50% {
     box-shadow:
-      0 0 0 24px rgba(199, 93, 62, 0.38),
-      0 18px 54px rgba(199, 93, 62, 0.48);
+      0 0 0 8px rgba(199, 93, 62, 0.22),
+      0 8px 24px rgba(199, 93, 62, 0.28);
   }
 }
 
@@ -770,18 +787,18 @@
 @keyframes ks-aux-host-flash {
   0% {
     box-shadow:
-      0 0 0 0 rgba(199, 93, 62, 0.85),
-      0 0 0 0 rgba(199, 93, 62, 0.55);
+      0 0 0 0 rgba(199, 93, 62, 0.6),
+      0 0 0 0 rgba(199, 93, 62, 0.4);
   }
   35% {
     box-shadow:
-      0 0 0 30px rgba(199, 93, 62, 0.3),
-      0 0 0 66px rgba(199, 93, 62, 0);
+      0 0 0 14px rgba(199, 93, 62, 0.18),
+      0 0 0 30px rgba(199, 93, 62, 0);
   }
   100% {
     box-shadow:
-      0 0 0 12px rgba(199, 93, 62, 0.25),
-      0 14px 42px rgba(199, 93, 62, 0.32);
+      0 0 0 4px rgba(199, 93, 62, 0.16),
+      0 6px 18px rgba(199, 93, 62, 0.2);
   }
 }
 
@@ -795,13 +812,13 @@
   0%,
   100% {
     filter:
-      drop-shadow(0 0 12px rgba(199, 93, 62, 0.85))
-      drop-shadow(0 0 42px rgba(199, 93, 62, 0.5));
+      drop-shadow(0 0 4px rgba(199, 93, 62, 0.55))
+      drop-shadow(0 0 14px rgba(199, 93, 62, 0.3));
   }
   50% {
     filter:
-      drop-shadow(0 0 24px rgba(199, 93, 62, 1))
-      drop-shadow(0 0 66px rgba(199, 93, 62, 0.7));
+      drop-shadow(0 0 8px rgba(199, 93, 62, 0.7))
+      drop-shadow(0 0 22px rgba(199, 93, 62, 0.45));
   }
 }
 
@@ -812,18 +829,18 @@
 @keyframes ks-aux-host-flash-glow {
   0% {
     filter:
-      drop-shadow(0 0 0 rgba(199, 93, 62, 1))
-      drop-shadow(0 0 0 rgba(199, 93, 62, 0.85));
+      drop-shadow(0 0 0 rgba(199, 93, 62, 0.7))
+      drop-shadow(0 0 0 rgba(199, 93, 62, 0.55));
   }
   35% {
     filter:
-      drop-shadow(0 0 36px rgba(199, 93, 62, 1))
-      drop-shadow(0 0 72px rgba(199, 93, 62, 0.7));
+      drop-shadow(0 0 12px rgba(199, 93, 62, 0.65))
+      drop-shadow(0 0 24px rgba(199, 93, 62, 0.4));
   }
   100% {
     filter:
-      drop-shadow(0 0 18px rgba(199, 93, 62, 0.85))
-      drop-shadow(0 0 48px rgba(199, 93, 62, 0.5));
+      drop-shadow(0 0 6px rgba(199, 93, 62, 0.6))
+      drop-shadow(0 0 16px rgba(199, 93, 62, 0.32));
   }
 }
 

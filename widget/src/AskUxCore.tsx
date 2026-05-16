@@ -247,7 +247,7 @@ const saveState = (state: Persisted) => {
 const TEXT: Record<Lang, Record<string, string>> = {
   en: {
     pillLabel: 'Ask anything',
-    pillLabelReturning: "I'm always here",
+    pillLabelReturning: 'Your copilot is here',
     relevancePrompt: 'Was this relevant?',
     placeholder: 'Ask anything about career, UX, decisions, biases…',
     send: 'Ask',
@@ -274,7 +274,7 @@ const TEXT: Record<Lang, Record<string, string>> = {
   },
   ru: {
     pillLabel: 'Спросите что угодно',
-    pillLabelReturning: 'Я всегда тут',
+    pillLabelReturning: 'Ваш copilot тут',
     relevancePrompt: 'Это было полезно?',
     placeholder: 'Спросите про карьеру, UX, решения, искажения…',
     send: 'Спросить',
@@ -2426,6 +2426,9 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         <div className="ks-aux-header">
           <span className="ks-aux-reading" aria-label={t.readingLabel}>
             <span className="ks-aux-reading-dot" aria-hidden="true" />
+          </span>
+          <span className="ks-aux-brand" aria-hidden="true">
+            Copilot
           </span>
           {/* Immersion is the existing idle-opacity preference in a
               quieter shape: a small opacity-style icon next to CLEAR.
