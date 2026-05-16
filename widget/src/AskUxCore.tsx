@@ -793,6 +793,614 @@ const markCuratedLandingFired = (key: string) => {
   }
 };
 
+/* ──────────────────────────────────────────────────────────────────
+   Identity query triggers — works on any page.
+   ──────────────────────────────────────────────────────────────────
+   When the visitor's free-text question matches one of the canonical
+   "about us" clusters (what is keepsimple / is it free / who made
+   this / why open-source / how do you make money / etc.), we render
+   a hand-crafted answer locally instead of asking the LLM. Reason:
+   identity questions are brand-critical, the answer should never
+   drift, and the LLM round-trip is wasted tokens for a question
+   whose answer is fixed. Pipeline still runs for everything else.
+   ────────────────────────────────────────────────────────────────── */
+type IdentityTrigger = {
+  key: string;
+  patterns: RegExp[];
+  answer: string;
+  cards: Citation[];
+};
+
+const IDENTITY_TRIGGERS: Record<Lang, IdentityTrigger[]> = {
+  en: [
+    {
+      key: 'what-is-keepsimple',
+      patterns: [
+        /\bwhat\s+(is|are)\s+keepsimple\b/i,
+        /\bwhat'?s\s+keepsimple\b/i,
+        /\btell\s+me\s+about\s+keepsimple\b/i,
+        /\bwhat\s+is\s+this\s+(site|project|place)\b/i,
+        /\bwhat\s+do\s+you\s+(do|make|build)\b/i,
+      ],
+      answer:
+        "keepsimple is an open-source movement at the intersection of cognitive science, product, and engineering — running since 2019. The flagship is **UX Core**, the world's largest free library of cognitive biases and nudging strategies (used at Duke, Harvard, MIT, Google, Amazon).",
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'The flagship bias library',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "Full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on cog sci, product, decisions',
+        },
+      ],
+    },
+    {
+      key: 'is-it-free',
+      patterns: [
+        /\bis\s+(it|this|keepsimple)\s+(really\s+|actually\s+)?free\b/i,
+        /\bhow\s+(is|can)\s+(it|this)\s+(be\s+)?free\b/i,
+        /\bpaywall/i,
+        /\bpricing\b/i,
+        /\bhow\s+much\s+(does\s+it\s+cost|to\s+use)/i,
+        /\bsubscription\b/i,
+        /\bpremium\s+(tier|plan)/i,
+        /\bcost\s+(of|to)\s+(use|access)/i,
+      ],
+      answer:
+        'Free since day one in 2019. No paywalls, no ads, no investors, no premium tier. The code is open-source, content under Creative Commons. Wolf funds the project from his own pocket; supporters chip in if they want to.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'The people who keep this open',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "Full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Our take on the bigger questions',
+        },
+      ],
+    },
+    {
+      key: 'where-do-i-start',
+      patterns: [
+        /\bwhere\s+(do|should)\s+i\s+start\b/i,
+        /\b(i'?m|i\s+am)\s+new\b/i,
+        /\bwhere\s+to\s+begin\b/i,
+        /\bhow\s+do\s+i\s+(use|start|begin)\b/i,
+        /\bfirst\s+time\s+here\b/i,
+        /\bnew\s+(here|to\s+this)\b/i,
+      ],
+      answer:
+        "The lowest-friction entry is the **UX Awareness Test** — about 10 minutes, you'll spot a surprising number of biases at play around you. From there: **UX Core** is the bias library. **UXCG** lets you audit your own organisation. If you'd rather read first, **Articles** holds the long-form thinking.",
+      cards: [
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: 'Take the 10-min Awareness Test',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Browse the bias library',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'Audit your organisation',
+        },
+      ],
+    },
+    {
+      key: 'who-made-this',
+      patterns: [
+        /\bwho\s+(made|built|created|runs|owns|started|founded)\s+(this|keepsimple|it)\b/i,
+        /\bwho(?:'?s|\s+is)\s+wolf\b/i,
+        /\bwho(?:'?s|\s+is)\s+behind\s+keepsimple\b/i,
+        /\b(the\s+)?(team|founder|creator|author)\s+(of|behind)\s+keepsimple\b/i,
+        /\bwho\s+(writes|maintains)\s+(this|keepsimple)\b/i,
+      ],
+      answer:
+        '**Wolf Alexanyan** founded keepsimple in 2019 and runs it as the lead. A small core team plus a wider community of contributors keep the work going. Day-to-day faces are on the Contributors page.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Everyone behind the project',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'The orbital map of what we run',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: "Wolf's long-form thinking",
+        },
+      ],
+    },
+    {
+      key: 'why-open-source',
+      patterns: [
+        /\bwhy\s+(open[-\s]?source|free|give\s+(it|this)\s+away|gratis)\b/i,
+        /\bwhat'?s?\s+the\s+catch\b/i,
+        /\bwhy\s+(no\s+ads|do\s+you\s+do\s+this)\b/i,
+        /\b(open[-\s]?source)\s+(reasoning|philosophy|why)\b/i,
+      ],
+      answer:
+        "No catch. keepsimple is open-source because that's how the knowledge stays trustworthy and usable — anyone can read the source, fork it, contribute, or run their own copy. The deal is simple: if it helps you, pass it on.",
+      cards: [
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "Full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'The people who keep this open',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on the philosophy behind the project',
+        },
+      ],
+    },
+    {
+      key: 'credibility',
+      patterns: [
+        /\bhow\s+many\s+(users|readers|people)\b/i,
+        /\b\d+[k,]?\s*(thousand|million)?\s+(users|readers)\b/i,
+        /\bcredib(le|ility)\b/i,
+        /\b(reputation|reputable)\b/i,
+        /\bwho\s+(uses|reads)\s+(this|keepsimple|you)\b/i,
+        /\bis\s+this\s+(real|legit)\b/i,
+        /\b(reference|cited)\s+(at|by)\b/i,
+      ],
+      answer:
+        "300,000+ readers worldwide. **UX Core** is referenced at Duke, Harvard Business School, MIT, Google, Yandex, Amazon. Open-source movement since 2019; everything on the site is the same one team's work, no licensing tricks.",
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'The library referenced at Duke, Harvard, MIT, Google',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Full transparency on what we run',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form, public since 2014',
+        },
+      ],
+    },
+    {
+      key: 'how-to-contribute',
+      patterns: [
+        /\bhow\s+(can|do)\s+i\s+(help|contribute|donate|support)\b/i,
+        /\bdonat(e|ion|ions)\b/i,
+        /\bsupport\s+keepsimple\b/i,
+        /\b(contribute|contribut(or|ion))\b/i,
+        /\bsponsor\b/i,
+        /\bcan\s+i\s+(help|join)\b/i,
+      ],
+      answer:
+        'Three ways. (1) Spread the word — link any page, cite UX Core, write about us. (2) Fork on GitHub or open a PR. (3) Support financially through the Contributors page. All optional, none required.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'How to chip in, financial or otherwise',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'What we run — pick a piece to help with',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Read the work, cite the pieces that helped you',
+        },
+      ],
+    },
+    {
+      key: 'business-model',
+      patterns: [
+        /\bhow\s+do\s+(you|they)\s+make\s+money\b/i,
+        /\b(business|revenue|monetiz(e|ation))\s+model\b/i,
+        /\bare\s+you\s+(profitable|funded)\b/i,
+        /\bwho\s+(funds|pays\s+for)\s+(this|keepsimple)\b/i,
+        /\bhow\s+is\s+(this|keepsimple)\s+funded\b/i,
+        /\bwhere\s+does\s+the\s+money\s+come\s+from\b/i,
+      ],
+      answer:
+        "Short answer: we don't make money on keepsimple. Wolf funds the project from his own pocket, solely. No ads, no paid tier, no investor pressure on what we build.",
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Where supporters can chip in if they want',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Full transparency on the work and the people',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on why we build it this way',
+        },
+      ],
+    },
+  ],
+  ru: [
+    {
+      key: 'what-is-keepsimple',
+      patterns: [
+        /\bчто\s+(такое|за)\s+keepsimple\b/i,
+        /\bрасскажи\s+(про|о)\s+keepsimple\b/i,
+        /\bчто\s+это\s+за\s+(проект|сайт|штука|место)\b/i,
+        /\bчем\s+(вы\s+)?занимаетесь\b/i,
+      ],
+      answer:
+        'keepsimple — open-source движение на стыке когнитивной науки, продукта и инженерии, с 2019 года. Флагман — **UX Core**, крупнейшая в мире бесплатная библиотека когнитивных искажений и стратегий нуджинга (её используют в Duke, Harvard, MIT, Google, Amazon).',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Флагманская библиотека искажений',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про когнитивную науку, продукт, решения',
+        },
+      ],
+    },
+    {
+      key: 'is-it-free',
+      patterns: [
+        /\b(это|оно|keepsimple)\s+(правда\s+|реально\s+|действительно\s+)?бесплат/i,
+        /\bкак\s+(оно|это)\s+(может\s+быть\s+)?бесплат/i,
+        /\bплатно\b/i,
+        /\bстоимост/i,
+        /\bподписк/i,
+        /\bпремиум/i,
+        /\bсколько\s+стоит/i,
+      ],
+      answer:
+        'Бесплатно с первого дня в 2019. Никаких пейволлов, рекламы, инвесторов, премиум-тарифа. Код открыт, контент под Creative Commons. Wolf финансирует проект из своего кармана; саппортеры подкидывают если хотят.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Люди, которые держат это открытым',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Наша позиция по большим вопросам',
+        },
+      ],
+    },
+    {
+      key: 'where-do-i-start',
+      patterns: [
+        /\bс\s+чего\s+начать\b/i,
+        /\bя\s+(тут|здесь)\s+(впервые|новый|нов)\b/i,
+        /\bкак\s+(начать|пользоваться|использовать)\b/i,
+        /\bпервый\s+раз\s+здесь\b/i,
+        /\bкуда\s+(идти|нажать)\s+(сначала|сперва)\b/i,
+      ],
+      answer:
+        'Самый простой вход — **тест осознанности** (UXCAT), минут 10, заметишь удивительно много искажений вокруг. Дальше: **UX Core** — библиотека искажений. **UXCG** — оцени собственную организацию. Если хочется сначала почитать — **Статьи**.',
+      cards: [
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: '10-минутный тест осознанности',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Библиотека искажений',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'Оцени свою организацию',
+        },
+      ],
+    },
+    {
+      key: 'who-made-this',
+      patterns: [
+        /\bкто\s+(создал|сделал|ведёт|ведет|основал|руководит|стоит)\b/i,
+        /\bкто\s+такой\s+wolf\b/i,
+        /\bкто\s+за\s+(этим|keepsimple)\b/i,
+        /\b(команд|основател|автор)/i,
+        /\bкто\s+пишет\s+(это|keepsimple)\b/i,
+      ],
+      answer:
+        '**Wolf Alexanyan** основал keepsimple в 2019 и ведёт его как лид. Небольшая core-команда плюс более широкое сообщество контрибьюторов держат работу на ходу. Кто что делает — на странице Contributors.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Все люди за проектом',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Орбитальная карта того, что мы запускаем',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты от Wolf-а',
+        },
+      ],
+    },
+    {
+      key: 'why-open-source',
+      patterns: [
+        /\bпочему\s+(open[-\s]?source|открыт|бесплат|без\s+рекламы)/i,
+        /\bзачем\s+(делать|открыт|бесплат)/i,
+        /\bв\s+ч[её]м\s+подвох\b/i,
+        /\bкакая\s+выгода\b/i,
+      ],
+      answer:
+        'Никакого подвоха. keepsimple — open-source потому что только так знание остаётся честным и пригодным: каждый может прочитать исходник, форкнуть, поучаствовать, запустить свою копию. Договор простой: если помогло — расскажи дальше.',
+      cards: [
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Люди, которые держат это открытым',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про философию проекта',
+        },
+      ],
+    },
+    {
+      key: 'credibility',
+      patterns: [
+        /\bсколько\s+(пользовател|читател|людей|у\s+вас)/i,
+        /\b\d+[\s,]?(\d+)?\s*(тысяч|миллион|к|млн)\s+(пользоват|читател)/i,
+        /\bкто\s+(пользуется|читает|использует)\s+(этим|keepsimple|вами)/i,
+        /\bрепутац/i,
+        /\bправда\s+ли/i,
+        /\bкто\s+вас\s+знает/i,
+        /\b(ссыла|цитиру)\s+(на|вас)/i,
+      ],
+      answer:
+        '300 000+ читателей по миру. **UX Core** упоминают в Duke, Harvard Business School, MIT, Google, Яндексе, Amazon. Open-source движение с 2019; всё на сайте — работа одной команды, никаких лицензионных трюков.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'Библиотека, на которую ссылаются в Duke, Harvard, MIT, Google',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность того, что мы делаем',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты, публичны с 2014',
+        },
+      ],
+    },
+    {
+      key: 'how-to-contribute',
+      patterns: [
+        /\bкак\s+(могу\s+)?(помочь|поучаств|поддерж|donat)/i,
+        /\b(контрибь|задонат|пожертвовать)/i,
+        /\bкак\s+(вписаться|включиться|присоединиться)/i,
+        /\bподдержать\s+keepsimple/i,
+      ],
+      answer:
+        'Три способа. (1) Расскажи дальше — поделись страницей, сошлись на UX Core, напиши про нас. (2) Форкни на GitHub или открой PR. (3) Поддержи финансово через Contributors. Всё опционально, ничего не обязательно.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Как помочь — финансово или иначе',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Что мы делаем — выбери кусок чтобы помочь',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Прочитай работу, сошлись на куски, которые помогли',
+        },
+      ],
+    },
+    {
+      key: 'business-model',
+      patterns: [
+        /\bкак\s+(вы|они)\s+(зарабат|деньг|монетиз)/i,
+        /\b(бизнес|финанс|монетиз)\s+(модел|схем)/i,
+        /\bкто\s+(финансирует|оплачивает|спонсирует)/i,
+        /\bза\s+чей\s+счёт\b/i,
+        /\bоткуда\s+деньги\b/i,
+      ],
+      answer:
+        'Коротко: мы не зарабатываем на keepsimple. Wolf финансирует проект из своего кармана, и только. Никакой рекламы, никаких платных тарифов, никакого давления инвесторов на то, что мы делаем.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Где саппортеры могут подкинуть если захотят',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность про работу и людей',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про то, почему мы делаем это так',
+        },
+      ],
+    },
+  ],
+};
+
+const matchIdentityTrigger = (
+  query: string,
+  lang: Lang,
+): IdentityTrigger | null => {
+  const q = (query || '').trim();
+  if (q.length < 3) return null;
+  for (const trig of IDENTITY_TRIGGERS[lang]) {
+    for (const re of trig.patterns) {
+      if (re.test(q)) return trig;
+    }
+  }
+  return null;
+};
+
 type TypeKey =
   | 'bias'
   | 'article'
@@ -2133,6 +2741,39 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     );
 
     trackEvent('query_sent', { lang, retry: !!replaceTurnId });
+
+    /* Identity-trigger short-circuit: brand-critical "about us"
+       questions (what is keepsimple / is it free / who's Wolf / etc.)
+       get a hand-crafted answer rendered locally — no LLM call, no
+       drift. Same think-pause + typewriter as homepage starters so it
+       reads like a live response. Fires on any page. */
+    const identityHit = matchIdentityTrigger(query, lang);
+    if (identityHit) {
+      trackEvent('identity_trigger_hit', {
+        lang,
+        key: identityHit.key,
+      });
+      window.setTimeout(() => {
+        const typer = createTypewriter(id);
+        typer.push(identityHit.answer);
+        typer.finish(() => {
+          setTurns(prev =>
+            prev.map(tt =>
+              tt.id === id
+                ? {
+                    ...tt,
+                    answer: identityHit.answer,
+                    citations: identityHit.cards,
+                    isStreaming: false,
+                  }
+                : tt,
+            ),
+          );
+          setLoading(false);
+        });
+      }, 2200);
+      return;
+    }
 
     try {
       /* Send last 6 finished turns so follow-ups like "how do I do that?"
