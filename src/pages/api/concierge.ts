@@ -813,8 +813,32 @@ function detectIntent(
     ) ||
     /(что|где)[\s-]?ещё\b/i.test(q) ||
     /(другое|другие|по-другому)/i.test(q);
+  /* "here / this / this page / what should I do / where am I /
+     show me / explain this / go deeper" — generic SPATIAL signals.
+     Visitor is asking about where they're standing without naming
+     a section. Bilingual. Without this, classifier collapses to
+     neutral on the most common "what's this?" turn and the
+     same-family filter never fires. */
+  const GENERIC_SPATIAL =
+    /\bthis\s+(page|place|section|thing|one|looks)\b/i.test(q) ||
+    /\b(here|this)\b.*\b(do|interesting|matters|about|works?)\b/i.test(q) ||
+    /\bwhat\s+(should|do)\s+i\s+(do|click|read|try|pick|start)\b/i.test(q) ||
+    /\bwhere\s+am\s+i\b/i.test(q) ||
+    /\bwhat'?s?\s+(this|here)\b/i.test(q) ||
+    /\bshow\s+me\s+(more|around)\b/i.test(q) ||
+    /\b(more|deeper|further)\s+(on|about|into)\s+this\b/i.test(q) ||
+    /\b(walk|guide|take)\s+me\s+through\b/i.test(q) ||
+    /\b(эта|это|этот|эту)\s+(страниц|раздел|штук|вещ|тема)/i.test(q) ||
+    /\b(что|чё|чо)\s+(тут|здесь|это)\b/i.test(q) ||
+    /\b(где|куда)\s+(я|мне)\b/i.test(q) ||
+    /\bчто\s+(мне|тут)\s+(делать|нажать|читать|попробовать)\b/i.test(q) ||
+    /\b(покажи|объясни|расскажи)\s+(тут|здесь|это|про\s+это)\b/i.test(q) ||
+    /\b(глубже|подробнее)\s+(про|об|на)\s+это\b/i.test(q);
   if (mentioned.length === 0) {
-    return { tag: GENERIC_GLOBAL ? 'global' : 'neutral', mentioned: [] };
+    if (GENERIC_GLOBAL) return { tag: 'global', mentioned: [] };
+    if (GENERIC_SPATIAL && here !== null)
+      return { tag: 'spatial', mentioned: [] };
+    return { tag: 'neutral', mentioned: [] };
   }
   /* Only the current section was mentioned → visitor is still talking
      about where they stand; spatial. */
