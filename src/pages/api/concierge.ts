@@ -17,6 +17,10 @@ import {
   type PageKind,
   resolvePageIdentity,
 } from '../../lib/widget/pageIdentity';
+import {
+  getUxcgBridgeEntry,
+  type UxcgBridgeEntry,
+} from '../../lib/widget/uxcgBridge';
 
 /* Page kinds where the visitor is reading a specific piece of content
    we have indexed — biases, articles, UXCG cases, UXCAT steps,
@@ -929,6 +933,7 @@ function buildCandidates(
   lang: 'en' | 'ru',
   pageIdentity: PageIdentity,
   intentTag: IntentTag = 'neutral',
+  uxcgBridge: UxcgBridgeEntry | null = null,
 ): Candidate[] {
   const visitorCanonical = pageIdentity.canonicalPath;
   const spatial = intentTag === 'spatial';
@@ -981,7 +986,28 @@ function buildCandidates(
     .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
     .slice(0, 25);
 
-  return [...surface, ...library];
+  /* UXCG sibling-question bridge: on a /uxcg/<slug> page (SPATIAL or
+     not — siblings are always relevant), inject up to 2 sibling
+     question cards as high-scored library candidates so the LLM has
+     real "go deeper inside UXCG" picks even when LightRAG retrieval
+     is sparse for single-question pages. */
+  const bridge: Candidate[] = [];
+  if (uxcgBridge && uxcgBridge.siblings.length > 0) {
+    for (const s of uxcgBridge.siblings) {
+      const url = localizedUrl(`/uxcg/${s.slug}`, lang);
+      if (surface.some(c => c.url === url)) continue;
+      if (library.some(c => c.url === url)) continue;
+      bridge.push({
+        source: 'library' as const,
+        title: s.title,
+        url,
+        type: 'question',
+        score: 0.95,
+      });
+    }
+  }
+
+  return [...surface, ...bridge, ...library];
 }
 
 function buildCandidatesBlock(candidates: Candidate[]): string {
@@ -1502,11 +1528,29 @@ export default async function handler(
      off-family surface/library cards on SPATIAL turns. renderUserPrompt
      re-derives intent with the same classifier; both stay in sync. */
   const candidateIntent = detectIntent(userQuery, pageIdentity);
+
+  /* UXCG question pages: pull sibling-question candidates from the
+     Strapi-fed bridge so the candidate pool always has a real "go
+     deeper inside UXCG" option, even when LightRAG retrieval is
+     sparse for the specific question. */
+  const uxcgSlugMatch = /^\/uxcg\/([^/]+)\/?$/i.exec(
+    pageIdentity.canonicalPath,
+  );
+  let uxcgBridge: UxcgBridgeEntry | null = null;
+  if (uxcgSlugMatch) {
+    try {
+      uxcgBridge = await getUxcgBridgeEntry(uxcgSlugMatch[1], userLang);
+    } catch {
+      uxcgBridge = null;
+    }
+  }
+
   const candidates = buildCandidates(
     localeFiltered,
     userLang,
     pageIdentity,
     candidateIntent.tag,
+    uxcgBridge,
   );
 
   const streak = clarifyStreak.get(sid) ?? 0;
