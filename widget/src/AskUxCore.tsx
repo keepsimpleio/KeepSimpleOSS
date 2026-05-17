@@ -1,7 +1,7 @@
 import { CSSProperties, FormEvent, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import { askConcierge, Citation, trackEvent } from './api';
+import { askConcierge, Citation, postCopilotEvent, trackEvent } from './api';
 
 type Lang = 'en' | 'ru';
 
@@ -36,6 +36,41 @@ type Turn = {
 const STORAGE_KEY = 'ks_aux_state_v2';
 const IDLE_OPACITY_KEY = 'ks_aux_idle_opacity_v1'; // gitleaks:allow
 const COLLAPSED_ONCE_KEY = 'ks_aux_collapsed_once_v1'; // gitleaks:allow
+const THREAD_ID_KEY = 'ks_aux_thread_id_v1'; // gitleaks:allow
+
+/* Thread id: persists across reloads in localStorage; survives the
+   page lifecycle and follows the visitor across tabs. Bumped on every
+   CLEAR so transcript analytics can group questions into the same
+   conversation block while still seeing where the visitor wiped and
+   started over. Lives client-side; server pairs it with the http-only
+   sid cookie for the canonical visitor identity. */
+const getOrMakeThreadId = (): string => {
+  if (typeof window === 'undefined') return '';
+  try {
+    const existing = localStorage.getItem(THREAD_ID_KEY);
+    if (existing) return existing;
+    const fresh =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `th-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(THREAD_ID_KEY, fresh);
+    return fresh;
+  } catch {
+    return `th-${Date.now()}`;
+  }
+};
+const rotateThreadId = (): string => {
+  const fresh =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `th-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  try {
+    localStorage.setItem(THREAD_ID_KEY, fresh);
+  } catch {
+    /* localStorage disabled — keep the in-memory id */
+  }
+  return fresh;
+};
 const loadCollapsedOnce = (): boolean => {
   try {
     return localStorage.getItem(COLLAPSED_ONCE_KEY) === '1';
@@ -1833,6 +1868,10 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   const [onUxcatRoot, setOnUxcatRoot] = useState<boolean>(() =>
     isOnUxcatRoot(),
   );
+  /* Per-conversation thread id. Survives reloads (localStorage),
+     bumped on CLEAR. Passed up the chain so server-side analytics
+     groups Q&A turns correctly. */
+  const threadIdRef = useRef<string>(getOrMakeThreadId());
   const onBeginUxcatTest = () => {
     trackEvent('uxcat_begin_test_click', {});
     let hasToken = false;
@@ -2847,6 +2886,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         '/api/concierge',
         onChunk,
         lastPick,
+        threadIdRef.current,
       );
       const cleaned = stripMarkers(result.answer);
       typer.push(cleaned);
@@ -2901,6 +2941,23 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   const onCardClick = (citation: Citation) => {
     if (!citation.url) return;
     trackEvent('card_click', { url: citation.url, type: citation.type });
+    const tier: 'high' | 'mid' | 'low' = citation.nominated
+      ? 'high'
+      : (citation.score ?? 0) >= 0.5
+        ? 'high'
+        : (citation.score ?? 0) >= 0.3
+          ? 'mid'
+          : 'low';
+    postCopilotEvent({
+      kind: 'card_click',
+      threadId: threadIdRef.current,
+      lang,
+      cardClicked: {
+        title: citation.title,
+        url: citation.url,
+        tier,
+      },
+    });
     const isMobile =
       typeof window !== 'undefined' &&
       window.matchMedia('(max-width: 480px)').matches;
@@ -3002,6 +3059,14 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       // ignore
     }
     trackEvent('clear_all', {});
+    const oldThreadId = threadIdRef.current;
+    threadIdRef.current = rotateThreadId();
+    postCopilotEvent({
+      kind: 'clear',
+      threadId: threadIdRef.current,
+      oldThreadId,
+      lang,
+    });
   };
   const onCopyTranscript = async () => {
     const lines: string[] = [];

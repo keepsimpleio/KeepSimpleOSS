@@ -1,6 +1,12 @@
 import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getToken } from 'next-auth/jwt';
 
+import {
+  ensureSession as logEnsureSession,
+  logTurn,
+  markAuthLink,
+} from '../../lib/copilotAnalytics';
 import {
   ANTHROPIC_KEY,
   ANTHROPIC_URL,
@@ -1355,6 +1361,7 @@ export default async function handler(
     recentCardUrls: rawRecentCardUrls,
     lastPick: rawLastPick,
     stream: wantsStream,
+    threadId: rawThreadId,
   } = (req.body ?? {}) as {
     text?: string;
     lang?: string;
@@ -1364,6 +1371,7 @@ export default async function handler(
     recentCardUrls?: unknown;
     lastPick?: unknown;
     stream?: boolean;
+    threadId?: string;
   };
   const streaming = wantsStream === true;
   const pageMeta: {
@@ -1599,7 +1607,77 @@ export default async function handler(
     res.setHeader('Connection', 'keep-alive');
     (res as unknown as { flushHeaders?: () => void }).flushHeaders?.();
   }
+  /* Thread id arrives from the widget — survives reloads, bumped on
+     CLEAR. Falls back to sid when the widget didn't send one (older
+     bundle) so analytics still groups properly. */
+  const threadId =
+    typeof rawThreadId === 'string' && rawThreadId ? rawThreadId : sid;
+
   const sendFinal = (payload: object) => {
+    /* Analytics fan-out — fire-and-forget. Every helper inside the
+       analytics module already handles its own try/catch and skips
+       silently when Strapi isn't configured, so the visitor is
+       never affected by a Strapi outage. */
+    try {
+      const p = payload as {
+        answer?: string;
+        citations?: unknown;
+        mode?: string;
+      };
+      logEnsureSession({
+        sid,
+        lang: userLang,
+        threadId,
+        userAgent:
+          typeof req.headers['user-agent'] === 'string'
+            ? req.headers['user-agent']
+            : undefined,
+        firstUrl: pageUrlRaw,
+      });
+      logTurn({
+        sid,
+        threadId,
+        kind: 'question',
+        query: userQuery,
+        pageUrl: pageUrlRaw,
+        pageTitle: pageMeta.title,
+      });
+      logTurn({
+        sid,
+        threadId,
+        kind: 'answer',
+        answer: typeof p.answer === 'string' ? p.answer : undefined,
+        cardsShown: Array.isArray(p.citations) ? p.citations : undefined,
+        mode: typeof p.mode === 'string' ? p.mode : undefined,
+        pageUrl: pageUrlRaw,
+        pageTitle: pageMeta.title,
+      });
+      void (async () => {
+        try {
+          const tok = await getToken({ req });
+          const userId =
+            (tok &&
+              ((tok as Record<string, unknown>).email ||
+                tok.sub ||
+                (tok as Record<string, unknown>).id)) ||
+            null;
+          if (userId && typeof userId === 'string') {
+            markAuthLink({
+              sid,
+              threadId,
+              user: userId.slice(0, 200),
+              pageUrl: pageUrlRaw,
+              pageTitle: pageMeta.title,
+            });
+          }
+        } catch {
+          /* next-auth not configured / token decode failed — silent */
+        }
+      })();
+    } catch (e) {
+      console.warn('[concierge] analytics fan-out failed:', e);
+    }
+
     if (streaming) {
       try {
         res.write(`event: done\ndata: ${JSON.stringify(payload)}\n\n`);

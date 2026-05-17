@@ -136,3 +136,24 @@ When the widget's in-panel "Begin Test" CTA (rendered on `/uxcat` only) is click
 `UXCatLayout` listens for that event and opens its `LogInModal` — the same modal the in-page begin-test CTA opens. After a successful login the visitor can start the test from there. Logged-in visitors get navigated to `/uxcat/start-test` directly.
 
 Reason: matching the in-page CTA behavior so the widget never sends a fresh visitor to a guarded URL that just bounces them back.
+
+## Analytics: Strapi session log
+
+Every Copilot session is mirrored into our existing Strapi as two collections — `copilot-sessions` (one row per visitor) and `copilot-turns` (one row per event). Full spec: `docs/copilot-analytics-strapi-spec.md`.
+
+How it's wired:
+
+- **Visitor identity (`sid`)** — http-only `aux_sid` cookie minted on the visitor's first `/api/concierge` (or `/api/copilot/event`) call. Survives 30 days, scoped to the keepsimple host.
+- **Conversation thread (`threadId`)** — generated client-side, persisted in `localStorage` so it survives reloads. Rotated on every CLEAR so transcripts naturally split into per-conversation blocks under the same `sid`.
+- **Question + answer turns** — logged server-side from inside `/api/concierge` after the response is built. The fan-out is fire-and-forget; visitor never waits.
+- **CLEAR and card clicks** — posted by the widget to `/api/copilot/event` (uses `sendBeacon` when available so card clicks that precede a navigation still land). That endpoint forwards to Strapi.
+- **Auth link** — on every Q&A turn and every widget event, the server checks for a NextAuth JWT via `getToken`. If a user is signed in and the session row isn't linked yet, it stamps `linkedUser` + `linkedAt` AND writes a `kind=auth` turn at that moment — so we see exactly when in the conversation the visitor signed up.
+
+Hard guarantees:
+
+- Strapi collections are prefixed `copilot-*` and the write-only token (`STRAPI_COPILOT_TOKEN`) is scoped strictly to them. Cannot touch any existing content type.
+- Never queried at build time; a Strapi outage cannot break a deploy.
+- Every write is in a try/catch; visitor reply never waits on Strapi.
+- When `STRAPI_COPILOT_TOKEN` is unset, the analytics module is fully inert (returns immediately, no fetch attempted) — useful for local dev.
+
+Where Wolf reads it: Strapi admin panel, filtered by `env=prod` for live calibration. No custom admin UI in v1.
