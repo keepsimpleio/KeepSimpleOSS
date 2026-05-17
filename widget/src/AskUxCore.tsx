@@ -26,6 +26,11 @@ type Turn = {
      because they're cheap (no LLM call) and visually thinner. */
   kind?: 'landing' | 'nav';
   navTitle?: string;
+  /* Stamped on curated landings (PAGE_LANDINGS) — lets per-page UI
+     (e.g. the UXCAT Begin-Test CTA) gate on the turn itself instead
+     of "is this the most-recent spatial turn", so a follow-up nav
+     turn doesn't strip the CTA off the still-on-page landing. */
+  landingKey?: string;
 };
 
 const STORAGE_KEY = 'ks_aux_state_v2';
@@ -2130,6 +2135,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
             isStreaming: true,
             kind: 'landing',
             navTitle: urlTitle || cleanPageTitle(rawTitle),
+            landingKey: curated.key,
           },
         ]);
         const { message, cards } = curated.entry;
@@ -2384,6 +2390,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
               isStreaming: true,
               answer: '',
               navTitle: resolvedTitle || next[idx].navTitle,
+              landingKey: curated.key,
             };
             return next;
           }
@@ -2399,6 +2406,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
               isStreaming: true,
               kind: 'landing',
               navTitle: resolvedTitle,
+              landingKey: curated.key,
             },
           ];
         });
@@ -3377,7 +3385,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
                     {!turn.isStreaming && !turn.error && (
                       <>
                         {turn.kind === 'landing' &&
-                          isCurrentSpatial &&
+                          turn.landingKey === '/uxcat' &&
                           onUxcatRoot && (
                             <div className="ks-aux-uxcat-cta">
                               <span className="ks-aux-uxcat-nudge">
