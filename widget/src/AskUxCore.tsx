@@ -287,7 +287,7 @@ const saveState = (state: Persisted) => {
 const TEXT: Record<Lang, Record<string, string>> = {
   en: {
     pillLabel: 'Ask anything',
-    pillLabelReturning: 'Your copilot is here',
+    pillLabelReturning: 'Your Copilot',
     relevancePrompt: 'Was this relevant?',
     placeholder: 'Ask anything about career, UX, decisions, biases…',
     send: 'Ask',
@@ -314,7 +314,7 @@ const TEXT: Record<Lang, Record<string, string>> = {
   },
   ru: {
     pillLabel: 'Спросите что угодно',
-    pillLabelReturning: 'Ваш copilot тут',
+    pillLabelReturning: 'Ваш Copilot',
     relevancePrompt: 'Это было полезно?',
     placeholder: 'Спросите про карьеру, UX, решения, искажения…',
     send: 'Спросить',
