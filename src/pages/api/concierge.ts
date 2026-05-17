@@ -523,6 +523,7 @@ CARD SELECTION:
 - Pick 2-3 cards your prose actually leans on. Return their integer indices in "used".
 - For EACH used card, return a one-line "why this" in the same-order "whys" array: ≤ 60 chars, written FOR the visitor (not us), explaining why THIS card matches THEIR question. No fluff, no "this is", no card title repeated. Examples: "the canonical anchoring entry", "where pricing pages get hit hardest", "specific to remote teams". Same language as the answer (EN if EN, RU if RU).
 - Skip any card whose URL matches the current page — the visitor is already there.
+- ZERO CARDS — META / CONVERSATIONAL TURNS: When the visitor's message is about HOW to use Copilot/the chat itself, a one-word ack, or pure conversational filler that doesn't ask for content or navigation, return "used":[] and "whys":[]. Examples: "so I just type my problem?", "how do I use this?", "what can you do?", "ok", "got it", "i see", "thanks", "cool", "alright". On these turns the visitor is engaging with what's already in front of them — cards push them sideways and undo that. Answer the meta question warmly, no cards.
 - First-turn / introductory questions → lean on surface cards (broad directions).
 - Specific questions → lean on the library entry that addresses the question. If retrieval returned strong matches, prefer those over surface cards.
 - VISITOR INTENT ALWAYS WINS — HARD RULE. If the visitor names a section, type, or destination explicitly ("articles", "podcast", "longevity", "AI Atlas", "UXCG", "biases", "management", "Bob", "personas") you MUST take them there. The project they happen to be standing in does not override what they just asked for. Cross-project pivots ARE the right move when intent is explicit.
@@ -639,6 +640,7 @@ const SYSTEM_RU = `Вы — команда keepsimple. Небольшая гру
 - Выберите 2-3 карточки, на которые ваша проза реально опирается. Верните их индексы в "used".
 - Для КАЖДОЙ использованной карточки верните одну строку в массиве "whys" в том же порядке: ≤ 60 символов, написано ДЛЯ ПОСЕТИТЕЛЯ (не для нас), объясняет почему ИМЕННО эта карточка подходит к ИХ вопросу. Без воды, без «это», без повтора заголовка. Примеры: «каноническая запись по якорению», «бьёт по страницам с ценами сильнее всего», «специфично для удалённых команд». Тот же язык, что и ответ.
 - Пропустите карточку, чей URL совпадает с текущей страницей — пользователь уже там.
+- НОЛЬ КАРТОЧЕК — МЕТА / РАЗГОВОРНЫЕ ХОДЫ: Когда реплика посетителя — про то, КАК пользоваться Copilot/чатом, односложное «ок/понял/спасибо», или чистая разговорная связка без запроса на контент или навигацию — верните "used":[] и "whys":[]. Примеры: «так мне просто написать проблему?», «как этим пользоваться?», «что ты умеешь?», «ок», «понял», «ясно», «спасибо», «круто», «ладно». На таких ходах посетитель работает с тем, что уже перед ним — карточки уводят в сторону и ломают это. Ответьте на мета-вопрос тепло, без карточек.
 - Первая реплика / знакомство → опирайтесь на surface-карточки (широкие направления).
 - Конкретный вопрос → опирайтесь на запись библиотеки, отвечающую на вопрос. При сильных совпадениях retrieval предпочитайте их surface-карточкам.
 - НАМЕРЕНИЕ ПОСЕТИТЕЛЯ ВСЕГДА ПОБЕЖДАЕТ — ЖЁСТКОЕ ПРАВИЛО. Если посетитель явно называет раздел, тип или направление («статьи», «podcast», «лонжевити», «AI Atlas», «UXCG», «искажения», «менеджмент», «Bob», «персоны») — вы ОБЯЗАНЫ повести его туда. Проект, в котором он сейчас стоит, не отменяет того, что он только что попросил. Кросс-проектные пивоты — это правильный ход, когда намерение явное.
@@ -855,6 +857,36 @@ function detectIntent(
     return { tag: 'spatial', mentioned };
   }
   return { tag: 'global', mentioned };
+}
+
+/* Meta-turn detector. Orthogonal to detectIntent: catches turns where
+   the visitor is engaging with the chat itself (how-to-use, "just
+   type?", "what can you do") or making a pure conversational move
+   ("ok", "got it", "thanks"). On these turns cards are noise — the
+   visitor isn't asking for navigation, and surfacing link-cards
+   pushes them sideways out of whatever they were focused on. Used
+   as a hard gate: when this fires, displayCitations is forced empty
+   regardless of what the LLM nominated. Patterns are deliberately
+   conservative — broader interpretation (e.g. "how does the test
+   work" on /uxcat) is left to the LLM-side ZERO-CARDS rule. */
+const META_PATTERNS: RegExp[] = [
+  /\b(just|simply)\s+(type|ask|write|enter|input)\b/i,
+  /\bi\s+(just\s+)?(type|ask|write|enter|input)\s+(my|the|here|it)\b/i,
+  /\b(so|then)\s+i\s+(just|should|need|have\s+to)\s+(type|ask|write|enter|input)\b/i,
+  /\bhow\s+do\s+i\s+use\s+(this|you|it|the\s+chat|copilot)\b/i,
+  /\bwhat\s+(can|do)\s+you\s+(do|help\s+with)\b/i,
+  /^\s*(ok(ay)?|k|got\s+it|gotcha|i\s+see|cool|thanks?|thank\s+you|alright|right|sure|nice|good|fine|fair)[\s.!?]*$/i,
+  /\b(просто|только)\s+(написать|спросить|задать|ввести|напечатать|вписать)\b/i,
+  /\b(так|тогда)\s+(я|мне)\s+(просто|должн|надо|нужно)\s*(написать|спросить|задать|ввести|напечатать)/i,
+  /\bчто\s+(ты|вы)\s+(умеешь|умеете|можешь|можете|делаешь|делаете)\b/i,
+  /\bкак\s+(этим|тобой|вами|чатом)\s+пользоваться\b/i,
+  /\bпрямо\s+(тут|здесь|сюда)\s+(писать|спрашивать|задавать)/i,
+  /^\s*(ок|окей|ясно|понял|поняла|спасибо|спс|круто|ага|угу|ладно|хорошо|норм|ок\.?)[\s.!?]*$/i,
+];
+function isMetaTurn(query: string): boolean {
+  const q = (query || '').trim();
+  if (q.length < 2) return false;
+  return META_PATTERNS.some(re => re.test(q));
 }
 
 /* Project bias — single source of truth for "what we want to surface
@@ -1669,6 +1701,21 @@ export default async function handler(
       citations: [],
       suggestions: decision.suggestions ?? [],
       mode: 'clarify',
+    });
+    return;
+  }
+
+  /* Meta-turn short-circuit: if the visitor's query is a how-to-use,
+     conversational filler, or pure ack, ship the prose with zero
+     cards — no fallback, no bias-mention safety net, nothing. The
+     LLM-side ZERO-CARDS rule normally handles this; this is the
+     belt-and-suspenders that kicks in when the LLM nominates anyway. */
+  if (isMetaTurn(userQuery)) {
+    sendFinal({
+      answer: decision.text,
+      citations: [],
+      suggestions: [],
+      mode: 'answer',
     });
     return;
   }
