@@ -157,3 +157,12 @@ Hard guarantees:
 - When `STRAPI_COPILOT_TOKEN` is unset, the analytics module is fully inert (returns immediately, no fetch attempted) — useful for local dev.
 
 Where Wolf reads it: Strapi admin panel, filtered by `env=prod` for live calibration. No custom admin UI in v1.
+
+## Safety layer
+
+`src/lib/copilotSafety.ts` adds four guardrails on every `/api/concierge` turn, gating BEFORE any retrieval or LLM call so blocked / at-capacity requests cost us nothing:
+
+1. **Daily cost ceiling.** `COPILOT_DAILY_BUDGET_USD` (default `$5`) × `COPILOT_AVG_CALL_USD` (default `$0.04`) decides when the breaker trips. Beyond the cap the visitor gets a polite "at capacity" reply; resets at UTC midnight. In-memory counter on the long-running container — fine for single-replica today; move to Redis once we scale horizontally.
+2. **Abuse moderation.** One OpenAI `omni-moderation-latest` call per question (~50–150ms, no cost). Hate / sex / self-harm / violence → polite refusal, no LLM spend, blocked turn logged with `meta.blocked=true` for review. Fails open if the moderation API is down or `OPENAI_API_KEY` is missing.
+3. **Prompt-injection hardening.** Every user-supplied or DOM-supplied block is wrapped in XML-ish fences (`<question>`, `<page>`, `<pageContent>`, `<history>`) and the system prompt's "INSTRUCTION SAFETY" rule treats anything inside those fences as DATA, never instructions. Visible attempts ("ignore previous instructions", role-switch demands, prompt-dumps) get a short on-brand pivot reply with no acknowledgement.
+4. **PII scrub on the Strapi log.** Emails, phone numbers, and likely card-number runs are masked (`[email]` / `[phone]` / `[cc]`) before `query`, `answer`, `cardsShown`, `cardClicked`, and `meta` reach Strapi. Applied at both `/api/concierge` and `/api/copilot/event` boundaries.

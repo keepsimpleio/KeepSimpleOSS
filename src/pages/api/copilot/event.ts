@@ -15,6 +15,7 @@ import {
   logTurn,
   markAuthLink,
 } from '@lib/copilotAnalytics';
+import { scrubAny } from '@lib/copilotSafety';
 
 const COOKIE_NAME = 'aux_sid';
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
@@ -106,10 +107,10 @@ export default async function handler(
         sid,
         threadId,
         kind: 'card_click',
-        cardClicked: body.cardClicked,
+        cardClicked: scrubAny(body.cardClicked),
         pageUrl: body.pageUrl,
         pageTitle: body.pageTitle,
-        meta: body.meta,
+        meta: scrubAny(body.meta),
       });
       break;
     }
@@ -120,7 +121,7 @@ export default async function handler(
         kind: 'nav',
         pageUrl: body.pageUrl,
         pageTitle: body.pageTitle,
-        meta: body.meta,
+        meta: scrubAny(body.meta),
       });
       break;
     }
