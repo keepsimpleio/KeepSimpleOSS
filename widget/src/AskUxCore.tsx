@@ -2278,35 +2278,80 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       title: document.title,
     };
 
-    /* Page-movement analytics. Every entry into a page fires a
-       page_view; every exit fires a dwell event with ms-on-page so
-       we can reconstruct visitor journeys and per-page attention in
-       the copilot-events store. */
-    const pageEnterAtRef = { current: Date.now() };
+    /* Page-movement analytics. Goals:
+       - dwell = real visible-time on a page before the visitor moves
+         within the site. Pure attention signal, no wall-clock idle.
+       - tab_close = its own event, with the same activeMs payload, so
+         the timeline can show "× closed tab after 32s active reading"
+         instead of a misleading 2-hour dwell.
+       Accumulation only ticks while document.visibilityState is
+       'visible' — hidden tabs do not inflate the number. */
+    const activeMsRef = { current: 0 };
+    const lastVisibleAtRef = {
+      current: document.visibilityState === 'visible' ? Date.now() : 0,
+    };
+    const sealedRef = { current: false };
+    const flushActive = () => {
+      if (lastVisibleAtRef.current > 0) {
+        activeMsRef.current += Date.now() - lastVisibleAtRef.current;
+        lastVisibleAtRef.current = 0;
+      }
+    };
+    const resetPageTimers = () => {
+      activeMsRef.current = 0;
+      lastVisibleAtRef.current =
+        document.visibilityState === 'visible' ? Date.now() : 0;
+      sealedRef.current = false;
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        lastVisibleAtRef.current = Date.now();
+      } else {
+        flushActive();
+      }
+    };
     const firePageView = () => {
-      pageEnterAtRef.current = Date.now();
+      resetPageTimers();
       postCopilotEvent({
         kind: 'page_view',
         threadId: threadIdRef.current,
         lang,
       });
     };
-    const fireDwell = (sealed: boolean) => {
-      const dwellMs = Math.max(0, Date.now() - pageEnterAtRef.current);
+    const fireDwell = () => {
+      flushActive();
+      const activeMs = activeMsRef.current;
       const lp = lastPageRef.current;
       if (!lp) return;
       /* Drop sub-half-second blips — those are router transitions or
          debounce-window false starts, not real attention. */
-      if (dwellMs < 500) return;
+      if (activeMs < 500) return;
       postCopilotEvent({
         kind: 'dwell',
         threadId: threadIdRef.current,
         lang,
         meta: {
-          dwellMs,
+          activeMs,
           pageUrl: lp.url,
           pageTitle: lp.title,
-          sealed,
+        },
+      });
+    };
+    const fireTabClose = () => {
+      if (sealedRef.current) return;
+      sealedRef.current = true;
+      flushActive();
+      const activeMs = activeMsRef.current;
+      const lp = lastPageRef.current;
+      if (!lp) return;
+      postCopilotEvent({
+        kind: 'tab_close',
+        threadId: threadIdRef.current,
+        lang,
+        meta: {
+          activeMs,
+          pageUrl: lp.url,
+          pageTitle: lp.title,
         },
       });
     };
@@ -2334,9 +2379,13 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       const title = document.title;
       const cleaned = cleanPageTitle(title);
       const lastCleaned = cleanPageTitle(lastPageRef.current?.title || '');
+      const lastUrl = lastPageRef.current?.url || '';
+      /* Title-only changes (loading dots, async updates) are not a
+         navigation — bail before we emit a dwell or swap state. */
+      if (url === lastUrl) return;
       const next = { url, title };
       /* Seal dwell on the OUTGOING page before we swap the ref. */
-      fireDwell(false);
+      fireDwell();
       lastPageRef.current = next;
       saveLastPage(next);
       if (!cleaned || cleaned === lastCleaned) return;
@@ -2413,13 +2462,14 @@ export function AskUxCore({ lang }: { lang: Lang }) {
 
     const onUnload = () => {
       if (lastPageRef.current) saveLastPage(lastPageRef.current);
-      /* Seal dwell on tab close / refresh. sendBeacon path inside
-         postCopilotEvent survives unload, so this final dwell still
-         reaches the server. */
-      fireDwell(true);
+      /* Emit tab_close (sealedRef guards against beforeunload +
+         pagehide both firing). sendBeacon path inside postCopilotEvent
+         survives unload. */
+      fireTabClose();
     };
     window.addEventListener('beforeunload', onUnload);
     window.addEventListener('pagehide', onUnload);
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       if (timer) clearTimeout(timer);
@@ -2428,6 +2478,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       window.removeEventListener('ks-aux-urlchange', onChange);
       window.removeEventListener('beforeunload', onUnload);
       window.removeEventListener('pagehide', onUnload);
+      document.removeEventListener('visibilitychange', onVisibility);
       document.removeEventListener('click', onDocClick, true);
       titleObs?.disconnect();
       window.history.pushState = origPush;

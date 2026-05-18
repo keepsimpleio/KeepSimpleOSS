@@ -61,6 +61,17 @@ function fmtDate(s: string): string {
   }
 }
 
+function fmtGap(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ${s % 60}s`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ${m % 60}m`;
+  const d = Math.floor(h / 24);
+  return `${d}d ${h % 24}h`;
+}
+
 function payloadGet<T = unknown>(
   p: Record<string, unknown> | null,
   key: string,
@@ -137,14 +148,27 @@ function renderEventBody(e: EventRow) {
         </div>
       );
     case 'dwell': {
-      const ms = payloadGet<number>(p, 'dwellMs') ?? 0;
-      const sealed = payloadGet<boolean>(p, 'sealed');
+      /* activeMs is the new visible-only counter. dwellMs is the
+         legacy wall-clock value still present in older rows. */
+      const ms =
+        payloadGet<number>(p, 'activeMs') ??
+        payloadGet<number>(p, 'dwellMs') ??
+        0;
       const pageUrl = payloadGet<string>(p, 'pageUrl');
       return (
         <div className={styles.eventBody}>
-          spent <strong>{(ms / 1000).toFixed(1)}s</strong> on{' '}
+          read <strong>{(ms / 1000).toFixed(1)}s</strong> on{' '}
           {String(payloadGet(p, 'pageTitle') ?? pageUrl ?? '—')}
-          {sealed && <> · sealed (tab close)</>}
+        </div>
+      );
+    }
+    case 'tab_close': {
+      const ms = payloadGet<number>(p, 'activeMs') ?? 0;
+      const pageUrl = payloadGet<string>(p, 'pageUrl');
+      return (
+        <div className={styles.eventBody}>
+          closed tab after <strong>{(ms / 1000).toFixed(1)}s</strong> on{' '}
+          {String(payloadGet(p, 'pageTitle') ?? pageUrl ?? '—')}
         </div>
       );
     }
@@ -187,6 +211,34 @@ export default function CopilotSessionDetail({ sid, payload }: Props) {
   }
   const { session, events: rawEvents } = parsed;
   const events = rawEvents.filter(e => e.kind !== 'session_start');
+
+  /* A "return-after-close" gap is any pair where the visitor closed
+     the tab and came back later in the same session. We surface the
+     wall-clock distance between the tab_close and the next non-close
+     event as a banner row. Threshold avoids flagging refresh-loops. */
+  const GAP_THRESHOLD_MS = 60_000;
+  type GapRow = {
+    kind: 'gap';
+    id: string;
+    afterId: number;
+    deltaMs: number;
+  };
+  const gaps: GapRow[] = [];
+  for (let i = 0; i < events.length - 1; i += 1) {
+    const a = events[i];
+    const b = events[i + 1];
+    if (a.kind !== 'tab_close') continue;
+    const delta = new Date(b.ts).getTime() - new Date(a.ts).getTime();
+    if (Number.isFinite(delta) && delta >= GAP_THRESHOLD_MS) {
+      gaps.push({
+        kind: 'gap',
+        id: `gap-${a.id}`,
+        afterId: a.id,
+        deltaMs: delta,
+      });
+    }
+  }
+  const gapByAfter = new Map(gaps.map(g => [g.afterId, g] as const));
 
   return (
     <>
@@ -247,19 +299,29 @@ export default function CopilotSessionDetail({ sid, payload }: Props) {
               <div className={styles.empty}>No events yet.</div>
             ) : (
               <div className={styles.events}>
-                {events.map(e => (
-                  <div
-                    key={e.id}
-                    className={`${styles.event} ${styles[e.kind] ?? ''}`}
-                  >
-                    <div className={styles.eventHead}>
-                      <span className={styles.mono}>{fmtTs(e.ts)}</span>{' '}
-                      <span className={styles.kind}>{e.kind}</span>
-                      {e.page_title && <span>· {e.page_title}</span>}
+                {events.map(e => {
+                  const gap = gapByAfter.get(e.id);
+                  return (
+                    <div key={e.id}>
+                      <div
+                        className={`${styles.event} ${styles[e.kind] ?? ''}`}
+                      >
+                        <div className={styles.eventHead}>
+                          <span className={styles.mono}>{fmtTs(e.ts)}</span>{' '}
+                          <span className={styles.kind}>{e.kind}</span>
+                          {e.page_title && <span>· {e.page_title}</span>}
+                        </div>
+                        {renderEventBody(e)}
+                      </div>
+                      {gap && (
+                        <div className={styles.gap}>
+                          ↺ returned <strong>{fmtGap(gap.deltaMs)}</strong>{' '}
+                          later
+                        </div>
+                      )}
                     </div>
-                    {renderEventBody(e)}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </>

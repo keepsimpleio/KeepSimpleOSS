@@ -18,6 +18,7 @@ export type EventKind =
   | 'nav'
   | 'page_view'
   | 'dwell'
+  | 'tab_close'
   | 'outbound_click';
 
 type TrackInput = {
