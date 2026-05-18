@@ -188,25 +188,25 @@ export default function CopilotSessionDetail({
 
         {!session ? (
           <div className={styles.empty}>
-            Session not found (id <code>{sid}</code>). Could be the read token
-            isn’t configured, or the sid never logged an event.
-            {debug && (
-              <pre
-                style={{
-                  marginTop: 16,
-                  textAlign: 'left',
-                  fontSize: 11,
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-all',
-                  color: '#555',
-                  background: '#fafafa',
-                  padding: 10,
-                  borderRadius: 6,
-                }}
-              >
-                {debug}
-              </pre>
-            )}
+            <div style={{ fontWeight: 600, marginBottom: 8 }}>
+              DBG-v3 — Session not found (id <code>{sid}</code>)
+            </div>
+            <pre
+              style={{
+                marginTop: 16,
+                textAlign: 'left',
+                fontSize: 11,
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+                color: '#222',
+                background: '#fff7f0',
+                border: '1px solid #d8a368',
+                padding: 10,
+                borderRadius: 6,
+              }}
+            >
+              {debug ?? '(no debug field — lib returned undefined)'}
+            </pre>
           </div>
         ) : (
           <>
