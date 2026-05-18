@@ -111,10 +111,10 @@ indices:
 
 ## 5. Environment variables
 
-| Var                          | Where  | Notes                                                   |
-| ---------------------------- | ------ | ------------------------------------------------------- |
-| `COPILOT_EVENTS_URL`         | server | e.g. `http://127.0.0.1:5046` (DEV), set per environment |
-| `COPILOT_EVENTS_WRITE_TOKEN` | server | Bearer token for `POST /track`. Inert when unset.       |
+| Var                          | Where  | Notes                                                                                          |
+| ---------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
+| `COPILOT_EVENTS_URL`         | server | DEV: `http://127.0.0.1:5046`. Staging + prod: `https://copilot-events.administration.ae`.      |
+| `COPILOT_EVENTS_WRITE_TOKEN` | server | Bearer token for `POST /track`. Same token value across envs (set per-host). Inert when unset. |
 
 Both are SERVER-ONLY — never `NEXT_PUBLIC_*`. The widget never talks to the copilot-events service directly; it always goes through `/api/copilot/event` so the token stays on the server.
 
