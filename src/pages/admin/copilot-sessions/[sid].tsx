@@ -164,8 +164,6 @@ function renderEventBody(e: EventRow) {
           widget nav chip → {e.page_title || e.page_url || '—'}
         </div>
       );
-    case 'session_start':
-      return null;
     default:
       return (
         <div className={styles.eventBody}>
@@ -187,7 +185,8 @@ export default function CopilotSessionDetail({ sid, payload }: Props) {
   } catch {
     parsed = { session: null, events: [], debug: 'parse-error', libRev: '?' };
   }
-  const { session, events } = parsed;
+  const { session, events: rawEvents } = parsed;
+  const events = rawEvents.filter(e => e.kind !== 'session_start');
 
   return (
     <>
