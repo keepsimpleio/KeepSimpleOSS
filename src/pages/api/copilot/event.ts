@@ -117,6 +117,7 @@ export default async function handler(
     case 'nav':
     case 'page_view':
     case 'dwell':
+    case 'tab_close':
     case 'outbound_click': {
       logTurn({
         sid,
