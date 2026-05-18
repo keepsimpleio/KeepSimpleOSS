@@ -15,13 +15,8 @@ import {
 import styles from './index.module.scss';
 
 type Props = {
-  session: SessionRow | null;
-  events: EventRow[];
   sid: string;
-  debug?: string | null;
-  libKeys?: string;
-  libRev?: string;
-  resultDump?: string;
+  payload: string;
 };
 
 function isDevHost(): boolean {
@@ -35,41 +30,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
   const sid = typeof sidRaw === 'string' ? sidRaw : '';
   if (!sid) return { notFound: true };
   const result = await getSessionDetail(sid);
-  /* Next.js silently drops props whose object graph contains any
-     unserializable value (Date, BigInt, undefined-nested). Round-trip
-     through JSON.stringify so what reaches the page is guaranteed
-     clean. */
-  const sanitize = <T,>(v: T): T => JSON.parse(JSON.stringify(v ?? null)) as T;
-  const session = sanitize(result.session);
-  const events = sanitize(result.events);
-  const debug = result.debug;
-  const libKeys = Object.keys(result).join(',');
-  /* Dump the whole result for diagnosis — page shows it verbatim when
-     session is null. Limit size so we don't blow up the wire. */
-  const resultDump = JSON.stringify(
-    {
-      sessionType: typeof session,
-      sessionIsNull: session === null,
-      sessionKeys: session ? Object.keys(session) : null,
-      sessionSample: session,
-      eventsCount: Array.isArray(events) ? events.length : 'not-array',
-      debugType: typeof debug,
-      debugValue: debug,
-    },
-    null,
-    2,
-  ).slice(0, 2000);
-  return {
-    props: {
-      session,
-      events,
-      sid,
-      debug: debug ?? null,
-      libKeys,
-      libRev: READ_LIB_REVISION,
-      resultDump,
-    },
-  };
+  /* Bypass Next.js prop serialization entirely. We pass one string
+     prop and parse it on the page. This sidesteps the issue where
+     Next.js was silently dropping the session + events object props
+     for reasons we couldn't pin down. */
+  const payload = JSON.stringify({
+    session: result.session ?? null,
+    events: result.events ?? [],
+    debug: result.debug ?? null,
+    libRev: READ_LIB_REVISION,
+  });
+  return { props: { sid, payload } };
 };
 
 function fmtTs(s: string): string {
@@ -204,15 +175,20 @@ function renderEventBody(e: EventRow) {
   }
 }
 
-export default function CopilotSessionDetail({
-  session,
-  events,
-  sid,
-  debug,
-  libKeys,
-  libRev,
-  resultDump,
-}: Props) {
+export default function CopilotSessionDetail({ sid, payload }: Props) {
+  let parsed: {
+    session: SessionRow | null;
+    events: EventRow[];
+    debug: string | null;
+    libRev: string;
+  };
+  try {
+    parsed = JSON.parse(payload);
+  } catch {
+    parsed = { session: null, events: [], debug: 'parse-error', libRev: '?' };
+  }
+  const { session, events } = parsed;
+
   return (
     <>
       <Head>
@@ -229,38 +205,7 @@ export default function CopilotSessionDetail({
 
         {!session ? (
           <div className={styles.empty}>
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>
-              DBG-v6 — Session not found (id <code>{sid}</code>)
-            </div>
-            <pre
-              style={{
-                marginTop: 16,
-                textAlign: 'left',
-                fontSize: 11,
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all',
-                color: '#222',
-                background: '#fff7f0',
-                border: '1px solid #d8a368',
-                padding: 10,
-                borderRadius: 6,
-              }}
-            >
-              libRev = {libRev ?? '(undef)'}
-              {'\n'}libKeys = {libKeys ?? '(undef)'}
-              {'\n'}debug = {debug ?? '(undef)'}
-              {'\n'}--- IN-RENDER PROPS ---
-              {'\n'}typeof session = {typeof session}
-              {'\n'}session === null = {String(session === null)}
-              {'\n'}session === undefined = {String(session === undefined)}
-              {'\n'}Boolean(session) = {String(Boolean(session))}
-              {'\n'}session?.session_id ={' '}
-              {String(session?.session_id ?? 'NONE')}
-              {'\n'}JSON.stringify(session) ={' '}
-              {JSON.stringify(session)?.slice(0, 200)}
-              {'\n\n--- raw result from getSessionDetail (GSSP-side) ---\n'}
-              {resultDump ?? '(no resultDump)'}
-            </pre>
+            Session not found (id <code>{sid}</code>).
           </div>
         ) : (
           <>
