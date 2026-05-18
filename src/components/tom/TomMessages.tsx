@@ -47,7 +47,7 @@ const TomMessages: FC<Props> = ({ messages, isLoading }) => {
           >
             {msg.role === 'assistant' && (
               <img
-                src="/keepsimple_/assets/tom/tom_img.png"
+                src="/assets/tom/tom_img.png"
                 alt="Tom"
                 className={styles.avatar}
               />
@@ -115,7 +115,7 @@ const TomMessages: FC<Props> = ({ messages, isLoading }) => {
             !messages[messages.length - 1]?.content)) && (
           <div className={`${styles.row} ${styles.rowBot}`}>
             <img
-              src="/keepsimple_/assets/tom/tom_img.png"
+              src="/assets/tom/tom_img.png"
               alt="Tom"
               className={styles.avatar}
             />

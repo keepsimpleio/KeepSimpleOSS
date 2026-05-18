@@ -83,6 +83,38 @@
   margin: 0;
 }
 
+.banner {
+  width: 100%;
+  max-width: 780px;
+  margin: 12px auto 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  background: rgba(220, 80, 80, 0.08);
+  border: 1px solid rgba(220, 80, 80, 0.35);
+  color: var(--tom-text);
+}
+
+.bannerClose {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
 /* ── Tablet ── */
 @media (max-width: 1140px) {
   .root {

@@ -11,9 +11,13 @@ import type { TomAttachment } from './types';
 
 import styles from './TomInput.module.scss';
 
+const MAX_CHARS = 4000;
+const COUNTER_VISIBLE_AT = 3500;
+
 interface Props {
   onSend: (content: string, attachments?: TomAttachment[]) => void;
   disabled: boolean;
+  disabledReason?: string;
 }
 
 function uid() {
@@ -22,7 +26,7 @@ function uid() {
 
 const ACCEPTED = 'image/png,image/jpeg,image/gif,image/webp,text/plain,.txt';
 
-const TomInput: FC<Props> = ({ onSend, disabled }) => {
+const TomInput: FC<Props> = ({ onSend, disabled, disabledReason }) => {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<TomAttachment[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -65,13 +69,15 @@ const TomInput: FC<Props> = ({ onSend, disabled }) => {
     setAttachments(prev => prev.filter(a => a.id !== id));
   };
 
+  const canSubmit =
+    !disabled && text.trim().length > 0 && text.length <= MAX_CHARS;
+
   const handleSubmit = (e?: FormEvent) => {
     e?.preventDefault();
-    if (disabled || (!text.trim() && attachments.length === 0)) return;
+    if (!canSubmit) return;
     onSend(text, attachments.length > 0 ? attachments : undefined);
     setText('');
     setAttachments([]);
-    // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
@@ -104,9 +110,17 @@ const TomInput: FC<Props> = ({ onSend, disabled }) => {
     el.style.height = Math.min(el.scrollHeight, 150) + 'px';
   };
 
+  const handleTextChange = (value: string) => {
+    // Hard-cap at MAX_CHARS so a paste of 10k characters can't ever bypass.
+    setText(value.length > MAX_CHARS ? value.slice(0, MAX_CHARS) : value);
+    autoResize();
+  };
+
+  const showCounter = text.length >= COUNTER_VISIBLE_AT;
+  const overLimit = text.length >= MAX_CHARS;
+
   return (
     <div className={styles.wrapper}>
-      {/* Attachment previews */}
       {attachments.length > 0 && (
         <div className={styles.previews}>
           {attachments.map(a => (
@@ -155,12 +169,12 @@ const TomInput: FC<Props> = ({ onSend, disabled }) => {
       )}
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        {/* Attach button */}
         <button
           type="button"
           className={styles.attachBtn}
           onClick={() => fileRef.current?.click()}
           title="Attach image or .txt file"
+          disabled={disabled}
         >
           <svg
             width="20"
@@ -192,22 +206,20 @@ const TomInput: FC<Props> = ({ onSend, disabled }) => {
           ref={textareaRef}
           className={styles.textarea}
           value={text}
-          onChange={e => {
-            setText(e.target.value);
-            autoResize();
-          }}
+          onChange={e => handleTextChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          placeholder="Ask anything..."
+          placeholder={disabledReason ?? 'Ask anything...'}
           rows={1}
+          maxLength={MAX_CHARS}
           disabled={disabled}
+          aria-invalid={overLimit || undefined}
         />
 
-        {/* Send button */}
         <button
           type="submit"
-          className={`${styles.sendBtn} ${text.trim() || attachments.length ? styles.sendActive : ''}`}
-          disabled={disabled || (!text.trim() && attachments.length === 0)}
+          className={`${styles.sendBtn} ${canSubmit ? styles.sendActive : ''}`}
+          disabled={!canSubmit}
           title="Send message"
         >
           <svg
@@ -226,9 +238,17 @@ const TomInput: FC<Props> = ({ onSend, disabled }) => {
         </button>
       </form>
 
-      <p className={styles.disclaimer}>
-        AI may make mistakes. Last 5 messages kept in context.
-      </p>
+      <div className={styles.footer}>
+        <p className={styles.disclaimer}>AI may make mistakes.</p>
+        {showCounter && (
+          <span
+            className={`${styles.counter} ${overLimit ? styles.counterOver : ''}`}
+            aria-live="polite"
+          >
+            {text.length} / {MAX_CHARS}
+          </span>
+        )}
+      </div>
     </div>
   );
 };

@@ -41,7 +41,7 @@ const TomSidebar: FC<Props> = ({
         <div className={styles.header}>
           <div className={styles.identity}>
             <img
-              src="/keepsimple_/assets/tom/tom_img.png"
+              src="/assets/tom/tom_img.png"
               alt="Tom"
               className={styles.avatar}
             />
@@ -73,7 +73,7 @@ const TomSidebar: FC<Props> = ({
           className={styles.newChat}
           onClick={onNewChat}
           disabled={!canCreateChat}
-          title={canCreateChat ? 'New Chat' : 'Daily limit reached (5/day)'}
+          title="New Chat"
         >
           <svg
             width="16"
@@ -143,7 +143,9 @@ const ChatItem: FC<{
       className={styles.deleteBtn}
       onClick={e => {
         e.stopPropagation();
-        onDelete(chat.id);
+        if (window.confirm('Delete this chat? This cannot be undone.')) {
+          onDelete(chat.id);
+        }
       }}
       title="Delete chat"
     >

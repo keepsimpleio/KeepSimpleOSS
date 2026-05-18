@@ -15,15 +15,18 @@ const TomChat: FC = () => {
     recentChats,
     canCreateChat,
     isLoading,
+    isFeatureDisabled,
+    isDailyCapped,
+    lastError,
     createChat,
     selectChat,
     deleteChat,
     sendMessage,
+    dismissError,
   } = useTomChat();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Auto-close sidebar on mobile
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 768px)');
     if (mq.matches) setSidebarOpen(false);
@@ -36,7 +39,6 @@ const TomChat: FC = () => {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  // Close sidebar on mobile when selecting a chat
   const handleSelectChat = (id: string) => {
     selectChat(id);
     if (window.innerWidth <= 768) setSidebarOpen(false);
@@ -47,7 +49,34 @@ const TomChat: FC = () => {
     if (window.innerWidth <= 768) setSidebarOpen(false);
   };
 
+  if (isFeatureDisabled) {
+    return (
+      <div className={`tom-root ${styles.root}`}>
+        <div className={styles.main}>
+          <div className={styles.welcome}>
+            <img
+              src="/assets/tom/tom_img.png"
+              alt="Friendly Tom"
+              className={styles.welcomeAvatar}
+            />
+            <h1 className={styles.welcomeTitle}>Friendly Tom</h1>
+            <p className={styles.welcomeSubtitle}>Because you matter</p>
+            <p className={styles.welcomeTagline}>
+              Longevity GPT is not available on your account yet.
+              <br />
+              Check back soon.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const hasMessages = activeChat && activeChat.messages.length > 0;
+  // Per Strapi feature-flag guidance: render entry point optimistically on
+  // first load — only a real 403 should disable. So isInitializing is not in
+  // this gate; it flows to the disabled-screen takeover via isFeatureDisabled.
+  const inputDisabled = isLoading || isDailyCapped;
 
   return (
     <div className={`tom-root ${styles.root}`}>
@@ -65,7 +94,6 @@ const TomChat: FC = () => {
       />
 
       <div className={styles.main}>
-        {/* Sidebar toggle when collapsed */}
         {!sidebarOpen && (
           <button
             className={styles.mobileToggle}
@@ -88,13 +116,25 @@ const TomChat: FC = () => {
           </button>
         )}
 
-        {/* Messages when chatting, welcome screen otherwise */}
+        {lastError && (
+          <div className={styles.banner} role="alert">
+            <span>{lastError.message}</span>
+            <button
+              className={styles.bannerClose}
+              onClick={dismissError}
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {hasMessages ? (
           <TomMessages messages={activeChat.messages} isLoading={isLoading} />
         ) : (
           <div className={styles.welcome}>
             <img
-              src="/keepsimple_/assets/tom/tom_img.png"
+              src="/assets/tom/tom_img.png"
               alt="Friendly Tom"
               className={styles.welcomeAvatar}
             />
@@ -108,8 +148,15 @@ const TomChat: FC = () => {
           </div>
         )}
 
-        {/* Input is ALWAYS visible */}
-        <TomInput onSend={sendMessage} disabled={isLoading} />
+        <TomInput
+          onSend={sendMessage}
+          disabled={inputDisabled}
+          disabledReason={
+            isDailyCapped
+              ? "You've reached today's message limit. Come back tomorrow."
+              : undefined
+          }
+        />
       </div>
     </div>
   );

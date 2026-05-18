@@ -1,68 +1,97 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import {
+  createTomChat,
+  deleteTomChat,
+  getTomChatHistory,
+  listTomChats,
+  sendTomMessage,
+  tomErrorCopy,
+  TomGptErrorCode,
+} from '@api/tomGpt';
+
 import type { TomAttachment, TomChat, TomMessage } from './types';
 
-const STORAGE_KEY = 'tom-chats';
-const MAX_CHATS_TODAY = 5;
-const MAX_RECENT = 20;
-const CONTEXT_WINDOW = 5;
+const MESSAGE_MAX = 4000;
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function parseCreatedAt(s: string): number {
+  const t = Date.parse(s);
+  return Number.isFinite(t) ? t : Date.now();
 }
 
 function startOfDay(d = new Date()) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
-function load(): TomChat[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch {
-    return [];
-  }
+function defaultTitleFor(createdAt: number): string {
+  return new Date(createdAt).toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
-function persist(chats: TomChat[]) {
-  // Strip large base64 dataUrls from image attachments before storing
-  const light = chats.map(c => ({
-    ...c,
-    messages: c.messages.map(m => ({
-      ...m,
-      attachments: m.attachments?.map(a =>
-        a.type === 'image' ? { ...a, dataUrl: '', name: a.name } : a,
-      ),
-    })),
-  }));
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(light));
-  } catch {
-    // localStorage full — silently fail
-  }
+export interface TransientError {
+  code: TomGptErrorCode;
+  message: string;
 }
 
 export default function useTomChat() {
   const [chats, setChats] = useState<TomChat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFeatureDisabled, setIsFeatureDisabled] = useState(false);
+  const [isDailyCapped, setIsDailyCapped] = useState(false);
+  const [lastError, setLastError] = useState<TransientError | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  // Keep a ref so streaming callbacks see fresh chats
   const chatsRef = useRef(chats);
   chatsRef.current = chats;
 
-  useEffect(() => {
-    setChats(load());
+  // Any 403 reached: treat the feature as off for this session.
+  const handleErrorCode = useCallback((code: TomGptErrorCode) => {
+    if (code === 'FEATURE_DISABLED') setIsFeatureDisabled(true);
   }, []);
 
-  // Persist on change (skip initial empty state)
-  const mounted = useRef(false);
+  // Fetch the chat list once on mount.
   useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-      return;
-    }
-    persist(chats);
-  }, [chats]);
+    let cancelled = false;
+    (async () => {
+      const res = await listTomChats();
+      if (cancelled) return;
+      if ('code' in res) {
+        handleErrorCode(res.code);
+        if (res.code !== 'FEATURE_DISABLED') {
+          setLastError({ code: res.code, message: tomErrorCopy(res.code) });
+        }
+        setIsInitializing(false);
+        return;
+      }
+      const items = [...res.data.chats]
+        .map(c => {
+          const ts = parseCreatedAt(c.createdAt);
+          return {
+            id: c.chatId,
+            title: defaultTitleFor(ts),
+            messages: [],
+            createdAt: ts,
+            updatedAt: ts,
+            historyLoaded: false,
+          } as TomChat;
+        })
+        .sort((a, b) => b.updatedAt - a.updatedAt);
+      setChats(items);
+      setIsInitializing(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [handleErrorCode]);
 
   const activeChat = chats.find(c => c.id === activeChatId) ?? null;
 
@@ -70,139 +99,141 @@ export default function useTomChat() {
   const todayChats = chats
     .filter(c => c.createdAt >= todayStart)
     .sort((a, b) => b.updatedAt - a.updatedAt);
-
   const recentChats = chats
     .filter(c => c.createdAt < todayStart)
-    .sort((a, b) => b.updatedAt - a.updatedAt)
-    .slice(0, MAX_RECENT);
+    .sort((a, b) => b.updatedAt - a.updatedAt);
 
-  const canCreateChat = todayChats.length < MAX_CHATS_TODAY;
+  const canInteract = !isFeatureDisabled && !isInitializing;
+  const canCreateChat = canInteract;
 
-  const createChat = useCallback(() => {
-    if (!canCreateChat) return null;
+  const createChat = useCallback(async (): Promise<TomChat | null> => {
+    if (!canInteract) return null;
+    const res = await createTomChat();
+    if ('code' in res) {
+      handleErrorCode(res.code);
+      if (res.code !== 'FEATURE_DISABLED') {
+        setLastError({ code: res.code, message: tomErrorCopy(res.code) });
+      }
+      return null;
+    }
+    const now = Date.now();
     const chat: TomChat = {
-      id: uid(),
-      title: 'New Chat',
+      id: res.data.chatId,
+      title: defaultTitleFor(now),
       messages: [],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: now,
+      updatedAt: now,
+      historyLoaded: true, // freshly created — only the seed message exists, which we hide
     };
     setChats(prev => [chat, ...prev]);
     setActiveChatId(chat.id);
     return chat;
-  }, [canCreateChat]);
+  }, [canInteract, handleErrorCode]);
 
-  const selectChat = useCallback((id: string) => {
-    setActiveChatId(id);
-  }, []);
+  // Pull full history for a chat and hydrate its messages. System messages
+  // and empty-content items (legacy KB-seed input_file etc.) are dropped;
+  // we additionally skip the leading assistant welcome message that v1
+  // seeds on conversation create. v2 returns an empty array for new chats
+  // so this filter is a no-op there.
+  const loadHistory = useCallback(
+    async (chatId: string) => {
+      const res = await getTomChatHistory(chatId);
+      if ('code' in res) {
+        handleErrorCode(res.code);
+        if (res.code !== 'FEATURE_DISABLED') {
+          setLastError({ code: res.code, message: tomErrorCopy(res.code) });
+        }
+        return;
+      }
+      const visible: TomMessage[] = [];
+      let droppedSeedAssistant = false;
+      for (const item of res.data.messages) {
+        if (item.role === 'system') continue;
+        const text = item.content;
+        if (!text) continue;
+        if (
+          !droppedSeedAssistant &&
+          item.role === 'assistant' &&
+          visible.length === 0
+        ) {
+          droppedSeedAssistant = true;
+          continue;
+        }
+        visible.push({
+          id: uid(),
+          role: item.role as 'user' | 'assistant',
+          content: text,
+          timestamp: Date.now(),
+        });
+      }
+      setChats(prev =>
+        prev.map(c => {
+          if (c.id !== chatId) return c;
+          const firstUser = visible.find(m => m.role === 'user');
+          return {
+            ...c,
+            messages: visible,
+            title: firstUser ? firstUser.content.slice(0, 50) : c.title,
+            historyLoaded: true,
+          };
+        }),
+      );
+    },
+    [handleErrorCode],
+  );
+
+  const selectChat = useCallback(
+    (id: string) => {
+      setActiveChatId(id);
+      const target = chatsRef.current.find(c => c.id === id);
+      if (target && !target.historyLoaded) loadHistory(id);
+    },
+    [loadHistory],
+  );
 
   const deleteChat = useCallback(
-    (id: string) => {
+    async (id: string) => {
+      // Optimistic removal; restore if the server rejects with anything other
+      // than 404 (404 means it's already gone — treat as success).
+      const previous = chatsRef.current;
       setChats(prev => prev.filter(c => c.id !== id));
       if (activeChatId === id) setActiveChatId(null);
+
+      const res = await deleteTomChat(id);
+      if ('code' in res && res.code !== 'CHAT_NOT_FOUND') {
+        handleErrorCode(res.code);
+        if (res.code !== 'FEATURE_DISABLED') {
+          setLastError({ code: res.code, message: tomErrorCopy(res.code) });
+        }
+        setChats(previous);
+      }
     },
-    [activeChatId],
+    [activeChatId, handleErrorCode],
   );
 
   const sendMessage = useCallback(
     async (content: string, attachments?: TomAttachment[]) => {
-      const hasContent = content.trim().length > 0;
-      const hasAttachments = attachments && attachments.length > 0;
-      if (!hasContent && !hasAttachments) return;
+      const trimmed = content.trim();
+      if (!trimmed) return; // Backend requires non-empty `message`.
+      if (trimmed.length > MESSAGE_MAX) return; // Input enforces this too.
+      if (!canInteract || isDailyCapped) return;
 
-      // Auto-create a chat if none is active
+      // Auto-create a conversation if none is active.
       let chatId = activeChatId;
       if (!chatId) {
-        if (!canCreateChat) return;
-        const title = hasContent
-          ? content.trim().slice(0, 50)
-          : `Image: ${attachments![0].name}`;
-        const newChat: TomChat = {
-          id: uid(),
-          title,
-          messages: [],
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        };
-        setChats(prev => [newChat, ...prev]);
-        setActiveChatId(newChat.id);
+        const newChat = await createChat();
+        if (!newChat) return;
         chatId = newChat.id;
       }
 
       const userMsg: TomMessage = {
         id: uid(),
         role: 'user',
-        content: content.trim(),
+        content: trimmed,
         timestamp: Date.now(),
+        // Attachments are kept client-side only until backend support lands.
         attachments: attachments?.length ? attachments : undefined,
       };
-
-      // Add user message and update title if first message
-      setChats(prev =>
-        prev.map(c => {
-          if (c.id !== chatId) return c;
-          return {
-            ...c,
-            messages: [...c.messages, userMsg],
-            title:
-              c.messages.length === 0
-                ? hasContent
-                  ? content.trim().slice(0, 50)
-                  : `Image: ${attachments![0].name}`
-                : c.title,
-            updatedAt: Date.now(),
-          };
-        }),
-      );
-
-      setIsLoading(true);
-
-      // Build context — last N messages
-      const chat = chatsRef.current.find(c => c.id === chatId);
-      const allMsgs = [...(chat?.messages ?? []), userMsg];
-      const contextMessages = allMsgs.slice(-CONTEXT_WINDOW).map(m => {
-        // If message has image attachments, include them for vision
-        if (m.attachments?.some(a => a.type === 'image')) {
-          const parts: Array<
-            | { type: 'text'; text: string }
-            | { type: 'image_url'; image_url: { url: string; detail?: string } }
-          > = [
-            {
-              type: 'text',
-              text: m.content || 'What do you think about this image?',
-            },
-          ];
-          m.attachments
-            .filter(a => a.type === 'image')
-            .forEach(a => {
-              parts.push({
-                type: 'image_url',
-                image_url: { url: a.dataUrl, detail: 'auto' },
-              });
-            });
-          // Include text file content inline
-          m.attachments
-            .filter(a => a.type === 'text')
-            .forEach(a => {
-              parts.push({
-                type: 'text',
-                text: `[File: ${a.name}]\n${a.content}`,
-              });
-            });
-          return { role: m.role, content: parts };
-        }
-        // Text-only or text file attachments
-        let text = m.content;
-        if (m.attachments?.some(a => a.type === 'text')) {
-          m.attachments
-            .filter(a => a.type === 'text')
-            .forEach(a => {
-              text += `\n\n[File: ${a.name}]\n${a.content}`;
-            });
-        }
-        return { role: m.role, content: text };
-      });
-
       const assistantMsg: TomMessage = {
         id: uid(),
         role: 'assistant',
@@ -210,97 +241,76 @@ export default function useTomChat() {
         timestamp: Date.now(),
       };
 
-      // Add placeholder assistant message
       setChats(prev =>
         prev.map(c => {
           if (c.id !== chatId) return c;
           return {
             ...c,
-            messages: [...c.messages, assistantMsg],
+            messages: [...c.messages, userMsg, assistantMsg],
+            title: c.messages.length === 0 ? trimmed.slice(0, 50) : c.title,
             updatedAt: Date.now(),
           };
         }),
       );
 
-      try {
-        const res = await fetch('/api/tom/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: contextMessages }),
-        });
+      setIsLoading(true);
 
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
-        }
-
-        const reader = res.body?.getReader();
-        if (!reader) throw new Error('No stream reader');
-
-        const decoder = new TextDecoder();
-        let accumulated = '';
-        let sseBuffer = '';
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          sseBuffer += decoder.decode(value, { stream: true });
-          const lines = sseBuffer.split('\n');
-          sseBuffer = lines.pop() || '';
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || !trimmed.startsWith('data: ')) continue;
-            const data = trimmed.slice(6);
-            if (data === '[DONE]') break;
-
-            try {
-              const { content: token } = JSON.parse(data);
-              if (token) {
-                accumulated += token;
-                const text = accumulated; // capture for closure
-                setChats(prev =>
-                  prev.map(c => {
-                    if (c.id !== chatId) return c;
-                    return {
-                      ...c,
-                      messages: c.messages.map(m =>
-                        m.id === assistantMsg.id ? { ...m, content: text } : m,
-                      ),
-                    };
-                  }),
-                );
-              }
-            } catch {
-              // skip
-            }
+      // Stream consumer. Yields incremental `delta` events terminated by
+      // `done` or `error`.
+      let accumulated = '';
+      for await (const ev of sendTomMessage(chatId, trimmed)) {
+        if (ev.type === 'delta') {
+          accumulated += ev.text;
+          setChats(prev =>
+            prev.map(c => {
+              if (c.id !== chatId) return c;
+              return {
+                ...c,
+                messages: c.messages.map(m =>
+                  m.id === assistantMsg.id ? { ...m, content: accumulated } : m,
+                ),
+              };
+            }),
+          );
+        } else if (ev.type === 'error') {
+          handleErrorCode(ev.code);
+          const message = ev.message || tomErrorCopy(ev.code);
+          if (ev.code !== 'FEATURE_DISABLED') {
+            setLastError({ code: ev.code, message });
           }
+          if (ev.code === 'RATE_LIMITED') setIsDailyCapped(true);
+          setChats(prev =>
+            prev.map(c => {
+              if (c.id !== chatId) return c;
+              return {
+                ...c,
+                messages: c.messages.map(m =>
+                  m.id === assistantMsg.id
+                    ? {
+                        ...m,
+                        content: accumulated || message,
+                        errored: true,
+                      }
+                    : m,
+                ),
+              };
+            }),
+          );
+        } else if (ev.type === 'done') {
+          setChats(prev =>
+            prev.map(c =>
+              c.id === chatId ? { ...c, updatedAt: Date.now() } : c,
+            ),
+          );
         }
-      } catch (err) {
-        console.error('Tom chat error:', err);
-        setChats(prev =>
-          prev.map(c => {
-            if (c.id !== chatId) return c;
-            return {
-              ...c,
-              messages: c.messages.map(m =>
-                m.id === assistantMsg.id
-                  ? {
-                      ...m,
-                      content:
-                        'Sorry, I had trouble responding. Please try again.',
-                    }
-                  : m,
-              ),
-            };
-          }),
-        );
-      } finally {
-        setIsLoading(false);
       }
+
+      setIsLoading(false);
     },
-    [activeChatId, canCreateChat],
+    [activeChatId, canInteract, createChat, handleErrorCode, isDailyCapped],
   );
+
+  const dismissError = useCallback(() => setLastError(null), []);
 
   return {
     chats,
@@ -310,9 +320,14 @@ export default function useTomChat() {
     recentChats,
     canCreateChat,
     isLoading,
+    isInitializing,
+    isFeatureDisabled,
+    isDailyCapped,
+    lastError,
     createChat,
     selectChat,
     deleteChat,
     sendMessage,
+    dismissError,
   };
 }
