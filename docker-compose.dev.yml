@@ -1,0 +1,39 @@
+# Wolf's Server staging preview for the merged KeepSimpleOSS (KS+UX Core).
+# Bind-mounts source, runs next dev so edits go live without rebuild.
+# Single Next.js app — no path-split — so HMR works cleanly through CF Access.
+
+services:
+  keepsimple-merged-dev:
+    image: node:20.19.0
+    container_name: keepsimple-merged-dev
+    working_dir: /app
+    command: ["sh", "-c", "[ -d node_modules/.bin ] || yarn install --frozen-lockfile; yarn dev -- -H 0.0.0.0"]
+    cpus: 4.0
+    mem_limit: 6g
+    mem_reservation: 3g
+    volumes:
+      - /home/wolf/projects/keepsimple-merged:/app
+      - keepsimple-merged-modules:/app/node_modules
+      - keepsimple-merged-next:/app/.next
+    ports:
+      - "127.0.0.1:5044:3005"
+    environment:
+      NODE_ENV: development
+      APP_ENV: local
+      # Override the localhost default in .env so NextAuth callbacks use the
+      # public hostname behind cloudflared instead of bouncing back to a port
+      # that's only reachable inside the container.
+      NEXTAUTH_URL: "https://keepsimple.administration.ae"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3005/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+volumes:
+  keepsimple-merged-modules:
+  keepsimple-merged-next:
