@@ -316,12 +316,19 @@ export function trackEvent(
   }
 }
 
-/* Server-side transcript logger. Posts non-Q&A events (clears, card
-   clicks, nav, explicit auth pings) to /api/copilot/event, which
-   forwards to Strapi. Q&A events are logged server-side from inside
-   /api/concierge so the widget doesn't fire them twice. Fire-and-
-   forget — failures never affect the visitor. */
-export type CopilotEventKind = 'clear' | 'card_click' | 'nav' | 'auth_probe';
+/* Server-side transcript logger. Posts non-Q&A events to
+   /api/copilot/event, which forwards to the copilot-events service
+   (Postgres-backed, sibling container). Q&A events are logged
+   server-side from inside /api/concierge so the widget doesn't fire
+   them twice. Fire-and-forget — failures never affect the visitor. */
+export type CopilotEventKind =
+  | 'clear'
+  | 'card_click'
+  | 'nav'
+  | 'page_view'
+  | 'dwell'
+  | 'outbound_click'
+  | 'auth_probe';
 
 export function postCopilotEvent(payload: {
   kind: CopilotEventKind;

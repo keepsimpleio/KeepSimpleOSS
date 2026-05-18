@@ -1535,9 +1535,9 @@ export default async function handler(
   const moderation = await isSafeInput(userQuery);
   if (!moderation.safe) {
     /* Best-effort analytics: record the blocked turn so we can see
-       abuse patterns in Strapi. Server-side cookie sid is in place
-       but the threadId hasn't been threaded yet at this point — fine,
-       fall back to sid as the thread key. */
+       abuse patterns in copilot-events. Server-side cookie sid is in
+       place but the threadId hasn't been threaded yet at this point
+       — fine, fall back to sid as the thread key. */
     try {
       logTurn({
         sid,
@@ -1699,8 +1699,8 @@ export default async function handler(
   const sendFinal = (payload: object) => {
     /* Analytics fan-out — fire-and-forget. Every helper inside the
        analytics module already handles its own try/catch and skips
-       silently when Strapi isn't configured, so the visitor is
-       never affected by a Strapi outage. */
+       silently when copilot-events isn't configured, so the visitor
+       is never affected by an analytics-service outage. */
     try {
       const p = payload as {
         answer?: string;
@@ -1717,11 +1717,11 @@ export default async function handler(
             : undefined,
         firstUrl: pageUrlRaw,
       });
-      /* PII scrub before every Strapi write. Visitors paste emails,
-         phone numbers, occasionally card-like digit runs into the
-         chat — none of that belongs in a long-lived transcript log.
-         Mask once at the boundary; the answer/cards rarely contain
-         PII but pass through the same filter for symmetry. */
+      /* PII scrub before every analytics write. Visitors paste
+         emails, phone numbers, occasionally card-like digit runs into
+         the chat — none of that belongs in a long-lived transcript
+         log. Mask once at the boundary; the answer/cards rarely
+         contain PII but pass through the same filter for symmetry. */
       logTurn({
         sid,
         threadId,

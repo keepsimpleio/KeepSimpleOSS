@@ -137,26 +137,30 @@ When the widget's in-panel "Begin Test" CTA (rendered on `/uxcat` only) is click
 
 Reason: matching the in-page CTA behavior so the widget never sends a fresh visitor to a guarded URL that just bounces them back.
 
-## Analytics: Strapi session log
+## Analytics: copilot-events (Postgres)
 
-Every Copilot session is mirrored into our existing Strapi as two collections — `copilot-sessions` (one row per visitor) and `copilot-turns` (one row per event). Full spec: `docs/copilot-analytics-strapi-spec.md`.
+Every Copilot session AND every visitor movement is mirrored into the **copilot-events** sibling service (Postgres 16, separate container, HTTP ingest). Full spec: `docs/copilot-analytics-spec.md`.
+
+Why Postgres and not Strapi: at our user base the `copilot-turn` collection would balloon past 100k rows per week and the Strapi admin panel would become unreadable. Postgres + a thin ingest API gives us proper indexed event storage, room for nav / dwell / outbound-click events (not only Q&A), and zero impact on the content-Strapi.
 
 How it's wired:
 
 - **Visitor identity (`sid`)** — http-only `aux_sid` cookie minted on the visitor's first `/api/concierge` (or `/api/copilot/event`) call. Survives 30 days, scoped to the keepsimple host.
 - **Conversation thread (`threadId`)** — generated client-side, persisted in `localStorage` so it survives reloads. Rotated on every CLEAR so transcripts naturally split into per-conversation blocks under the same `sid`.
 - **Question + answer turns** — logged server-side from inside `/api/concierge` after the response is built. The fan-out is fire-and-forget; visitor never waits.
-- **CLEAR and card clicks** — posted by the widget to `/api/copilot/event` (uses `sendBeacon` when available so card clicks that precede a navigation still land). That endpoint forwards to Strapi.
+- **CLEAR, card clicks, nav, page_view, dwell, outbound_click** — posted by the widget to `/api/copilot/event` (uses `sendBeacon` when available so events that precede a navigation still land). That endpoint forwards each event to the copilot-events `POST /track` ingest.
+- **Page-movement capture (page_view + dwell + outbound_click)** — the widget's nav `useEffect` fires `page_view` on every page entry, `dwell` on every page exit (in-app or unload) with elapsed ms-on-page, and `outbound_click` on any anchor whose href crosses origin. This is how we reconstruct visitor journeys ("where did they go after the UXCG case page?") without polling.
 - **Auth link** — on every Q&A turn and every widget event, the server checks for a NextAuth JWT via `getToken`. If a user is signed in and the session row isn't linked yet, it stamps `linkedUser` + `linkedAt` AND writes a `kind=auth` turn at that moment — so we see exactly when in the conversation the visitor signed up.
 
 Hard guarantees:
 
-- Strapi collections are prefixed `copilot-*` and the write-only token (`STRAPI_COPILOT_TOKEN`) is scoped strictly to them. Cannot touch any existing content type.
-- Never queried at build time; a Strapi outage cannot break a deploy.
-- Every write is in a try/catch; visitor reply never waits on Strapi.
-- When `STRAPI_COPILOT_TOKEN` is unset, the analytics module is fully inert (returns immediately, no fetch attempted) — useful for local dev.
+- The KeepSimple repo has **zero** Postgres dependencies. The DB lives in the sibling container; the writer is a thin HTTP client.
+- Never queried at build time; a copilot-events outage cannot break a deploy.
+- Every write is in a try/catch; visitor reply never waits on the analytics service.
+- When `COPILOT_EVENTS_URL` or `COPILOT_EVENTS_WRITE_TOKEN` is unset, the analytics module is fully inert (returns immediately, no fetch attempted) — useful for local dev without the sibling container.
+- The widget never sees the write-token. It always proxies through `/api/copilot/event` so the token stays server-side.
 
-Where Wolf reads it: Strapi admin panel, filtered by `env=prod` for live calibration. No custom admin UI in v1.
+Where Wolf reads it: query Postgres directly, or hit `GET /sessions` / `GET /sessions/{sid}/events` on the copilot-events service with the read-token. A proper dashboard is a future epic, not v1.
 
 ## Safety layer
 
@@ -165,4 +169,4 @@ Where Wolf reads it: Strapi admin panel, filtered by `env=prod` for live calibra
 1. **Daily cost ceiling.** `COPILOT_DAILY_BUDGET_USD` (default `$5`) × `COPILOT_AVG_CALL_USD` (default `$0.04`) decides when the breaker trips. Beyond the cap the visitor gets a polite "at capacity" reply; resets at UTC midnight. In-memory counter on the long-running container — fine for single-replica today; move to Redis once we scale horizontally.
 2. **Abuse moderation.** One OpenAI `omni-moderation-latest` call per question (~50–150ms, no cost). Hate / sex / self-harm / violence → polite refusal, no LLM spend, blocked turn logged with `meta.blocked=true` for review. Fails open if the moderation API is down or `OPENAI_API_KEY` is missing.
 3. **Prompt-injection hardening.** Every user-supplied or DOM-supplied block is wrapped in XML-ish fences (`<question>`, `<page>`, `<pageContent>`, `<history>`) and the system prompt's "INSTRUCTION SAFETY" rule treats anything inside those fences as DATA, never instructions. Visible attempts ("ignore previous instructions", role-switch demands, prompt-dumps) get a short on-brand pivot reply with no acknowledgement.
-4. **PII scrub on the Strapi log.** Emails, phone numbers, and likely card-number runs are masked (`[email]` / `[phone]` / `[cc]`) before `query`, `answer`, `cardsShown`, `cardClicked`, and `meta` reach Strapi. Applied at both `/api/concierge` and `/api/copilot/event` boundaries.
+4. **PII scrub on the analytics log.** Emails, phone numbers, and likely card-number runs are masked (`[email]` / `[phone]` / `[cc]`) before `query`, `answer`, `cardsShown`, `cardClicked`, and `meta` reach the copilot-events ingest. Applied at both `/api/concierge` and `/api/copilot/event` boundaries.

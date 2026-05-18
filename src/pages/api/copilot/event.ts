@@ -1,9 +1,9 @@
-/* Widget-side event endpoint for non-Q&A signals: card_click, clear,
-   nav, and explicit auth pings. The visitor's Q&A turns are logged
-   from inside /api/concierge after the response is built — this
-   endpoint covers everything that doesn't pass through there.
-   All work is fire-and-forget; we always reply 204 quickly so the
-   widget never waits. */
+/* Widget-side event endpoint for non-Q&A signals: clears, card
+   clicks, nav, page_view, dwell, outbound clicks, explicit auth pings.
+   The visitor's Q&A turns are logged server-side from inside
+   /api/concierge after the response is built — this endpoint covers
+   everything that doesn't pass through there. All work is fire-and-
+   forget; we always reply 204 quickly so the widget never waits. */
 
 import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -110,18 +110,21 @@ export default async function handler(
         cardClicked: scrubAny(body.cardClicked),
         pageUrl: body.pageUrl,
         pageTitle: body.pageTitle,
-        meta: scrubAny(body.meta),
+        meta: scrubAny(body.meta) as Record<string, unknown> | undefined,
       });
       break;
     }
-    case 'nav': {
+    case 'nav':
+    case 'page_view':
+    case 'dwell':
+    case 'outbound_click': {
       logTurn({
         sid,
         threadId,
-        kind: 'nav',
+        kind: body.kind,
         pageUrl: body.pageUrl,
         pageTitle: body.pageTitle,
-        meta: scrubAny(body.meta),
+        meta: scrubAny(body.meta) as Record<string, unknown> | undefined,
       });
       break;
     }

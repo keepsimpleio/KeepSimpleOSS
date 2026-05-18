@@ -2278,6 +2278,39 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       title: document.title,
     };
 
+    /* Page-movement analytics. Every entry into a page fires a
+       page_view; every exit fires a dwell event with ms-on-page so
+       we can reconstruct visitor journeys and per-page attention in
+       the copilot-events store. */
+    const pageEnterAtRef = { current: Date.now() };
+    const firePageView = () => {
+      pageEnterAtRef.current = Date.now();
+      postCopilotEvent({
+        kind: 'page_view',
+        threadId: threadIdRef.current,
+        lang,
+      });
+    };
+    const fireDwell = (sealed: boolean) => {
+      const dwellMs = Math.max(0, Date.now() - pageEnterAtRef.current);
+      const lp = lastPageRef.current;
+      if (!lp) return;
+      /* Drop sub-half-second blips — those are router transitions or
+         debounce-window false starts, not real attention. */
+      if (dwellMs < 500) return;
+      postCopilotEvent({
+        kind: 'dwell',
+        threadId: threadIdRef.current,
+        lang,
+        meta: {
+          dwellMs,
+          pageUrl: lp.url,
+          pageTitle: lp.title,
+          sealed,
+        },
+      });
+    };
+
     /* Mount-time cross-page diff. Skip when pendingLanding is set —
        landing effect handles that hop. */
     const prior = loadLastPage();
@@ -2293,6 +2326,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     }
     lastPageRef.current = currentPage;
     saveLastPage(currentPage);
+    firePageView();
 
     let timer: ReturnType<typeof setTimeout> | null = null;
     const check = () => {
@@ -2301,6 +2335,8 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       const cleaned = cleanPageTitle(title);
       const lastCleaned = cleanPageTitle(lastPageRef.current?.title || '');
       const next = { url, title };
+      /* Seal dwell on the OUTGOING page before we swap the ref. */
+      fireDwell(false);
       lastPageRef.current = next;
       saveLastPage(next);
       if (!cleaned || cleaned === lastCleaned) return;
@@ -2311,7 +2347,39 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       setRecommendedQ(harvestRecommendedQuestion());
       appendNav(title);
       fireOrganicLanding(url, title);
+      firePageView();
     };
+
+    /* Outbound-link capture: when the visitor clicks an anchor whose
+       href points to a different origin, log it so we can see where
+       they go after KeepSimple. Same-origin clicks are covered by the
+       page_view event that fires on the destination. */
+    const onDocClick = (e: MouseEvent) => {
+      try {
+        const t = e.target;
+        if (!(t instanceof Element)) return;
+        const a = t.closest('a[href]') as HTMLAnchorElement | null;
+        if (!a) return;
+        const href = a.href;
+        if (!href || href.startsWith('javascript:')) return;
+        const u = new URL(href, window.location.href);
+        if (u.origin === window.location.origin) return;
+        const anchorText = (a.textContent || '').trim().slice(0, 200);
+        postCopilotEvent({
+          kind: 'outbound_click',
+          threadId: threadIdRef.current,
+          lang,
+          meta: {
+            href: u.href.slice(0, 500),
+            anchorText,
+            target: a.target || '_self',
+          },
+        });
+      } catch {
+        /* never block the click */
+      }
+    };
+    document.addEventListener('click', onDocClick, true);
     const onChange = () => {
       if (timer) clearTimeout(timer);
       /* Debounce — title often lags URL by a frame in client-side
@@ -2345,6 +2413,10 @@ export function AskUxCore({ lang }: { lang: Lang }) {
 
     const onUnload = () => {
       if (lastPageRef.current) saveLastPage(lastPageRef.current);
+      /* Seal dwell on tab close / refresh. sendBeacon path inside
+         postCopilotEvent survives unload, so this final dwell still
+         reaches the server. */
+      fireDwell(true);
     };
     window.addEventListener('beforeunload', onUnload);
     window.addEventListener('pagehide', onUnload);
@@ -2356,6 +2428,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       window.removeEventListener('ks-aux-urlchange', onChange);
       window.removeEventListener('beforeunload', onUnload);
       window.removeEventListener('pagehide', onUnload);
+      document.removeEventListener('click', onDocClick, true);
       titleObs?.disconnect();
       window.history.pushState = origPush;
       window.history.replaceState = origReplace;
