@@ -4,9 +4,17 @@
   z-index: 999;
   padding-bottom: 20px;
   position: relative;
+  background-color: #ecdbba;
 
-  .img {
+  .video {
     position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
   }
   .heading {
     padding-top: 20px;
@@ -51,8 +59,9 @@
     width: unset;
     height: unset;
     padding-bottom: unset;
+    background-color: transparent;
 
-    .img {
+    .video {
       display: none;
     }
     .heading {

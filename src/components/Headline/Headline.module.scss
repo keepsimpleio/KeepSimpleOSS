@@ -206,7 +206,21 @@
 
 .darkTheme {
   .serenityBtn {
-    color: #252626;
+    color: #fafafa;
+  }
+
+  .leaf {
+    filter: brightness(0) invert(1);
+  }
+
+  .headlineInfo {
+    .contributors {
+      color: #fafafa;
+
+      &::after {
+        filter: brightness(0) invert(1);
+      }
+    }
   }
 
   .contentWrapper {
@@ -215,7 +229,7 @@
       p,
       a,
       span {
-        color: rgb(0, 0, 0);
+        color: #fafafa;
       }
     }
   }
@@ -223,7 +237,12 @@
   .socialMedia {
     .btn {
       background-color: unset;
-      color: rgb(0, 0, 0);
+      color: #fafafa;
+      border: 1px solid #fafafa;
+    }
+
+    a img {
+      filter: invert(1);
     }
   }
 }
@@ -369,7 +388,7 @@
         p,
         a,
         span {
-          color: #ffffffd9;
+          color: #fafafa;
         }
       }
     }
@@ -377,14 +396,18 @@
     .socialMedia {
       .btn {
         background-color: unset;
-        color: #ffffffd9;
-        border: 1px solid #ffffffd9;
+        color: #fafafa;
+        border: 1px solid #fafafa;
 
         &:hover {
-          background: #ffffffd9;
+          background: #fafafa;
           color: #000000;
-          border: 1px solid #ffffffd9;
+          border: 1px solid #fafafa;
         }
+      }
+
+      a img {
+        filter: invert(1);
       }
     }
   }
