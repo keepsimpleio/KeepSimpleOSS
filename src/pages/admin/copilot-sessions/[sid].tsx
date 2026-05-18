@@ -21,6 +21,7 @@ type Props = {
   debug?: string | null;
   libKeys?: string;
   libRev?: string;
+  resultDump?: string;
 };
 
 function isDevHost(): boolean {
@@ -36,6 +37,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
   const result = await getSessionDetail(sid);
   const { session, events, debug } = result;
   const libKeys = Object.keys(result).join(',');
+  /* Dump the whole result for diagnosis — page shows it verbatim when
+     session is null. Limit size so we don't blow up the wire. */
+  const resultDump = JSON.stringify(
+    {
+      sessionType: typeof session,
+      sessionIsNull: session === null,
+      sessionKeys: session ? Object.keys(session) : null,
+      sessionSample: session,
+      eventsCount: Array.isArray(events) ? events.length : 'not-array',
+      debugType: typeof debug,
+      debugValue: debug,
+    },
+    null,
+    2,
+  ).slice(0, 2000);
   return {
     props: {
       session,
@@ -44,6 +60,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
       debug: debug ?? null,
       libKeys,
       libRev: READ_LIB_REVISION,
+      resultDump,
     },
   };
 };
@@ -187,6 +204,7 @@ export default function CopilotSessionDetail({
   debug,
   libKeys,
   libRev,
+  resultDump,
 }: Props) {
   return (
     <>
@@ -205,7 +223,7 @@ export default function CopilotSessionDetail({
         {!session ? (
           <div className={styles.empty}>
             <div style={{ fontWeight: 600, marginBottom: 8 }}>
-              DBG-v4 — Session not found (id <code>{sid}</code>)
+              DBG-v5 — Session not found (id <code>{sid}</code>)
             </div>
             <pre
               style={{
@@ -221,10 +239,11 @@ export default function CopilotSessionDetail({
                 borderRadius: 6,
               }}
             >
-              libRev = {libRev ?? '(undefined — STALE LIB MODULE)'}
-              {'\n'}libKeys = {libKeys ?? '(undefined)'}
-              {'\n'}debug ={' '}
-              {debug ?? '(undefined — old lib without debug field)'}
+              libRev = {libRev ?? '(undef)'}
+              {'\n'}libKeys = {libKeys ?? '(undef)'}
+              {'\n'}debug = {debug ?? '(undef)'}
+              {'\n\n--- raw result from getSessionDetail ---\n'}
+              {resultDump ?? '(no resultDump)'}
             </pre>
           </div>
         ) : (
