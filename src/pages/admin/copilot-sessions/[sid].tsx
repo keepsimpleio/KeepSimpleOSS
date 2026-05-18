@@ -8,6 +8,7 @@ import Link from 'next/link';
 import {
   type EventRow,
   getSessionDetail,
+  READ_LIB_REVISION,
   type SessionRow,
 } from '@lib/copilotEventsRead';
 
@@ -18,6 +19,8 @@ type Props = {
   events: EventRow[];
   sid: string;
   debug?: string | null;
+  libKeys?: string;
+  libRev?: string;
 };
 
 function isDevHost(): boolean {
@@ -30,8 +33,19 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
   const sidRaw = ctx.params?.sid;
   const sid = typeof sidRaw === 'string' ? sidRaw : '';
   if (!sid) return { notFound: true };
-  const { session, events, debug } = await getSessionDetail(sid);
-  return { props: { session, events, sid, debug: debug ?? null } };
+  const result = await getSessionDetail(sid);
+  const { session, events, debug } = result;
+  const libKeys = Object.keys(result).join(',');
+  return {
+    props: {
+      session,
+      events,
+      sid,
+      debug: debug ?? null,
+      libKeys,
+      libRev: READ_LIB_REVISION,
+    },
+  };
 };
 
 function fmtTs(s: string): string {
@@ -171,6 +185,8 @@ export default function CopilotSessionDetail({
   events,
   sid,
   debug,
+  libKeys,
+  libRev,
 }: Props) {
   return (
     <>
@@ -189,7 +205,7 @@ export default function CopilotSessionDetail({
         {!session ? (
           <div className={styles.empty}>
             <div style={{ fontWeight: 600, marginBottom: 8 }}>
-              DBG-v3 — Session not found (id <code>{sid}</code>)
+              DBG-v4 — Session not found (id <code>{sid}</code>)
             </div>
             <pre
               style={{
@@ -205,7 +221,10 @@ export default function CopilotSessionDetail({
                 borderRadius: 6,
               }}
             >
-              {debug ?? '(no debug field — lib returned undefined)'}
+              libRev = {libRev ?? '(undefined — STALE LIB MODULE)'}
+              {'\n'}libKeys = {libKeys ?? '(undefined)'}
+              {'\n'}debug ={' '}
+              {debug ?? '(undefined — old lib without debug field)'}
             </pre>
           </div>
         ) : (

@@ -7,6 +7,11 @@ const BASE = (process.env.COPILOT_EVENTS_URL || '').replace(/\/+$/, '');
 const READ_TOKEN = process.env.COPILOT_EVENTS_READ_TOKEN || '';
 const TIMEOUT_MS = 6000;
 
+/* Bump this when the lib changes to force the Next.js dev cache to
+   re-resolve. Exported so the admin page can render it as a sanity
+   check that the module it imports really is the latest. */
+export const READ_LIB_REVISION = 'v4';
+
 export type SessionRow = {
   session_id: string;
   env: string;
