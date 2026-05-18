@@ -61,7 +61,7 @@ export async function listSessions(
     const j = (await r.json().catch(() => null)) as {
       sessions?: SessionRow[];
     } | null;
-    return Array.isArray(j?.sessions) ? j!.sessions : [];
+    return Array.isArray(j?.sessions) ? j!.sessions! : [];
   } catch {
     return [];
   } finally {

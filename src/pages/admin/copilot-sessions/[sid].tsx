@@ -35,7 +35,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
   const sid = typeof sidRaw === 'string' ? sidRaw : '';
   if (!sid) return { notFound: true };
   const result = await getSessionDetail(sid);
-  const { session, events, debug } = result;
+  /* Next.js silently drops props whose object graph contains any
+     unserializable value (Date, BigInt, undefined-nested). Round-trip
+     through JSON.stringify so what reaches the page is guaranteed
+     clean. */
+  const sanitize = <T,>(v: T): T => JSON.parse(JSON.stringify(v ?? null)) as T;
+  const session = sanitize(result.session);
+  const events = sanitize(result.events);
+  const debug = result.debug;
   const libKeys = Object.keys(result).join(',');
   /* Dump the whole result for diagnosis — page shows it verbatim when
      session is null. Limit size so we don't blow up the wire. */
