@@ -67,29 +67,57 @@ export async function listSessions(
 export async function getSessionDetail(sid: string): Promise<{
   session: SessionRow | null;
   events: EventRow[];
+  debug?: string;
 }> {
-  if (!copilotEventsReadEnabled()) return { session: null, events: [] };
+  if (!copilotEventsReadEnabled()) {
+    return {
+      session: null,
+      events: [],
+      debug: 'env not configured (BASE or READ_TOKEN missing)',
+    };
+  }
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const reqUrl = `${BASE}/sessions/${encodeURIComponent(sid)}/events`;
   try {
-    const r = await fetch(
-      `${BASE}/sessions/${encodeURIComponent(sid)}/events`,
-      {
-        headers: { Authorization: `Bearer ${READ_TOKEN}` },
-        signal: ctrl.signal,
-      },
-    );
-    if (!r.ok) return { session: null, events: [] };
-    const j = (await r.json().catch(() => null)) as {
-      session?: SessionRow;
-      events?: EventRow[];
-    } | null;
+    const r = await fetch(reqUrl, {
+      headers: { Authorization: `Bearer ${READ_TOKEN}` },
+      signal: ctrl.signal,
+    });
+    if (!r.ok) {
+      const body = await r.text().catch(() => '');
+      return {
+        session: null,
+        events: [],
+        debug: `GET ${reqUrl} → ${r.status} ${r.statusText} body=${body.slice(0, 200)}`,
+      };
+    }
+    const raw = await r.text();
+    let j: { session?: SessionRow; events?: EventRow[] } | null = null;
+    try {
+      j = JSON.parse(raw);
+    } catch {
+      return {
+        session: null,
+        events: [],
+        debug: `GET ${reqUrl} → 200 but non-JSON body=${raw.slice(0, 200)}`,
+      };
+    }
+    const session = j?.session ?? null;
+    const events = Array.isArray(j?.events) ? j!.events! : [];
     return {
-      session: j?.session ?? null,
-      events: Array.isArray(j?.events) ? j!.events : [],
+      session,
+      events,
+      debug: session
+        ? undefined
+        : `GET ${reqUrl} → 200 but session=null; events=${events.length}; raw=${raw.slice(0, 200)}`,
     };
-  } catch {
-    return { session: null, events: [] };
+  } catch (e) {
+    return {
+      session: null,
+      events: [],
+      debug: `GET ${reqUrl} threw: ${String(e).slice(0, 200)}`,
+    };
   } finally {
     clearTimeout(timer);
   }

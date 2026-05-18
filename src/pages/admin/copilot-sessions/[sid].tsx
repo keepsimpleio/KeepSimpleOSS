@@ -17,6 +17,7 @@ type Props = {
   session: SessionRow | null;
   events: EventRow[];
   sid: string;
+  debug?: string | null;
 };
 
 function isDevHost(): boolean {
@@ -29,8 +30,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
   const sidRaw = ctx.params?.sid;
   const sid = typeof sidRaw === 'string' ? sidRaw : '';
   if (!sid) return { notFound: true };
-  const { session, events } = await getSessionDetail(sid);
-  return { props: { session, events, sid } };
+  const { session, events, debug } = await getSessionDetail(sid);
+  return { props: { session, events, sid, debug: debug ?? null } };
 };
 
 function fmtTs(s: string): string {
@@ -165,7 +166,12 @@ function renderEventBody(e: EventRow) {
   }
 }
 
-export default function CopilotSessionDetail({ session, events, sid }: Props) {
+export default function CopilotSessionDetail({
+  session,
+  events,
+  sid,
+  debug,
+}: Props) {
   return (
     <>
       <Head>
@@ -184,6 +190,23 @@ export default function CopilotSessionDetail({ session, events, sid }: Props) {
           <div className={styles.empty}>
             Session not found (id <code>{sid}</code>). Could be the read token
             isn’t configured, or the sid never logged an event.
+            {debug && (
+              <pre
+                style={{
+                  marginTop: 16,
+                  textAlign: 'left',
+                  fontSize: 11,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-all',
+                  color: '#555',
+                  background: '#fafafa',
+                  padding: 10,
+                  borderRadius: 6,
+                }}
+              >
+                {debug}
+              </pre>
+            )}
           </div>
         ) : (
           <>
