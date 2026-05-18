@@ -223,7 +223,7 @@ export default function CopilotSessionDetail({
         {!session ? (
           <div className={styles.empty}>
             <div style={{ fontWeight: 600, marginBottom: 8 }}>
-              DBG-v5 — Session not found (id <code>{sid}</code>)
+              DBG-v6 — Session not found (id <code>{sid}</code>)
             </div>
             <pre
               style={{
@@ -242,7 +242,16 @@ export default function CopilotSessionDetail({
               libRev = {libRev ?? '(undef)'}
               {'\n'}libKeys = {libKeys ?? '(undef)'}
               {'\n'}debug = {debug ?? '(undef)'}
-              {'\n\n--- raw result from getSessionDetail ---\n'}
+              {'\n'}--- IN-RENDER PROPS ---
+              {'\n'}typeof session = {typeof session}
+              {'\n'}session === null = {String(session === null)}
+              {'\n'}session === undefined = {String(session === undefined)}
+              {'\n'}Boolean(session) = {String(Boolean(session))}
+              {'\n'}session?.session_id ={' '}
+              {String(session?.session_id ?? 'NONE')}
+              {'\n'}JSON.stringify(session) ={' '}
+              {JSON.stringify(session)?.slice(0, 200)}
+              {'\n\n--- raw result from getSessionDetail (GSSP-side) ---\n'}
               {resultDump ?? '(no resultDump)'}
             </pre>
           </div>
