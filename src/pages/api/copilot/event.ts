@@ -9,12 +9,7 @@ import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
-import {
-  bumpThread,
-  ensureSession,
-  logTurn,
-  markAuthLink,
-} from '@lib/copilotAnalytics';
+import { bumpThread, logTurn, markAuthLink } from '@lib/copilotAnalytics';
 import { scrubAny } from '@lib/copilotSafety';
 
 const COOKIE_NAME = 'aux_sid';
@@ -63,13 +58,15 @@ export default async function handler(
     typeof body.threadId === 'string' && body.threadId ? body.threadId : sid;
   const lang = (typeof body.lang === 'string' ? body.lang : 'en').slice(0, 3);
 
-  ensureSession({
-    sid,
-    lang,
-    threadId,
-    userAgent: req.headers['user-agent'],
-    firstUrl: typeof body.pageUrl === 'string' ? body.pageUrl : undefined,
-  });
+  /* Session-row metadata (lang / userAgent / firstUrl) is carried on
+     every track call below — the service COALESCEs whichever non-null
+     value arrives first into the session row. No dedicated
+     session_start event needed. */
+  const userAgent =
+    typeof req.headers['user-agent'] === 'string'
+      ? req.headers['user-agent']
+      : undefined;
+  const firstUrl = typeof body.pageUrl === 'string' ? body.pageUrl : undefined;
 
   /* NextAuth detection: getToken reads the JWT cookie without
      needing authOptions. If a user is signed in and we haven't
@@ -111,6 +108,9 @@ export default async function handler(
         pageUrl: body.pageUrl,
         pageTitle: body.pageTitle,
         meta: scrubAny(body.meta) as Record<string, unknown> | undefined,
+        lang,
+        userAgent,
+        firstUrl,
       });
       break;
     }
@@ -125,6 +125,9 @@ export default async function handler(
         pageUrl: body.pageUrl,
         pageTitle: body.pageTitle,
         meta: scrubAny(body.meta) as Record<string, unknown> | undefined,
+        lang,
+        userAgent,
+        firstUrl,
       });
       break;
     }

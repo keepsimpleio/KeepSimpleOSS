@@ -2,11 +2,7 @@ import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
-import {
-  ensureSession as logEnsureSession,
-  logTurn,
-  markAuthLink,
-} from '../../lib/copilotAnalytics';
+import { logTurn, markAuthLink } from '../../lib/copilotAnalytics';
 import {
   atCapacityMessage,
   budgetExhausted,
@@ -1707,21 +1703,18 @@ export default async function handler(
         citations?: unknown;
         mode?: string;
       };
-      logEnsureSession({
-        sid,
-        lang: userLang,
-        threadId,
-        userAgent:
-          typeof req.headers['user-agent'] === 'string'
-            ? req.headers['user-agent']
-            : undefined,
-        firstUrl: pageUrlRaw,
-      });
+      const ua =
+        typeof req.headers['user-agent'] === 'string'
+          ? req.headers['user-agent']
+          : undefined;
       /* PII scrub before every analytics write. Visitors paste
          emails, phone numbers, occasionally card-like digit runs into
          the chat — none of that belongs in a long-lived transcript
          log. Mask once at the boundary; the answer/cards rarely
-         contain PII but pass through the same filter for symmetry. */
+         contain PII but pass through the same filter for symmetry.
+         lang/userAgent/firstUrl ride along on every event so the
+         session row's COALESCE upsert seeds itself off the first
+         real turn — no dedicated session_start needed. */
       logTurn({
         sid,
         threadId,
@@ -1729,6 +1722,9 @@ export default async function handler(
         query: scrubPii(userQuery),
         pageUrl: pageUrlRaw,
         pageTitle: pageMeta.title,
+        lang: userLang,
+        userAgent: ua,
+        firstUrl: pageUrlRaw,
       });
       logTurn({
         sid,
@@ -1741,6 +1737,9 @@ export default async function handler(
         mode: typeof p.mode === 'string' ? p.mode : undefined,
         pageUrl: pageUrlRaw,
         pageTitle: pageMeta.title,
+        lang: userLang,
+        userAgent: ua,
+        firstUrl: pageUrlRaw,
       });
       void (async () => {
         try {

@@ -10,7 +10,6 @@
 */
 
 export type EventKind =
-  | 'session_start'
   | 'question'
   | 'answer'
   | 'clear'
@@ -47,12 +46,10 @@ type LogTurn = {
   pageTitle?: string;
   mode?: string;
   meta?: Record<string, unknown>;
-};
-
-type EnsureSession = {
-  sid: string;
-  lang: string;
-  threadId: string;
+  /* Optional session-row seed fields. The service does an UPSERT with
+     COALESCE on these, so passing them on every event is harmless —
+     the session row picks up whichever non-null arrives first. */
+  lang?: string;
   userAgent?: string;
   firstUrl?: string;
 };
@@ -102,20 +99,19 @@ async function track(ev: TrackInput): Promise<void> {
   }
 }
 
-/* First-touch metadata for a session. The copilot-events service
-   upserts the session row on any event, reading lang/userAgent/firstUrl
-   from the body — so we fire one explicit `session_start` event to
-   seed those columns cleanly. Idempotent on the service side. */
-export function ensureSession(opts: EnsureSession): void {
-  if (!enabled()) return;
-  void track({
-    sid: opts.sid,
-    threadId: opts.threadId,
-    kind: 'session_start',
-    lang: opts.lang,
-    userAgent: opts.userAgent,
-    firstUrl: opts.firstUrl,
-  });
+/* No-op kept as a backwards-compatible export. Session-row metadata
+   (lang / userAgent / firstUrl) is now seeded by the COALESCE upsert
+   inside the service on every event — no dedicated session_start
+   write needed. Call sites that already pass these to logTurn get the
+   same result without the timeline noise. */
+export function ensureSession(_opts: {
+  sid: string;
+  lang: string;
+  threadId: string;
+  userAgent?: string;
+  firstUrl?: string;
+}): void {
+  /* intentionally empty */
 }
 
 export function logTurn(opts: LogTurn): void {
@@ -136,6 +132,9 @@ export function logTurn(opts: LogTurn): void {
     ts: opts.ts,
     pageUrl: opts.pageUrl,
     pageTitle: opts.pageTitle,
+    lang: opts.lang,
+    userAgent: opts.userAgent,
+    firstUrl: opts.firstUrl,
     payload: Object.keys(payload).length > 0 ? payload : undefined,
   });
 }
