@@ -488,6 +488,19 @@ The `next.config.js` loads env from `.env.{APP_ENV}` (e.g., `.env.local`, `.env.
 
 ---
 
+## Commit Hygiene — never push noise
+
+Before every commit and before every push, audit `git status` and `git diff --cached --stat` and remove anything that doesn't belong in the change set. Specifically:
+
+- **Personal developer files** (`docker-compose.dev.yml`, `docker-compose.override.yml`, local `.env.*`, editor configs, scratch notes) MUST NOT be committed. They live only on the dev machine; the repo has no use for them.
+- **Working / scratch docs** under `/docs` are gitignored. Anything you want shared belongs in `README.md`, `AGENTS.md`, or a CLAUDE.md — not a loose markdown file in `/docs/`.
+- **Build output** (the widget bundle, `.next/`, `dist/`) is gitignored. If it shows up in `git status`, something is wrong with the build script, not the gitignore.
+- **Debug artifacts** (revision constants like `READ_LIB_REVISION = 'v4'`, console.logs left over from a debug session, no-op shim exports kept "for safety") get removed before the PR opens — they age into rot otherwise.
+
+If you find one of these staged or already committed in your branch, drop it with `git rm` (or `git restore --staged`) and add it to `.gitignore` so the next agent can't trip on it. The `.gitignore` is the durable fix; deleting the file alone is not.
+
+---
+
 ## Gotchas
 
 ### Case sensitivity

@@ -150,3 +150,13 @@ qa-runs/auth/
 /public/ask-ux-core-dev.js
 /widget/dist/
 /widget/node_modules/
+
+# Personal developer compose files — local-only, never commit.
+docker-compose.dev.yml
+docker-compose.override.yml
+
+# Working / scratch docs — keep out of the repo by default.
+# (Anything tracked under /docs that pre-dates this rule stays tracked;
+#  gitignore only blocks new untracked files. Move docs you want
+#  shared into README/AGENTS/CLAUDE.md or a dedicated published path.)
+/docs/

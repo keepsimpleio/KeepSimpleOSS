@@ -7,11 +7,6 @@ const BASE = (process.env.COPILOT_EVENTS_URL || '').replace(/\/+$/, '');
 const READ_TOKEN = process.env.COPILOT_EVENTS_READ_TOKEN || '';
 const TIMEOUT_MS = 6000;
 
-/* Bump this when the lib changes to force the Next.js dev cache to
-   re-resolve. Exported so the admin page can render it as a sanity
-   check that the module it imports really is the latest. */
-export const READ_LIB_REVISION = 'v4';
-
 export type SessionRow = {
   session_id: string;
   env: string;
@@ -69,6 +64,9 @@ export async function listSessions(
   }
 }
 
+/* Admin-only. Debug field contains the internal service URL plus
+   status/body slices; never expose this return value to a non-admin
+   caller. The /admin/copilot-sessions pages are env-gated. */
 export async function getSessionDetail(sid: string): Promise<{
   session: SessionRow | null;
   events: EventRow[];

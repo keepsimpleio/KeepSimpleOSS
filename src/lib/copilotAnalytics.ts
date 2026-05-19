@@ -100,21 +100,6 @@ async function track(ev: TrackInput): Promise<void> {
   }
 }
 
-/* No-op kept as a backwards-compatible export. Session-row metadata
-   (lang / userAgent / firstUrl) is now seeded by the COALESCE upsert
-   inside the service on every event — no dedicated session_start
-   write needed. Call sites that already pass these to logTurn get the
-   same result without the timeline noise. */
-export function ensureSession(_opts: {
-  sid: string;
-  lang: string;
-  threadId: string;
-  userAgent?: string;
-  firstUrl?: string;
-}): void {
-  /* intentionally empty */
-}
-
 export function logTurn(opts: LogTurn): void {
   if (!enabled()) return;
   const payload: Record<string, unknown> = {};

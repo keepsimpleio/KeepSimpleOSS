@@ -8,7 +8,6 @@ import Link from 'next/link';
 import {
   type EventRow,
   getSessionDetail,
-  READ_LIB_REVISION,
   type SessionRow,
 } from '@lib/copilotEventsRead';
 
@@ -38,7 +37,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
     session: result.session ?? null,
     events: result.events ?? [],
     debug: result.debug ?? null,
-    libRev: READ_LIB_REVISION,
   });
   return { props: { sid, payload } };
 };
@@ -202,12 +200,11 @@ export default function CopilotSessionDetail({ sid, payload }: Props) {
     session: SessionRow | null;
     events: EventRow[];
     debug: string | null;
-    libRev: string;
   };
   try {
     parsed = JSON.parse(payload);
   } catch {
-    parsed = { session: null, events: [], debug: 'parse-error', libRev: '?' };
+    parsed = { session: null, events: [], debug: 'parse-error' };
   }
   const { session, events: rawEvents } = parsed;
   const events = rawEvents.filter(e => e.kind !== 'session_start');

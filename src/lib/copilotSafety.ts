@@ -17,6 +17,11 @@ const DAILY_BUDGET_USD = Number(process.env.COPILOT_DAILY_BUDGET_USD || '5');
    cap trips a little early rather than overshooting the budget. */
 const AVG_CALL_USD = Number(process.env.COPILOT_AVG_CALL_USD || '0.04');
 
+/* Soft cap: in-process counter, single container, no shared store.
+   Resets on every restart (deploy, OOM, crash). Mid-day restart loses
+   the day's prior tally and the cap "fresh starts" for what remains.
+   Acceptable while traffic is low; revisit with Redis/Postgres if a
+   single day ever risks crossing the budget multiple times over. */
 const dailyCalls: Map<string, number> = new Map();
 
 function todayKey(): string {

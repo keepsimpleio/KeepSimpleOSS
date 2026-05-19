@@ -22,13 +22,23 @@ function readSid(req: NextApiRequest): string | null {
   return m ? m[1] : null;
 }
 
+function isHttps(req: NextApiRequest): boolean {
+  const xfp = req.headers['x-forwarded-proto'];
+  const proto = Array.isArray(xfp) ? xfp[0] : xfp;
+  if (proto === 'https') return true;
+  return Boolean(
+    (req.socket as { encrypted?: boolean } | undefined)?.encrypted,
+  );
+}
+
 function ensureSid(req: NextApiRequest, res: NextApiResponse): string {
   const existing = readSid(req);
   if (existing) return existing;
   const sid = randomUUID();
+  const secure = isHttps(req) ? '; Secure' : '';
   res.setHeader(
     'Set-Cookie',
-    `${COOKIE_NAME}=${sid}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${COOKIE_MAX_AGE}`,
+    `${COOKIE_NAME}=${sid}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${COOKIE_MAX_AGE}${secure}`,
   );
   return sid;
 }

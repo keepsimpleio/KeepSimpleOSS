@@ -327,8 +327,8 @@ export type CopilotEventKind =
   | 'nav'
   | 'page_view'
   | 'dwell'
-  | 'outbound_click'
-  | 'auth_probe';
+  | 'tab_close'
+  | 'outbound_click';
 
 export function postCopilotEvent(payload: {
   kind: CopilotEventKind;
