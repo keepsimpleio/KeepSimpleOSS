@@ -106,3 +106,67 @@ A delta-indexing path (Strapi webhooks + GitHub Action + ingest
 endpoint + safety-net cron) has been designed but is **currently
 deferred** — see `docs/delta-indexing-proposal.md` for the agreed
 direction when we resume.
+
+## Carve-out: homepage first-touch starters
+
+The homepage empty-state chips and the answers + cards they produce are **not** served by the concierge pipeline above. They live entirely on the client, in `HOMEPAGE_STARTERS` inside `widget/src/AskUxCore.tsx`.
+
+Three hand-crafted Q&A objects (en + ru), one per starter chip:
+
+1. _What does keepsimple actually make?_
+2. _How is this project completely free?_
+3. _Where do I start if I'm new here?_
+
+When the visitor clicks one of those chips on the homepage, `runStarter()` synthesizes a finished Turn locally — the answer text and the 3–4 hand-picked cards render immediately, no LLM call, no LightRAG retrieval, no `/api/concierge` round-trip.
+
+The carve-out only fires when:
+
+- the panel is in the empty state (no transcript yet), **and**
+- the visitor is on the homepage (`/`, `/ru`, `/hy`), **and**
+- they click one of the three starter chips.
+
+Anything else — free-form questions on the homepage, follow-ups after a starter, every non-homepage page — goes through the normal pipeline.
+
+**Why this trade-off:** the first impression is the highest-leverage moment in the whole funnel. Pristine brand copy, zero latency, zero hallucination risk on those three questions outweighs the cost of keeping their copy in code (and re-deploying when it changes).
+
+## Carve-out: widget UXCAT begin-test auth-gate
+
+When the widget's in-panel "Begin Test" CTA (rendered on `/uxcat` only) is clicked by an anonymous visitor, it does **not** navigate to `/uxcat/start-test`. Instead, it dispatches a `ks-aux-request-login` `CustomEvent` on the window.
+
+`UXCatLayout` listens for that event and opens its `LogInModal` — the same modal the in-page begin-test CTA opens. After a successful login the visitor can start the test from there. Logged-in visitors get navigated to `/uxcat/start-test` directly.
+
+Reason: matching the in-page CTA behavior so the widget never sends a fresh visitor to a guarded URL that just bounces them back.
+
+## Analytics: copilot-events (Postgres)
+
+Every Copilot session AND every visitor movement is mirrored into the **copilot-events** sibling service (Postgres 16, separate container, HTTP ingest). Full spec: `docs/copilot-analytics-spec.md`.
+
+Why Postgres and not Strapi: at our user base the `copilot-turn` collection would balloon past 100k rows per week and the Strapi admin panel would become unreadable. Postgres + a thin ingest API gives us proper indexed event storage, room for nav / dwell / outbound-click events (not only Q&A), and zero impact on the content-Strapi.
+
+How it's wired:
+
+- **Visitor identity (`sid`)** — http-only `aux_sid` cookie minted on the visitor's first `/api/concierge` (or `/api/copilot/event`) call. Survives 30 days, scoped to the keepsimple host.
+- **Conversation thread (`threadId`)** — generated client-side, persisted in `localStorage` so it survives reloads. Rotated on every CLEAR so transcripts naturally split into per-conversation blocks under the same `sid`.
+- **Question + answer turns** — logged server-side from inside `/api/concierge` after the response is built. The fan-out is fire-and-forget; visitor never waits.
+- **CLEAR, card clicks, nav, page_view, dwell, outbound_click** — posted by the widget to `/api/copilot/event` (uses `sendBeacon` when available so events that precede a navigation still land). That endpoint forwards each event to the copilot-events `POST /track` ingest.
+- **Page-movement capture (page_view + dwell + outbound_click)** — the widget's nav `useEffect` fires `page_view` on every page entry, `dwell` on every page exit (in-app or unload) with elapsed ms-on-page, and `outbound_click` on any anchor whose href crosses origin. This is how we reconstruct visitor journeys ("where did they go after the UXCG case page?") without polling.
+- **Auth link** — on every Q&A turn and every widget event, the server checks for a NextAuth JWT via `getToken`. If a user is signed in and the session row isn't linked yet, it stamps `linkedUser` + `linkedAt` AND writes a `kind=auth` turn at that moment — so we see exactly when in the conversation the visitor signed up.
+
+Hard guarantees:
+
+- The KeepSimple repo has **zero** Postgres dependencies. The DB lives in the sibling container; the writer is a thin HTTP client.
+- Never queried at build time; a copilot-events outage cannot break a deploy.
+- Every write is in a try/catch; visitor reply never waits on the analytics service.
+- When `COPILOT_EVENTS_URL` or `COPILOT_EVENTS_WRITE_TOKEN` is unset, the analytics module is fully inert (returns immediately, no fetch attempted) — useful for local dev without the sibling container.
+- The widget never sees the write-token. It always proxies through `/api/copilot/event` so the token stays server-side.
+
+Where Wolf reads it: query Postgres directly, or hit `GET /sessions` / `GET /sessions/{sid}/events` on the copilot-events service with the read-token. A proper dashboard is a future epic, not v1.
+
+## Safety layer
+
+`src/lib/copilotSafety.ts` adds four guardrails on every `/api/concierge` turn, gating BEFORE any retrieval or LLM call so blocked / at-capacity requests cost us nothing:
+
+1. **Daily cost ceiling.** `COPILOT_DAILY_BUDGET_USD` (default `$5`) × `COPILOT_AVG_CALL_USD` (default `$0.04`) decides when the breaker trips. Beyond the cap the visitor gets a polite "at capacity" reply; resets at UTC midnight. In-memory counter on the long-running container — fine for single-replica today; move to Redis once we scale horizontally.
+2. **Abuse moderation.** One OpenAI `omni-moderation-latest` call per question (~50–150ms, no cost). Hate / sex / self-harm / violence → polite refusal, no LLM spend, blocked turn logged with `meta.blocked=true` for review. Fails open if the moderation API is down or `OPENAI_API_KEY` is missing.
+3. **Prompt-injection hardening.** Every user-supplied or DOM-supplied block is wrapped in XML-ish fences (`<question>`, `<page>`, `<pageContent>`, `<history>`) and the system prompt's "INSTRUCTION SAFETY" rule treats anything inside those fences as DATA, never instructions. Visible attempts ("ignore previous instructions", role-switch demands, prompt-dumps) get a short on-brand pivot reply with no acknowledgement.
+4. **PII scrub on the analytics log.** Emails, phone numbers, and likely card-number runs are masked (`[email]` / `[phone]` / `[cc]`) before `query`, `answer`, `cardsShown`, `cardClicked`, and `meta` reach the copilot-events ingest. Applied at both `/api/concierge` and `/api/copilot/event` boundaries.

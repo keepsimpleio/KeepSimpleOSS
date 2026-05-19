@@ -1,7 +1,7 @@
 import { CSSProperties, FormEvent, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import { askConcierge, Citation, trackEvent } from './api';
+import { askConcierge, Citation, postCopilotEvent, trackEvent } from './api';
 
 type Lang = 'en' | 'ru';
 
@@ -26,11 +26,51 @@ type Turn = {
      because they're cheap (no LLM call) and visually thinner. */
   kind?: 'landing' | 'nav';
   navTitle?: string;
+  /* Stamped on curated landings (PAGE_LANDINGS) — lets per-page UI
+     (e.g. the UXCAT Begin-Test CTA) gate on the turn itself instead
+     of "is this the most-recent spatial turn", so a follow-up nav
+     turn doesn't strip the CTA off the still-on-page landing. */
+  landingKey?: string;
 };
 
 const STORAGE_KEY = 'ks_aux_state_v2';
 const IDLE_OPACITY_KEY = 'ks_aux_idle_opacity_v1'; // gitleaks:allow
 const COLLAPSED_ONCE_KEY = 'ks_aux_collapsed_once_v1'; // gitleaks:allow
+const THREAD_ID_KEY = 'ks_aux_thread_id_v1'; // gitleaks:allow
+
+/* Thread id: persists across reloads in localStorage; survives the
+   page lifecycle and follows the visitor across tabs. Bumped on every
+   CLEAR so transcript analytics can group questions into the same
+   conversation block while still seeing where the visitor wiped and
+   started over. Lives client-side; server pairs it with the http-only
+   sid cookie for the canonical visitor identity. */
+const getOrMakeThreadId = (): string => {
+  if (typeof window === 'undefined') return '';
+  try {
+    const existing = localStorage.getItem(THREAD_ID_KEY);
+    if (existing) return existing;
+    const fresh =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `th-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(THREAD_ID_KEY, fresh);
+    return fresh;
+  } catch {
+    return `th-${Date.now()}`;
+  }
+};
+const rotateThreadId = (): string => {
+  const fresh =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `th-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  try {
+    localStorage.setItem(THREAD_ID_KEY, fresh);
+  } catch {
+    /* localStorage disabled — keep the in-memory id */
+  }
+  return fresh;
+};
 const loadCollapsedOnce = (): boolean => {
   try {
     return localStorage.getItem(COLLAPSED_ONCE_KEY) === '1';
@@ -247,7 +287,7 @@ const saveState = (state: Persisted) => {
 const TEXT: Record<Lang, Record<string, string>> = {
   en: {
     pillLabel: 'Ask anything',
-    pillLabelReturning: "I'm always here",
+    pillLabelReturning: 'Your Copilot',
     relevancePrompt: 'Was this relevant?',
     placeholder: 'Ask anything about career, UX, decisions, biases…',
     send: 'Ask',
@@ -274,7 +314,7 @@ const TEXT: Record<Lang, Record<string, string>> = {
   },
   ru: {
     pillLabel: 'Спросите что угодно',
-    pillLabelReturning: 'Я всегда тут',
+    pillLabelReturning: 'Ваш Copilot',
     relevancePrompt: 'Это было полезно?',
     placeholder: 'Спросите про карьеру, UX, решения, искажения…',
     send: 'Спросить',
@@ -306,6 +346,1100 @@ const stripMarkers = (raw: string): string =>
     .replace(/\[(KG|DC|no-context)\]/g, '')
     .replace(/\(Reference:\s*https?:\/\/[^\s)]+\)/gi, '')
     .trim();
+
+type HomepageStarter = {
+  q: string;
+  a: string;
+  cards: Citation[];
+};
+
+/* First-touch homepage starter Q&As. Carve-out from the normal
+   server-driven concierge pipeline (see docs/widget-architecture.md):
+   on the homepage, the empty-state chips are replaced with three
+   hand-crafted questions whose answers + cards render locally — no
+   LLM call, no retrieval. Pristine brand copy, zero latency, zero
+   hallucination risk on the three questions where first-impression
+   storytelling matters most. Pipeline resumes for free-form asks. */
+const HOMEPAGE_STARTERS: Record<Lang, HomepageStarter[]> = {
+  en: [
+    {
+      q: 'What does keepsimple actually make?',
+      a: "keepsimple is an open-source movement at the intersection of cognitive science, product, and engineering — running since 2019. The flagship is **UX Core**, the world's largest free library of cognitive biases and nudging strategies (used at Duke, Harvard, MIT, Google, Amazon).",
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'UX Core, the flagship bias library',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'long-form on cog sci, product, decisions',
+        },
+      ],
+    },
+    {
+      q: 'How is this project completely free?',
+      a: 'No paywalls, no ads, no investors — keepsimple has been free since day one in 2019. It runs on a small team plus a community of contributors and supporters. The code is open-source, the content is under Creative Commons. The deal is simple: if it helped you, pass it on, contribute, or chip in.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'the people who keep this open',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'our take on the bigger questions',
+        },
+      ],
+    },
+    {
+      q: "Where do I start if I'm new here?",
+      a: "The lowest-friction entry is the **UX Awareness Test** — about 10 minutes, you'll spot a surprising number of biases at play around you. From there: **UX Core** is the bias library, with text and visual examples of how each one shows up. **UXCG** lets you evaluate your own organization for the mistakes those biases drive. And **Articles** is where we lay out our take on the bigger questions.",
+      cards: [
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'take the 10-min Awareness Test and spot numerous biases around us',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'browse the bias library with text + visual examples',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'evaluate your organization for the mistakes biases drive',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'learn our take on critical matters',
+        },
+      ],
+    },
+  ],
+  ru: [
+    {
+      q: 'Чем занимается keepsimple?',
+      a: 'keepsimple — open-source движение на стыке когнитивной науки, продукта и инженерии, с 2019 года. Флагман — **UX Core**, крупнейшая в мире бесплатная библиотека когнитивных искажений и стратегий нуджинга (её используют в Duke, Harvard, MIT, Google, Amazon).',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'флагманская библиотека искажений',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'длинные тексты про когнитивную науку, продукт, решения',
+        },
+      ],
+    },
+    {
+      q: 'Почему всё это бесплатно?',
+      a: 'Никаких пейволлов, рекламы или инвесторов — keepsimple бесплатен с первого дня в 2019. Проект держится на небольшой команде и сообществе контрибьюторов и саппортеров. Код открыт, контент под Creative Commons. Договор простой: если помогло — расскажи дальше, поучаствуй или поддержи.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'люди, которые держат это открытым',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'наша позиция по большим вопросам',
+        },
+      ],
+    },
+    {
+      q: 'С чего начать, если я тут впервые?',
+      a: 'Самый простой вход — **тест осознанности** (UXCAT). Минут 10 — и заметишь удивительно много искажений вокруг себя. Дальше: **UX Core** — библиотека искажений с текстом и визуальными примерами того, как каждое проявляется. **UXCG** даёт оценить собственную организацию на ошибки, которые эти искажения порождают. А **Articles** — место, где мы раскладываем нашу позицию по большим вопросам.',
+      cards: [
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: '10-минутный тест осознанности, заметь искажения вокруг',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'библиотека искажений: текст + визуальные примеры',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'оцени свою организацию на ошибки от искажений',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'наша позиция по критическим вопросам',
+        },
+      ],
+    },
+  ],
+};
+
+type PageLanding = {
+  message: string;
+  cards: Citation[];
+};
+
+/* Curated per-page landings. When the visitor lands on one of these
+   paths (organic nav OR following a card click) and we haven't already
+   shown this page's curated landing this session, the widget renders
+   a hand-crafted message + cards locally instead of asking the server
+   landing endpoint. Server landing keeps running for everything else.
+
+   Once-per-session is keyed off canonical pathname (locale-stripped)
+   in sessionStorage — clears on tab close. Revisits within the same
+   session get no landing turn at all (not curated, not server) so
+   the visitor isn't nagged by repeated greetings. */
+const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
+  en: {
+    '/uxcore': {
+      message:
+        "You're in **UX Core** — our open library of cognitive biases, each mapped to real product and HR scenarios with debiasing strategies. If you're not sure where to start, the 10-minute Awareness Test gives you a personal pulse on which biases bend your decisions today.",
+      cards: [
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'The only science-backed awareness test. <7 minutes of your time needed',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: '1000+ nudging examples for your org/startup',
+        },
+        {
+          title: 'Persona Map',
+          url: '/uxcp',
+          type: 'project',
+          nominated: true,
+          blurb: 'Find your nationality and learn more about your neighbours',
+        },
+      ],
+    },
+    '/tools/longevity-protocol': {
+      message:
+        "You're in the **Longevity Protocol** — our take on long-haul health, distilled into a small set of practices we actually run on ourselves. Same principle as the rest of keepsimple: smart defaults beat willpower.",
+      cards: [
+        {
+          title: 'Tools',
+          url: '/tools',
+          type: 'project',
+          nominated: true,
+          blurb: 'Other small utilities we built and opened up',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Cognitive backbone behind the protocol',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on decisions and discipline',
+        },
+      ],
+    },
+    '/tools': {
+      message:
+        '**Tools** is the workshop — small utilities we built for ourselves and opened up. Each one solves a sharp, real problem we hit; nothing here for showroom reasons.',
+      cards: [],
+    },
+    '/ai-atlas': {
+      message:
+        "You're in the **AI Atlas** — the orbital map of everything we run, who runs it, and how the agents talk to each other. Open transparency layer; nothing hidden, nothing aspirational.",
+      cards: [
+        {
+          title: 'Terminal',
+          url: '/ai-atlas#terminal',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'Plenty of tips and tricks are in hands of the Terminal',
+        },
+        {
+          title: 'Tools',
+          url: '/ai-atlas#tools',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'And a bunch of tweaks here',
+        },
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'All humans behind the project',
+        },
+      ],
+    },
+    '/articles': {
+      message:
+        '**Articles** — the long-form ledger, mostly Wolf, public since 2014. Cognitive science, product, project management — written when we have something to say, not on a publishing schedule.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'The bias library that grew out of these notes',
+        },
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: 'Find your own biases first',
+        },
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Who chips in alongside Wolf',
+        },
+      ],
+    },
+  },
+  ru: {
+    '/uxcore': {
+      message:
+        'Ты в **UX Core** — открытой библиотеке когнитивных искажений, каждое привязано к реальным продуктовым и HR-сценариям и снабжено стратегиями дебайзинга. Если не знаешь с чего начать — 10-минутный тест осознанности даст персональный срез: какие искажения гнут твои решения сегодня.',
+      cards: [
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'Единственный научно-обоснованный тест осознанности. Меньше 7 минут твоего времени',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: '1000+ примеров нуджинга для твоей компании или стартапа',
+        },
+        {
+          title: 'Persona Map',
+          url: '/uxcp',
+          type: 'project',
+          nominated: true,
+          blurb: 'Найди свою национальность и узнай больше про своих соседей',
+        },
+      ],
+    },
+    '/tools/longevity-protocol': {
+      message:
+        'Ты в **Longevity Protocol** — это наш взгляд на долгое здоровье, упакованный в небольшой набор практик, которые мы сами на себе и используем. Тот же принцип что и в остальном keepsimple: умные дефолты бьют силу воли.',
+      cards: [
+        {
+          title: 'Tools',
+          url: '/tools',
+          type: 'project',
+          nominated: true,
+          blurb: 'Другие маленькие утилиты которые мы собрали и открыли',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Когнитивный костяк за протоколом',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про решения и дисциплину',
+        },
+      ],
+    },
+    '/tools': {
+      message:
+        '**Tools** — это мастерская: маленькие утилиты, которые мы собрали для себя и открыли наружу. Каждая решает реальную острую проблему; ничего здесь не лежит "для витрины".',
+      cards: [],
+    },
+    '/ai-atlas': {
+      message:
+        'Ты в **AI Atlas** — это орбитальная карта всего, что мы запускаем: кто что делает и как наши агенты общаются друг с другом. Открытый слой прозрачности; ничего не спрятано, ничего вымышленного.',
+      cards: [
+        {
+          title: 'Терминал',
+          url: '/ai-atlas#terminal',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'Куча подсказок и фишек в руках Терминала',
+        },
+        {
+          title: 'Tools',
+          url: '/ai-atlas#tools',
+          type: 'aiatlas',
+          nominated: true,
+          blurb: 'И целая куча твиков вот здесь',
+        },
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Все люди за этим проектом',
+        },
+      ],
+    },
+    '/articles': {
+      message:
+        '**Статьи** — длинный публичный журнал, в основном Wolf, открыт с 2014. Когнитивная наука, продукт, проект-менеджмент — пишется когда есть что сказать, а не по расписанию.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Библиотека искажений, выросшая из этих заметок',
+        },
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: 'Сначала найди собственные искажения',
+        },
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Кто пишет вместе с Wolf-ом',
+        },
+      ],
+    },
+  },
+};
+
+const CURATED_LANDING_FIRED_KEY = 'ks_aux_curated_landing_v1';
+const curatedLandingPathKey = (rawUrl: string): string | null => {
+  try {
+    const u = new URL(rawUrl, window.location.origin);
+    let p = u.pathname.replace(/^\/(ru|hy|en)(?=\/|$)/, '');
+    p = p.replace(/\/+$/, '');
+    return p || '/';
+  } catch {
+    return null;
+  }
+};
+const getCuratedLandingFor = (
+  rawUrl: string,
+  lang: Lang,
+): { key: string; entry: PageLanding } | null => {
+  const key = curatedLandingPathKey(rawUrl);
+  if (!key) return null;
+  const entry = PAGE_LANDINGS[lang][key];
+  return entry ? { key, entry } : null;
+};
+const hasCuratedLandingFired = (key: string): boolean => {
+  try {
+    const raw = sessionStorage.getItem(CURATED_LANDING_FIRED_KEY) || '{}';
+    return !!JSON.parse(raw)[key];
+  } catch {
+    return false;
+  }
+};
+const markCuratedLandingFired = (key: string) => {
+  try {
+    const raw = sessionStorage.getItem(CURATED_LANDING_FIRED_KEY) || '{}';
+    const obj = JSON.parse(raw);
+    obj[key] = Date.now();
+    sessionStorage.setItem(CURATED_LANDING_FIRED_KEY, JSON.stringify(obj));
+  } catch {
+    /* sessionStorage disabled — fall through; landing will fire each visit */
+  }
+};
+
+/* ──────────────────────────────────────────────────────────────────
+   Identity query triggers — works on any page.
+   ──────────────────────────────────────────────────────────────────
+   When the visitor's free-text question matches one of the canonical
+   "about us" clusters (what is keepsimple / is it free / who made
+   this / why open-source / how do you make money / etc.), we render
+   a hand-crafted answer locally instead of asking the LLM. Reason:
+   identity questions are brand-critical, the answer should never
+   drift, and the LLM round-trip is wasted tokens for a question
+   whose answer is fixed. Pipeline still runs for everything else.
+   ────────────────────────────────────────────────────────────────── */
+type IdentityTrigger = {
+  key: string;
+  patterns: RegExp[];
+  answer: string;
+  cards: Citation[];
+};
+
+const IDENTITY_TRIGGERS: Record<Lang, IdentityTrigger[]> = {
+  en: [
+    {
+      key: 'what-is-keepsimple',
+      patterns: [
+        /\bwhat\s+(is|are)\s+keepsimple\b/i,
+        /\bwhat'?s\s+keepsimple\b/i,
+        /\btell\s+me\s+about\s+keepsimple\b/i,
+        /\bwhat\s+is\s+this\s+(site|project|place)\b/i,
+        /\bwhat\s+do\s+you\s+(do|make|build)\b/i,
+      ],
+      answer:
+        "keepsimple is an open-source movement at the intersection of cognitive science, product, and engineering — running since 2019. The flagship is **UX Core**, the world's largest free library of cognitive biases and nudging strategies (used at Duke, Harvard, MIT, Google, Amazon).",
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'The flagship bias library',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "Full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on cog sci, product, decisions',
+        },
+      ],
+    },
+    {
+      key: 'is-it-free',
+      patterns: [
+        /\bis\s+(it|this|keepsimple)\s+(really\s+|actually\s+)?free\b/i,
+        /\bhow\s+(is|can)\s+(it|this)\s+(be\s+)?free\b/i,
+        /\bpaywall/i,
+        /\bpricing\b/i,
+        /\bhow\s+much\s+(does\s+it\s+cost|to\s+use)/i,
+        /\bsubscription\b/i,
+        /\bpremium\s+(tier|plan)/i,
+        /\bcost\s+(of|to)\s+(use|access)/i,
+      ],
+      answer:
+        'Free since day one in 2019. No paywalls, no ads, no investors, no premium tier. The code is open-source, content under Creative Commons. Wolf funds the project from his own pocket; supporters chip in if they want to.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'The people who keep this open',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "Full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Our take on the bigger questions',
+        },
+      ],
+    },
+    {
+      key: 'where-do-i-start',
+      patterns: [
+        /\bwhere\s+(do|should)\s+i\s+start\b/i,
+        /\b(i'?m|i\s+am)\s+new\b/i,
+        /\bwhere\s+to\s+begin\b/i,
+        /\bhow\s+do\s+i\s+(use|start|begin)\b/i,
+        /\bfirst\s+time\s+here\b/i,
+        /\bnew\s+(here|to\s+this)\b/i,
+      ],
+      answer:
+        "The lowest-friction entry is the **UX Awareness Test** — about 10 minutes, you'll spot a surprising number of biases at play around you. From there: **UX Core** is the bias library. **UXCG** lets you audit your own organisation. If you'd rather read first, **Articles** holds the long-form thinking.",
+      cards: [
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: 'Take the 10-min Awareness Test',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Browse the bias library',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'Audit your organisation',
+        },
+      ],
+    },
+    {
+      key: 'who-made-this',
+      patterns: [
+        /\bwho\s+(made|built|created|runs|owns|started|founded)\s+(this|keepsimple|it)\b/i,
+        /\bwho(?:'?s|\s+is)\s+wolf\b/i,
+        /\bwho(?:'?s|\s+is)\s+behind\s+keepsimple\b/i,
+        /\b(the\s+)?(team|founder|creator|author)\s+(of|behind)\s+keepsimple\b/i,
+        /\bwho\s+(writes|maintains)\s+(this|keepsimple)\b/i,
+      ],
+      answer:
+        '**Wolf Alexanyan** founded keepsimple in 2019 and runs it as the lead. A small core team plus a wider community of contributors keep the work going. Day-to-day faces are on the Contributors page.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Everyone behind the project',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'The orbital map of what we run',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: "Wolf's long-form thinking",
+        },
+      ],
+    },
+    {
+      key: 'why-open-source',
+      patterns: [
+        /\bwhy\s+(open[-\s]?source|free|give\s+(it|this)\s+away|gratis)\b/i,
+        /\bwhat'?s?\s+the\s+catch\b/i,
+        /\bwhy\s+(no\s+ads|do\s+you\s+do\s+this)\b/i,
+        /\b(open[-\s]?source)\s+(reasoning|philosophy|why)\b/i,
+      ],
+      answer:
+        "No catch. keepsimple is open-source because that's how the knowledge stays trustworthy and usable — anyone can read the source, fork it, contribute, or run their own copy. The deal is simple: if it helps you, pass it on.",
+      cards: [
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: "Full transparency: our AI agents' orchestration",
+        },
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'The people who keep this open',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on the philosophy behind the project',
+        },
+      ],
+    },
+    {
+      key: 'credibility',
+      patterns: [
+        /\bhow\s+many\s+(users|readers|people)\b/i,
+        /\b\d+[k,]?\s*(thousand|million)?\s+(users|readers)\b/i,
+        /\bcredib(le|ility)\b/i,
+        /\b(reputation|reputable)\b/i,
+        /\bwho\s+(uses|reads)\s+(this|keepsimple|you)\b/i,
+        /\bis\s+this\s+(real|legit)\b/i,
+        /\b(reference|cited)\s+(at|by)\b/i,
+      ],
+      answer:
+        "300,000+ readers worldwide. **UX Core** is referenced at Duke, Harvard Business School, MIT, Google, Yandex, Amazon. Open-source movement since 2019; everything on the site is the same one team's work, no licensing tricks.",
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'The library referenced at Duke, Harvard, MIT, Google',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Full transparency on what we run',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form, public since 2014',
+        },
+      ],
+    },
+    {
+      key: 'how-to-contribute',
+      patterns: [
+        /\bhow\s+(can|do)\s+i\s+(help|contribute|donate|support)\b/i,
+        /\bdonat(e|ion|ions)\b/i,
+        /\bsupport\s+keepsimple\b/i,
+        /\b(contribute|contribut(or|ion))\b/i,
+        /\bsponsor\b/i,
+        /\bcan\s+i\s+(help|join)\b/i,
+      ],
+      answer:
+        'Three ways. (1) Spread the word — link any page, cite UX Core, write about us. (2) Fork on GitHub or open a PR. (3) Support financially through the Contributors page. All optional, none required.',
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'How to chip in, financial or otherwise',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'What we run — pick a piece to help with',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Read the work, cite the pieces that helped you',
+        },
+      ],
+    },
+    {
+      key: 'business-model',
+      patterns: [
+        /\bhow\s+do\s+(you|they)\s+make\s+money\b/i,
+        /\b(business|revenue|monetiz(e|ation))\s+model\b/i,
+        /\bare\s+you\s+(profitable|funded)\b/i,
+        /\bwho\s+(funds|pays\s+for)\s+(this|keepsimple)\b/i,
+        /\bhow\s+is\s+(this|keepsimple)\s+funded\b/i,
+        /\bwhere\s+does\s+the\s+money\s+come\s+from\b/i,
+      ],
+      answer:
+        "Short answer: we don't make money on keepsimple. Wolf funds the project from his own pocket, solely. No ads, no paid tier, no investor pressure on what we build.",
+      cards: [
+        {
+          title: 'Contributors',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Where supporters can chip in if they want',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Full transparency on the work and the people',
+        },
+        {
+          title: 'Articles',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Long-form on why we build it this way',
+        },
+      ],
+    },
+  ],
+  ru: [
+    {
+      key: 'what-is-keepsimple',
+      patterns: [
+        /\bчто\s+(такое|за)\s+keepsimple\b/i,
+        /\bрасскажи\s+(про|о)\s+keepsimple\b/i,
+        /\bчто\s+это\s+за\s+(проект|сайт|штука|место)\b/i,
+        /\bчем\s+(вы\s+)?занимаетесь\b/i,
+      ],
+      answer:
+        'keepsimple — open-source движение на стыке когнитивной науки, продукта и инженерии, с 2019 года. Флагман — **UX Core**, крупнейшая в мире бесплатная библиотека когнитивных искажений и стратегий нуджинга (её используют в Duke, Harvard, MIT, Google, Amazon).',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Флагманская библиотека искажений',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про когнитивную науку, продукт, решения',
+        },
+      ],
+    },
+    {
+      key: 'is-it-free',
+      patterns: [
+        /\b(это|оно|keepsimple)\s+(правда\s+|реально\s+|действительно\s+)?бесплат/i,
+        /\bкак\s+(оно|это)\s+(может\s+быть\s+)?бесплат/i,
+        /\bплатно\b/i,
+        /\bстоимост/i,
+        /\bподписк/i,
+        /\bпремиум/i,
+        /\bсколько\s+стоит/i,
+      ],
+      answer:
+        'Бесплатно с первого дня в 2019. Никаких пейволлов, рекламы, инвесторов, премиум-тарифа. Код открыт, контент под Creative Commons. Wolf финансирует проект из своего кармана; саппортеры подкидывают если хотят.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Люди, которые держат это открытым',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Наша позиция по большим вопросам',
+        },
+      ],
+    },
+    {
+      key: 'where-do-i-start',
+      patterns: [
+        /\bс\s+чего\s+начать\b/i,
+        /\bя\s+(тут|здесь)\s+(впервые|новый|нов)\b/i,
+        /\bкак\s+(начать|пользоваться|использовать)\b/i,
+        /\bпервый\s+раз\s+здесь\b/i,
+        /\bкуда\s+(идти|нажать)\s+(сначала|сперва)\b/i,
+      ],
+      answer:
+        'Самый простой вход — **тест осознанности** (UXCAT), минут 10, заметишь удивительно много искажений вокруг. Дальше: **UX Core** — библиотека искажений. **UXCG** — оцени собственную организацию. Если хочется сначала почитать — **Статьи**.',
+      cards: [
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: '10-минутный тест осознанности',
+        },
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'Библиотека искажений',
+        },
+        {
+          title: 'UXCG',
+          url: '/uxcg',
+          type: 'project',
+          nominated: true,
+          blurb: 'Оцени свою организацию',
+        },
+      ],
+    },
+    {
+      key: 'who-made-this',
+      patterns: [
+        /\bкто\s+(создал|сделал|ведёт|ведет|основал|руководит|стоит)\b/i,
+        /\bкто\s+такой\s+wolf\b/i,
+        /\bкто\s+за\s+(этим|keepsimple)\b/i,
+        /\b(команд|основател|автор)/i,
+        /\bкто\s+пишет\s+(это|keepsimple)\b/i,
+      ],
+      answer:
+        '**Wolf Alexanyan** основал keepsimple в 2019 и ведёт его как лид. Небольшая core-команда плюс более широкое сообщество контрибьюторов держат работу на ходу. Кто что делает — на странице Contributors.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Все люди за проектом',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Орбитальная карта того, что мы запускаем',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты от Wolf-а',
+        },
+      ],
+    },
+    {
+      key: 'why-open-source',
+      patterns: [
+        /\bпочему\s+(open[-\s]?source|открыт|бесплат|без\s+рекламы)/i,
+        /\bзачем\s+(делать|открыт|бесплат)/i,
+        /\bв\s+ч[её]м\s+подвох\b/i,
+        /\bкакая\s+выгода\b/i,
+      ],
+      answer:
+        'Никакого подвоха. keepsimple — open-source потому что только так знание остаётся честным и пригодным: каждый может прочитать исходник, форкнуть, поучаствовать, запустить свою копию. Договор простой: если помогло — расскажи дальше.',
+      cards: [
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность: оркестрация наших AI-агентов',
+        },
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Люди, которые держат это открытым',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про философию проекта',
+        },
+      ],
+    },
+    {
+      key: 'credibility',
+      patterns: [
+        /\bсколько\s+(пользовател|читател|людей|у\s+вас)/i,
+        /\b\d+[\s,]?(\d+)?\s*(тысяч|миллион|к|млн)\s+(пользоват|читател)/i,
+        /\bкто\s+(пользуется|читает|использует)\s+(этим|keepsimple|вами)/i,
+        /\bрепутац/i,
+        /\bправда\s+ли/i,
+        /\bкто\s+вас\s+знает/i,
+        /\b(ссыла|цитиру)\s+(на|вас)/i,
+      ],
+      answer:
+        '300 000+ читателей по миру. **UX Core** упоминают в Duke, Harvard Business School, MIT, Google, Яндексе, Amazon. Open-source движение с 2019; всё на сайте — работа одной команды, никаких лицензионных трюков.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'Библиотека, на которую ссылаются в Duke, Harvard, MIT, Google',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность того, что мы делаем',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты, публичны с 2014',
+        },
+      ],
+    },
+    {
+      key: 'how-to-contribute',
+      patterns: [
+        /\bкак\s+(могу\s+)?(помочь|поучаств|поддерж|donat)/i,
+        /\b(контрибь|задонат|пожертвовать)/i,
+        /\bкак\s+(вписаться|включиться|присоединиться)/i,
+        /\bподдержать\s+keepsimple/i,
+      ],
+      answer:
+        'Три способа. (1) Расскажи дальше — поделись страницей, сошлись на UX Core, напиши про нас. (2) Форкни на GitHub или открой PR. (3) Поддержи финансово через Contributors. Всё опционально, ничего не обязательно.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Как помочь — финансово или иначе',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Что мы делаем — выбери кусок чтобы помочь',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Прочитай работу, сошлись на куски, которые помогли',
+        },
+      ],
+    },
+    {
+      key: 'business-model',
+      patterns: [
+        /\bкак\s+(вы|они)\s+(зарабат|деньг|монетиз)/i,
+        /\b(бизнес|финанс|монетиз)\s+(модел|схем)/i,
+        /\bкто\s+(финансирует|оплачивает|спонсирует)/i,
+        /\bза\s+чей\s+счёт\b/i,
+        /\bоткуда\s+деньги\b/i,
+      ],
+      answer:
+        'Коротко: мы не зарабатываем на keepsimple. Wolf финансирует проект из своего кармана, и только. Никакой рекламы, никаких платных тарифов, никакого давления инвесторов на то, что мы делаем.',
+      cards: [
+        {
+          title: 'Контрибьюторы',
+          url: '/contributors',
+          type: 'project',
+          nominated: true,
+          blurb: 'Где саппортеры могут подкинуть если захотят',
+        },
+        {
+          title: 'AI Atlas',
+          url: '/ai-atlas',
+          type: 'project',
+          nominated: true,
+          blurb: 'Полная прозрачность про работу и людей',
+        },
+        {
+          title: 'Статьи',
+          url: '/articles',
+          type: 'project',
+          nominated: true,
+          blurb: 'Длинные тексты про то, почему мы делаем это так',
+        },
+      ],
+    },
+  ],
+};
+
+const matchIdentityTrigger = (
+  query: string,
+  lang: Lang,
+): IdentityTrigger | null => {
+  const q = (query || '').trim();
+  if (q.length < 3) return null;
+  for (const trig of IDENTITY_TRIGGERS[lang]) {
+    for (const re of trig.patterns) {
+      if (re.test(q)) return trig;
+    }
+  }
+  return null;
+};
 
 type TypeKey =
   | 'bias'
@@ -481,6 +1615,20 @@ const isHighlightEnabledPage = (): boolean => {
    over the generic nav tab pointing at /ai-atlas. Falls back to plain
    pathname-matching anchors when no hash is present or no specific
    element is found. */
+/* True for any node living inside the widget's own DOM (panel, pill,
+   cards, suggestions, …). Used to keep the host-page highlighter
+   from glowing the widget's own card anchors — they all live under
+   ancestors whose classes start with `ks-aux-`. */
+const isInsideWidget = (el: Element | null): boolean => {
+  let cur: Element | null = el;
+  while (cur) {
+    const cls = cur.className;
+    if (typeof cls === 'string' && /(?:^|\s)ks-aux-/.test(cls)) return true;
+    cur = cur.parentElement;
+  }
+  return false;
+};
+
 const findHostMatches = (cardUrl: string): HTMLElement[] => {
   if (typeof document === 'undefined') return [];
   const targetPath = canonicalPathOf(cardUrl);
@@ -488,8 +1636,10 @@ const findHostMatches = (cardUrl: string): HTMLElement[] => {
   if (targetHash) {
     const out: HTMLElement[] = [];
     const idMatch = document.getElementById(targetHash);
-    if (idMatch instanceof HTMLElement) out.push(idMatch);
+    if (idMatch instanceof HTMLElement && !isInsideWidget(idMatch))
+      out.push(idMatch);
     document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(a => {
+      if (isInsideWidget(a)) return;
       if (hashOf(a.href) !== targetHash) return;
       if (
         targetPath &&
@@ -504,6 +1654,7 @@ const findHostMatches = (cardUrl: string): HTMLElement[] => {
   if (!targetPath) return [];
   const out: HTMLAnchorElement[] = [];
   document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(a => {
+    if (isInsideWidget(a)) return;
     if (canonicalPathOf(a.href) === targetPath) out.push(a);
   });
   return out;
@@ -717,8 +1868,32 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   const [onUxcatRoot, setOnUxcatRoot] = useState<boolean>(() =>
     isOnUxcatRoot(),
   );
+  /* Per-conversation thread id. Survives reloads (localStorage),
+     bumped on CLEAR. Passed up the chain so server-side analytics
+     groups Q&A turns correctly. */
+  const threadIdRef = useRef<string>(getOrMakeThreadId());
   const onBeginUxcatTest = () => {
     trackEvent('uxcat_begin_test_click', {});
+    let hasToken = false;
+    try {
+      hasToken = !!localStorage.getItem('accessToken');
+    } catch {
+      /* localStorage disabled — fall through to navigation; the
+         server-side page guard will handle it. */
+    }
+    if (!hasToken) {
+      /* Mirror the in-page /uxcat begin-test CTA: when anonymous,
+         open the host page's LogInModal via custom event rather than
+         bounce through /uxcat/start-test → /uxcat. UXCatLayout listens
+         and opens its modal. */
+      trackEvent('uxcat_begin_test_auth_gate', {});
+      window.dispatchEvent(
+        new CustomEvent('ks-aux-request-login', {
+          detail: { source: 'widget-uxcat', next: '/uxcat/start-test' },
+        }),
+      );
+      return;
+    }
     const target = rewriteToCurrentHost('/uxcat/start-test');
     window.location.href = target;
   };
@@ -969,6 +2144,61 @@ export function AskUxCore({ lang }: { lang: Lang }) {
        Aborts in flight if another nav happens before the response. */
     const fireOrganicLanding = (rawUrl: string, rawTitle: string) => {
       organicAbortRef.current?.abort();
+
+      /* Curated-landing carve-out (PAGE_LANDINGS): on the listed
+         pages we render a hand-crafted message + cards locally and
+         skip the server landing entirely. Once-per-session — revisit
+         within the same tab gets nothing (no curated, no server). */
+      const curated = getCuratedLandingFor(rawUrl, lang);
+      if (curated) {
+        if (hasCuratedLandingFired(curated.key)) return;
+        markCuratedLandingFired(curated.key);
+        justNavigatedRef.current = true;
+        const urlTitle = (() => {
+          try {
+            return deriveSpatialTitleFromUrl(new URL(rawUrl).pathname);
+          } catch {
+            return null;
+          }
+        })();
+        const turnId = `land-${Date.now()}`;
+        setTurns(cur => [
+          ...cur,
+          {
+            id: turnId,
+            query: '',
+            answer: '',
+            citations: [],
+            suggestions: [],
+            mode: 'answer',
+            isStreaming: true,
+            kind: 'landing',
+            navTitle: urlTitle || cleanPageTitle(rawTitle),
+            landingKey: curated.key,
+          },
+        ]);
+        const { message, cards } = curated.entry;
+        window.setTimeout(() => {
+          const typer = createTypewriter(turnId);
+          typer.push(message);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === turnId
+                  ? {
+                      ...tt,
+                      answer: message,
+                      citations: cards,
+                      isStreaming: false,
+                    }
+                  : tt,
+              ),
+            );
+          });
+        }, 2200);
+        return;
+      }
+
       const ctrl = new AbortController();
       organicAbortRef.current = ctrl;
       fetch('/api/concierge-landing', {
@@ -1010,20 +2240,33 @@ export function AskUxCore({ lang }: { lang: Lang }) {
               return null;
             }
           })();
+          const turnId = `land-${Date.now()}`;
           setTurns(cur => [
             ...cur,
             {
-              id: `land-${Date.now()}`,
+              id: turnId,
               query: '',
-              answer: text,
+              answer: '',
               citations: [],
               suggestions: [],
               mode: 'answer',
-              isStreaming: false,
+              isStreaming: true,
               kind: 'landing',
               navTitle: urlTitle || cleanPageTitle(rawTitle),
             },
           ]);
+          const finalText = text;
+          const typer = createTypewriter(turnId);
+          typer.push(finalText);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === turnId
+                  ? { ...tt, answer: finalText, isStreaming: false }
+                  : tt,
+              ),
+            );
+          });
         })
         .catch(() => {
           /* aborted or upstream fail — silent */
@@ -1033,6 +2276,84 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     const currentPage: LastPage = {
       url: window.location.href,
       title: document.title,
+    };
+
+    /* Page-movement analytics. Goals:
+       - dwell = real visible-time on a page before the visitor moves
+         within the site. Pure attention signal, no wall-clock idle.
+       - tab_close = its own event, with the same activeMs payload, so
+         the timeline can show "× closed tab after 32s active reading"
+         instead of a misleading 2-hour dwell.
+       Accumulation only ticks while document.visibilityState is
+       'visible' — hidden tabs do not inflate the number. */
+    const activeMsRef = { current: 0 };
+    const lastVisibleAtRef = {
+      current: document.visibilityState === 'visible' ? Date.now() : 0,
+    };
+    const sealedRef = { current: false };
+    const flushActive = () => {
+      if (lastVisibleAtRef.current > 0) {
+        activeMsRef.current += Date.now() - lastVisibleAtRef.current;
+        lastVisibleAtRef.current = 0;
+      }
+    };
+    const resetPageTimers = () => {
+      activeMsRef.current = 0;
+      lastVisibleAtRef.current =
+        document.visibilityState === 'visible' ? Date.now() : 0;
+      sealedRef.current = false;
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        lastVisibleAtRef.current = Date.now();
+      } else {
+        flushActive();
+      }
+    };
+    const firePageView = () => {
+      resetPageTimers();
+      postCopilotEvent({
+        kind: 'page_view',
+        threadId: threadIdRef.current,
+        lang,
+      });
+    };
+    const fireDwell = () => {
+      flushActive();
+      const activeMs = activeMsRef.current;
+      const lp = lastPageRef.current;
+      if (!lp) return;
+      /* Drop sub-half-second blips — those are router transitions or
+         debounce-window false starts, not real attention. */
+      if (activeMs < 500) return;
+      postCopilotEvent({
+        kind: 'dwell',
+        threadId: threadIdRef.current,
+        lang,
+        meta: {
+          activeMs,
+          pageUrl: lp.url,
+          pageTitle: lp.title,
+        },
+      });
+    };
+    const fireTabClose = () => {
+      if (sealedRef.current) return;
+      sealedRef.current = true;
+      flushActive();
+      const activeMs = activeMsRef.current;
+      const lp = lastPageRef.current;
+      if (!lp) return;
+      postCopilotEvent({
+        kind: 'tab_close',
+        threadId: threadIdRef.current,
+        lang,
+        meta: {
+          activeMs,
+          pageUrl: lp.url,
+          pageTitle: lp.title,
+        },
+      });
     };
 
     /* Mount-time cross-page diff. Skip when pendingLanding is set —
@@ -1050,6 +2371,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     }
     lastPageRef.current = currentPage;
     saveLastPage(currentPage);
+    firePageView();
 
     let timer: ReturnType<typeof setTimeout> | null = null;
     const check = () => {
@@ -1057,7 +2379,13 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       const title = document.title;
       const cleaned = cleanPageTitle(title);
       const lastCleaned = cleanPageTitle(lastPageRef.current?.title || '');
+      const lastUrl = lastPageRef.current?.url || '';
+      /* Title-only changes (loading dots, async updates) are not a
+         navigation — bail before we emit a dwell or swap state. */
+      if (url === lastUrl) return;
       const next = { url, title };
+      /* Seal dwell on the OUTGOING page before we swap the ref. */
+      fireDwell();
       lastPageRef.current = next;
       saveLastPage(next);
       if (!cleaned || cleaned === lastCleaned) return;
@@ -1068,7 +2396,39 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       setRecommendedQ(harvestRecommendedQuestion());
       appendNav(title);
       fireOrganicLanding(url, title);
+      firePageView();
     };
+
+    /* Outbound-link capture: when the visitor clicks an anchor whose
+       href points to a different origin, log it so we can see where
+       they go after KeepSimple. Same-origin clicks are covered by the
+       page_view event that fires on the destination. */
+    const onDocClick = (e: MouseEvent) => {
+      try {
+        const t = e.target;
+        if (!(t instanceof Element)) return;
+        const a = t.closest('a[href]') as HTMLAnchorElement | null;
+        if (!a) return;
+        const href = a.href;
+        if (!href || href.startsWith('javascript:')) return;
+        const u = new URL(href, window.location.href);
+        if (u.origin === window.location.origin) return;
+        const anchorText = (a.textContent || '').trim().slice(0, 200);
+        postCopilotEvent({
+          kind: 'outbound_click',
+          threadId: threadIdRef.current,
+          lang,
+          meta: {
+            href: u.href.slice(0, 500),
+            anchorText,
+            target: a.target || '_self',
+          },
+        });
+      } catch {
+        /* never block the click */
+      }
+    };
+    document.addEventListener('click', onDocClick, true);
     const onChange = () => {
       if (timer) clearTimeout(timer);
       /* Debounce — title often lags URL by a frame in client-side
@@ -1102,9 +2462,14 @@ export function AskUxCore({ lang }: { lang: Lang }) {
 
     const onUnload = () => {
       if (lastPageRef.current) saveLastPage(lastPageRef.current);
+      /* Emit tab_close (sealedRef guards against beforeunload +
+         pagehide both firing). sendBeacon path inside postCopilotEvent
+         survives unload. */
+      fireTabClose();
     };
     window.addEventListener('beforeunload', onUnload);
     window.addEventListener('pagehide', onUnload);
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       if (timer) clearTimeout(timer);
@@ -1113,6 +2478,8 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       window.removeEventListener('ks-aux-urlchange', onChange);
       window.removeEventListener('beforeunload', onUnload);
       window.removeEventListener('pagehide', onUnload);
+      document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('click', onDocClick, true);
       titleObs?.disconnect();
       window.history.pushState = origPush;
       window.history.replaceState = origReplace;
@@ -1141,6 +2508,95 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       return;
     }
     pendingLandingRef.current = null;
+
+    /* Curated-landing carve-out (PAGE_LANDINGS): same logic as
+       organic landing — if the destination has a curated entry and
+       it hasn't fired this session, replace the click-time placeholder
+       with the curated message + cards locally and skip the server.
+       If it already fired this session, drop the placeholder silently. */
+    {
+      const curated = getCuratedLandingFor(window.location.href, lang);
+      if (curated) {
+        const placeholderId = pending.placeholderId;
+        if (hasCuratedLandingFired(curated.key)) {
+          if (placeholderId !== undefined) {
+            setTurns(cur => cur.filter(tt => tt.id !== placeholderId));
+          }
+          return;
+        }
+        markCuratedLandingFired(curated.key);
+        justNavigatedRef.current = true;
+        const resolvedTitle = (() => {
+          if (/^\/(?:ru|hy|en)?\/?$/i.test(window.location.pathname)) {
+            return 'Keep Simple';
+          }
+          const urlTitle = deriveSpatialTitleFromUrl(window.location.pathname);
+          if (urlTitle) return urlTitle.slice(0, 200);
+          const h1 = document
+            .querySelector('h1')
+            ?.textContent?.replace(/\s+/g, ' ')
+            .trim();
+          if (h1) return h1.slice(0, 200);
+          return cleanPageTitle(pending.title) || '';
+        })();
+        let landingTurnId = `land-${Date.now()}`;
+        setTurns(cur => {
+          const idx =
+            placeholderId !== undefined
+              ? cur.findIndex(tt => tt.id === placeholderId)
+              : -1;
+          if (idx >= 0) {
+            landingTurnId = cur[idx].id;
+            const next = cur.slice();
+            next[idx] = {
+              ...next[idx],
+              isStreaming: true,
+              answer: '',
+              navTitle: resolvedTitle || next[idx].navTitle,
+              landingKey: curated.key,
+            };
+            return next;
+          }
+          return [
+            ...cur,
+            {
+              id: landingTurnId,
+              query: '',
+              answer: '',
+              citations: [],
+              suggestions: [],
+              mode: 'answer',
+              isStreaming: true,
+              kind: 'landing',
+              navTitle: resolvedTitle,
+              landingKey: curated.key,
+            },
+          ];
+        });
+        const { message, cards } = curated.entry;
+        const targetId = landingTurnId;
+        window.setTimeout(() => {
+          const typer = createTypewriter(targetId);
+          typer.push(message);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === targetId
+                  ? {
+                      ...tt,
+                      answer: message,
+                      citations: cards,
+                      isStreaming: false,
+                    }
+                  : tt,
+              ),
+            );
+          });
+        }, 2200);
+        return;
+      }
+    }
+
     let cancelled = false;
     fetch('/api/concierge-landing', {
       method: 'POST',
@@ -1190,6 +2646,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         })();
         const placeholderId = pending.placeholderId;
         justNavigatedRef.current = true;
+        let landingTurnId: string | null = null;
         setTurns(cur => {
           /* Replace the optimistic placeholder we dropped on click;
              back-compat fallback appends a fresh turn for old
@@ -1204,32 +2661,51 @@ export function AskUxCore({ lang }: { lang: Lang }) {
                  don't leave a permanent skeleton. */
               return cur.filter((_, i) => i !== idx);
             }
+            landingTurnId = cur[idx].id;
             const next = cur.slice();
             next[idx] = {
               ...next[idx],
-              answer: text,
-              isStreaming: false,
-              /* H1 wins over the optimistic card-title seed. */
+              /* Keep isStreaming true — the typewriter below fills
+                 the text in and clears the flag on completion. */
+              isStreaming: true,
+              answer: '',
               navTitle: resolvedTitle || next[idx].navTitle,
             };
             return next;
           }
           if (!text) return cur;
+          const freshId = `land-${Date.now()}`;
+          landingTurnId = freshId;
           return [
             ...cur,
             {
-              id: `land-${Date.now()}`,
+              id: freshId,
               query: '',
-              answer: text,
+              answer: '',
               citations: [],
               suggestions: [],
               mode: 'answer',
-              isStreaming: false,
+              isStreaming: true,
               kind: 'landing',
               navTitle: resolvedTitle,
             },
           ];
         });
+        if (landingTurnId && text) {
+          const finalText = text;
+          const targetId = landingTurnId;
+          const typer = createTypewriter(targetId);
+          typer.push(finalText);
+          typer.finish(() => {
+            setTurns(prev =>
+              prev.map(tt =>
+                tt.id === targetId
+                  ? { ...tt, answer: finalText, isStreaming: false }
+                  : tt,
+              ),
+            );
+          });
+        }
       })
       .catch(() => {
         /* landing line is best-effort — clear placeholder skeleton */
@@ -1307,6 +2783,115 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     };
   }, [turns]);
 
+  /* Typewriter constants — every bit of bot-authored text in the
+     widget (concierge stream, homepage starters, landing turns) runs
+     through the same throttle so the panel reads at one consistent
+     tempo. 1 char / 22ms ≈ 45 chars/sec — smooth char-by-char reveal,
+     reads as deliberate rather than firehosed. */
+  const STREAM_CHUNK = 1;
+  const STREAM_TICK = 22;
+  const SETTLE_MS = 200;
+
+  /* Streaming typewriter — accepts a growing target via push() and
+     drips it into the named turn at the typewriter tempo. finish()
+     marks the target final and runs onDone once the displayed text
+     has caught up. Works for both live server streams (where the
+     target keeps growing) and pre-canned text (single push). */
+  const createTypewriter = (turnId: string) => {
+    let target = '';
+    let displayed = '';
+    let timerActive = false;
+    let streamDone = false;
+    let pendingDone: (() => void) | null = null;
+
+    const advance = () => {
+      if (displayed.length < target.length) {
+        const next = Math.min(displayed.length + STREAM_CHUNK, target.length);
+        displayed = target.slice(0, next);
+        setTurns(prev =>
+          prev.map(tt =>
+            tt.id === turnId ? { ...tt, answer: displayed } : tt,
+          ),
+        );
+      }
+      if (displayed.length < target.length) {
+        window.setTimeout(advance, STREAM_TICK);
+        return;
+      }
+      timerActive = false;
+      if (streamDone && pendingDone) {
+        const cb = pendingDone;
+        pendingDone = null;
+        window.setTimeout(cb, SETTLE_MS);
+      }
+    };
+    const kick = () => {
+      if (timerActive) return;
+      if (displayed.length >= target.length) return;
+      timerActive = true;
+      advance();
+    };
+
+    return {
+      push: (next: string) => {
+        target = next;
+        kick();
+      },
+      finish: (onDone: () => void) => {
+        streamDone = true;
+        if (displayed.length >= target.length) {
+          window.setTimeout(onDone, SETTLE_MS);
+        } else {
+          pendingDone = onDone;
+          kick();
+        }
+      },
+    };
+  };
+
+  /* Homepage carve-out: render a starter Q&A as a local Turn.
+     Mimics the real concierge pipeline visually — a short "thinking"
+     beat with the streaming caret, then the answer types in chunks
+     through the shared typewriter, then the cards land. */
+  const runStarter = (starter: HomepageStarter) => {
+    trackEvent('homepage_starter_clicked', { lang, q: starter.q });
+    const id = `${Date.now()}-starter`;
+    const emptyTurn: Turn = {
+      id,
+      query: starter.q,
+      answer: '',
+      citations: [],
+      suggestions: [],
+      mode: 'answer',
+      isStreaming: true,
+    };
+    justSubmittedRef.current = true;
+    setTurns(prev => [...prev, emptyTurn]);
+
+    /* Thinking pause tuned to the real concierge's average latency
+       so the carve-out reads at the same tempo as a live round-trip. */
+    const THINK_MS = 2200;
+
+    window.setTimeout(() => {
+      const typer = createTypewriter(id);
+      typer.push(starter.a);
+      typer.finish(() => {
+        setTurns(prev =>
+          prev.map(tt =>
+            tt.id === id
+              ? {
+                  ...tt,
+                  answer: starter.a,
+                  citations: starter.cards,
+                  isStreaming: false,
+                }
+              : tt,
+          ),
+        );
+      });
+    }, THINK_MS);
+  };
+
   const runQuery = async (query: string, replaceTurnId?: string) => {
     setLoading(true);
     const id = replaceTurnId ?? `${Date.now()}`;
@@ -1327,6 +2912,39 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     );
 
     trackEvent('query_sent', { lang, retry: !!replaceTurnId });
+
+    /* Identity-trigger short-circuit: brand-critical "about us"
+       questions (what is keepsimple / is it free / who's Wolf / etc.)
+       get a hand-crafted answer rendered locally — no LLM call, no
+       drift. Same think-pause + typewriter as homepage starters so it
+       reads like a live response. Fires on any page. */
+    const identityHit = matchIdentityTrigger(query, lang);
+    if (identityHit) {
+      trackEvent('identity_trigger_hit', {
+        lang,
+        key: identityHit.key,
+      });
+      window.setTimeout(() => {
+        const typer = createTypewriter(id);
+        typer.push(identityHit.answer);
+        typer.finish(() => {
+          setTurns(prev =>
+            prev.map(tt =>
+              tt.id === id
+                ? {
+                    ...tt,
+                    answer: identityHit.answer,
+                    citations: identityHit.cards,
+                    isStreaming: false,
+                  }
+                : tt,
+            ),
+          );
+          setLoading(false);
+        });
+      }, 2200);
+      return;
+    }
 
     try {
       /* Send last 6 finished turns so follow-ups like "how do I do that?"
@@ -1376,13 +2994,13 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         }
         return null;
       })();
+      /* Server tokens often arrive in bursts; route them through the
+         shared typewriter so every answer types in at the same steady
+         tempo as the homepage starters. Cards/suggestions attach in
+         finish() once the displayed text catches up. */
+      const typer = createTypewriter(id);
       const onChunk = (current: string) => {
-        const cleanedPartial = stripMarkers(current);
-        setTurns(prev =>
-          prev.map(tt =>
-            tt.id === id ? { ...tt, answer: cleanedPartial } : tt,
-          ),
-        );
+        typer.push(stripMarkers(current));
       };
       const result = await askConcierge(
         query,
@@ -1392,27 +3010,30 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         '/api/concierge',
         onChunk,
         lastPick,
+        threadIdRef.current,
       );
       const cleaned = stripMarkers(result.answer);
-
-      setTurns(prev =>
-        prev.map(tt =>
-          tt.id === id
-            ? {
-                ...tt,
-                answer: cleaned,
-                citations: result.citations,
-                suggestions: result.suggestions,
-                mode: result.mode,
-                isStreaming: false,
-              }
-            : tt,
-        ),
-      );
-      trackEvent('answer_received', {
-        lang,
-        citations: result.citations.length,
-        mode: result.mode,
+      typer.push(cleaned);
+      typer.finish(() => {
+        setTurns(prev =>
+          prev.map(tt =>
+            tt.id === id
+              ? {
+                  ...tt,
+                  answer: cleaned,
+                  citations: result.citations,
+                  suggestions: result.suggestions,
+                  mode: result.mode,
+                  isStreaming: false,
+                }
+              : tt,
+          ),
+        );
+        trackEvent('answer_received', {
+          lang,
+          citations: result.citations.length,
+          mode: result.mode,
+        });
       });
     } catch (e) {
       const code = errCode(e);
@@ -1444,6 +3065,23 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   const onCardClick = (citation: Citation) => {
     if (!citation.url) return;
     trackEvent('card_click', { url: citation.url, type: citation.type });
+    const tier: 'high' | 'mid' | 'low' = citation.nominated
+      ? 'high'
+      : (citation.score ?? 0) >= 0.5
+        ? 'high'
+        : (citation.score ?? 0) >= 0.3
+          ? 'mid'
+          : 'low';
+    postCopilotEvent({
+      kind: 'card_click',
+      threadId: threadIdRef.current,
+      lang,
+      cardClicked: {
+        title: citation.title,
+        url: citation.url,
+        tier,
+      },
+    });
     const isMobile =
       typeof window !== 'undefined' &&
       window.matchMedia('(max-width: 480px)').matches;
@@ -1545,6 +3183,14 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       // ignore
     }
     trackEvent('clear_all', {});
+    const oldThreadId = threadIdRef.current;
+    threadIdRef.current = rotateThreadId();
+    postCopilotEvent({
+      kind: 'clear',
+      threadId: threadIdRef.current,
+      oldThreadId,
+      lang,
+    });
   };
   const onCopyTranscript = async () => {
     const lines: string[] = [];
@@ -1618,6 +3264,9 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         <div className="ks-aux-header">
           <span className="ks-aux-reading" aria-label={t.readingLabel}>
             <span className="ks-aux-reading-dot" aria-hidden="true" />
+          </span>
+          <span className="ks-aux-brand" aria-hidden="true">
+            Copilot
           </span>
           {/* Immersion is the existing idle-opacity preference in a
               quieter shape: a small opacity-style icon next to CLEAR.
@@ -1741,6 +3390,28 @@ export function AskUxCore({ lang }: { lang: Lang }) {
           <div className="ks-aux-feed-empty">
             <span className="ks-aux-feed-empty-text">{t.empty}</span>
             {(() => {
+              /* Homepage carve-out: replace server-driven page
+                 suggestions with hand-crafted first-touch starters
+                 (HOMEPAGE_STARTERS). Click → runStarter renders a
+                 local Q&A turn with pre-canned answer + cards. */
+              if (atHome) {
+                const starters = HOMEPAGE_STARTERS[lang];
+                return (
+                  <div className="ks-aux-empty-sugg">
+                    {starters.map((s, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className="ks-aux-suggestion"
+                        onClick={() => runStarter(s)}
+                        tabIndex={open ? 0 : -1}
+                      >
+                        {s.q}
+                      </button>
+                    ))}
+                  </div>
+                );
+              }
               /* Merge the page's own "recommended question" (harvested
                  from the host DOM — bias cards ship one) into the empty-
                  state chips. Leads the list when present so the visitor
@@ -1903,7 +3574,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
                     {!turn.isStreaming && !turn.error && (
                       <>
                         {turn.kind === 'landing' &&
-                          isCurrentSpatial &&
+                          turn.landingKey === '/uxcat' &&
                           onUxcatRoot && (
                             <div className="ks-aux-uxcat-cta">
                               <span className="ks-aux-uxcat-nudge">

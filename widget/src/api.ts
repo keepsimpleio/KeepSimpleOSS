@@ -127,6 +127,7 @@ export async function askConcierge(
   endpoint = '/api/concierge',
   onChunk?: (currentText: string) => void,
   lastPick?: LastPick | null,
+  threadId?: string,
 ): Promise<ConciergeResponse> {
   let r: Response;
   const pageUrl =
@@ -146,6 +147,7 @@ export async function askConcierge(
         recentCardUrls,
         lastPick: lastPick ?? undefined,
         stream: wantStream || undefined,
+        threadId: threadId || undefined,
       }),
       credentials: 'same-origin',
     });
@@ -311,5 +313,61 @@ export function trackEvent(
     }
   } catch {
     // analytics is best-effort
+  }
+}
+
+/* Server-side transcript logger. Posts non-Q&A events to
+   /api/copilot/event, which forwards to the copilot-events service
+   (Postgres-backed, sibling container). Q&A events are logged
+   server-side from inside /api/concierge so the widget doesn't fire
+   them twice. Fire-and-forget — failures never affect the visitor. */
+export type CopilotEventKind =
+  | 'clear'
+  | 'card_click'
+  | 'nav'
+  | 'page_view'
+  | 'dwell'
+  | 'tab_close'
+  | 'outbound_click';
+
+export function postCopilotEvent(payload: {
+  kind: CopilotEventKind;
+  threadId: string;
+  oldThreadId?: string;
+  lang: 'en' | 'ru';
+  cardClicked?: { title: string; url: string; tier?: string };
+  meta?: Record<string, unknown>;
+}): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const body = JSON.stringify({
+      ...payload,
+      pageUrl: window.location.href,
+      pageTitle: document.title,
+    });
+    const url = '/api/copilot/event';
+    /* sendBeacon survives page unload (esp. for card_click that
+       precedes a navigation away); falls back to fetch when unavailable
+       or returns false. */
+    const beacon = (
+      navigator as Navigator & {
+        sendBeacon?: (u: string, b: Blob | string) => boolean;
+      }
+    ).sendBeacon;
+    if (beacon) {
+      const blob = new Blob([body], { type: 'application/json' });
+      if (beacon.call(navigator, url, blob)) return;
+    }
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      credentials: 'same-origin',
+      keepalive: true,
+    }).catch(() => {
+      /* best-effort */
+    });
+  } catch {
+    /* never block on analytics */
   }
 }
