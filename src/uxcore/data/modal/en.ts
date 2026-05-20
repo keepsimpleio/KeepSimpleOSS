@@ -16,7 +16,7 @@ const en = {
   uxeducationButtonLabel: 'Using UXCG in Education',
   downloadButtonLabel: 'Download PDF',
   visualExample: 'Visual Example',
-  offsecText: 'Offensive Security',
+  offsecText: 'Offensive Cybersecurity',
   offsecShortText: 'OffSec',
   usageOffsec: 'Example of use by Offensive Cybersecurity',
   offsecComingSoon:

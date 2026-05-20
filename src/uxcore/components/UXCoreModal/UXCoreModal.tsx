@@ -4,9 +4,11 @@ import ProductIcon from '@uxcore/assets/icons/ProductIcon';
 import BiasBody from '@uxcore/components/_biases/BiasBody';
 import ContentParser from '@uxcore/components/ContentParser';
 import ModalRaiting from '@uxcore/components/ModalRaiting';
+import OffsecBiasView from '@uxcore/components/OffsecBiasView';
 import Spinner from '@uxcore/components/Spinner';
 import Table from '@uxcore/components/Table';
 import UXCoreModalHeader from '@uxcore/components/UXCoreModalParts/UXCoreModalHeader';
+import { getOffsecBiasContent } from '@uxcore/data/biasOffsec';
 import modalIntl from '@uxcore/data/modal';
 import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
@@ -255,7 +257,16 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               <span>{offsecText}</span>
             </div>
             {isOffsecView ? (
-              <div className={styles.offsecComingSoon}>{offsecComingSoon}</div>
+              (() => {
+                const offsecContent = getOffsecBiasContent(biasNumber);
+                return offsecContent ? (
+                  <OffsecBiasView content={offsecContent} />
+                ) : (
+                  <div className={styles.offsecComingSoon}>
+                    {offsecComingSoon}
+                  </div>
+                );
+              })()
             ) : (
               <ContentParser
                 data={!isProductView ? data.usage : data.usageHr}

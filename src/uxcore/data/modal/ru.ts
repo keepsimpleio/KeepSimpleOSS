@@ -16,7 +16,7 @@ const ru = {
   uxeducationButtonLabel: 'Использование UXCG в образовании',
   downloadButtonLabel: 'Скачать PDF',
   visualExample: 'Визуальный пример',
-  offsecText: 'Наступательная безопасность',
+  offsecText: 'Наступательная кибербезопасность',
   offsecShortText: 'OffSec',
   usageOffsec: 'Пример использования в наступательной кибербезопасности',
   offsecComingSoon:

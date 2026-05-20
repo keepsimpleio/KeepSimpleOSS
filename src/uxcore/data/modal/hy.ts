@@ -16,7 +16,7 @@ const hy = {
   uxeducationButtonLabel: 'Using UXCG in Education',
   downloadButtonLabel: 'Ներբեռնել PDF', //TODO Add to sheet
   visualExample: 'Տեսողական օրինակ',
-  offsecText: 'Offensive Security',
+  offsecText: 'Offensive Cybersecurity',
   offsecShortText: 'OffSec',
   usageOffsec: 'Example of use by Offensive Cybersecurity',
   offsecComingSoon:
