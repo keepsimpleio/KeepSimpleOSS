@@ -122,6 +122,16 @@
   }
 }
 
+// On narrower viewports the View type ViewSwitcher restacks into a
+// column (max-width:1360px), pushing its bottom edge well past the
+// original top:150px slot for Use cases. Drop the Use cases panel down
+// so the "Use cases" label clears the second View type icon.
+@media (max-width: 1360px) {
+  .useCasesPanel {
+    top: 220px;
+  }
+}
+
 // On narrower laptop viewports swap "Cybersecurity" for the short
 // "OffSec" so the third row's label still fits comfortably.
 @media (max-width: 1280px) {
