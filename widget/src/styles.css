@@ -1251,6 +1251,17 @@
   background: #2c2926;
 }
 
+/* === Laptop fit (481px – 1280px) ===
+   On smaller laptops a 480px panel chews into the host page's navbar
+   and other right-aligned chrome. Narrow it without flipping into the
+   mobile near-full-screen treatment. */
+@media (min-width: 481px) and (max-width: 1280px) {
+  .ks-aux-panel {
+    width: 380px;
+    height: min(620px, calc(100dvh - 120px));
+  }
+}
+
 /* === Mobile usability (≤480px) ===
    Phone screens can't host a fixed 480×660 panel comfortably. Panel
    becomes near-full-screen, pill anchors to the bottom-right with a
