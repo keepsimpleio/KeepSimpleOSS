@@ -94,31 +94,6 @@ $active-bg-color: #ffffff;
   }
 }
 
-// Wide variant — used by the Use cases column on the UX Core landing so
-// the View type pair lines up flush with the 200px-wide Use cases rows
-// underneath. Each button bumps from 79px to 99px so the two-button
-// strip totals 198px (≈ matches the Use cases column width).
-.wide {
-  .ViewSwitcherButtons {
-    .ViewSwitcherButton {
-      box-sizing: border-box;
-      width: 99px;
-    }
-  }
-
-  // At the column-mode breakpoint the base rule shrinks each button to
-  // 63×28. Override so the View type pair stays the same width as the
-  // Use cases column underneath (168px / 38px tall on small screens).
-  @media (max-width: 1360px) {
-    .ViewSwitcherButtons {
-      .ViewSwitcherButton {
-        width: 168px;
-        height: 38px;
-      }
-    }
-  }
-}
-
 @media (max-width: 1360px) {
   .ViewSwitcher {
     margin-bottom: 10px;
@@ -175,6 +150,27 @@ $active-bg-color: #ffffff;
           border-left: 1px solid #000000d9;
         }
       }
+    }
+  }
+}
+
+// Wide variant — used by the Use cases column on the UX Core landing so
+// the View type pair lines up flush with the Use cases rows underneath.
+// Chained selector (.ViewSwitcher.wide) outranks the standalone
+// max-width:1360px override above (3 classes vs 4), so the column-mode
+// shrink to 63×28 doesn't reach the wide instance.
+.ViewSwitcher.wide {
+  .ViewSwitcherButtons .ViewSwitcherButton {
+    box-sizing: border-box;
+    width: 99px;
+  }
+}
+
+@media (max-width: 1360px) {
+  .ViewSwitcher.wide {
+    .ViewSwitcherButtons .ViewSwitcherButton {
+      width: 168px;
+      height: 38px;
     }
   }
 }
