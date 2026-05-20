@@ -1,3 +1,14 @@
+@keyframes usageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .ModalOverlay {
   display: flex;
   width: 100vw;
@@ -211,6 +222,13 @@
           color: #5a1f12;
           font-size: 14px;
           line-height: 1.5;
+        }
+
+        // Crossfade-on-key swap for the use case content slot. Each
+        // PM/HR/OffSec click rotates the keyed wrapper, so the animation
+        // replays and the new content slides in instead of popping.
+        .usageFade {
+          animation: usageFadeIn 320ms cubic-bezier(0.22, 0.95, 0.35, 1) both;
         }
       }
     }

@@ -256,23 +256,28 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
               <span>{offsecText}</span>
             </div>
-            {isOffsecView ? (
-              (() => {
-                const offsecContent = getOffsecBiasContent(biasNumber);
-                return offsecContent ? (
-                  <OffsecBiasView content={offsecContent} />
-                ) : (
-                  <div className={styles.offsecComingSoon}>
-                    {offsecComingSoon}
-                  </div>
-                );
-              })()
-            ) : (
-              <ContentParser
-                data={!isProductView ? data.usage : data.usageHr}
-                styles={styles}
-              />
-            )}
+            <div
+              key={isOffsecView ? 'offsec' : isProductView ? 'product' : 'hr'}
+              className={styles.usageFade}
+            >
+              {isOffsecView ? (
+                (() => {
+                  const offsecContent = getOffsecBiasContent(biasNumber);
+                  return offsecContent ? (
+                    <OffsecBiasView content={offsecContent} />
+                  ) : (
+                    <div className={styles.offsecComingSoon}>
+                      {offsecComingSoon}
+                    </div>
+                  );
+                })()
+              ) : (
+                <ContentParser
+                  data={!isProductView ? data.usage : data.usageHr}
+                  styles={styles}
+                />
+              )}
+            </div>
           </div>
           {data.title && <BiasBody biasNumber={biasNumber} locale={locale} />}
           {questions.length > 0 && (
