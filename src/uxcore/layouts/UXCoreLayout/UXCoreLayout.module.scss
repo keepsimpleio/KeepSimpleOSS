@@ -30,7 +30,9 @@
 }
 
 // Vertical Use cases panel — three stacked rows (PM / HR / Cybersecurity).
-// Sits below the View type switcher on the right.
+// Sits below the View type switcher on the right. Width matches the
+// View type pair (.wide variant of ViewSwitcher: 99 + 99 = 198px) so
+// the two right-hand controls line up flush.
 .useCasesPanel {
   position: absolute;
   top: 150px;
@@ -50,7 +52,7 @@
     align-items: center;
     gap: 10px;
     box-sizing: border-box;
-    width: 200px;
+    width: 198px;
     height: 38px;
     padding: 0 14px;
     background: #f4f4f4;
@@ -72,6 +74,9 @@
       border-bottom-width: 1px;
       border-bottom-left-radius: 6px;
       border-bottom-right-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
     }
 
     &.active {
@@ -88,6 +93,31 @@
 
     .cybersecShort {
       display: none;
+    }
+  }
+}
+
+// Dark mode — match the dark page background and lift the panel out of
+// it with a faintly lighter tone for inactive rows, a brighter neutral
+// for the active one.
+:global(body.darkTheme) .useCasesPanel {
+  .useCasesLabel {
+    color: #d8d8d8;
+  }
+
+  .useCaseRow {
+    background: #2a2f38;
+    border-color: #3c424d;
+    color: #c2c7cf;
+
+    &.active {
+      background: #1b1e26;
+      border-color: #f4f4f4;
+      color: #f4f4f4;
+
+      & + .useCaseRow {
+        border-top-color: #f4f4f4;
+      }
     }
   }
 }

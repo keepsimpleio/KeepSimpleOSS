@@ -600,6 +600,32 @@ ol {
   .ModalBodyContent .switcher .activeHr svg {
     fill: #bbe4f2 !important;
   }
+
+  .ModalBodyContent .offsecSwitcher {
+    background-color: #151a26 !important;
+    border-color: #303338 !important;
+    color: #c2c7cf !important;
+
+    svg {
+      fill: #c2c7cf !important;
+    }
+
+    &.active {
+      background-color: rgba(200, 65, 42, 0.18) !important;
+      border-color: #e57254 !important;
+      color: #ffd4c7 !important;
+
+      svg {
+        fill: #ffd4c7 !important;
+      }
+    }
+  }
+
+  .ModalBodyContent .offsecComingSoon {
+    background-color: #1f1419 !important;
+    border-color: #c8412a !important;
+    color: #ffd4c7 !important;
+  }
 }
 
 :global(body.darkTheme) .h1 {

@@ -179,6 +179,7 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
               secondViewIcon={<FolderIcon />}
               className={styles.viewTypeSwitcher}
               labelViewType
+              wide
               dataCy={'core-view-switcher'}
               dataCySecondView={'folder-view-switcher'}
             />

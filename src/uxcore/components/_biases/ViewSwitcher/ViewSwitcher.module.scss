@@ -94,6 +94,19 @@ $active-bg-color: #ffffff;
   }
 }
 
+// Wide variant — used by the Use cases column on the UX Core landing so
+// the View type pair lines up flush with the 200px-wide Use cases rows
+// underneath. Each button bumps from 79px to 99px so the two-button
+// strip totals 198px (≈ matches the Use cases column width).
+.wide {
+  .ViewSwitcherButtons {
+    .ViewSwitcherButton {
+      box-sizing: border-box;
+      width: 99px;
+    }
+  }
+}
+
 @media (max-width: 1360px) {
   .ViewSwitcher {
     margin-bottom: 10px;
