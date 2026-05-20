@@ -36,35 +36,38 @@
   z-index: 3;
 }
 
+// The PM/HR ViewSwitcher renders a label ("Viewer's team") + a 32px
+// two-button row. Its top:150px + ~26px label/gap + 32px button puts
+// its bottom edge at ~208px. The Cybersecurity button slots in
+// immediately below, sharing borders so the three buttons read as a
+// single block.
 .useCaseSwitcher {
   position: absolute;
-  top: 235px;
+  top: 208px;
   right: 20px;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-
-  .useCaseLabel {
-    color: #333333;
-    font-size: 14px;
-    margin: 0 0 8px;
-  }
 
   .useCaseButton {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
+    width: 158px; // PM (79) + HR (79) — match the strip above
     height: 32px;
-    padding: 0 12px;
+    padding: 0 8px;
     background: #f4f4f4;
     border: 1px solid #c4c4c4;
-    border-radius: 5px;
+    border-top: 0; // merge with PM/HR bottom edge
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     font-size: 14px;
     text-transform: uppercase;
     color: #000000d9;
     cursor: pointer;
+
+    > span {
+      line-height: 1;
+    }
 
     &.active {
       background: #ffffff;
@@ -72,9 +75,6 @@
     }
   }
 
-  // When PM/HR is active (OffSec inactive), dim the OffSec button to
-  // reinforce mutual exclusivity. When OffSec turns on, the
-  // viewTeamSwitcher above is dimmed by .dimmed.
   &.dimmed {
     opacity: 0.5;
   }
@@ -86,7 +86,7 @@
 
 @media (max-width: 1359px) {
   .useCaseSwitcher {
-    top: 260px;
+    top: 233px;
   }
 }
 

@@ -1,46 +1,25 @@
-// TODO(hexens-logo): replace this placeholder shield with the official
-// hexens.io company logo SVG. Wolf to drop the asset; this component
-// just needs its <svg>…</svg> body swapped.
-export const OffSecIcon = () => (
+// Hexens logo — bold X framed by top-left and bottom-right corner
+// brackets. Reproduced as SVG from the hexens.io brand mark; uses
+// currentColor so the parent's CSS color controls active/inactive
+// shading. Two named exports kept for parity with the PM/HR icon
+// pair (active vs greyed).
+const HexensMark = ({ color }: { color: string }) => (
   <svg
     width="20"
     height="20"
-    viewBox="0 0 20 20"
-    fill="none"
+    viewBox="0 0 24 24"
+    fill={color}
     xmlns="http://www.w3.org/2000/svg"
   >
-    <path
-      d="M10 1.75L3 4.25v4.5c0 4.4 2.98 8.52 7 9.5 4.02-.98 7-5.1 7-9.5v-4.5L10 1.75z"
-      fill="#C8412A"
-      stroke="#7A2618"
-      strokeWidth="0.6"
-    />
-    <path
-      d="M7.3 9.5h5.4v3.2a2.7 2.7 0 0 1-2.7 2.7 2.7 2.7 0 0 1-2.7-2.7V9.5z"
-      fill="#F5E7DE"
-    />
-    <rect x="8.6" y="6.6" width="2.8" height="3.4" rx="1.4" fill="#F5E7DE" />
+    {/* top-left bracket */}
+    <path d="M2 2 H9 V5 H5 V9 H2 Z" />
+    {/* bottom-right bracket */}
+    <path d="M22 22 H15 V19 H19 V15 H22 Z" />
+    {/* X — two diagonal bars meeting at center */}
+    <path d="M6.4 6.4 L9.2 6.4 L17.6 17.6 L14.8 17.6 Z" />
+    <path d="M14.8 6.4 L17.6 6.4 L9.2 17.6 L6.4 17.6 Z" />
   </svg>
 );
 
-export const OffSecIconGrey = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M10 1.75L3 4.25v4.5c0 4.4 2.98 8.52 7 9.5 4.02-.98 7-5.1 7-9.5v-4.5L10 1.75z"
-      fill="#B8B8B8"
-      stroke="#7A7A7A"
-      strokeWidth="0.6"
-    />
-    <path
-      d="M7.3 9.5h5.4v3.2a2.7 2.7 0 0 1-2.7 2.7 2.7 2.7 0 0 1-2.7-2.7V9.5z"
-      fill="#EEEEEE"
-    />
-    <rect x="8.6" y="6.6" width="2.8" height="3.4" rx="1.4" fill="#EEEEEE" />
-  </svg>
-);
+export const OffSecIcon = () => <HexensMark color="#111111" />;
+export const OffSecIconGrey = () => <HexensMark color="#9a9a9a" />;

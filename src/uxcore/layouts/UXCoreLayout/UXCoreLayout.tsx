@@ -81,7 +81,7 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   const [headerPodcastOpen, setHeaderPodcastOpen] = useState(false);
   const { locale } = router as TRouter;
   const data = biasesLocalization[locale];
-  const { browsingAsProduct, browsingAsHR } = data;
+  const { browsingAsProduct, browsingAsHR, browsingAsOffsec } = data;
   const { description } = biasesMobile[locale];
 
   useEffect(() => {
@@ -121,13 +121,29 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
 
   useEffect(() => {
     if (isSwitched !== undefined) {
-      if (isProductView) {
+      if (isOffsecView) {
+        setSnackBarText(browsingAsOffsec);
+      } else if (isProductView) {
         setSnackBarText(browsingAsProduct);
       } else {
         setSnackBarText(browsingAsHR);
       }
     }
-  }, [isSwitched, isProductView, locale]);
+  }, [isSwitched, isProductView, isOffsecView, locale]);
+
+  const handleOffsecClick = () => {
+    // Pre-set the snackbar text from the next state — the global hook's
+    // listener updates asynchronously, so reading isOffsecView in the
+    // text-effect alone briefly flashes the previous PM/HR label.
+    if (!isOffsecView) {
+      setSnackBarText(browsingAsOffsec);
+    } else {
+      setSnackBarText(isProductView ? browsingAsProduct : browsingAsHR);
+    }
+    toggleIsOffsecView();
+    setIsSwitched(prev => !prev);
+    handleSnackbarOpening();
+  };
 
   let snackbarTimeout: NodeJS.Timeout;
   const handleSnackbarOpening = () => {
@@ -186,16 +202,15 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
                 [styles.dimmed]: !isOffsecView,
               })}
             >
-              <p className={styles.useCaseLabel}>Use case</p>
               <div
                 data-cy="switch-offsec"
-                onClick={toggleIsOffsecView}
+                onClick={handleOffsecClick}
                 className={cn(styles.useCaseButton, {
                   [styles.active]: isOffsecView,
                 })}
               >
                 {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
-                <span>Offensive Cybersecurity</span>
+                <span>Cybersecurity</span>
               </div>
             </div>
             {isCoreView && <Search biases={strapiBiases} />}

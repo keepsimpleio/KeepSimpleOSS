@@ -166,7 +166,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
     managementValue,
     productText,
     hrText,
-    offsecShortText,
+    offsecText,
     offsecComingSoon,
   } = modalIntl[locale];
 
@@ -252,7 +252,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               })}
             >
               {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
-              <span>{offsecShortText}</span>
+              <span>{offsecText}</span>
             </div>
             {isOffsecView ? (
               <div className={styles.offsecComingSoon}>{offsecComingSoon}</div>
