@@ -1,3 +1,17 @@
+import HrIcon from '@uxcore/assets/icons/HrIcon';
+import { OffSecIcon, OffSecIconGrey } from '@uxcore/assets/icons/OffSecIcon';
+import ProductIcon from '@uxcore/assets/icons/ProductIcon';
+import BiasBody from '@uxcore/components/_biases/BiasBody';
+import ContentParser from '@uxcore/components/ContentParser';
+import ModalRaiting from '@uxcore/components/ModalRaiting';
+import Spinner from '@uxcore/components/Spinner';
+import Table from '@uxcore/components/Table';
+import UXCoreModalHeader from '@uxcore/components/UXCoreModalParts/UXCoreModalHeader';
+import modalIntl from '@uxcore/data/modal';
+import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
+import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
+import type { QuestionType, TagType } from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import {
@@ -8,23 +22,6 @@ import {
   useRef,
   useState,
 } from 'react';
-
-import type { QuestionType, TagType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
-
-import modalIntl from '@uxcore/data/modal';
-
-import HrIcon from '@uxcore/assets/icons/HrIcon';
-import ProductIcon from '@uxcore/assets/icons/ProductIcon';
-
-import BiasBody from '@uxcore/components/_biases/BiasBody';
-import ContentParser from '@uxcore/components/ContentParser';
-import ModalRaiting from '@uxcore/components/ModalRaiting';
-import Spinner from '@uxcore/components/Spinner';
-import Table from '@uxcore/components/Table';
-import UXCoreModalHeader from '@uxcore/components/UXCoreModalParts/UXCoreModalHeader';
 
 import styles from './UXCoreModal.module.scss';
 
@@ -66,6 +63,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   slugs,
 }) => {
   const router = useRouter();
+  const [{ toggleIsOffsecView }, { isOffsecView }] = useUXCoreGlobals();
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const [isQuestionHovered, setIsQuestionHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -168,6 +166,8 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
     managementValue,
     productText,
     hrText,
+    offsecShortText,
+    offsecComingSoon,
   } = modalIntl[locale];
 
   const { linkedIn, facebook, tweeter } = generateSocialLinks(
@@ -216,7 +216,11 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
             <span className={styles.metaTitle}>{usage}</span>
           </div>
           <div className={styles.ModalBodyContent}>
-            <div className={styles.switcher}>
+            <div
+              className={cn(styles.switcher, {
+                [styles.dimmed]: isOffsecView,
+              })}
+            >
               <div
                 onClick={handlePageViewChange}
                 data-cy="switch-product"
@@ -240,10 +244,24 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
                 <span className={styles.switcherItemText}> {hrText}</span>
               </div>
             </div>
-            <ContentParser
-              data={!isProductView ? data.usage : data.usageHr}
-              styles={styles}
-            />
+            <div
+              data-cy="switch-offsec"
+              onClick={toggleIsOffsecView}
+              className={cn(styles.offsecSwitcher, {
+                [styles.active]: isOffsecView,
+              })}
+            >
+              {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+              <span>{offsecShortText}</span>
+            </div>
+            {isOffsecView ? (
+              <div className={styles.offsecComingSoon}>{offsecComingSoon}</div>
+            ) : (
+              <ContentParser
+                data={!isProductView ? data.usage : data.usageHr}
+                styles={styles}
+              />
+            )}
           </div>
           {data.title && <BiasBody biasNumber={biasNumber} locale={locale} />}
           {questions.length > 0 && (

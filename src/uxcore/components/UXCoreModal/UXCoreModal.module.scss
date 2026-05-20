@@ -162,6 +162,55 @@
               fill: #1e56a0;
             }
           }
+
+          &.dimmed {
+            opacity: 0.5;
+          }
+        }
+
+        .offsecSwitcher {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          height: 36px;
+          margin-bottom: 12px;
+          padding: 0 14px;
+          background-color: #fff;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          color: #000000a6;
+          font-size: 14px;
+          cursor: pointer;
+          opacity: 0.7;
+          transition:
+            opacity 200ms ease,
+            color 200ms ease;
+
+          &:hover {
+            opacity: 1;
+          }
+
+          &.active {
+            background-color: #fdecea;
+            border-color: #c8412a;
+            color: #c8412a;
+            opacity: 1;
+
+            svg {
+              fill: #c8412a;
+            }
+          }
+        }
+
+        .offsecComingSoon {
+          padding: 16px 18px;
+          border: 1px dashed #c8412a;
+          border-radius: 8px;
+          background-color: #fff6f4;
+          color: #5a1f12;
+          font-size: 14px;
+          line-height: 1.5;
         }
       }
     }

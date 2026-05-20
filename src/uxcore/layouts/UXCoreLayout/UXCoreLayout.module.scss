@@ -36,6 +36,60 @@
   z-index: 3;
 }
 
+.useCaseSwitcher {
+  position: absolute;
+  top: 235px;
+  right: 20px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .useCaseLabel {
+    color: #333333;
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+
+  .useCaseButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    background: #f4f4f4;
+    border: 1px solid #c4c4c4;
+    border-radius: 5px;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #000000d9;
+    cursor: pointer;
+
+    &.active {
+      background: #ffffff;
+      border-color: #000000d9;
+    }
+  }
+
+  // When PM/HR is active (OffSec inactive), dim the OffSec button to
+  // reinforce mutual exclusivity. When OffSec turns on, the
+  // viewTeamSwitcher above is dimmed by .dimmed.
+  &.dimmed {
+    opacity: 0.5;
+  }
+}
+
+.viewTeamSwitcher.dimmed {
+  opacity: 0.5;
+}
+
+@media (max-width: 1359px) {
+  .useCaseSwitcher {
+    top: 260px;
+  }
+}
+
 .Logos {
   position: absolute;
   top: 75%;

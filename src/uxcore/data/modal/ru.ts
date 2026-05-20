@@ -16,6 +16,11 @@ const ru = {
   uxeducationButtonLabel: 'Использование UXCG в образовании',
   downloadButtonLabel: 'Скачать PDF',
   visualExample: 'Визуальный пример',
+  offsecText: 'Наступательная кибербезопасность',
+  offsecShortText: 'OffSec',
+  usageOffsec: 'Пример использования в наступательной кибербезопасности',
+  offsecComingSoon:
+    'Сценарии для наступательной кибербезопасности — скоро. Мы готовим примеры для атакующей и защитной стороны для каждого искажения в UX Core.',
 };
 
 export default ru;

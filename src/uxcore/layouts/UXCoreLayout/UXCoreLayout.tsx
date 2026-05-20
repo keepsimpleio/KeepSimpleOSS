@@ -1,35 +1,34 @@
+import CoreIcon from '@uxcore/assets/icons/CoreIcon';
+import FolderIcon from '@uxcore/assets/icons/FolderIcon';
+import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
+import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
+import { OffSecIcon, OffSecIconGrey } from '@uxcore/assets/icons/OffSecIcon';
+import { PMIcon } from '@uxcore/assets/icons/PMIcon';
+import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
+import Search from '@uxcore/components/_biases/Search';
+import Logos from '@uxcore/components/Logos';
+import Spinner from '@uxcore/components/Spinner';
+import ToolFooter from '@uxcore/components/ToolFooter';
+import biasesLocalization from '@uxcore/data/biases';
+import biasesMobile from '@uxcore/data/biasesMobile';
+import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
+import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React, { FC, useEffect, useState } from 'react';
 
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
-import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
-
-import biasesLocalization from '@uxcore/data/biases';
-import biasesMobile from '@uxcore/data/biasesMobile';
-
-import CoreIcon from '@uxcore/assets/icons/CoreIcon';
-import FolderIcon from '@uxcore/assets/icons/FolderIcon';
-import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
-import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
-import { PMIcon } from '@uxcore/assets/icons/PMIcon';
-import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
-
-import Search from '@uxcore/components/_biases/Search';
-import Logos from '@uxcore/components/Logos';
-import Spinner from '@uxcore/components/Spinner';
-import ToolFooter from '@uxcore/components/ToolFooter';
-
 import type { UXCoreLayoutProps } from './UXCoreLayout.types';
 
 import styles from './UXCoreLayout.module.scss';
 
-const FolderViewLayout = dynamic(() => import('@uxcore/layouts/FolderViewLayout'), {
-  ssr: false,
-});
+const FolderViewLayout = dynamic(
+  () => import('@uxcore/layouts/FolderViewLayout'),
+  {
+    ssr: false,
+  },
+);
 const CoreViewLayout = dynamic(() => import('@uxcore/layouts/CoreViewLayout'), {
   ssr: false,
 });
@@ -38,16 +37,25 @@ const UXCorePopup = dynamic(() => import('@uxcore/components/UXCorePopup'), {
   ssr: false,
 });
 
-const UXCoreSnackbar = dynamic(() => import('@uxcore/components/UXCoreSnackbar'), {
-  ssr: false,
-});
+const UXCoreSnackbar = dynamic(
+  () => import('@uxcore/components/UXCoreSnackbar'),
+  {
+    ssr: false,
+  },
+);
 
-const ViewSwitcher = dynamic(() => import('@uxcore/components/_biases/ViewSwitcher'), {
-  ssr: false,
-});
-const MobileView = dynamic(() => import('@uxcore/components/_biases/MobileView'), {
-  ssr: false,
-});
+const ViewSwitcher = dynamic(
+  () => import('@uxcore/components/_biases/ViewSwitcher'),
+  {
+    ssr: false,
+  },
+);
+const MobileView = dynamic(
+  () => import('@uxcore/components/_biases/MobileView'),
+  {
+    ssr: false,
+  },
+);
 
 const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   strapiBiases,
@@ -62,6 +70,7 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
 }) => {
   const [{ toggleIsCoreView }, { isCoreView }] = useUXCoreGlobals();
   const [{ toggleIsProductView }, { isProductView }] = useUXCoreGlobals();
+  const [{ toggleIsOffsecView }, { isOffsecView }] = useUXCoreGlobals();
   const router = useRouter();
   const { asPath } = router as TRouter;
   const { isUxcoreMobile } = useUCoreMobile()[1];
@@ -78,10 +87,13 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   useEffect(() => {
     if (!mounted) return;
 
-    const hasHr = window.location.hash === '#hr';
+    const hash = window.location.hash;
 
-    if (hasHr && isProductView) {
+    if (hash === '#hr' && isProductView) {
       toggleIsProductView();
+    }
+    if (hash === '#offsec' && !isOffsecView) {
+      toggleIsOffsecView();
     }
   }, [mounted]);
 
@@ -96,7 +108,7 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
 
     const basePath = `${localePrefix}/uxcore`;
 
-    const shouldBeHash = isProductView ? '' : '#hr';
+    const shouldBeHash = isOffsecView ? '#offsec' : isProductView ? '' : '#hr';
 
     const targetUrl = `${basePath}${shouldBeHash}`;
 
@@ -105,7 +117,7 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
     if (currentUrl === targetUrl) return;
 
     window.history.replaceState(null, '', targetUrl);
-  }, [mounted, isProductView, router.locale]);
+  }, [mounted, isProductView, isOffsecView, router.locale]);
 
   useEffect(() => {
     if (isSwitched !== undefined) {
@@ -160,13 +172,32 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
               secondViewIcon={isProductView ? <HRIconGrey /> : <HRIconBlue />}
               secondViewLabel={'hr'}
               secondText={'HR'}
-              className={styles.viewTeamSwitcher}
+              className={cn(styles.viewTeamSwitcher, {
+                [styles.dimmed]: isOffsecView,
+              })}
               setIsSwitched={setIsSwitched}
               isSwitched={isSwitched}
               handleSnackbarOpening={handleSnackbarOpening}
               dataCy={'switch-product'}
               dataCySecondView={'switch-hr'}
             />
+            <div
+              className={cn(styles.useCaseSwitcher, {
+                [styles.dimmed]: !isOffsecView,
+              })}
+            >
+              <p className={styles.useCaseLabel}>Use case</p>
+              <div
+                data-cy="switch-offsec"
+                onClick={toggleIsOffsecView}
+                className={cn(styles.useCaseButton, {
+                  [styles.active]: isOffsecView,
+                })}
+              >
+                {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+                <span>Offensive Cybersecurity</span>
+              </div>
+            </div>
             {isCoreView && <Search biases={strapiBiases} />}
             {isCoreView && (
               <>

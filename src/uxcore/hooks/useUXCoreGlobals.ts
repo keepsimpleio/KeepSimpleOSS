@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-
 import { CustomHookType, DispatchFuntion } from '@uxcore/local-types/global';
+import { useEffect, useState } from 'react';
 
 interface TState {
   isCoreView: boolean;
   isProductView?: boolean;
+  isOffsecView?: boolean;
   showArrows?: boolean;
 }
 
@@ -12,6 +12,7 @@ let listeners: DispatchFuntion[] = [];
 let state: TState = {
   isCoreView: true,
   isProductView: true,
+  isOffsecView: false,
   showArrows: true,
 };
 
@@ -35,7 +36,18 @@ const toggleIsCoreView = () => {
 };
 const toggleIsProductView = () => {
   localStorage.setItem('isProductView', String(!state.isProductView));
-  reducer({ isProductView: !state.isProductView });
+  // Switching to a PM/HR view always exits OffSec — the three use cases
+  // are mutually exclusive.
+  if (state.isOffsecView) {
+    localStorage.setItem('isOffsecView', 'false');
+    reducer({ isProductView: !state.isProductView, isOffsecView: false });
+  } else {
+    reducer({ isProductView: !state.isProductView });
+  }
+};
+const toggleIsOffsecView = () => {
+  localStorage.setItem('isOffsecView', String(!state.isOffsecView));
+  reducer({ isOffsecView: !state.isOffsecView });
 };
 const toggleShowArrows = () => {
   localStorage.setItem('showArrows', String(!state.showArrows));
@@ -47,6 +59,7 @@ const initUseUXCoreGlobals = () => {
   const changeState = (localStorage.getItem('isCoreView') || true) === 'false';
   const changeStateView =
     (localStorage.getItem('isProductView') || true) === 'false';
+  const changeStateOffsec = localStorage.getItem('isOffsecView') === 'true';
   const changeStateArrows =
     (localStorage.getItem('showArrows') || true) === 'false';
   if (changeState) {
@@ -54,6 +67,9 @@ const initUseUXCoreGlobals = () => {
   }
   if (changeStateView) {
     toggleIsProductView();
+  }
+  if (changeStateOffsec) {
+    toggleIsOffsecView();
   }
   if (changeStateArrows) {
     toggleShowArrows();
@@ -77,6 +93,7 @@ const useUXCoreGlobals = (): CustomHookType => {
       initUseUXCoreGlobals,
       toggleIsCoreView,
       toggleIsProductView,
+      toggleIsOffsecView,
       toggleShowArrows,
     },
     state,

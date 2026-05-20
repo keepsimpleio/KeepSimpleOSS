@@ -16,5 +16,10 @@ const en = {
   uxeducationButtonLabel: 'Using UXCG in Education',
   downloadButtonLabel: 'Download PDF',
   visualExample: 'Visual Example',
+  offsecText: 'Offensive Cybersecurity',
+  offsecShortText: 'OffSec',
+  usageOffsec: 'Example of use by Offensive Cybersecurity',
+  offsecComingSoon:
+    'Offensive Cybersecurity use cases — coming soon. We are curating attacker-side and defender-side scenarios for every bias in UX Core.',
 };
 export default en;
