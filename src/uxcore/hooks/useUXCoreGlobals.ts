@@ -49,6 +49,21 @@ const toggleIsOffsecView = () => {
   localStorage.setItem('isOffsecView', String(!state.isOffsecView));
   reducer({ isOffsecView: !state.isOffsecView });
 };
+
+// Explicit setter used by the vertical Use cases panel — three mutually
+// exclusive targets. Persists both flags atomically so any consumer
+// reading the next state gets a consistent snapshot.
+const setUseCase = (target: 'product' | 'hr' | 'offsec') => {
+  const next = {
+    isProductView: target === 'product',
+    isOffsecView: target === 'offsec',
+  };
+  // 'hr' leaves isProductView=false, isOffsecView=false.
+  if (target === 'hr') next.isProductView = false;
+  localStorage.setItem('isProductView', String(next.isProductView));
+  localStorage.setItem('isOffsecView', String(next.isOffsecView));
+  reducer(next);
+};
 const toggleShowArrows = () => {
   localStorage.setItem('showArrows', String(!state.showArrows));
   reducer({ showArrows: !state.showArrows });
@@ -94,6 +109,7 @@ const useUXCoreGlobals = (): CustomHookType => {
       toggleIsCoreView,
       toggleIsProductView,
       toggleIsOffsecView,
+      setUseCase,
       toggleShowArrows,
     },
     state,

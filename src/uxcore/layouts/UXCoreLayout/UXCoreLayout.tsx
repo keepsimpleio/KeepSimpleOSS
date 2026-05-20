@@ -70,7 +70,8 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
 }) => {
   const [{ toggleIsCoreView }, { isCoreView }] = useUXCoreGlobals();
   const [{ toggleIsProductView }, { isProductView }] = useUXCoreGlobals();
-  const [{ toggleIsOffsecView }, { isOffsecView }] = useUXCoreGlobals();
+  const [{ toggleIsOffsecView, setUseCase }, { isOffsecView }] =
+    useUXCoreGlobals();
   const router = useRouter();
   const { asPath } = router as TRouter;
   const { isUxcoreMobile } = useUCoreMobile()[1];
@@ -131,16 +132,17 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
     }
   }, [isSwitched, isProductView, isOffsecView, locale]);
 
-  const handleOffsecClick = () => {
-    // Pre-set the snackbar text from the next state — the global hook's
-    // listener updates asynchronously, so reading isOffsecView in the
-    // text-effect alone briefly flashes the previous PM/HR label.
-    if (!isOffsecView) {
-      setSnackBarText(browsingAsOffsec);
-    } else {
-      setSnackBarText(isProductView ? browsingAsProduct : browsingAsHR);
-    }
-    toggleIsOffsecView();
+  // One click handler for the three vertical Use cases rows. Sets state
+  // explicitly via setUseCase so PM/HR/OffSec are mutually exclusive
+  // without depending on the toggle semantics of the older actions.
+  // Snackbar text is pre-set so the first frame doesn't flash the
+  // previous label while the hook listener catches up.
+  const handleUseCaseClick = (target: 'product' | 'hr' | 'offsec') => {
+    if (target === 'product') setSnackBarText(browsingAsProduct);
+    else if (target === 'hr') setSnackBarText(browsingAsHR);
+    else setSnackBarText(browsingAsOffsec);
+
+    setUseCase(target);
     setIsSwitched(prev => !prev);
     handleSnackbarOpening();
   };
@@ -180,37 +182,42 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
               dataCy={'core-view-switcher'}
               dataCySecondView={'folder-view-switcher'}
             />
-            <ViewSwitcher
-              isSecondView={isProductView}
-              toggleIsCoreView={toggleIsProductView}
-              defaultViewLabel={'PM'}
-              defaultVieWIcon={isProductView ? <PMIcon /> : <PMIconGrey />}
-              secondViewIcon={isProductView ? <HRIconGrey /> : <HRIconBlue />}
-              secondViewLabel={'hr'}
-              secondText={'HR'}
-              className={cn(styles.viewTeamSwitcher, {
-                [styles.dimmed]: isOffsecView,
-              })}
-              setIsSwitched={setIsSwitched}
-              isSwitched={isSwitched}
-              handleSnackbarOpening={handleSnackbarOpening}
-              dataCy={'switch-product'}
-              dataCySecondView={'switch-hr'}
-            />
-            <div
-              className={cn(styles.useCaseSwitcher, {
-                [styles.dimmed]: !isOffsecView,
-              })}
-            >
+            <div className={styles.useCasesPanel}>
+              <p className={styles.useCasesLabel}>Use cases</p>
+              <div
+                data-cy="switch-product"
+                onClick={() => handleUseCaseClick('product')}
+                className={cn(styles.useCaseRow, {
+                  [styles.active]: isProductView && !isOffsecView,
+                })}
+              >
+                {isProductView && !isOffsecView ? <PMIcon /> : <PMIconGrey />}
+                <span>PM</span>
+              </div>
+              <div
+                data-cy="switch-hr"
+                onClick={() => handleUseCaseClick('hr')}
+                className={cn(styles.useCaseRow, {
+                  [styles.active]: !isProductView && !isOffsecView,
+                })}
+              >
+                {!isProductView && !isOffsecView ? (
+                  <HRIconBlue />
+                ) : (
+                  <HRIconGrey />
+                )}
+                <span>HR</span>
+              </div>
               <div
                 data-cy="switch-offsec"
-                onClick={handleOffsecClick}
-                className={cn(styles.useCaseButton, {
+                onClick={() => handleUseCaseClick('offsec')}
+                className={cn(styles.useCaseRow, {
                   [styles.active]: isOffsecView,
                 })}
               >
                 {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
-                <span>Cybersecurity</span>
+                <span className={styles.cybersecFull}>Cybersecurity</span>
+                <span className={styles.cybersecShort}>OffSec</span>
               </div>
             </div>
             {isCoreView && <Search biases={strapiBiases} />}

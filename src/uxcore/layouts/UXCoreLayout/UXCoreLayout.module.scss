@@ -29,65 +29,81 @@
   z-index: 3;
 }
 
-.viewTeamSwitcher {
+// Vertical Use cases panel — three stacked rows (PM / HR / Cybersecurity).
+// Sits below the View type switcher on the right.
+.useCasesPanel {
   position: absolute;
   top: 150px;
   right: 20px;
   z-index: 3;
-}
+  display: flex;
+  flex-direction: column;
 
-// The PM/HR ViewSwitcher renders a label ("Viewer's team") + a 32px
-// two-button row. Its top:150px + ~26px label/gap + 32px button puts
-// its bottom edge at ~208px. The Cybersecurity button slots in
-// immediately below, sharing borders so the three buttons read as a
-// single block.
-.useCaseSwitcher {
-  position: absolute;
-  top: 208px;
-  right: 20px;
-  z-index: 3;
+  .useCasesLabel {
+    color: #333333;
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
 
-  .useCaseButton {
+  .useCaseRow {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
+    gap: 10px;
     box-sizing: border-box;
-    width: 158px; // PM (79) + HR (79) — matches the strip above exactly
-    height: 32px;
-    padding: 0 8px;
+    width: 200px;
+    height: 38px;
+    padding: 0 14px;
     background: #f4f4f4;
     border: 1px solid #c4c4c4;
-    border-top: 0; // merge with PM/HR bottom edge
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-bottom-width: 0;
+    color: #515151;
     font-size: 14px;
-    text-transform: uppercase;
-    color: #000000d9;
     cursor: pointer;
+    transition:
+      background 160ms ease,
+      color 160ms ease;
 
-    > span {
-      line-height: 1;
+    &:first-of-type {
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+    }
+
+    &:last-of-type {
+      border-bottom-width: 1px;
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
     }
 
     &.active {
       background: #ffffff;
       border-color: #000000d9;
+      color: #000000d9;
+
+      // The neighbouring row's top border should sit above this active
+      // row's dark border so the dark border wraps fully around it.
+      & + .useCaseRow {
+        border-top-color: #000000d9;
+      }
+    }
+
+    .cybersecShort {
+      display: none;
     }
   }
-
-  &.dimmed {
-    opacity: 0.5;
-  }
 }
 
-.viewTeamSwitcher.dimmed {
-  opacity: 0.5;
-}
+// On narrower laptop viewports swap "Cybersecurity" for the short
+// "OffSec" so the third row's label still fits comfortably.
+@media (max-width: 1280px) {
+  .useCasesPanel .useCaseRow {
+    width: 168px;
 
-@media (max-width: 1359px) {
-  .useCaseSwitcher {
-    top: 233px;
+    .cybersecFull {
+      display: none;
+    }
+    .cybersecShort {
+      display: inline;
+    }
   }
 }
 
@@ -185,10 +201,6 @@
 }
 
 @media (max-width: 1359px) {
-  .viewTeamSwitcher {
-    top: 175px;
-    align-items: flex-end;
-  }
   .SvgWrapper {
     .BiasEnvironment {
       left: 0;
