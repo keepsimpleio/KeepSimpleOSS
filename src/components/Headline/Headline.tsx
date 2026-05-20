@@ -47,8 +47,12 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
 
   const [desktopVideoReady, setDesktopVideoReady] = useState(false);
   const [mobileVideoReady, setMobileVideoReady] = useState(false);
+  const [desktopVideoDarkReady, setDesktopVideoDarkReady] = useState(false);
+  const [mobileVideoDarkReady, setMobileVideoDarkReady] = useState(false);
   const desktopVideoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const desktopVideoDarkRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoDarkRef = useRef<HTMLVideoElement>(null);
 
   const loadVideo = useCallback(
     (
@@ -80,6 +84,16 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
         mobileVideoRef,
         '/keepsimple_/assets/home-page/Mobile-Leaves-Compressed1.mp4',
         setMobileVideoReady,
+      );
+      loadVideo(
+        desktopVideoDarkRef,
+        '/keepsimple_/assets/home-page/leaves-dark.mp4',
+        setDesktopVideoDarkReady,
+      );
+      loadVideo(
+        mobileVideoDarkRef,
+        '/keepsimple_/assets/home-page/leaves-mobile-dark.mp4',
+        setMobileVideoDarkReady,
       );
     };
 
@@ -235,7 +249,19 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
             muted
             loop
             className={cn(styles.video, {
-              [styles.videoVisible]: desktopVideoReady,
+              [styles.videoVisible]: desktopVideoReady && !darkTheme,
+            })}
+            height={600}
+          />
+          <video
+            ref={desktopVideoDarkRef}
+            controls={false}
+            playsInline
+            autoPlay
+            muted
+            loop
+            className={cn(styles.video, {
+              [styles.videoVisible]: desktopVideoDarkReady && darkTheme,
             })}
             height={600}
           />
@@ -348,7 +374,19 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
             muted
             loop
             className={cn(styles.video, {
-              [styles.videoVisible]: mobileVideoReady,
+              [styles.videoVisible]: mobileVideoReady && !darkTheme,
+            })}
+            height={600}
+          />
+          <video
+            ref={mobileVideoDarkRef}
+            controls={false}
+            playsInline
+            autoPlay
+            muted
+            loop
+            className={cn(styles.video, {
+              [styles.videoVisible]: mobileVideoDarkReady && darkTheme,
             })}
             height={600}
           />
