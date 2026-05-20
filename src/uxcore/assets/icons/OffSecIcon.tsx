@@ -1,14 +1,16 @@
 // Hexens logo — bold X framed by top-left and bottom-right corner
-// brackets. Reproduced as SVG from the hexens.io brand mark; uses
-// currentColor so the parent's CSS color controls active/inactive
-// shading. Two named exports kept for parity with the PM/HR icon
-// pair (active vs greyed).
-const HexensMark = ({ color }: { color: string }) => (
+// brackets. Reproduced as SVG from the hexens.io brand mark. Uses
+// `currentColor` so the host row's `color` cascade decides the fill,
+// which lets dark mode invert it to white without a second asset.
+// Two exports kept for parity with the PM/HR icon pair, but they
+// share the same body — the wrapping span on the "grey" variant lets
+// callers visually flag the inactive state if needed.
+const HexensMark = () => (
   <svg
     width="20"
     height="20"
     viewBox="0 0 24 24"
-    fill={color}
+    fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"
   >
     {/* top-left bracket */}
@@ -21,5 +23,5 @@ const HexensMark = ({ color }: { color: string }) => (
   </svg>
 );
 
-export const OffSecIcon = () => <HexensMark color="#111111" />;
-export const OffSecIconGrey = () => <HexensMark color="#9a9a9a" />;
+export const OffSecIcon = () => <HexensMark />;
+export const OffSecIconGrey = () => <HexensMark />;

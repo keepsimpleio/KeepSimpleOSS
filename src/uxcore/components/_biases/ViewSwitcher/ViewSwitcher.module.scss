@@ -105,6 +105,18 @@ $active-bg-color: #ffffff;
       width: 99px;
     }
   }
+
+  // At the column-mode breakpoint the base rule shrinks each button to
+  // 63×28. Override so the View type pair stays the same width as the
+  // Use cases column underneath (168px / 38px tall on small screens).
+  @media (max-width: 1360px) {
+    .ViewSwitcherButtons {
+      .ViewSwitcherButton {
+        width: 168px;
+        height: 38px;
+      }
+    }
+  }
 }
 
 @media (max-width: 1360px) {
