@@ -5,7 +5,7 @@ const en = {
   description: 'Description',
   hrText: 'People Management',
   productText: 'Product Management',
-  usage: 'Example of use by team',
+  usage: 'Examples of use',
   mentionedIn: 'This bias answers to the following questions',
   productValue: 'Product value',
   usageUiUx: 'Example of use by UI/UX',

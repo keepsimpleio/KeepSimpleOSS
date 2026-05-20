@@ -5,7 +5,7 @@ const hy = {
   description: 'Նկարագրություն',
   hrText: 'ՄՌԿ (HR)',
   productText: 'Պրոդուկտ',
-  usage: 'Թիմում կիրառության օրինակ',
+  usage: 'Կիրառության օրինակներ',
   mentionedIn: 'Այս հակումը պատասխանում է հետևյալ հարցերին',
   productValue: 'Product value',
   usageUiUx: 'Example of use by UI/UX',
