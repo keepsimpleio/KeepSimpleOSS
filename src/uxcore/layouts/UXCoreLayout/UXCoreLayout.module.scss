@@ -52,7 +52,8 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    width: 160.94px; // matches the rendered PM+HR strip width
+    box-sizing: border-box;
+    width: 158px; // PM (79) + HR (79) — matches the strip above exactly
     height: 32px;
     padding: 0 8px;
     background: #f4f4f4;
