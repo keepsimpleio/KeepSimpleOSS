@@ -33,10 +33,6 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
             <div className={styles.cardSender}>{before.sender}</div>
             <div className={styles.cardSubject}>{before.subject}</div>
             <div className={styles.cardPreview}>{before.preview}</div>
-            <div className={styles.cardStat}>
-              <span className={styles.cardStatValue}>{before.stat.value}</span>
-              <span className={styles.cardStatLabel}>{before.stat.label}</span>
-            </div>
           </div>
 
           <div className={styles.cardDivider}>
@@ -51,10 +47,6 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
               {after.subject}
             </div>
             <div className={styles.cardPreview}>{after.preview}</div>
-            <div className={styles.cardStat}>
-              <span className={styles.cardStatValue}>{after.stat.value}</span>
-              <span className={styles.cardStatLabel}>{after.stat.label}</span>
-            </div>
           </div>
         </div>
       </div>
