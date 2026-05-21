@@ -1638,10 +1638,13 @@ function AiAtlasApp() {
     data.projects.members.forEach((p: any) => {
       const n = p.children.length;
       if (!n) return;
-      const half = p.territoryArc / 2;
+      // childrenArc (if set) governs the angular spread of child entities
+      // independently of territoryArc (which drives the territory band
+      // backdrop). Lets the band stay wide while keeping satellites tight.
+      const arc = p.childrenArc != null ? p.childrenArc : p.territoryArc;
+      const half = arc / 2;
       p.children.forEach((c: any, i: number) => {
-        const t =
-          n === 1 ? p.theta : p.theta - half + i * (p.territoryArc / (n - 1));
+        const t = n === 1 ? p.theta : p.theta - half + i * (arc / (n - 1));
         const r = c.external ? data.territoryR + 0.1 : data.territoryR;
         const pos = POL(r, t);
         m[c.id] = { ...pos, ring: 'territories', node: c, parent: p.id };

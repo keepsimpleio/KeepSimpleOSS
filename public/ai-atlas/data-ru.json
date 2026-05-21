@@ -101,6 +101,7 @@
         "status": "ok",
         "leadDiamond": "blue",
         "territoryArc": 70,
+        "childrenArc": 36,
         "children": [
           {
             "id": "orchestrator",
@@ -192,6 +193,20 @@
           }
         ],
         "territoryLabel": "B2B SAAS"
+      },
+      {
+        "id": "seogeosolved",
+        "label": "SeoGeoSolver",
+        "sub": "seo + geo",
+        "diamond": "red",
+        "theta": 45,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "leadDeg": 6,
+        "leadR": 0.54,
+        "territoryArc": 0,
+        "children": [],
+        "territoryLabel": ""
       },
       {
         "id": "keepsimple",
@@ -502,6 +517,39 @@
         {
           "k": "полномочия",
           "v": "кодовая база multimove · оркестрация каналов"
+        },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "seogeosolved": {
+      "title": "SEOGEOSOLVER",
+      "cjk": "索",
+      "desc": "Мастерская по поисковой и генеративной оптимизации. Инструменты и аудиты для нового слоя ранжирования — где вопрос не «есть ли ты в Google», а «цитирует ли тебя модель». Рабочая папка /workspace/seo-geo-solved · CLAUDE.md сейчас 148 строк.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        {
+          "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-seogeosolved"
+        },
+        { "k": "владеет", "v": "seo + geo территория" }
+      ]
+    },
+
+    "lead-seogeosolved": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · SEOGEOSOLVER",
+      "cjk": "長",
+      "desc": "Технический лид, прикреплён к проекту SeoGeoSolver.",
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "технический лид" },
+        {
+          "k": "полномочия",
+          "v": "кодовая база seo-geo-solved · поисковые и GEO эксперименты"
         },
         { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
         { "k": "кольцо", "v": "III — ключевые продукты" }
