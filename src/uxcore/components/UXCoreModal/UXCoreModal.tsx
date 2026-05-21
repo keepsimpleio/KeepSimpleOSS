@@ -53,7 +53,6 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   onClose,
   onChangeBiasId,
   isProductView,
-  toggleIsProductView,
   isSecondView,
   data,
   setIsModalClosed,
@@ -65,7 +64,8 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   slugs,
 }) => {
   const router = useRouter();
-  const [{ toggleIsOffsecView }, { isOffsecView }] = useUXCoreGlobals();
+  const [{ toggleIsOffsecView, setUseCase }, { isOffsecView }] =
+    useUXCoreGlobals();
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const [isQuestionHovered, setIsQuestionHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,11 +79,13 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   const handlePageViewChange = useCallback(
     e => {
       const { type } = e.currentTarget.dataset;
-      if ((type === secondViewLabel) !== isSecondView) {
-        toggleIsProductView();
-      }
+      // Explicit set (not toggle) — guarantees a single click switches to
+      // the clicked side regardless of whether OffSec is currently active.
+      // The prior toggle-with-guard swallowed clicks when OffSec was on but
+      // the underlying isProductView still matched the clicked side.
+      setUseCase(type === secondViewLabel ? 'hr' : 'product');
     },
-    [isSecondView, toggleIsProductView],
+    [secondViewLabel, setUseCase],
   );
 
   const handleCopyLink = useCallback(() => {
