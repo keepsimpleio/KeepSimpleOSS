@@ -4,7 +4,9 @@
 // pattern — that topical, news-anchored lures outperform generic ones —
 // is well documented; the specific lift is not the point of the page.
 
-const content = {
+import type { OffsecBiasContent } from './types';
+
+const content: OffsecBiasContent = {
   scenario:
     'A major company just got breached and the news is everywhere. The next morning, an email lands in your inbox — looks like a vendor you trust, anchored to the breach you just read about.',
   visualLabel: 'Scenario',
@@ -43,4 +45,3 @@ const content = {
 };
 
 export default content;
-export type OffsecBiasContent = typeof content;

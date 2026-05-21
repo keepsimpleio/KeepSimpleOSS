@@ -1,10 +1,13 @@
 import { biases } from '../biasList/biases';
-import availabilityHeuristics, {
-  OffsecBiasContent,
-} from './availabilityHeuristics';
+import attentionalBias from './attentionalBias';
+import availabilityHeuristics from './availabilityHeuristics';
+import illusoryTruthEffect from './illusoryTruthEffect';
+import type { OffsecBiasContent } from './types';
 
 const offsecBySlug: Record<string, OffsecBiasContent> = {
   'availability-heuristics': availabilityHeuristics,
+  'attentional-bias': attentionalBias,
+  'illusory-truth-effect': illusoryTruthEffect,
 };
 
 export const getOffsecBiasContent = (
