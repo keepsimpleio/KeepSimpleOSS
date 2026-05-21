@@ -1,7 +1,8 @@
+import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
 import cn from 'classnames';
 import React, { FC } from 'react';
 
-import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
+import ThemeToggle from '@components/ThemeToggle';
 
 import styles from './UXCoreModalHeader.module.scss';
 
@@ -82,6 +83,7 @@ const UXCoreModalHeader: FC<UXCoreModalHeaderProps> = ({
               number === 7 || number === 19 || number === 87,
           })}
         >
+          <ThemeToggle />
           <LanguageSwitcher section={'uxcore'} languageSwitchSlugs={slugs} />
           <img
             src="/assets/biases/cross.svg"

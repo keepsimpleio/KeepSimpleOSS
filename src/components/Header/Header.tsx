@@ -24,6 +24,7 @@ import { GlobalContext } from '@components/Context/GlobalContext';
 import LogIn from '@components/LogIn';
 import Navbar from '@components/Navbar';
 import Link from '@components/NextLink';
+import ThemeToggle from '@components/ThemeToggle';
 import UserProfile from '@components/UserProfile';
 
 import styles from './Header.module.scss';
@@ -42,10 +43,7 @@ const Header: FC = () => {
   const isSmallScreen = useIsWidthLessThan(1141);
   const [openLogin, setOpenLogin] = useState(false);
   const { accountData, setAccountData } = useContext(GlobalContext);
-  const [
-    { toggleIsDarkTheme, toggleSidebar },
-    { isDarkTheme, isOpenedSidebar },
-  ] = useGlobals();
+  const [{ toggleSidebar }, { isDarkTheme, isOpenedSidebar }] = useGlobals();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('accessToken');
@@ -57,10 +55,6 @@ const Header: FC = () => {
       setOpenLogin(true);
     }
   }, [router.query.authError]);
-
-  const handleToggleTheme = useCallback(() => {
-    toggleIsDarkTheme();
-  }, []);
 
   const handleToggleSidebar = useCallback(() => {
     toggleSidebar();
@@ -176,11 +170,7 @@ const Header: FC = () => {
             handleClick={handleClick}
           />
           <div className={styles.actions}>
-            <div
-              data-test-id="theme-toggle"
-              className={styles.toggleTheme}
-              onClick={handleToggleTheme}
-            ></div>
+            <ThemeToggle />
             <div
               className={cn(styles.toggleLanguage, {
                 [styles.en]: locale === 'en',
