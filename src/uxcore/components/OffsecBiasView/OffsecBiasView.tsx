@@ -1,4 +1,4 @@
-import { OffsecBiasContent } from '@uxcore/data/biasOffsec';
+import { OffsecBiasCard, OffsecBiasContent } from '@uxcore/data/biasOffsec';
 
 import KemmioCredit from './KemmioCredit';
 
@@ -7,6 +7,79 @@ import styles from './OffsecBiasView.module.scss';
 interface OffsecBiasViewProps {
   content: OffsecBiasContent;
 }
+
+const CardBody = ({ card }: { card: OffsecBiasCard }) => {
+  if (card.kind === 'email') {
+    return (
+      <>
+        <div className={styles.emailHeader}>
+          <span className={styles.cardSender}>{card.sender}</span>
+          {card.timestamp && (
+            <span className={styles.cardTimestamp}>{card.timestamp}</span>
+          )}
+        </div>
+        <div className={styles.cardSubject}>
+          {card.flagged && <span className={styles.cardUrgencyDot} />}
+          {card.subject}
+        </div>
+        <div className={styles.cardRule} />
+        <div className={styles.cardPreview}>{card.preview}</div>
+        {card.attachment && (
+          <div className={styles.cardAttachment}>
+            <span className={styles.cardAttachmentIcon}>📎</span>
+            {card.attachment}
+          </div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'notification') {
+    return (
+      <>
+        <div className={styles.notifHeader}>
+          <span className={styles.notifAppIcon} aria-hidden="true" />
+          <span className={styles.notifAppName}>{card.appName}</span>
+          {card.timestamp && (
+            <span className={styles.notifTimestamp}>{card.timestamp}</span>
+          )}
+        </div>
+        <div className={styles.notifTitle}>
+          {card.flagged && <span className={styles.cardUrgencyDot} />}
+          {card.title}
+        </div>
+        <div className={styles.notifBody}>{card.body}</div>
+      </>
+    );
+  }
+
+  // kind === 'chat'
+  return (
+    <>
+      <div className={styles.chatHeader}>
+        <span className={styles.chatAvatar} aria-hidden="true">
+          {card.senderName.charAt(0)}
+        </span>
+        <div className={styles.chatIdentity}>
+          <span className={styles.chatSenderName}>{card.senderName}</span>
+          {card.senderHandle && (
+            <span className={styles.chatSenderHandle}>{card.senderHandle}</span>
+          )}
+        </div>
+        {card.timestamp && (
+          <span className={styles.chatTimestamp}>{card.timestamp}</span>
+        )}
+      </div>
+      {card.priorContext && (
+        <div className={styles.chatPrior}>↳ {card.priorContext}</div>
+      )}
+      <div className={styles.chatBubble}>
+        {card.flagged && <span className={styles.cardUrgencyDot} />}
+        <span>{card.body}</span>
+      </div>
+    </>
+  );
+};
 
 const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
   const { before, after } = content.visual;
@@ -20,24 +93,8 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
         <div className={styles.cards}>
           <div className={styles.cardWrap}>
             <span className={styles.cardCaption}>{before.tag}</span>
-            <div className={styles.card}>
-              <div className={styles.emailHeader}>
-                <span className={styles.cardSender}>{before.sender}</span>
-                {before.timestamp && (
-                  <span className={styles.cardTimestamp}>
-                    {before.timestamp}
-                  </span>
-                )}
-              </div>
-              <div className={styles.cardSubject}>{before.subject}</div>
-              <div className={styles.cardRule} />
-              <div className={styles.cardPreview}>{before.preview}</div>
-              {before.attachment && (
-                <div className={styles.cardAttachment}>
-                  <span className={styles.cardAttachmentIcon}>📎</span>
-                  {before.attachment}
-                </div>
-              )}
+            <div className={`${styles.card} ${styles[`card_${before.kind}`]}`}>
+              <CardBody card={before} />
             </div>
           </div>
 
@@ -51,21 +108,10 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
             >
               {after.tag}
             </span>
-            <div className={`${styles.card} ${styles.cardFlagged}`}>
-              <div className={styles.emailHeader}>
-                <span className={styles.cardSender}>{after.sender}</span>
-                {after.timestamp && (
-                  <span className={styles.cardTimestamp}>
-                    {after.timestamp}
-                  </span>
-                )}
-              </div>
-              <div className={styles.cardSubject}>
-                <span className={styles.cardUrgencyDot} />
-                {after.subject}
-              </div>
-              <div className={styles.cardRule} />
-              <div className={styles.cardPreview}>{after.preview}</div>
+            <div
+              className={`${styles.card} ${styles[`card_${after.kind}`]} ${styles.cardFlagged}`}
+            >
+              <CardBody card={after} />
             </div>
           </div>
         </div>

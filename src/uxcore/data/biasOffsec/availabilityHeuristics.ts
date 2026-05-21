@@ -12,6 +12,7 @@ const content: OffsecBiasContent = {
   visualLabel: 'Scenario',
   visual: {
     before: {
+      kind: 'email',
       tag: 'Generic',
       sender: 'billing@acme-vendor.com',
       timestamp: 'Mon, 10:42 AM',
@@ -20,6 +21,7 @@ const content: OffsecBiasContent = {
       attachment: 'invoice-Q3.pdf',
     },
     after: {
+      kind: 'email',
       tag: 'News-anchored',
       sender: 'security@acme-vendor.com',
       timestamp: 'Tue, 08:17 AM',
