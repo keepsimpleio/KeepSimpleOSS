@@ -6,7 +6,7 @@
 
 const content = {
   scenario:
-    'A major company just got breached and the news is everywhere. Now an attacker emails your finance team, pretending to be a trusted vendor.',
+    'A major company just got breached and the news is everywhere. The next morning, an email lands in your inbox — looks like a vendor you trust, anchored to the breach you just read about.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -29,7 +29,7 @@ const content = {
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'Availability heuristic colliding with base-rate neglect. After a breach saturates the news, the brain stops asking “how likely?” and starts asking “how easy to recall?” — and right now, the answer is everywhere. The target substitutes “I just read about this” for “I should verify this sender,” and a finance employee in that window pattern-matches the email to the news cycle, not to phishing. Identical payload; the news desk is doing the social engineering.',
+    'Availability heuristic colliding with base-rate neglect. After a breach saturates the news, your brain stops asking “how likely is this real?” and starts asking “how easy is it to recall?” — and right now, the answer is everywhere. You substitute “I just read about this” for “I should verify this sender,” and pattern-match the email to the news cycle, not to phishing. Identical payload; the news desk is doing the social engineering.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your security team is handling the perimeter. Here’s how you handle your inbox.',
