@@ -1678,11 +1678,18 @@ function AiAtlasApp() {
       : focusedDossier || buildIntroDossier(data, now, t);
 
   /* When a focused entity has a CLAUDE.md count from the metrics feed,
-     append it as the last row of the dossier. */
-  const claudeLines =
+     append it as the last row of the dossier. Falls back to a static
+     `claudeMdLines` on the dossier itself when the metrics endpoint
+     doesn't (yet) know about the entity — keeps the row format uniform. */
+  const metricsLines =
     focusId && metrics?.claudeMdLines?.[focusId] != null
       ? metrics.claudeMdLines[focusId]
       : null;
+  const staticLines =
+    focusedDossier && typeof (focusedDossier as any).claudeMdLines === 'number'
+      ? (focusedDossier as any).claudeMdLines
+      : null;
+  const claudeLines = metricsLines != null ? metricsLines : staticLines;
   if (claudeLines != null) {
     dossier = {
       ...dossier,

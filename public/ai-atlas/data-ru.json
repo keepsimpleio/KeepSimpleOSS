@@ -101,7 +101,7 @@
         "status": "ok",
         "leadDiamond": "blue",
         "territoryArc": 70,
-        "childrenArc": 36,
+        "childrenArc": 28,
         "children": [
           {
             "id": "orchestrator",
@@ -199,11 +199,9 @@
         "label": "SeoGeoSolver",
         "sub": "seo + geo",
         "diamond": "red",
-        "theta": 45,
+        "theta": 26,
         "status": "ok",
         "leadDiamond": "blue",
-        "leadDeg": 6,
-        "leadR": 0.54,
         "territoryArc": 0,
         "children": [],
         "territoryLabel": ""
@@ -526,7 +524,7 @@
     "seogeosolved": {
       "title": "SEOGEOSOLVER",
       "cjk": "索",
-      "desc": "Мастерская по поисковой и генеративной оптимизации. Инструменты и аудиты для нового слоя ранжирования — где вопрос не «есть ли ты в Google», а «цитирует ли тебя модель». Рабочая папка /workspace/seo-geo-solved · CLAUDE.md сейчас 148 строк.",
+      "desc": "Мастерская по поисковой и генеративной оптимизации. Инструменты и аудиты для нового слоя ранжирования — где вопрос не «есть ли ты в Google», а «цитирует ли тебя модель». В паре с Multimove внутри контент/PR-направления.",
       "rows": [
         { "k": "тип", "v": "продукт", "cls": "red" },
         { "k": "кольцо", "v": "III — ключевые продукты" },
@@ -536,7 +534,7 @@
           "cls": "blue",
           "ref": "lead-seogeosolved"
         },
-        { "k": "владеет", "v": "seo + geo территория" }
+        { "k": "партнёр", "v": "multimove", "cls": "red", "ref": "multimove" }
       ]
     },
 
@@ -544,6 +542,7 @@
       "title": "ТЕХНИЧЕСКИЙ ЛИД · SEOGEOSOLVER",
       "cjk": "長",
       "desc": "Технический лид, прикреплён к проекту SeoGeoSolver.",
+      "claudeMdLines": 148,
       "rows": [
         { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
         { "k": "роль", "v": "технический лид" },

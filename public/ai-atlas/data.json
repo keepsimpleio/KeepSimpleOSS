@@ -101,7 +101,7 @@
         "status": "ok",
         "leadDiamond": "blue",
         "territoryArc": 70,
-        "childrenArc": 36,
+        "childrenArc": 28,
         "children": [
           {
             "id": "orchestrator",
@@ -199,11 +199,9 @@
         "label": "SeoGeoSolver",
         "sub": "seo + geo",
         "diamond": "red",
-        "theta": 45,
+        "theta": 26,
         "status": "ok",
         "leadDiamond": "blue",
-        "leadDeg": 6,
-        "leadR": 0.54,
         "territoryArc": 0,
         "children": [],
         "territoryLabel": ""
@@ -518,7 +516,7 @@
     "seogeosolved": {
       "title": "SEOGEOSOLVER",
       "cjk": "索",
-      "desc": "Search-engine + generative-engine optimization workshop. Tools and audits that move pages on the new ranking layer where the question is no longer “is this on Google” but “does the model cite this.” Workspace at /workspace/seo-geo-solved · CLAUDE.md currently 148 lines.",
+      "desc": "Search-engine + generative-engine optimization workshop. Tools and audits that move pages on the new ranking layer where the question is no longer “is this on Google” but “does the model cite this.” Partners with Multimove inside the content / PR wing.",
       "rows": [
         { "k": "kind", "v": "product", "cls": "red" },
         { "k": "ring", "v": "III — core products" },
@@ -528,7 +526,7 @@
           "cls": "blue",
           "ref": "lead-seogeosolved"
         },
-        { "k": "owns", "v": "seo + geo territory" }
+        { "k": "partner", "v": "multimove", "cls": "red", "ref": "multimove" }
       ]
     },
 
@@ -536,6 +534,7 @@
       "title": "ENGINEERING LEAD · SEOGEOSOLVER",
       "cjk": "長",
       "desc": "Engineering lead attached to the SeoGeoSolver project.",
+      "claudeMdLines": 148,
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },
