@@ -33,27 +33,10 @@ $ks-crimson-deep: #7a2618;
   padding: 2px 0;
 }
 
-.scenarioBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px;
-  background: $ks-paper;
-  border: 1px solid $ks-rule;
-  border-radius: 6px;
-
-  .scenario {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.5;
-    color: $ks-ink-soft;
-  }
-}
-
 .visualBlock {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   padding: 16px;
   background: #ffffff;
   border: 1px solid $ks-rule;
@@ -85,20 +68,12 @@ $ks-crimson-deep: #7a2618;
     border-bottom-right-radius: 8px;
     pointer-events: none;
   }
-}
 
-.visualHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .markWrap {
-    display: inline-flex;
-    width: 22px;
-    height: 22px;
-    align-items: center;
-    justify-content: center;
-    color: $ks-crimson;
+  .scenario {
+    margin: 0 0 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: $ks-ink-soft;
   }
 }
 
@@ -286,15 +261,6 @@ $ks-crimson-deep: #7a2618;
     color: $dk-crimson;
   }
 
-  .scenarioBlock {
-    background: $dk-card;
-    border-color: $dk-rule;
-
-    .scenario {
-      color: $dk-text-soft;
-    }
-  }
-
   .visualBlock {
     background: $dk-card-soft;
     border-color: $dk-rule;
@@ -303,10 +269,10 @@ $ks-crimson-deep: #7a2618;
     &::after {
       border-color: $dk-crimson;
     }
-  }
 
-  .visualHeader .markWrap {
-    color: $dk-crimson;
+    .scenario {
+      color: $dk-text-soft;
+    }
   }
 
   .card {

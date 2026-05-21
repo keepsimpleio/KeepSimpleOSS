@@ -1,4 +1,3 @@
-import { OffSecIcon } from '@uxcore/assets/icons/OffSecIcon';
 import { OffsecBiasContent } from '@uxcore/data/biasOffsec';
 
 import styles from './OffsecBiasView.module.scss';
@@ -12,18 +11,9 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
 
   return (
     <div className={styles.root}>
-      <div className={styles.scenarioBlock}>
-        <span className={styles.eyebrow}>{content.scenarioLabel}</span>
-        <p className={styles.scenario}>{content.scenario}</p>
-      </div>
-
       <div className={styles.visualBlock}>
-        <div className={styles.visualHeader}>
-          <span className={styles.markWrap}>
-            <OffSecIcon />
-          </span>
-          <span className={styles.eyebrow}>{content.visualLabel}</span>
-        </div>
+        <span className={styles.eyebrow}>{content.visualLabel}</span>
+        <p className={styles.scenario}>{content.scenario}</p>
 
         <div className={styles.cards}>
           <div className={styles.card}>

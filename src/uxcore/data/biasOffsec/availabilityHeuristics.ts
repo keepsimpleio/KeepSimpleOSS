@@ -5,9 +5,8 @@
 // is well documented; the specific lift is not the point of the page.
 
 const content = {
-  scenarioLabel: 'Scenario',
   scenario:
-    'Vendor-impersonation phish, finance team — in the days after a competitor’s breach hits the front page.',
+    'Vendor-impersonation phish aimed at finance — in the days after a competitor’s breach hits the front page.',
   visualLabel: 'Same payload, different framing',
   visual: {
     before: {
@@ -32,10 +31,10 @@ const content = {
   blueTeam: {
     lede: 'Invert the heuristic in the org’s head: topical is a phishing signal, not a credibility one.',
     moves: [
-      'Tune detection so subjects echoing the current news cycle get extra scrutiny — same nouns as the front page is a feature of the attack, not a coincidence.',
+      'Tune detection so subjects echoing the current news cycle get extra scrutiny — front-page vocabulary landing in your inbox is a feature of the attack, not a coincidence.',
       'Pre-publish a breach-week runbook that assumes vendor-impersonation attempts will follow every public incident in the days after.',
-      'Drop a one-line prime into the org channel the day a major breach lands: “expect lures naming this company by tomorrow — verify in band before clicking.”',
-      'Strip implicit trust from neighboring sender domains; attackers register lookalikes the same week the news breaks.',
+      'Drop a one-line prime into the org channel the day a major breach lands: “expect lures naming this company by tomorrow — verify out of band before clicking.”',
+      'Strip implicit trust from lookalike sender domains — attackers register them the same week the news breaks.',
     ],
   },
 };
