@@ -45,10 +45,10 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
       </div>
 
       <div className={`${styles.proseBlock} ${styles.defenderBlock}`}>
-        <span className={styles.eyebrow}>{content.blueTeamLabel}</span>
-        <p className={styles.defenderLede}>{content.blueTeam.lede}</p>
+        <span className={styles.eyebrow}>{content.defenseLabel}</span>
+        <p className={styles.defenderLede}>{content.defense.lede}</p>
         <ul className={styles.defenderMoves}>
-          {content.blueTeam.moves.map((move, i) => (
+          {content.defense.moves.map((move, i) => (
             <li key={i}>{move}</li>
           ))}
         </ul>

@@ -27,14 +27,14 @@ const content = {
   whyItWorksLabel: 'Why it works',
   whyItWorks:
     'Availability heuristic colliding with base-rate neglect. After a breach saturates the news, the brain stops asking “how likely?” and starts asking “how easy to recall?” — and right now, the answer is everywhere. The target substitutes “I just read about this” for “I should verify this sender,” and a finance employee in that window pattern-matches the email to the news cycle, not to phishing. Identical payload; the news desk is doing the social engineering.',
-  blueTeamLabel: 'Blue-team countermeasure',
-  blueTeam: {
-    lede: 'Invert the heuristic in the org’s head: topical is a phishing signal, not a credibility one.',
+  defenseLabel: 'Protect yourself',
+  defense: {
+    lede: 'Your security team is handling the perimeter. Here’s how you handle your inbox.',
     moves: [
-      'Treat the breach disclosure as an IOC. The moment HIBP, a CERT advisory, or the vendor itself names the victim, pipe the company name, exec names, and incident terms into the mail gateway and SIEM — every inbound match gets sandboxed and banner-flagged for the duration of the news cycle.',
-      'Raise mail posture for the window: click-time URL rewriting on every inbound link, hold-and-detonate for non-trusted attachments, and forced SSO re-auth so credentials phished mid-window can’t ride a live session.',
-      'Drop a one-line prime into the org channel the day a major breach lands: “expect lures naming this company by tomorrow — verify out of band before clicking.”',
-      'Strip implicit trust from lookalike sender domains — attackers register them the same week the news breaks.',
+      'When an email leans on today’s news to get you moving, that’s exactly when to slow down — not speed up. The urgency you feel is the attack working.',
+      'Verify through a channel you already trust — the vendor’s portal from a bookmark, or the phone number already in your contacts. Never the link or number in the email itself.',
+      'Let your password manager be the judge. If it doesn’t autofill on a login page, that page isn’t the one you think it is — don’t override it, close the tab.',
+      'Treat any breach reference in the email as a claim, not a fact. Check the company’s own status page or Have I Been Pwned before you click anything else in the message.',
     ],
   },
 };
