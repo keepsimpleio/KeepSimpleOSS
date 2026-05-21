@@ -5,11 +5,9 @@
 // is well documented; the specific lift is not the point of the page.
 
 const content = {
-  intro:
-    'Brains shortcut "how likely" with "how easy to recall." After a breach hits the news, every employee has the threat one neuron away — engineer to receptionist. Attackers ride that recency: an email naming the breach feels like an inevitable follow-up, not a probe. The same lure a few weeks earlier would die in spam.',
   scenarioLabel: 'Scenario',
   scenario:
-    'Spear-phish targeting a finance team in the days after a competitor’s breach hits the front page.',
+    'Vendor-impersonation phish, finance team — in the days after a competitor’s breach hits the front page.',
   visualLabel: 'Same payload, different framing',
   visual: {
     before: {
@@ -21,26 +19,25 @@ const content = {
     after: {
       tag: 'Breach-themed lure',
       sender: 'security@acme-vendor.com',
-      subject: 'Action required: NorthBank exposure check',
+      subject: 'Action required: exposure check after the NorthBank incident',
       preview:
-        'Our security team flagged your domain in the NorthBank dataset…',
+        'Our team flagged your domain in the NorthBank dataset. Confirm SSO so we can scope your exposure before EOD.',
       flagged: true,
     },
   },
-  outcome: {
-    withoutLabel: 'Without the bias',
-    withoutText:
-      'Generic invoice lure reads like every other vendor email. Brushed off, lost in the inbox.',
-    withLabel: 'With the bias',
-    withText:
-      'Breach-themed lure rides the news cycle — it feels like an expected follow-up, not a probe.',
-  },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'Recent media coverage warps base-rate judgment. The brain treats vivid and recent as common and imminent, even when actual incidence hasn’t moved. Identical bytes; the news cycle is doing the persuasion.',
+    'Availability heuristic colliding with base-rate neglect. After a breach saturates the news, the brain stops asking “how likely?” and starts asking “how easy to recall?” — and right now, the answer is everywhere. The target substitutes “I just read about this” for “I should verify this sender,” and a finance employee in that window pattern-matches the email to the news cycle, not to phishing. Identical payload; the news desk is doing the social engineering.',
   blueTeamLabel: 'Blue-team countermeasure',
-  blueTeam:
-    'Treat topical urgency as a phishing signal, not a credibility one. Tune detection so subjects echoing the current breach news cycle get extra scrutiny, and write crisis runbooks that assume impersonation attempts will follow every public incident.',
+  blueTeam: {
+    lede: 'Invert the heuristic in the org’s head: topical is a phishing signal, not a credibility one.',
+    moves: [
+      'Tune detection so subjects echoing the current news cycle get extra scrutiny — same nouns as the front page is a feature of the attack, not a coincidence.',
+      'Pre-publish a breach-week runbook that assumes vendor-impersonation attempts will follow every public incident in the days after.',
+      'Drop a one-line prime into the org channel the day a major breach lands: “expect lures naming this company by tomorrow — verify in band before clicking.”',
+      'Strip implicit trust from neighboring sender domains; attackers register lookalikes the same week the news breaks.',
+    ],
+  },
 };
 
 export default content;

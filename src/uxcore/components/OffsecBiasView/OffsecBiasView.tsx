@@ -12,8 +12,6 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
 
   return (
     <div className={styles.root}>
-      <p className={styles.intro}>{content.intro}</p>
-
       <div className={styles.scenarioBlock}>
         <span className={styles.eyebrow}>{content.scenarioLabel}</span>
         <p className={styles.scenario}>{content.scenario}</p>
@@ -51,23 +49,6 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
         </div>
       </div>
 
-      <div className={styles.outcomeBlock}>
-        <div className={styles.outcomeRow}>
-          <span className={styles.outcomeKey}>
-            {content.outcome.withoutLabel}
-          </span>
-          <span className={styles.outcomeValue}>
-            {content.outcome.withoutText}
-          </span>
-        </div>
-        <div className={`${styles.outcomeRow} ${styles.outcomeRowAccent}`}>
-          <span className={styles.outcomeKey}>{content.outcome.withLabel}</span>
-          <span className={styles.outcomeValue}>
-            {content.outcome.withText}
-          </span>
-        </div>
-      </div>
-
       <div className={styles.proseBlock}>
         <span className={styles.eyebrow}>{content.whyItWorksLabel}</span>
         <p>{content.whyItWorks}</p>
@@ -75,7 +56,12 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
 
       <div className={`${styles.proseBlock} ${styles.defenderBlock}`}>
         <span className={styles.eyebrow}>{content.blueTeamLabel}</span>
-        <p>{content.blueTeam}</p>
+        <p className={styles.defenderLede}>{content.blueTeam.lede}</p>
+        <ul className={styles.defenderMoves}>
+          {content.blueTeam.moves.map((move, i) => (
+            <li key={i}>{move}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
