@@ -1,5 +1,7 @@
 import { OffsecBiasContent } from '@uxcore/data/biasOffsec';
 
+import KemmioCredit from './KemmioCredit';
+
 import styles from './OffsecBiasView.module.scss';
 
 interface OffsecBiasViewProps {
@@ -83,6 +85,8 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
           ))}
         </ul>
       </div>
+
+      <KemmioCredit />
     </div>
   );
 };

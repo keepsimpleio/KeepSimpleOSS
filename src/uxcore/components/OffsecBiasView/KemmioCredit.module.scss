@@ -1,0 +1,211 @@
+$ks-paper: #fbf8f1;
+$ks-ink: #1b1e26;
+$ks-ink-soft: #4a5060;
+$ks-rule: #d8d0bf;
+$ks-crimson: #c8412a;
+$ks-crimson-deep: #7a2618;
+
+.credit {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: right;
+  color: $ks-ink-soft;
+  font-style: italic;
+  font-family: 'Lato', sans-serif;
+}
+
+.kemmioLink {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: $ks-crimson;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: $ks-crimson-deep;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $ks-crimson;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(15, 17, 22, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 180ms ease-out;
+}
+
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: $ks-paper;
+  border: 1px solid $ks-rule;
+  border-radius: 10px;
+  padding: 24px 28px 22px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+  font-family: 'Lato', sans-serif;
+  color: $ks-ink;
+  animation: popIn 200ms cubic-bezier(0.22, 0.95, 0.35, 1);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: 0;
+  padding: 4px 10px 6px;
+  font-size: 22px;
+  line-height: 1;
+  color: $ks-ink-soft;
+  cursor: pointer;
+
+  &:hover {
+    color: $ks-crimson;
+  }
+}
+
+.title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+.realName {
+  font-weight: 400;
+  font-size: 14px;
+  color: $ks-ink-soft;
+}
+
+.lead {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.55;
+
+  strong {
+    color: $ks-crimson;
+    font-weight: 700;
+  }
+}
+
+.facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 13.5px;
+    line-height: 1.5;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 10px;
+      height: 1px;
+      background: $ks-crimson;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+:global(body.darkTheme) {
+  $dk-card: #1b1f29;
+  $dk-rule: #2f3441;
+  $dk-text: #e6e8ee;
+  $dk-text-soft: #a5acba;
+  $dk-crimson: #e57254;
+
+  .credit {
+    color: $dk-text-soft;
+  }
+
+  .kemmioLink {
+    color: $dk-crimson;
+
+    &:hover {
+      color: lighten($dk-crimson, 8%);
+    }
+  }
+
+  .backdrop {
+    background: rgba(0, 0, 0, 0.65);
+  }
+
+  .dialog {
+    background: $dk-card;
+    border-color: $dk-rule;
+    color: $dk-text;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55);
+  }
+
+  .closeBtn {
+    color: $dk-text-soft;
+
+    &:hover {
+      color: $dk-crimson;
+    }
+  }
+
+  .realName {
+    color: $dk-text-soft;
+  }
+
+  .lead {
+    color: $dk-text;
+
+    strong {
+      color: $dk-crimson;
+    }
+  }
+
+  .facts li {
+    color: $dk-text;
+
+    &::before {
+      background: $dk-crimson;
+    }
+  }
+}
