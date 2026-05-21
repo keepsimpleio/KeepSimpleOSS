@@ -226,6 +226,36 @@ $ks-crimson-deep: #7a2618;
   }
 }
 
+.whyBlock {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 28px;
+    height: 28px;
+    border-top: 2px solid $ks-crimson;
+    border-left: 2px solid $ks-crimson;
+    border-top-left-radius: 6px;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 28px;
+    height: 28px;
+    border-bottom: 2px solid $ks-crimson;
+    border-right: 2px solid $ks-crimson;
+    border-bottom-right-radius: 6px;
+    pointer-events: none;
+  }
+}
+
 .defenderBlock {
   background: #f4f1e8;
   border-left: 3px solid $ks-crimson;
@@ -358,6 +388,13 @@ $ks-crimson-deep: #7a2618;
 
     p {
       color: $dk-text;
+    }
+  }
+
+  .whyBlock {
+    &::before,
+    &::after {
+      border-color: $dk-crimson;
     }
   }
 

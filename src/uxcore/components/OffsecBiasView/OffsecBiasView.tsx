@@ -69,7 +69,7 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
         </div>
       </div>
 
-      <div className={styles.proseBlock}>
+      <div className={`${styles.proseBlock} ${styles.whyBlock}`}>
         <span className={styles.eyebrow}>{content.whyItWorksLabel}</span>
         <p>{content.whyItWorks}</p>
       </div>
