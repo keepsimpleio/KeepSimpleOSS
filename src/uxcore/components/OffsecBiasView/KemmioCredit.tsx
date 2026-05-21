@@ -66,12 +66,58 @@ const KemmioCredit = () => {
 
               <h3 id="kemmio-title" className={styles.title}>
                 kemmio
-                <span className={styles.realName}> — Vahe Karapetyan 🇦🇲</span>
+                <span className={styles.realName}>
+                  {' '}
+                  — Vahe Karapetyan{' '}
+                  <span
+                    className={styles.flagAM}
+                    role="img"
+                    aria-label="Armenia"
+                    title="Armenia"
+                  >
+                    <svg viewBox="0 0 18 11" width="16" height="10">
+                      <rect
+                        x="0"
+                        y="0"
+                        width="18"
+                        height="3.67"
+                        fill="#D90012"
+                      />
+                      <rect
+                        x="0"
+                        y="3.67"
+                        width="18"
+                        height="3.67"
+                        fill="#0033A0"
+                      />
+                      <rect
+                        x="0"
+                        y="7.34"
+                        width="18"
+                        height="3.66"
+                        fill="#F2A800"
+                      />
+                    </svg>
+                  </span>
+                </span>
               </h3>
 
+              <p className={styles.tagline}>
+                Among the most consequential whitehat hackers alive.
+              </p>
+
               <p className={styles.lead}>
-                Co-founder of <strong>Hexens</strong> — the cybersecurity firm
-                whose audits have safeguarded over $125B in assets.
+                Co-founder of{' '}
+                <a
+                  href="https://hexens.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.hexensLink}
+                >
+                  <strong>Hexens</strong>
+                </a>{' '}
+                — the cybersecurity firm whose audits have safeguarded over
+                $125B in assets.
               </p>
 
               <ul className={styles.facts}>
@@ -84,6 +130,19 @@ const KemmioCredit = () => {
                   vulnerability in Web3 history — $500M of instant loss and
                   $1.7T of cascade-effect damage on the table. Caught in private
                   disclosure; exploitation never landed.
+                </li>
+                <li>
+                  Uncovered the first critical Solidity compiler vulnerability
+                  in over a decade — the{' '}
+                  <a
+                    href="https://hexens.io/research/solidity-compiler-bug-tstore-poison"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.researchLink}
+                  >
+                    TSTORE poison bug
+                  </a>
+                  .
                 </li>
               </ul>
             </div>
