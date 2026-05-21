@@ -70,8 +70,10 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
 }) => {
   const [{ toggleIsCoreView }, { isCoreView }] = useUXCoreGlobals();
   const [{ toggleIsProductView }, { isProductView }] = useUXCoreGlobals();
-  const [{ toggleIsOffsecView, setUseCase }, { isOffsecView }] =
-    useUXCoreGlobals();
+  const [
+    { toggleIsOffsecView, setUseCase },
+    { isOffsecView, lastBaseUseCase },
+  ] = useUXCoreGlobals();
   const router = useRouter();
   const { asPath } = router as TRouter;
   const { isUxcoreMobile } = useUCoreMobile()[1];
@@ -135,11 +137,14 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   // One click handler for the three vertical Use cases rows. Sets state
   // explicitly via setUseCase so PM/HR/OffSec are mutually exclusive
   // without depending on the toggle semantics of the older actions.
-  // Snackbar text is pre-set so the first frame doesn't flash the
-  // previous label while the hook listener catches up.
+  // Clicking the active OffSec row reverts to lastBaseUseCase — mirror
+  // that resolution here so the snackbar pre-set lands on the correct
+  // label and the first frame doesn't flash the wrong text.
   const handleUseCaseClick = (target: 'product' | 'hr' | 'offsec') => {
-    if (target === 'product') setSnackBarText(browsingAsProduct);
-    else if (target === 'hr') setSnackBarText(browsingAsHR);
+    const resolved =
+      target === 'offsec' && isOffsecView ? lastBaseUseCase || 'hr' : target;
+    if (resolved === 'product') setSnackBarText(browsingAsProduct);
+    else if (resolved === 'hr') setSnackBarText(browsingAsHR);
     else setSnackBarText(browsingAsOffsec);
 
     setUseCase(target);

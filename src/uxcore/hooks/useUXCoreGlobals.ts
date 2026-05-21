@@ -5,6 +5,10 @@ interface TState {
   isCoreView: boolean;
   isProductView?: boolean;
   isOffsecView?: boolean;
+  // Remembers the most recent PM/HR selection so clicking the active
+  // OffSec row can revert to where the user was before they detoured
+  // into Cybersecurity. Never holds 'offsec'.
+  lastBaseUseCase?: 'product' | 'hr';
   showArrows?: boolean;
 }
 
@@ -13,6 +17,7 @@ let state: TState = {
   isCoreView: true,
   isProductView: true,
   isOffsecView: false,
+  lastBaseUseCase: 'product',
   showArrows: true,
 };
 
@@ -51,15 +56,22 @@ const toggleIsOffsecView = () => {
 };
 
 // Explicit setter used by the vertical Use cases panel — three mutually
-// exclusive targets. Persists both flags atomically so any consumer
-// reading the next state gets a consistent snapshot.
+// exclusive targets. Clicking the already-active OffSec row reverts to
+// the last PM/HR state (lastBaseUseCase) so the user can declick
+// Cybersecurity and return to the canonical pair.
 const setUseCase = (target: 'product' | 'hr' | 'offsec') => {
-  const next = {
-    isProductView: target === 'product',
-    isOffsecView: target === 'offsec',
+  let resolved: 'product' | 'hr' | 'offsec' = target;
+  if (target === 'offsec' && state.isOffsecView) {
+    resolved = state.lastBaseUseCase || 'hr';
+  }
+  const next: Partial<TState> = {
+    isProductView: resolved === 'product',
+    isOffsecView: resolved === 'offsec',
   };
-  // 'hr' leaves isProductView=false, isOffsecView=false.
-  if (target === 'hr') next.isProductView = false;
+  if (resolved === 'product' || resolved === 'hr') {
+    next.lastBaseUseCase = resolved;
+    localStorage.setItem('lastBaseUseCase', resolved);
+  }
   localStorage.setItem('isProductView', String(next.isProductView));
   localStorage.setItem('isOffsecView', String(next.isOffsecView));
   reducer(next);
@@ -77,6 +89,10 @@ const initUseUXCoreGlobals = () => {
   const changeStateOffsec = localStorage.getItem('isOffsecView') === 'true';
   const changeStateArrows =
     (localStorage.getItem('showArrows') || true) === 'false';
+  const storedBase = localStorage.getItem('lastBaseUseCase');
+  if (storedBase === 'product' || storedBase === 'hr') {
+    reducer({ lastBaseUseCase: storedBase });
+  }
   if (changeState) {
     toggleIsCoreView();
   }
