@@ -31,8 +31,8 @@ const content = {
   blueTeam: {
     lede: 'Invert the heuristic in the org’s head: topical is a phishing signal, not a credibility one.',
     moves: [
-      'Tune detection so subjects echoing the current news cycle get extra scrutiny — front-page vocabulary landing in your inbox is a feature of the attack, not a coincidence.',
-      'Pre-publish a breach-week runbook that assumes vendor-impersonation attempts will follow every public incident in the days after.',
+      'Treat the breach disclosure as an IOC. The moment HIBP, a CERT advisory, or the vendor itself names the victim, pipe the company name, exec names, and incident terms into the mail gateway and SIEM — every inbound match gets sandboxed and banner-flagged for the duration of the news cycle.',
+      'Raise mail posture for the window: click-time URL rewriting on every inbound link, hold-and-detonate for non-trusted attachments, and forced SSO re-auth so credentials phished mid-window can’t ride a live session.',
       'Drop a one-line prime into the org channel the day a major breach lands: “expect lures naming this company by tomorrow — verify out of band before clicking.”',
       'Strip implicit trust from lookalike sender domains — attackers register them the same week the news breaks.',
     ],
