@@ -176,6 +176,10 @@
 
           &.dimmed {
             opacity: 0.5;
+
+            &::before {
+              opacity: 0;
+            }
           }
         }
 

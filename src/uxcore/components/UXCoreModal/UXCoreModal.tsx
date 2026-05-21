@@ -228,7 +228,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
                 data-cy="switch-product"
                 data-type={defaultViewLabel}
                 className={cn(styles.switcherItem, {
-                  [styles.activeProduct]: !isProductView,
+                  [styles.activeProduct]: !isOffsecView && !isProductView,
                 })}
               >
                 <ProductIcon />
@@ -239,7 +239,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
                 data-cy="switch-hr"
                 data-type={secondViewLabel}
                 className={cn(styles.switcherItem, {
-                  [styles.activeHr]: isProductView,
+                  [styles.activeHr]: !isOffsecView && isProductView,
                 })}
               >
                 <HrIcon />
