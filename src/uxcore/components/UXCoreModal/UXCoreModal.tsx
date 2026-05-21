@@ -279,7 +279,9 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               )}
             </div>
           </div>
-          {data.title && <BiasBody biasNumber={biasNumber} locale={locale} />}
+          {!isOffsecView && data.title && (
+            <BiasBody biasNumber={biasNumber} locale={locale} />
+          )}
           {questions.length > 0 && (
             <>
               <div
