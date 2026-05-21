@@ -6,18 +6,21 @@
 
 const content = {
   scenario:
-    'Vendor-impersonation phish aimed at finance — in the days after a competitor’s breach hits the front page.',
-  visualLabel: 'Same payload, different framing',
+    'A major company just got breached and the news is everywhere. Now an attacker emails your finance team, pretending to be a trusted vendor.',
+  visualLabel: 'Scenario',
   visual: {
     before: {
-      tag: 'Generic lure',
+      tag: 'Generic',
       sender: 'billing@acme-vendor.com',
+      timestamp: 'Mon, 10:42 AM',
       subject: 'Q3 invoice attached',
       preview: 'Hi team — please find the attached invoice for Q3.',
+      attachment: 'invoice-Q3.pdf',
     },
     after: {
-      tag: 'Breach-themed lure',
+      tag: 'News-anchored',
       sender: 'security@acme-vendor.com',
+      timestamp: 'Tue, 08:17 AM',
       subject: 'Action required: exposure check after the NorthBank incident',
       preview:
         'Our team flagged your domain in the NorthBank dataset. Confirm SSO so we can scope your exposure before EOD.',

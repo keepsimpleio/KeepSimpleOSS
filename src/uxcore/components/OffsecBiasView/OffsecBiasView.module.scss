@@ -84,22 +84,41 @@ $ks-crimson-deep: #7a2618;
   gap: 8px;
 }
 
+.cardWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cardCaption {
+  font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $ks-ink-soft;
+}
+
+.cardCaptionFlagged {
+  color: $ks-crimson;
+}
+
 .card {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 14px;
-  background: $ks-paper;
+  padding: 12px 14px 14px;
+  background: #ffffff;
   border: 1px solid $ks-rule;
   border-radius: 6px;
   min-width: 0;
+  box-shadow: 0 1px 0 rgba(27, 30, 38, 0.04);
 
-  .cardTag {
-    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: $ks-ink-soft;
+  .emailHeader {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
   }
 
   .cardSender {
@@ -107,6 +126,14 @@ $ks-crimson-deep: #7a2618;
     font-size: 11.5px;
     color: $ks-ink-soft;
     word-break: break-all;
+  }
+
+  .cardTimestamp {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    color: $ks-ink-soft;
+    opacity: 0.75;
+    flex-shrink: 0;
   }
 
   .cardSubject {
@@ -117,6 +144,12 @@ $ks-crimson-deep: #7a2618;
     font-weight: 700;
     color: $ks-ink;
     line-height: 1.3;
+  }
+
+  .cardRule {
+    height: 1px;
+    background: $ks-rule;
+    margin: 4px 0 2px;
   }
 
   .cardUrgencyDot {
@@ -130,31 +163,27 @@ $ks-crimson-deep: #7a2618;
 
   .cardPreview {
     font-size: 12.5px;
-    line-height: 1.4;
+    line-height: 1.45;
     color: $ks-ink-soft;
   }
 
-  .cardStat {
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
+  .cardAttachment {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
     margin-top: 4px;
-    padding-top: 8px;
-    border-top: 1px dashed $ks-rule;
+    padding: 4px 8px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 4px;
 
-    .cardStatValue {
-      font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
-      font-size: 16px;
-      font-weight: 700;
-      color: $ks-ink;
-    }
-
-    .cardStatLabel {
-      font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: $ks-ink-soft;
+    .cardAttachmentIcon {
+      font-size: 11px;
+      line-height: 1;
     }
   }
 }
@@ -163,12 +192,8 @@ $ks-crimson-deep: #7a2618;
   background: linear-gradient(180deg, $ks-crimson-soft 0%, #ffffff 110%);
   border-color: $ks-crimson;
 
-  .cardTag {
-    color: $ks-crimson-deep;
-  }
-
-  .cardStatValue {
-    color: $ks-crimson;
+  .cardRule {
+    background: rgba(200, 65, 42, 0.25);
   }
 }
 
@@ -275,20 +300,31 @@ $ks-crimson-deep: #7a2618;
     }
   }
 
+  .cardCaption {
+    color: $dk-text-soft;
+  }
+
+  .cardCaptionFlagged {
+    color: $dk-crimson;
+  }
+
   .card {
     background: $dk-card;
     border-color: $dk-rule;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
 
-    .cardTag,
     .cardSender,
-    .cardPreview,
-    .cardStatLabel {
+    .cardTimestamp,
+    .cardPreview {
       color: $dk-text-soft;
     }
 
-    .cardSubject,
-    .cardStatValue {
+    .cardSubject {
       color: $dk-text;
+    }
+
+    .cardRule {
+      background: $dk-rule;
     }
 
     .cardUrgencyDot {
@@ -296,8 +332,10 @@ $ks-crimson-deep: #7a2618;
       box-shadow: 0 0 0 3px $dk-crimson-glow;
     }
 
-    .cardStat {
-      border-top-color: $dk-rule;
+    .cardAttachment {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+      color: $dk-text-soft;
     }
   }
 
@@ -305,12 +343,8 @@ $ks-crimson-deep: #7a2618;
     background: linear-gradient(180deg, $dk-crimson-soft 0%, $dk-card 110%);
     border-color: $dk-crimson;
 
-    .cardTag {
-      color: $dk-crimson;
-    }
-
-    .cardStatValue {
-      color: $dk-crimson;
+    .cardRule {
+      background: rgba(229, 114, 84, 0.35);
     }
   }
 
