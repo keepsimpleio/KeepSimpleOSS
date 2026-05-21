@@ -32,7 +32,7 @@ const content = {
     'Availability heuristic colliding with base-rate neglect. After a breach saturates the news, your brain stops asking “how likely is this real?” and starts asking “how easy is it to recall?” — and right now, the answer is everywhere. You substitute “I just read about this” for “I should verify this sender,” and pattern-match the email to the news cycle, not to phishing. Identical payload; the news desk is doing the social engineering.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'Your security team is handling the perimeter. Here’s how you handle your inbox.',
+    lede: 'While your security team handles the perimeter — here’s your homework.',
     moves: [
       'When an email leans on today’s news to get you moving, that’s exactly when to slow down — not speed up. The urgency you feel is the attack working.',
       'Verify through a channel you already trust — the vendor’s portal from a bookmark, or the phone number already in your contacts. Never the link or number in the email itself.',
