@@ -39,6 +39,12 @@
     max-height: 100%;
 
     .videoContainer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+
       .poster {
         width: 100%;
         height: 100%;
@@ -46,7 +52,6 @@
         position: absolute;
         top: 0;
         left: 0;
-        z-index: -1;
       }
 
       .video {
@@ -56,7 +61,6 @@
         position: absolute;
         top: 0;
         left: 0;
-        z-index: -1;
         background-color: unset;
         opacity: 0;
         transition: opacity 300ms ease;
@@ -181,6 +185,22 @@
     padding-top: 5px;
     align-items: center;
 
+    a {
+      display: inline-flex;
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+
+      img {
+        transition: filter 0.2s ease;
+      }
+
+      &:hover {
+        opacity: 0.75;
+        transform: translateY(-2px);
+      }
+    }
+
     .btn {
       border-radius: 2px;
       width: 100px;
@@ -208,6 +228,7 @@
   .serenityBtn {
     color: #fafafa;
   }
+  background-image: url('/keepsimple_/assets/landingPage/dark-theme-bg.png');
 
   .leaf {
     filter: brightness(0) invert(1);
@@ -328,6 +349,7 @@
         max-width: 100%;
         height: 55vh;
         position: relative;
+        overflow: hidden;
 
         &::after {
           content: '';

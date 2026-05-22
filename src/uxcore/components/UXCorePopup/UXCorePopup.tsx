@@ -1,10 +1,10 @@
+import podcast from '@uxcore/data/podcast';
+import useGlobals from '@uxcore/hooks/useGlobals';
+import type { TRouter } from '@uxcore/local-types/global';
+import cn from 'classnames';
 import { useRouter } from 'next/router';
 import React, { FC } from 'react';
 import { Player } from 'react-simple-player/lib/components/Player';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import podcast from '@uxcore/data/podcast';
 
 import styles from './UXCorePopup.module.scss';
 
@@ -19,6 +19,7 @@ type UXCorePopupTypes = {
 const UXCorePopup: FC<UXCorePopupTypes> = ({ setOpenPodcast, openPodcast }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
+  const { isDarkTheme } = useGlobals()[1];
   const { title, source, link, podcastLink } = podcast[locale];
   const closePopUp = () => {
     setOpenPodcast(false);
@@ -27,7 +28,10 @@ const UXCorePopup: FC<UXCorePopupTypes> = ({ setOpenPodcast, openPodcast }) => {
   return (
     locale !== 'hy' &&
     openPodcast && (
-      <div className={styles.popup} data-cy="uxcore-podcast-popup">
+      <div
+        className={cn(styles.popup, { [styles.dark]: isDarkTheme })}
+        data-cy="uxcore-podcast-popup"
+      >
         <div className={styles.iconWrapper}>
           <img
             src="/assets/biases/cross.svg"
@@ -46,7 +50,13 @@ const UXCorePopup: FC<UXCorePopupTypes> = ({ setOpenPodcast, openPodcast }) => {
                 {source}
               </a>
             </p>
-            <Player src={podcastLink} height={40} key={'key-' + 1} />
+            <Player
+              src={podcastLink}
+              height={40}
+              key={'key-' + 1}
+              grey={isDarkTheme ? [42, 45, 51] : undefined}
+              accent={isDarkTheme ? [218, 218, 218] : undefined}
+            />
           </>
         </div>
       </div>

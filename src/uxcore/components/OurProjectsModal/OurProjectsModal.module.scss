@@ -99,6 +99,11 @@
     .name {
       color: #dadada !important;
     }
+
+    .projectIcon,
+    .openLinkIcon {
+      filter: invert(1);
+    }
   }
 
   .description,
@@ -111,9 +116,25 @@
     color: #dadada;
     background-color: transparent;
 
+    .darkIcon {
+      display: none;
+    }
+
+    .lightIcon {
+      display: inline-block;
+    }
+
     &:hover {
       background-color: #dadada;
       color: #1b1e26;
+
+      .darkIcon {
+        display: inline-block;
+      }
+
+      .lightIcon {
+        display: none;
+      }
     }
   }
 }
