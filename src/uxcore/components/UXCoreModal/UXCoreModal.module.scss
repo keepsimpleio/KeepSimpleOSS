@@ -612,12 +612,6 @@ ol {
     }
   }
 
-  // Invert the Hexens bitmap on dark backgrounds — same trick we use on
-  // the kemmio popup. `brightness` lifts the mid-grey into white range.
-  .ModalBodyContent .switcher img {
-    filter: invert(1) brightness(1.4);
-  }
-
   .ModalBodyContent .offsecComingSoon {
     background-color: #1f1419 !important;
     border-color: #c8412a !important;
