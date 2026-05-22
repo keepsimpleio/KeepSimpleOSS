@@ -28,8 +28,12 @@
   }
 
   &::before {
-    background-image: url('/keepsimple_/assets/landingPage/usedByDark.png');
-    background-size: cover;
+    background-image: url('/keepsimple_/assets/landingPage/dark.png');
+    // url('/keepsimple_/assets/landingPage/used-by-dark.png');
+    background-repeat: repeat, no-repeat;
+    background-size:
+      560px 420px,
+      cover;
     opacity: 1;
   }
 }

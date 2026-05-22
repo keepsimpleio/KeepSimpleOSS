@@ -1,12 +1,11 @@
 import cn from 'classnames';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FC } from 'react';
 
 import { TRouter } from '@local-types/global';
 
 import cookieData from '@data/cookies';
-
-import Button from '@components/Button';
 
 import styles from './Box.module.scss';
 
@@ -20,25 +19,44 @@ const Box: FC<CookiesBoxProps> = ({ setIsSeen }) => {
   const { title, description, ok } = cookieData[locale];
 
   return (
-    <div>
-      <div
-        data-cy="cookie-box"
-        className={cn(styles.content, {
-          [styles.hyLang]: locale === 'hy',
-        })}
-      >
-        <div className={styles.header}>
+    <div
+      data-cy="cookie-box"
+      className={cn(styles.content, {
+        [styles.hyLang]: locale === 'hy',
+        [styles.ruLang]: locale === 'ru',
+      })}
+    >
+      <div className={styles.header}>
+        <div className={styles.headerRow}>
           <span className={styles.title}>{title}</span>
-        </div>
-        <p className={styles.txt}>{description}</p>
-        <div className={styles.btnWrapper}>
-          <Button
-            label={ok}
+          <button
+            type="button"
+            aria-label="Close"
             onClick={setIsSeen}
-            variant={'primary'}
-            dataCy="cookie-box-accept"
-          />
+            className={styles.closeBtn}
+            data-cy="cookie-box-close"
+          >
+            <Image
+              src="/keepsimple_/assets/cookies/close.svg"
+              alt=""
+              width={26}
+              height={26}
+              className={styles.closeIcon}
+            />
+          </button>
         </div>
+        <span className={styles.divider} aria-hidden />
+      </div>
+      <p className={styles.txt}>{description}</p>
+      <div className={styles.btnWrapper}>
+        <button
+          type="button"
+          data-cy="cookie-box-accept"
+          onClick={setIsSeen}
+          className={styles.acceptBtn}
+        >
+          {ok}
+        </button>
       </div>
     </div>
   );

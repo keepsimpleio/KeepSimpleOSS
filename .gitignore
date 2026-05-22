@@ -160,3 +160,5 @@ docker-compose.override.yml
 #  gitignore only blocks new untracked files. Move docs you want
 #  shared into README/AGENTS/CLAUDE.md or a dedicated published path.)
 /docs/
+
+.codegraph/
