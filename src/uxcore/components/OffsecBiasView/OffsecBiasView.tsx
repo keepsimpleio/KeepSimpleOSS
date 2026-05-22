@@ -13,6 +13,21 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
     return (
       <>
         <div className={styles.emailHeader}>
+          <span className={styles.emailEnvelope} aria-hidden="true">
+            <svg
+              viewBox="0 0 20 16"
+              width="18"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinejoin="round"
+            >
+              <rect x="1" y="1" width="18" height="14" rx="2" />
+              <path d="M1.6 2.2 L10 9 L18.4 2.2" />
+            </svg>
+          </span>
+          <span className={styles.emailFromLabel}>From</span>
           <span className={styles.cardSender}>{card.sender}</span>
           {card.timestamp && (
             <span className={styles.cardTimestamp}>{card.timestamp}</span>

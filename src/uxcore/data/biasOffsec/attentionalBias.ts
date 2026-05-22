@@ -1,13 +1,15 @@
-// No quoted figures by policy. Surface here is push notifications, not
-// email — attentional-bias attacks land wherever multiple things compete
-// for your eyes (lock-screen, OS toasts, browser pop-ups), and the
-// mechanism is unrelated to the inbox.
+// No quoted figures by policy. Two surfaces side-by-side on purpose: the
+// loud decoy is a phone push (Microsoft Defender lock-screen toast), the
+// quiet ask is an email landing in the inbox at the same minute. Mixing
+// channels makes the "your attention is the budget" point visible —
+// the attacker doesn't care which app delivers the request, only that
+// the noisy one absorbs the eye while the quiet one slides past.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'Two notifications arrive on your phone within the same minute. One is loud and demands you act right now. The other is quiet and looks routine. Your attention has a budget — the attacker chose where to spend it.',
+    'Two pings hit you inside the same minute — one a phone push, the other an email. One is loud and demands you act right now. The other is quiet and looks routine. Your attention has a budget — the attacker chose where to spend it.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -20,12 +22,13 @@ const content: OffsecBiasContent = {
       flagged: true,
     },
     after: {
-      kind: 'notification',
+      kind: 'email',
       tag: 'Quiet ask',
-      appName: 'Wire Approvals',
+      sender: 'approvals@acme-vendor.com',
       timestamp: '1 min ago',
-      title: 'Acme Vendor updated their bank details',
-      body: 'New routing + account on file. Same totals, same schedule — approve to keep payments flowing.',
+      subject: 'Acme Vendor updated their bank details',
+      preview:
+        'New routing + account on file. Same totals, same schedule — approve to keep payments flowing.',
     },
   },
   whyItWorksLabel: 'Why it works',
