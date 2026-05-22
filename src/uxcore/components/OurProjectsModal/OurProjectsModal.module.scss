@@ -106,14 +106,45 @@
     color: rgba(218, 218, 218, 0.75) !important;
   }
 
+  // Strapi ships the project glyphs as dark ink on transparent — they
+  // disappear against the dark panel. Invert them, and stack the
+  // grayscale on inDev rows so the dim-state still reads.
+  .projectIcon,
+  .openLinkIcon {
+    filter: invert(1) brightness(1.4);
+  }
+
+  .inDevelopment .projectIcon,
+  .inDevelopment .openLinkIcon {
+    filter: invert(1) brightness(1.4) grayscale(70%);
+  }
+
   .buttonStyleLink {
     border-color: #303338;
     color: #dadada;
     background-color: transparent;
 
+    // Resting state on dark needs the LIGHT (white) icon; on hover the
+    // button flips to a light background and the DARK icon takes over.
+    .darkIcon {
+      display: none;
+    }
+
+    .lightIcon {
+      display: inline-block;
+    }
+
     &:hover {
       background-color: #dadada;
       color: #1b1e26;
+
+      .darkIcon {
+        display: inline-block;
+      }
+
+      .lightIcon {
+        display: none;
+      }
     }
   }
 }
