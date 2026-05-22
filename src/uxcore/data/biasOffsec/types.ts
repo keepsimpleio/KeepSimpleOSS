@@ -39,10 +39,26 @@ export interface OffsecBiasChatCard extends OffsecBiasCardCommon {
   body: string;
 }
 
+// Faux browser tab — used for biases where the attack surface is a web
+// page (lookalike domain, sponsored result, fake breach-checker landing).
+// The `host` field is split out so we can highlight the deceptive part
+// (e.g., the second-level domain) without forcing the data file to ship
+// inline markup.
+export interface OffsecBiasBrowserCard extends OffsecBiasCardCommon {
+  kind: 'browser';
+  protocol?: 'https' | 'http';
+  host: string;
+  path?: string;
+  pageHeading: string;
+  pageBody: string;
+  cta?: string;
+}
+
 export type OffsecBiasCard =
   | OffsecBiasEmailCard
   | OffsecBiasNotificationCard
-  | OffsecBiasChatCard;
+  | OffsecBiasChatCard
+  | OffsecBiasBrowserCard;
 
 export interface OffsecBiasContent {
   scenario: string;

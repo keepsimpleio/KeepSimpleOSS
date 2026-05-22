@@ -49,6 +49,49 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
     );
   }
 
+  if (card.kind === 'browser') {
+    const protocol = card.protocol || 'https';
+    return (
+      <>
+        <div className={styles.browserChrome}>
+          <span className={styles.browserDots} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span className={styles.browserUrlBar}>
+            <span className={styles.browserPadlock} aria-hidden="true">
+              <svg
+                viewBox="0 0 14 14"
+                width="11"
+                height="11"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinejoin="round"
+              >
+                <rect x="2.5" y="6" width="9" height="6.5" rx="1" />
+                <path d="M4.5 6 V4 a2.5 2.5 0 0 1 5 0 V6" />
+              </svg>
+            </span>
+            <span className={styles.browserProtocol}>{protocol}://</span>
+            <span className={styles.browserHost}>{card.host}</span>
+            {card.path && (
+              <span className={styles.browserPath}>{card.path}</span>
+            )}
+          </span>
+        </div>
+        <div className={styles.browserPageHeading}>
+          {card.flagged && <span className={styles.cardUrgencyDot} />}
+          {card.pageHeading}
+        </div>
+        <div className={styles.cardRule} />
+        <div className={styles.browserPageBody}>{card.pageBody}</div>
+        {card.cta && <div className={styles.browserCta}>{card.cta}</div>}
+      </>
+    );
+  }
+
   if (card.kind === 'notification') {
     return (
       <>
