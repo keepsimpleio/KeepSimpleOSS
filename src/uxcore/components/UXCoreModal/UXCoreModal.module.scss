@@ -118,7 +118,7 @@
         .switcher {
           position: relative;
           display: flex;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
           border: 1px solid #e0e0e0;
           border-radius: 8px;
           background-color: #fff;
@@ -130,25 +130,36 @@
             top: -1px;
             bottom: -1px;
             left: -1px;
-            width: calc(50% + 1px);
+            width: calc(33.3333% + 1px);
             background-color: #e8f0fb;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             transform: translateX(0);
-            transition: transform 450ms cubic-bezier(0.22, 0.95, 0.35, 1);
+            transition:
+              transform 450ms cubic-bezier(0.22, 0.95, 0.35, 1),
+              background-color 250ms ease,
+              border-color 250ms ease;
             will-change: transform;
             pointer-events: none;
             z-index: 0;
           }
 
           &:has(.activeHr)::before {
-            transform: translateX(calc(100% - 2px));
+            transform: translateX(calc(100% - 1px));
+          }
+
+          // OffSec uses Hexens-crimson for the sliding indicator so the
+          // mode shift reads as "different domain", not just "different tab".
+          &:has(.activeOffsec)::before {
+            transform: translateX(calc(200% - 2px));
+            background-color: #fdecea;
+            border-color: #c8412a;
           }
 
           .switcherItem {
             position: relative;
             z-index: 1;
-            width: 50%;
+            width: 33.3333%;
             text-align: center;
             height: 100%;
             padding: 8px 0;
@@ -156,7 +167,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             color: #000000a6;
             transition: color 300ms ease;
 
@@ -174,43 +185,8 @@
             }
           }
 
-          &.dimmed {
-            opacity: 0.5;
-
-            &::before {
-              opacity: 0;
-            }
-          }
-        }
-
-        .offsecSwitcher {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          height: 36px;
-          margin-bottom: 12px;
-          padding: 0 14px;
-          background-color: #fff;
-          border: 1px solid #e0e0e0;
-          border-radius: 8px;
-          color: #000000a6;
-          font-size: 14px;
-          cursor: pointer;
-          opacity: 0.7;
-          transition:
-            opacity 200ms ease,
-            color 200ms ease;
-
-          &:hover {
-            opacity: 1;
-          }
-
-          &.active {
-            background-color: #fdecea;
-            border-color: #c8412a;
+          .activeOffsec {
             color: #c8412a;
-            opacity: 1;
 
             svg {
               fill: #c8412a;
@@ -605,6 +581,11 @@ ol {
     border-color: #4c8cc1 !important;
   }
 
+  .ModalBodyContent .switcher:has(.activeOffsec)::before {
+    background-color: rgba(200, 65, 42, 0.18) !important;
+    border-color: #e57254 !important;
+  }
+
   .ModalBodyContent .switcher .switcherItem {
     color: rgba(218, 218, 218, 0.7) !important;
   }
@@ -623,24 +604,18 @@ ol {
     fill: #bbe4f2 !important;
   }
 
-  .ModalBodyContent .offsecSwitcher {
-    background-color: #151a26 !important;
-    border-color: #303338 !important;
-    color: #c2c7cf !important;
+  .ModalBodyContent .switcher .activeOffsec {
+    color: #ffd4c7 !important;
 
     svg {
-      fill: #c2c7cf !important;
+      fill: #ffd4c7 !important;
     }
+  }
 
-    &.active {
-      background-color: rgba(200, 65, 42, 0.18) !important;
-      border-color: #e57254 !important;
-      color: #ffd4c7 !important;
-
-      svg {
-        fill: #ffd4c7 !important;
-      }
-    }
+  // Invert the Hexens bitmap on dark backgrounds — same trick we use on
+  // the kemmio popup. `brightness` lifts the mid-grey into white range.
+  .ModalBodyContent .switcher img {
+    filter: invert(1) brightness(1.4);
   }
 
   .ModalBodyContent .offsecComingSoon {

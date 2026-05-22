@@ -64,8 +64,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   slugs,
 }) => {
   const router = useRouter();
-  const [{ toggleIsOffsecView, setUseCase }, { isOffsecView }] =
-    useUXCoreGlobals();
+  const [{ setUseCase }, { isOffsecView }] = useUXCoreGlobals();
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const [isQuestionHovered, setIsQuestionHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,16 +75,12 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   const { locale } = router as TRouter;
   const isOpen = !!biasNumber && data;
 
-  const handlePageViewChange = useCallback(
+  const handleUseCaseClick = useCallback(
     e => {
-      const { type } = e.currentTarget.dataset;
-      // Explicit set (not toggle) — guarantees a single click switches to
-      // the clicked side regardless of whether OffSec is currently active.
-      // The prior toggle-with-guard swallowed clicks when OffSec was on but
-      // the underlying isProductView still matched the clicked side.
-      setUseCase(type === secondViewLabel ? 'hr' : 'product');
+      const { usecase } = e.currentTarget.dataset;
+      setUseCase(usecase as 'product' | 'hr' | 'offsec');
     },
-    [secondViewLabel, setUseCase],
+    [setUseCase],
   );
 
   const handleCopyLink = useCallback(() => {
@@ -220,15 +215,11 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
             <span className={styles.metaTitle}>{usage}</span>
           </div>
           <div className={styles.ModalBodyContent}>
-            <div
-              className={cn(styles.switcher, {
-                [styles.dimmed]: isOffsecView,
-              })}
-            >
+            <div className={styles.switcher}>
               <div
-                onClick={handlePageViewChange}
+                onClick={handleUseCaseClick}
                 data-cy="switch-product"
-                data-type={defaultViewLabel}
+                data-usecase="product"
                 className={cn(styles.switcherItem, {
                   [styles.activeProduct]: !isOffsecView && !isProductView,
                 })}
@@ -237,9 +228,9 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
                 <span className={styles.switcherItemText}> {productText}</span>
               </div>
               <div
-                onClick={handlePageViewChange}
+                onClick={handleUseCaseClick}
                 data-cy="switch-hr"
-                data-type={secondViewLabel}
+                data-usecase="hr"
                 className={cn(styles.switcherItem, {
                   [styles.activeHr]: !isOffsecView && isProductView,
                 })}
@@ -247,16 +238,17 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
                 <HrIcon />
                 <span className={styles.switcherItemText}> {hrText}</span>
               </div>
-            </div>
-            <div
-              data-cy="switch-offsec"
-              onClick={toggleIsOffsecView}
-              className={cn(styles.offsecSwitcher, {
-                [styles.active]: isOffsecView,
-              })}
-            >
-              {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
-              <span>{offsecText}</span>
+              <div
+                onClick={handleUseCaseClick}
+                data-cy="switch-offsec"
+                data-usecase="offsec"
+                className={cn(styles.switcherItem, {
+                  [styles.activeOffsec]: isOffsecView,
+                })}
+              >
+                {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+                <span className={styles.switcherItemText}> {offsecText}</span>
+              </div>
             </div>
             <div
               key={isOffsecView ? 'offsec' : isProductView ? 'product' : 'hr'}
