@@ -534,7 +534,7 @@
       "title": "ENGINEERING LEAD · SEOGEOSOLVER",
       "cjk": "長",
       "desc": "Engineering lead attached to the SeoGeoSolver project.",
-      "claudeMdLines": 148,
+      "claudeMdLines": 142,
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },

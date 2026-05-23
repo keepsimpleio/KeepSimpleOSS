@@ -542,7 +542,7 @@
       "title": "ТЕХНИЧЕСКИЙ ЛИД · SEOGEOSOLVER",
       "cjk": "長",
       "desc": "Технический лид, прикреплён к проекту SeoGeoSolver.",
-      "claudeMdLines": 148,
+      "claudeMdLines": 142,
       "rows": [
         { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
         { "k": "роль", "v": "технический лид" },
