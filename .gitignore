@@ -4,6 +4,10 @@
 .idea/
 .codex
 
+# Wolf's-terminal session attachments (screenshots Wolf drops in mid-chat).
+# Local-only — never commit.
+/attachments/
+
 # Logs
 logs
 *.log
