@@ -4,7 +4,8 @@
      env() is 0 on devices without a safe area, so desktop layout is
      unchanged. Pairs with `viewport-fit=cover` in SeoGenerator. */
   bottom: max(15px, env(safe-area-inset-bottom));
-  right: 15px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
   padding: 20px;
@@ -154,10 +155,8 @@
 
 @media (max-width: 500px) {
   .content {
-    right: unset;
-    margin: 0 15px;
+    width: calc(100% - 30px);
     max-width: unset;
-    width: unset;
     bottom: max(15px, env(safe-area-inset-bottom));
   }
 }

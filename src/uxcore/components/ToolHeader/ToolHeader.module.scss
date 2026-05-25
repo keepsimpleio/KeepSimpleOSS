@@ -13,7 +13,7 @@ $headerHeight: 46px;
   flex-direction: row;
   align-items: center;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
-  z-index: 2;
+  z-index: 10;
   box-sizing: border-box;
   justify-content: space-between;
 
@@ -549,6 +549,14 @@ $headerHeight: 46px;
 
   .openLink {
     filter: invert(1) brightness(2) saturate(0);
+  }
+
+  .PageSwitcherItem {
+    color: #dadada;
+
+    svg path {
+      fill: #dadada;
+    }
   }
 }
 

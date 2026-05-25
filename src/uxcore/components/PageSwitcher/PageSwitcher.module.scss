@@ -84,3 +84,35 @@ $active-color: #359eff;
     grid-template-columns: 1fr;
   }
 }
+
+// Dark theme: default button rail is a white panel with hairline-gray
+// borders and black labels — on the dark page that becomes a bright slab
+// with invisible text. Repaint to the dark surface and lift the labels
+// and active accent to the dark-mode palette.
+:global(body.darkTheme) .PageSwitcher {
+  background-color: transparent;
+
+  & .Button {
+    border-color: #303338;
+
+    & svg path {
+      fill: #dadada;
+    }
+
+    & .Description {
+      color: #dadada;
+    }
+
+    &.Active {
+      border-color: #7fb3d5;
+
+      & svg > path {
+        fill: #7fb3d5;
+      }
+
+      & .Description {
+        color: #7fb3d5;
+      }
+    }
+  }
+}

@@ -3,7 +3,9 @@ import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 import CloseIcon from '@uxcore/assets/icons/CloseIcon';
 import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
+import MoonIcon from '@uxcore/assets/icons/MoonIcon';
 import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
+import SunIcon from '@uxcore/assets/icons/SunIcon';
 import MobileHeader from '@uxcore/components/_biases/MobileHeader';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
@@ -464,34 +466,7 @@ const ToolHeader: FC<TToolHeader> = ({
                 aria-pressed={isDarkTheme}
                 data-cy="theme-toggle"
               >
-                {isDarkTheme ? (
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="4" />
-                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-                  </svg>
-                ) : (
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                  </svg>
-                )}
+                {isDarkTheme ? <SunIcon /> : <MoonIcon />}
               </button>
               <LanguageSwitcher
                 withFlag

@@ -1,12 +1,15 @@
 import { getMyInfo } from '@uxcore/api/strapi';
 import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
+import MoonIcon from '@uxcore/assets/icons/MoonIcon';
 import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
+import SunIcon from '@uxcore/assets/icons/SunIcon';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
 import SettingsModal from '@uxcore/components/SettingsModal';
 import UserDropdown from '@uxcore/components/UserDropdown';
 import toolHeaderData from '@uxcore/data/toolHeader';
+import useGlobals from '@uxcore/hooks/useGlobals';
 import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
 import type { TRouter } from '@uxcore/local-types/global';
 import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
@@ -46,6 +49,7 @@ const MobileHeader: FC<MobileHeaderProps> = ({
   const router = useRouter();
   const { locale } = router as TRouter;
   const { accountData, setAccountData } = useContext(GlobalContext);
+  const [{ toggleIsDarkTheme }, { isDarkTheme }] = useGlobals();
   const { usernameIsTaken, settingsTxt, myProfileTxt } = toolHeaderData[locale];
   const imageSrc = useMemo(() => accountData?.picture, [accountData]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -151,7 +155,11 @@ const MobileHeader: FC<MobileHeaderProps> = ({
       <div className={styles.SiteName}>
         <a href={`/${locale === 'ru' ? 'ru' : ''}`} target="_self">
           <Image
-            src="/assets/logos/keepsimple.svg"
+            src={
+              isDarkTheme
+                ? '/assets/logos/keepsimpleDark.svg'
+                : '/assets/logos/keepsimple.svg'
+            }
             alt="keepsimple logo"
             width={130.61}
             height={25.87}
@@ -170,6 +178,18 @@ const MobileHeader: FC<MobileHeaderProps> = ({
             <PodcastIcon />
           </div>
         )}
+        <button
+          type="button"
+          className={styles.themeToggle}
+          onClick={toggleIsDarkTheme}
+          aria-label={
+            isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'
+          }
+          aria-pressed={isDarkTheme}
+          data-cy="theme-toggle"
+        >
+          {isDarkTheme ? <SunIcon /> : <MoonIcon />}
+        </button>
         <LanguageSwitcher
           withFlag
           withText={false}
