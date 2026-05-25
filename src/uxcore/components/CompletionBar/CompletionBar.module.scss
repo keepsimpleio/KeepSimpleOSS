@@ -537,11 +537,15 @@
   }
 
   .progressBar .levelTxt {
-    color: rgba(218, 218, 218, 0.55);
+    color: #dadada;
   }
 
   .step {
-    color: rgba(218, 218, 218, 0.5);
+    color: #dadada;
+  }
+
+  .step:not(.completed):not(.completedMilestone):not(.hoveredLvl):not(.singleHoveredLvl) {
+    background-image: url("data:image/svg+xml;utf8,<svg width='22' height='22' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path d='M9.99998 20L18.6603 15V5L9.99998 0L1.33972 5V15L9.99998 20Z' fill='%23000000d9'/></svg>");
   }
 
   .bar,

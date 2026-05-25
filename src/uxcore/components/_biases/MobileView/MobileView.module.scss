@@ -214,3 +214,79 @@
     }
   }
 }
+
+// Dark theme: the mobile list defaults to white cards on white sticky bars,
+// which leave bright slabs on the dark page bg and make the black bias
+// labels invisible. Repaint surfaces to the dark page palette, lift text
+// to the dark-mode foreground, and dim the section tints so the category
+// stripes still read as accents rather than solid color bars.
+:global(body.darkTheme) {
+  .StickyElement {
+    background-color: #1b1e26;
+  }
+
+  .Title {
+    color: #7fb3d5;
+  }
+
+  .Subtitle {
+    color: #9aa0aa;
+  }
+
+  .link {
+    color: #7fb3d5;
+  }
+
+  .BiasCategory {
+    background-color: #1b1e26;
+    border-bottom-color: #303338;
+
+    &.Section1 {
+      color: #74d2f2;
+    }
+    &.Section2 {
+      color: #7eeec7;
+    }
+    &.Section3 {
+      color: #dc7ca4;
+    }
+    &.Section4 {
+      color: #9084fa;
+    }
+  }
+
+  .BiasTitle {
+    color: #dadada;
+    border-bottom-color: #303338;
+
+    &.Section1 {
+      background-color: rgba(116, 210, 242, 0.08);
+    }
+    &.Section2 {
+      background-color: rgba(126, 238, 199, 0.08);
+    }
+    &.Section3 {
+      background-color: rgba(220, 124, 164, 0.08);
+    }
+    &.Section4 {
+      background-color: rgba(144, 132, 250, 0.08);
+    }
+  }
+
+  .BiasName {
+    color: #dadada;
+  }
+
+  .MobileContent {
+    border-bottom-color: #303338;
+
+    .OurProjectsLabel {
+      border-color: #303338;
+      color: #dadada;
+    }
+  }
+
+  .MobileVersion {
+    color: #9aa0aa;
+  }
+}
