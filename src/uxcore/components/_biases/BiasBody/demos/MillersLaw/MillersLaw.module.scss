@@ -1,0 +1,82 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.sidebar {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.sidebarTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+  padding: $space-md $space-lg;
+  border-bottom: 1px solid $border-color;
+  background: $bg-alt;
+}
+
+.flatList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.flatItem {
+  padding: $space-sm $space-lg;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  border-bottom: 1px solid $border-color;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+.group {
+  border-bottom: 1px solid $border-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.groupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  padding: $space-sm $space-lg $space-xs;
+  background: $bg-alt;
+}
+
+.groupList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.groupItem {
+  padding: $space-sm $space-lg;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  border-top: 1px solid $border-color;
+  cursor: pointer;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}

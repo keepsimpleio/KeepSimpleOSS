@@ -1,0 +1,55 @@
+.wrapper {
+  max-width: 100% !important;
+  margin: 0 !important;
+  background: linear-gradient(
+      94deg,
+      rgba(231, 233, 255, 0.61) 23.62%,
+      rgba(210, 215, 255, 0.61) 99.75%
+    ),
+    #fff;
+  border-radius: unset !important;
+  border: 1px solid #d9d9d9;
+  filter: drop-shadow(0px 4px 16px rgba(0, 0, 0, 0.15));
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .btnWrapper {
+      margin-bottom: 31px;
+      width: 100%;
+      text-align: end;
+    }
+
+    .title {
+      font-size: 18px;
+      line-height: 19.2px;
+      font-weight: 700;
+      color: #000000a6;
+      margin: 17px 0 6px 0;
+    }
+
+    .description {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 58px;
+    }
+
+    .unlockedStatus,
+    .statistics {
+      color: #a6a6a6;
+      font-weight: 400;
+      font-size: 14px;
+      display: block;
+    }
+
+    .unlockedStatus {
+      margin-bottom: 16px;
+    }
+  }
+
+  .locked {
+    opacity: 35%;
+  }
+}

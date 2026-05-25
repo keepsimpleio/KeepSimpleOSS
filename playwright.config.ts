@@ -1,31 +1,43 @@
-/// <reference types="node" />
 import { defineConfig, devices } from '@playwright/test';
 
+// Local: `yarn dev` on port 3005. CI: hit a deployed URL via PLAYWRIGHT_BASE_URL.
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3005';
-const isCI = !!process.env.CI;
+
+// CI sets PLAYWRIGHT_NO_SERVER=1 to skip the local webServer and target a deployed URL.
+const skipWebServer = process.env.PLAYWRIGHT_NO_SERVER === '1';
+
+// Staging sits behind HTTP Basic Auth; production and local dev don't.
+const httpCredentials =
+  process.env.PLAYWRIGHT_HTTP_USERNAME && process.env.PLAYWRIGHT_HTTP_PASSWORD
+    ? {
+        username: process.env.PLAYWRIGHT_HTTP_USERNAME,
+        password: process.env.PLAYWRIGHT_HTTP_PASSWORD,
+      }
+    : undefined;
 
 export default defineConfig({
   testDir: './tests',
-  testIgnore: ['**/fixtures/**', '**/helpers/**'],
+  globalSetup: './tests/global-setup.ts',
   fullyParallel: true,
-  forbidOnly: isCI,
-  retries: isCI ? 2 : 1,
-  // Cap local workers. `next dev` compiles routes on-demand; unbounded
-  // parallelism starves the server and the first-hit latency blows past
-  // navigationTimeout on pages the compiler hasn't warmed yet. 2 is
-  // deliberately conservative — the suite still runs under 3 min.
-  workers: isCI ? 1 : 2,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0,
+  // 1 worker locally: `next dev` compile-on-first-hit contention causes
+  // intermittent net::ERR_ABORTED flakes when multiple workers hammer the
+  // same uncompiled dynamic route at once. CI hits a prebuilt deployed URL
+  // so parallelism is fine there; but scheduled runs use 1 worker anyway
+  // to keep behavior consistent.
+  workers: 1,
+  reporter: [['html', { open: 'never' }], ['list']],
+
   use: {
     baseURL,
-    locale: 'en-US',
-    trace: 'on-first-retry',
+    httpCredentials,
     testIdAttribute: 'data-testid',
-    actionTimeout: 15_000,
-    // Raised from 30s — accommodates `next dev`'s compile-on-first-hit cost
-    // when multiple workers each land on cold routes simultaneously.
-    navigationTimeout: 60_000,
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
+
   projects: [
     {
       name: 'chromium',
@@ -40,23 +52,17 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
-  // Server selection:
-  //   - PLAYWRIGHT_NO_SERVER=1 → don't manage one (e.g. workflow already
-  //     started it, or running against a deployed URL).
-  //   - APP_ENV=staging|prod → pre-built production server (`next start`).
-  //     The CI workflow runs `next build` first, then this block boots
-  //     `next start` against the chosen env file. See
-  //     .github/workflows/playwright-scheduled.yml.
-  //   - else → local `yarn dev`.
-  webServer: process.env.PLAYWRIGHT_NO_SERVER
+
+  webServer: skipWebServer
     ? undefined
     : {
-        command:
-          process.env.APP_ENV === 'staging' || process.env.APP_ENV === 'prod'
-            ? `cross-env NODE_ENV=production APP_ENV=${process.env.APP_ENV} next start -p 3005`
-            : 'yarn dev',
-        url: baseURL,
-        reuseExistingServer: !isCI,
+        command: 'yarn dev',
+        // Health-check against a known-200 route. Root (/) currently returns
+        // 404 in dev (see QA_PLAN Phase 1 findings), so we can't use baseURL.
+        // English is served at the root (no /en prefix) — use the canonical
+        // path.
+        url: `${baseURL}/uxcore`,
+        reuseExistingServer: true,
         timeout: 180_000,
         stdout: 'ignore',
         stderr: 'pipe',

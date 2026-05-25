@@ -1,0 +1,217 @@
+import { CustomHookType, DispatchFuntion } from '@uxcore/local-types/global';
+import { useCallback, useEffect, useState } from 'react';
+
+type TFullscreenFunction = (options?: FullscreenOptions) => Promise<void>;
+
+interface StateType {
+  isDarkTheme: boolean;
+  isOpenedSidebar: boolean;
+  isFullScreen: boolean;
+  articleRef: HTMLElement & {
+    mozRequestFullScreen: TFullscreenFunction;
+    webkitRequestFullScreen: TFullscreenFunction;
+    msRequestFullscreen: TFullscreenFunction;
+  };
+}
+
+let listeners: DispatchFuntion[] = [];
+let state: StateType = {
+  isDarkTheme: false,
+  isOpenedSidebar: false,
+  isFullScreen: false,
+  articleRef: null,
+};
+
+const reducer = (newState: any) => {
+  state = {
+    ...state,
+    ...newState,
+  };
+
+  listeners.forEach(listener => {
+    listener(state);
+  });
+};
+
+/* ACTIONS */
+
+// Cross-realm theme sync. The keepsimple side and the UX Core side each
+// ship their own copy of useGlobals (separate module state, separate
+// listener arrays). They share the same localStorage key + body class, so
+// persistence is fine — but in-memory state diverges when the user toggles
+// in one realm and navigates to the other. To keep them in lockstep
+// within a single tab we dispatch a window event on every toggle; both
+// realms subscribe and mirror the new value into their own state.
+const DARK_THEME_EVENT = 'darktheme:change';
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(DARK_THEME_EVENT, (e: Event) => {
+    const next = !!(e as CustomEvent).detail?.isDarkTheme;
+    if (state.isDarkTheme !== next) {
+      if (state.articleRef) {
+        state.articleRef.classList.toggle('darkTheme', next);
+      }
+      reducer({ isDarkTheme: next });
+    }
+  });
+}
+
+// dark theme action
+const toggleIsDarkTheme = () => {
+  const newThemeState = !state.isDarkTheme;
+  localStorage.setItem('darkTheme', String(newThemeState));
+  document.body.classList.toggle('darkTheme', newThemeState);
+  if (state.articleRef) {
+    state.articleRef.classList.toggle('darkTheme', newThemeState);
+  }
+  reducer({ isDarkTheme: newThemeState });
+  window.dispatchEvent(
+    new CustomEvent(DARK_THEME_EVENT, {
+      detail: { isDarkTheme: newThemeState },
+    }),
+  );
+};
+
+// sidebar action
+const toggleSidebar = () => {
+  const isOpenedSidebar = !state.isOpenedSidebar;
+
+  if (isOpenedSidebar) {
+    document.documentElement.style.overflowY = 'hidden';
+  } else {
+    // @ts-ignore
+    const isChrome = !!window.chrome;
+    const overflowDefaultValue = isChrome ? 'overlay' : 'auto';
+    document.documentElement.style.overflowY = overflowDefaultValue;
+  }
+  reducer({ isOpenedSidebar });
+};
+
+const handleSidebarChanges = () => {
+  if (window.innerWidth > 961 && state.isOpenedSidebar) {
+    toggleSidebar();
+  }
+};
+
+// fullscreen actions
+const fullScreenCancel = () => {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+    // @ts-ignore
+  } else if (document.webkitExitFullscreen) {
+    // @ts-ignore
+    document.webkitExitFullscreen();
+    // @ts-ignore
+  } else if (document.mozCancelFullScreen) {
+    // @ts-ignore
+    document.mozCancelFullScreen();
+    // @ts-ignore
+  } else if (document.msExitFullscreen) {
+    // @ts-ignore
+    document.msExitFullscreen();
+  }
+
+  reducer({ isFullScreen: false });
+};
+
+const handleExitFullscreenByKeydown = () => {
+  document.removeEventListener(
+    'fullscreenchange',
+    handleExitFullscreenByKeydown,
+  );
+  reducer({ isFullScreen: false });
+};
+
+const moveTofullScreen = () => {
+  const { articleRef } = state;
+
+  if (articleRef.requestFullscreen) {
+    articleRef.requestFullscreen();
+  } else if (articleRef.mozRequestFullScreen) {
+    articleRef.mozRequestFullScreen();
+  } else if (articleRef.webkitRequestFullScreen) {
+    articleRef.webkitRequestFullScreen();
+  } else if (articleRef.msRequestFullscreen) {
+    articleRef.msRequestFullscreen();
+  }
+
+  reducer({ isFullScreen: true });
+
+  setTimeout(() => {
+    document.addEventListener(
+      'fullscreenchange',
+      handleExitFullscreenByKeydown,
+    );
+  }, 50);
+};
+
+// article setter
+const setArticleRef = (articleRef: HTMLElement) => {
+  reducer({ articleRef });
+};
+
+/* INIT */
+const initUseGlobals = (articleRef: HTMLElement) => {
+  // Init articleRef
+  setArticleRef(articleRef);
+
+  // Dark theme — apply localStorage value unconditionally (true OR false)
+  // so navigation between realms always re-syncs in-memory state.
+  const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+  document.body.classList.toggle('darkTheme', isDarkTheme);
+  if (articleRef) {
+    articleRef.classList.toggle('darkTheme', isDarkTheme);
+  }
+  if (state.isDarkTheme !== isDarkTheme) {
+    reducer({ isDarkTheme });
+  }
+
+  window.addEventListener('resize', handleSidebarChanges);
+};
+
+// Article-ref-free init for pages without an article surface (e.g. /uxcore).
+// Reads persisted darkTheme flag and applies it to <body> + state.
+const initDarkTheme = () => {
+  if (typeof window === 'undefined') return;
+  const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+  document.body.classList.toggle('darkTheme', isDarkTheme);
+  if (state.isDarkTheme !== isDarkTheme) {
+    reducer({ isDarkTheme });
+  }
+};
+
+const unmountUseGlobals = () => {
+  window.removeEventListener('resize', handleSidebarChanges);
+};
+
+/* CUSTOM HOOK */
+const useGlobals = (): CustomHookType => {
+  const newListener = useState()[1];
+
+  useEffect(() => {
+    listeners.push(newListener);
+
+    return () => {
+      listeners = listeners.filter(listener => listener !== newListener);
+    };
+  }, [newListener]);
+
+  const handleToggleTheme = useCallback(() => {
+    toggleIsDarkTheme();
+  }, []);
+
+  return [
+    {
+      initUseGlobals,
+      initDarkTheme,
+      unmountUseGlobals,
+      toggleIsDarkTheme: handleToggleTheme,
+      toggleSidebar,
+      moveTofullScreen,
+      fullScreenCancel,
+    },
+    state,
+  ];
+};
+
+export default useGlobals;

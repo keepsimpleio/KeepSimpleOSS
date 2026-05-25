@@ -1,0 +1,86 @@
+$primary-color: #c4c4c4;
+$active-color: #359eff;
+
+.PageSwitcher {
+  display: flex;
+  background-color: #fff;
+  width: 100%;
+
+  & .Button {
+    box-sizing: border-box;
+    width: -webkit-fill-available;
+    height: 40px;
+    border: 1px solid $primary-color;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    cursor: default;
+
+    &:link {
+      text-decoration: none;
+    }
+
+    .bob {
+      opacity: 85%;
+      width: 23px !important;
+      height: 23px !important;
+
+      &:hover {
+        opacity: 100%;
+      }
+    }
+
+    & svg,
+    .bob {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+    }
+
+    & .Description {
+      font-size: 14px;
+      color: #000;
+    }
+
+    &.Active {
+      border-color: $active-color;
+
+      & svg > path {
+        fill: #359eff;
+      }
+
+      & .Description {
+        color: $active-color;
+      }
+    }
+
+    margin-right: 5px;
+  }
+
+  .GridWrapper {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 6px;
+  }
+
+  .GridWrapper > .Button:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1010px) {
+  .PageSwitcher {
+    .Button {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+@media (max-width: 300px) {
+  .PageSwitcher {
+    grid-template-columns: 1fr;
+  }
+}

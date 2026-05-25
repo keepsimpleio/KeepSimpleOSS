@@ -1,0 +1,98 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.banner {
+  background: $color-primary;
+  color: $color-white;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  margin-bottom: $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+}
+
+.bannerIcon {
+  font-size: $font-size-md;
+}
+
+.bannerText {
+  flex: 1;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.featureRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.featureName {
+  flex: 1;
+  font-size: $font-size-base;
+  color: $text-primary;
+}
+
+.eta {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  background: $bg-alt;
+  padding: 2px $space-sm;
+  border-radius: $border-radius;
+}
+
+.voteBtn {
+  padding: 4px $space-sm;
+  border: 1px solid $color-primary;
+  border-radius: $border-radius;
+  background: transparent;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $color-primary;
+    color: $color-white;
+  }
+}
+
+.votes {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  min-width: 70px;
+  text-align: right;
+}
+
+.note {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-top: $space-md;
+  text-align: center;
+}

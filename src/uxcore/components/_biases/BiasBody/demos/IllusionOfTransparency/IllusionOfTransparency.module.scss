@@ -1,0 +1,124 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+}
+
+.form {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $text-primary;
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+  }
+
+  input,
+  select,
+  textarea {
+    font-family: $font-family;
+    font-size: $font-size-sm;
+    padding: $space-xs $space-sm;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    background: $bg-alt;
+    color: $text-primary;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.helpWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.helpIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $color-white;
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 0;
+  font-family: $font-family;
+}
+
+.tooltip {
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: $color-dark;
+  color: $color-white;
+  font-size: 11px;
+  font-weight: 400;
+  padding: $space-sm $space-md;
+  border-radius: $border-radius;
+  white-space: normal;
+  width: 200px;
+  z-index: 10;
+  box-shadow: $shadow-card;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.guideLink {
+  font-size: $font-size-sm;
+  color: $text-link;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.btn {
+  padding: $space-sm $space-lg;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+  }
+}

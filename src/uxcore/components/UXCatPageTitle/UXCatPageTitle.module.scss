@@ -1,0 +1,25 @@
+.pageTitle {
+  margin-top: 64px;
+  margin-bottom: 32px;
+  font-size: 16px;
+  color: #000000a6;
+  font-weight: 700;
+}
+
+.bigFont {
+  font-size: 24px;
+}
+
+@media (max-width: 800px) {
+  .pageTitle {
+    margin-bottom: 8px;
+    margin-top: 40px;
+  }
+}
+
+// Dark theme: this is the section heading shared by "Level Progression",
+// "Achievements", etc. on /uxcat — was rgba(0,0,0,0.65), invisible on
+// dark page bg.
+:global(body.darkTheme) .pageTitle {
+  color: #dadada;
+}

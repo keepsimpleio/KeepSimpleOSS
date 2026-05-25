@@ -83,6 +83,48 @@
   padding: 24px 28px 16px 28px !important;
 }
 
+.emailChangeDescription {
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #5c5650;
+  margin: 0;
+}
+
+.emailChangeSent {
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1c1c1a;
+  margin: 0;
+}
+
+.sendConfirmationBtn {
+  background-color: #242424 !important;
+  border: 1px solid #242424 !important;
+  border-radius: 0 !important;
+  color: #fff !important;
+  font-family: 'Source Serif 4', 'Source-Serif-Regular', serif;
+  font-size: 14px !important;
+  line-height: 1.4;
+  height: 36px !important;
+  padding: 6px 16px !important;
+  align-self: flex-start;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:hover {
+    background-color: #111 !important;
+    border-color: #111 !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .ModalWrapper {
   max-width: 480px !important;
   width: 480px !important;
@@ -113,6 +155,25 @@
 
   .Label {
     color: #fff;
+  }
+
+  .emailChangeDescription {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .emailChangeSent {
+    color: #fff;
+  }
+
+  .sendConfirmationBtn {
+    background-color: #fff !important;
+    border-color: #fff !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+
+    &:hover {
+      background-color: #e8e8e8 !important;
+      border-color: #e8e8e8 !important;
+    }
   }
 
   .CancelBtn {

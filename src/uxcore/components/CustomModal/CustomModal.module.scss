@@ -1,0 +1,175 @@
+.ModalOverlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 106;
+  animation: cmOverlayFadeIn 0.2s ease-out;
+
+  &.ModalOverlayClosing {
+    animation: cmOverlayFadeOut 0.18s ease-in forwards;
+  }
+
+  & .Modal {
+    position: relative;
+    background: #fff;
+    width: 560px;
+    border: 1px solid #cbcbcb;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    animation: cmWrapperIn 0.2s ease-out;
+
+    &.ModalClosing {
+      animation: cmWrapperOut 0.18s ease-in forwards;
+    }
+
+    & .ModalHeader {
+      display: flex;
+      padding: 15px 20px 10px;
+      border-bottom: 1px solid #cbcbcb;
+
+      & .ModalHeaderBody {
+        width: 100%;
+        color: #28587b;
+        font-size: 16px;
+      }
+
+      & .ModalHeaderCloseButtonContainer {
+        width: 75px;
+
+        & .ModalHeaderCloseButton {
+          text-align: right;
+          margin-top: 2px;
+
+          & img {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    & .ModalBody {
+      padding: 14px 20px 20px;
+      max-height: calc(100vh - 315px);
+      overflow: auto;
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(40, 88, 123, 0.4) transparent;
+
+      /* width */
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.4);
+        border-radius: 5px;
+      }
+    }
+  }
+  .hyLang {
+    * {
+      font-family: 'NotoSansArmenian-Regular', sans-serif;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .ModalOverlay {
+    z-index: 10;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    & .Modal {
+      width: 100%;
+
+      & .ModalBody {
+        height: calc(100vh - 120px) !important;
+        height: calc((var(--vh, 1vh) * 100) - 120px) !important;
+        max-height: none;
+      }
+    }
+  }
+}
+
+@keyframes cmOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cmOverlayFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes cmWrapperIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes cmWrapperOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+}
+
+// Dark theme: re-skin the CustomModal chrome (used by Contact Us /
+// Add Question). Modal is portaled under <body>, so the descendant
+// selector from body.darkTheme still matches.
+:global(body.darkTheme) .ModalOverlay {
+  background-color: rgba(0, 0, 0, 0.55);
+
+  .Modal {
+    background: #1b1e26;
+    border-color: #303338;
+
+    .ModalHeader {
+      border-bottom-color: #303338;
+
+      .ModalHeaderBody {
+        color: #7fb3d5;
+      }
+
+      .ModalHeaderCloseButton img {
+        filter: invert(0.85);
+      }
+    }
+
+    .ModalBody {
+      scrollbar-color: rgba(127, 179, 213, 0.4) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(127, 179, 213, 0.4);
+      }
+    }
+  }
+}

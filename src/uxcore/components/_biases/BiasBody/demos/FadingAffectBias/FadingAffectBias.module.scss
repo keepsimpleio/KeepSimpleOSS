@@ -1,0 +1,185 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.outageBanner {
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: $border-radius-round;
+  background: #c0392b;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.bannerTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: #c0392b;
+}
+
+.bannerSub {
+  font-size: $font-size-sm;
+  color: #a93226;
+}
+
+.operationalBanner {
+  background: #eafaf1;
+  border: 1px solid #a9dfbf;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+}
+
+.dotGreen {
+  width: 10px;
+  height: 10px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.operationalTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: #1e8449;
+}
+
+.operationalSub {
+  font-size: $font-size-sm;
+  color: #1a5276;
+}
+
+.section {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.sectionTitle {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.incident {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.incidentBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: $color-white;
+  background: $text-secondary;
+  padding: 1px $space-xs;
+  border-radius: $border-radius;
+}
+
+.incidentName {
+  color: $text-secondary;
+}
+
+.improvements {
+  background: $bg-card;
+  border: 1px solid #a9dfbf;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.improvTitle {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: #1e8449;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.improvItem {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.improvIcon {
+  color: $tag-green;
+  font-weight: 700;
+  font-size: $font-size-md;
+  flex-shrink: 0;
+}
+
+.services {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.service {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  border-bottom: 1px solid $border-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: #c0392b;
+}
+
+.statusDotGreen {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+}
+
+.historyLink {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  text-align: right;
+  cursor: pointer;
+}

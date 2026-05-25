@@ -1,0 +1,31 @@
+export const HRIconBlue = () => (
+  <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_5138_10344)">
+      <path d="M4 6.33317C4 4.30812 5.64162 2.6665 7.66667 2.6665C9.69173 2.6665 11.3333 4.30812 11.3333 6.33317C11.3333 8.35822 9.69173 9.99984 7.66667 9.99984C5.64162 9.99984 4 8.35822 4 6.33317Z" fill="url(#paint0_linear_5138_10344)"/>
+      <path d="M3 13.9998C3 12.5271 4.19391 11.3332 5.66667 11.3332H9.66667C11.1394 11.3332 12.3333 12.5271 12.3333 13.9998V16.6665C12.3333 17.0347 12.0349 17.3332 11.6667 17.3332H3.66667C3.29848 17.3332 3 17.0347 3 16.6665V13.9998Z" fill="url(#paint1_linear_5138_10344)"/>
+      <path d="M12.6668 6.33317C12.6668 7.3334 12.3731 8.26503 11.8672 9.0465C12.5185 9.63884 13.3838 9.99984 14.3335 9.99984C16.3585 9.99984 18.0001 8.35822 18.0001 6.33317C18.0001 4.30812 16.3585 2.6665 14.3335 2.6665C13.3838 2.6665 12.5185 3.02752 11.8672 3.61981C12.3731 4.40131 12.6668 5.33294 12.6668 6.33317Z" fill="url(#paint2_linear_5138_10344)"/>
+      <path d="M13.6669 13.9998V17.3332H18.3335C18.7017 17.3332 19.0002 17.0347 19.0002 16.6665V13.9998C19.0002 12.5271 17.8063 11.3332 16.3335 11.3332H12.6483C13.2817 12.0408 13.6669 12.9754 13.6669 13.9998Z" fill="url(#paint3_linear_5138_10344)"/>
+    </g>
+    <defs>
+      <linearGradient id="paint0_linear_5138_10344" x1="7.66667" y1="3" x2="7.66667" y2="17.3335" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#05B8FE"/>
+        <stop offset="1" stop-color="#525BFB"/>
+      </linearGradient>
+      <linearGradient id="paint1_linear_5138_10344" x1="7.66667" y1="3" x2="7.66667" y2="17.3335" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#05B8FE"/>
+        <stop offset="1" stop-color="#525BFB"/>
+      </linearGradient>
+      <linearGradient id="paint2_linear_5138_10344" x1="15.4337" y1="3" x2="15.4337" y2="17.3335" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#058EFE"/>
+        <stop offset="1" stop-color="#5852FB"/>
+      </linearGradient>
+      <linearGradient id="paint3_linear_5138_10344" x1="15.4337" y1="3" x2="15.4337" y2="17.3335" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#058EFE"/>
+        <stop offset="1" stop-color="#5852FB"/>
+      </linearGradient>
+      <clipPath id="clip0_5138_10344">
+        <rect width="16" height="16" fill="white" transform="translate(3 2)"/>
+      </clipPath>
+    </defs>
+  </svg>
+);

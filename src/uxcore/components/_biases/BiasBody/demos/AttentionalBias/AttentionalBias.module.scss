@@ -1,0 +1,161 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-base;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.meta {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.section {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.progressBar {
+  height: 8px;
+  background: $bg-alt;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $color-primary;
+  border-radius: 4px;
+}
+
+.progressText {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.statusBadge {
+  font-size: $font-size-sm;
+  background: $tag-green;
+  color: $color-white;
+  padding: 2px $space-sm;
+  border-radius: $border-radius;
+  font-weight: 600;
+}
+
+// After styles
+.metricsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-sm;
+}
+
+.metricCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.metricValue {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.rankValue {
+  color: $tag-purple;
+}
+
+.streakValue {
+  color: $tag-orange;
+}
+
+.metricLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.streakBar {
+  background: linear-gradient(90deg, #fff4e6, #ffe0b2);
+  border: 1px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $tag-orange;
+}
+
+.fire {
+  font-size: $font-size-md;
+}
+
+.streakMsg {
+  color: $tag-orange;
+}

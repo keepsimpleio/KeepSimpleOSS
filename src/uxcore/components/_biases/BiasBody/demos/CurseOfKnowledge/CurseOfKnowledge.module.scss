@@ -1,0 +1,120 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.codeBlock {
+  background: #1e2023;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  font-family: 'Courier New', monospace;
+}
+
+.codeLine {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  font-size: $font-size-sm;
+}
+
+.indent {
+  display: inline-block;
+  width: 16px;
+}
+
+.key {
+  color: #7ec8e3;
+}
+
+.val {
+  color: #a8e6cf;
+}
+
+.jargon {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  font-style: italic;
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  cursor: pointer;
+
+  input {
+    margin: 0;
+    flex-shrink: 0;
+  }
+}
+
+.optionSelected {
+  border-color: $color-primary;
+  background: #f0f6fc;
+}
+
+.optionIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.optionTitle {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.optionDesc {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.btnPrimary {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

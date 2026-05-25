@@ -1,0 +1,114 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.notifCard {
+  display: flex;
+  gap: $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  align-items: flex-start;
+}
+
+.notifIcon {
+  font-size: $font-size-lg;
+  color: $color-primary;
+  flex-shrink: 0;
+}
+
+.notifContent {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.notifTitle {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.notifBody {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.5;
+}
+
+.customList {
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.customItem {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.icon {
+  color: $color-primary;
+  font-size: $font-size-sm;
+  flex-shrink: 0;
+}
+
+.previewBox {
+  background: $bg-card;
+  border: 1px dashed $color-primary;
+  border-radius: $border-radius;
+  padding: $space-md;
+  font-size: $font-size-sm;
+  color: $color-primary;
+  text-align: center;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+  justify-content: flex-end;
+}
+
+.btnPrimary {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.btnSecondary {
+  padding: $space-sm $space-lg;
+  background: $bg-card;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+}

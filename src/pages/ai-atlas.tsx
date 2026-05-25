@@ -74,10 +74,6 @@ const STRINGS = {
     welcomeBanner: "Welcome to the heart of KeepSimple Team's operations",
     day: 'DAY',
     daySinceTail: 'since the beginning of our movement',
-    thisWeek: 'THIS WEEK',
-    metricCommits: 'commits',
-    metricLoc: 'loc',
-    metricServices: 'services',
     apexFounderFallback: 'founder',
     redactedPlaceholder: 'REDACTED',
     engLeadLabel: 'Eng. Lead',
@@ -288,10 +284,6 @@ const STRINGS = {
     welcomeBanner: 'Добро пожаловать в сердце операций команды KeepSimple',
     day: 'ДЕНЬ',
     daySinceTail: 'с начала нашего движения',
-    thisWeek: 'НА НЕДЕЛЕ',
-    metricCommits: 'коммитов',
-    metricLoc: 'loc',
-    metricServices: 'сервисов',
     apexFounderFallback: 'основатель',
     redactedPlaceholder: 'СКРЫТО',
     engLeadLabel: 'Тех. Лид',
@@ -1489,32 +1481,52 @@ function AiAtlasApp() {
     };
   }, []);
 
-  /* hash → view mode (initial load + back/forward).
+  /* hash → state (initial load + back/forward).
      useLayoutEffect runs synchronously after hydration commit and
      before paint, so a deep-link to /ai-atlas#security shows the
      correct tab on first paint instead of flashing 'environment'
-     for one frame and then snapping. */
+     for one frame and then snapping.
+
+     Reserved hashes: 'security' (Security tab), '' / 'environment'
+     (default tab, no focus). Anything else is treated as an entity
+     id and focuses that entity. We set optimistically here; the
+     validation effect below clears unknown ids once data loads. */
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
     const sync = () => {
       const hash = window.location.hash.replace(/^#/, '').toLowerCase();
-      setViewMode(hash === 'security' ? 'security' : 'environment');
+      if (hash === 'security') {
+        setViewMode('security');
+        setFocusedNode(null);
+        return;
+      }
+      setViewMode('environment');
+      setFocusedNode(hash && hash !== 'environment' ? hash : null);
     };
     sync();
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
   }, []);
 
-  /* view mode → hash (silent, no history clutter) */
+  /* Once data is loaded, drop any focusedNode whose id isn't a real
+     entity — protects against typo'd or stale share links. */
+  useEffect(() => {
+    if (!data || !focusedNode) return;
+    if (!data.dossiers || !data.dossiers[focusedNode]) setFocusedNode(null);
+  }, [data, focusedNode]);
+
+  /* state → hash (silent, no history clutter) */
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const desired = viewMode === 'security' ? '#security' : '';
+    let desired = '';
+    if (viewMode === 'security') desired = '#security';
+    else if (focusedNode) desired = '#' + focusedNode;
     const current = window.location.hash;
     if (current !== desired) {
       const url = window.location.pathname + window.location.search + desired;
       window.history.replaceState(null, '', url);
     }
-  }, [viewMode]);
+  }, [viewMode, focusedNode]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1806,26 +1818,6 @@ function AiAtlasApp() {
             </b>
             <span className="meta-tail">{t.daySinceTail}</span>
           </span>
-          {metrics && (
-            <>
-              <span className="meta-sep">◆</span>
-              <span className="meta-group">
-                <span className="meta-label">{t.thisWeek}</span>
-                {metrics.commitsWeek != null && (
-                  <>
-                    <b>{metrics.commitsWeek.toLocaleString()}</b>
-                    <span className="meta-unit">{t.metricCommits}</span>
-                  </>
-                )}
-                {metrics.totalLines != null && (
-                  <>
-                    <b>{metrics.totalLines.toLocaleString()}</b>
-                    <span className="meta-unit">{t.metricLoc}</span>
-                  </>
-                )}
-              </span>
-            </>
-          )}
         </div>
       </header>
 

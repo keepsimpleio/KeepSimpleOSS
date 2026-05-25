@@ -8,6 +8,8 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import ArticleTag from '@components/articles/ArticleTag';
 import { GlobalContext } from '@components/Context/GlobalContext';
 
@@ -133,7 +135,7 @@ const ArticleInfo: FC<ArticleInfoProps> = ({
           <div
             // @ts-ignore
             style={{ '--desc-lines': descLineCount }}
-            dangerouslySetInnerHTML={{ __html: description }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
             className={styles.p}
             data-tooltip-id={description}
           />
@@ -147,7 +149,7 @@ const ArticleInfo: FC<ArticleInfoProps> = ({
               })}
             >
               <span
-                dangerouslySetInnerHTML={{ __html: description }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
                 className={styles.p}
               />
             </ReactTooltip>

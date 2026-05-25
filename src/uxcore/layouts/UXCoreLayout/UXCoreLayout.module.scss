@@ -1,0 +1,181 @@
+.body {
+  margin: 0;
+  padding: 0;
+  background-color: #fafafa;
+  overflow: hidden;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+}
+
+:global(body.darkTheme) .body {
+  background-color: #1b1e26;
+}
+
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+.viewTypeSwitcher {
+  position: absolute;
+  top: 65px;
+  right: 20px;
+  // The sibling .coreView fills the entire viewport (100vw / 100vh) and is
+  // rendered AFTER the switchers in the DOM, so without a z-index it
+  // stacks on top of them and silently eats every click on the switcher
+  // buttons. Lift the switchers above the core view layer.
+  z-index: 3;
+}
+
+.viewTeamSwitcher {
+  position: absolute;
+  top: 150px;
+  right: 20px;
+  z-index: 3;
+}
+
+.Logos {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.SvgWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh);
+}
+
+.MobileView {
+  display: none;
+}
+
+.BiasEnvironment {
+  position: absolute;
+  top: 9%;
+  left: 25px;
+  padding: 8px 0px 14px 16px;
+
+  .Label {
+    font-weight: 600;
+  }
+
+  .Title,
+  .Label {
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+  }
+
+  .Title {
+    display: flex;
+    align-items: center;
+    white-space: pre-line;
+  }
+
+  .Title:last-child {
+    align-items: flex-start;
+  }
+
+  .ToolExplained {
+    text-decoration: none;
+    position: relative;
+    z-index: 4;
+    display: block;
+    width: fit-content;
+  }
+
+  .Separator {
+    border: 1px solid #d9d9d9;
+    width: 145px;
+    margin-left: 0;
+  }
+
+  .Purple,
+  .Pink,
+  .Green,
+  .Blue,
+  .imgWrapper {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 16px;
+  }
+
+  .Purple {
+    background-color: #cdc8fc;
+  }
+
+  .Pink {
+    background-color: #dbcad1;
+  }
+
+  .Green {
+    background-color: #c5eadd;
+  }
+
+  .Blue {
+    background-color: #bbe4f2;
+  }
+}
+
+@media (max-width: 1450px) {
+  .hyVersion {
+    width: 136px;
+  }
+}
+
+@media (max-width: 1359px) {
+  .viewTeamSwitcher {
+    top: 175px;
+    align-items: flex-end;
+  }
+  .SvgWrapper {
+    .BiasEnvironment {
+      left: 0;
+
+      .Label,
+      .Title {
+        font-size: 12px;
+      }
+    }
+  }
+  .hyVersion {
+    width: 136px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .SvgWrapper {
+    .BiasEnvironment {
+      .Label,
+      .Title {
+        font-size: 10px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1010px) {
+  .body {
+    overflow: auto;
+  }
+
+  .SvgWrapper {
+    display: none;
+  }
+  .MobileView {
+    display: block;
+    position: relative;
+  }
+}
+
+@media (min-width: 3500px) {
+  .logos {
+    top: 80%;
+  }
+}

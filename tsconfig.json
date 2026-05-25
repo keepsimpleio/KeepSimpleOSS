@@ -1,8 +1,14 @@
 {
   "compilerOptions": {
-    "types": ["cypress", "node", "./cypress/support/commands"],
+    "types": [
+      "node"
+    ],
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -19,28 +25,90 @@
     "jsx": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@data/*": ["src/data/*"],
-      "@constants/*": ["src/constants/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@lib/*": ["src/lib/*"],
-      "@api/*": ["src/api/*"],
-      "@styles/*": ["src/styles/*"],
-      "@local-types/*": ["src/local-types/*"],
-      "@utils/*": ["src/utils/*"],
-      "@icons/*": ["src/assets/icons/*"],
-      "react": ["node_modules/@types/react"]
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@data/*": [
+        "src/data/*"
+      ],
+      "@constants/*": [
+        "src/constants/*"
+      ],
+      "@hooks/*": [
+        "src/hooks/*"
+      ],
+      "@layouts/*": [
+        "src/layouts/*"
+      ],
+      "@lib/*": [
+        "src/lib/*"
+      ],
+      "@api/*": [
+        "src/api/*"
+      ],
+      "@styles/*": [
+        "src/styles/*"
+      ],
+      "@local-types/*": [
+        "src/local-types/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@icons/*": [
+        "src/assets/icons/*"
+      ],
+      "react": [
+        "node_modules/@types/react"
+      ],
+      "@uxcore/components/*": [
+        "src/uxcore/components/*"
+      ],
+      "@uxcore/data/*": [
+        "src/uxcore/data/*"
+      ],
+      "@uxcore/hooks/*": [
+        "src/uxcore/hooks/*"
+      ],
+      "@uxcore/layouts/*": [
+        "src/uxcore/layouts/*"
+      ],
+      "@uxcore/lib/*": [
+        "src/uxcore/lib/*"
+      ],
+      "@uxcore/api/*": [
+        "src/uxcore/api/*"
+      ],
+      "@uxcore/styles/*": [
+        "src/uxcore/styles/*"
+      ],
+      "@uxcore/local-types/*": [
+        "src/uxcore/local-types/*"
+      ],
+      "@uxcore/assets/*": [
+        "src/uxcore/assets/*"
+      ],
+      "@uxcore/constants/*": [
+        "src/uxcore/constants/*"
+      ],
+      "@uxcore/utils/*": [
+        "src/uxcore/utils/*"
+      ],
+      "@uxcore/assets/icons/*": [
+        "src/uxcore/assets/icons/*"
+      ]
     },
     "incremental": true
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    "cypress",
-    "cypress/support/commands.d.ts",
-    "cypress/**/*.ts"
+    "**/*.tsx"
   ],
-  "exclude": ["node_modules", "tests", "playwright.config.ts"]
+  "exclude": [
+    "node_modules",
+    "tests",
+    "playwright.config.ts",
+    "widget"
+  ]
 }

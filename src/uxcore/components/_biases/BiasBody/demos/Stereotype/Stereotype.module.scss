@@ -1,0 +1,92 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.greeting {
+  font-size: $font-size-lg;
+  color: $text-primary;
+}
+
+.subline {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.modules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-xs;
+  margin-top: $space-xs;
+}
+
+.module {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+
+  &.matched {
+    border-color: $tag-green;
+    background: lighten(#42c256, 47%);
+  }
+}
+
+.icon {
+  font-size: $font-size-md;
+}
+
+.modLabel {
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.note {
+  font-size: 11px;
+  font-style: italic;
+  color: $text-secondary;
+  margin-top: $space-xs;
+}
+
+.signals {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.signalsTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.signal {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+}
+
+.signalLabel {
+  color: $text-secondary;
+}
+
+.signalValue {
+  color: $text-primary;
+  font-weight: 600;
+}

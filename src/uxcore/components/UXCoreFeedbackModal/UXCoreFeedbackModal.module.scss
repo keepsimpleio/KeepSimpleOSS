@@ -1,0 +1,162 @@
+.overlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+
+  .shadow {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    background-color: #fff;
+    max-width: 580px;
+    height: auto;
+    min-height: 403px;
+    height: auto !important; /* for IE as it does not support min-height */
+    height: 403px;
+    border-radius: 4px;
+    width: 100%;
+    height: auto;
+    padding-bottom: 20px;
+    z-index: 15;
+  }
+
+  .textAndClosebtn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 17px;
+  }
+
+  .closeBtn {
+    cursor: pointer;
+    width: 40px;
+    text-align: center;
+  }
+
+  .mainTitle {
+    font-weight: normal;
+  }
+
+  .separator {
+    border: 1px solid #cbcbcb;
+  }
+
+  .feedbackBody {
+    display: flex;
+    flex-direction: column;
+    padding: 0 17px;
+  }
+
+  .textAndImage {
+    display: flex;
+  }
+
+  .textarea {
+    width: 100%;
+    height: 150px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid #d9d9d9;
+    resize: none;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .title {
+    padding-bottom: 13px;
+    padding-top: 18px;
+  }
+
+  .text {
+    color: rgba(0, 0, 0, 0.65);
+    padding-left: 10px;
+  }
+  .thankYouWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    height: auto;
+    min-height: 353px;
+    height: auto !important; /* for IE as it does not support min-height */
+    height: 353px;
+    border-radius: 4px;
+    width: 100%;
+    height: auto;
+    padding-top: 15px;
+    z-index: 15;
+    flex-direction: column;
+  }
+  .thankYouTitle {
+    font-weight: bold;
+  }
+
+  .imageAndButton {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 17px 0 17px;
+  }
+
+  .btnWrapper {
+    text-align: end;
+  }
+
+  .buttonDismiss,
+  .buttonSubmit,
+  .buttonClose {
+    all: unset;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+
+  .buttonDismiss {
+    border: 1px solid #d9d9d9;
+    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.016);
+    border-radius: 2px;
+    padding: 5px 16px;
+    margin-right: 4px;
+  }
+
+  .buttonSubmit,
+  .buttonClose {
+    background: #28587b;
+    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+    border-radius: 2px;
+    padding: 5px 16px;
+    border: none;
+    color: #fff;
+  }
+  .buttonCloseWrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+}
+
+.overlayDisabled {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  .wrapper {
+    margin: 20px;
+  }
+}

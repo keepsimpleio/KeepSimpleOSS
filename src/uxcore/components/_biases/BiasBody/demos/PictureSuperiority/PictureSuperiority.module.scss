@@ -1,0 +1,83 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+  text-align: center;
+}
+
+.textList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  li {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    line-height: 1.6;
+    padding: $space-sm $space-md;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    padding-left: $space-2xl;
+    position: relative;
+
+    &::before {
+      content: '–';
+      position: absolute;
+      left: $space-md;
+      color: $text-disabled;
+    }
+  }
+}
+
+.iconGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-sm;
+}
+
+.featureCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  align-items: flex-start;
+}
+
+.featureIcon {
+  width: 32px;
+  height: 32px;
+  color: $color-primary;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.featureLabel {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.featureDesc {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}

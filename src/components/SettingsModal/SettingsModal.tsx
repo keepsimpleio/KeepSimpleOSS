@@ -5,11 +5,15 @@ import { FC, useCallback, useState } from 'react';
 import { TRouter } from '@local-types/global';
 
 import {
+  isTwitterPlaceholderEmail,
   isValidEmail,
   linkedInRegex,
   usernameRegex,
 } from '@lib/settings-helpers';
 
+import { requestTwitterEmailChange } from '@api/auth';
+
+import authData from '@data/auth';
 import settingsData from '@data/settings';
 
 import Button from '@components/Button';
@@ -19,6 +23,12 @@ import Modal from '@components/Modal';
 import Textarea from '@components/Textarea';
 
 import styles from './SettingsModal.module.scss';
+
+type EmailChangeStatus =
+  | { kind: 'idle' }
+  | { kind: 'submitting' }
+  | { kind: 'sent'; email: string }
+  | { kind: 'error'; message: string };
 
 type SettingsModalProps = {
   setOpenSettings: (openSettings: boolean) => void;
@@ -30,6 +40,8 @@ type SettingsModalProps = {
   linkedinStatus?: boolean;
   changeTitlePermission?: boolean;
   usernameIsTakenError?: string;
+  provider?: string;
+  token?: string | null;
   setUsernameIsTakenError: (usernameIsTakenError: string) => void;
   setChangedTitle: (selected: boolean) => void;
   handleSaveClick: (
@@ -54,10 +66,15 @@ const SettingsModal: FC<SettingsModalProps> = ({
   defaultSelectedTitle,
   changeTitlePermission,
   setChangedTitle,
+  provider,
+  token,
 }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
+  const showEmailChange =
+    provider === 'twitter' && isTwitterPlaceholderEmail(currentEmail);
+  const emailChangeCopy = authData[currentLocale].emailChange.settings;
   const [isEmailPublic, setIsEmailPublic] = useState(
     !!mailStatus ? 'everyone' : 'onlyMe',
   );
@@ -66,8 +83,16 @@ const SettingsModal: FC<SettingsModalProps> = ({
   );
   const [username, setUsername] = useState(currentUsername);
   const [linkedInUrl, setLinkedInUrl] = useState(linkedin);
+  const [emailValue, setEmailValue] = useState('');
+  const [emailFieldValid, setEmailFieldValid] = useState(true);
+  const [emailChangeStatus, setEmailChangeStatus] = useState<EmailChangeStatus>(
+    { kind: 'idle' },
+  );
   const [selectedTitle] = useState(defaultSelectedTitle);
-  const [isValid, setIsValid] = useState({ username: true, linkedin: true });
+  const [isValid, setIsValid] = useState({
+    username: true,
+    linkedin: true,
+  });
 
   const {
     title,
@@ -81,6 +106,7 @@ const SettingsModal: FC<SettingsModalProps> = ({
     cancelBtn,
     usernameValidationMessage,
     invalidLinkedIn,
+    emailPlaceholder,
   } = settingsData[currentLocale];
 
   const closeSettings = () => {
@@ -106,7 +132,7 @@ const SettingsModal: FC<SettingsModalProps> = ({
         [type]: value,
       }));
     },
-    [isValid],
+    [],
   );
 
   const handleSave = () => {
@@ -120,6 +146,69 @@ const SettingsModal: FC<SettingsModalProps> = ({
       );
     }
     setChangedTitle && setChangedTitle(true);
+  };
+
+  const handleSendConfirmation = async () => {
+    const trimmed = emailValue.trim();
+    if (!isValidEmail(trimmed)) {
+      setEmailFieldValid(false);
+      setEmailChangeStatus({
+        kind: 'error',
+        message: emailChangeCopy.invalidEmail,
+      });
+      return;
+    }
+    if (!token) {
+      setEmailChangeStatus({
+        kind: 'error',
+        message: emailChangeCopy.generic,
+      });
+      return;
+    }
+    setEmailChangeStatus({ kind: 'submitting' });
+    const result = await requestTwitterEmailChange({
+      email: trimmed,
+      locale: currentLocale,
+      token,
+    });
+    if (result.ok) {
+      setEmailChangeStatus({ kind: 'sent', email: trimmed });
+      return;
+    }
+    if ('code' in result) {
+      if (result.code === 'INVALID_EMAIL') {
+        setEmailChangeStatus({
+          kind: 'error',
+          message: emailChangeCopy.invalidEmail,
+        });
+        return;
+      }
+      if (result.code === 'EMAIL_ALREADY_REGISTERED' || result.status === 409) {
+        setEmailChangeStatus({
+          kind: 'error',
+          message: emailChangeCopy.emailAlreadyRegistered,
+        });
+        return;
+      }
+      if (result.code === 'LIMIT_REACHED' || result.status === 429) {
+        setEmailChangeStatus({
+          kind: 'error',
+          message: emailChangeCopy.limitReached,
+        });
+        return;
+      }
+      if (result.code === 'EMAIL_CHANGE_NOT_ALLOWED' || result.status === 403) {
+        setEmailChangeStatus({
+          kind: 'error',
+          message: emailChangeCopy.notAllowed,
+        });
+        return;
+      }
+    }
+    setEmailChangeStatus({
+      kind: 'error',
+      message: emailChangeCopy.generic,
+    });
   };
 
   return (
@@ -154,22 +243,84 @@ const SettingsModal: FC<SettingsModalProps> = ({
             }
           />
         </div>
-        <div className={styles.FieldGroupWithVisibility}>
+        {showEmailChange ? (
           <div className={styles.FieldGroup}>
             <span className={styles.Label}>{email}</span>
-            <Input
-              disabled
-              placeholder={isValidEmail(currentEmail) ? currentEmail : ''}
+            <p
+              className={styles.emailChangeDescription}
+              data-cy="twitter-email-change-description"
+            >
+              {emailChangeCopy.description}
+            </p>
+            {emailChangeStatus.kind === 'sent' ? (
+              <p
+                className={styles.emailChangeSent}
+                role="status"
+                data-cy="twitter-email-change-sent"
+              >
+                {emailChangeCopy.sent.replace(
+                  '{email}',
+                  emailChangeStatus.email,
+                )}
+              </p>
+            ) : (
+              <>
+                <Input
+                  value={emailValue}
+                  placeholder={emailPlaceholder}
+                  onChange={value => {
+                    setEmailValue(value);
+                    if (!emailFieldValid) setEmailFieldValid(true);
+                    if (emailChangeStatus.kind === 'error') {
+                      setEmailChangeStatus({ kind: 'idle' });
+                    }
+                  }}
+                  validationFunction={isValidEmail}
+                  isValidCallback={setEmailFieldValid}
+                  showMessage={
+                    !emailFieldValid || emailChangeStatus.kind === 'error'
+                  }
+                  errorMessage={
+                    emailChangeStatus.kind === 'error'
+                      ? emailChangeStatus.message
+                      : emailChangeCopy.invalidEmail
+                  }
+                />
+                <Button
+                  label={
+                    emailChangeStatus.kind === 'submitting'
+                      ? emailChangeCopy.submitting
+                      : emailChangeCopy.submit
+                  }
+                  onClick={handleSendConfirmation}
+                  variant="black"
+                  className={styles.sendConfirmationBtn}
+                  disabled={
+                    emailChangeStatus.kind === 'submitting' ||
+                    !emailValue.trim()
+                  }
+                />
+              </>
+            )}
+          </div>
+        ) : (
+          <div className={styles.FieldGroupWithVisibility}>
+            <div className={styles.FieldGroup}>
+              <span className={styles.Label}>{email}</span>
+              <Input
+                disabled
+                placeholder={isValidEmail(currentEmail) ? currentEmail : ''}
+              />
+            </div>
+            <Checkbox
+              visibleTxt={visible}
+              everyone={everyone}
+              onlyYou={onlyYou}
+              setRadioValue={setIsEmailPublic}
+              radioValue={isEmailPublic}
             />
           </div>
-          <Checkbox
-            visibleTxt={visible}
-            everyone={everyone}
-            onlyYou={onlyYou}
-            setRadioValue={setIsEmailPublic}
-            radioValue={isEmailPublic}
-          />
-        </div>
+        )}
         <div className={styles.FieldGroupWithVisibility}>
           <div className={styles.FieldGroup}>
             <span className={styles.Label}>{linkedIn}</span>

@@ -1,0 +1,184 @@
+.ToolFooter {
+  box-sizing: border-box;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 0;
+  width: 100%;
+  padding: 15px 20px;
+
+  & .AdvancedLinks {
+    position: absolute;
+    right: 20px;
+    text-align: right;
+    bottom: 35px;
+
+    & > * {
+      font-size: 16px;
+      color: #28587b;
+      display: block;
+      margin-bottom: 5px;
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .tooltipContainer {
+    background: #fff;
+    color: #000;
+    z-index: 444;
+    border: 1px solid #cbcbcb;
+    transition: opacity 0.2s ease-in-out;
+    opacity: 100%;
+
+    > div {
+      border: none;
+      filter: unset;
+      box-shadow: unset;
+      border-bottom: 1px solid #d9d9d9;
+      border-right: 1px solid #d9d9d9;
+      bottom: -5px !important;
+    }
+  }
+
+  & .Motto {
+    font-size: 20px;
+    color: #28587b;
+    position: absolute;
+    left: calc(50vw - 85px);
+    bottom: 15px;
+  }
+
+  & .Release {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    font-size: 15px;
+    color: #9c9999;
+  }
+
+  &:not(.UXCore) {
+    & .Authors {
+      width: 270px;
+    }
+  }
+}
+
+.UXCore {
+  padding: unset;
+}
+
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+@media (max-width: 1440px) {
+  .ToolFooter {
+    & .AdvancedLinks {
+      & > * {
+        font-size: 14px;
+      }
+    }
+
+    & .Motto {
+      font-size: 15px;
+    }
+  }
+}
+
+@media (max-width: 901px) {
+  .ToolFooter {
+    & .AdvancedLinks {
+      & > * {
+        font-size: 16px;
+      }
+    }
+
+    & .Motto {
+      font-size: 17px;
+    }
+  }
+}
+
+@media (min-width: 851px) and (max-height: 800px) {
+  .ToolFooter {
+    & .Release {
+      font-size: 10px;
+    }
+
+    & .AdvancedLinks {
+      & > * {
+        font-size: 10px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1010px) {
+  .ToolFooter {
+    height: auto;
+    position: static;
+    padding: 0 16px;
+
+    & .AdvancedLinks {
+      position: static;
+      text-align: left;
+      margin-bottom: 15px;
+
+      & > * {
+        margin-bottom: 12px;
+      }
+    }
+
+    & .Motto {
+      display: block;
+      position: static;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    & .Release {
+      display: block;
+      position: static;
+      padding: 0 0 30px;
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 1360px) and (min-width: 801px) {
+  .ToolFooter {
+    z-index: 2;
+  }
+  .Motto {
+    bottom: 10px !important;
+  }
+}
+
+@media (min-width: 1361px) {
+  .Motto {
+    display: none;
+  }
+}
+
+// Dark theme: keep brand-blue accents but lift contrast for the muted release
+// label so it stays legible against the dark page.
+:global(body.darkTheme) .ToolFooter {
+  & .AdvancedLinks > * {
+    color: #7fb3d5;
+  }
+
+  & .Motto {
+    color: #7fb3d5;
+  }
+
+  & .Release {
+    color: #9aa0aa;
+  }
+}

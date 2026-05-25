@@ -1,0 +1,202 @@
+.overlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+
+  h4 {
+    margin: 16px 0;
+  }
+
+  hr {
+    margin: 0;
+  }
+
+  .shadow {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    background-color: #fff;
+    max-width: 490px;
+    min-height: 350px;
+    height: auto !important; /* for IE as it does not support min-height */
+    border-radius: 4px;
+    width: 100%;
+    height: auto;
+    padding-bottom: 20px;
+    z-index: 15;
+  }
+
+  .textAndClosebtn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 17px;
+  }
+
+  .closeBtn {
+    cursor: pointer;
+    width: 40px;
+    text-align: center;
+  }
+
+  .title {
+    font-weight: normal;
+  }
+
+  .separator {
+    border: 1px solid #cbcbcb;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 17px;
+  }
+
+  .textAndImage {
+    display: flex;
+  }
+
+  .outlinedArea {
+    height: 100%;
+    width: 100%;
+    font-size: 14px;
+    margin: 0 8px 0 20px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #d9d9d9;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .copyBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    padding: 8px 12px 8px 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #d9d9d9;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .shortTxt {
+    min-width: 120px;
+  }
+
+  .longTxt {
+    min-width: 172px;
+  }
+
+  .text {
+    vertical-align: middle;
+    white-space: pre-line;
+    padding-bottom: 13px;
+    padding-top: 18px;
+    color: rgba(0, 0, 0, 0.65);
+    padding-left: 10px;
+  }
+
+  .linkFields {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: normal;
+    margin-top: 20px;
+  }
+
+  .imageAndButton {
+    display: flex;
+    padding: 20px 17px 0 17px;
+  }
+
+  .btnWrapper {
+    align-self: center;
+  }
+
+  button {
+    all: unset;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+}
+
+.overlayDisabled {
+  display: none;
+}
+
+.shareImg {
+  width: 32px;
+  height: 32px;
+  margin: 0 16px;
+}
+
+.shareToText {
+  padding: 32px 0 16px;
+  font-size: 14px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.copyTxt {
+  text-align: center;
+  padding-left: 8px;
+}
+
+@media (max-width: 920px) {
+  .wrapper {
+    margin: 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .linkFields {
+    flex-direction: column;
+    text-align: center !important;
+  }
+
+  .outlinedArea {
+    width: 100%;
+    text-align: center;
+    margin: 0 20px 6px 20px !important;
+  }
+
+  .copyBtn {
+    width: 100% !important;
+    margin: 0 20px !important;
+    text-align: center;
+  }
+}
+
+@media (max-width: 350px) {
+  .imageAndButton {
+    flex-direction: column;
+    padding: 20px 0 0 0 !important;
+  }
+
+  .text {
+    margin: 0 !important;
+    padding: 18px 0 0 0 !important;
+  }
+
+  .linkFields {
+    margin-top: 0;
+  }
+}

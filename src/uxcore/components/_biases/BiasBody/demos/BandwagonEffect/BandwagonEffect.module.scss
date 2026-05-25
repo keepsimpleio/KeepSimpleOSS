@@ -1,0 +1,149 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+  width: 100%;
+  max-width: 280px;
+  box-shadow: $shadow-card;
+}
+
+.cardImg {
+  height: 120px;
+  background: $bg-alt;
+  position: relative;
+}
+
+.cardImgTrending {
+  background: linear-gradient(135deg, #1e3a5f, $color-primary);
+}
+
+.trendingBadge {
+  position: absolute;
+  top: $space-sm;
+  left: $space-sm;
+  background: #f59e0b;
+  color: #000;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  padding: 3px $space-sm;
+  border-radius: 3px;
+}
+
+.cardBody {
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.cardName {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.cardCategory {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.cardRating {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.stars {
+  color: #f59e0b;
+  font-size: $font-size-sm;
+}
+
+.ratingCount {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.ratingTotal {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.socialProof {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-xs $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+}
+
+.avatarStack {
+  display: flex;
+}
+
+.avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  border: 2px solid $bg-card;
+  margin-left: -6px;
+
+  &:first-child {
+    margin-left: 0;
+    background: $tag-green;
+  }
+
+  &:last-child {
+    background: $tag-purple;
+  }
+}
+
+.socialText {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.cardPrice {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $color-primary;
+  margin-top: $space-xs;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnPrimary {
+  background: $color-primary;
+  color: $color-white;
+  border-color: $color-primary;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

@@ -1,0 +1,116 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  background: #f5f1ea;
+  border: 1px solid #ddd7ce;
+}
+
+.heading {
+  font-family: 'Aboreto', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: #1c1c1a;
+  margin: 0;
+  text-align: center;
+}
+
+.body {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #5c5650;
+  margin: 0;
+  text-align: center;
+}
+
+.email {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1rem;
+  color: #1c1c1a;
+  text-align: center;
+  word-break: break-all;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-family: 'Jost', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1c1c1a;
+}
+
+.input {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1rem;
+  color: #1c1c1a;
+  background: #faf6ef;
+  border: 1px solid #ddd7ce;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: #b83232;
+  }
+}
+
+.submit {
+  font-family: 'Jost', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1c1c1a;
+  background: transparent;
+  border: 1px solid #c8c0b5;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: #b83232;
+    color: #b83232;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.error {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 0.875rem;
+  color: #b83232;
+  margin: 0;
+  text-align: center;
+}
+
+.requestNewLink {
+  font-family: 'Jost', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #b83232;
+  background: transparent;
+  border: 1px solid #b83232;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}

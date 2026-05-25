@@ -1,0 +1,105 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.checkout {
+  background: $color-white;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+
+  &JP {
+    background: #fdf6f0;
+    border-color: #e8c9a0;
+  }
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+
+  &JP {
+    color: #5a3e28;
+    font-size: $font-size-md;
+    margin: 0 0 $space-lg;
+  }
+}
+
+.orderSummary {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  margin-bottom: $space-lg;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  padding-bottom: $space-xs;
+  border-bottom: 1px solid $border-color;
+}
+
+.total {
+  font-weight: 700;
+  color: $text-primary;
+  border-bottom: none;
+  font-size: $font-size-base;
+}
+
+.btnGlobal {
+  width: 100%;
+  padding: $space-md;
+  background: $tag-green;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnJP {
+  width: 100%;
+  padding: $space-md;
+  background: $tag-green;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+.note {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-top: $space-md;
+  text-align: center;
+}
+
+.noteJP {
+  font-size: 11px;
+  color: #8a6a50;
+  margin-top: $space-sm;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.trustBadge {
+  text-align: center;
+  font-size: $font-size-sm;
+  color: #5a7a5a;
+  margin-top: $space-sm;
+  font-weight: 600;
+}

@@ -1,0 +1,207 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.email {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.emailMeta {
+  background: $bg-alt;
+  border-bottom: 1px solid $border-color;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.from {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.subject {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.emailBody {
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.heroBanner {
+  background: $tag-orange;
+  color: $color-white;
+  font-size: $font-size-lg;
+  font-weight: 900;
+  text-align: center;
+  padding: $space-md;
+  border-radius: $border-radius;
+  letter-spacing: 0.03em;
+}
+
+.hype {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.dealBox {
+  background: #fff8e1;
+  border: 2px solid $tag-orange;
+  border-radius: $border-radius;
+  padding: $space-md;
+  text-align: center;
+}
+
+.dealLabel {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $tag-orange;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dealPrice {
+  font-size: $font-size-xl;
+  font-weight: 900;
+  color: $tag-orange;
+}
+
+.btnHype {
+  width: 100%;
+  padding: $space-md;
+  border: none;
+  border-radius: $border-radius;
+  background: $tag-orange;
+  color: $color-white;
+  font-size: $font-size-base;
+  font-weight: 900;
+  cursor: pointer;
+  font-family: $font-family;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.urgency {
+  font-size: $font-size-sm;
+  color: #c0392b;
+  text-align: center;
+  font-weight: 600;
+  margin: 0;
+}
+
+.greeting {
+  font-size: $font-size-base;
+  color: $text-primary;
+  margin: 0;
+}
+
+.intro {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.changeList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.change {
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  border-left: 3px solid $color-primary;
+}
+
+.changeTitle {
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.changeSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.statsRow {
+  display: flex;
+  gap: $space-sm;
+}
+
+.stat {
+  flex: 1;
+  text-align: center;
+  padding: $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+
+  strong {
+    display: block;
+    font-size: $font-size-md;
+    color: $color-primary;
+    margin-bottom: 2px;
+  }
+}
+
+.btnClean {
+  width: 100%;
+  padding: $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 340px;
+}
+
+.labelGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}

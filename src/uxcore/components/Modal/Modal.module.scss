@@ -1,0 +1,298 @@
+.overlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 45;
+  animation: overlayFadeIn 0.2s ease-out;
+
+  &.overlayClosing {
+    animation: overlayFadeOut 0.18s ease-in forwards;
+  }
+
+  .wrapper {
+    display: flex;
+    width: 100%;
+    background-color: #fff;
+    flex-direction: column;
+    position: relative;
+    z-index: 80;
+    border-radius: 4px;
+    animation: wrapperIn 0.2s ease-out;
+
+    &.wrapperClosing {
+      animation: wrapperOut 0.18s ease-in forwards;
+    }
+
+    .header {
+      .hadBorder {
+        border-bottom: 1px solid #d9d9d9;
+      }
+    }
+
+    .withoutHeader {
+      display: none !important;
+    }
+
+    .header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding-top: 13px;
+      padding-bottom: 8px;
+
+      .title,
+      .blackTitle,
+      .grayTitle {
+        padding: 10px 28px;
+        font-size: 16px;
+        color: #28587b;
+      }
+
+      .blackTitle {
+        color: #000;
+      }
+
+      .grayTitle {
+        color: #9e9e9e;
+      }
+
+      .closeBtn {
+        padding-right: 15px;
+        cursor: pointer;
+        width: 16px;
+        height: 34px;
+      }
+    }
+
+    .body {
+      padding: 16px 28px;
+      overflow: auto;
+
+      // Slim styled scrollbar so the inside of the modal does not look
+      // like a Windows-95 widget when the content overflows.
+      scrollbar-width: thin;
+      scrollbar-color: rgba(40, 88, 123, 0.4) transparent;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.4);
+        border-radius: 5px;
+      }
+    }
+  }
+
+  .small {
+    width: 560px;
+  }
+
+  .customDecisionTable {
+    width: 100%;
+    height: 635px;
+  }
+
+  .bobModal {
+    max-width: 1024px;
+    width: 100%;
+    margin: 20px;
+  }
+
+  .large {
+    max-width: 1359px;
+    max-height: 800px;
+    height: 100%;
+    width: 100%;
+    margin: 20px;
+  }
+
+  .medium {
+    max-width: 1359px;
+    max-height: 725px;
+    width: 100%;
+    height: 100%;
+    margin: 20px;
+  }
+
+  .hasBorder {
+    border-bottom: 1px solid #d9d9d9;
+  }
+
+  .closeBtnWithoutHeader {
+    padding-right: 15px;
+    cursor: pointer;
+    width: 25px;
+    height: 32px;
+    position: absolute;
+    right: 0;
+    top: -45px;
+  }
+}
+
+.background {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 46;
+}
+
+@media (max-width: 960px) {
+  .overlay {
+    .bobModal {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      max-width: unset !important;
+      top: 0;
+      scrollbar-width: none;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      margin: 0 !important;
+
+      .header {
+        padding-top: 12px;
+        padding-bottom: 7px;
+      }
+
+      .body {
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .overlay {
+    .removeBorderMobile {
+      border-bottom: none;
+
+      .blackTitle {
+        padding: 10px 16px !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 750px) {
+  .overlay {
+    .small {
+      max-width: 400px;
+      width: 100% !important;
+      margin: 25px;
+    }
+
+    .fullSizeMobile {
+      max-width: unset;
+    }
+
+    .fullHeightMobile {
+      max-height: unset;
+      max-width: unset;
+      width: 100vw;
+      height: 100vh;
+      margin: unset;
+    }
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes overlayFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes wrapperIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes wrapperOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+}
+
+// Dark theme: re-skin the base modal chrome (wrapper bg, header divider,
+// title, close button). Modal renders through a portal under <body>, so a
+// descendant selector from body.darkTheme still matches.
+:global(body.darkTheme) .overlay {
+  background-color: rgba(0, 0, 0, 0.55);
+
+  .wrapper {
+    background-color: #1b1e26 !important;
+    border: 1px solid #303338;
+
+    .body {
+      scrollbar-color: rgba(127, 179, 213, 0.4) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(127, 179, 213, 0.4);
+      }
+    }
+  }
+
+  .header {
+    .title {
+      color: #7fb3d5 !important;
+    }
+
+    .blackTitle {
+      color: #dadada !important;
+    }
+
+    .grayTitle {
+      color: rgba(218, 218, 218, 0.55) !important;
+    }
+
+    .closeBtn,
+    .closeBtnWithoutHeader {
+      // The close icon is a dark SVG — invert it so it reads against the
+      // dark modal chrome.
+      filter: invert(0.85);
+    }
+  }
+
+  .hasBorder {
+    border-bottom-color: #303338 !important;
+  }
+}

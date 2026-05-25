@@ -1,0 +1,99 @@
+.Root {
+  background: #ffffff;
+}
+
+.Header {
+  padding: 48px 24px 24px;
+  text-align: center;
+}
+
+.Eyebrow {
+  margin: 0 0 4px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a2e;
+
+  @media (min-width: 640px) {
+    font-size: 38px;
+  }
+}
+
+.SubtitleSlot {
+  margin: 0 0 16px;
+  font-size: 28px;
+
+  @media (min-width: 640px) {
+    font-size: 34px;
+  }
+}
+
+.CyclingWord {
+  display: inline-block;
+  transition: all 0.3s;
+  // Default (non-bold) cycling word. Light theme: near-black. Inline JS
+  // colour was the same; moved here so the dark-theme rule can override.
+  color: #1a1a2e;
+  font-weight: 700;
+}
+
+.CyclingWordBold {
+  color: #337ab7;
+  font-weight: 900;
+}
+
+.SubTagline {
+  max-width: 560px;
+  margin: 16px auto 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #94a3b8;
+}
+
+.SubTaglineLead {
+  color: #1a1a2e;
+}
+
+.Divider {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 8px 16px;
+
+  hr {
+    border: 0;
+    border-top: 1px solid #f1f5f9;
+  }
+}
+
+// Dark theme: the outer "Choose your Rival" card surface + headings.
+:global(body.darkTheme) {
+  .Root {
+    background: transparent;
+  }
+
+  .Eyebrow {
+    color: #dadada;
+  }
+
+  .SubTagline {
+    color: rgba(218, 218, 218, 0.6);
+  }
+
+  .SubTaglineLead {
+    color: #dadada;
+  }
+
+  .Divider hr {
+    border-top-color: #303338;
+  }
+
+  // Cycling subtitle word: non-bold (Rival / Customer / Audience) was a
+  // near-black inline color, invisible on dark. Bold word (Persona) was
+  // light blue, already visible — keep a lighter accent in dark mode.
+  .CyclingWord {
+    color: #dadada;
+  }
+
+  .CyclingWordBold {
+    color: #7fb3d5;
+  }
+}

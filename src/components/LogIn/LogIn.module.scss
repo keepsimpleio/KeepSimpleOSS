@@ -15,6 +15,18 @@
     padding: 0;
     margin: 0;
   }
+  .errorBanner {
+    width: 100%;
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #f5c2c7;
+    background: #fde8e8;
+    color: #b42318;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+  }
   .btnWrapper {
     display: flex;
     flex-direction: column;
@@ -32,19 +44,111 @@
       justify-content: center;
       align-items: center;
       gap: 16px;
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        filter 0.15s ease;
+
       svg {
         width: 24px;
         height: 24px;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0px 6px 10px rgba(0, 0, 0, 0.18),
+          0px 2px 4px rgba(0, 0, 0, 0.1);
+        filter: brightness(1.05);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow:
+          0px 1px 2px rgba(0, 0, 0, 0.2) inset,
+          0px 1px 1px rgba(0, 0, 0, 0.08);
+        filter: brightness(0.95);
+        transition-duration: 0.05s;
+      }
+
+      &:focus-visible {
+        outline: 2px solid #b83232;
+        outline-offset: 2px;
       }
     }
     .googleBtn {
       background-color: #fff;
       color: #0000008a;
+
+      &:hover {
+        background-color: #f7f7f7;
+      }
     }
     .discordBtn {
       background-color: #5865f2;
       color: white;
-      margin-bottom: 114px;
+
+      &:hover {
+        background-color: #4854e0;
+      }
+    }
+    .linkedinBtn {
+      background-color: #0177b5;
+      color: white;
+
+      &:hover {
+        background-color: #015d8d;
+      }
+    }
+    .twitterBtn {
+      background-color: #000;
+      color: white;
+
+      &:hover {
+        background-color: #1a1a1a;
+      }
+    }
+    .mailruBtn {
+      background-color: #168de2;
+      color: white;
+
+      &:hover {
+        background-color: #1078c0;
+      }
+    }
+    .yandexBtn {
+      background-color: #fc3f1d;
+      color: white;
+
+      &:hover {
+        background-color: #e0331a;
+      }
+    }
+  }
+}
+
+// Dark theme: flip the heading / subtitle to read on the dark modal bg.
+// The brand-colored provider buttons stay as-is; only the Google button
+// (white bg + dark text) gets a slight border so it doesn't blow out
+// against the dark surface.
+:global(body.darkTheme) .container {
+  .heading h3 {
+    color: #dadada !important;
+  }
+
+  .text {
+    color: rgba(218, 218, 218, 0.75);
+  }
+
+  .errorBanner {
+    background: rgba(180, 35, 24, 0.15);
+    border-color: rgba(245, 194, 199, 0.4);
+    color: #f5c2c7;
+  }
+
+  .btnWrapper {
+    .googleBtn {
+      border: 1px solid #303338;
     }
   }
 }

@@ -1,0 +1,101 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: baseline;
+  gap: $space-xs;
+  margin-bottom: $space-xs;
+}
+
+.scoreBig {
+  font-size: $font-size-display;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.scoreMax {
+  font-size: $font-size-lg;
+  color: $text-secondary;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-bottom: $space-lg;
+}
+
+// Before — bar chart areas
+.areas {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.areaRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.areaName {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.barWrap {
+  flex: 1;
+  height: 8px;
+  background: $bg-alt;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: $color-primary;
+  border-radius: 4px;
+}
+
+.areaPct {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  width: 32px;
+  text-align: right;
+}
+
+// After — insights
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.insight {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  line-height: 1.5;
+}
+
+.insightIcon {
+  font-size: $font-size-md;
+  flex-shrink: 0;
+}

@@ -1,0 +1,35 @@
+.container {
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  padding: 16px 20px;
+  margin-top: 20px;
+
+  .title,
+  .description,
+  .details,
+  .exampleCode {
+    margin: 0;
+  }
+
+  .title {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 24px;
+    color: #28587b;
+  }
+
+  .description {
+    padding-top: 16px;
+  }
+
+  .details {
+    padding-top: 10px;
+    padding-bottom: 20px;
+  }
+
+  .exampleCode {
+    font-weight: bold;
+    word-wrap: break-word;
+  }
+}

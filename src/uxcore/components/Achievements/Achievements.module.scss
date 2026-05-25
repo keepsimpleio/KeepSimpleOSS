@@ -1,0 +1,169 @@
+.hidden {
+  display: none;
+}
+
+.achievements {
+  border-radius: 8px;
+  box-shadow:
+    0px 8px 17px 0px rgba(0, 0, 0, 0.05),
+    0px 30px 30px 0px rgba(0, 0, 0, 0.04),
+    0px 68px 41px 0px rgba(0, 0, 0, 0.03),
+    0px 122px 49px 0px rgba(0, 0, 0, 0.01),
+    0px 190px 53px 0px rgba(0, 0, 0, 0);
+  will-change: transform;
+  background: #f3f3f3;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 3;
+
+  .header {
+    display: flex;
+    border-radius: 8px 8px 0 0;
+    justify-content: space-between;
+    padding: 10px 16px;
+    // Remove after making it draggable again
+    cursor: default;
+
+    .pageTitleWrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      > svg {
+        path {
+          fill: #fff;
+        }
+      }
+
+      .pageTitle {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 500;
+        margin: 0;
+      }
+    }
+
+    .meterAndDragWrapper {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.wrapper {
+  background: #f3f3f3;
+  border-radius: 8px;
+  margin: 12px 8px 0 12px;
+  overflow: hidden;
+  max-height: 584px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 4px;
+  }
+
+  .group {
+    background: #fff;
+  }
+
+  .achievementContainer {
+    background: #fff;
+    border-radius: 8px;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .list,
+  .specialList {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 10px;
+    column-gap: 15px;
+    justify-content: flex-start;
+    align-items: baseline;
+
+    .specialList {
+      max-height: unset;
+    }
+
+    .skeletonWrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 11px;
+      width: 155px;
+      gap: 5px;
+    }
+  }
+
+  .achievementType {
+    color: #6165aa;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 8px 0 8px 18px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .achievements {
+    background: #fff;
+    box-shadow: unset;
+    border: 1px solid #d9d9d9;
+    padding-bottom: unset;
+
+    .achievementContainer {
+      padding-bottom: 40px;
+    }
+
+    .achievementType {
+      text-align: center;
+      padding: 5px 0 27px 0;
+      font-size: 18px;
+    }
+
+    .wrapper {
+      background: #fff;
+      max-height: unset;
+
+      .list,
+      .specialList {
+        margin-left: unset;
+        gap: 20px;
+        align-items: baseline;
+        justify-content: center;
+
+        .achievement {
+          max-width: fit-content;
+          width: 100%;
+        }
+      }
+    }
+
+    .header {
+      .dragIcon {
+        display: none !important;
+      }
+    }
+  }
+  .generalList {
+    position: relative;
+
+    &:after {
+      content: '';
+      width: 95%;
+      height: 1px;
+      background-color: #e7e7e7;
+      position: absolute;
+      bottom: -20px;
+    }
+  }
+}

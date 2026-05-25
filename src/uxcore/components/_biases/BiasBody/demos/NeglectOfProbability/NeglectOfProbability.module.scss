@@ -1,0 +1,127 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  text-align: center;
+
+  &Alert {
+    border-color: #e53e3e;
+    background: #fff5f5;
+  }
+}
+
+.icon {
+  font-size: 36px;
+  margin-bottom: $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0 0 $space-md;
+}
+
+// After — alert
+.alertHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+  margin-bottom: $space-md;
+}
+
+.alertIcon {
+  font-size: $font-size-lg;
+}
+
+.alertTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: #e53e3e;
+}
+
+.daysStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: $space-lg;
+}
+
+.daysNum {
+  font-size: 48px;
+  font-weight: 700;
+  color: #e53e3e;
+  line-height: 1;
+}
+
+.daysLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-top: $space-xs;
+}
+
+.comparison {
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+  margin-bottom: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.compRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: $font-size-sm;
+}
+
+.compLabel {
+  color: $text-secondary;
+}
+
+.compValue {
+  font-weight: 600;
+  color: $text-primary;
+
+  &Red {
+    color: #e53e3e;
+  }
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: #e53e3e;
+    color: $color-white;
+    border-color: #e53e3e;
+  }
+}

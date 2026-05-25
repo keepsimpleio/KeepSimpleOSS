@@ -1,0 +1,38 @@
+.modalBody {
+  padding: 0 0 22px 0 !important;
+
+  .img {
+    object-fit: cover;
+    position: relative;
+    width: 100%;
+  }
+}
+
+.content {
+  text-align: left;
+  padding: 8px 30px 0 30px;
+}
+
+.instaIcon {
+  position: absolute;
+  right: 34%;
+  top: 21%;
+  cursor: pointer;
+}
+
+.btnWrapper {
+  text-align: center;
+
+  .closeBtn {
+    border-radius: 0;
+    background-color: #000;
+    color: #fff;
+    margin-top: 32px;
+    border: 1px solid #000 !important;
+
+    &:hover {
+      border: 1px solid #000 !important;
+      color: #fff !important;
+    }
+  }
+}

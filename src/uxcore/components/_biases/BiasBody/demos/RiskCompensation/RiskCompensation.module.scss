@@ -1,0 +1,165 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.header {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.backupBanner {
+  background: #e8f5e9;
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.checkIcon {
+  font-size: $font-size-lg;
+  color: $tag-green;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.backupTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.backupSub {
+  font-size: $font-size-sm;
+  color: #388e3c;
+}
+
+// Before-only styles
+.actionSection {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.actionLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recordCount {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.btnDanger {
+  padding: $space-sm $space-md;
+  background: #d32f2f;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  align-self: flex-start;
+}
+
+// After-only styles
+.warningCard {
+  background: #fff3f3;
+  border: 1px solid #d32f2f;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.warnHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: #b71c1c;
+}
+
+.warnIcon {
+  font-size: $font-size-md;
+  flex-shrink: 0;
+}
+
+.warnItem {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  line-height: 1.5;
+
+  strong {
+    color: #b71c1c;
+  }
+}
+
+.warnDot {
+  width: 6px;
+  height: 6px;
+  border-radius: $border-radius-round;
+  background: #d32f2f;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.actionRow {
+  display: flex;
+  gap: $space-sm;
+  justify-content: flex-end;
+  margin-top: $space-xs;
+}
+
+.btnCancel {
+  padding: $space-sm $space-lg;
+  background: $bg-card;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnConfirm {
+  padding: $space-sm $space-md;
+  background: #d32f2f;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: #b71c1c;
+  }
+}

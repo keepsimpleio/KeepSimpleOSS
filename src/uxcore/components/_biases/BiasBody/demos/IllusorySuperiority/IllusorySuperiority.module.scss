@@ -1,0 +1,157 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.header {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  text-align: center;
+}
+
+.statsRow {
+  display: flex;
+  gap: $space-sm;
+}
+
+.statBox {
+  flex: 1;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  text-align: center;
+}
+
+.statVal {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.statLbl {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-top: $space-xs;
+}
+
+.btn {
+  padding: $space-sm $space-lg;
+  background: $bg-card;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  align-self: center;
+}
+
+// After
+.crushBanner {
+  background: linear-gradient(90deg, #e8f5e9, #c8e6c9);
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: #2e7d32;
+  text-align: center;
+}
+
+.compareSection {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.compareLabel {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  text-align: center;
+
+  strong {
+    color: $color-primary;
+    font-size: $font-size-base;
+  }
+}
+
+.chartBar {
+  height: 20px;
+  background: $bg-alt;
+  border-radius: 10px;
+  position: relative;
+  overflow: visible;
+}
+
+.chartFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary, $color-primary-hover);
+  border-radius: 10px;
+}
+
+.chartMarker {
+  position: absolute;
+  top: -4px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.markerLabel {
+  margin-top: 2px;
+  background: $color-primary;
+  color: $color-white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.streakBadge {
+  background: #fff8e1;
+  border: 1px solid #ffc107;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: #856404;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-xs;
+}
+
+.btnPrimary {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+  align-self: center;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

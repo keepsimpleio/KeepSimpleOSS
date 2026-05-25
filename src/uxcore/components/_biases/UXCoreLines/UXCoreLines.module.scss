@@ -1,0 +1,90 @@
+.svg {
+  width: 420px;
+  height: auto;
+}
+
+.path {
+  //transition: fill 0.3s ease;
+  fill: #4c8cc1;
+}
+
+.hoveredBluePath,
+.searchedBluePath {
+  cursor: pointer;
+  stroke: #4c8cc1;
+  stroke-width: 0.5px;
+  transition:
+    stroke 0.2s ease,
+    stroke-opacity 0.2s ease;
+}
+
+.greenPath {
+  fill: #75b3b3;
+}
+
+.hoveredGreenPath,
+.searchedPathGreen {
+  stroke: #75b3b3;
+  stroke-width: 0.5px;
+  transition:
+    stroke 0.2s ease,
+    stroke-opacity 0.2s ease;
+}
+
+.pinkPath {
+  fill: #80739b;
+}
+
+.hoveredPinkPath,
+.searchedPathPink {
+  stroke: #80739b;
+  stroke-width: 0.5px;
+  transition:
+    stroke 0.2s ease,
+    stroke-opacity 0.2s ease;
+}
+
+.purplePath {
+  fill: #8073ff;
+}
+
+.fadedPath {
+  opacity: 0.5;
+}
+
+.hoveredPurplePath,
+.searchedPathPurple {
+  stroke: #8073ff;
+  stroke-width: 0.5px;
+  transition:
+    stroke 0.2s ease,
+    stroke-opacity 0.2s ease;
+}
+
+@media (max-width: 1550px) {
+  .svg {
+    width: clamp(200px, 26.4vw, 420px);
+  }
+}
+
+@media (min-width: 2500px) {
+  .svg {
+    width: 17vw;
+  }
+}
+
+@media (min-width: 3500px) {
+  .svg {
+    width: 17vw;
+  }
+}
+
+// Dark theme: dim the connector rays so the cards pop instead of fighting them.
+:global(body.darkTheme) .svg {
+  .path,
+  .greenPath,
+  .pinkPath,
+  .purplePath {
+    opacity: 0.45;
+  }
+}

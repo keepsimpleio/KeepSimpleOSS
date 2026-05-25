@@ -1,0 +1,112 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+  text-align: center;
+}
+
+.items {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.item {
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.itemName {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.itemCategory {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.oldPrice {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  text-decoration: line-through;
+}
+
+.newPrice {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.discount {
+  display: inline-block;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  padding: $space-xs $space-sm;
+  border-radius: $border-radius;
+  background: $bg-alt;
+  color: $text-secondary;
+  align-self: flex-start;
+
+  &Big {
+    background: #c0392b;
+    color: $color-white;
+    font-size: $font-size-md;
+    padding: $space-xs $space-md;
+  }
+
+  &Small {
+    background: $bg-alt;
+    color: $text-secondary;
+    font-size: $font-size-sm;
+  }
+}
+
+.divider {
+  height: 1px;
+  background: $border-color;
+  margin: 0 $space-lg;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Hot {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+    font-weight: 600;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}

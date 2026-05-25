@@ -2,6 +2,7 @@ import unescape from 'lodash.unescape';
 import { FC, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 import remarkBreaks from 'remark-breaks';
 
 import useContentType from '@hooks/useContentType';
@@ -31,7 +32,7 @@ const ContentParser: FC<ContentParserProps> = ({
         className={styles.content}
         components={componentList}
         remarkPlugins={[[remarkBreaks]]}
-        rehypePlugins={[rehypeRaw]}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
       >
         {modifiedData}
       </ReactMarkdown>

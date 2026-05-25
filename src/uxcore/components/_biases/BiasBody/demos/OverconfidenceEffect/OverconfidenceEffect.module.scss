@@ -1,0 +1,149 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.question {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.input {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $color-primary;
+  font-family: $font-family;
+}
+
+.confidence {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $bg-alt;
+  padding: $space-sm $space-md;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.confidenceVal {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.calibration,
+.calibrationOk {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+}
+
+.calibration {
+  background: lighten(#cd7232, 38%);
+  border: 1px solid $tag-orange;
+  color: $text-primary;
+}
+
+.calibrationOk {
+  background: lighten(#42c256, 47%);
+  border: 1px solid $tag-green;
+  color: $text-primary;
+}
+
+.warnIcon,
+.checkIcon {
+  font-size: $font-size-md;
+}
+
+.intervalLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $color-primary;
+  font-weight: 700;
+}
+
+.intervalRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-sm;
+}
+
+.bound {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.boundLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.boundInput {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm;
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  font-family: $font-family;
+  text-align: center;
+}
+
+.rules {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rule {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+}
+
+.bulletOk {
+  color: $tag-green;
+  font-weight: 700;
+  flex-shrink: 0;
+}

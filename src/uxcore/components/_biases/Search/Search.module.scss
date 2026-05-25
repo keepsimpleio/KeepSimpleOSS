@@ -1,0 +1,199 @@
+.SearchBoxWrapper {
+  position: absolute;
+  width: 320px;
+  top: 145px;
+  right: calc(50% - 150px - 25px);
+}
+
+.Search {
+  position: relative;
+  z-index: 3;
+  & input {
+    height: 40px;
+    outline: none;
+    background: #fff;
+    border: 1px solid #cbcbcb;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 10px 36px 10px 10px;
+    width: calc(100% - 30px);
+
+    &:focus {
+      border-color: #6d6d6d;
+
+      & ~ .SearchIcon svg path {
+        fill: #6d6d6d;
+      }
+    }
+  }
+}
+
+.Popup {
+  display: none;
+  font-size: 14px;
+  line-height: 17px;
+  background: #ffffff;
+  border: 1px solid #cbcbcb;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  padding: 10px 14px;
+  position: relative;
+  width: 280px;
+  right: 132px;
+  top: -88px;
+
+  &:after {
+    display: none;
+    position: absolute;
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: #ffffff;
+    border: 1px solid #cbcbcb;
+    border-left-width: 0;
+    border-top-width: 0;
+    transform: rotate(45deg);
+    top: calc(100% - 5px);
+    right: calc(50% - 5px);
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.QuestionMarkIcon {
+  cursor: help;
+
+  &:hover + div {
+    display: block;
+  }
+}
+
+.ClearIcon {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+}
+
+.ClearIcon,
+.SearchIcon {
+  visibility: hidden;
+  position: absolute;
+  top: 10px;
+  left: calc(100% - 58px);
+
+  &.Visible {
+    visibility: visible;
+  }
+}
+
+.SearchResults {
+  position: relative;
+  z-index: -1;
+  text-indent: 12px;
+  font-size: 12px;
+  transition: 0.3s;
+  color: #838383;
+  visibility: hidden;
+  top: -22px;
+
+  &.Visible {
+    visibility: visible;
+    top: 0px;
+  }
+
+  &.Mobile {
+    input {
+      border-radius: 0;
+      -webkit-appearance: none;
+    }
+
+    .Popup {
+      right: 254px;
+    }
+
+    .Popup::after {
+      right: 12px;
+    }
+  }
+}
+
+@media (min-width: 851px) and (max-height: 800px) {
+  .SearchBoxWrapper {
+    width: 350px;
+    top: 70px;
+    right: calc(50% - 175px - 15px);
+  }
+
+  .Search {
+    & input {
+      height: 32px;
+    }
+
+    .ClearIcon,
+    .SearchIcon {
+      top: 6px;
+    }
+
+    .SearchTooltip {
+      top: 8px;
+    }
+  }
+}
+
+@media (max-width: 1010px) {
+  .SearchBoxWrapper {
+    position: static;
+    width: 100%;
+
+    input {
+      margin-top: 0px;
+      width: calc(100% - 30px);
+      border-radius: 0;
+      -webkit-appearance: none;
+    }
+  }
+
+  .Popup {
+    right: 254px;
+
+    &::after {
+      right: 12px;
+    }
+  }
+}
+
+// Dark theme: repaint the bias search input + popup. Accent for focus state
+// stays the UX-Core blue so the form keeps its identity.
+:global(body.darkTheme) {
+  .Search input {
+    background: #1b1e26;
+    border-color: #303338;
+    color: #dadada;
+
+    &::placeholder {
+      color: rgba(218, 218, 218, 0.45);
+    }
+
+    &:focus {
+      border-color: #4c8cc1;
+    }
+  }
+
+  .Popup {
+    background: #1b1e26;
+    border-color: #303338;
+    color: #dadada;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+
+    &:after {
+      background: #1b1e26;
+      border-color: #303338;
+    }
+  }
+
+  .SearchResults {
+    color: #9aa0aa;
+  }
+}

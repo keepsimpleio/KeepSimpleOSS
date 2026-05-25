@@ -1,0 +1,72 @@
+.pinnedImage {
+  max-width: 18.75rem;
+  position: fixed;
+  top: 5.625rem;
+  right: 0.625rem;
+  padding: 0.625rem;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  border: 0.0625rem solid gray;
+  opacity: 0.2;
+  transition: 0.2s;
+
+  & img {
+    max-width: 17.5rem;
+    max-height: calc(100vh - 11.625rem);
+  }
+
+  & .actionButtonBlock {
+    display: none;
+    opacity: 0.2;
+    transition: 0.2s;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: #fff;
+    box-shadow: 0rem 0rem 0.25rem -0.0625rem;
+    border-radius: 0.3125rem;
+    padding: 4px 4px 2px;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    & .unpin,
+    & .zoom,
+    & .scrollToImage {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background-position: center center;
+      background-size: 90%;
+      background-repeat: no-repeat;
+      cursor: pointer;
+    }
+
+    & .scrollToImage {
+      width: 32px;
+      background-image: url(/assets/find-on-map.png);
+      margin-left: 6px;
+    }
+
+    & .unpin {
+      position: relative;
+      background-image: url(/assets/close.png);
+      margin-left: 10px;
+    }
+
+    & .zoom {
+      position: relative;
+      background-image: url(/assets/zoom2.png);
+      margin-left: 4px;
+    }
+  }
+
+  &:hover {
+    opacity: 1;
+
+    & .actionButtonBlock {
+      display: block !important;
+    }
+  }
+}

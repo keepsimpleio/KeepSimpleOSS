@@ -130,3 +130,35 @@ blob-report/
 QA_PLAN.md
 QA_RECON.md
 TODO.md
+marys-notes.md
+
+# Playwright MCP cache
+.playwright-mcp/
+
+# Loose QA screenshots at repo root (they belong in reports/screenshots/<date>/)
+/qa-*.png
+/uxcore-*.png
+
+# QA agent runtime artifacts (regenerable; never commit)
+qa-runs/state/
+qa-runs/baselines/
+qa-runs/screenshots/
+qa-runs/auth/
+
+# Concierge widget build output (built by `yarn prebuild:widget` before
+# next build; serve via CI, never commit the bundle).
+/public/ask-ux-core-dev.js
+/widget/dist/
+/widget/node_modules/
+
+# Personal developer compose files — local-only, never commit.
+docker-compose.dev.yml
+docker-compose.override.yml
+
+# Working / scratch docs — keep out of the repo by default.
+# (Anything tracked under /docs that pre-dates this rule stays tracked;
+#  gitignore only blocks new untracked files. Move docs you want
+#  shared into README/AGENTS/CLAUDE.md or a dedicated published path.)
+/docs/
+
+.codegraph/

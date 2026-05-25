@@ -1,0 +1,21 @@
+.defaultTooltip {
+  background: #fff;
+  color: #000;
+  z-index: 9999;
+  width: 300px;
+  opacity: 1;
+  text-align: center;
+  border: 1px solid #cbcbcb;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  max-width: 380px;
+
+  > div {
+    border: none;
+    filter: unset;
+    box-shadow: unset;
+    border-bottom: 1px solid #c7c7c7;
+    border-right: 1px solid #c7c7c7;
+    bottom: -5px !important;
+  }
+}

@@ -1,0 +1,225 @@
+.overlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+
+  h4 {
+    margin: 16px 0;
+  }
+
+  hr {
+    margin: 0;
+  }
+
+  .shadow {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+  }
+
+  .viewHref {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .wrapper {
+    position: relative;
+    background-color: #fff;
+    max-width: 490px;
+    min-height: 350px;
+    height: auto !important; /* for IE as it does not support min-height */
+    border-radius: 4px;
+    width: 100%;
+    height: auto;
+    padding-bottom: 20px;
+    z-index: 15;
+  }
+
+  .textAndClosebtn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 17px;
+  }
+
+  .closeBtn {
+    cursor: pointer;
+    width: 40px;
+    text-align: center;
+  }
+
+  .separator {
+    border: 1px solid #cbcbcb;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .textAndImage {
+    display: flex;
+  }
+
+  .outlinedArea {
+    height: 100%;
+    width: 100%;
+    font-size: 14px;
+    margin: 0 8px 0 20px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #d9d9d9;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .viewProfile {
+    height: 100%;
+    min-width: 115px;
+    font-size: 14px;
+    margin-right: 20px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #d9d9d9;
+    color: rgba(0, 0, 0, 0.65);
+    text-decoration: none;
+  }
+
+  .link {
+    display: flex;
+    justify-content: center;
+  }
+
+  .text1 {
+    font-size: 16px;
+    font-style: normal;
+    line-height: 160%;
+    vertical-align: middle;
+    white-space: pre-line;
+    color: rgba(0, 0, 0, 0.65);
+    background: var(--uxcoreuxcg-grey-01, #f1f1f1);
+    padding: 17px 20px 12px 160px;
+    margin-top: 0;
+
+    .askMeAnythingText {
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
+
+  .text2 {
+    padding: 10px 20px 8px 20px;
+    color: var(--uxcoreuxcg-text-01, rgba(0, 0, 0, 0.85));
+    font-family: Lato;
+    font-size: 16px;
+    font-style: normal;
+    line-height: 160%;
+  }
+
+  .linkFields {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .imageAndButton {
+    position: absolute;
+    padding: 17px;
+  }
+
+  .btnWrapper {
+    align-self: center;
+  }
+
+  button {
+    all: unset;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+
+  .underlinedText {
+    text-decoration: underline;
+  }
+}
+
+.overlayDisabled {
+  display: none;
+}
+
+.twitterImg {
+  width: 42px;
+  height: 42px;
+  margin: 24px 0 12px 0;
+}
+
+@media (max-width: 920px) {
+  .wrapper {
+    margin: 20px;
+  }
+  .overlay {
+    .viewProfile {
+      margin-right: unset;
+    }
+  }
+}
+
+@media (max-width: 490px) {
+  .outlinedArea {
+    width: auto;
+    margin: 0 20px;
+  }
+
+  .text1 {
+    padding: 17px 20px 12px 120px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .linkFields {
+    flex-direction: column;
+    text-align: center !important;
+  }
+
+  .outlinedArea {
+    width: auto !important;
+    text-align: center;
+    margin: 0 20px 10px 0 !important;
+  }
+
+  .copyBtn {
+    width: 100% !important;
+    margin: 0 20px !important;
+    text-align: center;
+  }
+}
+
+@media (max-width: 350px) {
+  .imageAndButton {
+    width: 70px;
+  }
+
+  .text1 {
+    padding: 17px 20px 12px 90px !important;
+  }
+  .outlinedArea {
+    margin: 0 0 10px 0 !important;
+  }
+
+  .linkFields {
+    margin-top: 0;
+  }
+}

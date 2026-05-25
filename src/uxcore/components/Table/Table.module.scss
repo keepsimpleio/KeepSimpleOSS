@@ -1,0 +1,525 @@
+@import '../../styles/_animations.scss';
+
+.Table {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background-color: #fff;
+
+  & .NoResults {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  & .TableBody {
+    overflow: overlay;
+
+    /* width */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: rgba(40, 88, 123, 0.5);
+      border-radius: 5px;
+    }
+  }
+
+  &FilterWrapper {
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    background-color: #f8f8f8;
+    padding: 8px 18px 0;
+    position: relative;
+    transition: 0.2s;
+    overflow: hidden;
+
+    .LabelWrapper {
+      display: inline-block;
+    }
+
+    .LabelWrapperAnimation {
+      @extend .animate_pulsate;
+    }
+
+    .SelectionTxt {
+      display: inline-block;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 16px;
+      padding-right: 14px;
+    }
+
+    &.Collapsed {
+      max-height: 0;
+      padding: 0 18px;
+    }
+
+    & > div {
+      margin-right: 10px;
+      margin-bottom: 8px;
+    }
+  }
+
+  & .AllQuestionsButton {
+    margin-right: 10px;
+    margin-bottom: 8px;
+  }
+
+  & .TableRow {
+    display: block;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+
+    &Tags {
+      line-height: normal;
+      padding: 0 0 10px;
+
+      & div + div {
+        margin-left: 5px;
+      }
+
+      .TableRowTag {
+        margin-right: 5px;
+        margin-bottom: 5px;
+      }
+    }
+
+    &Data {
+      display: flex;
+      color: #000;
+      align-items: baseline;
+
+      & div:nth-child(1) {
+        margin-right: 5px;
+      }
+    }
+
+    &:link,
+    &:focus,
+    &:active {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    &:nth-of-type(even) {
+      background-color: #fafafa;
+    }
+
+    & + .TableRow {
+      border-top: 1px solid #e9e9e9;
+    }
+
+    &:hover {
+      background-color: rgba(71, 163, 230, 0.2) !important;
+
+      & .TableRowData > div:nth-of-type(2) {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .Hidden {
+    display: none;
+  }
+
+  .questionTitle {
+    font-size: 16px;
+    display: contents;
+    font-weight: 300;
+    line-height: 150%;
+    color: #000;
+  }
+
+  &.SearchLess {
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #e9e9e9;
+
+    & .TableRow {
+      &:nth-of-type(odd) {
+        background-color: #fafafa;
+      }
+
+      &:nth-of-type(even) {
+        background-color: #fff;
+      }
+    }
+
+    & .TableRow {
+      border-top: 1px solid #e9e9e9;
+    }
+  }
+
+  .showMoreLessBtns {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+}
+
+.TableSearchWrapper {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1440px) {
+  .Table {
+    .questionTitle {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .Table {
+    &FilterWrapper {
+      .SelectionTxt {
+        font-size: 16px;
+      }
+    }
+
+    .questionTitle {
+      font-size: 16px;
+    }
+
+    & .TableRow {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .Table {
+    & .TableBody {
+      max-height: none !important;
+    }
+
+    .SelectionTxt {
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .AllQuestionsButton,
+    .TableFilter {
+      margin-bottom: 8px;
+    }
+
+    .TableFilter {
+      margin-right: 10px;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.UXCoreModal {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background-color: #fff;
+
+  & .NoResults {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  & .TableBody {
+    overflow: overlay;
+
+    /* width */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: rgba(40, 88, 123, 0.5);
+      border-radius: 5px;
+    }
+  }
+
+  &FilterWrapper {
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    background-color: #f8f8f8;
+    padding: 8px 18px 0;
+    position: relative;
+    transition: 0.2s;
+    overflow: hidden;
+
+    .SelectionTxt {
+      display: inline-block;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 16px;
+      padding-right: 14px;
+    }
+
+    &.Collapsed {
+      max-height: 0;
+      padding: 0 18px;
+    }
+
+    & > div {
+      margin-right: 10px;
+      margin-bottom: 8px;
+    }
+  }
+
+  & .AllQuestionsButton {
+    margin-right: 10px;
+    margin-bottom: 8px;
+  }
+
+  & .TableRow {
+    display: block;
+    padding: 10px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #fafafa;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    margin-bottom: 8px;
+
+    &Tags {
+      line-height: normal;
+      padding: 0 0 10px;
+
+      & div + div {
+        margin-left: 5px;
+      }
+
+      .TableRowTag {
+        margin-right: 5px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+      }
+    }
+
+    &Data {
+      display: flex;
+      color: #000;
+      align-items: baseline;
+
+      & div:nth-child(1) {
+        margin-right: 5px;
+      }
+    }
+
+    &:link,
+    &:focus,
+    &:active {
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+
+  .questionTitle {
+    font-size: 16px;
+    display: contents;
+    font-weight: 300;
+    line-height: 150%;
+  }
+
+  &.SearchLess {
+    border: none;
+    border-radius: 0;
+
+    & .TableRow {
+      background-color: #fafafa !important;
+    }
+  }
+
+  .showMoreLessBtns {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    grid-gap: 10px;
+    gap: 10px;
+    background: #fafafa;
+    margin-top: unset !important;
+
+    .showMoreBtn,
+    .showLessBtn {
+      width: 100%;
+      padding: 9px;
+      box-shadow: 0px 2px 2px 0px #0000000d;
+      background-color: #ffffff;
+      color: #000;
+
+      &:hover {
+        background-color: #ffffff !important;
+        color: #000 !important;
+      }
+    }
+  }
+}
+
+.TableSearchWrapper {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1440px) {
+  .UXCoreModal {
+    .questionTitle {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .UXCoreModal {
+    &FilterWrapper {
+      .SelectionTxt {
+        font-size: 16px;
+      }
+    }
+
+    .questionTitle {
+      font-size: 16px;
+    }
+
+    & .TableRow {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .UXCoreModal {
+    & .TableBody {
+      max-height: none !important;
+    }
+
+    .SelectionTxt {
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .AllQuestionsButton,
+    .TableFilter {
+      margin-bottom: 8px;
+    }
+
+    .TableFilter {
+      margin-right: 10px;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+// Dark theme: question table (UXCG main + "This bias answers to..." section).
+:global(body.darkTheme) .Table {
+  background-color: #151a26 !important;
+  border-color: #303338 !important;
+
+  .NoResults,
+  .questionTitle {
+    color: #dadada !important;
+  }
+
+  .TableBody::-webkit-scrollbar-thumb {
+    background: rgba(127, 179, 213, 0.5) !important;
+  }
+
+  .TableFilterWrapper {
+    background-color: #0e1219 !important;
+
+    .SelectionTxt {
+      color: rgba(218, 218, 218, 0.7) !important;
+    }
+
+    // "All Questions" button uses inline backgroundColor: #282828, which is
+    // basically the dark page bg. Override with a lighter neutral so it reads
+    // as a real button.
+    .AllQuestionsButton {
+      background-color: #2f3441 !important;
+      color: #dadada !important;
+    }
+  }
+
+  .TableRow {
+    background-color: transparent !important;
+    color: #dadada !important;
+
+    &:nth-of-type(even) {
+      background-color: rgba(127, 179, 213, 0.05) !important;
+    }
+
+    & + .TableRow {
+      border-top-color: #303338 !important;
+    }
+
+    .TableRowData {
+      color: #dadada !important;
+    }
+
+    &:hover {
+      background-color: rgba(76, 140, 193, 0.18) !important;
+    }
+  }
+}
+
+:global(body.darkTheme) .UXCoreModal {
+  background-color: #1b1e26 !important;
+  border-color: #303338 !important;
+
+  .NoResults,
+  .questionTitle {
+    color: #dadada !important;
+  }
+
+  .TableBody::-webkit-scrollbar-thumb {
+    background: rgba(127, 179, 213, 0.5) !important;
+  }
+
+  .UXCoreModalFilterWrapper {
+    background-color: #0e1219 !important;
+
+    .SelectionTxt {
+      color: rgba(218, 218, 218, 0.7) !important;
+    }
+  }
+
+  .TableRow {
+    background-color: #151a26 !important;
+    border-color: #303338 !important;
+    color: #dadada !important;
+
+    .TableRowData {
+      color: #dadada !important;
+    }
+
+    &:hover {
+      background-color: rgba(76, 140, 193, 0.18) !important;
+    }
+  }
+
+  .showMoreLessBtns {
+    background: #0e1219 !important;
+
+    .showMoreBtn,
+    .showLessBtn {
+      background-color: #151a26 !important;
+      color: #dadada !important;
+      border-color: #303338 !important;
+
+      &:hover {
+        background-color: #1b1e26 !important;
+        color: #ffffff !important;
+        border-color: #303338 !important;
+      }
+    }
+  }
+}

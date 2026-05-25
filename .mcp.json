@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "source ~/.nvm/nvm.sh && nvm use 20 >/dev/null && exec npx -y @playwright/mcp@latest --headless --browser chrome --executable-path $HOME/.cache/ms-playwright/chromium_headless_shell-1219/chrome-headless-shell-linux64/chrome-headless-shell"
+      ]
+    }
+  }
+}

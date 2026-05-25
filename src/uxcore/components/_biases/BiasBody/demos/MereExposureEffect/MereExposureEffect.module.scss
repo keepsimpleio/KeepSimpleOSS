@@ -1,0 +1,173 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.appCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.heroGeneric {
+  height: 80px;
+  background: $bg-alt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroIcon {
+  font-size: 36px;
+}
+
+.heroFrench {
+  height: 80px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #fff5f5 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-xs;
+  position: relative;
+  overflow: hidden;
+}
+
+.tricolor {
+  display: flex;
+  height: 6px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
+.triBlue {
+  flex: 1;
+  background: #002395;
+}
+
+.triWhite {
+  flex: 1;
+  background: $color-white;
+}
+
+.triRed {
+  flex: 1;
+  background: #ed2939;
+}
+
+.parisLine {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  margin-top: $space-sm;
+}
+
+.parisIcon {
+  font-size: $font-size-xl;
+}
+
+.parisText {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.cardBody {
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.appTitle {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.appSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.stars {
+  font-size: $font-size-sm;
+  color: $tag-orange;
+
+  span {
+    color: $text-secondary;
+  }
+}
+
+.testimonial {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  font-style: italic;
+  padding: $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  border-left: 3px solid $border-color;
+}
+
+.testimonialFr {
+  border-left-color: #002395;
+}
+
+.testimonialAuthor {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-style: normal;
+  margin-top: $space-xs;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.btnFr {
+  background: #002395;
+  color: $color-white;
+  border-color: #002395;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 320px;
+}
+
+.labelGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}

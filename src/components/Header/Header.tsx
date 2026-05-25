@@ -52,6 +52,12 @@ const Header: FC = () => {
     setToken(storedToken);
   }, []);
 
+  useEffect(() => {
+    if (router.query.authError) {
+      setOpenLogin(true);
+    }
+  }, [router.query.authError]);
+
   const handleToggleTheme = useCallback(() => {
     toggleIsDarkTheme();
   }, []);
@@ -257,6 +263,8 @@ const Header: FC = () => {
           mailStatus={accountData?.publicEmail}
           linkedin={accountData?.linkedIn}
           linkedinStatus={accountData?.publicLinkedin}
+          provider={accountData?.provider}
+          token={token}
           handleSaveClick={handleSaveClick}
           setUsernameIsTakenError={setUsernameIsTakenError}
           usernameIsTakenError={usernameIsTakenError}

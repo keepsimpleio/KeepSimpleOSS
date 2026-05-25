@@ -1,0 +1,23 @@
+.QuestionTooltip {
+  & .Row {
+    display: flex;
+    align-items: flex-start;
+
+    & .Image {
+      width: 10px;
+      height: 16px;
+      margin-right: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    & > .Text {
+      width: 276px;
+    }
+
+    &:last-of-type {
+      margin-top: 12px;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+export type AchievementProps = {
+  statistics?: number;
+  unlocked?: boolean;
+  showTitle?: boolean;
+  title: string;
+  icon?: string;
+  description: string;
+  unlockedStatus?: string;
+  locked?: boolean;
+  loading?: boolean;
+  parentId?: string;
+  tooltipId?: string;
+  activatedDuration?: number;
+  codeIsActivated?: boolean;
+  flipDelay?: number;
+  slug: string;
+  randomDelay?: number;
+  animated?: boolean;
+  className?: string;
+  delay?: number;
+};

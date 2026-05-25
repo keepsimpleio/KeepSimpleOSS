@@ -1,0 +1,52 @@
+@keyframes countryBiasFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: countryBiasFadeSlideUp 0.3s ease-out forwards;
+}
+
+.animated-underline-wrap {
+  display: inline-block;
+}
+
+.animated-underline {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, #337ab7, #7c3aed);
+  border-radius: 1px;
+  transform-origin: left;
+  animation: countryBiasUnderlineSweep 3s ease-in-out infinite;
+}
+
+@keyframes countryBiasUnderlineSweep {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  80% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}

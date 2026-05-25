@@ -1,0 +1,161 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.anonBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  background: $tag-green;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  padding: $space-xs $space-md;
+  border-radius: 20px;
+  align-self: flex-start;
+
+  &::before {
+    content: '🔒';
+    font-size: 11px;
+  }
+}
+
+.question {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.stars {
+  display: flex;
+  gap: $space-xs;
+}
+
+.star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: $font-size-xl;
+  color: $border-dark;
+  padding: 0;
+  line-height: 1;
+
+  &.filled {
+    color: $tag-orange;
+  }
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  cursor: pointer;
+  padding: $space-xs $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-alt;
+
+  input[type='radio'] {
+    cursor: pointer;
+    accent-color: $color-primary;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  textarea {
+    font-family: $font-family;
+    font-size: $font-size-sm;
+    padding: $space-xs $space-sm;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    background: $bg-alt;
+    color: $text-primary;
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.anonNote {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  font-style: italic;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+  }
+}

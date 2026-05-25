@@ -127,7 +127,8 @@ const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
         <p className={styles.summary}>
           {totalWeeklyActivity.earlyDyingRisk}
           <span
-            className={cn({
+            key={`risk-${selectedMinutes}`}
+            className={cn(styles.riskValue, {
               [styles.orangeRisk]: selectedMinutes === 150,
               [styles.greenRisk]:
                 selectedMinutes === 225 || selectedMinutes === 300,
@@ -141,7 +142,8 @@ const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
         <p className={styles.summary}>
           {totalWeeklyActivity.dementiaRisk}
           <span
-            className={cn({
+            key={`dementia-${selectedMinutes}`}
+            className={cn(styles.riskValue, {
               [styles.orangeRisk]: selectedMinutes === 150,
               [styles.greenRisk]:
                 selectedMinutes === 225 || selectedMinutes === 300,
@@ -156,7 +158,8 @@ const WeeklyWorkout: FC<WeeklyWorkoutProps> = ({ locale }) => {
         <p className={styles.summary}>
           {totalWeeklyActivity.agingTrajectory}
           <span
-            className={cn({
+            key={`aging-${selectedMinutes}`}
+            className={cn(styles.riskValue, {
               [styles.orangeRisk]: selectedMinutes === 150,
               [styles.greenRisk]:
                 selectedMinutes === 225 || selectedMinutes === 300,

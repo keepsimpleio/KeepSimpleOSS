@@ -1,0 +1,88 @@
+const content = {
+  en: {
+    from: 'orders@techstore.io',
+    productName: 'MechPro X Keyboard',
+    price: '$149.00',
+    trackBtn: 'Track Your Order',
+    before: {
+      subject: 'Order #4821 Confirmed',
+      greeting: 'Hi there,',
+      body: 'Your order has been placed successfully.',
+      deliveryLabel: 'Estimated delivery',
+      deliveryDate: 'March 28',
+      label: 'Plain transactional — buyer doubt unaddressed',
+    },
+    after: {
+      subject: 'Great choice — Order #4821 Confirmed',
+      heroEmoji: '⌨️',
+      greeting: 'Great choice, Alex!',
+      socialProof: 'Rated #1 by 12,000+ developers',
+      exclusivityBadge: 'Limited Edition',
+      exclusivityPrefix: 'Serial:',
+      serial: 'MP-2024-8841',
+      quote: '"Best keyboard I\'ve used in 10 years of coding."',
+      quoteAuthor: '— Maria, Senior Engineer',
+      setupBtn: 'Setup Guide + Tips',
+      label: 'Social proof + exclusivity — rationalizes the purchase instantly',
+    },
+  },
+  ru: {
+    from: 'orders@techstore.io',
+    productName: 'Клавиатура MechPro X',
+    price: '$149,00',
+    trackBtn: 'Отследить заказ',
+    before: {
+      subject: 'Заказ №4821 подтверждён',
+      greeting: 'Здравствуйте,',
+      body: 'Ваш заказ успешно оформлен.',
+      deliveryLabel: 'Ожидаемая доставка',
+      deliveryDate: '28 марта',
+      label: 'Обычное транзакционное — сомнения покупателя не закрыты',
+    },
+    after: {
+      subject: 'Отличный выбор — Заказ №4821 подтверждён',
+      heroEmoji: '⌨️',
+      greeting: 'Отличный выбор, Алекс!',
+      socialProof: '№1 по оценкам у 12 000+ разработчиков',
+      exclusivityBadge: 'Лимитированная серия',
+      exclusivityPrefix: 'Серийный номер:',
+      serial: 'MP-2024-8841',
+      quote: '«Лучшая клавиатура, на которой я кодил за 10 лет.»',
+      quoteAuthor: '— Мария, старший инженер',
+      setupBtn: 'Руководство + советы',
+      label:
+        'Соцдоказательство + эксклюзивность — мгновенно оправдывает покупку',
+    },
+  },
+  hy: {
+    from: 'orders@techstore.io',
+    productName: 'MechPro X ստեղնաշար',
+    price: '$149.00',
+    trackBtn: 'Հետևել պատվերին',
+    before: {
+      subject: 'Պատվեր #4821 հաստատված է',
+      greeting: 'Բարև,',
+      body: 'Ձեր պատվերը հաջողությամբ կատարվել է։',
+      deliveryLabel: 'Սպասվող առաքում',
+      deliveryDate: 'Մարտի 28',
+      label: 'Պարզ գործարքային — գնորդի կասկածը չի հասցեագրված',
+    },
+    after: {
+      subject: 'Հիանալի ընտրություն — Պատվեր #4821 հաստատված է',
+      heroEmoji: '⌨️',
+      greeting: 'Հիանալի ընտրություն, Ալեքս։',
+      socialProof: 'Գնահատված է #1 12,000+ ծրագրավորողների կողմից',
+      exclusivityBadge: 'Սահմանափակ թողարկում',
+      exclusivityPrefix: 'Սերիական համար՝',
+      serial: 'MP-2024-8841',
+      quote:
+        '«Լավագույն ստեղնաշարը, որ օգտագործել եմ իմ 10 տարվա կոդավորման ընթացքում։»',
+      quoteAuthor: '— Մարիա, ավագ ինժեներ',
+      setupBtn: 'Կարգավորման ուղեցույց + խորհուրդներ',
+      label:
+        'Սոցիալական ապացույց + բացառիկություն — ակնթարթորեն արդարացնում է գնումը',
+    },
+  },
+};
+
+export default content;

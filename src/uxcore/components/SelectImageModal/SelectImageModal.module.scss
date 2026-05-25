@@ -1,0 +1,91 @@
+.modalBody {
+  padding: 16px 4px 16px 20px !important;
+}
+
+.modalWrapper {
+  width: 481px !important;
+}
+
+.container {
+  height: 330px;
+  overflow: auto;
+  padding-bottom: 31px;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 23px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #c4c4c4;
+  }
+
+  .imagesWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    .defaultBg {
+      background: #fafafa;
+      width: 210px;
+      height: 124px;
+    }
+
+    .img {
+      cursor: pointer;
+      object-fit: cover;
+    }
+
+    .selected {
+      border: 1px solid #5b88bd;
+    }
+  }
+}
+
+.btnWrapper {
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  padding-right: 16px;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 106%;
+    background-color: #cbcbcb;
+    height: 1px;
+    right: -4px;
+  }
+}
+
+.skeleton {
+  background-color: #d9d9d9;
+  width: 210px;
+  height: 124px;
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+@media (max-width: 900px) {
+  .img {
+    width: 150px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 415px) {
+  .imagesWrapper {
+    justify-content: center;
+  }
+}

@@ -15,6 +15,8 @@ import { socialMediaLinks } from '@constants/common';
 
 import { TRouter } from '@local-types/global';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import contributors from '@data/contributors';
 
 import AudioPlayer from '@components/AudioPlayer';
@@ -45,8 +47,12 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
 
   const [desktopVideoReady, setDesktopVideoReady] = useState(false);
   const [mobileVideoReady, setMobileVideoReady] = useState(false);
+  const [desktopVideoDarkReady, setDesktopVideoDarkReady] = useState(false);
+  const [mobileVideoDarkReady, setMobileVideoDarkReady] = useState(false);
   const desktopVideoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const desktopVideoDarkRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoDarkRef = useRef<HTMLVideoElement>(null);
 
   const loadVideo = useCallback(
     (
@@ -78,6 +84,16 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
         mobileVideoRef,
         '/keepsimple_/assets/home-page/Mobile-Leaves-Compressed1.mp4',
         setMobileVideoReady,
+      );
+      loadVideo(
+        desktopVideoDarkRef,
+        '/keepsimple_/assets/home-page/leaves-dark.mp4',
+        setDesktopVideoDarkReady,
+      );
+      loadVideo(
+        mobileVideoDarkRef,
+        '/keepsimple_/assets/home-page/leaves-mobile-dark.mp4',
+        setMobileVideoDarkReady,
       );
     };
 
@@ -233,7 +249,19 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
             muted
             loop
             className={cn(styles.video, {
-              [styles.videoVisible]: desktopVideoReady,
+              [styles.videoVisible]: desktopVideoReady && !darkTheme,
+            })}
+            height={600}
+          />
+          <video
+            ref={desktopVideoDarkRef}
+            controls={false}
+            playsInline
+            autoPlay
+            muted
+            loop
+            className={cn(styles.video, {
+              [styles.videoVisible]: desktopVideoDarkReady && darkTheme,
             })}
             height={600}
           />
@@ -264,7 +292,9 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
                   [styles.fadeOut]: fadeOutIndexes.includes(1),
                   [styles.fadeIn]: fadeInIndexes.includes(1),
                 })}
-                dangerouslySetInnerHTML={{ __html: highlightedText }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(highlightedText),
+                }}
               ></p>
             )}
             {title && secondDescription && (
@@ -277,7 +307,9 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
                   [styles.fadeIn]:
                     fadeInIndexes.includes(2) && !fadeOutIndexes.includes(2),
                 })}
-                dangerouslySetInnerHTML={{ __html: secondDescription }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(secondDescription),
+                }}
               ></p>
             )}
             {title && lastDescription && (
@@ -290,7 +322,9 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
                     fadeOutIndexes.includes(3) && !fadeInIndexes.includes(3),
                   [styles.fadeIn]: fadeInIndexes.includes(3),
                 })}
-                dangerouslySetInnerHTML={{ __html: lastDescription }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(lastDescription),
+                }}
               ></p>
             )}
           </div>
@@ -340,7 +374,19 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
             muted
             loop
             className={cn(styles.video, {
-              [styles.videoVisible]: mobileVideoReady,
+              [styles.videoVisible]: mobileVideoReady && !darkTheme,
+            })}
+            height={600}
+          />
+          <video
+            ref={mobileVideoDarkRef}
+            controls={false}
+            playsInline
+            autoPlay
+            muted
+            loop
+            className={cn(styles.video, {
+              [styles.videoVisible]: mobileVideoDarkReady && darkTheme,
             })}
             height={600}
           />

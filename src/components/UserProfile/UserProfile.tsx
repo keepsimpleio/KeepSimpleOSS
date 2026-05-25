@@ -86,9 +86,9 @@ const UserProfile: FC<UserProfileProps> = ({
 
   const renderUserImage = () => {
     if (!isLoggedIn && isAccessTokenExist) {
-      return '/assets/avatar.svg';
+      return '/keepsimple_/assets/avatar.svg';
     }
-    return userImage;
+    return userImage || '/keepsimple_/assets/avatar.svg';
   };
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');

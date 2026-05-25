@@ -1,0 +1,50 @@
+.MobileHeader,
+.disablePageSwitcher {
+  color: #28587b;
+  z-index: 4;
+  height: 45px;
+  line-height: 45px;
+  box-sizing: border-box;
+  top: 0;
+  left: 0;
+  width: 100%;
+  font-size: 20px;
+  font-weight: 700;
+  background-color: #fff;
+  padding: 0 0 0 16px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+
+  & .SiteName {
+    font-size: 22px;
+    display: inline-block;
+    margin-top: 5px;
+  }
+
+  & .Actions {
+    width: auto;
+    position: static;
+    padding-top: 0rem;
+    float: right;
+    display: flex;
+    gap: 10px;
+
+    .PodcastWrapper {
+      padding: 3px;
+    }
+
+    .active {
+      > svg {
+        fill: #5b88bd;
+      }
+    }
+
+    & a {
+      font-size: 21px;
+    }
+  }
+}
+
+.disablePageSwitcher {
+  position: relative;
+  z-index: 5;
+}

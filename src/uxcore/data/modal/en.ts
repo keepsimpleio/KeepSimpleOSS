@@ -1,0 +1,20 @@
+const en = {
+  copyLink: 'Copy link',
+  copied: 'Copied!',
+  share: 'Share',
+  description: 'Description',
+  hrText: 'People Management',
+  productText: 'Product Management',
+  usage: 'Example of use by team',
+  mentionedIn: 'This bias answers to the following questions',
+  productValue: 'Product value',
+  usageUiUx: 'Example of use by UI/UX',
+  usageHr: 'Example of use by HR',
+  managementValue: 'Management value',
+  answersLabel: 'Possible answers',
+  relatedQuestionsLabel: 'Related questions',
+  uxeducationButtonLabel: 'Using UXCG in Education',
+  downloadButtonLabel: 'Download PDF',
+  visualExample: 'Visual Example',
+};
+export default en;

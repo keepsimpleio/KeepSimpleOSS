@@ -1,0 +1,180 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.urgencyBanner {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: #856404;
+  font-weight: 500;
+}
+
+.fire {
+  margin-right: $space-xs;
+}
+
+.countdown {
+  font-weight: 700;
+  font-family: monospace;
+  color: #c0392b;
+}
+
+.icon {
+  font-size: 36px;
+}
+
+.heading {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: $text-primary;
+  margin: 0;
+}
+
+.headingBold {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.subtext {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.comparison {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  justify-content: center;
+}
+
+.option {
+  flex: 1;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  &.highlighted {
+    background: $color-primary;
+    color: $color-white;
+
+    .label,
+    .amount {
+      color: $color-white;
+    }
+
+    .savings {
+      font-size: $font-size-sm;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: $border-radius;
+      padding: 1px $space-xs;
+    }
+  }
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.amount {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.savings {
+  font-size: $font-size-sm;
+  color: $tag-green;
+  font-weight: 500;
+}
+
+.divider {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.freeMonth {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  background: #f0f9f0;
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  text-align: left;
+}
+
+.freeTag {
+  background: $tag-green;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  padding: $space-xs $space-sm;
+  border-radius: $border-radius;
+  white-space: nowrap;
+}
+
+.freeDesc {
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+  font-weight: 500;
+
+  &Cta {
+    background: $tag-green;
+    color: $color-white;
+    border-color: $tag-green;
+    font-weight: 700;
+
+    &:hover {
+      background: darken(#42c256, 8%);
+    }
+  }
+}
+
+.note {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}

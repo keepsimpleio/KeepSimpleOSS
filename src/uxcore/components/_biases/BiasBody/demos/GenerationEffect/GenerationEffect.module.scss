@@ -1,0 +1,134 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  align-items: center;
+}
+
+.badge {
+  display: inline-block;
+  padding: $space-xs $space-md;
+  background: $bg-alt;
+  color: $text-secondary;
+  border-radius: 20px;
+  font-size: $font-size-sm;
+  font-weight: 600;
+}
+
+.card {
+  width: 100%;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  box-shadow: $shadow-card;
+}
+
+.cardLang {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cardWord {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: 0.05em;
+}
+
+.cardExample {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  font-style: italic;
+
+  strong {
+    color: $color-primary;
+    font-style: normal;
+  }
+}
+
+.cardActions {
+  display: flex;
+  gap: $space-sm;
+  width: 100%;
+}
+
+.btnWrong {
+  flex: 1;
+  padding: $space-sm;
+  background: #fdecea;
+  color: #c0392b;
+  border: 1px solid #f5c6cb;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btnRight {
+  flex: 1;
+  padding: $space-sm;
+  background: #e8f9eb;
+  color: #2a6b2a;
+  border: 1px solid #b2dfbb;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.inputRow {
+  display: flex;
+  gap: $space-sm;
+  width: 100%;
+}
+
+.answerInput {
+  flex: 1;
+  padding: $space-sm $space-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  background: $bg-card;
+  color: $text-primary;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+}
+
+.btnCheck {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.hint {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  font-style: italic;
+  text-align: center;
+}

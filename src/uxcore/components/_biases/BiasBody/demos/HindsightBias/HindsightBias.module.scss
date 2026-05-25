@@ -1,0 +1,148 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  margin-bottom: $space-md;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+  flex-shrink: 0;
+}
+
+.statusText {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $tag-green;
+}
+
+.duration {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-left: auto;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-lg;
+}
+
+.section {
+  margin-bottom: $space-md;
+}
+
+.sectionLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $space-xs;
+}
+
+.sectionBody {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  line-height: 1.5;
+  margin: 0;
+}
+
+// After — timeline
+.timeline {
+  margin-bottom: $space-md;
+}
+
+.timelineLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $space-sm;
+}
+
+.tlRow {
+  display: flex;
+  gap: $space-sm;
+  align-items: flex-start;
+  padding: $space-xs 0;
+  border-left: 2px solid $border-color;
+  padding-left: $space-sm;
+  margin-left: $space-xs;
+  font-size: $font-size-sm;
+
+  &Ambiguous {
+    border-left-color: $border-color;
+    color: $text-secondary;
+  }
+
+  &Critical {
+    border-left-color: #e53e3e;
+    color: #e53e3e;
+    font-weight: 600;
+  }
+}
+
+.tlTime {
+  flex-shrink: 0;
+  width: 40px;
+  font-weight: 600;
+}
+
+.tlMsg {
+  flex: 1;
+}
+
+.tlNote {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-style: italic;
+  margin: $space-sm 0 0;
+}
+
+.adding {
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+}
+
+.addingLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: $space-xs;
+}
+
+.addingList {
+  margin: 0;
+  padding-left: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  li {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}

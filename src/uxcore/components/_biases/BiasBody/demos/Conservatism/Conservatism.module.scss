@@ -1,0 +1,153 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.hero {
+  text-align: center;
+  padding: $space-lg $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+}
+
+.heroIcon {
+  font-size: 28px;
+  margin-bottom: $space-sm;
+}
+
+.heroTitle {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-sm;
+}
+
+.heroSub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.stepList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.stepNum {
+  width: 22px;
+  height: 22px;
+  background: $color-primary;
+  color: $color-white;
+  border-radius: $border-radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.welcomeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  background: #e8f4e8;
+  color: #2a6b2a;
+  border-radius: 20px;
+  padding: $space-xs $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.badgeIcon {
+  color: $tag-green;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.featureRow {
+  display: flex;
+  gap: $space-sm;
+}
+
+.featureCard {
+  flex: 1;
+  padding: $space-md;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+}
+
+.featureNew {
+  border-color: $color-primary;
+  background: #f0f6fc;
+}
+
+.featureLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: $space-xs;
+}
+
+.featureDesc {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.hint {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+  font-style: italic;
+}
+
+.btnPrimary {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

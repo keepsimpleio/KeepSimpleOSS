@@ -1,0 +1,44 @@
+.Tag {
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 17px;
+  border-radius: 2px;
+  display: inline-block;
+  border: none;
+
+  &.Large {
+    font-size: 14px;
+    height: 32px;
+    padding: 3px 17px;
+  }
+
+  &Button {
+    cursor: pointer;
+    opacity: 0.3;
+    box-sizing: border-box;
+    border: none;
+
+    &.TagButtonActive {
+      opacity: 1;
+    }
+  }
+}
+
+// Dark theme: inactive stage filter pills are nearly invisible at 0.3 opacity
+// against the dark page bg. Raise to 0.75 and give them a faint border so they
+// register as real buttons. Active pill stays fully opaque.
+:global(body.darkTheme) .Tag {
+  &Button {
+    opacity: 0.75;
+    border: 1px solid rgba(218, 218, 218, 0.2);
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &.TagButtonActive {
+      opacity: 1;
+      border-color: transparent;
+    }
+  }
+}

@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { FC } from 'react';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import LongevitySubSection from '@components/longevity/LongevitySubSection';
 import MainInfoSection from '@components/longevity/MainInfoSection';
 
@@ -59,7 +61,9 @@ const ResultsLayout: FC<ResultsLayoutProps> = ({ data, locale }) => {
           height={104}
           className={styles.backgroundImg}
         />
-        <div dangerouslySetInnerHTML={{ __html: data['PS Quote'] }} />
+        <div
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(data['PS Quote']) }}
+        />
       </div>
     </div>
   );

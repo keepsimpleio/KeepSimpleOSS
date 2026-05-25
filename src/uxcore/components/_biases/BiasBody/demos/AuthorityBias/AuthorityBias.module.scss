@@ -1,0 +1,154 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+// Before
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.recommendation {
+  font-size: $font-size-base;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btn {
+  align-self: flex-start;
+  padding: $space-sm $space-lg;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  color: $text-primary;
+}
+
+// After
+.doctorCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.doctorHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-base;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.doctorInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doctorName {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.credential {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  background: #e8f5e9;
+  border: 1px solid $tag-green;
+  border-radius: $border-radius;
+  padding: 2px $space-sm;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: darken(#42c256, 15%);
+  white-space: nowrap;
+}
+
+.badgeIcon {
+  color: $tag-green;
+  font-weight: 700;
+}
+
+.quote {
+  font-size: $font-size-base;
+  font-style: italic;
+  color: $text-primary;
+  margin: 0;
+  padding: $space-md;
+  border-left: 3px solid $color-primary;
+  background: $bg-alt;
+  border-radius: 0 $border-radius $border-radius 0;
+  line-height: 1.5;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-xs;
+}
+
+.tag {
+  font-size: $font-size-sm;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 2px $space-sm;
+  color: $text-secondary;
+}
+
+.btnPrimary {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+}

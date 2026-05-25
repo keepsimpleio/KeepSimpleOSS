@@ -1,0 +1,44 @@
+.SectionTitle {
+  font-size: 16px;
+  text-align: center;
+  margin: 6px 0;
+  font-weight: 700;
+}
+
+.SectionDescription {
+  font-size: 16px;
+}
+
+.QuestionList .NoData {
+  color: #bfbfbf;
+  font-size: 24px;
+  text-align: center;
+  padding: 58px 0 42px;
+}
+
+@media (max-width: 1440px) {
+  .SectionDescription {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 901px) {
+  .SectionDescription {
+    font-size: 16px;
+  }
+}
+
+// Dark theme: lift section copy + empty-state contrast.
+:global(body.darkTheme) {
+  .SectionTitle {
+    color: #dadada;
+  }
+
+  .SectionDescription {
+    color: #dadada;
+  }
+
+  .QuestionList .NoData {
+    color: rgba(218, 218, 218, 0.45);
+  }
+}

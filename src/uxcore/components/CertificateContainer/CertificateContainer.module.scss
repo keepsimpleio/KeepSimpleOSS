@@ -1,0 +1,135 @@
+.certificateContainer {
+  background: #fff;
+  padding: 15px;
+  margin: 15px;
+
+  .certificate {
+    position: relative;
+    border: 5px solid #dab659;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1140px;
+    aspect-ratio: 1140 / 691;
+    height: auto;
+    box-sizing: border-box;
+
+    .firstWrapper {
+      .info {
+        padding-top: 44px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .uxcoreLogo {
+          padding-bottom: 65px !important;
+        }
+
+        .titleIcon {
+          padding-bottom: 8px;
+        }
+
+        .name {
+          color: #bf8c0a;
+          font-size: 76px;
+          font-weight: 100;
+          margin: 0 20px;
+          font-family: 'Manrope-ExtraLight.ttf', sans-serif;
+        }
+
+        .subText {
+          font-family: 'IBMPlexSans-SemiBold.ttf', sans-serif;
+          font-size: 16px;
+          padding-bottom: 40px;
+        }
+
+        .description {
+          width: 100%;
+          text-align: center;
+          line-height: 30px;
+          font-size: 16px;
+          color: #000000d9;
+          max-width: 830px;
+          padding: 0 65px 39px 65px;
+          font-family: 'IBMPlexSans-Regular.ttf', sans-serif;
+        }
+      }
+    }
+
+    .secondWrapper {
+      .authorName {
+        font-family: 'IBMPlexSans-Regular.ttf', sans-serif;
+        font-size: 12px;
+      }
+
+      .signingAndId {
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+        padding-left: 65px;
+      }
+
+      .userId {
+        display: block;
+        text-align: end;
+        color: #000000a6;
+        font-size: 12px;
+        padding: 0 15px 15px 0;
+      }
+    }
+  }
+}
+
+.background {
+  position: absolute;
+  width: 100%;
+  max-width: 1140px;
+  aspect-ratio: 1140 / 691;
+  height: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1000px) {
+  .certificateContainer {
+    .certificate {
+      .firstWrapper {
+        .info {
+          .description {
+            width: unset;
+            max-width: unset;
+          }
+
+          .name {
+            font-size: 45px;
+          }
+
+          .titleIcon {
+            max-width: 400px;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .certificateContainer {
+    .certificate {
+      .firstWrapper {
+        .info {
+          .description {
+            width: unset;
+            max-width: unset;
+            padding: 15px;
+          }
+        }
+      }
+
+      .secondWrapper {
+        .signingAndId {
+          padding-left: 15px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,116 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.emailCard {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  box-shadow: $shadow-card;
+}
+
+.emailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-lg;
+}
+
+.logo {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.badge {
+  font-size: $font-size-sm;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: 20px;
+  padding: 2px $space-sm;
+  color: $text-secondary;
+}
+
+.headline {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0 0 $space-lg;
+}
+
+// Before — stat
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: $space-sm;
+  margin-bottom: $space-lg;
+}
+
+.statNum {
+  font-size: $font-size-display;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+// After — highlights
+.highlights {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  margin-bottom: $space-lg;
+}
+
+.highlight {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.icon {
+  font-size: $font-size-md;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}

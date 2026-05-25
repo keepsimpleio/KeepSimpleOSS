@@ -1,0 +1,142 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.spotlightBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-md;
+  background: linear-gradient(135deg, #1e3a5f, $color-primary);
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.spotlightLeft {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  flex: 1;
+  min-width: 0;
+}
+
+.newBadge {
+  flex-shrink: 0;
+  background: #f59e0b;
+  color: #000;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  padding: 2px $space-sm;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+
+.spotlightTitle {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $color-white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotlightSub {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+
+.tryBtn {
+  flex-shrink: 0;
+  padding: $space-xs $space-md;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: $border-radius;
+  background: rgba(255, 255, 255, 0.15);
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.appShell {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  width: 120px;
+  border-right: 1px solid $border-color;
+  background: $bg-alt;
+  display: flex;
+  flex-direction: column;
+  padding: $space-sm 0;
+}
+
+.sidebarItem {
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-xs;
+}
+
+.sidebarActive {
+  color: $color-primary;
+  font-weight: 600;
+  background: $bg-card;
+  border-left: 2px solid $color-primary;
+}
+
+.sidebarHighlight {
+  color: $color-primary;
+  font-weight: 600;
+}
+
+.sidebarBadge {
+  background: #f59e0b;
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.main {
+  flex: 1;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.mainTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.placeholder {
+  height: 36px;
+  background: $bg-alt;
+  border-radius: $border-radius;
+}

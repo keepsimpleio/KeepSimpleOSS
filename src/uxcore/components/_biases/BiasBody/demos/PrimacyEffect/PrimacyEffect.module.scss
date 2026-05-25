@@ -1,0 +1,125 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  align-items: center;
+  text-align: center;
+}
+
+.logo {
+  font-size: $font-size-md;
+  font-weight: 700;
+  color: $color-primary;
+  letter-spacing: 0.05em;
+  margin-top: $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.featureList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  text-align: left;
+  align-self: stretch;
+
+  li {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    padding: $space-sm $space-md;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+  }
+}
+
+.avatarRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+  margin-top: $space-md;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  font-weight: 700;
+}
+
+.avatarLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.hook {
+  font-size: $font-size-md;
+  color: $text-primary;
+  margin: 0;
+
+  strong {
+    color: $color-primary;
+  }
+}
+
+.proofRow {
+  display: flex;
+  gap: $space-xl;
+  justify-content: center;
+}
+
+.proofItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.proofValue {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.proofLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.btnPrimary {
+  padding: $space-sm $space-xl;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}

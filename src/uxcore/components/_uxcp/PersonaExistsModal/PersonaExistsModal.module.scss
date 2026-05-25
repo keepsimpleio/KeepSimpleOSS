@@ -1,0 +1,14 @@
+.modalContent {
+  .btnWrapper {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    padding-top: 28px;
+  }
+}
+
+.modalContentHy {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}

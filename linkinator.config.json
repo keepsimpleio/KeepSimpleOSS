@@ -1,0 +1,18 @@
+{
+  "recurse": true,
+  "concurrency": 10,
+  "timeout": 15000,
+  "retry": true,
+  "retryErrors": true,
+  "retryErrorsCount": 3,
+  "skip": [
+    "linkedin.com",
+    "twitter.com",
+    "x.com",
+    "facebook.com",
+    "instagram.com",
+    "discord.com",
+    "discord.gg"
+  ],
+  "verbosity": "INFO"
+}

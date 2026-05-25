@@ -1,0 +1,152 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+// Before — commercial
+.commercialHero {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  text-align: center;
+}
+
+.urgencyBadge {
+  background: $tag-orange;
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  padding: 4px $space-md;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+
+.headline {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.amounts {
+  display: flex;
+  gap: $space-sm;
+}
+
+.amountBtn {
+  padding: $space-sm $space-lg;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Nature {
+    border-color: #4a7c59;
+    color: #4a7c59;
+
+    &:hover {
+      background: #f0f7f2;
+    }
+  }
+}
+
+.cta {
+  width: 100%;
+  padding: $space-sm;
+  background: $tag-orange;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+// After — nature
+.natureHero {
+  background: linear-gradient(160deg, #e8f5e9, #c8e6c9);
+  border: 1px solid #a5d6a7;
+  border-radius: $border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  text-align: center;
+}
+
+.leafDecor {
+  font-size: 32px;
+}
+
+.headlineNature {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: #2e7d32;
+  margin: 0;
+}
+
+.subNature {
+  font-size: $font-size-sm;
+  color: #388e3c;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ctaNature {
+  width: 100%;
+  padding: $space-sm;
+  background: #2e7d32;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.testimonial {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $font-size-sm;
+  color: #388e3c;
+}
+
+.tAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: $border-radius-round;
+  background: #4caf50;
+  color: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tText {
+  font-style: italic;
+}

@@ -1,0 +1,298 @@
+@import '../../../styles/_uxcore-labels.scss';
+
+$blue-background: #c7ebf8;
+$blue-border: #4c8cc1;
+
+$pink-background: #e9dfe3;
+$pink-border: #80739b;
+
+$green-background: #c5eadd;
+$green-border: #75b3b3;
+
+$purple-background: #e9e6ff;
+$purple-border: #8073ff;
+
+.hovered {
+  cursor: pointer;
+
+  .label {
+    &:before {
+      opacity: 1;
+    }
+  }
+}
+
+.label {
+  height: 12px;
+  position: absolute;
+  left: calc(var(--x) * 1px);
+  top: calc(var(--y) * 1px);
+  transform: translate(5px, -50%);
+  padding: 0 8px;
+  cursor: pointer;
+  color: #333;
+  font-size: 8px;
+  clip-path: polygon(4.5% 0, 95.5% 0, 100% 50%, 95.5% 100%, 4.5% 100%, 0 50%);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(4.5% 0, 95.5% 0, 100% 50%, 95.5% 100%, 4.5% 100%, 0 50%);
+    z-index: 0;
+    transition: opacity 0.25s ease;
+    opacity: 0;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    clip-path: polygon(4.5% 0, 95.5% 0, 100% 50%, 95.5% 100%, 4.5% 100%, 0 50%);
+    z-index: 1;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  .txt {
+    font-size: 10px;
+    display: block;
+    padding-top: 0.3px;
+    color: #333333;
+    white-space: nowrap;
+    position: relative;
+    z-index: 4;
+  }
+}
+
+.isLeftSection {
+  .label {
+    transform: translate(-94%, -6px);
+  }
+}
+
+// This is not the best solution but it's the fastest to implement for now
+// This might be unnecessary if we fix the bug of the labels positions in the future
+.bias-label-99 {
+  .label {
+    transform: translate(-91%, -7px);
+  }
+}
+
+.bias-label-98,
+.bias-label-97 {
+  .label {
+    transform: translate(-95%, -7px);
+  }
+}
+
+.bias-label-96,
+.bias-label-95,
+.bias-label-94,
+.bias-label-93 {
+  .label {
+    transform: translate(-95%, -7px);
+  }
+}
+
+.bias-label-92,
+.bias-label-91,
+.bias-label-90 {
+  .label {
+    transform: translate(-93%, -7px);
+  }
+}
+
+.bias-label-87 {
+  .label {
+    transform: translate(-96%, -8px);
+  }
+}
+
+.bias-label-89,
+.bias-label-88,
+.bias-label-86 {
+  .label {
+    transform: translate(-94.5%, -8px);
+  }
+}
+
+.bias-label-85,
+.bias-label-84,
+.bias-label-83,
+.bias-label-82 {
+  .label {
+    transform: translate(-94%, -9px);
+  }
+}
+
+.blue {
+  background: $blue-background;
+  @extend .blueBorders;
+}
+
+.purple {
+  background: $purple-background;
+  @extend .purpleBorders;
+}
+
+.green {
+  background: $green-background;
+  @extend .greenBorders;
+}
+
+.pink {
+  background: $pink-background;
+  @extend .pinkBorders;
+}
+
+.biasLabel {
+  position: absolute;
+  left: var(--x);
+  display: flex;
+  top: 0px;
+  margin-left: -5px;
+  margin-top: -1px;
+
+  .link {
+    display: contents;
+  }
+}
+
+.biasLabelHy {
+  .label {
+    .txt {
+      margin-top: -2px;
+    }
+  }
+}
+
+.secondRow {
+  margin-left: -4px;
+  margin-top: 0;
+}
+
+.faded {
+  opacity: 0.5;
+}
+
+.searched {
+  .label {
+    &:before {
+      opacity: 1;
+    }
+  }
+
+  .blue {
+    @extend .blue;
+  }
+
+  .purple {
+    @extend .purple;
+  }
+
+  .green {
+    @extend .green;
+  }
+
+  .pink {
+    @extend .pink;
+  }
+}
+
+@media (max-width: 1536px) and (max-height: 731px) {
+  .label {
+    height: 9px;
+
+    .txt {
+      font-size: 8px;
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .label {
+    height: 9px;
+
+    .txt {
+      font-size: 8px;
+    }
+  }
+}
+
+@media (min-width: 2500px) {
+  .label {
+    height: 1.4vh;
+
+    .txt {
+      font-size: 1.2vh;
+    }
+  }
+}
+
+@media (min-width: 3500px) {
+  .label {
+    height: 1vh;
+
+    .txt {
+      font-size: 0.8vh;
+    }
+  }
+}
+
+// Dark theme: invert bias cards. The colored fill (::after) becomes a dark
+// surface; the category accent shifts to the text. The border ring (::before)
+// keeps its accent so each card still reads as its category at a glance.
+:global(body.darkTheme) {
+  .label {
+    .txt {
+      color: #dadada;
+    }
+
+    &::after {
+      background: #1f2533;
+    }
+  }
+
+  .blue {
+    background: #1f2533;
+    .txt {
+      color: #bbe4f2;
+    }
+    &::after {
+      background: #1f2533;
+    }
+  }
+
+  .green {
+    background: #1f2533;
+    .txt {
+      color: #c5eadd;
+    }
+    &::after {
+      background: #1f2533;
+    }
+  }
+
+  .pink {
+    background: #1f2533;
+    .txt {
+      color: #dbcad1;
+    }
+    &::after {
+      background: #1f2533;
+    }
+  }
+
+  .purple {
+    background: #1f2533;
+    .txt {
+      color: #cdc8fc;
+    }
+    &::after {
+      background: #1f2533;
+    }
+  }
+}

@@ -1,0 +1,140 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.phone {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.notifBar {
+  background: $color-dark;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.appDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-round;
+  background: $tag-green;
+  flex-shrink: 0;
+}
+
+.appLabel {
+  font-size: $font-size-sm;
+  color: $color-white;
+  font-weight: 600;
+  flex: 1;
+}
+
+.notifTime {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.notifBody {
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.notifTitle {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+  line-height: 1.3;
+}
+
+.notifMsg {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.4;
+}
+
+.streakChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 36px;
+  padding: $space-xs 0;
+}
+
+.bar {
+  width: 14px;
+  background: $tag-green;
+  border-radius: 2px 2px 0 0;
+  flex-shrink: 0;
+}
+
+.chartLabel {
+  font-size: $font-size-sm;
+  color: $tag-green;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  border-top: 1px solid $border-color;
+}
+
+.dismiss {
+  flex: 1;
+  padding: $space-md;
+  border: none;
+  border-right: 1px solid $border-color;
+  background: transparent;
+  color: $text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.open {
+  flex: 1;
+  padding: $space-md;
+  border: none;
+  background: transparent;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.openGreen {
+  color: $tag-green;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+  width: 100%;
+  max-width: 320px;
+}
+
+.labelGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}

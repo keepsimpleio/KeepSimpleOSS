@@ -1,5 +1,6 @@
-import Image from 'next/image';
 import { FC } from 'react';
+
+import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 import Heading from '@components/Heading';
 
@@ -41,7 +42,7 @@ const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
 
     return (
       <div
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
         className={styles.content}
       />
     );
@@ -50,13 +51,12 @@ const WhyDoThisTooltip: FC<WhyDoThisTooltipProps> = ({
   return (
     <div className={styles.whyDoThisTooltip} data-cy="why-do-this-content">
       <div>
-        <Image
-          src={'/keepsimple_/assets/longevity/habits/what-is-this-bg.png'}
-          alt="Background"
-          width={700}
-          height={300}
-          priority
-          className={styles.img}
+        <video
+          src="/assets/longevity/habits/brain-vid.mp4"
+          autoPlay
+          muted
+          playsInline
+          className={styles.video}
         />
         {headline && (
           <Heading

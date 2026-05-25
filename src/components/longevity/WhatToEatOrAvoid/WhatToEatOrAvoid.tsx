@@ -5,6 +5,8 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { useIsWidthLessThan } from '@hooks/useScreenSize';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import longevityData from '@data/longevity';
 
 import Heading from '@components/Heading';
@@ -90,7 +92,7 @@ const WhatToEatOrAvoid: FC<WhatToEatOrAvoidProps> = ({
             height={16}
           />
           <div
-            dangerouslySetInnerHTML={{ __html: info }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(info) }}
             className={styles.content}
           />
         </div>

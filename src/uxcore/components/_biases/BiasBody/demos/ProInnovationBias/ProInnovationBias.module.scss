@@ -1,0 +1,125 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+
+  &.bannerLoud {
+    background: linear-gradient(90deg, $tag-purple, $color-primary);
+    color: $color-white;
+  }
+
+  &.bannerCalm {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    color: $text-primary;
+  }
+}
+
+.sparkle {
+  font-size: $font-size-md;
+}
+
+.tagBeta {
+  font-size: 10px;
+  background: $tag-orange;
+  color: $color-white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.bigHeadline {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+.body {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+}
+
+.ctaBig {
+  flex: 1;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ctaPrimary {
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ctaSecondary {
+  background: $bg-card;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.complaint,
+.reassure {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.complaint {
+  background: lighten(#cd7232, 38%);
+  border: 1px solid $tag-orange;
+  font-style: italic;
+}
+
+.reassure {
+  background: lighten(#42c256, 47%);
+  border: 1px solid $tag-green;
+}
+
+.complaintIcon,
+.checkIcon {
+  font-size: $font-size-md;
+  flex-shrink: 0;
+}

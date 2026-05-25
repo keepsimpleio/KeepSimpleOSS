@@ -1,0 +1,8 @@
+.PersonaSection {
+  display: flex;
+  justify-content: center;
+
+  & .Wrapper {
+    width: 340px;
+  }
+}

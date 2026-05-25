@@ -1,0 +1,524 @@
+.ModalOverlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  & .Modal {
+    position: relative;
+    z-index: 108;
+    background: #fff;
+    width: 650px;
+    border: 1px solid #cbcbcb;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    height: 100vh;
+
+    & .ModalHeader {
+      padding: 15px 20px 10px;
+      border-bottom: 1px solid #cbcbcb;
+
+      .ModalHeaderTop {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .Number {
+          padding-right: 10px;
+          padding-bottom: 4px;
+        }
+
+        .ModalHeaderTags {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          gap: 2px;
+
+          & div {
+            margin-left: 5px;
+            margin-bottom: 5px;
+          }
+        }
+      }
+
+      .ModalHeaderTitle {
+        font-size: 18px;
+        font-weight: 600;
+        color: #000;
+        margin: 0;
+      }
+
+      .ModalHeaderLinks {
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+
+        .CopyText {
+          font-size: 14px;
+          color: #5b88bd;
+          position: relative;
+          display: inline-block;
+          text-decoration: none;
+          margin-right: 10px;
+          cursor: pointer;
+
+          .Tooltip {
+            z-index: 1;
+            transition: 0.3s;
+            position: absolute;
+            background-color: #fff;
+            color: #000;
+            border-radius: 2px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+
+            top: -2px;
+            right: calc(100% + 8px);
+            padding: 2px 8px;
+            opacity: 0;
+            visibility: hidden;
+
+            &:after {
+              top: calc(50% - 3px);
+              left: calc(100% - 3px);
+            }
+
+            &.Visible {
+              opacity: 1;
+              visibility: visible;
+            }
+          }
+        }
+
+        & > a,
+        & > span {
+          font-size: 14px;
+          color: #5b88bd;
+          position: relative;
+          display: inline-block;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        & .DownloadLink {
+          display: inline-flex;
+          align-items: center;
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          & > img {
+            margin-right: 6px;
+          }
+        }
+      }
+
+      & .ModalHeaderCloseButtonContainer {
+        width: 75px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        gap: 24px;
+
+        & .ModalHeaderCloseButton {
+          text-align: right;
+          margin-top: 2px;
+
+          & img {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    & .ModalBody {
+      font-size: 16px;
+      padding: 15px 20px 40px;
+      line-height: 150%;
+      height: calc(98vh - 300px);
+      overflow: auto !important;
+      background-color: #f1f1f1;
+
+      /* width */
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: rgba(40, 88, 123, 0.5);
+        border-radius: 5px;
+      }
+
+      .disableArrows {
+        -webkit-animation: fadeOut 1s;
+        animation: fadeOut 1s;
+        animation-fill-mode: forwards;
+      }
+
+      .arrowRight {
+        position: absolute;
+        cursor: pointer;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 10px;
+        top: 50%;
+        z-index: 50;
+        transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        left: 80%;
+
+        > svg {
+          fill: #28587b;
+          opacity: 35%;
+        }
+      }
+
+      .arrowLeft {
+        cursor: pointer;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 10px;
+        z-index: 50;
+        position: absolute;
+        top: 50%;
+        left: 21px;
+
+        > svg {
+          fill: #28587b;
+          opacity: 35%;
+        }
+      }
+
+      .AnswersHeader {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .PossibleAnswers,
+        .RelatedQuestionTitle {
+          margin: 0;
+          font-size: 16px;
+          display: inline-block;
+          padding-bottom: 5px;
+          font-weight: 300;
+        }
+
+        .Line {
+          flex-grow: 1;
+          height: 1px;
+          border: none;
+          background-color: #28587b;
+        }
+      }
+
+      .RelatedQuestionTitle {
+        padding-bottom: 8px;
+        padding-top: 8px;
+      }
+
+      & p {
+        margin-top: 0;
+      }
+
+      .ModalBodyContent {
+        & .AnswerItem {
+          display: flex;
+          align-items: center;
+          position: relative;
+          z-index: 1;
+          color: #000;
+          border: 1px solid #d9d9d9;
+          background: #fff;
+          margin-bottom: 8px;
+          padding: 5px;
+
+          & > div:nth-child(1) {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+            cursor: pointer;
+          }
+
+          & .AnswerLink {
+            color: #28587b;
+            white-space: nowrap;
+            position: relative;
+            text-decoration: none;
+            z-index: 1;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            background: #f1f1f1;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+
+          & + .AnswerItem {
+            margin-top: 1px;
+          }
+
+          &::after {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: -6px;
+            width: calc(100% + 12px);
+            height: 100%;
+            content: '';
+            background: transparent;
+            border: 1px solid transparent;
+            box-sizing: border-box;
+            border-radius: 4px;
+            transition: 1s;
+          }
+
+          &.Higlighted {
+            &:after {
+              background: #fff0b9;
+              border-color: #f8dd7e;
+            }
+
+            & .AnswerLink::after {
+              background: transparent;
+            }
+          }
+        }
+
+        & .QuestionLink {
+          cursor: pointer;
+          color: #28587b;
+          font-size: 16px;
+          font-weight: 400;
+          text-decoration: none;
+          line-height: 150%;
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          & + .QuestionLink {
+            margin-top: 15px;
+          }
+        }
+      }
+    }
+
+    & .ModalButtons {
+      & .ModalButton {
+        width: 72px;
+        height: 72px;
+        position: absolute;
+        top: calc(50% - 36px);
+        cursor: pointer;
+        padding: 18px;
+        box-sizing: border-box;
+
+        &.Disabled {
+          opacity: 0.4;
+        }
+
+        & img {
+          height: 36px;
+        }
+
+        &:nth-of-type(1) {
+          left: -100px;
+        }
+
+        &:nth-of-type(2) {
+          right: -100px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .ModalOverlay {
+    .Modal {
+      .ModalBody {
+        background-color: #fff;
+
+        .ModalBodyContent {
+          .AnswerItem {
+            border: none;
+            padding: 6px 0;
+            margin: unset;
+
+            .AnswerLink {
+              &:after {
+                background: #28587b26;
+              }
+            }
+          }
+        }
+
+        .PossibleAnswers,
+        .RelatedQuestionTitle {
+          background-color: #fff;
+          color: #28587b;
+          position: relative;
+          display: block;
+        }
+
+        .PossibleAnswersRu {
+          &::after {
+            left: 160px;
+          }
+        }
+
+        .PossibleAnswers {
+          &:after {
+            top: 9px;
+          }
+        }
+
+        .RelatedQuestionTitle {
+          &:after {
+            top: 15px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.hyLang {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+.uxcgLangSwitcher {
+  display: block;
+  position: absolute;
+  right: 20px;
+}
+
+@media (max-width: 380px) {
+  .DownloadLink {
+    img {
+      display: none;
+    }
+
+    span {
+      display: none;
+    }
+  }
+}
+
+@media (min-width: 381px) {
+  .DownloadLink {
+    svg {
+      display: none;
+    }
+  }
+}
+
+.Modal {
+  .ModalBody {
+    background-color: #fff;
+
+    .ModalBodyContent {
+      .AnswerItem {
+        border: none;
+        padding: 6px 0;
+        margin: unset;
+
+        .AnswerLink {
+          &:after {
+            background: #28587b26;
+          }
+        }
+      }
+    }
+
+    .AnswersHeader {
+      .PossibleAnswers,
+      .RelatedQuestionTitle {
+        background-color: #fff;
+        color: #28587b;
+        position: relative;
+        display: block;
+
+        .Line {
+          flex-grow: 1;
+          height: 1px;
+          border: none;
+          background-color: #28587b;
+        }
+      }
+    }
+
+    .RelatedQuestionTitle {
+      &:after {
+        top: 15px;
+      }
+    }
+  }
+}
+
+@media (max-width: 375px) {
+  .ModalOverlay {
+    & .Modal {
+      & .ModalHeader {
+        padding: 15px 10px 10px;
+
+        & .ModalHeaderCloseButtonContainer {
+          width: 25px;
+        }
+
+        & .ModalHeaderLinks {
+          align-items: center;
+
+          & .DownloadLink {
+            top: unset;
+            bottom: 5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 280px) {
+  .EduUsage {
+    padding-right: 30px;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 0.01;
+    width: 100%;
+    height: 100%;
+  }
+  100% {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}

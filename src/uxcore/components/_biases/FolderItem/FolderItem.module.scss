@@ -1,0 +1,367 @@
+.FolderItem {
+  width: 422px;
+  position: absolute;
+  flex-direction: column;
+  transition: 0.25s;
+  cursor: pointer;
+
+  &Title {
+    display: inline-block;
+    position: relative;
+    height: 26px;
+    transition: max-width 0.3s;
+    transition-delay: 0;
+    min-width: 200px;
+    max-width: 200px;
+    box-sizing: border-box;
+    margin-top: -25px;
+    padding: 0 10px;
+    border-top-left-radius: 3px;
+    cursor: pointer;
+
+    span {
+      font-size: 12px;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    & > div {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      position: relative;
+      top: 2px;
+    }
+
+    &:after {
+      position: absolute;
+      right: -26px;
+      top: 0;
+      content: '';
+      width: 0;
+      height: 0;
+      border: 13px solid transparent;
+      box-shadow: -1px 1px 0px 0px currentColor;
+    }
+  }
+
+  .Content {
+    position: relative;
+    width: 100%;
+    height: 252px;
+    background-color: white;
+    z-index: 1;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      background: rgba(40, 88, 123, 0.45);
+      border-radius: 2px;
+
+      p {
+        color: white;
+        font-family: 'IBM Plex Mono';
+        font-size: 12px;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      &:nth-child(3) {
+        margin-top: 16px;
+      }
+    }
+
+    .TextContainer {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    p {
+      font-weight: 400;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.85);
+      overflow: hidden;
+      max-height: 50px;
+    }
+
+    li {
+      font-weight: 400;
+      font-size: 14px;
+    }
+  }
+
+  .Bottom {
+    width: 410px;
+    height: 60px;
+    background: linear-gradient(
+      to top,
+      rgb(255, 255, 255),
+      rgba(255, 255, 255),
+      rgba(255, 255, 255),
+      rgba(255, 255, 255, 1),
+      rgba(255, 255, 255, 0)
+    );
+    margin-top: -30px;
+    margin-left: -12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 16px;
+    box-sizing: border-box;
+
+    .ClickText {
+      margin-top: 30px;
+      color: #28587b;
+      background: transparent;
+      border: none;
+      font-family: 'IBM Plex Mono';
+      font-size: 14px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  &:hover {
+    & > .FolderItemTitle {
+      max-width: 420px;
+    }
+  }
+
+  &.Type-0 {
+    & > .FolderItemTitle {
+      background-color: #bbe4f2;
+      color: #0a6c8d;
+      border-bottom: 1px solid #bbe4f2;
+
+      &:after {
+        border-left-color: #bbe4f2;
+        border-bottom-color: #bbe4f2;
+        color: #bbe4f2;
+      }
+    }
+
+    & > .Content {
+      border: 2px solid #bbe4f2;
+    }
+  }
+
+  &.Type-1 {
+    & > .FolderItemTitle {
+      background-color: #c5eadd;
+      color: #258484;
+      border-bottom: 1px solid #c5eadd;
+
+      &:after {
+        border-left-color: #c5eadd;
+        border-bottom-color: #c5eadd;
+        color: #c5eadd;
+      }
+    }
+
+    & > .Content {
+      border: 2px solid #c5eadd;
+    }
+  }
+
+  &.Type-2 {
+    & > .FolderItemTitle {
+      background-color: #dbcad1;
+      color: #573e48;
+      border-bottom: 1px solid #dbcad1;
+
+      &:after {
+        border-left-color: #dbcad1;
+        border-bottom-color: #dbcad1;
+        color: #dbcad1;
+      }
+    }
+
+    & > .Content {
+      border: 2px solid #dbcad1;
+    }
+  }
+
+  &.Type-3 {
+    & > .FolderItemTitle {
+      background-color: #cdc8fc;
+      color: #5c578d;
+      border-bottom: 1px solid #cdc8fc;
+
+      &:after {
+        border-left-color: #cdc8fc;
+        border-bottom-color: #cdc8fc;
+        color: #cdc8fc;
+      }
+    }
+
+    & > .Content {
+      border: 2px solid #cdc8fc;
+    }
+  }
+}
+
+@media (max-width: 1440px) and (min-width: 901px) {
+  .FolderItem {
+    width: 390px !important;
+
+    .Bottom {
+      width: 385px !important;
+    }
+  }
+}
+
+@media (max-width: 900px) and (min-width: 801px) {
+  .FolderItem {
+    width: 390px !important;
+
+    .Bottom {
+      display: flex;
+      justify-content: center;
+      margin-top: -10px;
+
+      .ClickText {
+        margin-top: 1px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .FolderItem {
+    .Content {
+      p {
+        font-size: 14px;
+      }
+    }
+
+    .Bottom {
+      .ClickText {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// Dark theme: invert FolderItem rows. The colored title tab becomes a dark
+// surface with the category accent as text + tab outline; the content panel
+// and the "Click for more" gradient also flip to dark.
+:global(body.darkTheme) .FolderItem {
+  .Content {
+    background-color: #1f2533;
+
+    // Body text — all paragraphs and inline elements inside the description
+    // get a light color and any inline background (Strapi raw HTML) stripped.
+    .TextContainer p,
+    .TextContainer p *,
+    .TextContainer ul,
+    .TextContainer ul * {
+      background: transparent !important;
+      background-color: transparent !important;
+      color: rgba(218, 218, 218, 0.92) !important;
+    }
+
+    // DESCRIPTION / USAGE badges only — direct-child spans with <p> inside.
+    // Restore the white label text on the badge surface.
+    > .TextContainer > span {
+      background: rgba(127, 179, 213, 0.32);
+
+      > p {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .Bottom {
+    background: linear-gradient(
+      to top,
+      #1f2533,
+      #1f2533,
+      #1f2533,
+      rgba(31, 37, 51, 1),
+      rgba(31, 37, 51, 0)
+    );
+
+    .ClickText {
+      color: #7fb3d5;
+    }
+  }
+
+  &.Type-0 {
+    & > .FolderItemTitle {
+      background-color: #0f131c;
+      color: #bbe4f2;
+      border-bottom-color: #4c8cc1;
+
+      &:after {
+        border-left-color: #0f131c;
+        border-bottom-color: #0f131c;
+        color: #0f131c;
+      }
+    }
+
+    & > .Content {
+      border-color: #4c8cc1;
+    }
+  }
+
+  &.Type-1 {
+    & > .FolderItemTitle {
+      background-color: #0f131c;
+      color: #c5eadd;
+      border-bottom-color: #75b3b3;
+
+      &:after {
+        border-left-color: #0f131c;
+        border-bottom-color: #0f131c;
+        color: #0f131c;
+      }
+    }
+
+    & > .Content {
+      border-color: #75b3b3;
+    }
+  }
+
+  &.Type-2 {
+    & > .FolderItemTitle {
+      background-color: #0f131c;
+      color: #dbcad1;
+      border-bottom-color: #80739b;
+
+      &:after {
+        border-left-color: #0f131c;
+        border-bottom-color: #0f131c;
+        color: #0f131c;
+      }
+    }
+
+    & > .Content {
+      border-color: #80739b;
+    }
+  }
+
+  &.Type-3 {
+    & > .FolderItemTitle {
+      background-color: #0f131c;
+      color: #cdc8fc;
+      border-bottom-color: #8073ff;
+
+      &:after {
+        border-left-color: #0f131c;
+        border-bottom-color: #0f131c;
+        color: #0f131c;
+      }
+    }
+
+    & > .Content {
+      border-color: #8073ff;
+    }
+  }
+}

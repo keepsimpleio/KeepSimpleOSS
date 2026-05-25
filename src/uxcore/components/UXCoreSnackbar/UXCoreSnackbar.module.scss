@@ -1,0 +1,49 @@
+.snackBar {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid #cbcbcb;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.5s,
+    visibility 0.5s;
+
+  .text {
+    margin: 8px;
+  }
+
+  .checkmark {
+    margin-left: 5px;
+  }
+}
+.snackBarHy {
+  * {
+    font-family: 'NotoSansArmenian-Regular', sans-serif;
+  }
+}
+
+.showSnackbar {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 950px) {
+  .snackBar {
+    top: 80px;
+    width: 90%;
+  }
+}
+
+// Dark theme: dark pill matching the chrome.
+:global(body.darkTheme) .snackBar {
+  background-color: #151a26;
+  border-color: #303338;
+  color: #dadada;
+}

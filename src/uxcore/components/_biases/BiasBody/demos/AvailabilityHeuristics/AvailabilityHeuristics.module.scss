@@ -1,0 +1,85 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-2xl $space-lg;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+}
+
+.chainIcon,
+.shieldIcon {
+  font-size: 40px;
+}
+
+.productName {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.tagline {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-xs;
+  justify-content: center;
+}
+
+.chip {
+  font-size: $font-size-sm;
+  padding: 2px $space-sm;
+  border-radius: 20px;
+  border: 1px solid $border-color;
+  color: $text-secondary;
+  background: $bg-alt;
+}
+
+.btn {
+  padding: $space-sm $space-2xl;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $bg-card;
+  color: $text-primary;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-top: $space-sm;
+}

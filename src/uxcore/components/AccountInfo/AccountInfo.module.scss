@@ -1,0 +1,267 @@
+.accountInfo {
+  display: flex;
+  margin-top: 49px;
+  margin-left: 145px;
+
+  .badge {
+    position: relative;
+    top: -10px;
+  }
+
+  .tooltipContainer {
+    z-index: 99999;
+    background: linear-gradient(
+        94deg,
+        rgba(231, 233, 255, 0.61) 23.62%,
+        rgba(210, 215, 255, 0.61) 99.75%
+      ),
+      #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    max-width: unset !important;
+
+    > div {
+      border: none;
+      filter: unset;
+      box-shadow: unset;
+
+      &:nth-child(2) {
+        border-bottom: 1px solid #d9d9d9;
+        border-right: 1px solid #d9d9d9;
+        margin-top: -1px;
+      }
+    }
+  }
+
+  .badgeSkeleton {
+    margin-right: 10px;
+  }
+
+  .levelSkeleton {
+    margin: 5px 0 9px 0;
+  }
+
+  .wrapper {
+    display: flex;
+
+    .txtAndImage {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding-bottom: 13px;
+      font-size: 16px;
+
+      .linkedin {
+        text-decoration: none;
+        color: #000;
+      }
+
+      &:not(:first-child)::before {
+        content: '';
+        width: 1px;
+        height: 100%;
+        background-color: #c4c4c4;
+        display: block;
+        margin-right: 10px;
+      }
+    }
+
+    .txtAndImage:nth-child(2) {
+      margin-right: 15px;
+    }
+  }
+
+  .tooltipContent {
+    padding: 2px 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+
+    &:hover {
+      border-radius: 4px;
+      background-color: #fff;
+    }
+  }
+
+  .certificateInfo,
+  .badgeTooltip {
+    background: #fff;
+    color: #000;
+    z-index: 444;
+    border: 1px solid #cbcbcb;
+    transition: opacity 0.2s ease-in-out;
+
+    > div {
+      border: none;
+      filter: unset;
+      box-shadow: unset;
+
+      &:nth-child(2) {
+        border-bottom: 1px solid #d9d9d9;
+        border-right: 1px solid #d9d9d9;
+        margin-top: -1px;
+      }
+    }
+  }
+
+  .badgeTooltip {
+    max-width: 500px;
+  }
+
+  .closed {
+    opacity: 0;
+  }
+
+  .open {
+    opacity: 1;
+  }
+
+  .nameAndTitle {
+    display: flex;
+
+    .username,
+    .title {
+      color: #313131;
+      font-size: 18px;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .title {
+      color: #8f4fc2;
+    }
+  }
+
+  .withGap {
+    gap: 8px;
+  }
+
+  .description,
+  .levelTitle {
+    font-size: 16px;
+  }
+
+  .description {
+    margin: 0;
+    padding-bottom: 8px;
+  }
+
+  .levelTitle {
+    font-weight: bold;
+    padding: 5px 0 9px 0;
+    display: block;
+  }
+
+  .awarenessPoints {
+    display: block;
+    color: #6165aa;
+    margin: 0;
+    padding-bottom: 12px;
+    font-size: 16px;
+
+    > span {
+      font-weight: bold;
+    }
+  }
+}
+
+@media (max-width: 1270px) {
+  .accountInfo {
+    margin-left: 25px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .accountInfo {
+    .wrapper {
+      flex-direction: column;
+      margin-left: unset;
+
+      .txtAndImage {
+        &:not(:first-child)::before {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .accountInfo {
+    .wrapper {
+      .txtAndImage {
+        font-size: 14px;
+      }
+    }
+
+    .description,
+    .levelTitle {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .accountInfo,
+  .wrapper {
+    flex-direction: column;
+    margin-bottom: unset;
+
+    .txtAndImage:first-child {
+      gap: unset;
+      align-items: flex-start;
+    }
+  }
+
+  .accountInfo {
+    align-items: center;
+    margin-top: 5px;
+    margin-left: unset;
+
+    .badgeTooltip {
+      display: none;
+    }
+
+    .levelSkeleton {
+      width: 100% !important;
+    }
+
+    .tooltipContent {
+      font-size: 16px;
+    }
+
+    .username,
+    .description,
+    .levelTitle,
+    .awarenessPoints {
+      text-align: center;
+    }
+
+    .nameAndTitle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .title,
+      .username {
+        font-size: 18px;
+      }
+    }
+
+    .withGap {
+      gap: 0;
+    }
+
+    .wrapper {
+      flex-direction: column;
+      gap: 0;
+
+      .txtAndImage {
+        justify-content: center;
+        font-size: 16px;
+      }
+    }
+  }
+}

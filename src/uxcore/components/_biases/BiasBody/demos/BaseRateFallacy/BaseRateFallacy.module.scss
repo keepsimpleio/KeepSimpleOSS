@@ -1,0 +1,129 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 $space-md;
+}
+
+.summary {
+  display: flex;
+  gap: $space-lg;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  margin-bottom: $space-md;
+  align-items: flex-start;
+}
+
+.summaryScore {
+  font-size: $font-size-display;
+  font-weight: 700;
+  color: $text-primary;
+  line-height: 1;
+}
+
+.summaryRight {
+  flex: 1;
+}
+
+.summaryStars {
+  color: #f59e0b;
+  font-size: $font-size-base;
+}
+
+.summaryCount {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-bottom: $space-sm;
+}
+
+.barChart {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.barLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  width: 20px;
+  text-align: right;
+}
+
+.barTrack {
+  flex: 1;
+  height: 8px;
+  background: $bg-alt;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: $tag-green;
+  border-radius: 4px;
+}
+
+.barPct {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  width: 28px;
+}
+
+.divider {
+  height: 1px;
+  background: $border-color;
+  margin: $space-md 0;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.review {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm $space-md;
+}
+
+.reviewStars {
+  color: #f59e0b;
+  font-size: $font-size-sm;
+}
+
+.reviewText {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin: 2px 0;
+}
+
+.reviewAuthor {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.overallSmall {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm;
+}

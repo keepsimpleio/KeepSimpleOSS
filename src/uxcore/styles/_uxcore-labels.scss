@@ -1,0 +1,51 @@
+$blue-background: #c7ebf8;
+$blue-border: #4c8cc1;
+
+$pink-background: #f3cfdd;
+$pink-border: #80739b;
+
+$green-background: #abebd9;
+$green-border: #75b3b3;
+
+$purple-background: #d6d0ff;
+$purple-border: #8073ff;
+
+.blueBorders {
+  &:before {
+    background: $blue-border;
+  }
+
+  &:after {
+    background: $blue-background;
+  }
+}
+
+.purpleBorders {
+  &:before {
+    background: $purple-border;
+  }
+
+  &:after {
+    background: $purple-background;
+  }
+}
+
+.greenBorders {
+  &:before {
+    background: $green-border;
+  }
+
+  &:after {
+    background: $green-background;
+  }
+}
+
+.pinkBorders {
+  &:before {
+    background: $pink-border;
+  }
+
+  &:after {
+    background: $pink-background;
+  }
+}

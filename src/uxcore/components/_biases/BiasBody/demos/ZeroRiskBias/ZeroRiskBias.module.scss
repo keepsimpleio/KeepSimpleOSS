@@ -1,0 +1,123 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-xl;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  box-shadow: $shadow-card;
+}
+
+.heading {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.orderSummary {
+  background: $bg-alt;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.orderRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.orderDivider {
+  height: 1px;
+  background: $border-color;
+  margin: $space-xs 0;
+}
+
+.orderTotal {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.policy {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm;
+  background: $bg-alt;
+  border-radius: $border-radius;
+}
+
+.badges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-sm;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  background: $bg-alt;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-sm;
+}
+
+.badgeIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.badgeTitle {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+.badgeDesc {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.2;
+}
+
+.btn {
+  width: 100%;
+  padding: $space-md;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+  font-weight: 600;
+
+  &Primary {
+    background: $color-primary;
+    color: $color-white;
+
+    &:hover {
+      background: $color-primary-hover;
+    }
+  }
+}

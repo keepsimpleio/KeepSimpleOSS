@@ -1,0 +1,65 @@
+@use '../../tokens' as *;
+
+.container {
+  padding: $space-lg;
+  font-family: $font-family;
+  background: $bg-page;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.heading {
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.surface {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.surfaceConsistent {
+  border-color: $color-primary;
+}
+
+.surfaceLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tagline {
+  font-size: $font-size-base;
+  color: $text-primary;
+}
+
+.taglineHighlight {
+  color: $color-primary;
+  font-weight: 600;
+}
+
+.note {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  text-align: center;
+  padding: $space-sm $space-md;
+  background: $bg-alt;
+  border-radius: $border-radius;
+}
+
+.noteGood {
+  color: $color-primary;
+  background: lighten(#28587b, 52%);
+}
