@@ -95,6 +95,10 @@ $active-color: #359eff;
   & .Button {
     border-color: #303338;
 
+    & svg path {
+      fill: #dadada;
+    }
+
     & .Description {
       color: #dadada;
     }
