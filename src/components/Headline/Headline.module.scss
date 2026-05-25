@@ -301,6 +301,16 @@
       }
     }
   }
+
+  .darkTheme {
+    .headlineInfo {
+      .videoContainer {
+        .video {
+          background-color: #1c1c1c;
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: 1440px) {

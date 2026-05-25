@@ -48,3 +48,21 @@
   position: relative;
   z-index: 5;
 }
+
+// Dark theme: the sticky header defaults to white bg + brand-blue title,
+// which reads as a hard white bar across the top of the dark mobile page.
+// Repaint the bar to the dark surface, lift the accent so it still reads
+// as the brand color, and replace the soft light shadow with a darker
+// drop so the header still feels lifted from the page.
+:global(body.darkTheme) {
+  .MobileHeader,
+  .disablePageSwitcher {
+    background-color: #1b1e26;
+    color: #7fb3d5;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5);
+
+    & .Actions .active > svg {
+      fill: #7fb3d5;
+    }
+  }
+}

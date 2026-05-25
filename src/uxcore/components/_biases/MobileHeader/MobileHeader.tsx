@@ -7,6 +7,7 @@ import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
 import SettingsModal from '@uxcore/components/SettingsModal';
 import UserDropdown from '@uxcore/components/UserDropdown';
 import toolHeaderData from '@uxcore/data/toolHeader';
+import useGlobals from '@uxcore/hooks/useGlobals';
 import { isLevelMilestone } from '@uxcore/lib/uxcat-helpers';
 import type { TRouter } from '@uxcore/local-types/global';
 import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
@@ -46,6 +47,7 @@ const MobileHeader: FC<MobileHeaderProps> = ({
   const router = useRouter();
   const { locale } = router as TRouter;
   const { accountData, setAccountData } = useContext(GlobalContext);
+  const [, { isDarkTheme }] = useGlobals();
   const { usernameIsTaken, settingsTxt, myProfileTxt } = toolHeaderData[locale];
   const imageSrc = useMemo(() => accountData?.picture, [accountData]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -151,7 +153,11 @@ const MobileHeader: FC<MobileHeaderProps> = ({
       <div className={styles.SiteName}>
         <a href={`/${locale === 'ru' ? 'ru' : ''}`} target="_self">
           <Image
-            src="/assets/logos/keepsimple.svg"
+            src={
+              isDarkTheme
+                ? '/assets/logos/keepsimpleDark.svg'
+                : '/assets/logos/keepsimple.svg'
+            }
             alt="keepsimple logo"
             width={130.61}
             height={25.87}

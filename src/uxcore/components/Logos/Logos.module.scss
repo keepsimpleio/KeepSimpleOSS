@@ -67,6 +67,9 @@
 
 // Dark theme: lift the description text, then desaturate + invert the
 // partner logos so the black-on-white marks read as soft light marks on dark.
+// The mobile breakpoint above paints `.logoWrapper` solid white to give the
+// logos breathing room on the cramped mobile column — on dark that becomes
+// a bright slab mid-page, so blank the background out here.
 :global(body.darkTheme) {
   .title {
     color: rgba(218, 218, 218, 0.65);
@@ -75,5 +78,11 @@
   .logos {
     filter: invert(1) hue-rotate(180deg) brightness(0.95) saturate(0.85);
     opacity: 0.85;
+  }
+
+  @media (max-width: 1010px) {
+    .logoWrapper {
+      background-color: transparent;
+    }
   }
 }
