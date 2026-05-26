@@ -17,6 +17,7 @@ import YandexIcon from '@uxcore/assets/icons/YandexIcon';
 
 import Button from '@uxcore/components/Button';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
+import MagicLinkEmailForm from '@uxcore/components/LogIn/MagicLinkEmailForm';
 import Modal from '@uxcore/components/Modal';
 
 import {
@@ -126,6 +127,7 @@ const LogInModal: FC<LoginModalProps> = ({ setShowModal, source }) => {
           >
             <YandexIcon /> <span>{signInWithYandex}</span>
           </a>
+          <MagicLinkEmailForm />
           <Button
             label={cancelBtn}
             onClick={handleClose}
