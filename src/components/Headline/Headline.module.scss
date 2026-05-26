@@ -242,6 +242,15 @@
         filter: brightness(0) invert(1);
       }
     }
+
+    .videoContainer,
+    .videoContainerMobile {
+      background-color: #1d1b1b;
+
+      .poster {
+        display: none;
+      }
+    }
   }
 
   .contentWrapper {
