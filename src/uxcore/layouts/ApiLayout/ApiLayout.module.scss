@@ -124,3 +124,40 @@
     }
   }
 }
+
+:global(body.darkTheme) .body {
+  background: #0f1218;
+
+  .wrapper {
+    .pageTitle,
+    .Motto {
+      color: #7fb3d5;
+    }
+
+    .mainTitle {
+      color: #dadada;
+    }
+
+    .link {
+      color: #7fb3d5;
+    }
+
+    .parametersTxt {
+      color: rgba(218, 218, 218, 0.7);
+    }
+
+    .sectionDescription,
+    .mainInfo span,
+    .codeUsage p {
+      color: #dadada;
+    }
+
+    .separator {
+      border-color: #303338;
+    }
+  }
+
+  .Motto {
+    color: #7fb3d5;
+  }
+}

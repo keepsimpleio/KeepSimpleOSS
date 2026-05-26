@@ -242,6 +242,15 @@
         filter: brightness(0) invert(1);
       }
     }
+
+    .videoContainer,
+    .videoContainerMobile {
+      background-color: #1d1b1b;
+
+      .poster {
+        display: none;
+      }
+    }
   }
 
   .contentWrapper {
@@ -276,6 +285,8 @@
 
 @media (min-width: 1921px) {
   .headline {
+    height: 800px;
+
     .contentWrapper {
       padding-left: 0;
       padding-top: 0;
@@ -284,6 +295,30 @@
     .headlineInfo {
       justify-content: center;
       align-items: center;
+
+      .videoContainer {
+        .poster {
+          height: 800px;
+          object-fit: none;
+        }
+
+        .video {
+          height: 800px;
+          object-fit: none;
+          background-color: #e7e7e7;
+        }
+      }
+    }
+  }
+
+  .darkTheme {
+    .headlineInfo {
+      .videoContainer {
+        .poster,
+        .video {
+          background-color: #1d1b1b;
+        }
+      }
     }
   }
 }
@@ -330,8 +365,7 @@
 
       .videoContainerMobile {
         display: block;
-        width: 786px;
-        max-width: 100%;
+        width: 100%;
         height: 55vh;
         position: relative;
         overflow: hidden;
