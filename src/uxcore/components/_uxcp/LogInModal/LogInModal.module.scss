@@ -24,6 +24,7 @@
     transition: 0.2s;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     text-decoration: none;
   }
@@ -36,6 +37,8 @@
     flex-direction: column;
     justify-content: center;
     gap: 11px;
+    width: 400px;
+    max-width: 100%;
 
     .cancelBtn {
       height: 46px;
@@ -44,7 +47,7 @@
 }
 
 .loginWrapper {
-  width: 420px !important;
+  width: 600px !important;
   max-width: 92vw !important;
 }
 .loginBody {
