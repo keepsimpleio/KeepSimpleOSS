@@ -237,7 +237,7 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
             src={
               darkTheme
                 ? '/keepsimple_/assets/home-page/desktop-thumbnail-dark.webp'
-                : '/keepsimple_/assets/home-page/desktop-thumbnail.png'
+                : '/keepsimple_/assets/home-page/desktop-thumbnail-light.webp'
             }
             alt="Hero background"
             fill
