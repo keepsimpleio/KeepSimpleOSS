@@ -234,7 +234,11 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
         </div>
         <div className={styles.videoContainer}>
           <Image
-            src="/keepsimple_/assets/home-page/desktop-thumbnail.png"
+            src={
+              darkTheme
+                ? '/keepsimple_/assets/home-page/desktop-thumbnail-dark.webp'
+                : '/keepsimple_/assets/home-page/desktop-thumbnail.png'
+            }
             alt="Hero background"
             fill
             priority
@@ -359,7 +363,11 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
         </div>
         <div className={styles.videoContainerMobile}>
           <Image
-            src="/keepsimple_/assets/home-page/mobile-thumbnail.png"
+            src={
+              darkTheme
+                ? '/keepsimple_/assets/home-page/mobile-thumbnail-dark.webp'
+                : '/keepsimple_/assets/home-page/mobile-thumbnail.png'
+            }
             alt="Hero background"
             fill
             priority
