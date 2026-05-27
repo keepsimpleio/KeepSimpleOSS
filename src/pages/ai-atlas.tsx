@@ -1009,6 +1009,7 @@ function tallyDiamonds(data: any) {
   ((data.projects && data.projects.members) || []).forEach((p: any) => {
     tally(p.diamond);
     if (p.leadDiamond) tally(p.leadDiamond);
+    if (p.leadDiamond2) tally(p.leadDiamond2);
     (p.children || []).forEach((c: any) => tally(c.diamond));
   });
   return { humans, agents, products };
@@ -1634,6 +1635,26 @@ function AiAtlasApp() {
           role: 'lead',
         },
       };
+      // Optional second lead (e.g. when a project has both an AI and a human
+      // engineering lead). Opt-in via `leadDiamond2`; `leadDeg2` / `leadR2`
+      // control its placement relative to the project pin.
+      if (p.leadDiamond2) {
+        const lead2Id = `lead2-${p.id}`;
+        const lead2Offset =
+          p.leadDeg2 !== undefined ? p.leadDeg2 : -data.projects.leadDeg;
+        const lead2R = p.leadR2 !== undefined ? p.leadR2 : data.projects.r;
+        const lead2Pos = POL(lead2R, p.theta + lead2Offset);
+        m[lead2Id] = {
+          ...lead2Pos,
+          ring: 'projects',
+          node: {
+            id: lead2Id,
+            label: t.engLeadLabel,
+            diamond: p.leadDiamond2,
+            role: 'lead',
+          },
+        };
+      }
     });
     data.projects.members.forEach((p: any) => {
       const n = p.children.length;
@@ -1730,6 +1751,7 @@ function AiAtlasApp() {
         data.projects.members.forEach((p: any) => {
           set.add(p.id);
           set.add(`lead-${p.id}`);
+          if (p.leadDiamond2) set.add(`lead2-${p.id}`);
         });
       if (ringKey === 'territories')
         data.projects.members.forEach((p: any) =>
@@ -1740,13 +1762,19 @@ function AiAtlasApp() {
     if (pinnedSolo) return set;
     const fp = points[highlightId];
     if (!fp) return set;
-    if (highlightId.startsWith('lead-')) {
-      const projId = highlightId.slice(5);
+    if (highlightId.startsWith('lead2-') || highlightId.startsWith('lead-')) {
+      const projId = highlightId.startsWith('lead2-')
+        ? highlightId.slice(6)
+        : highlightId.slice(5);
       set.add(projId);
       const proj = data.projects.members.find((p: any) => p.id === projId);
       if (proj) proj.children.forEach((c: any) => set.add(c.id));
     } else {
       set.add(`lead-${highlightId}`);
+      const focusProj = data.projects.members.find(
+        (p: any) => p.id === highlightId,
+      );
+      if (focusProj && focusProj.leadDiamond2) set.add(`lead2-${highlightId}`);
     }
     if (highlightId === 'terminal') {
       if (data.order.member.diamond === 'blue') set.add(data.order.member.id);
@@ -1763,7 +1791,10 @@ function AiAtlasApp() {
       set.add(fp.parent);
       set.add(`lead-${fp.parent}`);
       const parent = data.projects.members.find((p: any) => p.id === fp.parent);
-      if (parent) parent.children.forEach((c: any) => set.add(c.id));
+      if (parent) {
+        if (parent.leadDiamond2) set.add(`lead2-${fp.parent}`);
+        parent.children.forEach((c: any) => set.add(c.id));
+      }
     }
     if (highlightId === 'wolf') {
       set.add('order');
@@ -1776,6 +1807,7 @@ function AiAtlasApp() {
       data.projects.members.forEach((p: any) => {
         set.add(p.id);
         set.add(`lead-${p.id}`);
+        if (p.leadDiamond2) set.add(`lead2-${p.id}`);
       });
     }
     if (fp.ring === 'dev') set.add('order');
@@ -1937,6 +1969,19 @@ function AiAtlasApp() {
                   />
                 ))}
 
+                {data.projects.members
+                  .filter((p: any) => p.leadDiamond2)
+                  .map((p: any) => (
+                    <Spoke
+                      key={'lp2-' + p.id}
+                      from={points[p.id]}
+                      to={points[`lead2-${p.id}`]}
+                      kind="lead"
+                      dim={isDim(p.id) || isDim(`lead2-${p.id}`)}
+                      glow={spokeGlow(p.id, `lead2-${p.id}`)}
+                    />
+                  ))}
+
                 {data.projects.members.flatMap((p: any) =>
                   p.children
                     .filter((c: any) => !c.noSpoke)
@@ -2080,6 +2125,27 @@ function AiAtlasApp() {
                     />
                   );
                 })}
+
+                {data.projects.members
+                  .filter((p: any) => p.leadDiamond2)
+                  .map((p: any) => {
+                    const id = `lead2-${p.id}`;
+                    return (
+                      <NodeBody
+                        key={id}
+                        node={points[id].node}
+                        x={points[id].x}
+                        y={points[id].y}
+                        active={focusId === id}
+                        dimmed={isDim(id)}
+                        highlighted={!!highlightId && highlight.has(id)}
+                        hovered={hoverNode === id}
+                        onSelect={onSelect}
+                        w={140}
+                        h={38}
+                      />
+                    );
+                  })}
 
                 {data.projects.members.flatMap((p: any) =>
                   p.children.map((c: any) => {

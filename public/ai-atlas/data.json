@@ -214,6 +214,7 @@
         "theta": 180,
         "status": "ok",
         "leadDiamond": "blue",
+        "leadDiamond2": "gold",
         "territoryArc": 70,
         "children": [
           {
@@ -425,9 +426,15 @@
         { "k": "ring", "v": "III — core products" },
         {
           "k": "lead",
+          "v": "AI engineering agent",
+          "cls": "blue",
+          "ref": "lead-keepsimple"
+        },
+        {
+          "k": "lead",
           "v": "human · engineering lead",
           "cls": "gold",
-          "ref": "lead-keepsimple"
+          "ref": "lead2-keepsimple"
         },
         { "k": "owns", "v": "public impact constellation" }
       ]
@@ -488,6 +495,18 @@
           "v": "keepsimple.io codebase · UX Core · AI Atlas"
         },
         { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" }
+      ]
+    },
+
+    "lead2-keepsimple": {
+      "title": "ENGINEERING LEAD · KEEPSIMPLE",
+      "cjk": "長",
+      "desc": "Human custodian of the KeepSimple open-source wing — pairs with the AI engineering lead.",
+      "rows": [
+        { "k": "kind", "v": "human", "cls": "gold" },
+        { "k": "role", "v": "engineering lead" },
+        { "k": "pairs", "v": "keepsimple", "cls": "red" },
         { "k": "ring", "v": "III — core products" }
       ]
     },

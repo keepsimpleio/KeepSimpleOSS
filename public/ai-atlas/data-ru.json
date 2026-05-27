@@ -214,6 +214,7 @@
         "theta": 180,
         "status": "ok",
         "leadDiamond": "blue",
+        "leadDiamond2": "gold",
         "territoryArc": 70,
         "children": [
           {
@@ -425,9 +426,15 @@
         { "k": "кольцо", "v": "III — ключевые продукты" },
         {
           "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-keepsimple"
+        },
+        {
+          "k": "лид",
           "v": "человек · технический лид",
           "cls": "gold",
-          "ref": "lead-keepsimple"
+          "ref": "lead2-keepsimple"
         },
         { "k": "владеет", "v": "созвездие публичного влияния" }
       ]
@@ -493,6 +500,18 @@
           "v": "кодовая база keepsimple.io · UX Core · AI Atlas"
         },
         { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "lead2-keepsimple": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · KEEPSIMPLE",
+      "cjk": "長",
+      "desc": "Человек-куратор open-source крыла KeepSimple — работает в паре с ИИ-лидом.",
+      "rows": [
+        { "k": "тип", "v": "человек", "cls": "gold" },
+        { "k": "роль", "v": "технический лид" },
+        { "k": "пара", "v": "KeepSimple", "cls": "red", "ref": "keepsimple" },
         { "k": "кольцо", "v": "III — ключевые продукты" }
       ]
     },
