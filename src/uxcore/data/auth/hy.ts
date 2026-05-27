@@ -4,7 +4,6 @@ const hy = {
     subtitle: 'Ընտրեք ստորև բերված տարբերակներից մեկը',
     google: 'Մուտք գործել Google-ով',
     discord: 'Մուտք գործել Discord-ով',
-    linkedin: 'Մուտք գործել LinkedIn-ով',
     twitter: 'Մուտք գործել X-ով',
     mailru: 'Մուտք գործել Mail.ru-ով',
     yandex: 'Մուտք գործել Yandex-ով',

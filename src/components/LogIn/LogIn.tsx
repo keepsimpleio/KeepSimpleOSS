@@ -9,7 +9,6 @@ import auth from '@data/auth';
 
 import DiscordIcon from '@icons/DiscordIcon';
 import GoogleIcon from '@icons/GoogleIcon';
-import LinkedInIcon from '@icons/LinkedInIcon';
 import MailRuIcon from '@icons/MailRuIcon';
 import XIcon from '@icons/XIcon';
 import YandexIcon from '@icons/YandexIcon';
@@ -113,13 +112,6 @@ const LogIn: FC<LogInProps> = ({ setShowLogIn }) => {
           >
             <DiscordIcon />
             {copy.discord}
-          </button>
-          <button
-            onClick={() => handleProviderSignIn('linkedin')}
-            className={cn(styles.linkBtn, styles.linkedinBtn)}
-          >
-            <LinkedInIcon />
-            {copy.linkedin}
           </button>
           <button
             onClick={() => handleProviderSignIn('twitter')}
