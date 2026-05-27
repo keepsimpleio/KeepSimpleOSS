@@ -54,6 +54,10 @@
         left: 0;
       }
 
+      .posterDark {
+        display: none;
+      }
+
       .video {
         width: 100%;
         height: 100%;
@@ -246,6 +250,24 @@
     .videoContainer,
     .videoContainerMobile {
       background-color: #1d1b1b;
+    }
+  }
+}
+
+// Body-class driven swap — fires BEFORE React hydrates the .darkTheme prop on
+// the section, so the dark poster paints on first frame instead of after the
+// theme prop catches up.
+:global(body.darkTheme) {
+  .videoContainer,
+  .videoContainerMobile {
+    background-color: #1d1b1b;
+
+    .posterLight {
+      display: none;
+    }
+
+    .posterDark {
+      display: block;
     }
   }
 
