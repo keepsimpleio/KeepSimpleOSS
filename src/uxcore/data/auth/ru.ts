@@ -4,7 +4,6 @@ const ru = {
     subtitle: 'Выберите один из способов ниже',
     google: 'Войти через Google',
     discord: 'Войти через Discord',
-    linkedin: 'Войти через LinkedIn',
     twitter: 'Войти через X',
     mailru: 'Войти через Mail.ru',
     yandex: 'Войти через Yandex',

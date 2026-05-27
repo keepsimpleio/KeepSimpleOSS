@@ -99,6 +99,11 @@
     .name {
       color: #dadada !important;
     }
+
+    .projectIcon,
+    .openLinkIcon {
+      filter: invert(1);
+    }
   }
 
   .description,

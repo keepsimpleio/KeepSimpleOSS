@@ -224,20 +224,20 @@ $purple-border: #8073ff;
 
 @media (min-width: 2500px) {
   .label {
-    height: 1.4vh;
+    height: 0.6vw;
 
     .txt {
-      font-size: 1.2vh;
+      font-size: 0.45vw;
     }
   }
 }
 
 @media (min-width: 3500px) {
   .label {
-    height: 1vh;
+    height: 0.55vw;
 
     .txt {
-      font-size: 0.8vh;
+      font-size: 0.42vw;
     }
   }
 }

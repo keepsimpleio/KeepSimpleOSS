@@ -234,11 +234,19 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
         </div>
         <div className={styles.videoContainer}>
           <Image
-            src="/keepsimple_/assets/home-page/desktop-thumbnail.png"
+            src="/keepsimple_/assets/home-page/desktop-thumbnail-light.webp"
             alt="Hero background"
             fill
             priority
-            className={styles.poster}
+            className={cn(styles.poster, styles.posterLight)}
+            sizes="(max-width: 1440px) 50vw, 684px"
+          />
+          <Image
+            src="/keepsimple_/assets/home-page/desktop-thumbnail-dark.webp"
+            alt="Hero background"
+            fill
+            priority
+            className={cn(styles.poster, styles.posterDark)}
             sizes="(max-width: 1440px) 50vw, 684px"
           />
           <video
@@ -363,7 +371,15 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
             alt="Hero background"
             fill
             priority
-            className={styles.poster}
+            className={cn(styles.poster, styles.posterLight)}
+            sizes="(max-width: 786px) 100vw, 786px"
+          />
+          <Image
+            src="/keepsimple_/assets/home-page/mobile-thumbnail-dark.webp"
+            alt="Hero background"
+            fill
+            priority
+            className={cn(styles.poster, styles.posterDark)}
             sizes="(max-width: 786px) 100vw, 786px"
           />
           <video

@@ -33,3 +33,13 @@
     word-wrap: break-word;
   }
 }
+
+:global(body.darkTheme) .container {
+  background: #151a26;
+  border-color: #303338;
+  color: #dadada;
+
+  .title {
+    color: #7fb3d5;
+  }
+}

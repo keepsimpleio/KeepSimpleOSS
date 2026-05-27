@@ -10,8 +10,19 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
+    - name: Free disk space on runner
+      uses: jlumbroso/free-disk-space@v1.3.1
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: true
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -40,10 +51,9 @@ jobs:
       run: |
         docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod .
         docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod
- 
+
     - name: Staging Deploy
       if: github.ref == 'refs/heads/dev'
       run: |
         docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging .
         docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging
-  

@@ -91,3 +91,16 @@
     }
   }
 }
+
+:global(body.darkTheme) .pageNotFound {
+  background-image: none;
+  background-color: #1b1e26;
+
+  .content {
+    color: #dadada;
+
+    .image {
+      filter: invert(1) hue-rotate(180deg);
+    }
+  }
+}

@@ -1,28 +1,19 @@
-import { useRouter } from 'next/router';
-import { signOut, useSession } from 'next-auth/react';
-import { FC, useContext } from 'react';
-
-import { TRouter } from '@uxcore/local-types/global';
-
-import { setRedirectCookie } from '@uxcore/lib/cookies';
-
-import decisionTable from '@uxcore/data/decisionTable';
-
 import DiscordIcon from '@uxcore/assets/icons/DiscordIcon';
 import GoogleIcon from '@uxcore/assets/icons/GoogleIcon';
-import LinkedInIcon from '@uxcore/assets/icons/LinkedInIcon';
 import MailRuIcon from '@uxcore/assets/icons/MailRuIcon';
 import XIcon from '@uxcore/assets/icons/XIcon';
 import YandexIcon from '@uxcore/assets/icons/YandexIcon';
-
 import Button from '@uxcore/components/Button';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
+import MagicLinkEmailForm from '@uxcore/components/LogIn/MagicLinkEmailForm';
 import Modal from '@uxcore/components/Modal';
-
-import {
-  handleMixpanelSignUp,
-  trackLogInSource,
-} from '@uxcore/lib/mixpanel';
+import decisionTable from '@uxcore/data/decisionTable';
+import { setRedirectCookie } from '@uxcore/lib/cookies';
+import { handleMixpanelSignUp, trackLogInSource } from '@uxcore/lib/mixpanel';
+import { TRouter } from '@uxcore/local-types/global';
+import { useRouter } from 'next/router';
+import { signOut, useSession } from 'next-auth/react';
+import { FC, useContext } from 'react';
 
 import styles from './LogInModal.module.scss';
 
@@ -34,11 +25,9 @@ const LogInModal: FC<LoginModalProps> = ({ setShowModal, source }) => {
   const { locale } = useRouter() as TRouter;
   const { accountData } = useContext(GlobalContext);
   const router = useRouter();
-  const isProduction = process.env.NEXT_PUBLIC_ENV === 'prod';
   const { data: session } = useSession();
   const {
     singInWithGoogle,
-    signInWithLinkedIn,
     signInWithDiscord,
     signInWithTwitter,
     signInWithMailRu,
@@ -94,14 +83,6 @@ const LogInModal: FC<LoginModalProps> = ({ setShowModal, source }) => {
           >
             <GoogleIcon /> <span>{singInWithGoogle}</span>
           </a>
-          {!isProduction && (
-            <a
-              onClick={() => handleProviderSignIn('linkedin', source)}
-              className={styles.link}
-            >
-              <LinkedInIcon /> <span>{signInWithLinkedIn}</span>
-            </a>
-          )}
           <a
             onClick={() => handleProviderSignIn('discord', source)}
             className={styles.link}
@@ -126,6 +107,7 @@ const LogInModal: FC<LoginModalProps> = ({ setShowModal, source }) => {
           >
             <YandexIcon /> <span>{signInWithYandex}</span>
           </a>
+          <MagicLinkEmailForm />
           <Button
             label={cancelBtn}
             onClick={handleClose}

@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
-import LinkedInProvider from 'next-auth/providers/linkedin';
 import TwitterProvider from 'next-auth/providers/twitter';
 import YandexProvider from 'next-auth/providers/yandex';
 
@@ -14,7 +13,7 @@ const GOOGLE_AUTHORIZATION_URL =
   });
 
 /**
- * Function to refresh access token for Google & LinkedIn
+ * Function to refresh access token for Google & Twitter
  */
 async function refreshAccessToken(token) {
   try {
@@ -29,10 +28,6 @@ async function refreshAccessToken(token) {
       url = 'https://oauth2.googleapis.com/token';
       searchParams.append('client_id', process.env.GOOGLE_CLIENT_ID);
       searchParams.append('client_secret', process.env.GOOGLE_CLIENT_SECRET);
-    } else if (token.provider === 'linkedin') {
-      url = 'https://www.linkedin.com/oauth/v2/accessToken';
-      searchParams.append('client_id', process.env.LINKEDIN_CLIENT_ID);
-      searchParams.append('client_secret', process.env.LINKEDIN_CLIENT_SECRET);
     } else if (token.provider === 'twitter') {
       url = 'https://api.twitter.com/2/oauth2/token';
       searchParams.append('client_id', process.env.TWITTER_CLIENT_ID);
@@ -82,29 +77,6 @@ export default NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: GOOGLE_AUTHORIZATION_URL,
-    }),
-    LinkedInProvider({
-      clientId: process.env.LINKEDIN_CLIENT_ID || '',
-      clientSecret: process.env.LINKEDIN_CLIENT_SECRET || '',
-      client: { token_endpoint_auth_method: 'client_secret_post' },
-      issuer: 'https://www.linkedin.com',
-      profile: profile => {
-        return {
-          id: profile?.sub,
-          name:
-            profile.name ||
-            `${profile.localizedFirstName} ${profile.localizedLastName}`,
-          email: profile.email,
-          image: profile.picture,
-        };
-      },
-      wellKnown:
-        'https://www.linkedin.com/oauth/.well-known/openid-configuration',
-      authorization: {
-        params: {
-          scope: 'openid profile email',
-        },
-      },
     }),
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,

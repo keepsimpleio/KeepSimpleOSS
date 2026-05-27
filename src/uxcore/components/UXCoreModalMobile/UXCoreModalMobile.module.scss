@@ -278,3 +278,69 @@
     opacity: 0;
   }
 }
+
+// Dark theme: bias detail modal defaults to a white card with black body
+// text, a faint gray hairline border, and a near-white "mentioned in"
+// strip. On the dark page the whole sheet reads as a bright slab and the
+// body text falls back to invisible. Repaint surfaces + borders to the
+// dark palette and lift content + accents to dark-mode foreground.
+:global(body.darkTheme) {
+  .ModalOverlay {
+    background-color: rgba(0, 0, 0, 0.6);
+
+    & .Modal {
+      color: #dadada;
+      background: #1b1e26;
+      border-color: #303338;
+      box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.5);
+
+      & .ModalBody {
+        &::-webkit-scrollbar {
+          border-left-color: #303338;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: rgba(127, 179, 213, 0.5);
+          border-left-color: #303338;
+        }
+
+        & .ModalBodyTitle.mentionedIn {
+          background-color: #15171f;
+
+          span {
+            color: rgba(218, 218, 218, 0.65);
+          }
+        }
+
+        .ModalBodyContent .switcher {
+          .switcherItem {
+            border-color: #303338;
+          }
+
+          .activeProduct,
+          .activeHr {
+            border-color: #7fb3d5;
+            color: #7fb3d5;
+
+            svg {
+              fill: #7fb3d5;
+            }
+          }
+        }
+      }
+
+      .ModalButtons {
+        .arrowRight,
+        .arrowLeft {
+          > svg {
+            fill: #7fb3d5;
+          }
+        }
+      }
+    }
+  }
+
+  .a {
+    color: #dadada !important;
+  }
+}

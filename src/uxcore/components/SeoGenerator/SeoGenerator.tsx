@@ -1,14 +1,11 @@
+import hrSeoDescriptionEn from '@uxcore/data/seo/hrDescription-en';
+import hrSeoDescriptionRu from '@uxcore/data/seo/hrDescription-ru';
+import { generateSchema } from '@uxcore/lib/schema';
+import type { TRouter } from '@uxcore/local-types/global';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
 import type { FC } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { generateSchema } from '@uxcore/lib/schema';
-
-import hrSeoDescriptionEn from '@uxcore/data/seo/hrDescription-en';
-import hrSeoDescriptionRu from '@uxcore/data/seo/hrDescription-ru';
 
 interface SeoGeneratorProps {
   questionsSeo?: any;
@@ -332,6 +329,10 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
       <Script
         src="https://analytics.ahrefs.com/analytics.js"
         data-key={process.env.NEXT_PUBLIC_AHREFS_ANALYTICS_KEY}
+        strategy="afterInteractive"
+      />
+      <Script
+        src="https://seogeosolver.administration.ae/track.js"
         strategy="afterInteractive"
       />
     </>
