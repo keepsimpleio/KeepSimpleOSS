@@ -492,6 +492,7 @@
       "title": "ТЕХНИЧЕСКИЙ ЛИД · KEEPSIMPLE",
       "cjk": "長",
       "desc": "Технический лид, прикреплён к open-source крылу KeepSimple.",
+      "claudeMdLines": 34,
       "rows": [
         { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
         { "k": "роль", "v": "технический лид" },

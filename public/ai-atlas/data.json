@@ -487,6 +487,7 @@
       "title": "ENGINEERING LEAD · KEEPSIMPLE",
       "cjk": "長",
       "desc": "Engineering lead attached to the KeepSimple open-source wing.",
+      "claudeMdLines": 34,
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },
