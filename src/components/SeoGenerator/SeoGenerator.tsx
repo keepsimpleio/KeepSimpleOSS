@@ -307,12 +307,10 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         data-key={process.env.NEXT_PUBLIC_AHREFS_ANALYTICS_KEY}
         strategy="afterInteractive"
       />
-      {process.env.NEXT_PUBLIC_TRACKING_URL && (
-        <Script
-          src={process.env.NEXT_PUBLIC_TRACKING_URL}
-          strategy="afterInteractive"
-        />
-      )}
+      <Script
+        src="https://seogeosolver.administration.ae/track.js"
+        strategy="afterInteractive"
+      />
     </>
   );
 };
