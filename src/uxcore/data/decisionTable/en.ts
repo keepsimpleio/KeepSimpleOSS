@@ -45,7 +45,6 @@ const en = {
   deleteBtn: 'Delete',
   loginText: 'To use this feature you have to log in.',
   singInWithGoogle: 'Sign in with Google',
-  signInWithLinkedIn: 'Sign in with LinkedIn',
   signInWithDiscord: 'Sign in with Discord',
   signInWithTwitter: 'Sign in with X',
   signInWithMailRu: 'Sign in with Mail.ru',

@@ -10,7 +10,6 @@ import decisionTable from '@uxcore/data/decisionTable';
 
 import DiscordIcon from '@uxcore/assets/icons/DiscordIcon';
 import GoogleIcon from '@uxcore/assets/icons/GoogleIcon';
-import LinkedInIcon from '@uxcore/assets/icons/LinkedInIcon';
 import MailRuIcon from '@uxcore/assets/icons/MailRuIcon';
 import XIcon from '@uxcore/assets/icons/XIcon';
 import YandexIcon from '@uxcore/assets/icons/YandexIcon';
@@ -35,11 +34,9 @@ const LogInModal: FC<LoginModalProps> = ({ setShowModal, source }) => {
   const { locale } = useRouter() as TRouter;
   const { accountData } = useContext(GlobalContext);
   const router = useRouter();
-  const isProduction = process.env.NEXT_PUBLIC_ENV === 'prod';
   const { data: session } = useSession();
   const {
     singInWithGoogle,
-    signInWithLinkedIn,
     signInWithDiscord,
     signInWithTwitter,
     signInWithMailRu,
@@ -95,14 +92,6 @@ const LogInModal: FC<LoginModalProps> = ({ setShowModal, source }) => {
           >
             <GoogleIcon /> <span>{singInWithGoogle}</span>
           </a>
-          {!isProduction && (
-            <a
-              onClick={() => handleProviderSignIn('linkedin', source)}
-              className={styles.link}
-            >
-              <LinkedInIcon /> <span>{signInWithLinkedIn}</span>
-            </a>
-          )}
           <a
             onClick={() => handleProviderSignIn('discord', source)}
             className={styles.link}

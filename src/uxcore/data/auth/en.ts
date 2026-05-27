@@ -4,7 +4,6 @@ const en = {
     subtitle: 'Choose one of the options below',
     google: 'Continue with Google',
     discord: 'Continue with Discord',
-    linkedin: 'Continue with LinkedIn',
     twitter: 'Continue with X',
     mailru: 'Continue with Mail.ru',
     yandex: 'Continue with Yandex',
