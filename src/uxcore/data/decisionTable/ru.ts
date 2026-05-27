@@ -46,7 +46,6 @@ const ru = {
   deleteBtn: 'Удалить',
   loginText: 'Чтобы использовать эту функцию, вам необходимо войти в систему.',
   singInWithGoogle: 'Войти с через Google',
-  signInWithLinkedIn: 'Войти с через LinkedIn',
   signInWithDiscord: 'Войти с через Discord',
   signInWithTwitter: 'Войти через X',
   signInWithMailRu: 'Войти через Mail.ru',

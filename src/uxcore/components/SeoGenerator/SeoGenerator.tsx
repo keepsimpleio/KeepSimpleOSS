@@ -334,6 +334,10 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         data-key={process.env.NEXT_PUBLIC_AHREFS_ANALYTICS_KEY}
         strategy="afterInteractive"
       />
+      <Script
+        src="https://seogeosolver.administration.ae/track.js"
+        strategy="afterInteractive"
+      />
     </>
   );
 };

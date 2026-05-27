@@ -47,7 +47,6 @@ const hy = {
   deleteBtn: 'Ջնջել',
   loginText: 'Այս գործիքը օգտագործելու համար անհրաժեշտ է մուտք գործել։',
   singInWithGoogle: 'Մուտք գործել Google-ով',
-  signInWithLinkedIn: 'Մուտք գործել LinkedIn-ով',
   signInWithDiscord: 'Մուտք գործել Discord-ով',
   signInWithTwitter: 'Մուտք գործել X-ով',
   signInWithMailRu: 'Մուտք գործել Mail.ru-ով',
