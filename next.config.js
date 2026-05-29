@@ -43,7 +43,10 @@ module.exports = withBundleAnalyzer({
       'https://*.keepsimple.io',
       'https://metrics.administration.ae',
       'https://api.mixpanel.com',
+      'https://api-js.mixpanel.com',
       'https://www.google-analytics.com',
+      'https://*.analytics.google.com',
+      'https://stats.g.doubleclick.net',
     ]
       .filter(Boolean)
       .join(' ');
