@@ -169,7 +169,6 @@ const UXCoreIds: FC<UXCoreProps> = ({
       ) : (
         <UXCoreModal
           headingTitle={currentActiveBias.title}
-          toggleIsProductView={toggleIsProductView}
           isProductView={!isProductView}
           setIsModalClosed={setIsModalClosed}
           biasNumber={activeBiasNumber}

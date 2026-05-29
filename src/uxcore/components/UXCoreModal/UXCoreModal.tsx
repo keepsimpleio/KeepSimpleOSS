@@ -34,7 +34,6 @@ type UXCoreModalProps = {
   onClose: () => void;
   onChangeBiasId: (nextBiasId: number, nextBiasName: string) => void;
   isProductView: boolean;
-  toggleIsProductView: () => void;
   isSecondView: boolean;
   secondViewLabel: string;
   setIsModalClosed: (isModalClosed: boolean) => void;
