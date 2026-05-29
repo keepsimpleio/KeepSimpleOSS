@@ -5,7 +5,7 @@ const hy = {
   description: 'Նկարագրություն',
   hrText: 'ՄՌԿ (HR)',
   productText: 'Պրոդուկտ',
-  usage: 'Թիմում կիրառության օրինակ',
+  usage: 'Կիրառության օրինակներ',
   mentionedIn: 'Այս հակումը պատասխանում է հետևյալ հարցերին',
   productValue: 'Product value',
   usageUiUx: 'Example of use by UI/UX',
@@ -16,5 +16,10 @@ const hy = {
   uxeducationButtonLabel: 'Using UXCG in Education',
   downloadButtonLabel: 'Ներբեռնել PDF', //TODO Add to sheet
   visualExample: 'Տեսողական օրինակ',
+  offsecText: 'Offensive Cybersecurity',
+  offsecShortText: 'OffSec',
+  usageOffsec: 'Example of use by Offensive Cybersecurity',
+  offsecComingSoon:
+    'Offensive Cybersecurity use cases — coming soon. We are curating attacker-side and defender-side scenarios for every bias in UX Core.',
 };
 export default hy;

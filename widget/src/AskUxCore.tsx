@@ -1766,7 +1766,10 @@ const applyHostHighlight = (
 
 export function AskUxCore({ lang }: { lang: Lang }) {
   const initial = typeof window !== 'undefined' ? loadState() : null;
-  const [open, setOpen] = useState<boolean>(initial?.open ?? false);
+  // Always boot closed. The widget should never reveal itself or its
+  // effects (host-page highlights, etc.) until the visitor explicitly
+  // opens the pill — even if the previous session ended with it open.
+  const [open, setOpen] = useState<boolean>(false);
   const [text, setText] = useState('');
   const [turns, setTurns] = useState<Turn[]>(initial?.turns ?? []);
   const [loading, setLoading] = useState(false);
@@ -2742,8 +2745,17 @@ export function AskUxCore({ lang }: { lang: Lang }) {
 
   /* Articles-page experiment: when fresh cards land, flash the
      matching tiles on the host page so the visitor sees "here, look
-     at these" in context, not just in the widget. */
-  const lastFlashedTurnIdRef = useRef<string | null>(null);
+     at these" in context, not just in the widget.
+     Seed the ref with the last RESTORED turn id so the flash effect
+     only ever fires for turns the visitor produced in *this* session
+     — never for stale turns rehydrated from localStorage. Without this
+     seed, a returning visitor sees host elements light up on page load
+     with no obvious cause (the panel is closed). */
+  const lastFlashedTurnIdRef = useRef<string | null>(
+    initial?.turns && initial.turns.length > 0
+      ? initial.turns[initial.turns.length - 1].id
+      : null,
+  );
   useEffect(() => {
     if (!isHighlightEnabledPage()) return;
     const last = turns[turns.length - 1];

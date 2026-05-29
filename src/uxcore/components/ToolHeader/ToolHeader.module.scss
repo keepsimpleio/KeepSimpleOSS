@@ -13,6 +13,9 @@ $headerHeight: 46px;
   flex-direction: row;
   align-items: center;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+  // Sits above page chrome (ViewSwitcher / Use cases panel both at z-index: 3
+  // in UXCoreLayout) so the LanguageSwitcher dropdown — which lives inside
+  // this header's stacking context — isn't trapped beneath those controls.
   z-index: 10;
   box-sizing: border-box;
   justify-content: space-between;

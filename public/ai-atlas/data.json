@@ -101,6 +101,7 @@
         "status": "ok",
         "leadDiamond": "blue",
         "territoryArc": 70,
+        "childrenArc": 28,
         "children": [
           {
             "id": "orchestrator",
@@ -194,13 +195,26 @@
         "territoryLabel": "B2B SAAS"
       },
       {
+        "id": "seogeosolved",
+        "label": "SeoGeoSolver",
+        "sub": "seo + geo",
+        "diamond": "red",
+        "theta": 26,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "territoryArc": 0,
+        "children": [],
+        "territoryLabel": ""
+      },
+      {
         "id": "keepsimple",
         "label": "KeepSimple",
         "sub": "open-source wing",
         "diamond": "red",
         "theta": 180,
         "status": "ok",
-        "leadDiamond": "gold",
+        "leadDiamond": "blue",
+        "leadDiamond2": "gold",
         "territoryArc": 70,
         "children": [
           {
@@ -412,9 +426,15 @@
         { "k": "ring", "v": "III — core products" },
         {
           "k": "lead",
+          "v": "AI engineering agent",
+          "cls": "blue",
+          "ref": "lead-keepsimple"
+        },
+        {
+          "k": "lead",
           "v": "human · engineering lead",
           "cls": "gold",
-          "ref": "lead-keepsimple"
+          "ref": "lead2-keepsimple"
         },
         { "k": "owns", "v": "public impact constellation" }
       ]
@@ -466,11 +486,29 @@
     "lead-keepsimple": {
       "title": "ENGINEERING LEAD · KEEPSIMPLE",
       "cjk": "長",
-      "desc": "Human custodian of the open-source wing.",
+      "desc": "Engineering lead attached to the KeepSimple open-source wing.",
+      "claudeMdLines": 34,
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "engineering lead" },
+        {
+          "k": "authority",
+          "v": "keepsimple.io codebase · UX Core · AI Atlas"
+        },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" }
+      ]
+    },
+
+    "lead2-keepsimple": {
+      "title": "ENGINEERING LEAD · KEEPSIMPLE",
+      "cjk": "長",
+      "desc": "Human custodian of the KeepSimple open-source wing — pairs with the AI engineering lead.",
       "rows": [
         { "k": "kind", "v": "human", "cls": "gold" },
-        { "k": "ring", "v": "III — core products" },
-        { "k": "pairs", "v": "keepsimple", "cls": "red" }
+        { "k": "role", "v": "engineering lead" },
+        { "k": "pairs", "v": "keepsimple", "cls": "red" },
+        { "k": "ring", "v": "III — core products" }
       ]
     },
 
@@ -495,6 +533,40 @@
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "engineering lead" },
         { "k": "authority", "v": "multimove codebase · channel orchestration" },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "III — core products" }
+      ]
+    },
+
+    "seogeosolved": {
+      "title": "SEOGEOSOLVER",
+      "cjk": "索",
+      "desc": "Search-engine + generative-engine optimization workshop. Tools and audits that move pages on the new ranking layer where the question is no longer “is this on Google” but “does the model cite this.” Partners with Multimove inside the content / PR wing.",
+      "rows": [
+        { "k": "kind", "v": "product", "cls": "red" },
+        { "k": "ring", "v": "III — core products" },
+        {
+          "k": "lead",
+          "v": "AI engineering agent",
+          "cls": "blue",
+          "ref": "lead-seogeosolved"
+        },
+        { "k": "partner", "v": "multimove", "cls": "red", "ref": "multimove" }
+      ]
+    },
+
+    "lead-seogeosolved": {
+      "title": "ENGINEERING LEAD · SEOGEOSOLVER",
+      "cjk": "長",
+      "desc": "Engineering lead attached to the SeoGeoSolver project.",
+      "claudeMdLines": 142,
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "engineering lead" },
+        {
+          "k": "authority",
+          "v": "seo-geo-solved codebase · search/GEO experiments"
+        },
         { "k": "reports", "v": "wolf", "cls": "gold" },
         { "k": "ring", "v": "III — core products" }
       ]

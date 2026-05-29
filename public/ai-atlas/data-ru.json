@@ -101,6 +101,7 @@
         "status": "ok",
         "leadDiamond": "blue",
         "territoryArc": 70,
+        "childrenArc": 28,
         "children": [
           {
             "id": "orchestrator",
@@ -194,13 +195,26 @@
         "territoryLabel": "B2B SAAS"
       },
       {
+        "id": "seogeosolved",
+        "label": "SeoGeoSolver",
+        "sub": "seo + geo",
+        "diamond": "red",
+        "theta": 26,
+        "status": "ok",
+        "leadDiamond": "blue",
+        "territoryArc": 0,
+        "children": [],
+        "territoryLabel": ""
+      },
+      {
         "id": "keepsimple",
         "label": "KeepSimple",
         "sub": "open-source крыло",
         "diamond": "red",
         "theta": 180,
         "status": "ok",
-        "leadDiamond": "gold",
+        "leadDiamond": "blue",
+        "leadDiamond2": "gold",
         "territoryArc": 70,
         "children": [
           {
@@ -412,9 +426,15 @@
         { "k": "кольцо", "v": "III — ключевые продукты" },
         {
           "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-keepsimple"
+        },
+        {
+          "k": "лид",
           "v": "человек · технический лид",
           "cls": "gold",
-          "ref": "lead-keepsimple"
+          "ref": "lead2-keepsimple"
         },
         { "k": "владеет", "v": "созвездие публичного влияния" }
       ]
@@ -471,11 +491,29 @@
     "lead-keepsimple": {
       "title": "ТЕХНИЧЕСКИЙ ЛИД · KEEPSIMPLE",
       "cjk": "長",
-      "desc": "Человек-куратор open-source крыла.",
+      "desc": "Технический лид, прикреплён к open-source крылу KeepSimple.",
+      "claudeMdLines": 34,
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "технический лид" },
+        {
+          "k": "полномочия",
+          "v": "кодовая база keepsimple.io · UX Core · AI Atlas"
+        },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "lead2-keepsimple": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · KEEPSIMPLE",
+      "cjk": "長",
+      "desc": "Человек-куратор open-source крыла KeepSimple — работает в паре с ИИ-лидом.",
       "rows": [
         { "k": "тип", "v": "человек", "cls": "gold" },
-        { "k": "кольцо", "v": "III — ключевые продукты" },
-        { "k": "пара", "v": "KeepSimple", "cls": "red", "ref": "keepsimple" }
+        { "k": "роль", "v": "технический лид" },
+        { "k": "пара", "v": "KeepSimple", "cls": "red", "ref": "keepsimple" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
       ]
     },
 
@@ -502,6 +540,40 @@
         {
           "k": "полномочия",
           "v": "кодовая база multimove · оркестрация каналов"
+        },
+        { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
+        { "k": "кольцо", "v": "III — ключевые продукты" }
+      ]
+    },
+
+    "seogeosolved": {
+      "title": "SEOGEOSOLVER",
+      "cjk": "索",
+      "desc": "Мастерская по поисковой и генеративной оптимизации. Инструменты и аудиты для нового слоя ранжирования — где вопрос не «есть ли ты в Google», а «цитирует ли тебя модель». В паре с Multimove внутри контент/PR-направления.",
+      "rows": [
+        { "k": "тип", "v": "продукт", "cls": "red" },
+        { "k": "кольцо", "v": "III — ключевые продукты" },
+        {
+          "k": "лид",
+          "v": "ИИ инженерный агент",
+          "cls": "blue",
+          "ref": "lead-seogeosolved"
+        },
+        { "k": "партнёр", "v": "multimove", "cls": "red", "ref": "multimove" }
+      ]
+    },
+
+    "lead-seogeosolved": {
+      "title": "ТЕХНИЧЕСКИЙ ЛИД · SEOGEOSOLVER",
+      "cjk": "長",
+      "desc": "Технический лид, прикреплён к проекту SeoGeoSolver.",
+      "claudeMdLines": 142,
+      "rows": [
+        { "k": "тип", "v": "ИИ-агент", "cls": "blue" },
+        { "k": "роль", "v": "технический лид" },
+        {
+          "k": "полномочия",
+          "v": "кодовая база seo-geo-solved · поисковые и GEO эксперименты"
         },
         { "k": "подчиняется", "v": "Wolf", "cls": "gold", "ref": "wolf" },
         { "k": "кольцо", "v": "III — ключевые продукты" }

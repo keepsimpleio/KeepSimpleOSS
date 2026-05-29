@@ -7,6 +7,7 @@ const en = {
   mainTitle: 'Bias environment',
   browsingAsProduct: 'You are viewing Product Management use cases',
   browsingAsHR: 'You are viewing People Management use cases',
+  browsingAsOffsec: 'You are viewing offensive security use cases',
   sectionTitles: [
     { color: 'purple', title: 'What should we remember?' },
     { color: 'pink', title: 'Need to act fast' },

@@ -72,17 +72,6 @@
         margin: 0 6px;
       }
     }
-
-    & .toggleTheme {
-      background-image: url('/keepsimple_/assets/themeIcons/moon.png');
-      cursor: pointer;
-      background-position: left center;
-      background-repeat: no-repeat;
-      background-size: 24px;
-      width: 24px;
-      height: 24px;
-      padding-right: 16px;
-    }
   }
 }
 
@@ -202,10 +191,6 @@
 
     & .actions {
       background: #151a26;
-
-      & .toggleTheme {
-        background-image: url('/keepsimple_/assets/themeIcons/sun.png');
-      }
 
       .toggleLanguage {
         .languageTitle {
@@ -330,10 +315,6 @@
       &:hover {
         border: 0.0625rem solid #dadada;
       }
-    }
-
-    & .toggleTheme {
-      background-image: url('/keepsimple_/assets/themeIcons/sun.png');
     }
 
     .toggleLanguage {

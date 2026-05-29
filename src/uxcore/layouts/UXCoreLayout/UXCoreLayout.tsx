@@ -1,35 +1,34 @@
+import CoreIcon from '@uxcore/assets/icons/CoreIcon';
+import FolderIcon from '@uxcore/assets/icons/FolderIcon';
+import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
+import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
+import { OffSecIcon, OffSecIconGrey } from '@uxcore/assets/icons/OffSecIcon';
+import { PMIcon } from '@uxcore/assets/icons/PMIcon';
+import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
+import Search from '@uxcore/components/_biases/Search';
+import Logos from '@uxcore/components/Logos';
+import Spinner from '@uxcore/components/Spinner';
+import ToolFooter from '@uxcore/components/ToolFooter';
+import biasesLocalization from '@uxcore/data/biases';
+import biasesMobile from '@uxcore/data/biasesMobile';
+import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
+import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React, { FC, useEffect, useState } from 'react';
 
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
-import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
-
-import biasesLocalization from '@uxcore/data/biases';
-import biasesMobile from '@uxcore/data/biasesMobile';
-
-import CoreIcon from '@uxcore/assets/icons/CoreIcon';
-import FolderIcon from '@uxcore/assets/icons/FolderIcon';
-import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
-import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
-import { PMIcon } from '@uxcore/assets/icons/PMIcon';
-import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
-
-import Search from '@uxcore/components/_biases/Search';
-import Logos from '@uxcore/components/Logos';
-import Spinner from '@uxcore/components/Spinner';
-import ToolFooter from '@uxcore/components/ToolFooter';
-
 import type { UXCoreLayoutProps } from './UXCoreLayout.types';
 
 import styles from './UXCoreLayout.module.scss';
 
-const FolderViewLayout = dynamic(() => import('@uxcore/layouts/FolderViewLayout'), {
-  ssr: false,
-});
+const FolderViewLayout = dynamic(
+  () => import('@uxcore/layouts/FolderViewLayout'),
+  {
+    ssr: false,
+  },
+);
 const CoreViewLayout = dynamic(() => import('@uxcore/layouts/CoreViewLayout'), {
   ssr: false,
 });
@@ -38,16 +37,25 @@ const UXCorePopup = dynamic(() => import('@uxcore/components/UXCorePopup'), {
   ssr: false,
 });
 
-const UXCoreSnackbar = dynamic(() => import('@uxcore/components/UXCoreSnackbar'), {
-  ssr: false,
-});
+const UXCoreSnackbar = dynamic(
+  () => import('@uxcore/components/UXCoreSnackbar'),
+  {
+    ssr: false,
+  },
+);
 
-const ViewSwitcher = dynamic(() => import('@uxcore/components/_biases/ViewSwitcher'), {
-  ssr: false,
-});
-const MobileView = dynamic(() => import('@uxcore/components/_biases/MobileView'), {
-  ssr: false,
-});
+const ViewSwitcher = dynamic(
+  () => import('@uxcore/components/_biases/ViewSwitcher'),
+  {
+    ssr: false,
+  },
+);
+const MobileView = dynamic(
+  () => import('@uxcore/components/_biases/MobileView'),
+  {
+    ssr: false,
+  },
+);
 
 const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   strapiBiases,
@@ -62,6 +70,10 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
 }) => {
   const [{ toggleIsCoreView }, { isCoreView }] = useUXCoreGlobals();
   const [{ toggleIsProductView }, { isProductView }] = useUXCoreGlobals();
+  const [
+    { toggleIsOffsecView, setUseCase },
+    { isOffsecView, lastBaseUseCase },
+  ] = useUXCoreGlobals();
   const router = useRouter();
   const { asPath } = router as TRouter;
   const { isUxcoreMobile } = useUCoreMobile()[1];
@@ -72,16 +84,19 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   const [headerPodcastOpen, setHeaderPodcastOpen] = useState(false);
   const { locale } = router as TRouter;
   const data = biasesLocalization[locale];
-  const { browsingAsProduct, browsingAsHR } = data;
+  const { browsingAsProduct, browsingAsHR, browsingAsOffsec } = data;
   const { description } = biasesMobile[locale];
 
   useEffect(() => {
     if (!mounted) return;
 
-    const hasHr = window.location.hash === '#hr';
+    const hash = window.location.hash;
 
-    if (hasHr && isProductView) {
+    if (hash === '#hr' && isProductView) {
       toggleIsProductView();
+    }
+    if (hash === '#offsec' && !isOffsecView) {
+      toggleIsOffsecView();
     }
   }, [mounted]);
 
@@ -96,7 +111,7 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
 
     const basePath = `${localePrefix}/uxcore`;
 
-    const shouldBeHash = isProductView ? '' : '#hr';
+    const shouldBeHash = isOffsecView ? '#offsec' : isProductView ? '' : '#hr';
 
     const targetUrl = `${basePath}${shouldBeHash}`;
 
@@ -105,17 +120,37 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
     if (currentUrl === targetUrl) return;
 
     window.history.replaceState(null, '', targetUrl);
-  }, [mounted, isProductView, router.locale]);
+  }, [mounted, isProductView, isOffsecView, router.locale]);
 
   useEffect(() => {
     if (isSwitched !== undefined) {
-      if (isProductView) {
+      if (isOffsecView) {
+        setSnackBarText(browsingAsOffsec);
+      } else if (isProductView) {
         setSnackBarText(browsingAsProduct);
       } else {
         setSnackBarText(browsingAsHR);
       }
     }
-  }, [isSwitched, isProductView, locale]);
+  }, [isSwitched, isProductView, isOffsecView, locale]);
+
+  // One click handler for the three vertical Use cases rows. Sets state
+  // explicitly via setUseCase so PM/HR/OffSec are mutually exclusive
+  // without depending on the toggle semantics of the older actions.
+  // Clicking the active OffSec row reverts to lastBaseUseCase — mirror
+  // that resolution here so the snackbar pre-set lands on the correct
+  // label and the first frame doesn't flash the wrong text.
+  const handleUseCaseClick = (target: 'product' | 'hr' | 'offsec') => {
+    const resolved =
+      target === 'offsec' && isOffsecView ? lastBaseUseCase || 'hr' : target;
+    if (resolved === 'product') setSnackBarText(browsingAsProduct);
+    else if (resolved === 'hr') setSnackBarText(browsingAsHR);
+    else setSnackBarText(browsingAsOffsec);
+
+    setUseCase(target);
+    setIsSwitched(prev => !prev);
+    handleSnackbarOpening();
+  };
 
   let snackbarTimeout: NodeJS.Timeout;
   const handleSnackbarOpening = () => {
@@ -149,24 +184,48 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
               secondViewIcon={<FolderIcon />}
               className={styles.viewTypeSwitcher}
               labelViewType
+              wide
               dataCy={'core-view-switcher'}
               dataCySecondView={'folder-view-switcher'}
             />
-            <ViewSwitcher
-              isSecondView={isProductView}
-              toggleIsCoreView={toggleIsProductView}
-              defaultViewLabel={'PM'}
-              defaultVieWIcon={isProductView ? <PMIcon /> : <PMIconGrey />}
-              secondViewIcon={isProductView ? <HRIconGrey /> : <HRIconBlue />}
-              secondViewLabel={'hr'}
-              secondText={'HR'}
-              className={styles.viewTeamSwitcher}
-              setIsSwitched={setIsSwitched}
-              isSwitched={isSwitched}
-              handleSnackbarOpening={handleSnackbarOpening}
-              dataCy={'switch-product'}
-              dataCySecondView={'switch-hr'}
-            />
+            <div className={styles.useCasesPanel}>
+              <p className={styles.useCasesLabel}>Use cases</p>
+              <div
+                data-cy="switch-product"
+                onClick={() => handleUseCaseClick('product')}
+                className={cn(styles.useCaseRow, {
+                  [styles.active]: isProductView && !isOffsecView,
+                })}
+              >
+                {isProductView && !isOffsecView ? <PMIcon /> : <PMIconGrey />}
+                <span>PM</span>
+              </div>
+              <div
+                data-cy="switch-hr"
+                onClick={() => handleUseCaseClick('hr')}
+                className={cn(styles.useCaseRow, {
+                  [styles.active]: !isProductView && !isOffsecView,
+                })}
+              >
+                {!isProductView && !isOffsecView ? (
+                  <HRIconBlue />
+                ) : (
+                  <HRIconGrey />
+                )}
+                <span>HR</span>
+              </div>
+              <div
+                data-cy="switch-offsec"
+                onClick={() => handleUseCaseClick('offsec')}
+                className={cn(styles.useCaseRow, {
+                  [styles.active]: isOffsecView,
+                })}
+              >
+                {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+                <span className={styles.cybersecFull}>Cybersecurity</span>
+                <span className={styles.cybersecShort}>OffSec</span>
+              </div>
+            </div>
             {isCoreView && <Search biases={strapiBiases} />}
             {isCoreView && (
               <>

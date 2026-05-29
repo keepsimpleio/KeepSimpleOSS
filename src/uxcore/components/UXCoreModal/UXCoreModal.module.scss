@@ -1,3 +1,14 @@
+@keyframes usageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .ModalOverlay {
   display: flex;
   width: 100vw;
@@ -107,7 +118,7 @@
         .switcher {
           position: relative;
           display: flex;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
           border: 1px solid #e0e0e0;
           border-radius: 8px;
           background-color: #fff;
@@ -119,25 +130,36 @@
             top: -1px;
             bottom: -1px;
             left: -1px;
-            width: calc(50% + 1px);
+            width: calc(33.3333% + 1px);
             background-color: #e8f0fb;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             transform: translateX(0);
-            transition: transform 450ms cubic-bezier(0.22, 0.95, 0.35, 1);
+            transition:
+              transform 450ms cubic-bezier(0.22, 0.95, 0.35, 1),
+              background-color 250ms ease,
+              border-color 250ms ease;
             will-change: transform;
             pointer-events: none;
             z-index: 0;
           }
 
           &:has(.activeHr)::before {
-            transform: translateX(calc(100% - 2px));
+            transform: translateX(calc(100% - 1px));
+          }
+
+          // OffSec uses Hexens-crimson for the sliding indicator so the
+          // mode shift reads as "different domain", not just "different tab".
+          &:has(.activeOffsec)::before {
+            transform: translateX(calc(200% - 2px));
+            background-color: #fdecea;
+            border-color: #c8412a;
           }
 
           .switcherItem {
             position: relative;
             z-index: 1;
-            width: 50%;
+            width: 33.3333%;
             text-align: center;
             height: 100%;
             padding: 8px 0;
@@ -145,7 +167,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             color: #000000a6;
             transition: color 300ms ease;
 
@@ -162,6 +184,31 @@
               fill: #1e56a0;
             }
           }
+
+          .activeOffsec {
+            color: #c8412a;
+
+            svg {
+              fill: #c8412a;
+            }
+          }
+        }
+
+        .offsecComingSoon {
+          padding: 16px 18px;
+          border: 1px dashed #c8412a;
+          border-radius: 8px;
+          background-color: #fff6f4;
+          color: #5a1f12;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        // Crossfade-on-key swap for the use case content slot. Each
+        // PM/HR/OffSec click rotates the keyed wrapper, so the animation
+        // replays and the new content slides in instead of popping.
+        .usageFade {
+          animation: usageFadeIn 320ms cubic-bezier(0.22, 0.95, 0.35, 1) both;
         }
       }
     }
@@ -534,6 +581,11 @@ ol {
     border-color: #4c8cc1 !important;
   }
 
+  .ModalBodyContent .switcher:has(.activeOffsec)::before {
+    background-color: rgba(200, 65, 42, 0.18) !important;
+    border-color: #e57254 !important;
+  }
+
   .ModalBodyContent .switcher .switcherItem {
     color: rgba(218, 218, 218, 0.7) !important;
   }
@@ -550,6 +602,20 @@ ol {
   .ModalBodyContent .switcher .activeProduct svg,
   .ModalBodyContent .switcher .activeHr svg {
     fill: #bbe4f2 !important;
+  }
+
+  .ModalBodyContent .switcher .activeOffsec {
+    color: #ffd4c7 !important;
+
+    svg {
+      fill: #ffd4c7 !important;
+    }
+  }
+
+  .ModalBodyContent .offsecComingSoon {
+    background-color: #1f1419 !important;
+    border-color: #c8412a !important;
+    color: #ffd4c7 !important;
   }
 }
 

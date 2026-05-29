@@ -15,7 +15,6 @@ html {
   /* width */
   &::-webkit-scrollbar {
     width: 8px;
-    border-left: 1px solid #fafafa;
   }
 
   /* Track */
@@ -26,7 +25,6 @@ html {
   /* Handle */
   &::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    border-left: 1px solid #fafafa;
   }
 }
 

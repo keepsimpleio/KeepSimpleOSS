@@ -1,3 +1,19 @@
+import HrIcon from '@uxcore/assets/icons/HrIcon';
+import { OffSecIcon, OffSecIconGrey } from '@uxcore/assets/icons/OffSecIcon';
+import ProductIcon from '@uxcore/assets/icons/ProductIcon';
+import BiasBody from '@uxcore/components/_biases/BiasBody';
+import ContentParser from '@uxcore/components/ContentParser';
+import ModalRaiting from '@uxcore/components/ModalRaiting';
+import OffsecBiasView from '@uxcore/components/OffsecBiasView';
+import Spinner from '@uxcore/components/Spinner';
+import Table from '@uxcore/components/Table';
+import UXCoreModalHeader from '@uxcore/components/UXCoreModalParts/UXCoreModalHeader';
+import { getOffsecBiasContent } from '@uxcore/data/biasOffsec';
+import modalIntl from '@uxcore/data/modal';
+import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
+import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
+import type { QuestionType, TagType } from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import {
@@ -9,23 +25,6 @@ import {
   useState,
 } from 'react';
 
-import type { QuestionType, TagType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
-
-import modalIntl from '@uxcore/data/modal';
-
-import HrIcon from '@uxcore/assets/icons/HrIcon';
-import ProductIcon from '@uxcore/assets/icons/ProductIcon';
-
-import BiasBody from '@uxcore/components/_biases/BiasBody';
-import ContentParser from '@uxcore/components/ContentParser';
-import ModalRaiting from '@uxcore/components/ModalRaiting';
-import Spinner from '@uxcore/components/Spinner';
-import Table from '@uxcore/components/Table';
-import UXCoreModalHeader from '@uxcore/components/UXCoreModalParts/UXCoreModalHeader';
-
 import styles from './UXCoreModal.module.scss';
 
 type UXCoreModalProps = {
@@ -35,7 +34,6 @@ type UXCoreModalProps = {
   onClose: () => void;
   onChangeBiasId: (nextBiasId: number, nextBiasName: string) => void;
   isProductView: boolean;
-  toggleIsProductView: () => void;
   isSecondView: boolean;
   secondViewLabel: string;
   setIsModalClosed: (isModalClosed: boolean) => void;
@@ -54,7 +52,6 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   onClose,
   onChangeBiasId,
   isProductView,
-  toggleIsProductView,
   isSecondView,
   data,
   setIsModalClosed,
@@ -66,6 +63,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   slugs,
 }) => {
   const router = useRouter();
+  const [{ setUseCase }, { isOffsecView }] = useUXCoreGlobals();
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const [isQuestionHovered, setIsQuestionHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,14 +74,12 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   const { locale } = router as TRouter;
   const isOpen = !!biasNumber && data;
 
-  const handlePageViewChange = useCallback(
+  const handleUseCaseClick = useCallback(
     e => {
-      const { type } = e.currentTarget.dataset;
-      if ((type === secondViewLabel) !== isSecondView) {
-        toggleIsProductView();
-      }
+      const { usecase } = e.currentTarget.dataset;
+      setUseCase(usecase as 'product' | 'hr' | 'offsec');
     },
-    [isSecondView, toggleIsProductView],
+    [setUseCase],
   );
 
   const handleCopyLink = useCallback(() => {
@@ -168,6 +164,8 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
     managementValue,
     productText,
     hrText,
+    offsecText,
+    offsecComingSoon,
   } = modalIntl[locale];
 
   const { linkedIn, facebook, tweeter } = generateSocialLinks(
@@ -218,34 +216,65 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
           <div className={styles.ModalBodyContent}>
             <div className={styles.switcher}>
               <div
-                onClick={handlePageViewChange}
+                onClick={handleUseCaseClick}
                 data-cy="switch-product"
-                data-type={defaultViewLabel}
+                data-usecase="product"
                 className={cn(styles.switcherItem, {
-                  [styles.activeProduct]: !isProductView,
+                  [styles.activeProduct]: !isOffsecView && !isProductView,
                 })}
               >
                 <ProductIcon />
                 <span className={styles.switcherItemText}> {productText}</span>
               </div>
               <div
-                onClick={handlePageViewChange}
+                onClick={handleUseCaseClick}
                 data-cy="switch-hr"
-                data-type={secondViewLabel}
+                data-usecase="hr"
                 className={cn(styles.switcherItem, {
-                  [styles.activeHr]: isProductView,
+                  [styles.activeHr]: !isOffsecView && isProductView,
                 })}
               >
                 <HrIcon />
                 <span className={styles.switcherItemText}> {hrText}</span>
               </div>
+              <div
+                onClick={handleUseCaseClick}
+                data-cy="switch-offsec"
+                data-usecase="offsec"
+                className={cn(styles.switcherItem, {
+                  [styles.activeOffsec]: isOffsecView,
+                })}
+              >
+                {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+                <span className={styles.switcherItemText}> {offsecText}</span>
+              </div>
             </div>
-            <ContentParser
-              data={!isProductView ? data.usage : data.usageHr}
-              styles={styles}
-            />
+            <div
+              key={isOffsecView ? 'offsec' : isProductView ? 'product' : 'hr'}
+              className={styles.usageFade}
+            >
+              {isOffsecView ? (
+                (() => {
+                  const offsecContent = getOffsecBiasContent(biasNumber);
+                  return offsecContent ? (
+                    <OffsecBiasView content={offsecContent} />
+                  ) : (
+                    <div className={styles.offsecComingSoon}>
+                      {offsecComingSoon}
+                    </div>
+                  );
+                })()
+              ) : (
+                <ContentParser
+                  data={!isProductView ? data.usage : data.usageHr}
+                  styles={styles}
+                />
+              )}
+            </div>
           </div>
-          {data.title && <BiasBody biasNumber={biasNumber} locale={locale} />}
+          {!isOffsecView && data.title && (
+            <BiasBody biasNumber={biasNumber} locale={locale} />
+          )}
           {questions.length > 0 && (
             <>
               <div

@@ -25,6 +25,7 @@ type PropTypes = {
   secondText?: string;
   dataCy?: string;
   dataCySecondView?: string;
+  wide?: boolean;
 };
 
 const ViewSwitcher = ({
@@ -40,6 +41,7 @@ const ViewSwitcher = ({
   handleSnackbarOpening,
   dataCy,
   dataCySecondView,
+  wide,
 }: PropTypes) => {
   const router = useRouter();
   const { locale } = router as TRouter;
@@ -70,6 +72,7 @@ const ViewSwitcher = ({
       className={cn(styles.ViewSwitcher, {
         [styles.FolderView]: isSecondView,
         [styles.CoreView]: !isSecondView,
+        [styles.wide]: wide,
         [className]: className,
       })}
     >

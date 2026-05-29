@@ -5,7 +5,7 @@ const en = {
   description: 'Description',
   hrText: 'People Management',
   productText: 'Product Management',
-  usage: 'Example of use by team',
+  usage: 'Examples of use',
   mentionedIn: 'This bias answers to the following questions',
   productValue: 'Product value',
   usageUiUx: 'Example of use by UI/UX',
@@ -16,5 +16,10 @@ const en = {
   uxeducationButtonLabel: 'Using UXCG in Education',
   downloadButtonLabel: 'Download PDF',
   visualExample: 'Visual Example',
+  offsecText: 'Offensive Cybersecurity',
+  offsecShortText: 'OffSec',
+  usageOffsec: 'Example of use by Offensive Cybersecurity',
+  offsecComingSoon:
+    'Offensive Cybersecurity use cases — coming soon. We are curating attacker-side and defender-side scenarios for every bias in UX Core.',
 };
 export default en;

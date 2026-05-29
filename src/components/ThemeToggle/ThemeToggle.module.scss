@@ -1,0 +1,30 @@
+.toggle {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-image: url('/keepsimple_/assets/themeIcons/moon.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+:global(body.darkTheme) {
+  .toggle {
+    background-image: url('/keepsimple_/assets/themeIcons/sun.png');
+  }
+}
