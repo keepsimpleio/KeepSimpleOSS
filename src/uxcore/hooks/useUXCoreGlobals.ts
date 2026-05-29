@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
-
 import { CustomHookType, DispatchFuntion } from '@uxcore/local-types/global';
+import { useEffect, useState } from 'react';
 
 interface TState {
   isCoreView: boolean;
   isProductView?: boolean;
+  isOffsecView?: boolean;
+  // Remembers the most recent PM/HR selection so clicking the active
+  // OffSec row can revert to where the user was before they detoured
+  // into Cybersecurity. Never holds 'offsec'.
+  lastBaseUseCase?: 'product' | 'hr';
   showArrows?: boolean;
 }
 
@@ -12,6 +16,8 @@ let listeners: DispatchFuntion[] = [];
 let state: TState = {
   isCoreView: true,
   isProductView: true,
+  isOffsecView: false,
+  lastBaseUseCase: 'product',
   showArrows: true,
 };
 
@@ -35,7 +41,40 @@ const toggleIsCoreView = () => {
 };
 const toggleIsProductView = () => {
   localStorage.setItem('isProductView', String(!state.isProductView));
-  reducer({ isProductView: !state.isProductView });
+  // Switching to a PM/HR view always exits OffSec — the three use cases
+  // are mutually exclusive.
+  if (state.isOffsecView) {
+    localStorage.setItem('isOffsecView', 'false');
+    reducer({ isProductView: !state.isProductView, isOffsecView: false });
+  } else {
+    reducer({ isProductView: !state.isProductView });
+  }
+};
+const toggleIsOffsecView = () => {
+  localStorage.setItem('isOffsecView', String(!state.isOffsecView));
+  reducer({ isOffsecView: !state.isOffsecView });
+};
+
+// Explicit setter used by the vertical Use cases panel — three mutually
+// exclusive targets. Clicking the already-active OffSec row reverts to
+// the last PM/HR state (lastBaseUseCase) so the user can declick
+// Cybersecurity and return to the canonical pair.
+const setUseCase = (target: 'product' | 'hr' | 'offsec') => {
+  let resolved: 'product' | 'hr' | 'offsec' = target;
+  if (target === 'offsec' && state.isOffsecView) {
+    resolved = state.lastBaseUseCase || 'hr';
+  }
+  const next: Partial<TState> = {
+    isProductView: resolved === 'product',
+    isOffsecView: resolved === 'offsec',
+  };
+  if (resolved === 'product' || resolved === 'hr') {
+    next.lastBaseUseCase = resolved;
+    localStorage.setItem('lastBaseUseCase', resolved);
+  }
+  localStorage.setItem('isProductView', String(next.isProductView));
+  localStorage.setItem('isOffsecView', String(next.isOffsecView));
+  reducer(next);
 };
 const toggleShowArrows = () => {
   localStorage.setItem('showArrows', String(!state.showArrows));
@@ -47,13 +86,21 @@ const initUseUXCoreGlobals = () => {
   const changeState = (localStorage.getItem('isCoreView') || true) === 'false';
   const changeStateView =
     (localStorage.getItem('isProductView') || true) === 'false';
+  const changeStateOffsec = localStorage.getItem('isOffsecView') === 'true';
   const changeStateArrows =
     (localStorage.getItem('showArrows') || true) === 'false';
+  const storedBase = localStorage.getItem('lastBaseUseCase');
+  if (storedBase === 'product' || storedBase === 'hr') {
+    reducer({ lastBaseUseCase: storedBase });
+  }
   if (changeState) {
     toggleIsCoreView();
   }
   if (changeStateView) {
     toggleIsProductView();
+  }
+  if (changeStateOffsec) {
+    toggleIsOffsecView();
   }
   if (changeStateArrows) {
     toggleShowArrows();
@@ -77,6 +124,8 @@ const useUXCoreGlobals = (): CustomHookType => {
       initUseUXCoreGlobals,
       toggleIsCoreView,
       toggleIsProductView,
+      toggleIsOffsecView,
+      setUseCase,
       toggleShowArrows,
     },
     state,

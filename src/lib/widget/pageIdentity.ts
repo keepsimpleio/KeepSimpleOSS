@@ -160,8 +160,7 @@ const EXACT_DEFS: Array<[string, ExactEntry]> = [
       nameRu: 'вход',
       project: 'keepsimple',
       kind: 'utility',
-      blurbEn:
-        'Sign-in page (Google / Discord OAuth) for keepsimple accounts.',
+      blurbEn: 'Sign-in page (Google / Discord OAuth) for keepsimple accounts.',
       blurbRu:
         'Страница входа (Google / Discord OAuth) для аккаунтов keepsimple.',
     },

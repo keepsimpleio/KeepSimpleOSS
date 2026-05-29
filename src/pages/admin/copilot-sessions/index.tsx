@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 
 import {
   copilotEventsReadEnabled,
+  hasUserQuestionsBulk,
   listSessions,
   type SessionRow,
 } from '@lib/copilotEventsRead';
@@ -21,6 +22,7 @@ type EnvTab = (typeof VALID_ENVS)[number];
 type Props = {
   envTab: EnvTab;
   sessions: SessionRow[];
+  hasUserText: Record<string, boolean>;
   enabled: boolean;
 };
 
@@ -37,10 +39,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
       ? (q as EnvTab)
       : 'dev';
   const sessions = await listSessions(envTab, 100);
+  const hasUserText = await hasUserQuestionsBulk(
+    sessions.map(s => s.session_id),
+  );
   return {
     props: {
       envTab,
       sessions,
+      hasUserText,
       enabled: copilotEventsReadEnabled(),
     },
   };
@@ -62,6 +68,7 @@ function shortSid(sid: string): string {
 export default function CopilotSessionsIndex({
   envTab,
   sessions,
+  hasUserText,
   enabled,
 }: Props) {
   const router = useRouter();
@@ -114,6 +121,7 @@ export default function CopilotSessionsIndex({
                 <th>Lang</th>
                 <th>Events</th>
                 <th>Threads</th>
+                <th>Typed?</th>
                 <th>Linked user</th>
                 <th>First URL</th>
               </tr>
@@ -134,6 +142,13 @@ export default function CopilotSessionsIndex({
                   <td>{s.lang ?? '—'}</td>
                   <td>{s.event_count}</td>
                   <td>{s.thread_count}</td>
+                  <td>
+                    {hasUserText[s.session_id] ? (
+                      'yes'
+                    ) : (
+                      <span className={styles.muted}>—</span>
+                    )}
+                  </td>
                   <td>
                     {s.linked_user ? (
                       <span className={styles.mono}>{s.linked_user}</span>

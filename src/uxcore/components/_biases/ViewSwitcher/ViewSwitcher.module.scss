@@ -154,6 +154,27 @@ $active-bg-color: #ffffff;
   }
 }
 
+// Wide variant — used by the Use cases column on the UX Core landing so
+// the View type pair lines up flush with the Use cases rows underneath.
+// Chained selector (.ViewSwitcher.wide) outranks the standalone
+// max-width:1360px override above (3 classes vs 4), so the column-mode
+// shrink to 63×28 doesn't reach the wide instance.
+.ViewSwitcher.wide {
+  .ViewSwitcherButtons .ViewSwitcherButton {
+    box-sizing: border-box;
+    width: 99px;
+  }
+}
+
+@media (max-width: 1360px) {
+  .ViewSwitcher.wide {
+    .ViewSwitcherButtons .ViewSwitcherButton {
+      width: 168px;
+      height: 38px;
+    }
+  }
+}
+
 // Dark theme: repaint switcher buttons. Inactive buttons sit on page bg,
 // active button mirrors header surface for clear contrast. Restores the
 // right wall the legacy row-layout CSS strips off (`border-right-width: 0`

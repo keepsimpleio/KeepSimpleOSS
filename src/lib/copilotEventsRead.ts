@@ -64,6 +64,43 @@ export async function listSessions(
   }
 }
 
+/* Admin-only. Returns a map of session_id → bool indicating whether
+   the session contains at least one user-typed message (event kind
+   = "question"). Issued as N parallel fetches against the per-session
+   /events endpoint; fine for the dev admin's limit=100 page, but a
+   server-side aggregation on the events service would be cheaper. */
+export async function hasUserQuestionsBulk(
+  sids: string[],
+): Promise<Record<string, boolean>> {
+  if (!copilotEventsReadEnabled() || sids.length === 0) return {};
+  const entries = await Promise.all(
+    sids.map(async sid => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+      try {
+        const r = await fetch(
+          `${BASE}/sessions/${encodeURIComponent(sid)}/events`,
+          {
+            headers: { Authorization: `Bearer ${READ_TOKEN}` },
+            signal: ctrl.signal,
+          },
+        );
+        if (!r.ok) return [sid, false] as const;
+        const j = (await r.json().catch(() => null)) as {
+          events?: EventRow[];
+        } | null;
+        const events = Array.isArray(j?.events) ? j!.events! : [];
+        return [sid, events.some(e => e.kind === 'question')] as const;
+      } catch {
+        return [sid, false] as const;
+      } finally {
+        clearTimeout(timer);
+      }
+    }),
+  );
+  return Object.fromEntries(entries);
+}
+
 /* Admin-only. Debug field contains the internal service URL plus
    status/body slices; never expose this return value to a non-admin
    caller. The /admin/copilot-sessions pages are env-gated. */

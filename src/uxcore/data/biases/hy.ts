@@ -7,6 +7,7 @@ const hy = {
   moto: 'Be Kind. Do Good.',
   browsingAsProduct: 'Դուք դիտում եք կիրառությունները Պրոդուկտում',
   browsingAsHR: 'Դուք դիտում եք կիրառությունները ՄՌԿ-ում (HR)',
+  browsingAsOffsec: 'You are viewing offensive security use cases',
   sectionTitles: [
     { color: 'purple', title: 'Ի՞նչ պետք է հիշել' },
     { color: 'pink', title: 'Պետք է արագ գործել' },

@@ -1,0 +1,788 @@
+// Offensive Cybersecurity view for a bias modal. Visual language:
+// sharp angular cards, monospace for sender/subject, crimson Hexens
+// accent on the "with bias" side. Tuned for both light and dark
+// themes via :global(body.darkTheme) overrides at the bottom.
+
+$ks-paper: #fbf8f1;
+$ks-ink: #1b1e26;
+$ks-ink-soft: #4a5060;
+$ks-rule: #d8d0bf;
+$ks-rule-soft: #ece2d0;
+$ks-crimson: #c8412a;
+$ks-crimson-soft: #fdecea;
+$ks-crimson-deep: #7a2618;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 4px 0 8px;
+  color: $ks-ink;
+  font-family: 'Lato', sans-serif;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $ks-crimson;
+  background: transparent;
+  padding: 2px 0;
+}
+
+.visualBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid $ks-rule;
+  border-radius: 8px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 28px;
+    height: 28px;
+    border-top: 2px solid $ks-crimson;
+    border-left: 2px solid $ks-crimson;
+    border-top-left-radius: 8px;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 28px;
+    height: 28px;
+    border-bottom: 2px solid $ks-crimson;
+    border-right: 2px solid $ks-crimson;
+    border-bottom-right-radius: 8px;
+    pointer-events: none;
+  }
+
+  .scenario {
+    margin: 0 0 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: $ks-ink-soft;
+  }
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 36px 1fr;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.cardWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cardCaption {
+  font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $ks-ink-soft;
+}
+
+.cardCaptionFlagged {
+  color: $ks-crimson;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px 14px;
+  background: #ffffff;
+  border: 1px solid $ks-rule;
+  border-radius: 6px;
+  min-width: 0;
+  box-shadow: 0 1px 0 rgba(27, 30, 38, 0.04);
+
+  .emailHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  // Envelope glyph that anchors the email card visually so it can't be
+  // mistaken for a push notification or chat row.
+  .emailEnvelope {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 18px;
+    color: $ks-crimson;
+    flex-shrink: 0;
+  }
+
+  .emailFromLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $ks-ink-soft;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .cardSender {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11.5px;
+    color: $ks-ink-soft;
+    word-break: break-all;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .cardTimestamp {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    color: $ks-ink-soft;
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  .cardSubject {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: $ks-ink;
+    line-height: 1.3;
+  }
+
+  .cardRule {
+    height: 1px;
+    background: $ks-rule;
+    margin: 4px 0 2px;
+  }
+
+  .cardUrgencyDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $ks-crimson;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(200, 65, 42, 0.18);
+  }
+
+  .cardPreview {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+
+  .cardAttachment {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 4px 8px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 4px;
+
+    .cardAttachmentIcon {
+      font-size: 11px;
+      line-height: 1;
+    }
+  }
+}
+
+.cardFlagged {
+  background: linear-gradient(180deg, $ks-crimson-soft 0%, #ffffff 110%);
+  border-color: $ks-crimson;
+
+  .cardRule {
+    background: rgba(200, 65, 42, 0.25);
+  }
+}
+
+// === Browser surface =======================================================
+
+.card_browser {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+
+  .browserChrome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px 8px 12px;
+    background: $ks-paper;
+    border-bottom: 1px solid $ks-rule;
+  }
+
+  .browserDots {
+    display: inline-flex;
+    gap: 4px;
+    flex-shrink: 0;
+
+    span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(27, 30, 38, 0.18);
+    }
+  }
+
+  .browserUrlBar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 4px 10px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    background: #ffffff;
+    border: 1px solid $ks-rule;
+    border-radius: 999px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .browserPadlock {
+    display: inline-flex;
+    align-items: center;
+    color: #2a8a4a;
+    flex-shrink: 0;
+  }
+
+  .browserProtocol {
+    opacity: 0.55;
+  }
+
+  .browserHost {
+    color: $ks-ink;
+    font-weight: 600;
+  }
+
+  .browserPath {
+    opacity: 0.65;
+  }
+
+  .browserPageHeading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 14px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: $ks-ink;
+    line-height: 1.3;
+  }
+
+  .cardRule {
+    margin: 8px 14px 0;
+  }
+
+  .browserPageBody {
+    padding: 8px 14px 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+
+  .browserCta {
+    align-self: flex-start;
+    margin: 10px 14px 14px;
+    padding: 5px 12px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: $ks-crimson;
+    border-radius: 4px;
+  }
+}
+
+// On the flagged variant, the lookalike URL should read crimson so the
+// reader's eye is dragged to the deception, not just the page body.
+.cardFlagged.card_browser {
+  .browserHost {
+    color: $ks-crimson;
+  }
+
+  .browserPadlock {
+    color: $ks-crimson;
+  }
+}
+
+// === Notification surface ==================================================
+
+.card_notification {
+  gap: 8px;
+
+  .notifHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: $ks-ink-soft;
+  }
+
+  .notifAppIcon {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, $ks-crimson, $ks-crimson-deep);
+    flex-shrink: 0;
+  }
+
+  .notifAppName {
+    text-transform: uppercase;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .notifTimestamp {
+    opacity: 0.75;
+  }
+
+  .notifTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: $ks-ink;
+  }
+
+  .notifBody {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+}
+
+// === Chat surface ==========================================================
+
+.card_chat {
+  gap: 10px;
+
+  .chatHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chatAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: $ks-crimson;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .chatIdentity {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .chatSenderName {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: $ks-ink;
+  }
+
+  .chatSenderHandle {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    margin-top: 2px;
+  }
+
+  .chatTimestamp {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    color: $ks-ink-soft;
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  .chatPrior {
+    font-size: 11.5px;
+    font-style: italic;
+    color: $ks-ink-soft;
+    padding-left: 4px;
+  }
+
+  .chatBubble {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 12px;
+    border-top-left-radius: 4px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: $ks-ink;
+  }
+}
+
+.card_chat.cardFlagged .chatBubble {
+  background: rgba(200, 65, 42, 0.08);
+  border-color: $ks-crimson;
+}
+
+.cardDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .cardArrow {
+    font-size: 22px;
+    color: $ks-crimson;
+    font-weight: 600;
+  }
+}
+
+.proseBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: $ks-paper;
+  border: 1px solid $ks-rule;
+  border-radius: 6px;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: $ks-ink;
+  }
+}
+
+.whyBlock {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 28px;
+    height: 28px;
+    border-top: 2px solid $ks-crimson;
+    border-left: 2px solid $ks-crimson;
+    border-top-left-radius: 6px;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 28px;
+    height: 28px;
+    border-bottom: 2px solid $ks-crimson;
+    border-right: 2px solid $ks-crimson;
+    border-bottom-right-radius: 6px;
+    pointer-events: none;
+  }
+}
+
+.defenderBlock {
+  background: #f4f1e8;
+  border-left: 3px solid $ks-crimson;
+}
+
+.defenderLede {
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: $ks-ink;
+}
+
+.defenderMoves {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: $ks-ink;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.65em;
+      width: 10px;
+      height: 1px;
+      background: $ks-crimson;
+    }
+  }
+}
+
+// === Dark theme ============================================================
+
+:global(body.darkTheme) {
+  $dk-bg: #14171f;
+  $dk-card: #1b1f29;
+  $dk-card-soft: #20242f;
+  $dk-rule: #2f3441;
+  $dk-rule-soft: #262a36;
+  $dk-text: #e6e8ee;
+  $dk-text-soft: #a5acba;
+  $dk-crimson: #e57254;
+  $dk-crimson-soft: rgba(200, 65, 42, 0.18);
+  $dk-crimson-glow: rgba(229, 114, 84, 0.4);
+
+  .root {
+    color: $dk-text;
+  }
+
+  .eyebrow {
+    color: $dk-crimson;
+  }
+
+  .visualBlock {
+    background: $dk-card-soft;
+    border-color: $dk-rule;
+
+    &::before,
+    &::after {
+      border-color: $dk-crimson;
+    }
+
+    .scenario {
+      color: $dk-text-soft;
+    }
+  }
+
+  .cardCaption {
+    color: $dk-text-soft;
+  }
+
+  .cardCaptionFlagged {
+    color: $dk-crimson;
+  }
+
+  .card {
+    background: $dk-card;
+    border-color: $dk-rule;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+
+    .cardSender,
+    .cardTimestamp,
+    .cardPreview {
+      color: $dk-text-soft;
+    }
+
+    .emailEnvelope {
+      color: $dk-crimson;
+    }
+
+    .emailFromLabel {
+      color: $dk-text-soft;
+    }
+
+    .cardSubject {
+      color: $dk-text;
+    }
+
+    .cardRule {
+      background: $dk-rule;
+    }
+
+    .cardUrgencyDot {
+      background: $dk-crimson;
+      box-shadow: 0 0 0 3px $dk-crimson-glow;
+    }
+
+    .cardAttachment {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+      color: $dk-text-soft;
+    }
+  }
+
+  .cardFlagged {
+    background: linear-gradient(180deg, $dk-crimson-soft 0%, $dk-card 110%);
+    border-color: $dk-crimson;
+
+    .cardRule {
+      background: rgba(229, 114, 84, 0.35);
+    }
+  }
+
+  .card_notification {
+    .notifHeader,
+    .notifBody {
+      color: $dk-text-soft;
+    }
+
+    .notifTitle {
+      color: $dk-text;
+    }
+  }
+
+  .card_chat {
+    .chatSenderName {
+      color: $dk-text;
+    }
+
+    .chatSenderHandle,
+    .chatTimestamp,
+    .chatPrior {
+      color: $dk-text-soft;
+    }
+
+    .chatBubble {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+      color: $dk-text;
+    }
+  }
+
+  .card_chat.cardFlagged .chatBubble {
+    background: rgba(229, 114, 84, 0.14);
+    border-color: $dk-crimson;
+  }
+
+  .card_browser {
+    .browserChrome {
+      background: $dk-card-soft;
+      border-bottom-color: $dk-rule;
+    }
+
+    .browserDots span {
+      background: rgba(218, 218, 218, 0.22);
+    }
+
+    .browserUrlBar {
+      background: $dk-card;
+      border-color: $dk-rule;
+      color: $dk-text-soft;
+    }
+
+    .browserHost {
+      color: $dk-text;
+    }
+
+    .browserPadlock {
+      color: #6fcf97;
+    }
+
+    .browserPageHeading {
+      color: $dk-text;
+    }
+
+    .browserPageBody {
+      color: $dk-text-soft;
+    }
+  }
+
+  .cardFlagged.card_browser {
+    .browserHost,
+    .browserPadlock {
+      color: $dk-crimson;
+    }
+  }
+
+  .cardDivider .cardArrow {
+    color: $dk-crimson;
+  }
+
+  .proseBlock {
+    background: $dk-card;
+    border-color: $dk-rule;
+
+    p {
+      color: $dk-text;
+    }
+  }
+
+  .whyBlock {
+    &::before,
+    &::after {
+      border-color: $dk-crimson;
+    }
+  }
+
+  .defenderBlock {
+    background: $dk-card-soft;
+    border-left-color: $dk-crimson;
+  }
+
+  .defenderLede {
+    color: $dk-text;
+  }
+
+  .defenderMoves li {
+    color: $dk-text;
+
+    &::before {
+      background: $dk-crimson;
+    }
+  }
+}
+
+// === Responsive ============================================================
+
+@media (max-width: 720px) {
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .cardDivider {
+    transform: rotate(90deg);
+    justify-self: center;
+  }
+
+  .outcomeRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

@@ -1,14 +1,11 @@
+import hrSeoDescriptionEn from '@uxcore/data/seo/hrDescription-en';
+import hrSeoDescriptionRu from '@uxcore/data/seo/hrDescription-ru';
+import { generateSchema } from '@uxcore/lib/schema';
+import type { TRouter } from '@uxcore/local-types/global';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
 import type { FC } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { generateSchema } from '@uxcore/lib/schema';
-
-import hrSeoDescriptionEn from '@uxcore/data/seo/hrDescription-en';
-import hrSeoDescriptionRu from '@uxcore/data/seo/hrDescription-ru';
 
 interface SeoGeneratorProps {
   questionsSeo?: any;

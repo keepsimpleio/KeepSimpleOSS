@@ -29,11 +29,122 @@
   z-index: 3;
 }
 
-.viewTeamSwitcher {
+// Vertical Use cases panel — three stacked rows (PM / HR / Cybersecurity).
+// Sits below the View type switcher on the right. Width matches the
+// View type pair (.wide variant of ViewSwitcher: 99 + 99 = 198px) so
+// the two right-hand controls line up flush.
+.useCasesPanel {
   position: absolute;
   top: 150px;
   right: 20px;
   z-index: 3;
+  display: flex;
+  flex-direction: column;
+
+  .useCasesLabel {
+    color: #333333;
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+
+  .useCaseRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 198px;
+    height: 38px;
+    padding: 0 14px;
+    background: #f4f4f4;
+    border: 1px solid #c4c4c4;
+    border-bottom-width: 0;
+    color: #515151;
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+      background 160ms ease,
+      color 160ms ease;
+
+    &:first-of-type {
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+    }
+
+    &:last-of-type {
+      border-bottom-width: 1px;
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+    }
+
+    &.active {
+      background: #ffffff;
+      border-color: #000000d9;
+      color: #000000d9;
+
+      // The neighbouring row's top border should sit above this active
+      // row's dark border so the dark border wraps fully around it.
+      & + .useCaseRow {
+        border-top-color: #000000d9;
+      }
+    }
+
+    .cybersecShort {
+      display: none;
+    }
+  }
+}
+
+// Dark mode — match the dark page background and lift the panel out of
+// it with a faintly lighter tone for inactive rows, a brighter neutral
+// for the active one.
+:global(body.darkTheme) .useCasesPanel {
+  .useCasesLabel {
+    color: #d8d8d8;
+  }
+
+  .useCaseRow {
+    background: #2a2f38;
+    border-color: #3c424d;
+    color: #c2c7cf;
+
+    &.active {
+      background: #1b1e26;
+      border-color: #f4f4f4;
+      color: #f4f4f4;
+
+      & + .useCaseRow {
+        border-top-color: #f4f4f4;
+      }
+    }
+  }
+}
+
+// On narrower viewports the View type ViewSwitcher restacks into a
+// column (max-width:1360px), pushing its bottom edge well past the
+// original top:150px slot for Use cases. Drop the Use cases panel down
+// so the "Use cases" label clears the second View type icon.
+@media (max-width: 1360px) {
+  .useCasesPanel {
+    top: 220px;
+  }
+}
+
+// On narrower laptop viewports swap "Cybersecurity" for the short
+// "OffSec" so the third row's label still fits comfortably.
+@media (max-width: 1280px) {
+  .useCasesPanel .useCaseRow {
+    width: 168px;
+
+    .cybersecFull {
+      display: none;
+    }
+    .cybersecShort {
+      display: inline;
+    }
+  }
 }
 
 .Logos {
@@ -130,10 +241,6 @@
 }
 
 @media (max-width: 1359px) {
-  .viewTeamSwitcher {
-    top: 175px;
-    align-items: flex-end;
-  }
   .SvgWrapper {
     .BiasEnvironment {
       left: 0;
