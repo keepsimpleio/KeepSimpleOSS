@@ -47,6 +47,8 @@ module.exports = withBundleAnalyzer({
       'https://www.google-analytics.com',
       'https://*.analytics.google.com',
       'https://stats.g.doubleclick.net',
+      // Google Ads conversion: modern endpoint www.google.com/ccm/collect.
+      'https://www.google.com',
     ]
       .filter(Boolean)
       .join(' ');
@@ -72,7 +74,7 @@ module.exports = withBundleAnalyzer({
               "default-src 'self'",
               `script-src ${scriptSrc}`,
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://lh3.googleusercontent.com https://cdn.discordapp.com https://strapi.keepsimple.io https://staging-strapi.keepsimple.io https://www.google-analytics.com https://flagcdn.com",
+              "img-src 'self' data: blob: https://lh3.googleusercontent.com https://cdn.discordapp.com https://strapi.keepsimple.io https://staging-strapi.keepsimple.io https://www.google-analytics.com https://flagcdn.com https://www.google.com",
               "font-src 'self' data:",
               `connect-src ${connectSrc}`,
               "frame-ancestors 'none'",
