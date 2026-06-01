@@ -1,20 +1,31 @@
-'use client';
-
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Shelf } from '@/components/organisms/Shelf';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { LIBRARY_SHELVES_REFETCH_EVENT } from '@/constants/common';
-import { AddShelfModal, type ShelfType } from '@/components/molecules/AddShelfModal';
-import { Button, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import type { StrapiLibraryEntry, StrapiSingleShelfEntry } from '@/types/library';
-import type { IObject, ObjectType } from '@/types/object';
-import { getSingleLibrary } from '@/api/strapi';
-import { createShelf } from '@/app/api/shelf/createShelf';
-import { createLibrary } from '@/app/api/library/createLibrary';
-import { getLibraryIdByUsername } from '@/app/api/library/getLibraryIdByUsername';
-import { useAuth } from '@/context/AuthContext';
-import { useGlobalState } from '@/context/GlobalStateContext';
+import { LIBRARY_SHELVES_REFETCH_EVENT } from '@constants/library/common';
+
+import type {
+  StrapiLibraryEntry,
+  StrapiSingleShelfEntry,
+} from '@local-types/library/library';
+import type { IObject, ObjectType } from '@local-types/library/object';
+
+import { createLibrary } from '@api/library/library/createLibrary';
+import { getLibraryIdByUsername } from '@api/library/library/getLibraryIdByUsername';
+import { createShelf } from '@api/library/shelf/createShelf';
+import { getSingleLibrary } from '@api/library/strapi';
+
+import { useAuth } from '@components/Context/library/AuthContext';
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import {
+  AddShelfModal,
+  type ShelfType,
+} from '@components/library/molecules/AddShelfModal';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { Shelf } from '@components/library/organisms/Shelf';
 
 import type { LibraryTemplateProps } from './Library.types';
 
@@ -84,7 +95,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   }, [loadLibrary]);
 
   const modalToggler = () => {
-    setIsOpen((open) => !open);
+    setIsOpen(open => !open);
   };
 
   const handleCreateShelf = async (modalShelfType: ShelfType, name: string) => {
@@ -97,7 +108,10 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     }
 
     if (resolvedId == null) {
-      console.warn('[Library] cannot add shelf — no library found for', libraryId);
+      console.warn(
+        '[Library] cannot add shelf — no library found for',
+        libraryId,
+      );
       return;
     }
 
@@ -116,7 +130,8 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     }
   };
 
-  const shelves: StrapiSingleShelfEntry[] = library?.attributes.singleShelves?.data ?? [];
+  const shelves: StrapiSingleShelfEntry[] =
+    library?.attributes.singleShelves?.data ?? [];
 
   // Publish the current library's shelves so the Header's Jump-to nav can
   // render the right list without owning its own fetch. NOTE: no cleanup —
@@ -129,10 +144,10 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
 
   const mutateShelfObjects = useCallback(
     (shelfId: number, mutator: (objects: IObject[]) => IObject[]) => {
-      setLibrary((current) => {
+      setLibrary(current => {
         if (!current) return current;
         const shelvesData = current.attributes.singleShelves?.data ?? [];
-        const next = shelvesData.map((s) => {
+        const next = shelvesData.map(s => {
           if (s.id !== shelfId) return s;
           const existing = s.attributes.objects?.data ?? [];
           return {
@@ -152,41 +167,43 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         };
       });
     },
-    []
+    [],
   );
 
   const handleObjectCreated = useCallback(
     (shelfId: number, created: IObject) => {
-      mutateShelfObjects(shelfId, (objects) => [...objects, created]);
+      mutateShelfObjects(shelfId, objects => [...objects, created]);
     },
-    [mutateShelfObjects]
+    [mutateShelfObjects],
   );
 
   const handleObjectUpdated = useCallback(
     (shelfId: number, updated: IObject) => {
-      mutateShelfObjects(shelfId, (objects) =>
-        objects.map((o) => (o.id === updated.id ? updated : o))
+      mutateShelfObjects(shelfId, objects =>
+        objects.map(o => (o.id === updated.id ? updated : o)),
       );
     },
-    [mutateShelfObjects]
+    [mutateShelfObjects],
   );
 
   const handleObjectDeleted = useCallback(
     (shelfId: number, objectId: number) => {
-      mutateShelfObjects(shelfId, (objects) => objects.filter((o) => o.id !== objectId));
+      mutateShelfObjects(shelfId, objects =>
+        objects.filter(o => o.id !== objectId),
+      );
     },
-    [mutateShelfObjects]
+    [mutateShelfObjects],
   );
 
   const handleShelfDeleted = useCallback((shelfId: number) => {
-    setLibrary((current) => {
+    setLibrary(current => {
       if (!current) return current;
       const shelvesData = current.attributes.singleShelves?.data ?? [];
       return {
         ...current,
         attributes: {
           ...current.attributes,
-          singleShelves: { data: shelvesData.filter((s) => s.id !== shelfId) },
+          singleShelves: { data: shelvesData.filter(s => s.id !== shelfId) },
         },
       };
     });
@@ -194,24 +211,24 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
 
   const handleObjectMoved = useCallback(
     (fromShelfId: number, toShelfId: number, moved: IObject) => {
-      setLibrary((current) => {
+      setLibrary(current => {
         if (!current) return current;
         const shelvesData = current.attributes.singleShelves?.data ?? [];
-        const next = shelvesData.map((s) => {
+        const next = shelvesData.map(s => {
           if (s.id === fromShelfId) {
             const existing = s.attributes.objects?.data ?? [];
             return {
               ...s,
               attributes: {
                 ...s.attributes,
-                objects: { data: existing.filter((o) => o.id !== moved.id) },
+                objects: { data: existing.filter(o => o.id !== moved.id) },
               },
             };
           }
           if (s.id === toShelfId) {
             const existing = s.attributes.objects?.data ?? [];
             // Avoid duplicates if the move event somehow fires twice.
-            const withoutMoved = existing.filter((o) => o.id !== moved.id);
+            const withoutMoved = existing.filter(o => o.id !== moved.id);
             return {
               ...s,
               attributes: {
@@ -231,7 +248,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         };
       });
     },
-    []
+    [],
   );
 
   return (
@@ -240,7 +257,10 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         <Text variant={TypographyVariant.TextBase}>Loading…</Text>
       ) : shelves.length === 0 ? (
         <div className={styles.empty}>
-          <Text variant={TypographyVariant.TitleSecondaryBold} className={styles.text}>
+          <Text
+            variant={TypographyVariant.TitleSecondaryBold}
+            className={styles.text}
+          >
             Begin your journey by adding your first shelf
           </Text>
 
@@ -254,7 +274,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
           />
         </div>
       ) : (
-        shelves.map((shelf) => (
+        shelves.map(shelf => (
           <Shelf
             key={shelf.id}
             title={shelf.attributes.name}
@@ -270,7 +290,9 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         ))
       )}
 
-      {isOpen && <AddShelfModal onClose={modalToggler} onAddShelf={handleCreateShelf} />}
+      {isOpen && (
+        <AddShelfModal onClose={modalToggler} onAddShelf={handleCreateShelf} />
+      )}
     </div>
   );
 }

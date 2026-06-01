@@ -1,9 +1,13 @@
-import axiosInstance from '@/libraries/axios';
+import type { IObjectSingleResponse } from '@local-types/library/object';
 
-import type { IObjectSingleResponse } from '@/types/object';
+import axiosInstance from '@lib/library/axios';
 
-export const deleteObject = async (id: number): Promise<IObjectSingleResponse> => {
-  const { data } = await axiosInstance.delete<IObjectSingleResponse>(`/api/objects/${id}`);
+export const deleteObject = async (
+  id: number,
+): Promise<IObjectSingleResponse> => {
+  const { data } = await axiosInstance.delete<IObjectSingleResponse>(
+    `/api/objects/${id}`,
+  );
 
   return data;
 };

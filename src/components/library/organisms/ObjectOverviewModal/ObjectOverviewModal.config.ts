@@ -1,4 +1,4 @@
-import type { ObjectType } from '@/types/object';
+import type { ObjectType } from '@local-types/library/object';
 
 export type CoverShape = 'portrait' | 'landscape' | 'square';
 
@@ -26,7 +26,10 @@ export interface ObjectOverviewTypeConfig {
   titleMaxLength: number;
 }
 
-export const overviewConfigByType: Record<ObjectType, ObjectOverviewTypeConfig> = {
+export const overviewConfigByType: Record<
+  ObjectType,
+  ObjectOverviewTypeConfig
+> = {
   book: {
     modalTitle: 'Book overview',
     descriptionLabel: 'Book description',

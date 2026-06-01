@@ -1,15 +1,15 @@
 // Shareable types
 
-import { ShelfType } from '@/components/molecules/AddShelfModal';
+import { ShelfType } from '@components/library/molecules/AddShelfModal';
 
 export type {
   HomeLibraryCardView,
   StrapiLibrariesResponse,
-  StrapiSingleLibraryResponse,
-  StrapiLibraryEntry,
   StrapiLibraryAttributes,
-  StrapiSingleShelfEntry,
+  StrapiLibraryEntry,
   StrapiPaginationMeta,
+  StrapiSingleLibraryResponse,
+  StrapiSingleShelfEntry,
 } from './library';
 
 export interface ILibraryCard {

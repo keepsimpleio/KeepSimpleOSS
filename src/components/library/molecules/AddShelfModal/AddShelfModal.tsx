@@ -1,15 +1,13 @@
-'use client';
-
 import classNames from 'classnames';
 import React, { JSX, useState } from 'react';
 
-import { Modal, useModalClose } from '../Modal';
-import { Input } from '../Input';
-import { shelfCardData } from '@/constants/common';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { shelfCardData } from '@constants/library/common';
+
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import { Button, ButtonSize, ButtonType } from '../Button';
-
+import { Input } from '../Input';
+import { Modal, useModalClose } from '../Modal';
 import type { AddShelfModalProps, ShelfType } from './AddShelfModal.types';
 
 import styles from './AddShelfModal.module.scss';
@@ -32,7 +30,12 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
   };
 
   return (
-    <Modal className={styles.modal} title="Select shelf type" onClose={onClose} closeRef={closeRef}>
+    <Modal
+      className={styles.modal}
+      title="Select shelf type"
+      onClose={onClose}
+      closeRef={closeRef}
+    >
       <div className={styles.wrapper}>
         <div className={styles.field}>
           <Text variant={TypographyVariant.TextSmall} className={styles.label}>
@@ -41,7 +44,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
           <Input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
             placeholder="My shelf"
             placeholderColor="#9E9E9E"
             ariaLabel="Shelf name"
@@ -50,7 +53,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
         </div>
 
         <div className={styles.content}>
-          {shelfCardData.map((item) => {
+          {shelfCardData.map(item => {
             return (
               <div
                 key={item.key}

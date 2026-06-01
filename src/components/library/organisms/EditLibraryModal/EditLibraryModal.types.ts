@@ -1,4 +1,4 @@
-import type { ILibrary } from '@/types/library';
+import type { ILibrary } from '@local-types/library/library';
 
 export interface EditLibraryModalProps {
   className?: string;

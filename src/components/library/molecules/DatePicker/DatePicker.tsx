@@ -1,17 +1,16 @@
-'use client';
-
-import React, { JSX, useState } from 'react';
 import classNames from 'classnames';
+import React, { JSX, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/style.css';
 
-import { useClickOutside } from '@/hooks/useClickOutside';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { useClickOutside } from '@hooks/library/useClickOutside';
+
+import { ArrowIcon } from '@icons/library/svg';
+
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { DatePickerProps } from './DatePicker.types';
 
-import { ArrowIcon } from '@/assets/svg';
-
+import 'react-day-picker/style.css';
 import styles from './DatePicker.module.scss';
 
 function formatDate(date: Date): string {
@@ -47,7 +46,7 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
       <button
         type="button"
         className={classNames(styles.trigger, { [styles.open]: isOpen })}
-        onClick={() => !disabled && setIsOpen((prev) => !prev)}
+        onClick={() => !disabled && setIsOpen(prev => !prev)}
         disabled={disabled}
         aria-label={ariaLabel}
         aria-expanded={isOpen}

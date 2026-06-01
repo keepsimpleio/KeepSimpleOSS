@@ -1,4 +1,4 @@
-import axiosInstance from '@/libraries/axios';
+import axiosInstance from '@lib/library/axios';
 
 export interface UpdateTagRequest {
   name: string;
@@ -8,7 +8,10 @@ export interface UpdateTagRequest {
   description?: string;
 }
 
-export const updateTag = async (tagId: number | string, tagData: UpdateTagRequest) => {
+export const updateTag = async (
+  tagId: number | string,
+  tagData: UpdateTagRequest,
+) => {
   const { data } = await axiosInstance.put(`/api/tags/${tagId}`, {
     data: tagData,
   });

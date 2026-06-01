@@ -1,6 +1,6 @@
-import axiosInstance from '@/libraries/axios';
+import { ITag } from '@local-types/library/tag';
 
-import { ITag } from '@/types/tag';
+import axiosInstance from '@lib/library/axios';
 
 export interface GetTagsListResponse {
   data: ITag[];
@@ -18,7 +18,9 @@ export const getTagsList = async (): Promise<GetTagsListResponse> => {
       if (token) headers.Authorization = `Bearer ${token}`;
     }
 
-    const { data } = await axiosInstance.get<GetTagsListResponse>('/api/tags', { headers });
+    const { data } = await axiosInstance.get<GetTagsListResponse>('/api/tags', {
+      headers,
+    });
 
     return data;
   } catch (error) {

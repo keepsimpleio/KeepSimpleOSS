@@ -1,37 +1,38 @@
-'use client';
-
-import React, { JSX, useMemo, useRef, useState } from 'react';
-import axios from 'axios';
-import classNames from 'classnames';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-import { useAuth } from '@/context/AuthContext';
-
-import { updateMe } from '@/app/api/user/updateMe';
-import { updateLibrary } from '@/app/api/library/updateLibrary';
-import { getMyLibrary } from '@/app/api/library/getMyLibrary';
-import { uploadFile } from '@/app/api/upload/uploadFile';
-import { getUserInfo } from '@/api/strapi';
-
 import {
-  editLibrarySchema,
+  AVATAR_ACCEPT_MIME,
   AVATAR_MAX_BYTES,
   AVATAR_MIN_BYTES,
-  AVATAR_ACCEPT_MIME,
   type EditLibraryFormData,
-} from '@/utils/schema/editLibrarySchema';
+  editLibrarySchema,
+} from '@utils/library/schema/editLibrarySchema';
+import axios from 'axios';
+import classNames from 'classnames';
+import React, { JSX, useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { Modal, useModalClose } from '@/components/molecules/Modal';
-import { Input } from '@/components/molecules/Input';
-import { Textarea } from '@/components/molecules/Textarea';
-import { Avatar } from '@/components/atoms/Avatar';
-import { Button, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import type { IUpdateLibraryPayload } from '@local-types/library/library';
+import type { IUpdateMeErrorBody } from '@local-types/library/user';
+
+import { getMyLibrary } from '@api/library/library/getMyLibrary';
+import { updateLibrary } from '@api/library/library/updateLibrary';
+import { getUserInfo } from '@api/library/strapi';
+import { uploadFile } from '@api/library/upload/uploadFile';
+import { updateMe } from '@api/library/user/updateMe';
+
+import { useAuth } from '@components/Context/library/AuthContext';
+import { Avatar } from '@components/library/atoms/Avatar';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { Input } from '@components/library/molecules/Input';
+import { Modal, useModalClose } from '@components/library/molecules/Modal';
+import { Textarea } from '@components/library/molecules/Textarea';
 
 import type { EditLibraryModalProps } from './EditLibraryModal.types';
-import type { IUpdateLibraryPayload } from '@/types/library';
-import type { IUpdateMeErrorBody } from '@/types/user';
 
 import styles from './EditLibraryModal.module.scss';
 
@@ -44,7 +45,9 @@ function absoluteUrl(url: string | undefined | null): string | undefined {
   return url.startsWith('http') ? url : `${STRAPI_BASE}${url}`;
 }
 
-function readUsernameError(body: IUpdateMeErrorBody | undefined): string | undefined {
+function readUsernameError(
+  body: IUpdateMeErrorBody | undefined,
+): string | undefined {
   if (!body?.message) return undefined;
   if (typeof body.message === 'string') return body.message;
   return body.message.username ?? body.message.error;
@@ -64,9 +67,13 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const { accountData, setAccountData } = useAuth();
   const { closeRef, close } = useModalClose(onClose);
 
-  const currentAvatarUrl = absoluteUrl(library.attributes.avatar?.data?.attributes.url);
+  const currentAvatarUrl = absoluteUrl(
+    library.attributes.avatar?.data?.attributes.url,
+  );
   const currentAboutMe = stripHtml(library.attributes.aboutMe);
-  const currentAboutLibrary = stripHtml(library.attributes.libraryDetails?.aboutLibrary);
+  const currentAboutLibrary = stripHtml(
+    library.attributes.libraryDetails?.aboutLibrary,
+  );
   const currentUsername = accountData?.username ?? '';
 
   // Avatar state — tri-state: untouched (null), replaced (File), removed (true).
@@ -150,11 +157,15 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
 
       // 2. Build the library PUT payload — only include changed keys.
       const libraryPayload: IUpdateLibraryPayload = {};
-      if (data.aboutMe !== currentAboutMe) libraryPayload.aboutMe = data.aboutMe ?? '';
+      if (data.aboutMe !== currentAboutMe)
+        libraryPayload.aboutMe = data.aboutMe ?? '';
       if (data.aboutLibrary !== currentAboutLibrary) {
-        libraryPayload.libraryDetails = { aboutLibrary: data.aboutLibrary ?? '' };
+        libraryPayload.libraryDetails = {
+          aboutLibrary: data.aboutLibrary ?? '',
+        };
       }
-      if (uploadedAvatarId !== undefined) libraryPayload.avatar = uploadedAvatarId;
+      if (uploadedAvatarId !== undefined)
+        libraryPayload.avatar = uploadedAvatarId;
 
       const usernameChanged = data.username !== currentUsername;
 
@@ -162,21 +173,28 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
         Object.keys(libraryPayload).length > 0
           ? updateLibrary(library.id, libraryPayload)
           : Promise.resolve(null),
-        usernameChanged ? updateMe({ username: data.username }) : Promise.resolve(null),
+        usernameChanged
+          ? updateMe({ username: data.username })
+          : Promise.resolve(null),
       ]);
 
       if (userResult.status === 'rejected') {
         const body = axios.isAxiosError(userResult.reason)
           ? (userResult.reason.response?.data as IUpdateMeErrorBody | undefined)
           : undefined;
-        setUsernameError(readUsernameError(body) ?? 'Could not update username.');
+        setUsernameError(
+          readUsernameError(body) ?? 'Could not update username.',
+        );
       }
 
       if (libraryResult.status === 'rejected') {
         setTopError('Could not update library. Please try again.');
       }
 
-      if (libraryResult.status === 'rejected' || userResult.status === 'rejected') {
+      if (
+        libraryResult.status === 'rejected' ||
+        userResult.status === 'rejected'
+      ) {
         return; // leave the modal open so the user can fix it
       }
 
@@ -247,15 +265,23 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
             placeholderColor="#9E9E9E"
             {...register('username')}
           />
-          <p className={styles.error}>{errors.username?.message ?? usernameError ?? ' '}</p>
+          <p className={styles.error}>
+            {errors.username?.message ?? usernameError ?? ' '}
+          </p>
         </div>
 
         <div className={styles.field}>
           <div className={styles.labelRow}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               About library
             </Text>
-            <Text variant={TypographyVariant.TextSmall} className={styles.counter}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.counter}
+            >
               {aboutLibraryValue.length} / 4000
             </Text>
           </div>
@@ -271,10 +297,16 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
 
         <div className={styles.field}>
           <div className={styles.labelRow}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               About author
             </Text>
-            <Text variant={TypographyVariant.TextSmall} className={styles.counter}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.counter}
+            >
               {aboutMeValue.length} / 2000
             </Text>
           </div>

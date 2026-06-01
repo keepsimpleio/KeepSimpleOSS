@@ -1,9 +1,9 @@
 import type {
   HomeLibraryCardView,
-  StrapiLibraryEntry,
   StrapiLibrariesResponse,
+  StrapiLibraryEntry,
   StrapiSingleShelfEntry,
-} from '@/types/library';
+} from '@local-types/library/library';
 
 function stripHtml(html: string): string {
   if (!html) {
@@ -18,7 +18,7 @@ function stripHtml(html: string): string {
 
 function resolveMediaUrl(
   url: string | undefined,
-  strapiBase: string | undefined
+  strapiBase: string | undefined,
 ): string | undefined {
   if (!url) {
     return undefined;
@@ -56,16 +56,19 @@ function countObjectsByType(shelves: StrapiSingleShelfEntry[]) {
 
 export function mapStrapiLibraryEntryToCard(
   entry: StrapiLibraryEntry,
-  strapiBase?: string
+  strapiBase?: string,
 ): HomeLibraryCardView {
   const { id, attributes } = entry;
   const shelves = attributes.singleShelves?.data ?? [];
   const { bookCount, videoCount, songCount } = countObjectsByType(shelves);
 
-  const aboutLibraryPlain = stripHtml(attributes.libraryDetails?.aboutLibrary ?? '');
+  const aboutLibraryPlain = stripHtml(
+    attributes.libraryDetails?.aboutLibrary ?? '',
+  );
   const aboutMePlain = stripHtml(attributes.aboutMe);
 
-  const libraryName = attributes.name?.trim() || aboutLibraryPlain || `Library ${id}`;
+  const libraryName =
+    attributes.name?.trim() || aboutLibraryPlain || `Library ${id}`;
 
   const description = aboutMePlain || aboutLibraryPlain;
 
@@ -87,7 +90,9 @@ export function mapStrapiLibraryEntryToCard(
 
 export function mapStrapiLibrariesResponseToCards(
   response: StrapiLibrariesResponse,
-  strapiBase?: string
+  strapiBase?: string,
 ): HomeLibraryCardView[] {
-  return response.data.map((entry) => mapStrapiLibraryEntryToCard(entry, strapiBase));
+  return response.data.map(entry =>
+    mapStrapiLibraryEntryToCard(entry, strapiBase),
+  );
 }

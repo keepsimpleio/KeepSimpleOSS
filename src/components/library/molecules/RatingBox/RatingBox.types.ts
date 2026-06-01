@@ -1,4 +1,4 @@
-import type { Difficulty, OverallRating } from '@/types/object';
+import type { Difficulty, OverallRating } from '@local-types/library/object';
 
 export interface RatingBoxProps {
   /** Username shown in the header — "<username> rated this book:" */

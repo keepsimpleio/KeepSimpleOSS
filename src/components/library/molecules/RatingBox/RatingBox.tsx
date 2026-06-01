@@ -1,17 +1,17 @@
-'use client';
-
+import classNames from 'classnames';
 import React, { JSX, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import classNames from 'classnames';
 
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { useClickOutside } from '@/hooks/useClickOutside';
-import { useAnchoredPosition } from '@/hooks/useAnchoredPosition';
+import type { Difficulty, OverallRating } from '@local-types/library/object';
 
-import { ArrowIcon } from '@/assets/svg';
+import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
+import { useClickOutside } from '@hooks/library/useClickOutside';
+
+import { ArrowIcon } from '@icons/library/svg';
+
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { RatingBoxProps } from './RatingBox.types';
-import type { Difficulty, OverallRating } from '@/types/object';
 
 import styles from './RatingBox.module.scss';
 
@@ -36,7 +36,12 @@ const DIFFICULTY_META: Record<Difficulty, DifficultyMeta> = {
 };
 
 const OVERALL_VALUES: OverallRating[] = [1, 2, 3, 4, 5];
-const DIFFICULTY_VALUES: Difficulty[] = ['very_hard', 'hard', 'moderate', 'easy'];
+const DIFFICULTY_VALUES: Difficulty[] = [
+  'very_hard',
+  'hard',
+  'moderate',
+  'easy',
+];
 
 interface ColoredSelectProps<T extends string | number> {
   label: string;
@@ -49,8 +54,19 @@ interface ColoredSelectProps<T extends string | number> {
   placeholder: string;
 }
 
-function ColoredSelect<T extends string | number>(props: ColoredSelectProps<T>): JSX.Element {
-  const { label, value, options, renderLabel, getColor, onChange, readOnly, placeholder } = props;
+function ColoredSelect<T extends string | number>(
+  props: ColoredSelectProps<T>,
+): JSX.Element {
+  const {
+    label,
+    value,
+    options,
+    renderLabel,
+    getColor,
+    onChange,
+    readOnly,
+    placeholder,
+  } = props;
   const [isOpen, setIsOpen] = useState(false);
 
   const close = useCallback(() => setIsOpen(false), []);
@@ -62,7 +78,7 @@ function ColoredSelect<T extends string | number>(props: ColoredSelectProps<T>):
 
   const handleToggle = () => {
     if (readOnly) return;
-    setIsOpen((prev) => !prev);
+    setIsOpen(prev => !prev);
   };
 
   const handleSelect = (next: T) => {
@@ -88,15 +104,17 @@ function ColoredSelect<T extends string | number>(props: ColoredSelectProps<T>):
               zIndex: 1500,
             }}
             // Keep clicks inside the portaled menu from triggering useClickOutside.
-            onPointerDown={(e) => e.stopPropagation()}
+            onPointerDown={e => e.stopPropagation()}
           >
-            {options.map((opt) => (
+            {options.map(opt => (
               <button
                 key={String(opt)}
                 type="button"
                 role="option"
                 aria-selected={opt === value}
-                className={classNames(styles.option, { [styles.selected]: opt === value })}
+                className={classNames(styles.option, {
+                  [styles.selected]: opt === value,
+                })}
                 onClick={() => handleSelect(opt)}
                 style={{ color: getColor(opt) }}
               >
@@ -104,7 +122,7 @@ function ColoredSelect<T extends string | number>(props: ColoredSelectProps<T>):
               </button>
             ))}
           </div>,
-          document.body
+          document.body,
         )
       : null;
 
@@ -129,9 +147,13 @@ function ColoredSelect<T extends string | number>(props: ColoredSelectProps<T>):
       >
         <Text
           variant={TypographyVariant.TextBase}
-          className={classNames(styles.value, { [styles.placeholder]: !hasValue })}
+          className={classNames(styles.value, {
+            [styles.placeholder]: !hasValue,
+          })}
         >
-          <span style={displayColor ? { color: displayColor } : undefined}>{displayLabel}</span>
+          <span style={displayColor ? { color: displayColor } : undefined}>
+            {displayLabel}
+          </span>
         </Text>
         {!readOnly && (
           <ArrowIcon
@@ -168,8 +190,8 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
           label="Overall"
           value={overallRating}
           options={OVERALL_VALUES}
-          renderLabel={(v) => String(v)}
-          getColor={(v) => OVERALL_COLORS[v]}
+          renderLabel={v => String(v)}
+          getColor={v => OVERALL_COLORS[v]}
           onChange={onOverallChange}
           readOnly={readOnly}
           placeholder="—"
@@ -178,8 +200,8 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
           label="Difficulty"
           value={difficulty}
           options={DIFFICULTY_VALUES}
-          renderLabel={(v) => DIFFICULTY_META[v].label}
-          getColor={(v) => DIFFICULTY_META[v].color}
+          renderLabel={v => DIFFICULTY_META[v].label}
+          getColor={v => DIFFICULTY_META[v].color}
           onChange={onDifficultyChange}
           readOnly={readOnly}
           placeholder="—"

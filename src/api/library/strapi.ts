@@ -1,7 +1,10 @@
-import axiosInstance from '@/libraries/axios';
+import type {
+  StrapiLibrariesResponse,
+  StrapiSingleLibraryResponse,
+} from '@local-types/library/library';
+import type { IUser } from '@local-types/library/user';
 
-import type { StrapiLibrariesResponse, StrapiSingleLibraryResponse } from '@/types/library';
-import type { IUser } from '@/types/user';
+import axiosInstance from '@lib/library/axios';
 
 export const getUserInfo = async (): Promise<IUser | null> => {
   try {
@@ -40,16 +43,19 @@ export const getLibrariesList = async <T = unknown>(): Promise<T | null> => {
 
 export const getLibrariesPaginated = async (
   page = 1,
-  pageSize = 8
+  pageSize = 8,
 ): Promise<StrapiLibrariesResponse | null> => {
   try {
-    const { data } = await axiosInstance.get<StrapiLibrariesResponse>('/api/libraries', {
-      params: {
-        ...LIBRARY_CARD_POPULATE,
-        'pagination[page]': page,
-        'pagination[pageSize]': pageSize,
+    const { data } = await axiosInstance.get<StrapiLibrariesResponse>(
+      '/api/libraries',
+      {
+        params: {
+          ...LIBRARY_CARD_POPULATE,
+          'pagination[page]': page,
+          'pagination[pageSize]': pageSize,
+        },
       },
-    });
+    );
 
     return data ?? null;
   } catch (e) {
@@ -60,17 +66,20 @@ export const getLibrariesPaginated = async (
 };
 
 export const getSingleLibrary = async (
-  id: number | string
+  id: number | string,
 ): Promise<StrapiSingleLibraryResponse | null> => {
   try {
-    const { data } = await axiosInstance.get<StrapiSingleLibraryResponse>(`/api/libraries/${id}`, {
-      params: {
-        'populate[avatar]': true,
-        'populate[libraryDetails]': true,
-        'populate[singleShelves][populate][objects][populate][coverImage]': true,
-        'populate[singleShelves][populate][objects][populate][tags]': true,
+    const { data } = await axiosInstance.get<StrapiSingleLibraryResponse>(
+      `/api/libraries/${id}`,
+      {
+        params: {
+          'populate[avatar]': true,
+          'populate[libraryDetails]': true,
+          'populate[singleShelves][populate][objects][populate][coverImage]': true,
+          'populate[singleShelves][populate][objects][populate][tags]': true,
+        },
       },
-    });
+    );
 
     return data ?? null;
   } catch (e) {

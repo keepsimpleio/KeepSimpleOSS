@@ -1,4 +1,5 @@
-import { ITag, ITagAttributes } from '@/types/tag';
+import { ITag, ITagAttributes } from '@local-types/library/tag';
+
 export interface CreateTagFormData {
   name: string;
   color: string;

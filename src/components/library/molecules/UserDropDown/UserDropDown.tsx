@@ -1,13 +1,15 @@
-import React, { JSX } from 'react';
 import Image from 'next/image';
+import React, { JSX } from 'react';
 
-import { Text } from '@/components/atoms/Text';
-import { Dropdown } from '@/components/molecules/Dropdown';
+import { IUser } from '@local-types/library/user';
 
-import { IUser } from '@/types/user';
+import { AvatarIcon } from '@icons/library/svg';
+
+import { Text } from '@components/library/atoms/Text';
+import { Dropdown } from '@components/library/molecules/Dropdown';
+
 import type { UserDropDownProps } from './UserDropDown.types';
 
-import { AvatarIcon } from '@/assets/svg';
 import styles from './UserDropDown.module.scss';
 
 export function UserDropDown(props: UserDropDownProps): JSX.Element {
@@ -35,7 +37,9 @@ export function UserDropDown(props: UserDropDownProps): JSX.Element {
               alt="Avatar"
             />
             <Text className={styles.text}>
-              {(accountData as IUser)?.username || (accountData as IUser)?.name || 'User'}
+              {(accountData as IUser)?.username ||
+                (accountData as IUser)?.name ||
+                'User'}
             </Text>
           </div>
         }

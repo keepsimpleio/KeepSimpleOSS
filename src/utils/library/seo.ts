@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
-import { DEFAULT_SEO } from '@/config/seo.config';
-import { SEOProps } from '@/components/molecules/SEO/SEO.types';
+
+import { DEFAULT_SEO } from '@constants/library/seo.config';
+
+import { SEOProps } from '@components/library/molecules/SEO/SEO.types';
 
 /**
  *
@@ -28,7 +30,7 @@ export function generateSEOMetadata(
     image: '',
     type: 'website',
     canonical: '',
-  }
+  },
 ): Metadata {
   const {
     title,

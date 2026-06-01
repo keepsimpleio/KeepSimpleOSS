@@ -1,5 +1,5 @@
-import type { ObjectType } from '@/types/object';
-import type { IStrapiSingleResponse } from '@/types/strapi';
+import type { ObjectType } from '@local-types/library/object';
+import type { IStrapiSingleResponse } from '@local-types/library/strapi';
 
 export type ShelfVisibility = 'public' | 'private';
 

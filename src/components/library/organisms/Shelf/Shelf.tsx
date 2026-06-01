@@ -1,30 +1,44 @@
-'use client';
-
-import React, { JSX, useCallback, useState } from 'react';
 import classNames from 'classnames';
 import Image from 'next/image';
+import React, { JSX, useCallback, useState } from 'react';
+
+import type { IObject, ObjectType } from '@local-types/library/object';
+import type { ShelfVisibility } from '@local-types/library/shelf';
+
+import { deleteShelf } from '@api/library/shelf/deleteShelf';
+import { updateShelf } from '@api/library/shelf/updateShelf';
+
+import shelfBackground from '@icons/library/images/shelfBackground.png';
+import {
+  ArrowIcon,
+  AudioIcon,
+  BookIcon,
+  PlusIcon,
+  SettingsIcon,
+  VideoIcon,
+} from '@icons/library/svg';
+
+import { IconName } from '@components/library/atoms/Icon';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { AudioCard } from '@components/library/molecules/AudioCard';
+import { BookCard } from '@components/library/molecules/BookCard';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  IconPosition,
+} from '@components/library/molecules/Button';
+import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
+import { Dropdown } from '@components/library/molecules/Dropdown';
+import { Input } from '@components/library/molecules/Input';
+import { Modal, useModalClose } from '@components/library/molecules/Modal';
+import { VideoCard } from '@components/library/molecules/VideoCard';
+import { AddObjectModal } from '@components/library/organisms/AddObjectModal';
+import { ObjectOverviewModal } from '@components/library/organisms/ObjectOverviewModal';
 
 import type { ShelfProps } from './Shelf.types';
 
 import styles from './Shelf.module.scss';
-import { Button, IconPosition, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import { ArrowIcon, AudioIcon, BookIcon, PlusIcon, SettingsIcon, VideoIcon } from '@/assets/svg';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { Modal, useModalClose } from '@/components/molecules/Modal';
-import { Input } from '@/components/molecules/Input';
-import { Dropdown } from '@/components/molecules/Dropdown';
-import { BookCard } from '@/components/molecules/BookCard';
-import { VideoCard } from '@/components/molecules/VideoCard';
-import { AudioCard } from '@/components/molecules/AudioCard';
-import { ConfirmationModal } from '@/components/molecules/ConfirmationModal';
-import { IconName } from '@/components/atoms/Icon';
-import { AddObjectModal } from '@/components/organisms/AddObjectModal';
-import { ObjectOverviewModal } from '@/components/organisms/ObjectOverviewModal';
-import { deleteShelf } from '@/app/api/shelf/deleteShelf';
-import { updateShelf } from '@/app/api/shelf/updateShelf';
-import type { IObject, ObjectType } from '@/types/object';
-import type { ShelfVisibility } from '@/types/shelf';
-import shelfBackground from '@/assets/images/shelfBackground.png';
 
 const SHELF_TYPE_ICON: Record<string, JSX.Element> = {
   video: <VideoIcon />,
@@ -80,7 +94,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const [deleteShelfError, setDeleteShelfError] = useState<string | null>(null);
   const [deleteShelfSuccess, setDeleteShelfSuccess] = useState(false);
   const [visibility, setVisibility] = useState<ShelfVisibility>(
-    (shelf.attributes.visibility ?? 'private') as ShelfVisibility
+    (shelf.attributes.visibility ?? 'private') as ShelfVisibility,
   );
   const [shelfName, setShelfName] = useState(title ?? '');
   const [renameOpen, setRenameOpen] = useState(false);
@@ -93,7 +107,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
     setRenameOpen(false);
     setRenameError(null);
   }, [renameLoading]);
-  const { closeRef: renameCloseRef, close: closeRenameAnimated } = useModalClose(closeRename);
+  const { closeRef: renameCloseRef, close: closeRenameAnimated } =
+    useModalClose(closeRename);
 
   const openAdd = () => setIsAddOpen(true);
   const closeAdd = () => setIsAddOpen(false);
@@ -116,7 +131,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
       const previous = visibility;
       if (previous === value) return;
       setVisibility(value);
-      updateShelf(shelf.id, { visibility: value }).catch((e) => {
+      updateShelf(shelf.id, { visibility: value }).catch(e => {
         console.error('[Shelf] failed to update visibility', e);
         setVisibility(previous);
       });
@@ -136,7 +151,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
       setShelfName(trimmed);
       setRenameOpen(false);
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to rename shelf. Please try again.';
+      const message =
+        e instanceof Error
+          ? e.message
+          : 'Failed to rename shelf. Please try again.';
       setRenameError(message);
     } finally {
       setRenameLoading(false);
@@ -151,7 +169,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
       setDeleteShelfOpen(false);
       setDeleteShelfSuccess(true);
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to delete shelf. Please try again.';
+      const message =
+        e instanceof Error
+          ? e.message
+          : 'Failed to delete shelf. Please try again.';
       setDeleteShelfError(message);
     } finally {
       setDeleteShelfLoading(false);
@@ -182,7 +203,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   };
 
   return (
-    <div id={`shelf-${shelf.id}`} className={classNames(className, styles.wrapper)}>
+    <div
+      id={`shelf-${shelf.id}`}
+      className={classNames(className, styles.wrapper)}
+    >
       <div className={styles.header}>
         <div className={styles.left}>
           {isOwner && (
@@ -246,7 +270,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
         <div className={styles.items}>
           {objects.length === 0 ? (
             <div className={styles.empty}>
-              <Text variant={TypographyVariant.TextBase} className={styles.emptyText}>
+              <Text
+                variant={TypographyVariant.TextBase}
+                className={styles.emptyText}
+              >
                 {isOwner
                   ? `This shelf is empty - add the first ${typeLabel}`
                   : 'This shelf is empty'}
@@ -262,14 +289,20 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </div>
           ) : (
             <div className={styles.cards}>
-              {objects.map((obj) => {
+              {objects.map(obj => {
                 if (shelfType === 'video') {
-                  return <VideoCard key={obj.id} object={obj} onClick={openObject} />;
+                  return (
+                    <VideoCard key={obj.id} object={obj} onClick={openObject} />
+                  );
                 }
                 if (shelfType === 'audio') {
-                  return <AudioCard key={obj.id} object={obj} onClick={openObject} />;
+                  return (
+                    <AudioCard key={obj.id} object={obj} onClick={openObject} />
+                  );
                 }
-                return <BookCard key={obj.id} object={obj} onClick={openObject} />;
+                return (
+                  <BookCard key={obj.id} object={obj} onClick={openObject} />
+                );
               })}
             </div>
           )}
@@ -318,20 +351,26 @@ export function Shelf(props: ShelfProps): JSX.Element {
         >
           <div className={styles.renameWrapper}>
             <div className={styles.renameField}>
-              <Text variant={TypographyVariant.TextSmall} className={styles.renameLabel}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.renameLabel}
+              >
                 Shelf name
               </Text>
               <Input
                 type="text"
                 value={renameValue}
-                onChange={(e) => setRenameValue(e.target.value)}
+                onChange={e => setRenameValue(e.target.value)}
                 placeholder="My shelf"
                 placeholderColor="#9E9E9E"
                 ariaLabel="Shelf name"
                 maxLength={SHELF_NAME_MAX_LENGTH}
               />
               {renameError && (
-                <Text variant={TypographyVariant.TextSmall} className={styles.renameError}>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.renameError}
+                >
                   {renameError}
                 </Text>
               )}

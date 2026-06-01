@@ -1,20 +1,26 @@
-'use client';
-
+import { useRouter } from 'next/router';
 import React, { JSX } from 'react';
-import { useRouter } from 'next/navigation';
+
+import { Avatar } from '@components/library/atoms/Avatar';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Button, ButtonType } from '@components/library/molecules/Button';
+import { Object, ObjectType } from '@components/library/molecules/Object';
 
 import type { LibraryCardProps } from './LibraryCard.types';
-
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { Button, ButtonType } from '@/components/molecules/Button';
-import { Object, ObjectType } from '@/components/molecules/Object';
-import { Avatar } from '@/components/atoms/Avatar';
 
 import styles from './LibraryCard.module.scss';
 
 export function LibraryCard(props: LibraryCardProps): JSX.Element {
-  const { id, username, libraryName, description, bookCount, videoCount, songCount, avatar } =
-    props;
+  const {
+    id,
+    username,
+    libraryName,
+    description,
+    bookCount,
+    videoCount,
+    songCount,
+    avatar,
+  } = props;
   const router = useRouter();
 
   const handleViewLibrary = () => {
@@ -24,7 +30,10 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <Text className={styles.title} variant={TypographyVariant.SubtitleSecondaryAlt}>
+        <Text
+          className={styles.title}
+          variant={TypographyVariant.SubtitleSecondaryAlt}
+        >
           {libraryName}
         </Text>
       </div>
@@ -36,21 +45,42 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
           </div>
           <div className={styles.info}>
             <div className={styles.section}>
-              <Text className={styles.subtitle} variant={TypographyVariant.TextBaseBold}>
+              <Text
+                className={styles.subtitle}
+                variant={TypographyVariant.TextBaseBold}
+              >
                 About
               </Text>
-              <Text className={styles.text} variant={TypographyVariant.TextBase}>
+              <Text
+                className={styles.text}
+                variant={TypographyVariant.TextBase}
+              >
                 {description}
               </Text>
             </div>
             <div className={styles.section}>
-              <Text className={styles.subtitle} variant={TypographyVariant.TextBaseBold}>
+              <Text
+                className={styles.subtitle}
+                variant={TypographyVariant.TextBaseBold}
+              >
                 Objects
               </Text>
               <div className={styles.objects}>
-                <Object className={styles.count} type={ObjectType.Book} number={bookCount} />
-                <Object className={styles.count} type={ObjectType.Video} number={videoCount} />
-                <Object className={styles.count} type={ObjectType.Audio} number={songCount} />
+                <Object
+                  className={styles.count}
+                  type={ObjectType.Book}
+                  number={bookCount}
+                />
+                <Object
+                  className={styles.count}
+                  type={ObjectType.Video}
+                  number={videoCount}
+                />
+                <Object
+                  className={styles.count}
+                  type={ObjectType.Audio}
+                  number={songCount}
+                />
               </div>
             </div>
           </div>

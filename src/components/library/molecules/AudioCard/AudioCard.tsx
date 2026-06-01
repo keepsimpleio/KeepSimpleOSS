@@ -1,16 +1,21 @@
-import React, { JSX } from 'react';
-import Image from 'next/image';
+import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
-
-import { resolveStrapiUrl } from '@/utils/resolveStrapiUrl';
+import Image from 'next/image';
+import React, { JSX } from 'react';
 
 import type { AudioCardProps } from './AudioCard.types';
 
 import styles from './AudioCard.module.scss';
 
-export function AudioCard({ object, onClick, className }: AudioCardProps): JSX.Element {
+export function AudioCard({
+  object,
+  onClick,
+  className,
+}: AudioCardProps): JSX.Element {
   const { attributes } = object;
-  const coverUrl = resolveStrapiUrl(attributes.coverImage?.data?.attributes.url);
+  const coverUrl = resolveStrapiUrl(
+    attributes.coverImage?.data?.attributes.url,
+  );
   const tags = attributes.tags?.data ?? [];
   const title = attributes.title;
 
@@ -35,7 +40,13 @@ export function AudioCard({ object, onClick, className }: AudioCardProps): JSX.E
       >
         <div className={styles.cover}>
           {coverUrl ? (
-            <Image src={coverUrl} alt={title} fill sizes="190px" className={styles.coverImage} />
+            <Image
+              src={coverUrl}
+              alt={title}
+              fill
+              sizes="190px"
+              className={styles.coverImage}
+            />
           ) : (
             <div className={styles.coverPlaceholder} />
           )}
@@ -44,7 +55,7 @@ export function AudioCard({ object, onClick, className }: AudioCardProps): JSX.E
 
       {tags.length > 0 && (
         <div className={styles.tags} aria-label="Tags">
-          {tags.map((tag) => (
+          {tags.map(tag => (
             <span
               key={tag.id}
               className={styles.tagDot}

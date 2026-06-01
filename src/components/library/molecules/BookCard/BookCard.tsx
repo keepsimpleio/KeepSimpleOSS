@@ -1,17 +1,23 @@
-import React, { JSX } from 'react';
-import Image from 'next/image';
+import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
+import Image from 'next/image';
+import React, { JSX } from 'react';
 
-import { BookShadowIcon } from '@/assets/svg';
-import { resolveStrapiUrl } from '@/utils/resolveStrapiUrl';
+import { BookShadowIcon } from '@icons/library/svg';
 
 import type { BookCardProps } from './BookCard.types';
 
 import styles from './BookCard.module.scss';
 
-export function BookCard({ object, onClick, className }: BookCardProps): JSX.Element {
+export function BookCard({
+  object,
+  onClick,
+  className,
+}: BookCardProps): JSX.Element {
   const { attributes } = object;
-  const coverUrl = resolveStrapiUrl(attributes.coverImage?.data?.attributes.url);
+  const coverUrl = resolveStrapiUrl(
+    attributes.coverImage?.data?.attributes.url,
+  );
   const tags = attributes.tags?.data ?? [];
   const title = attributes.title;
 
@@ -53,7 +59,7 @@ export function BookCard({ object, onClick, className }: BookCardProps): JSX.Ele
 
       {tags.length > 0 && (
         <div className={styles.tags} aria-label="Tags">
-          {tags.map((tag) => (
+          {tags.map(tag => (
             <span
               key={tag.id}
               className={styles.tagDot}

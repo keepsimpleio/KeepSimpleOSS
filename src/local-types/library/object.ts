@@ -1,7 +1,11 @@
-import type { IStrapiRelation, IStrapiRelationList, IStrapiSingleResponse } from '@/types/strapi';
-import type { IMedia } from '@/types/media';
-import type { IShelfRef } from '@/types/shelf';
-import type { ITagRef } from '@/types/tag';
+import type { IMedia } from '@local-types/library/media';
+import type { IShelfRef } from '@local-types/library/shelf';
+import type {
+  IStrapiRelation,
+  IStrapiRelationList,
+  IStrapiSingleResponse,
+} from '@local-types/library/strapi';
+import type { ITagRef } from '@local-types/library/tag';
 
 export type ObjectType = 'book' | 'video' | 'audio';
 
@@ -53,7 +57,9 @@ export interface ICreateObjectPayload extends IObjectScalarFields {
   publishedAt?: string;
 }
 
-export type IUpdateObjectPayload = Partial<Omit<ICreateObjectPayload, 'type' | 'coverImage'>> & {
+export type IUpdateObjectPayload = Partial<
+  Omit<ICreateObjectPayload, 'type' | 'coverImage'>
+> & {
   coverImage?: number | null;
 };
 

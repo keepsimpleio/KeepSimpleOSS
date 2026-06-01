@@ -1,21 +1,19 @@
-'use client';
-
+import { useRouter } from 'next/router';
+import { signOut, useSession } from 'next-auth/react';
 import React, {
-  useState,
   createContext,
   type ReactNode,
   useCallback,
-  useEffect,
   useContext,
+  useEffect,
+  useState,
 } from 'react';
-import { Session } from 'next-auth';
-import { useRouter } from 'next/navigation';
-import { SessionProvider, signOut } from 'next-auth/react';
 
-import { logout } from '@/api/auth';
-import { getCookie } from '@/libraries/cookie';
+import { IUser } from '@local-types/library/user';
 
-import { IUser } from '@/types/user';
+import { getCookie } from '@lib/library/cookie';
+
+import { logout } from '@api/auth';
 
 type AuthContextValue = {
   accountData: IUser | null;
@@ -39,11 +37,11 @@ export const AuthContext = createContext<AuthContextValue>(defaultValues);
 
 type AuthProviderProps = {
   children: ReactNode;
-  session: Session | null;
 };
 
-export const AuthProvider = ({ children, session = null }: AuthProviderProps) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [token, setToken] = useState<string | null>(null);
   const [accountData, setAccountData] = useState<IUser | null>(null);
@@ -53,7 +51,10 @@ export const AuthProvider = ({ children, session = null }: AuthProviderProps) =>
     if (typeof window !== 'undefined') {
       const currentPath = window.location.pathname + window.location.search;
       // Don't store auth or dashboard pages as return URLs
-      if (!currentPath.includes('/auth') && !currentPath.includes('/dashboard')) {
+      if (
+        !currentPath.includes('/auth') &&
+        !currentPath.includes('/dashboard')
+      ) {
         localStorage.setItem('returnUrl', currentPath);
       }
     }
@@ -62,7 +63,8 @@ export const AuthProvider = ({ children, session = null }: AuthProviderProps) =>
       await signOut({ redirect: false });
 
       sessionStorage.clear();
-      document.cookie = 'next-auth.session-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie =
+        'next-auth.session-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
       setTimeout(() => {
         router.replace(`/auth?provider=${provider}`);
@@ -84,21 +86,18 @@ export const AuthProvider = ({ children, session = null }: AuthProviderProps) =>
   }, [session]);
 
   return (
-    <>
-      <AuthContext.Provider
-        value={{
-          token,
-          accountData,
-          setToken,
-          setAccountData,
-          handleLogout,
-          handleProviderSignIn,
-        }}
-      >
-        {/* @ts-expect-error - NextAuth SessionProvider type compatibility issue */}
-        {React.createElement(SessionProvider, { session, refetchInterval: 0 }, children)}
-      </AuthContext.Provider>
-    </>
+    <AuthContext.Provider
+      value={{
+        token,
+        accountData,
+        setToken,
+        setAccountData,
+        handleLogout,
+        handleProviderSignIn,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 

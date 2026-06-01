@@ -1,4 +1,4 @@
-import axiosInstance from '@/libraries/axios';
+import axiosInstance from '@lib/library/axios';
 
 export interface CreateTagRequest {
   name: string;

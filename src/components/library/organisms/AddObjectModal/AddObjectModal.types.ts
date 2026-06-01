@@ -1,4 +1,4 @@
-import type { ObjectType, IObject } from '@/types/object';
+import type { IObject,ObjectType } from '@local-types/library/object';
 
 export interface AddObjectModalProps {
   objectType: ObjectType;

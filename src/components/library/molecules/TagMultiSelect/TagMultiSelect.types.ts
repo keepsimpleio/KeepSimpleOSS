@@ -1,4 +1,4 @@
-import { ITagAttributes } from '@/types/tag';
+import { ITagAttributes } from '@local-types/library/tag';
 
 export interface TagOption extends Pick<ITagAttributes, 'name' | 'color'> {
   id: number;

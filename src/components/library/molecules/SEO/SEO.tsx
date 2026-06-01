@@ -1,5 +1,7 @@
 import Head from 'next/head';
-import { DEFAULT_SEO } from '@/config/seo.config';
+
+import { DEFAULT_SEO } from '@constants/library/seo.config';
+
 import { SEOProps } from './SEO.types';
 
 export const SEO: React.FC<SEOProps> = ({
@@ -51,7 +53,11 @@ export const SEO: React.FC<SEOProps> = ({
       {/* Robots */}
       <meta
         name="robots"
-        content={process.env.NEXT_PUBLIC_INDEXING === 'off' ? 'noindex, nofollow' : 'index, follow'}
+        content={
+          process.env.NEXT_PUBLIC_INDEXING === 'off'
+            ? 'noindex, nofollow'
+            : 'index, follow'
+        }
       />
 
       {/* Open Graph Tags */}

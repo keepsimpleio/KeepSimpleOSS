@@ -1,38 +1,52 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
-import { z } from 'zod';
-import classNames from 'classnames';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createTagSchema } from '@utils/library/schema/createTagSchema';
+import classNames from 'classnames';
+import React, { useEffect,useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Tag } from '@/components/molecules/Tag';
-import { Modal, useModalClose } from '@/components/molecules/Modal';
-import { Input } from '@/components/molecules/Input';
-import { IconName } from '@/components/atoms/Icon';
-import { Textarea } from '@/components/molecules/Textarea';
-import { ConfirmationModal } from '@/components/molecules/ConfirmationModal';
-import { Button, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { tagColors } from '@constants/library/tags';
 
-import { createTagSchema } from '@/utils/schema/createTagSchema';
+import { ArrowIcon, DeleteIcon, InfoIcon } from '@icons/library/svg';
 
-import { tagColors } from '@/constants/tags';
-import type { CreateTagModalProps, CreateTagFormData } from './CreateTagModal.types';
+import { IconName } from '@components/library/atoms/Icon';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
+import { Input } from '@components/library/molecules/Input';
+import { Modal, useModalClose } from '@components/library/molecules/Modal';
+import { Tag } from '@components/library/molecules/Tag';
+import { Textarea } from '@components/library/molecules/Textarea';
 
-import { ArrowIcon, DeleteIcon, InfoIcon } from '@/assets/svg';
+import type {
+  CreateTagFormData,
+  CreateTagModalProps,
+} from './CreateTagModal.types';
 
 import styles from './CreateTagModal.module.scss';
 
 export function CreateTagModal(props: CreateTagModalProps) {
-  const { onClose, onSubmit, isEdit = false, activeTag, tags = [], onDelete, onTagSelect } = props;
+  const {
+    onClose,
+    onSubmit,
+    isEdit = false,
+    activeTag,
+    tags = [],
+    onDelete,
+    onTagSelect,
+  } = props;
   const { closeRef, close } = useModalClose(onClose);
   const defaultColor = tagColors[0][0];
   const isSelectTag = isEdit && !activeTag;
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [showCreateSuccessConfirmation, setShowCreateSuccessConfirmation] = useState(false);
+  const [showCreateSuccessConfirmation, setShowCreateSuccessConfirmation] =
+    useState(false);
 
   const {
     register,
@@ -108,7 +122,10 @@ export function CreateTagModal(props: CreateTagModalProps) {
                 <div className={styles.noTagFound}>
                   {tags.length > 0 && (
                     <div className={styles.tagsList}>
-                      <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                      <Text
+                        variant={TypographyVariant.TextSmall}
+                        className={styles.label}
+                      >
                         Select tag :
                       </Text>
                       <div className={styles.tags}>
@@ -131,7 +148,10 @@ export function CreateTagModal(props: CreateTagModalProps) {
               ) : (
                 <>
                   <div className={styles.field}>
-                    <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                    <Text
+                      variant={TypographyVariant.TextSmall}
+                      className={styles.label}
+                    >
                       Tag name
                     </Text>
                     <Input
@@ -141,11 +161,16 @@ export function CreateTagModal(props: CreateTagModalProps) {
                       placeholderColor="#9E9E9E"
                       {...register('name')}
                     />
-                    {errors.name && <p className={styles.error}>{errors.name.message}</p>}
+                    {errors.name && (
+                      <p className={styles.error}>{errors.name.message}</p>
+                    )}
                   </div>
 
                   <div className={styles.field}>
-                    <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                    <Text
+                      variant={TypographyVariant.TextSmall}
+                      className={styles.label}
+                    >
                       Description
                     </Text>
                     <Textarea
@@ -156,12 +181,17 @@ export function CreateTagModal(props: CreateTagModalProps) {
                       {...register('description')}
                     />
                     {errors.description && (
-                      <p className={styles.error}>{errors.description.message}</p>
+                      <p className={styles.error}>
+                        {errors.description.message}
+                      </p>
                     )}
                   </div>
 
                   <div className={styles.field}>
-                    <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                    <Text
+                      variant={TypographyVariant.TextSmall}
+                      className={styles.label}
+                    >
                       Color
                     </Text>
                     <div className={styles.color}>
@@ -173,32 +203,42 @@ export function CreateTagModal(props: CreateTagModalProps) {
                               aria-label={`Select color ${color}`}
                               key={colorIndex}
                               style={{ backgroundColor: color }}
-                              className={activeColor === color ? styles.active : ''}
+                              className={
+                                activeColor === color ? styles.active : ''
+                              }
                               onClick={() => handleColorSelect(color)}
                             ></div>
                           ))}
                         </div>
                       ))}
                     </div>
-                    {errors.color && <p className={styles.error}>{errors.color.message}</p>}
+                    {errors.color && (
+                      <p className={styles.error}>{errors.color.message}</p>
+                    )}
                   </div>
 
                   <div className={styles.field}>
                     <div className={styles.labelWrapper}>
-                      <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                      <Text
+                        variant={TypographyVariant.TextSmall}
+                        className={styles.label}
+                      >
                         Tag object sequence
                       </Text>
                       <InfoIcon />
                     </div>
 
                     <Text variant={TypographyVariant.TextBase}>
-                      You don&apos;t have any objects with this tag yet. Tag more objects to modify
-                      the sequence here.
+                      You don&apos;t have any objects with this tag yet. Tag
+                      more objects to modify the sequence here.
                     </Text>
                   </div>
 
                   <div className={styles.field}>
-                    <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                    <Text
+                      variant={TypographyVariant.TextSmall}
+                      className={styles.label}
+                    >
                       Preview
                     </Text>
                     <div className={styles.preview}>
@@ -216,7 +256,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
                       onClick={handleDeleteClick}
                       role="button"
                       tabIndex={0}
-                      onKeyDown={(e) => {
+                      onKeyDown={e => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
                           handleDeleteClick();
@@ -225,7 +265,9 @@ export function CreateTagModal(props: CreateTagModalProps) {
                     >
                       <div className={styles.label}>
                         <DeleteIcon />
-                        <Text variant={TypographyVariant.TextBaseSemibold}>Delete tag</Text>
+                        <Text variant={TypographyVariant.TextBaseSemibold}>
+                          Delete tag
+                        </Text>
                       </div>
                       <ArrowIcon className={styles.arrow} />
                     </div>
@@ -237,7 +279,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
             <div className={styles.footer}>
               <Button
                 label="Cancel"
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault();
 
                   if (showDeleteConfirmation || showCreateSuccessConfirmation) {

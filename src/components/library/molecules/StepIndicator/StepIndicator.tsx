@@ -1,9 +1,9 @@
-import React, { JSX, Fragment } from 'react';
 import classNames from 'classnames';
+import React, { Fragment,JSX } from 'react';
 
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { CheckIcon } from '@icons/library/svg';
 
-import { CheckIcon } from '@/assets/svg';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { StepIndicatorProps } from './StepIndicator.types';
 
@@ -35,16 +35,25 @@ export function StepIndicator(props: StepIndicatorProps): JSX.Element {
                 {isCompleted ? (
                   <CheckIcon width={14} height={14} />
                 ) : (
-                  <Text variant={TypographyVariant.TextSmall} className={styles.number}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.number}
+                  >
                     {stepNumber}
                   </Text>
                 )}
               </div>
               <div className={styles.labels}>
-                <Text variant={TypographyVariant.TextTiny} className={styles.stepLabel}>
+                <Text
+                  variant={TypographyVariant.TextTiny}
+                  className={styles.stepLabel}
+                >
                   STEP {stepNumber}
                 </Text>
-                <Text variant={TypographyVariant.TextBaseSemibold} className={styles.titleLabel}>
+                <Text
+                  variant={TypographyVariant.TextBaseSemibold}
+                  className={styles.titleLabel}
+                >
                   {step.label}
                 </Text>
               </div>

@@ -1,41 +1,54 @@
-'use client';
-
 // Reorder persistence is not wired yet — drag updates the local list only.
 // Backend needs a positional-update endpoint (or `order` on shelf.objects)
 // before we can send the new order on submit.
 
-import React, { JSX } from 'react';
-import classNames from 'classnames';
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
-  SortableContext,
   rectSortingStrategy,
+  SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import classNames from 'classnames';
+import React, { JSX } from 'react';
 
-import { Button, ButtonType, ButtonSize } from '@/components/molecules/Button';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { PlusIcon } from '@icons/library/svg';
 
-import { PlusIcon } from '@/assets/svg';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
 
-import type { ReorderGridProps, ReorderItem, ReorderItemShape } from './ReorderGrid.types';
+import type {
+  ReorderGridProps,
+  ReorderItem,
+  ReorderItemShape,
+} from './ReorderGrid.types';
 
 import styles from './ReorderGrid.module.scss';
 
 function SortableCard(props: { item: ReorderItem; shape: ReorderItemShape }) {
   const { item, shape } = props;
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: item.id,
   });
 
@@ -49,14 +62,20 @@ function SortableCard(props: { item: ReorderItem; shape: ReorderItemShape }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={classNames(styles.card, styles[shape], { [styles.current]: item.isCurrent })}
+      className={classNames(styles.card, styles[shape], {
+        [styles.current]: item.isCurrent,
+      })}
       {...attributes}
       {...listeners}
     >
       <div className={styles.cover}>
         {item.coverUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.coverUrl} alt={item.title} className={styles.coverImage} />
+          <img
+            src={item.coverUrl}
+            alt={item.title}
+            className={styles.coverImage}
+          />
         ) : (
           <div className={styles.coverPlaceholder} aria-hidden="true" />
         )}
@@ -80,14 +99,16 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = items.findIndex((i) => i.id === active.id);
-    const newIndex = items.findIndex((i) => i.id === over.id);
+    const oldIndex = items.findIndex(i => i.id === active.id);
+    const newIndex = items.findIndex(i => i.id === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
     onReorder(arrayMove(items, oldIndex, newIndex));
   };
@@ -99,10 +120,17 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
           <Text variant={TypographyVariant.TextSmall}>{emptyState}</Text>
         </div>
       ) : (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={items.map((i) => i.id)} strategy={rectSortingStrategy}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={items.map(i => i.id)}
+            strategy={rectSortingStrategy}
+          >
             <div className={styles.grid}>
-              {items.map((item) => (
+              {items.map(item => (
                 <SortableCard key={item.id} item={item} shape={itemShape} />
               ))}
             </div>

@@ -1,4 +1,4 @@
-import type { ObjectType } from '@/types/object';
+import type { ObjectType } from '@local-types/library/object';
 
 import type { FieldKey, ObjectTypeConfig } from './AddObjectModal.types';
 

@@ -1,17 +1,15 @@
-'use client';
-
-import React, { JSX, useCallback, useRef, useState } from 'react';
 import classNames from 'classnames';
+import React, { JSX, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useClickOutside } from '@/hooks/useClickOutside';
-import { useAnchoredPosition } from '@/hooks/useAnchoredPosition';
+import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
+import { useClickOutside } from '@hooks/library/useClickOutside';
 
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { ArrowIcon, CheckIcon } from '@icons/library/svg';
+
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { DropdownProps } from './Dropdown.types';
-
-import { ArrowIcon, CheckIcon } from '@/assets/svg';
 
 import styles from './Dropdown.module.scss';
 
@@ -44,11 +42,11 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   // is tracked against the trigger and recomputed on scroll/resize.
   const menuPos = useAnchoredPosition(triggerRef, portal && isOpen);
 
-  const selectedOption = options.find((opt) => opt.value === value);
+  const selectedOption = options.find(opt => opt.value === value);
 
   const handleSelect = (optionValue: string, hasSubOptions: boolean) => {
     if (hasSubOptions) {
-      setActiveSubMenu((prev) => (prev === optionValue ? null : optionValue));
+      setActiveSubMenu(prev => (prev === optionValue ? null : optionValue));
       return;
     }
     onChange?.(optionValue);
@@ -85,14 +83,14 @@ export function Dropdown(props: DropdownProps): JSX.Element {
       // Portaled menu sits outside dropdownRef, so useClickOutside would close
       // the dropdown on the click that's about to select an option. Stop the
       // pointerdown from reaching the document-level listener.
-      onPointerDown={portal ? (e) => e.stopPropagation() : undefined}
+      onPointerDown={portal ? e => e.stopPropagation() : undefined}
     >
-      {options.map((option) => {
+      {options.map(option => {
         const hasSubOptions = Boolean(option.subOptions?.length);
         const isSubOpen = activeSubMenu === option.value;
         const isSelectedParent =
           value === option.value ||
-          (hasSubOptions && option.subOptions!.some((s) => s.value === value));
+          (hasSubOptions && option.subOptions!.some(s => s.value === value));
         return (
           <div key={option.value} className={styles.optionWrapper}>
             <div
@@ -110,7 +108,9 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                 <ArrowIcon
                   width={14}
                   height={14}
-                  className={classNames(styles.subArrow, { [styles.rotated]: isSubOpen })}
+                  className={classNames(styles.subArrow, {
+                    [styles.rotated]: isSubOpen,
+                  })}
                 />
               ) : (
                 value === option.value && (
@@ -120,7 +120,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
             </div>
             {hasSubOptions && isSubOpen && (
               <div className={styles.subMenu}>
-                {option.subOptions!.map((sub) => (
+                {option.subOptions!.map(sub => (
                   <div
                     key={sub.value}
                     role="button"
@@ -130,9 +130,15 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                     onClick={() => handleSubSelect(sub.value)}
                     aria-label={`Select ${sub.label}`}
                   >
-                    <Text variant={TypographyVariant.TextBase}>{sub.label}</Text>
+                    <Text variant={TypographyVariant.TextBase}>
+                      {sub.label}
+                    </Text>
                     {value === sub.value && (
-                      <CheckIcon width={14} height={14} className={styles.check} />
+                      <CheckIcon
+                        width={14}
+                        height={14}
+                        className={styles.check}
+                      />
                     )}
                   </div>
                 ))}
@@ -148,7 +154,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
     <div ref={dropdownRef} className={classNames(className, styles.dropdown)}>
       {customHeader ? (
         <div
-          ref={(el) => {
+          ref={el => {
             triggerRef.current = el;
           }}
           className={classNames(styles.trigger, triggerClassName, {
@@ -165,7 +171,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
         </div>
       ) : (
         <button
-          ref={(el) => {
+          ref={el => {
             triggerRef.current = el;
           }}
           type="button"

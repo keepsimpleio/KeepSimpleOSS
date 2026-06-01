@@ -1,13 +1,13 @@
-import React, { JSX, useEffect, useRef, useState } from 'react';
+import { getContrastTextColor } from '@utils/library/color';
 import classNames from 'classnames';
+import React, { JSX, useEffect, useRef, useState } from 'react';
+
+import { CloseIcon } from '@icons/library/svg';
+
+import { Text } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 
 import type { TagProps } from './Tag.types';
-import { Text } from '@/components/atoms/Text';
-import { Tooltip } from '@/components/atoms/Tooltip';
-
-import { getContrastTextColor } from '@/utils/color';
-
-import { CloseIcon } from '@/assets/svg';
 
 import styles from './Tag.module.scss';
 
@@ -34,7 +34,9 @@ export function Tag(props: TagProps): JSX.Element {
     <div
       role={onClick ? 'button' : undefined}
       style={{ background, color: textColor }}
-      className={classNames(className, styles.wrapper, { [styles.withRemove]: !!onRemove })}
+      className={classNames(className, styles.wrapper, {
+        [styles.withRemove]: !!onRemove,
+      })}
       onClick={onClick}
     >
       <div ref={textRef} className={styles.textWrapper}>
@@ -45,7 +47,7 @@ export function Tag(props: TagProps): JSX.Element {
           type="button"
           aria-label={`Remove ${label ?? 'tag'}`}
           className={styles.removeButton}
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             onRemove();
           }}
@@ -57,7 +59,11 @@ export function Tag(props: TagProps): JSX.Element {
   );
 
   return isTruncated ? (
-    <Tooltip place="bottom-start" arrowClassName={styles.arrow} tooltipContent={label ?? ''}>
+    <Tooltip
+      place="bottom-start"
+      arrowClassName={styles.arrow}
+      tooltipContent={label ?? ''}
+    >
       {tagContent}
     </Tooltip>
   ) : (

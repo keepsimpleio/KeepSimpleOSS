@@ -1,48 +1,47 @@
-'use client';
-
-import React, { JSX, useEffect, useMemo, useState } from 'react';
-import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-import { Modal, useModalClose } from '@/components/molecules/Modal';
-import { Input } from '@/components/molecules/Input';
-import { Dropdown } from '@/components/molecules/Dropdown';
-import { Textarea } from '@/components/molecules/Textarea';
-import { DatePicker } from '@/components/molecules/DatePicker';
-import { ImageDropzone } from '@/components/molecules/ImageDropzone';
-import { TagMultiSelect } from '@/components/molecules/TagMultiSelect';
-import { ReorderGrid } from '@/components/molecules/ReorderGrid';
-import { StepIndicator } from '@/components/molecules/StepIndicator';
-import { ConfirmationModal } from '@/components/molecules/ConfirmationModal';
-import { Button, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { IconName } from '@/components/atoms/Icon';
-
-import { useAuth } from '@/context/AuthContext';
-
-import { resolveStrapiUrl } from '@/utils/resolveStrapiUrl';
-
-import { createObject } from '@/app/api/object/createObject';
-import { updateObject } from '@/app/api/object/updateObject';
-import { uploadFile } from '@/app/api/upload/uploadFile';
-import { getTagsList } from '@/app/api/tag/getTagsList';
-import { getShelvesList } from '@/app/api/shelf/getShelvesList';
-
+import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import {
-  getSchemaForType,
   type AddObjectFormData,
   type BookFormData,
-} from '@/utils/schema/addObjectSchema';
+  getSchemaForType,
+} from '@utils/library/schema/addObjectSchema';
+import React, { JSX, useEffect, useMemo, useState } from 'react';
+import { Controller, type SubmitHandler,useForm } from 'react-hook-form';
 
-import type { TagOption } from '@/components/molecules/TagMultiSelect/TagMultiSelect.types';
-import type { ReorderItem } from '@/components/molecules/ReorderGrid/ReorderGrid.types';
+import type { IObject } from '@local-types/library/object';
+import type { IShelf } from '@local-types/library/shelf';
 
-import type { IObject } from '@/types/object';
-import type { IShelf } from '@/types/shelf';
-import type { AddObjectModalProps, FieldKey } from './AddObjectModal.types';
+import { createObject } from '@api/library/object/createObject';
+import { updateObject } from '@api/library/object/updateObject';
+import { getShelvesList } from '@api/library/shelf/getShelvesList';
+import { getTagsList } from '@api/library/tag/getTagsList';
+import { uploadFile } from '@api/library/upload/uploadFile';
+
+import { ArrowIcon, SearchIcon } from '@icons/library/svg';
+
+import { useAuth } from '@components/Context/library/AuthContext';
+import { IconName } from '@components/library/atoms/Icon';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
+import { DatePicker } from '@components/library/molecules/DatePicker';
+import { Dropdown } from '@components/library/molecules/Dropdown';
+import { ImageDropzone } from '@components/library/molecules/ImageDropzone';
+import { Input } from '@components/library/molecules/Input';
+import { Modal, useModalClose } from '@components/library/molecules/Modal';
+import { ReorderGrid } from '@components/library/molecules/ReorderGrid';
+import type { ReorderItem } from '@components/library/molecules/ReorderGrid/ReorderGrid.types';
+import { StepIndicator } from '@components/library/molecules/StepIndicator';
+import { TagMultiSelect } from '@components/library/molecules/TagMultiSelect';
+import type { TagOption } from '@components/library/molecules/TagMultiSelect/TagMultiSelect.types';
+import { Textarea } from '@components/library/molecules/Textarea';
+
 import { configByType } from './AddObjectModal.config';
-
-import { ArrowIcon, SearchIcon } from '@/assets/svg';
+import type { AddObjectModalProps, FieldKey } from './AddObjectModal.types';
 
 import styles from './AddObjectModal.module.scss';
 
@@ -53,7 +52,7 @@ const STEPS = [
 
 function buildDefaults(
   objectType: AddObjectModalProps['objectType'],
-  object?: IObject
+  object?: IObject,
 ): AddObjectFormData {
   if (!object) {
     return { type: objectType } as AddObjectFormData;
@@ -73,12 +72,16 @@ function buildDefaults(
 
 const DRAFT_REORDER_ID = 'draft-new';
 
-function shelfObjectsToReorderItems(objects: IObject[] | undefined): ReorderItem[] {
+function shelfObjectsToReorderItems(
+  objects: IObject[] | undefined,
+): ReorderItem[] {
   if (!objects?.length) return [];
-  return objects.map((o) => ({
+  return objects.map(o => ({
     id: `object-${o.id}`,
     title: o.attributes.title,
-    coverUrl: resolveStrapiUrl(o.attributes.coverImage?.data?.attributes.url) ?? undefined,
+    coverUrl:
+      resolveStrapiUrl(o.attributes.coverImage?.data?.attributes.url) ??
+      undefined,
   }));
 }
 
@@ -107,9 +110,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
   const [shelves, setShelves] = useState<IShelf[]>([]);
   const [selectedShelfId, setSelectedShelfId] = useState<string | undefined>(
-    shelfLocked ? String(defaultShelfId) : undefined
+    shelfLocked ? String(defaultShelfId) : undefined,
   );
-  const currentReorderId = editing && object ? `object-${object.id}` : DRAFT_REORDER_ID;
+  const currentReorderId =
+    editing && object ? `object-${object.id}` : DRAFT_REORDER_ID;
   const [reorderItems, setReorderItems] = useState<ReorderItem[]>(() => {
     const base = shelfObjectsToReorderItems(shelfObjects);
     // Edit mode: current object is already in `base` — keep its position.
@@ -118,7 +122,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     return [...base, { id: DRAFT_REORDER_ID, title: '' }];
   });
   const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(
-    editing ? resolveStrapiUrl(object?.attributes.coverImage?.data?.attributes.url) : null
+    editing
+      ? resolveStrapiUrl(object?.attributes.coverImage?.data?.attributes.url)
+      : null,
   );
 
   const schema = useMemo(() => getSchemaForType(objectType), [objectType]);
@@ -139,9 +145,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   useEffect(() => {
     let cancelled = false;
-    getTagsList().then((res) => {
+    getTagsList().then(res => {
       if (cancelled) return;
-      const opts: TagOption[] = res.data.map((t) => ({
+      const opts: TagOption[] = res.data.map(t => ({
         id: t.id,
         name: t.attributes.name,
         color: t.attributes.color,
@@ -149,8 +155,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       setTagOptions(opts);
 
       if (editing && object?.attributes.tags?.data?.length) {
-        const presetIds = new Set(object.attributes.tags.data.map((t) => t.id));
-        setSelectedTags(opts.filter((o) => presetIds.has(o.id)));
+        const presetIds = new Set(object.attributes.tags.data.map(t => t.id));
+        setSelectedTags(opts.filter(o => presetIds.has(o.id)));
       }
     });
     return () => {
@@ -161,7 +167,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   useEffect(() => {
     if (!config.hasShelf) return;
     let cancelled = false;
-    getShelvesList(objectType).then((res) => {
+    getShelvesList(objectType).then(res => {
       if (cancelled) return;
       setShelves(res?.data ?? []);
     });
@@ -185,7 +191,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   const handleBack = () => setCurrentStep(1);
 
-  const onSubmitForm: SubmitHandler<AddObjectFormData> = async (data) => {
+  const onSubmitForm: SubmitHandler<AddObjectFormData> = async data => {
     setSubmitError(null);
     setIsSubmittingForm(true);
     try {
@@ -215,7 +221,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           ? (data as BookFormData).publicationDate?.toISOString().slice(0, 10)
           : undefined;
 
-      const tags = selectedTags.length > 0 ? selectedTags.map((t) => t.id) : undefined;
+      const tags =
+        selectedTags.length > 0 ? selectedTags.map(t => t.id) : undefined;
       const shelf =
         shelfLocked && defaultShelfId != null
           ? defaultShelfId
@@ -281,9 +288,16 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       // Otherwise an "edit" without touching the cover would visually wipe it.
       if (editing && object) {
         const original = object.attributes;
-        const next = { ...resultObject, attributes: { ...resultObject.attributes } };
+        const next = {
+          ...resultObject,
+          attributes: { ...resultObject.attributes },
+        };
         // Cover untouched: no new upload AND not explicitly cleared.
-        if (!uploadedCover && coverImageId !== null && !next.attributes.coverImage?.data) {
+        if (
+          !uploadedCover &&
+          coverImageId !== null &&
+          !next.attributes.coverImage?.data
+        ) {
           next.attributes.coverImage = original.coverImage;
         }
         // Shelf untouched: payload didn't carry a shelf value.
@@ -293,7 +307,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         resultObject = next;
       }
 
-      const hasCoverRelation = !!resultObject.attributes.coverImage?.data?.attributes?.url;
+      const hasCoverRelation =
+        !!resultObject.attributes.coverImage?.data?.attributes?.url;
       if (!hasCoverRelation && uploadedCover) {
         resultObject = {
           ...resultObject,
@@ -313,14 +328,15 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           },
         };
       }
-      const hasTagsRelation = (resultObject.attributes.tags?.data?.length ?? 0) > 0;
+      const hasTagsRelation =
+        (resultObject.attributes.tags?.data?.length ?? 0) > 0;
       if (!hasTagsRelation && selectedTags.length > 0) {
         resultObject = {
           ...resultObject,
           attributes: {
             ...resultObject.attributes,
             tags: {
-              data: selectedTags.map((t) => ({
+              data: selectedTags.map(t => ({
                 id: t.id,
                 attributes: { name: t.name, color: t.color },
               })),
@@ -332,7 +348,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       onCreated?.(resultObject);
       setShowSuccess(true);
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Something went wrong. Please try again.';
+      const message =
+        e instanceof Error
+          ? e.message
+          : 'Something went wrong. Please try again.';
       setSubmitError(message);
     } finally {
       setIsSubmittingForm(false);
@@ -346,7 +365,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       case 'title':
         return (
           <div key={key} className={styles.field}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               {label}
             </Text>
             <Input
@@ -356,13 +378,18 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               placeholderColor="#9E9E9E"
               {...register('title')}
             />
-            {errors.title && <p className={styles.error}>{errors.title.message}</p>}
+            {errors.title && (
+              <p className={styles.error}>{errors.title.message}</p>
+            )}
           </div>
         );
       case 'author':
         return (
           <div key={key} className={styles.field}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               {label}
             </Text>
             <Input
@@ -372,13 +399,18 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               placeholderColor="#9E9E9E"
               {...register('author')}
             />
-            {errors.author && <p className={styles.error}>{errors.author.message}</p>}
+            {errors.author && (
+              <p className={styles.error}>{errors.author.message}</p>
+            )}
           </div>
         );
       case 'publicationDate':
         return (
           <div key={key} className={styles.field}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               {label}
             </Text>
             <Controller
@@ -394,14 +426,19 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               )}
             />
             {'publicationDate' in errors && errors.publicationDate?.message && (
-              <p className={styles.error}>{String(errors.publicationDate.message)}</p>
+              <p className={styles.error}>
+                {String(errors.publicationDate.message)}
+              </p>
             )}
           </div>
         );
       case 'description':
         return (
           <div key={key} className={styles.field}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               {label}
             </Text>
             <Textarea
@@ -412,13 +449,18 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               rows={5}
               {...register('description')}
             />
-            {errors.description && <p className={styles.error}>{errors.description.message}</p>}
+            {errors.description && (
+              <p className={styles.error}>{errors.description.message}</p>
+            )}
           </div>
         );
       case 'coverImage':
         return (
           <div key={key} className={styles.field}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               {label}
             </Text>
             <Controller
@@ -435,14 +477,19 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               )}
             />
             {errors.coverImage && (
-              <p className={styles.error}>{String(errors.coverImage.message)}</p>
+              <p className={styles.error}>
+                {String(errors.coverImage.message)}
+              </p>
             )}
           </div>
         );
       case 'sourceUrl':
         return (
           <div key={key} className={styles.field}>
-            <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
               {label}
             </Text>
             <div className={styles.urlRow}>
@@ -480,21 +527,24 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   // Live blob URL for the currently-picked cover File so the reorder card
   // mirrors what the user just dropped in step 1. Revoked on change/unmount.
-  const liveCoverFile = step1Fields.coverImage instanceof File ? step1Fields.coverImage : null;
+  const liveCoverFile =
+    step1Fields.coverImage instanceof File ? step1Fields.coverImage : null;
   const liveCoverObjectUrl = useMemo(
     () => (liveCoverFile ? URL.createObjectURL(liveCoverFile) : null),
-    [liveCoverFile]
+    [liveCoverFile],
   );
   useEffect(() => {
     if (!liveCoverObjectUrl) return;
     return () => URL.revokeObjectURL(liveCoverObjectUrl);
   }, [liveCoverObjectUrl]);
 
-  const liveCurrentTitle = step1Fields.title || (editing ? object?.attributes.title : '') || '';
+  const liveCurrentTitle =
+    step1Fields.title || (editing ? object?.attributes.title : '') || '';
   const liveCurrentCoverUrl =
-    liveCoverObjectUrl ?? (editing ? (existingCoverUrl ?? undefined) : undefined);
+    liveCoverObjectUrl ??
+    (editing ? (existingCoverUrl ?? undefined) : undefined);
 
-  const displayedReorderItems = reorderItems.map((item) =>
+  const displayedReorderItems = reorderItems.map(item =>
     item.id === currentReorderId
       ? {
           ...item,
@@ -502,10 +552,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           coverUrl: liveCurrentCoverUrl ?? item.coverUrl,
           isCurrent: true,
         }
-      : item
+      : item,
   );
 
-  const shelfOptions = shelves.map((s) => ({
+  const shelfOptions = shelves.map(s => ({
     value: String(s.id),
     label: s.attributes.name,
   }));
@@ -522,7 +572,12 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   return (
     <>
       {!showSuccess && (
-        <Modal className={styles.modal} title={modalTitle} onClose={onClose} closeRef={closeRef}>
+        <Modal
+          className={styles.modal}
+          title={modalTitle}
+          onClose={onClose}
+          closeRef={closeRef}
+        >
           <form onSubmit={handleSubmit(onSubmitForm)} noValidate>
             <div className={styles.indicatorWrap}>
               <StepIndicator
@@ -533,12 +588,17 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
             <div className={styles.wrapper}>
               {currentStep === 1 ? (
-                <div className={styles.stepBody}>{config.fields.map(renderField)}</div>
+                <div className={styles.stepBody}>
+                  {config.fields.map(renderField)}
+                </div>
               ) : (
                 <div className={styles.stepBody}>
                   {config.hasShelf && !shelfLocked && (
                     <div className={styles.field}>
-                      <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                      <Text
+                        variant={TypographyVariant.TextSmall}
+                        className={styles.label}
+                      >
                         Shelf
                       </Text>
                       <Dropdown
@@ -546,7 +606,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                         onChange={setSelectedShelfId}
                         options={shelfOptions}
                         placeholder={
-                          shelfOptions.length === 0 ? 'No shelves yet' : 'Select a shelf'
+                          shelfOptions.length === 0
+                            ? 'No shelves yet'
+                            : 'Select a shelf'
                         }
                         disabled={shelfOptions.length === 0}
                       />
@@ -554,7 +616,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                   )}
 
                   <div className={styles.field}>
-                    <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                    <Text
+                      variant={TypographyVariant.TextSmall}
+                      className={styles.label}
+                    >
                       {config.tagsLabel}
                     </Text>
                     <TagMultiSelect
@@ -569,11 +634,14 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                   </div>
 
                   <div className={styles.field}>
-                    <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+                    <Text
+                      variant={TypographyVariant.TextSmall}
+                      className={styles.label}
+                    >
                       Select tag to reorder objects
                     </Text>
                     <Dropdown
-                      options={selectedTags.map((t) => ({
+                      options={selectedTags.map(t => ({
                         value: String(t.id),
                         label: t.name,
                       }))}
@@ -599,7 +667,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
             </div>
 
             <div className={styles.footer}>
-              {submitError && <p className={styles.footerError}>{submitError}</p>}
+              {submitError && (
+                <p className={styles.footerError}>{submitError}</p>
+              )}
               <div className={styles.footerActions}>
                 {currentStep === 2 && (
                   <Button
@@ -608,7 +678,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     label="Go back"
                     ariaLabel="Go back to step 1"
                     Icon={<ArrowIcon className={styles.backIcon} />}
-                    onClick={(e) => {
+                    onClick={e => {
                       e.preventDefault();
                       handleBack();
                     }}
@@ -620,7 +690,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                   size={ButtonSize.Wide}
                   label="Cancel"
                   ariaLabel="Cancel"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.preventDefault();
                     close();
                   }}
@@ -632,7 +702,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     size={ButtonSize.Wide}
                     label="Next"
                     ariaLabel="Continue to step 2"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.preventDefault();
                       handleNext();
                     }}

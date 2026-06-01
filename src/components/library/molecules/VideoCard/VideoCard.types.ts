@@ -1,4 +1,4 @@
-import type { IObject } from '@/types/object';
+import type { IObject } from '@local-types/library/object';
 
 export interface VideoCardProps {
   object: IObject;

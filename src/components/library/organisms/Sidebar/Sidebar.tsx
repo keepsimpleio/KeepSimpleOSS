@@ -1,38 +1,47 @@
-'use client';
-
-import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibraries';
 import classNames from 'classnames';
+import { useRouter } from 'next/router';
+import React, { useEffect, useMemo,useState } from 'react';
 
-import { Tag } from '@/components/molecules/Tag';
-import { Input } from '@/components/molecules/Input';
-import { Avatar } from '@/components/atoms/Avatar';
-import { Toggle } from '@/components/atoms/Toggle';
-import { Tooltip } from '@/components/atoms/Tooltip';
-import { Dropdown } from '@/components/molecules/Dropdown';
-import { Object, ObjectType } from '@/components/molecules/Object';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { CreateTagFormData, CreateTagModal } from '@/components/molecules/CreateTagModal';
-import { Button, ButtonSize, ButtonType, IconPosition } from '@/components/molecules/Button';
-import { EditLibraryModal } from '@/components/organisms/EditLibraryModal';
+import { KEEPSIMPLE_URL } from '@constants/library/common';
 
-import { ITagAttributes } from '@/types/tag';
-import type { ILibrary, StrapiLibrariesResponse } from '@/types/library';
-import { KEEPSIMPLE_URL } from '@/constants/common';
-import { mapStrapiLibrariesResponseToCards } from '@/utils/mapStrapiLibraries';
+import type {
+  ILibrary,
+  StrapiLibrariesResponse,
+} from '@local-types/library/library';
+import { ITagAttributes } from '@local-types/library/tag';
 
-import { useAuth } from '@/context/AuthContext';
-import { useDashboard } from '@/context/DashboardContext';
-import { useGlobalState } from '@/context/GlobalStateContext';
+import { getMyLibrary } from '@api/library/library/getMyLibrary';
+import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
+import { deleteTag } from '@api/library/tag/deleteTag';
+import { getTagsList } from '@api/library/tag/getTagsList';
+import { updateTag, UpdateTagRequest } from '@api/library/tag/updateTag';
 
-import { deleteTag } from '@/app/api/tag/deleteTag';
-import { getTagsList } from '@/app/api/tag/getTagsList';
-import { createTag, CreateTagRequest } from '@/app/api/tag/createTag';
-import { updateTag, UpdateTagRequest } from '@/app/api/tag/updateTag';
-import { getMyLibrary } from '@/app/api/library/getMyLibrary';
+import avatarImage from '@icons/library/images/avatar.png';
+import { CloseIcon, CopyIcon, EditIcon, PlusIcon } from '@icons/library/svg';
 
-import avatarImage from '@/assets/images/avatar.png';
-import { CloseIcon, CopyIcon, EditIcon, PlusIcon } from '@/assets/svg';
+import { useAuth } from '@components/Context/library/AuthContext';
+import { useDashboard } from '@components/Context/library/DashboardContext';
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import { Avatar } from '@components/library/atoms/Avatar';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Toggle } from '@components/library/atoms/Toggle';
+import { Tooltip } from '@components/library/atoms/Tooltip';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  IconPosition,
+} from '@components/library/molecules/Button';
+import {
+  CreateTagFormData,
+  CreateTagModal,
+} from '@components/library/molecules/CreateTagModal';
+import { Dropdown } from '@components/library/molecules/Dropdown';
+import { Input } from '@components/library/molecules/Input';
+import { Object, ObjectType } from '@components/library/molecules/Object';
+import { Tag } from '@components/library/molecules/Tag';
+import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal';
 
 import styles from './Sidebar.module.scss';
 
@@ -46,12 +55,17 @@ const stripHtml = (s?: string | null) =>
 
 export function Sidebar() {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = router.asPath;
 
   const { accountData } = useAuth();
   const { tags, setTags } = useDashboard();
-  const { isSidebarOpen, isGuestMode, toggleSidebar, toggleGuestMode, libraries } =
-    useGlobalState();
+  const {
+    isSidebarOpen,
+    isGuestMode,
+    toggleSidebar,
+    toggleGuestMode,
+    libraries,
+  } = useGlobalState();
 
   const currentLibraryId = pathname?.split('/').pop() || '';
 
@@ -66,20 +80,27 @@ export function Sidebar() {
       return [];
     }
 
-    return mapStrapiLibrariesResponseToCards(res, process.env.NEXT_PUBLIC_STRAPI);
+    return mapStrapiLibrariesResponseToCards(
+      res,
+      process.env.NEXT_PUBLIC_STRAPI,
+    );
   }, [libraries]);
 
-  const [isOpenTagModal, setIsOpenTagModal] = useState<null | 'create' | 'edit'>(null);
+  const [isOpenTagModal, setIsOpenTagModal] = useState<
+    null | 'create' | 'edit'
+  >(null);
   const [selectedTag, setSelectedTag] = useState<ITagAttributes | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isEditLibraryOpen, setIsEditLibraryOpen] = useState(false);
   const [myLibrary, setMyLibrary] = useState<ILibrary | null>(null);
   const [selectedLibraryId, setSelectedLibraryId] = useState(
-    currentLibraryId || (libraryCards[0] ? String(libraryCards[0].id) : '')
+    currentLibraryId || (libraryCards[0] ? String(libraryCards[0].id) : ''),
   );
 
   const selectedLibrary =
-    libraryCards.find((lib) => String(lib.id) === selectedLibraryId) ?? libraryCards[0] ?? null;
+    libraryCards.find(lib => String(lib.id) === selectedLibraryId) ??
+    libraryCards[0] ??
+    null;
 
   const bookCount = selectedLibrary?.bookCount ?? 0;
   const videoCount = selectedLibrary?.videoCount ?? 0;
@@ -89,7 +110,7 @@ export function Sidebar() {
   const authorAvatarUrl = accountData?.picture;
   const aboutAuthorText = stripHtml(myLibrary?.attributes.aboutMe);
 
-  const dropdownOptions = libraryCards.map((lib) => ({
+  const dropdownOptions = libraryCards.map(lib => ({
     value: String(lib.id),
     label: lib.libraryName,
   }));
@@ -261,7 +282,9 @@ export function Sidebar() {
 
             <div className={styles.content}>
               <div>
-                <Text className={styles.label}>{selectedLibrary?.description ?? ''}</Text>
+                <Text className={styles.label}>
+                  {selectedLibrary?.description ?? ''}
+                </Text>
               </div>
               <div className={styles.divider} />
 
@@ -298,12 +321,20 @@ export function Sidebar() {
 
             <div className={styles.content}>
               <div className={styles.avatar}>
-                <Avatar url={authorAvatarUrl ?? avatarImage} className={styles.avatarImage} />
-                <Text className={styles.name} variant={TypographyVariant.TextBaseBold}>
+                <Avatar
+                  url={authorAvatarUrl ?? avatarImage}
+                  className={styles.avatarImage}
+                />
+                <Text
+                  className={styles.name}
+                  variant={TypographyVariant.TextBaseBold}
+                >
                   {authorName}
                 </Text>
               </div>
-              <Text className={styles.text}>{aboutAuthorText || 'No bio yet.'}</Text>
+              <Text className={styles.text}>
+                {aboutAuthorText || 'No bio yet.'}
+              </Text>
             </div>
           </div>
 
@@ -328,7 +359,11 @@ export function Sidebar() {
             <div className={styles.content}>
               <div className={styles.tags}>
                 {tags.map(({ attributes }) => (
-                  <Tag key={attributes.name} label={attributes.name} color={attributes.color} />
+                  <Tag
+                    key={attributes.name}
+                    label={attributes.name}
+                    color={attributes.color}
+                  />
                 ))}
                 {!isGuestMode && (
                   <Button
@@ -349,7 +384,9 @@ export function Sidebar() {
 
           <div className={styles.about}>
             <div className={styles.header}>
-              <Text className={styles.label}>Share (Including selected objects)</Text>
+              <Text className={styles.label}>
+                Share (Including selected objects)
+              </Text>
             </div>
             <div className={styles.content}>
               <div className={styles.shareInputContainer}>
@@ -363,7 +400,10 @@ export function Sidebar() {
                   className={styles.shareInput}
                   ariaLabel="Share URL"
                 />
-                <Tooltip place="top" tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}>
+                <Tooltip
+                  place="top"
+                  tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}
+                >
                   <Button
                     label=""
                     onClick={handleCopyUrl}
@@ -381,7 +421,11 @@ export function Sidebar() {
 
         <div className={styles.footer}>
           <Text className={styles.label}>Guest mode</Text>
-          <Toggle checked={isGuestMode} onChange={toggleGuestMode} ariaLabel="Guest mode" />
+          <Toggle
+            checked={isGuestMode}
+            onChange={toggleGuestMode}
+            ariaLabel="Guest mode"
+          />
         </div>
       </aside>
       {isOpenTagModal && (
@@ -395,14 +439,16 @@ export function Sidebar() {
             setSelectedTag(null);
           }}
           onTagSelect={setSelectedTag}
-          onSubmit={isOpenTagModal === 'create' ? handleCreateTag : handleEditTag}
+          onSubmit={
+            isOpenTagModal === 'create' ? handleCreateTag : handleEditTag
+          }
         />
       )}
       {isEditLibraryOpen && myLibrary && (
         <EditLibraryModal
           library={myLibrary}
           onClose={() => setIsEditLibraryOpen(false)}
-          onSaved={(updated) => setMyLibrary(updated)}
+          onSaved={updated => setMyLibrary(updated)}
         />
       )}
     </>

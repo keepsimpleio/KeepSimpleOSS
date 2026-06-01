@@ -1,19 +1,23 @@
-'use client';
-
 import React, { JSX } from 'react';
 
+import { CloseIcon } from '@icons/library/svg';
+import DiscordIcon from '@icons/library/svg/discord.svg';
+import GoogleIcon from '@icons/library/svg/google.svg';
+
+import { useAuth } from '@components/Context/library/AuthContext';
+import {
+  TagType,
+  Text,
+  TypographyVariant,
+} from '@components/library/atoms/Text';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { Modal, useModalClose } from '@components/library/molecules/Modal';
+
 import type { SignInModalProps } from './SignInModal.types';
-
-import { useAuth } from '@/context/AuthContext';
-
-import GoogleIcon from '@/assets/svg/google.svg';
-import DiscordIcon from '@/assets/svg/discord.svg';
-
-import { Modal, useModalClose } from '@/components/molecules/Modal';
-import { Button, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import { TagType, Text, TypographyVariant } from '@/components/atoms/Text';
-
-import { CloseIcon } from '@/assets/svg';
 
 import styles from './SignInModal.module.scss';
 
@@ -34,7 +38,11 @@ export function SignInModal(props: SignInModalProps): JSX.Element {
         <Text tag={TagType.H1} variant={TypographyVariant.TitlePrimary}>
           Log In
         </Text>
-        <Text tag={TagType.P} className={styles.text} variant={TypographyVariant.TextRegular}>
+        <Text
+          tag={TagType.P}
+          className={styles.text}
+          variant={TypographyVariant.TextRegular}
+        >
           To use this feature you have to log in.
         </Text>
 

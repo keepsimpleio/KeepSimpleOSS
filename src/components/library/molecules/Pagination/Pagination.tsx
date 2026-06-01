@@ -1,9 +1,9 @@
-import React, { JSX, useState } from 'react';
 import classNames from 'classnames';
+import React, { JSX, useState } from 'react';
 
-import { ArrowIcon } from '@/assets/svg';
+import { ArrowIcon } from '@icons/library/svg';
+
 import { Button, ButtonType } from '../Button';
-
 import type { PaginationProps } from './Pagination.types';
 
 import styles from './Pagination.module.scss';
@@ -57,7 +57,9 @@ export function Pagination(props: PaginationProps): JSX.Element {
       return (
         <Button
           key={item}
-          className={classNames(styles.page, { [styles.active]: page === item })}
+          className={classNames(styles.page, {
+            [styles.active]: page === item,
+          })}
           onClick={() => handleChange(Number(item))}
           type={ButtonType.Secondary}
           ariaLabel={`Go to page ${item}`}

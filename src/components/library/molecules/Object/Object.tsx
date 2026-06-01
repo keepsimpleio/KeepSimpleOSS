@@ -1,14 +1,19 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
-import { ObjectType, type ObjectProps } from './Object.types';
+import { Icon, IconName } from '@components/library/atoms/Icon';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
-import { Icon, IconName } from '@/components/atoms/Icon';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { type ObjectProps,ObjectType } from './Object.types';
 
 import styles from './Object.module.scss';
 
-export const Object: React.FC<ObjectProps> = ({ type, number, className, noBorder = false }) => {
+export const Object: React.FC<ObjectProps> = ({
+  type,
+  number,
+  className,
+  noBorder = false,
+}) => {
   const getLabel = () => {
     if (type === ObjectType.Audio) return 'Audio';
     if (type === ObjectType.Book) return 'Books';
@@ -17,7 +22,11 @@ export const Object: React.FC<ObjectProps> = ({ type, number, className, noBorde
   };
 
   return (
-    <div className={classNames(className, styles.object, { [styles.border]: !noBorder })}>
+    <div
+      className={classNames(className, styles.object, {
+        [styles.border]: !noBorder,
+      })}
+    >
       <div className={styles.icon}>
         <Icon
           width={noBorder ? 13 : 18}
@@ -27,7 +36,9 @@ export const Object: React.FC<ObjectProps> = ({ type, number, className, noBorde
       </div>
       <div className={styles.count}>
         <Text variant={TypographyVariant.TextRegular}>{number}</Text>
-        {noBorder && <Text variant={TypographyVariant.TextRegular}>{getLabel()}</Text>}
+        {noBorder && (
+          <Text variant={TypographyVariant.TextRegular}>{getLabel()}</Text>
+        )}
       </div>
     </div>
   );

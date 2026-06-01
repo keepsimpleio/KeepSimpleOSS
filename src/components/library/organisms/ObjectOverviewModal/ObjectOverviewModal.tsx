@@ -1,29 +1,19 @@
-'use client';
-
-import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
+import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
+import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Modal, useModalClose } from '@/components/molecules/Modal';
-import { Button, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import { Tag } from '@/components/molecules/Tag';
-import { Dropdown } from '@/components/molecules/Dropdown';
-import { ConfirmationModal } from '@/components/molecules/ConfirmationModal';
-import { RatingBox } from '@/components/molecules/RatingBox';
-import { TagType, Text, TypographyVariant } from '@/components/atoms/Text';
-import { IconName } from '@/components/atoms/Icon';
+import type {
+  Difficulty,
+  IObject,
+  OverallRating,
+} from '@local-types/library/object';
+import type { IShelf } from '@local-types/library/shelf';
 
-import { AddObjectModal } from '@/components/organisms/AddObjectModal';
+import { useClickOutside } from '@hooks/library/useClickOutside';
 
-import { deleteObject } from '@/app/api/object/deleteObject';
-import { updateObject } from '@/app/api/object/updateObject';
-import { getShelvesList } from '@/app/api/shelf/getShelvesList';
-
-import { useClickOutside } from '@/hooks/useClickOutside';
-import { resolveStrapiUrl } from '@/utils/resolveStrapiUrl';
-
-import type { IShelf } from '@/types/shelf';
-
-import type { Difficulty, IObject, OverallRating } from '@/types/object';
+import { deleteObject } from '@api/library/object/deleteObject';
+import { updateObject } from '@api/library/object/updateObject';
+import { getShelvesList } from '@api/library/shelf/getShelvesList';
 
 import {
   CalendarIcon,
@@ -32,7 +22,25 @@ import {
   DotsVerticalIcon,
   EditIcon,
   ShareIcon,
-} from '@/assets/svg';
+} from '@icons/library/svg';
+
+import { IconName } from '@components/library/atoms/Icon';
+import {
+  TagType,
+  Text,
+  TypographyVariant,
+} from '@components/library/atoms/Text';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
+import { Dropdown } from '@components/library/molecules/Dropdown';
+import { Modal, useModalClose } from '@components/library/molecules/Modal';
+import { RatingBox } from '@components/library/molecules/RatingBox';
+import { Tag } from '@components/library/molecules/Tag';
+import { AddObjectModal } from '@components/library/organisms/AddObjectModal';
 
 import { overviewConfigByType } from './ObjectOverviewModal.config';
 import type { ObjectOverviewModalProps } from './ObjectOverviewModal.types';
@@ -50,15 +58,26 @@ function formatDate(iso?: string): string | null {
 }
 
 function formatDuration(seconds?: number): string {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) return '—';
+  if (seconds === undefined || seconds === null || Number.isNaN(seconds))
+    return '—';
   const total = Math.max(0, Math.floor(seconds));
   const mm = String(Math.floor(total / 60)).padStart(2, '0');
   const ss = String(total % 60).padStart(2, '0');
   return `${mm}:${ss}`;
 }
 
-export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Element {
-  const { object, isOwner, ownerUsername, shelfObjects, onClose, onUpdated, onDeleted } = props;
+export function ObjectOverviewModal(
+  props: ObjectOverviewModalProps,
+): JSX.Element {
+  const {
+    object,
+    isOwner,
+    ownerUsername,
+    shelfObjects,
+    onClose,
+    onUpdated,
+    onDeleted,
+  } = props;
   const { id, attributes } = object;
   const objectType = attributes.type;
   const config = overviewConfigByType[objectType];
@@ -70,8 +89,12 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
-  const [overallRating, setOverallRating] = useState<OverallRating | undefined>(attributes.overall);
-  const [difficulty, setDifficulty] = useState<Difficulty | undefined>(attributes.difficulty);
+  const [overallRating, setOverallRating] = useState<OverallRating | undefined>(
+    attributes.overall,
+  );
+  const [difficulty, setDifficulty] = useState<Difficulty | undefined>(
+    attributes.difficulty,
+  );
   const [ratingError, setRatingError] = useState<string | null>(null);
 
   const [moveToShelfId, setMoveToShelfId] = useState<string | undefined>();
@@ -112,7 +135,8 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
       setDeleteSuccess(true);
       onDeleted?.(id);
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to delete. Please try again.';
+      const message =
+        e instanceof Error ? e.message : 'Failed to delete. Please try again.';
       setDeleteError(message);
     } finally {
       setDeleteLoading(false);
@@ -130,7 +154,7 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
   useEffect(() => {
     if (!isOwner) return;
     let cancelled = false;
-    getShelvesList(objectType).then((res) => {
+    getShelvesList(objectType).then(res => {
       if (cancelled) return;
       setShelfOptions(res?.data ?? []);
     });
@@ -141,8 +165,8 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
 
   const moveToOptions = useMemo(() => {
     return shelfOptions
-      .filter((s) => s.id !== currentShelfId)
-      .map((s) => ({ value: String(s.id), label: s.attributes.name }));
+      .filter(s => s.id !== currentShelfId)
+      .map(s => ({ value: String(s.id), label: s.attributes.name }));
   }, [shelfOptions, currentShelfId]);
 
   // PUT responses don't populate relations we didn't touch, so a rating-only
@@ -156,19 +180,27 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
       coverImage: next.attributes.coverImage?.data
         ? next.attributes.coverImage
         : attributes.coverImage,
-      tags: next.attributes.tags?.data?.length ? next.attributes.tags : attributes.tags,
-      shelf: next.attributes.shelf?.data ? next.attributes.shelf : attributes.shelf,
+      tags: next.attributes.tags?.data?.length
+        ? next.attributes.tags
+        : attributes.tags,
+      shelf: next.attributes.shelf?.data
+        ? next.attributes.shelf
+        : attributes.shelf,
       shelfName: next.attributes.shelfName ?? attributes.shelfName,
     },
   });
 
-  const persistRating = async (next: { overall?: OverallRating; difficulty?: Difficulty }) => {
+  const persistRating = async (next: {
+    overall?: OverallRating;
+    difficulty?: Difficulty;
+  }) => {
     setRatingError(null);
     try {
       const res = await updateObject(id, next);
       onUpdated?.(preserveRelations(res.data));
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Could not save your rating.';
+      const message =
+        e instanceof Error ? e.message : 'Could not save your rating.';
       setRatingError(message);
       // Revert optimistic state on failure.
       setOverallRating(attributes.overall);
@@ -190,7 +222,7 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
     if (!value) return;
     const targetId = Number(value);
     if (!Number.isFinite(targetId)) return;
-    const targetShelf = shelfOptions.find((s) => s.id === targetId);
+    const targetShelf = shelfOptions.find(s => s.id === targetId);
     if (!targetShelf) return;
     setMoveToShelfId(value);
     setMoveLoading(true);
@@ -229,13 +261,17 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
     }
   };
 
-  const coverUrl = resolveStrapiUrl(attributes.coverImage?.data?.attributes.url);
+  const coverUrl = resolveStrapiUrl(
+    attributes.coverImage?.data?.attributes.url,
+  );
   const tagsList = attributes.tags?.data ?? [];
   const shelfData = attributes.shelf?.data;
-  const shelfDisplayName = shelfData?.attributes.name ?? attributes.shelfName ?? '—';
+  const shelfDisplayName =
+    shelfData?.attributes.name ?? attributes.shelfName ?? '—';
   const shelfPosition = shelfData?.attributes.order;
   const publishedFormatted = formatDate(attributes.publicationDate);
-  const sourceLabel = attributes.source && attributes.source.length > 0 ? attributes.source : '—';
+  const sourceLabel =
+    attributes.source && attributes.source.length > 0 ? attributes.source : '—';
   const durationLabel = formatDuration(attributes.duration);
 
   // Edit mode swaps the modal entirely; AddObjectModal manages its own success popup.
@@ -250,7 +286,7 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
           setEditing(false);
           onClose();
         }}
-        onCreated={(updated) => {
+        onCreated={updated => {
           onUpdated?.(updated);
         }}
       />
@@ -259,7 +295,11 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
 
   return (
     <>
-      <Modal className={styles.modal} onClose={guardedOnClose} closeRef={closeRef}>
+      <Modal
+        className={styles.modal}
+        onClose={guardedOnClose}
+        closeRef={closeRef}
+      >
         <div className={styles.header}>
           <Text
             tag={TagType.H2}
@@ -287,7 +327,7 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
                     aria-label="More actions"
                     aria-haspopup="menu"
                     aria-expanded={menuOpen}
-                    onClick={() => setMenuOpen((prev) => !prev)}
+                    onClick={() => setMenuOpen(prev => !prev)}
                   >
                     <DotsVerticalIcon />
                   </button>
@@ -316,7 +356,12 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
                 </div>
               </>
             )}
-            <button type="button" className={styles.iconButton} aria-label="Close" onClick={close}>
+            <button
+              type="button"
+              className={styles.iconButton}
+              aria-label="Close"
+              onClick={close}
+            >
               <CloseIcon />
             </button>
           </div>
@@ -324,10 +369,16 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
 
         <div className={styles.body}>
           <div className={styles.left}>
-            <div className={classNames(styles.cover, styles[config.coverShape])}>
+            <div
+              className={classNames(styles.cover, styles[config.coverShape])}
+            >
               {coverUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img className={styles.coverImage} src={coverUrl} alt={attributes.title} />
+                <img
+                  className={styles.coverImage}
+                  src={coverUrl}
+                  alt={attributes.title}
+                />
               ) : (
                 <span className={styles.coverPlaceholder}>No cover</span>
               )}
@@ -336,18 +387,30 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
             {config.showSourceDurationRow && (
               <div className={styles.sourceDurationRow}>
                 <div className={styles.metaCell}>
-                  <Text variant={TypographyVariant.TextSmall} className={styles.metaLabel}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.metaLabel}
+                  >
                     Source
                   </Text>
-                  <Text variant={TypographyVariant.TextBase} className={styles.metaValue}>
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.metaValue}
+                  >
                     {sourceLabel}
                   </Text>
                 </div>
                 <div className={styles.metaCell}>
-                  <Text variant={TypographyVariant.TextSmall} className={styles.metaLabel}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.metaLabel}
+                  >
                     Duration
                   </Text>
-                  <Text variant={TypographyVariant.TextBase} className={styles.metaValue}>
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.metaValue}
+                  >
                     {durationLabel}
                   </Text>
                 </div>
@@ -366,10 +429,16 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
 
             {attributes.author && (
               <div className={styles.row}>
-                <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.rowLabel}
+                >
                   Author
                 </Text>
-                <Text variant={TypographyVariant.TextBase} className={styles.rowValue}>
+                <Text
+                  variant={TypographyVariant.TextBase}
+                  className={styles.rowValue}
+                >
                   {attributes.author}
                 </Text>
               </div>
@@ -377,18 +446,26 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
 
             {publishedFormatted && (
               <div className={styles.row}>
-                <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.rowLabel}
+                >
                   Published
                 </Text>
                 <span className={styles.publishedValue}>
                   <CalendarIcon width={14} height={14} />
-                  <Text variant={TypographyVariant.TextBase}>{publishedFormatted}</Text>
+                  <Text variant={TypographyVariant.TextBase}>
+                    {publishedFormatted}
+                  </Text>
                 </span>
               </div>
             )}
 
             <div className={styles.row}>
-              <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.rowLabel}
+              >
                 {config.descriptionLabel}
               </Text>
               {attributes.description ? (
@@ -397,7 +474,10 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
                   dangerouslySetInnerHTML={{ __html: attributes.description }}
                 />
               ) : (
-                <Text variant={TypographyVariant.TextBase} className={styles.rowValue}>
+                <Text
+                  variant={TypographyVariant.TextBase}
+                  className={styles.rowValue}
+                >
                   {config.descriptionEmpty}
                 </Text>
               )}
@@ -406,7 +486,10 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
             {tagsList.length > 0 && (
               <div className={styles.row}>
                 <div className={styles.tagsHeader}>
-                  <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.rowLabel}
+                  >
                     Tags
                   </Text>
                   {isOwner && (
@@ -421,7 +504,7 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
                   )}
                 </div>
                 <div className={styles.tags}>
-                  {tagsList.map((t) => (
+                  {tagsList.map(t => (
                     <Tag
                       key={t.id}
                       className={styles.tag}
@@ -435,23 +518,38 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
             )}
 
             <div className={styles.row}>
-              <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.rowLabel}
+              >
                 Destination
               </Text>
               <div className={styles.destination}>
                 <div className={styles.destinationCell}>
-                  <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.rowLabel}
+                  >
                     SHELF
                   </Text>
-                  <Text variant={TypographyVariant.TextBase} className={styles.rowValue}>
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.rowValue}
+                  >
                     {shelfDisplayName}
                   </Text>
                 </div>
                 <div className={styles.destinationCell}>
-                  <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.rowLabel}
+                  >
                     Position
                   </Text>
-                  <Text variant={TypographyVariant.TextBase} className={styles.rowValue}>
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.rowValue}
+                  >
                     {shelfPosition !== undefined ? String(shelfPosition) : '—'}
                   </Text>
                 </div>
@@ -460,7 +558,10 @@ export function ObjectOverviewModal(props: ObjectOverviewModalProps): JSX.Elemen
 
             {isOwner && (
               <div className={styles.row}>
-                <Text variant={TypographyVariant.TextSmall} className={styles.rowLabel}>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.rowLabel}
+                >
                   Move To
                 </Text>
                 <Dropdown

@@ -1,12 +1,10 @@
-'use client';
-
 import React, { JSX } from 'react';
 
-import type { AboutLibraryModalProps } from './AboutLibraryModal.types';
-import { Button, ButtonType, ButtonSize } from '../Button';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
+import { Button, ButtonSize,ButtonType } from '../Button';
 import { Modal, useModalClose } from '../Modal';
+import type { AboutLibraryModalProps } from './AboutLibraryModal.types';
 
 import styles from './AboutLibraryModal.module.scss';
 
@@ -26,12 +24,12 @@ export function AboutLibraryModal(props: AboutLibraryModalProps): JSX.Element {
           Welcome to the Library
         </Text>
         <Text className={styles.text} variant={TypographyVariant.TextRegular}>
-          This is where KeepSimple team members and friends share what they’ve read and watched -
-          books, videos, and ideas worth spreading.
+          This is where KeepSimple team members and friends share what they’ve
+          read and watched - books, videos, and ideas worth spreading.
         </Text>
         <Text className={styles.text} variant={TypographyVariant.TextRegular}>
-          The goal is to capture knowledge precisely: with descriptions, meaningful order, and clear
-          labels. Want your own Library?
+          The goal is to capture knowledge precisely: with descriptions,
+          meaningful order, and clear labels. Want your own Library?
         </Text>
         <Text className={styles.text} variant={TypographyVariant.TextRegular}>
           Tell us who you are and what your intent is - email{' '}

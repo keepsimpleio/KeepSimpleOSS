@@ -1,30 +1,52 @@
-'use client';
-
-import React, { JSX, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import classNames from 'classnames';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { JSX, useEffect, useRef, useState } from 'react';
 
-import { useAuth } from '@/context/AuthContext';
-import { useGlobalState } from '@/context/GlobalStateContext';
-import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
+import {
+  LIBRARY_SHELVES_REFETCH_EVENT,
+  navigationData,
+} from '@constants/library/common';
 
-import { SignInModal } from '@/components/molecules/SignInModal';
-import { AddShelfModal, ShelfType } from '@/components/molecules/AddShelfModal';
-import { UserDropDown } from '@/components/molecules/UserDropDown';
-import { TagType, Text, TypographyVariant } from '@/components/atoms/Text';
-import { Button, ButtonSize, ButtonType, IconPosition } from '@/components/molecules/Button';
+import type { ObjectType } from '@local-types/library/object';
 
-import { LIBRARY_SHELVES_REFETCH_EVENT, navigationData } from '@/constants/common';
-import { HeaderVariant, type HeaderProps } from './Header.types';
+import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
-import { PlusIcon, CloseIcon, LogoIcon, HamburgerIcon, ArrowIcon } from '@/assets/svg';
+import { createLibrary } from '@api/library/library/createLibrary';
+import { getLibraryIdByUsername } from '@api/library/library/getLibraryIdByUsername';
+import { createShelf } from '@api/library/shelf/createShelf';
+
+import {
+  ArrowIcon,
+  CloseIcon,
+  HamburgerIcon,
+  LogoIcon,
+  PlusIcon,
+} from '@icons/library/svg';
+
+import { useAuth } from '@components/Context/library/AuthContext';
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import {
+  TagType,
+  Text,
+  TypographyVariant,
+} from '@components/library/atoms/Text';
+import {
+  AddShelfModal,
+  ShelfType,
+} from '@components/library/molecules/AddShelfModal';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  IconPosition,
+} from '@components/library/molecules/Button';
+import { SignInModal } from '@components/library/molecules/SignInModal';
+import { UserDropDown } from '@components/library/molecules/UserDropDown';
+
+import { type HeaderProps,HeaderVariant } from './Header.types';
 
 import styles from './Header.module.scss';
-import { createShelf } from '@/app/api/shelf/createShelf';
-import { createLibrary } from '@/app/api/library/createLibrary';
-import { getLibraryIdByUsername } from '@/app/api/library/getLibraryIdByUsername';
-import type { ObjectType } from '@/types/object';
 
 const modalTypeToApi: Record<ShelfType, ObjectType> = {
   books: 'book',
@@ -35,13 +57,16 @@ const modalTypeToApi: Record<ShelfType, ObjectType> = {
 export function Header(props: HeaderProps): JSX.Element {
   const { className, variant } = props;
   const isMain = variant === HeaderVariant.Main;
-  const params = useParams();
-  const libraryRouteId = params?.username as string | undefined;
+  const router = useRouter();
+  const libraryRouteId = router.query?.userId as string | undefined;
 
   const menuRef = useRef<HTMLDivElement>(null);
   const { accountData, handleLogout } = useAuth();
-  const { isSidebarOpen, isGuestMode, toggleSidebar, currentShelves } = useGlobalState();
-  const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(null);
+  const { isSidebarOpen, isGuestMode, toggleSidebar, currentShelves } =
+    useGlobalState();
+  const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(
+    null,
+  );
 
   // Default to the first shelf as soon as the list lands; let the user
   // override by clicking, but don't clobber their choice when the list
@@ -51,8 +76,10 @@ export function Header(props: HeaderProps): JSX.Element {
       setSelectedJumpShelfId(null);
       return;
     }
-    setSelectedJumpShelfId((prev) =>
-      prev != null && currentShelves.some((s) => s.id === prev) ? prev : currentShelves[0].id
+    setSelectedJumpShelfId(prev =>
+      prev != null && currentShelves.some(s => s.id === prev)
+        ? prev
+        : currentShelves[0].id,
     );
   }, [currentShelves]);
 
@@ -101,7 +128,10 @@ export function Header(props: HeaderProps): JSX.Element {
     }
 
     if (!libraryId) {
-      console.warn('[Header] cannot add shelf — no library found for', libraryRouteId);
+      console.warn(
+        '[Header] cannot add shelf — no library found for',
+        libraryRouteId,
+      );
       return;
     }
 
@@ -132,10 +162,18 @@ export function Header(props: HeaderProps): JSX.Element {
   };
 
   return (
-    <header className={classNames(className, styles.header, { [styles.dashboard]: !isMain })}>
+    <header
+      className={classNames(className, styles.header, {
+        [styles.dashboard]: !isMain,
+      })}
+    >
       <div className={classNames(styles.wrapper, { container: isMain })}>
         <div className={classNames(styles.content)}>
-          <div className={styles.burger} role="button" onClick={openMenuToggler}>
+          <div
+            className={styles.burger}
+            role="button"
+            onClick={openMenuToggler}
+          >
             {isOpen ? <CloseIcon /> : <HamburgerIcon />}
           </div>
 
@@ -145,7 +183,9 @@ export function Header(props: HeaderProps): JSX.Element {
 
           <nav
             ref={menuRef}
-            className={classNames(styles.navigation, { [styles.active]: isMenuOpen })}
+            className={classNames(styles.navigation, {
+              [styles.active]: isMenuOpen,
+            })}
           >
             {navigationData.map(({ label, Icon, href }) => (
               <Link key={label} href={href} className={styles.item}>
@@ -154,7 +194,11 @@ export function Header(props: HeaderProps): JSX.Element {
               </Link>
             ))}
 
-            <div className={styles.close} role="button" onClick={openMenuToggler}>
+            <div
+              className={styles.close}
+              role="button"
+              onClick={openMenuToggler}
+            >
               <CloseIcon />
             </div>
           </nav>
@@ -180,12 +224,16 @@ export function Header(props: HeaderProps): JSX.Element {
         <>
           <div className={styles.divider} />
 
-          <div className={classNames(styles.controls, { [styles.guest]: isGuestMode })}>
+          <div
+            className={classNames(styles.controls, {
+              [styles.guest]: isGuestMode,
+            })}
+          >
             {!isGuestMode ? (
               <>
                 <Text className={styles.text}>Jump to →</Text>
                 <div className={styles.jumpButtons}>
-                  {currentShelves.map((shelf) => {
+                  {currentShelves.map(shelf => {
                     const isSelected = shelf.id === selectedJumpShelfId;
                     return (
                       <Button
@@ -226,12 +274,16 @@ export function Header(props: HeaderProps): JSX.Element {
               </>
             ) : (
               <>
-                <Text tag={TagType.H2} variant={TypographyVariant.TitleSecondaryBold}>
+                <Text
+                  tag={TagType.H2}
+                  variant={TypographyVariant.TitleSecondaryBold}
+                >
                   Welcome to Bryan’s hive
                 </Text>
                 <Text>
-                  Discover and explore curated collections on Brain and Psychology, along with an
-                  incredible playlist full of his favorite songs.
+                  Discover and explore curated collections on Brain and
+                  Psychology, along with an incredible playlist full of his
+                  favorite songs.
                 </Text>
               </>
             )}
@@ -239,7 +291,9 @@ export function Header(props: HeaderProps): JSX.Element {
         </>
       )}
 
-      {isOpen && <AddShelfModal onClose={modalToggler} onAddShelf={handleCreateShelf} />}
+      {isOpen && (
+        <AddShelfModal onClose={modalToggler} onAddShelf={handleCreateShelf} />
+      )}
       {isOpenModal && <SignInModal onClose={openLoginModalToogler} />}
     </header>
   );

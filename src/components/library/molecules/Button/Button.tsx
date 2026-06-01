@@ -1,13 +1,22 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
-import { ButtonProps, ButtonSize, ButtonType, IconPosition } from './Button.types';
+import {
+  TagType,
+  Text,
+  TypographyVariant,
+} from '@components/library/atoms/Text';
 
-import { TagType, Text, TypographyVariant } from '@/components/atoms/Text';
+import {
+  ButtonProps,
+  ButtonSize,
+  ButtonType,
+  IconPosition,
+} from './Button.types';
 
 import styles from './Button.module.scss';
 
-export const Button: React.FC<ButtonProps> = (props) => {
+export const Button: React.FC<ButtonProps> = props => {
   const {
     size = ButtonSize.Default,
     type = ButtonType.Primary,
@@ -29,7 +38,12 @@ export const Button: React.FC<ButtonProps> = (props) => {
       aria-label={ariaLabel}
       onClick={onClick}
       disabled={disabled}
-      className={classNames(styles.button, styles[size], styles[type], className)}
+      className={classNames(
+        styles.button,
+        styles[size],
+        styles[type],
+        className,
+      )}
     >
       {Icon && iconPosition === IconPosition.Left && Icon}
       {label && (

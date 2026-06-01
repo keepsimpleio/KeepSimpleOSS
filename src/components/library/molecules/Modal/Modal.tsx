@@ -1,23 +1,31 @@
-'use client';
-
-import React, { JSX, useCallback, useEffect, useId, useRef, useState } from 'react';
 import classNames from 'classnames';
+import React, {
+  JSX,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
+import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
+
+import { CloseIcon } from '@icons/library/svg';
+
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+
+import { Button, ButtonSize, ButtonType } from '../Button';
 import type { ModalProps } from './Modal.types';
 
-import { CloseIcon } from '@/assets/svg';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
-
 import styles from './Modal.module.scss';
-import { Button, ButtonSize, ButtonType } from '../Button';
 
 // Keep in sync with the fade-out duration in Modal.module.scss.
 const CLOSE_ANIMATION_MS = 180;
 
 export function Modal(props: ModalProps): JSX.Element {
-  const { className, title, wrapperClassName, onClose, closeRef, children } = props;
+  const { className, title, wrapperClassName, onClose, closeRef, children } =
+    props;
   const titleId = useId();
 
   const [isClosing, setIsClosing] = useState(false);
@@ -73,7 +81,9 @@ export function Modal(props: ModalProps): JSX.Element {
     return () => window.clearTimeout(timer);
   }, [isClosing, onClose]);
 
-  const handleBackdropPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handleBackdropPointerDown = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
     pressedOnBackdrop.current = event.target === event.currentTarget;
   };
 
@@ -132,6 +142,6 @@ export function Modal(props: ModalProps): JSX.Element {
         </div>
       </div>
     </>,
-    document.body
+    document.body,
   );
 }

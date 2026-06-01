@@ -1,12 +1,10 @@
-'use client';
-
-import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import { useDropzone, type FileRejection } from 'react-dropzone';
+import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
+import { type FileRejection,useDropzone } from 'react-dropzone';
 
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { CloseIcon, PlusIcon } from '@icons/library/svg';
 
-import { CloseIcon, PlusIcon } from '@/assets/svg';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { ImageDropzoneProps } from './ImageDropzone.types';
 
@@ -79,7 +77,7 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
         onChange?.(file);
       }
     },
-    [onChange, maxSize]
+    [onChange, maxSize],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -124,21 +122,34 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
           <div className={styles.preview}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={showFile ? (fileObjectUrl as string) : (existingPreviewUrl as string)}
+              src={
+                showFile
+                  ? (fileObjectUrl as string)
+                  : (existingPreviewUrl as string)
+              }
               alt={value?.name ?? 'Cover preview'}
               className={styles.previewImage}
             />
             <div className={styles.previewMeta}>
-              <Text variant={TypographyVariant.TextSmall} className={styles.fileName}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.fileName}
+              >
                 {value?.name ?? 'Current cover'}
               </Text>
               {value && (
-                <Text variant={TypographyVariant.TextTiny} className={styles.fileSize}>
+                <Text
+                  variant={TypographyVariant.TextTiny}
+                  className={styles.fileSize}
+                >
                   {formatBytes(value.size)}
                 </Text>
               )}
               {showExisting && (
-                <Text variant={TypographyVariant.TextTiny} className={styles.fileSize}>
+                <Text
+                  variant={TypographyVariant.TextTiny}
+                  className={styles.fileSize}
+                >
                   Drop a new image to replace
                 </Text>
               )}
@@ -159,7 +170,9 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
               <PlusIcon width={20} height={20} />
             </div>
             <Text variant={TypographyVariant.TextBase} className={styles.title}>
-              {isDragActive ? 'Drop the image here' : 'Click or drag image to upload'}
+              {isDragActive
+                ? 'Drop the image here'
+                : 'Click or drag image to upload'}
             </Text>
             <Text variant={TypographyVariant.TextSmall} className={styles.hint}>
               PNG or JPEG, up to {formatBytes(maxSize)}

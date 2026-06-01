@@ -1,23 +1,23 @@
-'use client';
-
+import { useSession } from 'next-auth/react';
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from 'react';
-import { useSession } from 'next-auth/react';
 
-import { getLibrariesList, getUserInfo } from '@/api/strapi';
-import { useAuth } from '@/context/AuthContext';
-import { getCookie } from '@/libraries/cookie';
+import type { StrapiSingleShelfEntry } from '@local-types/library/library';
+import type { IUser } from '@local-types/library/user';
 
-import type { IUser } from '@/types/user';
-import type { StrapiSingleShelfEntry } from '@/types/library';
+import { getCookie } from '@lib/library/cookie';
+
+import { getLibrariesList, getUserInfo } from '@api/library/strapi';
+
+import { useAuth } from '@components/Context/library/AuthContext';
 
 interface GlobalStateContextValue {
   isGuestMode: boolean;
@@ -39,7 +39,9 @@ interface GlobalStateContextValue {
   setCurrentShelves: (shelves: StrapiSingleShelfEntry[]) => void;
 }
 
-const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(undefined);
+const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(
+  undefined,
+);
 
 export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
@@ -50,7 +52,9 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [isUserLoading, setIsUserLoading] = useState(false);
   const [libraries, setLibraries] = useState<unknown>(null);
   const [isLibrariesLoading, setIsLibrariesLoading] = useState(false);
-  const [currentShelves, setCurrentShelves] = useState<StrapiSingleShelfEntry[]>([]);
+  const [currentShelves, setCurrentShelves] = useState<
+    StrapiSingleShelfEntry[]
+  >([]);
   const didAttemptUserLoad = useRef(false);
   const didAttemptLibrariesLoad = useRef(false);
 
@@ -108,8 +112,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     () => ({
       isGuestMode,
       isSidebarOpen,
-      toggleGuestMode: () => setIsGuestMode((prev) => !prev),
-      toggleSidebar: () => setIsSidebarOpen((prev) => !prev),
+      toggleGuestMode: () => setIsGuestMode(prev => !prev),
+      toggleSidebar: () => setIsSidebarOpen(prev => !prev),
       user: accountData,
       isUserLoading,
       refetchUser,
@@ -130,10 +134,14 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       refetchLibraries,
       currentShelves,
       setCurrentShelves,
-    ]
+    ],
   );
 
-  return <GlobalStateContext.Provider value={value}>{children}</GlobalStateContext.Provider>;
+  return (
+    <GlobalStateContext.Provider value={value}>
+      {children}
+    </GlobalStateContext.Provider>
+  );
 }
 
 export function useGlobalState(): GlobalStateContextValue {

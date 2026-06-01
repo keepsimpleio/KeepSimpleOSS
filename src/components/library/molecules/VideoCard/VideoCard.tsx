@@ -1,18 +1,25 @@
-import React, { JSX } from 'react';
-import Image from 'next/image';
+import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
+import Image from 'next/image';
+import React, { JSX } from 'react';
 
-import { VideoShadowIcon } from '@/assets/svg';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
-import { resolveStrapiUrl } from '@/utils/resolveStrapiUrl';
+import { VideoShadowIcon } from '@icons/library/svg';
+
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { VideoCardProps } from './VideoCard.types';
 
 import styles from './VideoCard.module.scss';
 
-export function VideoCard({ object, onClick, className }: VideoCardProps): JSX.Element {
+export function VideoCard({
+  object,
+  onClick,
+  className,
+}: VideoCardProps): JSX.Element {
   const { attributes } = object;
-  const coverUrl = resolveStrapiUrl(attributes.coverImage?.data?.attributes.url);
+  const coverUrl = resolveStrapiUrl(
+    attributes.coverImage?.data?.attributes.url,
+  );
   const title = attributes.title;
 
   const handleActivate = () => onClick?.(object);
@@ -36,7 +43,13 @@ export function VideoCard({ object, onClick, className }: VideoCardProps): JSX.E
       <div className={styles.thumbWrap}>
         <div className={styles.thumb}>
           {coverUrl ? (
-            <Image src={coverUrl} alt={title} fill sizes="231px" className={styles.coverImage} />
+            <Image
+              src={coverUrl}
+              alt={title}
+              fill
+              sizes="231px"
+              className={styles.coverImage}
+            />
           ) : (
             <div className={styles.coverPlaceholder} />
           )}
@@ -46,7 +59,10 @@ export function VideoCard({ object, onClick, className }: VideoCardProps): JSX.E
 
       <div className={styles.bar} aria-hidden />
 
-      <Text variant={TypographyVariant.TextBaseSemibold} className={styles.title}>
+      <Text
+        variant={TypographyVariant.TextBaseSemibold}
+        className={styles.title}
+      >
         {title}
       </Text>
     </div>

@@ -1,6 +1,6 @@
 /** Strapi REST shapes for `/api/libraries` with populated relations */
 
-import type { IObject } from '@/types/object';
+import type { IObject } from '@local-types/library/object';
 
 export interface StrapiPaginationMeta {
   page: number;

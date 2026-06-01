@@ -1,22 +1,31 @@
-'use client';
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
-
-import { ITag } from '@/types/tag';
+import { ITag } from '@local-types/library/tag';
 
 interface DashboardContextValue {
   tags: ITag[];
   setTags: (tags: ITag[]) => void;
 }
 
-const DashboardContext = createContext<DashboardContextValue | undefined>(undefined);
+const DashboardContext = createContext<DashboardContextValue | undefined>(
+  undefined,
+);
 
 interface DashboardProviderProps {
   children: ReactNode;
   initialTags?: ITag[];
 }
 
-export function DashboardProvider({ children, initialTags = [] }: DashboardProviderProps) {
+export function DashboardProvider({
+  children,
+  initialTags = [],
+}: DashboardProviderProps) {
   const [tags, setTags] = useState<ITag[]>(initialTags);
 
   const value = useMemo(
@@ -24,10 +33,14 @@ export function DashboardProvider({ children, initialTags = [] }: DashboardProvi
       tags,
       setTags,
     }),
-    [tags]
+    [tags],
   );
 
-  return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
+  return (
+    <DashboardContext.Provider value={value}>
+      {children}
+    </DashboardContext.Provider>
+  );
 }
 
 export function useDashboard(): DashboardContextValue {

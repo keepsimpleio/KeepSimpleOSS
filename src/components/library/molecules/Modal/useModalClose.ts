@@ -1,5 +1,3 @@
-'use client';
-
 import { useCallback, useRef } from 'react';
 
 // Wires a modal's own content buttons (Cancel/Close/etc.) into the Modal's

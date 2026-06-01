@@ -1,21 +1,23 @@
-'use client';
-
-import React, { useEffect, useMemo, useState } from 'react';
+import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibraries';
 import Image from 'next/image';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import { getLibrariesPaginated } from '@/api/strapi';
-import { HeaderVariant } from '@/components/organisms/Header/Header.types';
+import type { HomeLibraryCardView } from '@local-types/library/library';
 
-import { Button, ButtonSize, ButtonType } from '@/components/molecules/Button';
-import { Text, TypographyVariant } from '@/components/atoms/Text';
+import { getLibrariesPaginated } from '@api/library/strapi';
 
-import { Input } from '@/components/molecules/Input';
-import { Header } from '@/components/organisms/Header/Header';
-import { Pagination } from '@/components/molecules/Pagination';
-import { LibraryCard } from '@/components/organisms/LibraryCard';
-import { AboutLibraryModal } from '@/components/molecules/AboutLibraryModal';
-import type { HomeLibraryCardView } from '@/types/library';
-import { mapStrapiLibrariesResponseToCards } from '@/utils/mapStrapiLibraries';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { AboutLibraryModal } from '@components/library/molecules/AboutLibraryModal';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { Input } from '@components/library/molecules/Input';
+import { Pagination } from '@components/library/molecules/Pagination';
+import { Header } from '@components/library/organisms/Header/Header';
+import { HeaderVariant } from '@components/library/organisms/Header/Header.types';
+import { LibraryCard } from '@components/library/organisms/LibraryCard';
 
 import { HomeTemplateProps } from './Home.types';
 
@@ -93,7 +95,8 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
     if (section) {
       const offset = 48;
-      const sectionPosition = section.getBoundingClientRect().top + window.pageYOffset;
+      const sectionPosition =
+        section.getBoundingClientRect().top + window.pageYOffset;
 
       window.scrollTo({
         top: sectionPosition - offset,
@@ -112,7 +115,16 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   };
 
   const renderLibraryCards = currentLibraries.map(
-    ({ id, username, libraryName, description, bookCount, videoCount, songCount, avatar }) => (
+    ({
+      id,
+      username,
+      libraryName,
+      description,
+      bookCount,
+      videoCount,
+      songCount,
+      avatar,
+    }) => (
       <LibraryCard
         key={id}
         id={id}
@@ -124,7 +136,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
         songCount={songCount}
         avatar={avatar}
       />
-    )
+    ),
   );
 
   return (
@@ -153,7 +165,10 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
       <section className={styles.libraries} id={sectionId}>
         <div className="container">
           <div className={styles.controls}>
-            <Text className={styles.title} variant={TypographyVariant.TitlePrimary}>
+            <Text
+              className={styles.title}
+              variant={TypographyVariant.TitlePrimary}
+            >
               Libraries
             </Text>
             <Input
@@ -169,7 +184,9 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
           <div className={styles.content}>
             {isLoading && !isControlled ? (
-              <Text variant={TypographyVariant.TextBase}>Loading libraries…</Text>
+              <Text variant={TypographyVariant.TextBase}>
+                Loading libraries…
+              </Text>
             ) : (
               renderLibraryCards
             )}

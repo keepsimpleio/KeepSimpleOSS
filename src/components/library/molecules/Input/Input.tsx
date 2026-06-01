@@ -1,9 +1,9 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
+
+import { CloseIcon, SearchIcon } from '@icons/library/svg';
 
 import type { InputProps } from './Input.types';
-
-import { CloseIcon, SearchIcon } from '@/assets/svg';
 
 import styles from './Input.module.scss';
 

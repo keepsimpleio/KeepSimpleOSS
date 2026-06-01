@@ -1,5 +1,5 @@
-import type { StrapiSingleShelfEntry } from '@/types';
-import type { IObject } from '@/types/object';
+import type { StrapiSingleShelfEntry } from '@local-types/library';
+import type { IObject } from '@local-types/library/object';
 
 export interface ShelfProps {
   className?: string;
@@ -22,5 +22,9 @@ export interface ShelfProps {
    * Lets the library remove the object from the source shelf and add it to the
    * target shelf in the same render.
    */
-  onObjectMoved?: (fromShelfId: number, toShelfId: number, object: IObject) => void;
+  onObjectMoved?: (
+    fromShelfId: number,
+    toShelfId: number,
+    object: IObject,
+  ) => void;
 }
