@@ -134,7 +134,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
       <section className={styles.banner}>
         <Image
           className={styles.image}
-          src="/images/readmeImages/cover.png"
+          src="/library/images/readmeImages/cover.png"
           alt="Next.js logo"
           width={1980}
           height={900}

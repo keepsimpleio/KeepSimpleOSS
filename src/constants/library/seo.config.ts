@@ -4,7 +4,7 @@ export const DEFAULT_SEO = {
     'This is where KeepSimple team members and friends share what they’ve read and watched - books, videos, and ideas worth spreading.',
   siteName: 'keepSimple Library',
   url: 'https://keepsimple-library.com',
-  image: '/images/og-image.png',
+  image: '/library/images/og-image.png',
   favicon: '/favicon.ico',
   type: 'website',
   locale: 'en_US',

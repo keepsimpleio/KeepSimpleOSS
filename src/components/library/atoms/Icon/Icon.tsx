@@ -17,7 +17,7 @@ export function Icon(props: IconProps): JSX.Element {
       height={height}
       role="graphics-document"
     >
-      <use href={`/images/icons/all.svg#${name}`} />
+      <use href={`/library/images/icons/all.svg#${name}`} />
     </svg>
   );
 }
