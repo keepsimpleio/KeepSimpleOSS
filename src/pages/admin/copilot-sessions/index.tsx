@@ -21,6 +21,7 @@ type EnvTab = (typeof VALID_ENVS)[number];
 
 type Props = {
   envTab: EnvTab;
+  typedOnly: boolean;
   sessions: SessionRow[];
   hasUserText: Record<string, boolean>;
   enabled: boolean;
@@ -38,13 +39,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async ctx => {
     typeof q === 'string' && (VALID_ENVS as readonly string[]).includes(q)
       ? (q as EnvTab)
       : 'dev';
-  const sessions = await listSessions(envTab, 100);
+  const typedOnly = ctx.query.typed === '1';
+  const fetched = await listSessions(envTab, 100);
   const hasUserText = await hasUserQuestionsBulk(
-    sessions.map(s => s.session_id),
+    fetched.map(s => s.session_id),
   );
+  const sorted = [...fetched].sort((a, b) =>
+    b.started_at.localeCompare(a.started_at),
+  );
+  const sessions = typedOnly
+    ? sorted.filter(s => hasUserText[s.session_id])
+    : sorted;
   return {
     props: {
       envTab,
+      typedOnly,
       sessions,
       hasUserText,
       enabled: copilotEventsReadEnabled(),
@@ -67,6 +76,7 @@ function shortSid(sid: string): string {
 
 export default function CopilotSessionsIndex({
   envTab,
+  typedOnly,
   sessions,
   hasUserText,
   enabled,
@@ -95,11 +105,25 @@ export default function CopilotSessionsIndex({
               <code>COPILOT_EVENTS_READ_TOKEN</code>
             </span>
           )}
+          <Link
+            href={{
+              pathname: router.pathname,
+              query: typedOnly ? { env: envTab } : { env: envTab, typed: '1' },
+            }}
+            className={`${styles.typedToggle} ${
+              typedOnly ? styles.active : ''
+            }`}
+          >
+            {typedOnly ? 'typed only ✓' : 'typed only'}
+          </Link>
           <div className={styles.envPick}>
             {VALID_ENVS.map(e => (
               <Link
                 key={e}
-                href={{ pathname: router.pathname, query: { env: e } }}
+                href={{
+                  pathname: router.pathname,
+                  query: typedOnly ? { env: e, typed: '1' } : { env: e },
+                }}
                 className={e === envTab ? styles.active : ''}
               >
                 {e}

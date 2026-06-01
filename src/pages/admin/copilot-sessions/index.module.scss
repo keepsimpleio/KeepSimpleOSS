@@ -36,8 +36,24 @@
   font-weight: 500;
 }
 
-.envPick {
+.typedToggle {
   margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #444;
+  border: 1px solid #ddd;
+  background: #fff;
+  white-space: nowrap;
+
+  &.active {
+    background: #198754;
+    color: #fff;
+    border-color: #198754;
+  }
+}
+
+.envPick {
   display: flex;
   gap: 6px;
 
