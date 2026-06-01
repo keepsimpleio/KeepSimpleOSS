@@ -1,0 +1,73 @@
+.card {
+  // Without explicit border-box the 12px padding adds 24px to both dimensions,
+  // so the card rendered at 279×204 instead of the design's 255×181.
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 255px;
+  height: 181px;
+  padding: 12px;
+  background: var(--off-white);
+  border-radius: 0 0 20px 20px;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  overflow: hidden;
+
+  &:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--brown),
+      var(--card-shadow);
+  }
+}
+
+.thumbWrap {
+  position: relative;
+  width: 231px;
+  height: 125px;
+}
+
+.thumb {
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  overflow: hidden;
+}
+
+.coverImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--white);
+}
+
+.shadow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.bar {
+  width: 231px;
+  height: 6px;
+  background: var(--brown);
+}
+
+.title {
+  margin-top: 8px;
+  color: var(--gray-darkest);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
