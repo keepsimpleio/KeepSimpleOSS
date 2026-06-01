@@ -92,6 +92,23 @@ module.exports = withBundleAnalyzer({
   compiler: {
     removeConsole: process.env.NODE_ENV === 'prod',
   },
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'src/styles')],
+    // Library SCSS modules rely on placeholder selectors (e.g. %text-base)
+    // that the original app injected globally. Scope that injection to the
+    // migrated library files only so keepsimple's own SCSS stays untouched.
+    additionalData: (content, loaderContext) => {
+      const resourcePath = (loaderContext && loaderContext.resourcePath) || '';
+      const isLibraryModule =
+        /[\\/]src[\\/](components|layouts|pages)[\\/]library[\\/]/.test(
+          resourcePath,
+        );
+      if (isLibraryModule) {
+        return `@use "library/styles.scss" as *;\n${content}`;
+      }
+      return content;
+    },
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

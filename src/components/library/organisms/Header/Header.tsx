@@ -44,7 +44,7 @@ import {
 import { SignInModal } from '@components/library/molecules/SignInModal';
 import { UserDropDown } from '@components/library/molecules/UserDropDown';
 
-import { type HeaderProps,HeaderVariant } from './Header.types';
+import { type HeaderProps, HeaderVariant } from './Header.types';
 
 import styles from './Header.module.scss';
 
@@ -58,7 +58,7 @@ export function Header(props: HeaderProps): JSX.Element {
   const { className, variant } = props;
   const isMain = variant === HeaderVariant.Main;
   const router = useRouter();
-  const libraryRouteId = router.query?.userId as string | undefined;
+  const libraryRouteId = router.query?.username as string | undefined;
 
   const menuRef = useRef<HTMLDivElement>(null);
   const { accountData, handleLogout } = useAuth();
