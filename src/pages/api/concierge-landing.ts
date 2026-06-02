@@ -17,6 +17,61 @@ import {
 
 type LandingPayload = { text: string; suggestions: string[] };
 
+/* Cost hint ONLY — not an abuse control. This drops known crawlers and
+   header-less scripts so we don't pay for obvious machine traffic, but any
+   caller spoofing a browser UA bypasses it trivially. Real budget protection
+   is the per-IP rate limiter below. Greeting is non-critical — a dropped
+   caller just gets no line, never an error. */
+const BOT_UA_RE =
+  /bot|crawl|spider|slurp|mediapartners|ahrefs|semrush|mj12|dotbot|bingpreview|facebookexternalhit|embedly|slackbot|telegrambot|whatsapp|headless|phantomjs|python-requests|curl\/|wget|go-http-client|scrapy|yandex(?:bot)?|baidu|duckduckbot/i;
+
+function isBotUserAgent(ua: string | undefined): boolean {
+  if (!ua || !ua.trim()) return true;
+  return BOT_UA_RE.test(ua);
+}
+
+/* Per-IP sliding-window rate limit — the actual guard against budget
+   exhaustion on this paid endpoint. Prod is a long-running container, so the
+   map persists across requests; a restart just resets the windows. The UA
+   filter above is bypassable, this is not. */
+const RATE_LIMIT = 30;
+const RATE_WINDOW_MS = 60 * 60 * 1000;
+const RATE_SWEEP_AT = 5000;
+const ipHits = new Map<string, number[]>();
+
+function clientIp(req: NextApiRequest): string {
+  const xff = req.headers['x-forwarded-for'];
+  const raw = Array.isArray(xff) ? xff[0] : xff;
+  if (raw && raw.trim()) return raw.split(',')[0].trim();
+  return req.socket?.remoteAddress ?? 'unknown';
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const cutoff = now - RATE_WINDOW_MS;
+  if (ipHits.size > RATE_SWEEP_AT) {
+    ipHits.forEach((v, k) => {
+      const fresh = v.filter(t => t > cutoff);
+      if (fresh.length === 0) ipHits.delete(k);
+      else ipHits.set(k, fresh);
+    });
+  }
+  const hits = (ipHits.get(ip) ?? []).filter(t => t > cutoff);
+  if (hits.length >= RATE_LIMIT) {
+    ipHits.set(ip, hits);
+    return true;
+  }
+  hits.push(now);
+  ipHits.set(ip, hits);
+  return false;
+}
+
+const MAX_TITLE_LEN = 300;
+const MAX_PREV_LEN = 2000;
+function clampLen(s: string | undefined, max: number): string {
+  return typeof s === 'string' ? s.slice(0, max) : '';
+}
+
 async function callClaude(
   system: string,
   user: string,
@@ -268,6 +323,18 @@ export default async function handler(
     return res.status(200).json({ text: '' });
   }
 
+  const ua =
+    typeof req.headers['user-agent'] === 'string'
+      ? req.headers['user-agent']
+      : undefined;
+  if (isBotUserAgent(ua)) {
+    return res.status(200).json({ text: '' });
+  }
+
+  if (isRateLimited(clientIp(req))) {
+    return res.status(429).json({ text: '' });
+  }
+
   const { url, title, prevQuery, prevAnswer, lang, mode } = (req.body ??
     {}) as {
     url?: string;
@@ -299,11 +366,15 @@ export default async function handler(
       ? 'Канонический блок страницы (источник истины)'
       : 'Canonical page block (source of truth)';
 
+  const safeTitle = clampLen(title, MAX_TITLE_LEN);
+  const safePrevQuery = clampLen(prevQuery, MAX_PREV_LEN);
+  const safePrevAnswer = clampLen(prevAnswer, MAX_PREV_LEN);
+
   const userMsg = [
     `${identityHeader}:\n${identityBlock}`,
-    `Page title (raw, untrusted): ${title || '—'}`,
-    `User came from query: ${prevQuery || '—'}`,
-    `Prior bot answer: ${prevAnswer || '—'}`,
+    `Page title (raw, untrusted): ${safeTitle || '—'}`,
+    `User came from query: ${safePrevQuery || '—'}`,
+    `Prior bot answer: ${safePrevAnswer || '—'}`,
   ].join('\n');
 
   let result = await callClaude(system, userMsg);
