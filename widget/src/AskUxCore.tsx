@@ -796,6 +796,7 @@ const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
 
 const CURATED_LANDING_FIRED_KEY = 'ks_aux_curated_landing_v1';
 const ENGAGED_KEY = 'ks_aux_engaged_v1';
+const GREETED_PAGES_KEY = 'ks_aux_greeted_pages_v1';
 const curatedLandingPathKey = (rawUrl: string): string | null => {
   try {
     const u = new URL(rawUrl, window.location.origin);
@@ -834,22 +835,49 @@ const markCuratedLandingFired = (key: string) => {
   }
 };
 
-/* Engagement flag — set once the visitor actually uses the widget
-   (asks a question / clicks a card / picks a suggestion). Gates the
-   paid organic greeting so we only spend on visitors who've shown
-   interest, never on pure passers-by. Per-tab; clears on tab close. */
+/* Engagement — set ONLY when the visitor types a message themselves
+   (manual input). Clicking cards/suggestions/buttons does NOT count:
+   those are navigation, not a conversation. Gates the paid organic
+   greeting so we spend only on people who've actually talked to the
+   Copilot. Stored as a timestamp and treated as expired after 30 min
+   of no further typed input, so a long-idle tab starts neutral again.
+   Per-tab; clears on tab close. */
+const ENGAGED_TTL_MS = 30 * 60 * 1000;
+const markEngaged = () => {
+  try {
+    sessionStorage.setItem(ENGAGED_KEY, String(Date.now()));
+  } catch {
+    /* sessionStorage disabled — engagement not persisted across nav */
+  }
+};
 const hasEngaged = (): boolean => {
   try {
-    return sessionStorage.getItem(ENGAGED_KEY) === '1';
+    const ts = Number(sessionStorage.getItem(ENGAGED_KEY) || '0');
+    return ts > 0 && Date.now() - ts <= ENGAGED_TTL_MS;
   } catch {
     return false;
   }
 };
-const markEngaged = () => {
+
+/* Per-page greeting cache — once the organic greeting has fired for a
+   page in this tab session, never pay for it again on that page (revisits
+   and back/forth are free). Keyed by canonical path. */
+const hasGreetedPage = (key: string): boolean => {
   try {
-    sessionStorage.setItem(ENGAGED_KEY, '1');
+    const raw = sessionStorage.getItem(GREETED_PAGES_KEY) || '{}';
+    return !!JSON.parse(raw)[key];
   } catch {
-    /* sessionStorage disabled — engagement not persisted across nav */
+    return false;
+  }
+};
+const markGreetedPage = (key: string) => {
+  try {
+    const raw = sessionStorage.getItem(GREETED_PAGES_KEY) || '{}';
+    const obj = JSON.parse(raw);
+    obj[key] = Date.now();
+    sessionStorage.setItem(GREETED_PAGES_KEY, JSON.stringify(obj));
+  } catch {
+    /* sessionStorage disabled — greeting may re-fire on revisit */
   }
 };
 
@@ -2228,11 +2256,14 @@ export function AskUxCore({ lang }: { lang: Lang }) {
 
       /* Cost gate: the organic greeting is a paid AI call. Spend it
          only when the visitor is actually in the widget — panel open
-         AND already engaged (asked something / picked a card) this
-         session. Passers-by with the pill closed cost nothing, so the
-         bill no longer scales with raw visitor count. Curated landings
-         above are local (free) and stay ungated. */
+         AND they've typed a message themselves within the last 30 min.
+         Passers-by, button-only clickers and bots never type, so they
+         cost nothing. Then never pay twice for the same page this
+         session. Curated landings above are local (free) and ungated. */
       if (!openRef.current || !hasEngaged()) return;
+      const greetKey = canonicalPathKey(rawUrl);
+      if (hasGreetedPage(greetKey)) return;
+      markGreetedPage(greetKey);
 
       const ctrl = new AbortController();
       organicAbortRef.current = ctrl;
@@ -2937,7 +2968,6 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   };
 
   const runQuery = async (query: string, replaceTurnId?: string) => {
-    markEngaged();
     setLoading(true);
     const id = replaceTurnId ?? `${Date.now()}`;
     const newTurn: Turn = {
@@ -3103,13 +3133,15 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     if (e) e.preventDefault();
     const query = text.trim();
     if (!query || loading) return;
+    /* Manual typed input is the ONLY thing that enables the paid
+       organic greeting — and it refreshes the 30-min engagement clock. */
+    markEngaged();
     setText('');
     await runQuery(query);
   };
 
   const onCardClick = (citation: Citation) => {
     if (!citation.url) return;
-    markEngaged();
     trackEvent('card_click', { url: citation.url, type: citation.type });
     const tier: 'high' | 'mid' | 'low' = citation.nominated
       ? 'high'
