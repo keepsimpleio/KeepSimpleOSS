@@ -795,7 +795,7 @@ const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
 };
 
 const CURATED_LANDING_FIRED_KEY = 'ks_aux_curated_landing_v1';
-const ENGAGED_KEY = 'ks_aux_engaged_v1';
+const OPEN_KEY = 'ks_aux_open_v1';
 const GREETED_PAGES_KEY = 'ks_aux_greeted_pages_v1';
 const curatedLandingPathKey = (rawUrl: string): string | null => {
   try {
@@ -835,27 +835,23 @@ const markCuratedLandingFired = (key: string) => {
   }
 };
 
-/* Engagement — set ONLY when the visitor types a message themselves
-   (manual input). Clicking cards/suggestions/buttons does NOT count:
-   those are navigation, not a conversation. Gates the paid organic
-   greeting so we spend only on people who've actually talked to the
-   Copilot. Stored as a timestamp and treated as expired after 30 min
-   of no further typed input, so a long-idle tab starts neutral again.
-   Per-tab; clears on tab close. */
-const ENGAGED_TTL_MS = 30 * 60 * 1000;
-const markEngaged = () => {
+/* Widget open/closed — remembered per tab so the panel follows the
+   visitor across page loads (incl. hard reloads into UX Core / other
+   route groups). Opening the pill is a deliberate human gesture, so an
+   open panel is what gates the paid organic greeting. Clears on tab
+   close; a brand-new visit always starts closed. */
+const readOpenFlag = (): boolean => {
   try {
-    sessionStorage.setItem(ENGAGED_KEY, String(Date.now()));
-  } catch {
-    /* sessionStorage disabled — engagement not persisted across nav */
-  }
-};
-const hasEngaged = (): boolean => {
-  try {
-    const ts = Number(sessionStorage.getItem(ENGAGED_KEY) || '0');
-    return ts > 0 && Date.now() - ts <= ENGAGED_TTL_MS;
+    return sessionStorage.getItem(OPEN_KEY) === '1';
   } catch {
     return false;
+  }
+};
+const writeOpenFlag = (isOpen: boolean) => {
+  try {
+    sessionStorage.setItem(OPEN_KEY, isOpen ? '1' : '0');
+  } catch {
+    /* sessionStorage disabled — open state not remembered across nav */
   }
 };
 
@@ -1814,14 +1810,19 @@ const applyHostHighlight = (
 
 export function AskUxCore({ lang }: { lang: Lang }) {
   const initial = typeof window !== 'undefined' ? loadState() : null;
-  // Always boot closed. The widget should never reveal itself or its
-  // effects (host-page highlights, etc.) until the visitor explicitly
-  // opens the pill — even if the previous session ended with it open.
-  const [open, setOpen] = useState<boolean>(false);
+  // Restore the open/closed panel per tab so it follows the visitor
+  // across page loads (incl. hard reloads into UX Core). A brand-new
+  // visit (fresh tab) has no flag and boots closed.
+  const [open, setOpen] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? readOpenFlag() : false,
+  );
   /* Fresh mirror of `open` for the once-mounted nav effect, whose
-     closure would otherwise capture the initial (always-false) value. */
+     closure would otherwise capture the initial render's value. */
   const openRef = useRef(open);
   openRef.current = open;
+  useEffect(() => {
+    writeOpenFlag(open);
+  }, [open]);
   const [text, setText] = useState('');
   const [turns, setTurns] = useState<Turn[]>(initial?.turns ?? []);
   const [loading, setLoading] = useState(false);
@@ -2255,12 +2256,14 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       }
 
       /* Cost gate: the organic greeting is a paid AI call. Spend it
-         only when the visitor is actually in the widget — panel open
-         AND they've typed a message themselves within the last 30 min.
-         Passers-by, button-only clickers and bots never type, so they
-         cost nothing. Then never pay twice for the same page this
-         session. Curated landings above are local (free) and ungated. */
-      if (!openRef.current || !hasEngaged()) return;
+         only when the panel is open — opening the pill is a deliberate
+         human gesture, and the open panel now follows the visitor across
+         pages, so an open panel marks a real user. Passers-by and
+         crawlers never open it; the server greeting route also drops
+         known-bot user-agents as a backstop. Then never pay twice for
+         the same page this session. Curated landings above are local
+         (free) and ungated. */
+      if (!openRef.current) return;
       const greetKey = canonicalPathKey(rawUrl);
       if (hasGreetedPage(greetKey)) return;
       markGreetedPage(greetKey);
@@ -3133,9 +3136,6 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     if (e) e.preventDefault();
     const query = text.trim();
     if (!query || loading) return;
-    /* Manual typed input is the ONLY thing that enables the paid
-       organic greeting — and it refreshes the 30-min engagement clock. */
-    markEngaged();
     setText('');
     await runQuery(query);
   };
