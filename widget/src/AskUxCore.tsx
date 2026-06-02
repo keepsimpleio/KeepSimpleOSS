@@ -795,6 +795,7 @@ const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
 };
 
 const CURATED_LANDING_FIRED_KEY = 'ks_aux_curated_landing_v1';
+const ENGAGED_KEY = 'ks_aux_engaged_v1';
 const curatedLandingPathKey = (rawUrl: string): string | null => {
   try {
     const u = new URL(rawUrl, window.location.origin);
@@ -830,6 +831,25 @@ const markCuratedLandingFired = (key: string) => {
     sessionStorage.setItem(CURATED_LANDING_FIRED_KEY, JSON.stringify(obj));
   } catch {
     /* sessionStorage disabled — fall through; landing will fire each visit */
+  }
+};
+
+/* Engagement flag — set once the visitor actually uses the widget
+   (asks a question / clicks a card / picks a suggestion). Gates the
+   paid organic greeting so we only spend on visitors who've shown
+   interest, never on pure passers-by. Per-tab; clears on tab close. */
+const hasEngaged = (): boolean => {
+  try {
+    return sessionStorage.getItem(ENGAGED_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+const markEngaged = () => {
+  try {
+    sessionStorage.setItem(ENGAGED_KEY, '1');
+  } catch {
+    /* sessionStorage disabled — engagement not persisted across nav */
   }
 };
 
@@ -1770,6 +1790,10 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   // effects (host-page highlights, etc.) until the visitor explicitly
   // opens the pill — even if the previous session ended with it open.
   const [open, setOpen] = useState<boolean>(false);
+  /* Fresh mirror of `open` for the once-mounted nav effect, whose
+     closure would otherwise capture the initial (always-false) value. */
+  const openRef = useRef(open);
+  openRef.current = open;
   const [text, setText] = useState('');
   const [turns, setTurns] = useState<Turn[]>(initial?.turns ?? []);
   const [loading, setLoading] = useState(false);
@@ -2201,6 +2225,14 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         }, 2200);
         return;
       }
+
+      /* Cost gate: the organic greeting is a paid AI call. Spend it
+         only when the visitor is actually in the widget — panel open
+         AND already engaged (asked something / picked a card) this
+         session. Passers-by with the pill closed cost nothing, so the
+         bill no longer scales with raw visitor count. Curated landings
+         above are local (free) and stay ungated. */
+      if (!openRef.current || !hasEngaged()) return;
 
       const ctrl = new AbortController();
       organicAbortRef.current = ctrl;
@@ -2905,6 +2937,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   };
 
   const runQuery = async (query: string, replaceTurnId?: string) => {
+    markEngaged();
     setLoading(true);
     const id = replaceTurnId ?? `${Date.now()}`;
     const newTurn: Turn = {
@@ -3076,6 +3109,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
 
   const onCardClick = (citation: Citation) => {
     if (!citation.url) return;
+    markEngaged();
     trackEvent('card_click', { url: citation.url, type: citation.type });
     const tier: 'high' | 'mid' | 'low' = citation.nominated
       ? 'high'
