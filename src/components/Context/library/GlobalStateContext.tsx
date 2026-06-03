@@ -10,12 +10,16 @@ import {
   useState,
 } from 'react';
 
-import type { StrapiSingleShelfEntry } from '@local-types/library/library';
+import type {
+  StrapiLibrariesResponse,
+  StrapiSingleShelfEntry,
+} from '@local-types/library/library';
 import type { IUser } from '@local-types/library/user';
 
 import { getCookie } from '@lib/library/cookie';
 
-import { getLibrariesList, getUserInfo } from '@api/library/strapi';
+import { getLibrariesList } from '@api/library/getLibrariesList';
+import { getUserInfo } from '@api/library/user/getUserInfo';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 
@@ -27,7 +31,7 @@ interface GlobalStateContextValue {
   user: IUser | null;
   isUserLoading: boolean;
   refetchUser: () => Promise<void>;
-  libraries: unknown | null;
+  libraries: StrapiLibrariesResponse | null;
   isLibrariesLoading: boolean;
   refetchLibraries: () => Promise<void>;
   /**
@@ -50,7 +54,9 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserLoading, setIsUserLoading] = useState(false);
-  const [libraries, setLibraries] = useState<unknown>(null);
+  const [libraries, setLibraries] = useState<StrapiLibrariesResponse | null>(
+    null,
+  );
   const [isLibrariesLoading, setIsLibrariesLoading] = useState(false);
   const [currentShelves, setCurrentShelves] = useState<
     StrapiSingleShelfEntry[]
@@ -71,16 +77,12 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const refetchLibraries = useCallback(async () => {
     setIsLibrariesLoading(true);
     try {
-      const data = await getLibrariesList();
+      const data = await getLibrariesList<StrapiLibrariesResponse>();
       setLibraries(data);
     } finally {
       setIsLibrariesLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    refetchLibraries();
-  }, [refetchLibraries]);
 
   useEffect(() => {
     const hasToken = Boolean(getCookie('accessToken'));

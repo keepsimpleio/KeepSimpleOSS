@@ -23,7 +23,7 @@
   outline: none;
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px #017ccc;
+    box-shadow: 0 0 0 2px var(--focus-ring);
     border-radius: 2px;
   }
 }

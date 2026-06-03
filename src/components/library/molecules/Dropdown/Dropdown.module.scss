@@ -87,6 +87,15 @@
   overflow: visible;
 }
 
+// Portaled into document.body, so it's positioned against the viewport with the
+// trigger's live rect. Only top/left/width are dynamic (set inline from
+// getBoundingClientRect); the fixed positioning + stacking are constant.
+.menuPortal {
+  position: fixed;
+  right: auto;
+  z-index: 1500;
+}
+
 .optionWrapper {
   position: relative;
 

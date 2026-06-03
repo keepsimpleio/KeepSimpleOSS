@@ -68,16 +68,12 @@ export function Dropdown(props: DropdownProps): JSX.Element {
 
   const menuContent = (
     <div
-      className={classNames(styles.menu, menuClassName)}
+      className={classNames(styles.menu, menuClassName, {
+        [styles.menuPortal]: portal && menuPos,
+      })}
       style={
         portal && menuPos
-          ? {
-              position: 'fixed',
-              top: menuPos.top,
-              left: menuPos.left,
-              width: menuPos.width,
-              zIndex: 1500,
-            }
+          ? { top: menuPos.top, left: menuPos.left, width: menuPos.width }
           : undefined
       }
       // Portaled menu sits outside dropdownRef, so useClickOutside would close

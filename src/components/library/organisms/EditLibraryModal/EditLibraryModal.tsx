@@ -14,10 +14,10 @@ import { useForm } from 'react-hook-form';
 import type { IUpdateLibraryPayload } from '@local-types/library/library';
 import type { IUpdateMeErrorBody } from '@local-types/library/user';
 
-import { getMyLibrary } from '@api/library/library/getMyLibrary';
-import { updateLibrary } from '@api/library/library/updateLibrary';
-import { getUserInfo } from '@api/library/strapi';
+import { getMyLibrary } from '@api/library/getMyLibrary';
+import { updateLibrary } from '@api/library/updateLibrary';
 import { uploadFile } from '@api/library/upload/uploadFile';
+import { getUserInfo } from '@api/library/user/getUserInfo';
 import { updateMe } from '@api/library/user/updateMe';
 
 import { useAuth } from '@components/Context/library/AuthContext';

@@ -26,7 +26,11 @@ type UserProfileProps = {
 const labels = {
   en: { myLibrary: 'My Library', settings: 'Settings', logout: 'Log out' },
   ru: { myLibrary: 'Моя библиотека', settings: 'Настройки', logout: 'Выйти' },
-  hy: { myLibrary: 'My Library', settings: 'Settings', logout: 'Log out' },
+  hy: {
+    myLibrary: 'Իմ գրադարանը',
+    settings: 'Կարգավորումներ',
+    logout: 'Դուրս գալ',
+  },
 };
 
 const UserProfile: FC<UserProfileProps> = ({

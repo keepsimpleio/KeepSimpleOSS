@@ -11,7 +11,7 @@ import React, {
 
 import { IUser } from '@local-types/library/user';
 
-import { getCookie } from '@lib/library/cookie';
+import { getCookie, removeCookie } from '@lib/library/cookie';
 
 import { logout } from '@api/auth';
 
@@ -63,8 +63,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       await signOut({ redirect: false });
 
       sessionStorage.clear();
-      document.cookie =
-        'next-auth.session-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      removeCookie('next-auth.session-token');
 
       setTimeout(() => {
         router.replace(`/auth?provider=${provider}`);
@@ -76,8 +75,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const handleLogout = useCallback(() => {
     logout();
-    const secure = window.location.protocol === 'https:' ? ' Secure;' : '';
-    document.cookie = `accessToken=; path=/;${secure} SameSite=Strict;`;
+    removeCookie('accessToken');
+    setToken(null);
+    setAccountData(null);
   }, []);
 
   useEffect(() => {

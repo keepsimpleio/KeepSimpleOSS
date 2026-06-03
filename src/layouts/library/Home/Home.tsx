@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import type { HomeLibraryCardView } from '@local-types/library/library';
 
-import { getLibrariesPaginated } from '@api/library/strapi';
+import { getLibrariesPaginated } from '@api/library/getLibrariesPaginated';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AboutLibraryModal } from '@components/library/molecules/AboutLibraryModal';

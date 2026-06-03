@@ -8,13 +8,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { KEEPSIMPLE_URL } from '@constants/library/common';
 
-import type {
-  ILibrary,
-  StrapiLibrariesResponse,
-} from '@local-types/library/library';
+import type { ILibrary } from '@local-types/library/library';
 import { ITagAttributes } from '@local-types/library/tag';
 
-import { getMyLibrary } from '@api/library/library/getMyLibrary';
+import { getMyLibrary } from '@api/library/getMyLibrary';
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
 import { getTagsList } from '@api/library/tag/getTagsList';
@@ -74,18 +71,12 @@ export function Sidebar() {
   const currentLibraryId = pathname?.split('/').pop() || '';
 
   const libraryCards = useMemo(() => {
-    if (!libraries || typeof libraries !== 'object' || !('data' in libraries)) {
-      return [];
-    }
-
-    const res = libraries as StrapiLibrariesResponse;
-
-    if (!Array.isArray(res.data)) {
+    if (!libraries || !Array.isArray(libraries.data)) {
       return [];
     }
 
     return mapStrapiLibrariesResponseToCards(
-      res,
+      libraries,
       process.env.NEXT_PUBLIC_STRAPI,
     );
   }, [libraries]);

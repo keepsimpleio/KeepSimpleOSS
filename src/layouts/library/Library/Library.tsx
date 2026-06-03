@@ -15,10 +15,10 @@ import type {
 } from '@local-types/library/library';
 import type { IObject, ObjectType } from '@local-types/library/object';
 
-import { createLibrary } from '@api/library/library/createLibrary';
-import { getLibraryIdByUsername } from '@api/library/library/getLibraryIdByUsername';
+import { createLibrary } from '@api/library/createLibrary';
+import { getLibraryIdByUsername } from '@api/library/getLibraryIdByUsername';
+import { getSingleLibrary } from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
-import { getSingleLibrary } from '@api/library/strapi';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';

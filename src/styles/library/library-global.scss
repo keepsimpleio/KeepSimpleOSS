@@ -4,12 +4,12 @@
 // - variables.scss  -> :root custom properties (colors, shadows, fonts).
 //                      keepsimple defines no :root vars, so there are no
 //                      collisions; harmless on non-library pages.
-// - fonts.scss      -> @font-face for 'Source Serif 4' (referenced by
-//                      --font-source-serif), self-hosted from /public/fonts.
 // - animations.scss -> @keyframes used by library modals.
 // - global.scss     -> base resets/element styles, scoped under `.library`
 //                      so they never affect the rest of the site.
+//
+// The 'Source Serif 4' @font-face (referenced by --font-source-serif) lives in
+// styles/globals.scss alongside the other Source Serif faces — not here.
 @use './variables.scss';
-@use './fonts.scss';
 @use './animations.scss';
 @use './global.scss';
