@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
-import { type FileRejection,useDropzone } from 'react-dropzone';
+import { type FileRejection, useDropzone } from 'react-dropzone';
 
 import { CloseIcon, PlusIcon } from '@icons/library/svg';
 
@@ -33,17 +33,19 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
   } = props;
 
   const [error, setError] = useState<string | null>(null);
-  const [fileObjectUrl, setFileObjectUrl] = useState<string | null>(null);
 
+  // Derive the blob URL synchronously so the preview appears in the same render
+  // the file is picked. The previous effect-then-setState approach left a
+  // one-render gap where neither the file nor the existing preview showed — most
+  // visible when replacing a cover, where the dropzone flashed back to empty.
+  const fileObjectUrl = useMemo(
+    () => (value ? URL.createObjectURL(value) : null),
+    [value],
+  );
   useEffect(() => {
-    if (!value) {
-      setFileObjectUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(value);
-    setFileObjectUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [value]);
+    if (!fileObjectUrl) return;
+    return () => URL.revokeObjectURL(fileObjectUrl);
+  }, [fileObjectUrl]);
 
   const acceptMap = useMemo(() => {
     return accept.reduce<Record<string, string[]>>((acc, mime) => {

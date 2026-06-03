@@ -74,13 +74,20 @@ export function ObjectOverviewModal(
     isOwner,
     ownerUsername,
     shelfObjects,
+    defaultShelfId,
     onClose,
     onUpdated,
     onDeleted,
+    onObjectsReordered,
   } = props;
   const { id, attributes } = object;
   const objectType = attributes.type;
   const config = overviewConfigByType[objectType];
+  // Audio/video titles double as a hidden link to the user-provided source URL.
+  const titleHref =
+    (objectType === 'audio' || objectType === 'video') && attributes.sourceUrl
+      ? attributes.sourceUrl
+      : null;
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -282,6 +289,7 @@ export function ObjectOverviewModal(
         isCreate={false}
         object={object}
         shelfObjects={shelfObjects}
+        defaultShelfId={defaultShelfId}
         onClose={() => {
           setEditing(false);
           onClose();
@@ -289,6 +297,7 @@ export function ObjectOverviewModal(
         onCreated={updated => {
           onUpdated?.(updated);
         }}
+        onReordered={onObjectsReordered}
       />
     );
   }
@@ -419,13 +428,30 @@ export function ObjectOverviewModal(
           </div>
 
           <div className={styles.right}>
-            <Text
-              tag={TagType.H3}
-              variant={TypographyVariant.TitleSecondaryBold}
-              className={styles.objectTitle}
-            >
-              {attributes.title}
-            </Text>
+            {titleHref ? (
+              <a
+                href={titleHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.objectTitleLink}
+              >
+                <Text
+                  tag={TagType.H3}
+                  variant={TypographyVariant.TitleSecondaryBold}
+                  className={styles.objectTitle}
+                >
+                  {attributes.title}
+                </Text>
+              </a>
+            ) : (
+              <Text
+                tag={TagType.H3}
+                variant={TypographyVariant.TitleSecondaryBold}
+                className={styles.objectTitle}
+              >
+                {attributes.title}
+              </Text>
+            )}
 
             {attributes.author && (
               <div className={styles.row}>

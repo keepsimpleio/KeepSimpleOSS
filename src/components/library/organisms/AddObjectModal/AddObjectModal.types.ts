@@ -1,9 +1,19 @@
-import type { IObject,ObjectType } from '@local-types/library/object';
+import type {
+  IObject,
+  IReorderObjectEntry,
+  ObjectType,
+} from '@local-types/library/object';
 
 export interface AddObjectModalProps {
   objectType: ObjectType;
   onClose: () => void;
   onCreated?: (created: IObject) => void;
+  /**
+   * Fired with the full step-2 drag order after a successful save so the
+   * parent can apply the new `order` to its local objects immediately (the
+   * persisted order otherwise only shows after a refetch).
+   */
+  onReordered?: (ordered: IReorderObjectEntry[]) => void;
   /**
    * Mode flag. `true` (default) creates a new object via POST.
    * `false` opens an existing object for view/edit and submits via PUT.

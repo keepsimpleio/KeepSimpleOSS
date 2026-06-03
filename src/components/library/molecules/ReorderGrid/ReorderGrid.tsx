@@ -1,6 +1,6 @@
-// Reorder persistence is not wired yet — drag updates the local list only.
-// Backend needs a positional-update endpoint (or `order` on shelf.objects)
-// before we can send the new order on submit.
+// Generic, presentational grid: drag updates the caller's list via `onReorder`.
+// Persistence lives with the consumer — AddObjectModal sends the final order to
+// POST /api/objects/reorder on submit.
 
 import {
   closestCenter,
@@ -39,8 +39,12 @@ import type {
 
 import styles from './ReorderGrid.module.scss';
 
-function SortableCard(props: { item: ReorderItem; shape: ReorderItemShape }) {
-  const { item, shape } = props;
+function SortableCard(props: {
+  item: ReorderItem;
+  shape: ReorderItemShape;
+  position: number;
+}) {
+  const { item, shape, position } = props;
   const {
     attributes,
     listeners,
@@ -62,26 +66,33 @@ function SortableCard(props: { item: ReorderItem; shape: ReorderItemShape }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={classNames(styles.card, styles[shape], {
+      className={classNames(styles.cardWrap, {
         [styles.current]: item.isCurrent,
       })}
-      {...attributes}
-      {...listeners}
     >
-      <div className={styles.cover}>
-        {item.coverUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.coverUrl}
-            alt={item.title}
-            className={styles.coverImage}
-          />
-        ) : (
-          <div className={styles.coverPlaceholder} aria-hidden="true" />
-        )}
+      <div
+        className={classNames(styles.card, styles[shape])}
+        {...attributes}
+        {...listeners}
+      >
+        <div className={styles.cover}>
+          {item.coverUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={item.coverUrl}
+              alt={item.title}
+              className={styles.coverImage}
+              // Suppress the browser's native image drag-ghost, which would
+              // otherwise preempt dnd-kit's pointer drag and break reordering.
+              draggable={false}
+            />
+          ) : (
+            <div className={styles.coverPlaceholder} aria-hidden="true" />
+          )}
+        </div>
       </div>
-      <Text variant={TypographyVariant.TextSmall} className={styles.title}>
-        {item.title}
+      <Text variant={TypographyVariant.TextSmall} className={styles.position}>
+        {position}
       </Text>
     </div>
   );
@@ -130,8 +141,13 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
             strategy={rectSortingStrategy}
           >
             <div className={styles.grid}>
-              {items.map(item => (
-                <SortableCard key={item.id} item={item} shape={itemShape} />
+              {items.map((item, index) => (
+                <SortableCard
+                  key={item.id}
+                  item={item}
+                  shape={itemShape}
+                  position={index + 1}
+                />
               ))}
             </div>
           </SortableContext>

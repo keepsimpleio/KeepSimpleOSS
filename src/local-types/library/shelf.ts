@@ -43,3 +43,12 @@ export interface IUpdateShelfPayload {
   visibility?: ShelfVisibility;
   order?: number;
 }
+
+// Reorder endpoint takes a RAW body that is a bare array (no `{ data }`
+// wrapper): each shelf's new position.
+export interface IReorderShelfEntry {
+  id: number;
+  order: number;
+}
+
+export type IReorderShelvesPayload = IReorderShelfEntry[];

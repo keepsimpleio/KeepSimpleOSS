@@ -34,6 +34,8 @@ export interface IObjectScalarFields {
 export interface IObjectAttributes extends IObjectScalarFields {
   /** Server-derived from `shelf.name`. Read-only from the client. */
   shelfName?: string;
+  /** Position within its shelf. Backend default-sorts objects by `order` ASC. */
+  order?: number;
   coverImage?: IStrapiRelation<IMedia>;
   tags?: IStrapiRelationList<ITagRef>;
   shelf?: IStrapiRelation<IShelfRef>;
@@ -64,3 +66,15 @@ export type IUpdateObjectPayload = Partial<
 };
 
 export type IObjectSingleResponse = IStrapiSingleResponse<IObject>;
+
+// Reorder endpoint takes a RAW body (no `{ data }` wrapper): the shelf the
+// objects belong to plus each object's new position.
+export interface IReorderObjectEntry {
+  id: number;
+  order: number;
+}
+
+export interface IReorderObjectsPayload {
+  shelfId: number;
+  objects: IReorderObjectEntry[];
+}

@@ -5,13 +5,14 @@ import {
   type BookFormData,
   getSchemaForType,
 } from '@utils/library/schema/addObjectSchema';
-import React, { JSX, useEffect, useMemo, useState } from 'react';
-import { Controller, type SubmitHandler,useForm } from 'react-hook-form';
+import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
+import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
 
 import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
 
 import { createObject } from '@api/library/object/createObject';
+import { reorderObjects } from '@api/library/object/reorderObjects';
 import { updateObject } from '@api/library/object/updateObject';
 import { getShelvesList } from '@api/library/shelf/getShelvesList';
 import { getTagsList } from '@api/library/tag/getTagsList';
@@ -72,6 +73,23 @@ function buildDefaults(
 
 const DRAFT_REORDER_ID = 'draft-new';
 
+// Pull the status + Strapi error message out of an axios failure so a rejected
+// reorder reports *why* (e.g. 403 permission, 400 "All objects must belong to
+// the given shelf") instead of vanishing into a status-less console line.
+function describeReorderError(err: unknown): {
+  status?: number;
+  body?: unknown;
+  message: string;
+} {
+  const response = (err as { response?: { status?: number; data?: unknown } })
+    ?.response;
+  const body = response?.data;
+  const message =
+    (body as { error?: { message?: string } })?.error?.message ??
+    (err instanceof Error ? err.message : 'Unknown error');
+  return { status: response?.status, body, message };
+}
+
 function shelfObjectsToReorderItems(
   objects: IObject[] | undefined,
 ): ReorderItem[] {
@@ -90,6 +108,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     objectType,
     onClose,
     onCreated,
+    onReordered,
     isCreate = true,
     object,
     defaultShelfId,
@@ -153,15 +172,33 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         color: t.attributes.color,
       }));
       setTagOptions(opts);
-
-      if (editing && object?.attributes.tags?.data?.length) {
-        const presetIds = new Set(object.attributes.tags.data.map(t => t.id));
-        setSelectedTags(opts.filter(o => presetIds.has(o.id)));
-      }
     });
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  // Preset the object's existing tags exactly once, from the object's OWN
+  // populated tag data — not by filtering the fetched options. An unpublished
+  // tag won't appear in getTagsList, so filtering against it would silently drop
+  // the tag; because save backfills the relation from `selectedTags`, that
+  // dropped tag would be wiped on the next edit. Seeding from the object keeps
+  // every existing tag, and the ref guard stops a late re-render (e.g. a new
+  // `object` reference) from clobbering the user's in-progress changes.
+  const didPresetTags = useRef(false);
+  useEffect(() => {
+    if (didPresetTags.current) return;
+    if (!editing) return;
+    const existing = object?.attributes.tags?.data;
+    if (!existing?.length) return;
+    didPresetTags.current = true;
+    setSelectedTags(
+      existing.map(t => ({
+        id: t.id,
+        name: t.attributes.name,
+        color: t.attributes.color,
+      })),
+    );
   }, [editing, object]);
 
   useEffect(() => {
@@ -223,12 +260,15 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       const tags =
         selectedTags.length > 0 ? selectedTags.map(t => t.id) : undefined;
+      // Prefer the user's explicit shelf choice (move-to dropdown / locked add
+      // mode), then fall back to the shelf id the parent passed. The fallback
+      // matters in edit mode: if the object's `shelf` relation wasn't populated,
+      // `selectedShelfId` never resolves and the reorder below would silently
+      // skip — `defaultShelfId` keeps a valid `shelfId` in the payload.
       const shelf =
-        shelfLocked && defaultShelfId != null
-          ? defaultShelfId
-          : config.hasShelf && selectedShelfId
-            ? Number(selectedShelfId)
-            : undefined;
+        config.hasShelf && selectedShelfId
+          ? Number(selectedShelfId)
+          : (defaultShelfId ?? undefined);
 
       let resultObject: IObject;
 
@@ -345,7 +385,55 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         };
       }
 
+      // Land the created/updated object in the parent's list first so the
+      // reorder below can apply `order` to a state that already contains it.
       onCreated?.(resultObject);
+
+      // Persist the step-2 drag order. The draft placeholder stands in for the
+      // object we just created/updated, so map it to its real id.
+      if (shelf != null && reorderItems.length > 1) {
+        const orderedObjects = reorderItems
+          .map((item, index) => {
+            const id =
+              item.id === DRAFT_REORDER_ID
+                ? resultObject.id
+                : Number(item.id.replace('object-', ''));
+            return Number.isFinite(id) ? { id, order: index } : null;
+          })
+          .filter((entry): entry is { id: number; order: number } => !!entry);
+
+        // Optimistically push the new order to the parent so the shelf
+        // re-sequences immediately, then persist. Persistence is best-effort:
+        // the object itself is already saved, so a reorder failure shouldn't
+        // surface as a save failure — the next refetch reconciles.
+        onReordered?.(orderedObjects);
+        try {
+          await reorderObjects({ shelfId: shelf, objects: orderedObjects });
+        } catch (reorderError) {
+          // The object itself is already saved, so don't lose that work — but
+          // don't pretend the reorder landed either. A silent swallow here hid
+          // exactly the "drag order doesn't stick after refresh" bug: the
+          // optimistic update shows the new order in-session, then a refresh
+          // reverts it because this write never landed. Log status + response
+          // body (the exact Strapi message — e.g. 403 permission, 400 "objects
+          // must belong to the shelf"), roll the parent back to the last-known
+          // server order, and tell the user the order didn't apply.
+          const { status, body, message } = describeReorderError(reorderError);
+          console.error(
+            '[AddObjectModal] object reorder failed to persist',
+            { shelfId: shelf, objects: orderedObjects, status, body },
+            reorderError,
+          );
+          onReordered?.(
+            shelfObjects?.map((o, index) => ({ id: o.id, order: index })) ?? [],
+          );
+          setSubmitError(
+            `Your ${objectType} was saved, but the new order couldn't be applied: ${message}`,
+          );
+          return;
+        }
+      }
+
       setShowSuccess(true);
     } catch (e) {
       const message =

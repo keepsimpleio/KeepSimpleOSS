@@ -1,4 +1,4 @@
-import type { IObject } from '@local-types/library/object';
+import type { IObject, IReorderObjectEntry } from '@local-types/library/object';
 
 export interface ObjectOverviewModalProps {
   /** Full populated object (coverImage, tags, shelf). */
@@ -20,8 +20,16 @@ export interface ObjectOverviewModalProps {
    * the reorder grid in step 2 can render the shelf's real contents.
    */
   shelfObjects?: IObject[];
+  /**
+   * Id of the shelf this object lives on. Forwarded to the edit modal as a
+   * fallback shelf id so a step-2 reorder can build a valid payload even when
+   * the object's `shelf` relation isn't populated.
+   */
+  defaultShelfId?: number;
   /** Fired after a successful edit. */
   onUpdated?: (object: IObject) => void;
   /** Fired after a successful delete. */
   onDeleted?: (id: number) => void;
+  /** Forwarded to the edit modal so a step-2 reorder re-sequences the shelf. */
+  onObjectsReordered?: (ordered: IReorderObjectEntry[]) => void;
 }

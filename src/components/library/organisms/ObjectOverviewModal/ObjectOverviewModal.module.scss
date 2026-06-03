@@ -172,6 +172,17 @@
   word-break: break-word;
 }
 
+.objectTitleLink {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover .objectTitle,
+  &:focus-visible .objectTitle {
+    text-decoration: underline;
+  }
+}
+
 .row {
   display: flex;
   flex-direction: column;
