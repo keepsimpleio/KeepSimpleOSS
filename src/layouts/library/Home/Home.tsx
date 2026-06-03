@@ -15,8 +15,6 @@ import {
 } from '@components/library/molecules/Button';
 import { Input } from '@components/library/molecules/Input';
 import { Pagination } from '@components/library/molecules/Pagination';
-import { Header } from '@components/library/organisms/Header/Header';
-import { HeaderVariant } from '@components/library/organisms/Header/Header.types';
 import { LibraryCard } from '@components/library/organisms/LibraryCard';
 
 import { HomeTemplateProps } from './Home.types';
@@ -140,9 +138,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   );
 
   return (
-    <main>
-      <Header variant={HeaderVariant.Main} />
-
+    <main className="library">
       <section className={styles.banner}>
         <Image
           className={styles.image}

@@ -11,6 +11,11 @@ import {
   VideoIcon,
 } from '@icons/library/svg';
 
+// Frontend gate for the Library feature. Only the exact string 'true' enables
+// it; unset/'false'/anything else stays disabled so a typo can't ship it to prod.
+export const isLibraryEnabled = (): boolean =>
+  process.env.NEXT_PUBLIC_ENABLE_LIBRARY === 'true';
+
 export const title = 'Library';
 
 export const KEEPSIMPLE_URL = 'https://keepsimple.io';
@@ -69,3 +74,7 @@ export const navigationData: {
 ];
 
 export const LIBRARY_SHELVES_REFETCH_EVENT = 'library-shelves-refetch';
+
+// Backend caps a library at 21 shelves; the Add shelf control disables once a
+// library reaches this count.
+export const MAX_SHELVES_PER_LIBRARY = 21;

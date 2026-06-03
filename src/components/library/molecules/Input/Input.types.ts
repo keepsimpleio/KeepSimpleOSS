@@ -9,5 +9,6 @@ export interface InputProps {
   ariaLabel?: string;
   maxLength?: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onClear?: () => void;
 }
