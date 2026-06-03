@@ -1,12 +1,11 @@
 import type { GetServerSideProps, NextPage } from 'next';
 
+import { isLibraryEnabled } from '@constants/library/common';
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
 import { AuthProvider } from '@components/Context/library/AuthContext';
 import { DashboardProvider } from '@components/Context/library/DashboardContext';
 import { GlobalStateProvider } from '@components/Context/library/GlobalStateContext';
-import { Header } from '@components/library/organisms/Header/Header';
-import { HeaderVariant } from '@components/library/organisms/Header/Header.types';
 import { Sidebar } from '@components/library/organisms/Sidebar';
 import SeoGenerator from '@components/SeoGenerator';
 
@@ -41,9 +40,8 @@ const LibraryPage: NextPage<LibraryPageProps> = ({ username }) => {
               },
             }}
           />
-          <div className={styles.dashboard}>
+          <div className={`library ${styles.dashboard}`}>
             <main className={styles.content}>
-              <Header variant={HeaderVariant.Dashboard} />
               <LibraryTemplate libraryId={username} />
             </main>
             <Sidebar />
@@ -59,6 +57,10 @@ export default LibraryPage;
 export const getServerSideProps: GetServerSideProps<
   LibraryPageProps
 > = async context => {
+  if (!isLibraryEnabled()) {
+    return { notFound: true };
+  }
+
   const username = String(context.params?.username ?? '');
 
   return {

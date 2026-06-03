@@ -6,6 +6,8 @@ import Skeleton from 'react-loading-skeleton';
 
 import { logout } from '@api/auth';
 
+import LibraryIcon from '@icons/library/svg/library.svg';
+
 import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './UserProfile.module.scss';
 
@@ -22,9 +24,9 @@ type UserProfileProps = {
 };
 
 const labels = {
-  en: { settings: 'Settings', logout: 'Log out' },
-  ru: { settings: 'Настройки', logout: 'Выйти' },
-  hy: { settings: 'Settings', logout: 'Log out' },
+  en: { myLibrary: 'My Library', settings: 'Settings', logout: 'Log out' },
+  ru: { myLibrary: 'Моя библиотека', settings: 'Настройки', logout: 'Выйти' },
+  hy: { myLibrary: 'My Library', settings: 'Settings', logout: 'Log out' },
 };
 
 const UserProfile: FC<UserProfileProps> = ({
@@ -61,6 +63,11 @@ const UserProfile: FC<UserProfileProps> = ({
     setIsDropdownOpen(false);
     handleOpenSettings?.();
   }, [handleOpenSettings]);
+
+  const handleMyLibrary = useCallback(() => {
+    setIsDropdownOpen(false);
+    router.push(`/library/${username}`);
+  }, [router, username]);
 
   useEffect(() => {
     if (hideDropdown) setIsDropdownOpen(false);
@@ -136,6 +143,18 @@ const UserProfile: FC<UserProfileProps> = ({
         )}
         {isDropdownOpen && isAccessTokenExist && (
           <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
+            {username && (
+              <div className={styles.menuItem} onClick={handleMyLibrary}>
+                <LibraryIcon
+                  width={20}
+                  height={11}
+                  className={cn(styles.menuIcon, {
+                    [styles.menuIconDark]: isDarkTheme,
+                  })}
+                />
+                <span>{t.myLibrary}</span>
+              </div>
+            )}
             <div className={styles.menuItem} onClick={handleSettings}>
               <Image
                 src="/keepsimple_/assets/icons/user-dropdown/settings.svg"

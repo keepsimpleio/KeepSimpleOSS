@@ -2,6 +2,8 @@ import cn from 'classnames';
 import { useRouter } from 'next/router';
 import React, { FC, useContext } from 'react';
 
+import { isLibraryEnabled } from '@constants/library/common';
+
 import type { TRouter } from '@local-types/global';
 
 import useGlobals from '@hooks/useGlobals';
@@ -11,6 +13,7 @@ import navbar from '@data/navbar';
 
 import ArticlesDarkIcon from '@icons/ArticlesDarkIcon';
 import ArticlesIcon from '@icons/ArticlesIcon';
+import LibraryIcon from '@icons/library/svg/library.svg';
 import AiAtlasIcon from '@icons/navbar/ai-atlas.svg';
 import AiAtlasDarkIcon from '@icons/navbar/ai-atlas-dark.svg';
 import LongevityIcon from '@icons/navbar/longevity.svg';
@@ -36,7 +39,7 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
   const { isDarkTheme, isOpenedSidebar } = useGlobals()[1];
   const { accountData } = useContext(GlobalContext);
 
-  const { articles, contributorsTxt, tools, longevity, aiAtlas } =
+  const { articles, contributorsTxt, tools, library, longevity, aiAtlas } =
     navbar[locale];
 
   const normalizePath = (p: string) => {
@@ -73,6 +76,14 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       exact: true,
     },
     {
+      name: library,
+      path: '/library',
+      logo: <LibraryIcon />,
+      target: '',
+      id: 'library',
+      activeMatch: '/library',
+    },
+    {
       name: aiAtlas,
       path: '/ai-atlas',
       logo: isDarkTheme ? <AiAtlasIcon /> : <AiAtlasDarkIcon />,
@@ -100,43 +111,45 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
           [styles.authorized]: !!accountData,
         })}
       >
-        {routes.map(
-          ({ name, path, target, logo, id, activeMatch, exact }, index) => {
-            const match = activeMatch ?? path;
-            const currentPath = normalizePath(router.asPath);
-            const matchPath = normalizePath(match);
+        {routes
+          .filter(route => route.id !== 'library' || isLibraryEnabled())
+          .map(
+            ({ name, path, target, logo, id, activeMatch, exact }, index) => {
+              const match = activeMatch ?? path;
+              const currentPath = normalizePath(router.asPath);
+              const matchPath = normalizePath(match);
 
-            const isActive =
-              matchPath === '/'
-                ? currentPath === '/'
-                : exact
-                  ? currentPath === matchPath
-                  : currentPath.startsWith(matchPath);
+              const isActive =
+                matchPath === '/'
+                  ? currentPath === '/'
+                  : exact
+                    ? currentPath === matchPath
+                    : currentPath.startsWith(matchPath);
 
-            return (
-              <a
-                key={index}
-                href={path}
-                target={target}
-                onClick={e => {
-                  if (target === '_blank') return;
-                  e.preventDefault();
-                  if (isSmallScreen) handleToggleSidebar();
-                  handleClick(e, path);
-                }}
-                className={cn(styles.url, {
-                  [styles.active]: isActive,
-                  [styles.uxcoreIcon]: id === 'uxcore',
-                  [styles.companyManagementIcon]: id === 'companyManagement',
-                  [styles.articlesIcon]: id === 'articles',
-                  [styles.ruUrl]: locale === 'ru',
-                })}
-              >
-                {logo} {name}
-              </a>
-            );
-          },
-        )}
+              return (
+                <a
+                  key={index}
+                  href={path}
+                  target={target}
+                  onClick={e => {
+                    if (target === '_blank') return;
+                    e.preventDefault();
+                    if (isSmallScreen) handleToggleSidebar();
+                    handleClick(e, path);
+                  }}
+                  className={cn(styles.url, {
+                    [styles.active]: isActive,
+                    [styles.uxcoreIcon]: id === 'uxcore',
+                    [styles.companyManagementIcon]: id === 'companyManagement',
+                    [styles.articlesIcon]: id === 'articles',
+                    [styles.ruUrl]: locale === 'ru',
+                  })}
+                >
+                  {logo} {name}
+                </a>
+              );
+            },
+          )}
 
         <a
           href={'/contributors'}
