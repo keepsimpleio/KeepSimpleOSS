@@ -3,6 +3,10 @@
   flex-direction: row;
   align-items: stretch;
   gap: 10px;
+  // Fixed container so every book occupies the same cell whether or not it has
+  // tags (the tag column is always reserved below).
+  width: 206px;
+  height: 208px;
 }
 
 .card {
@@ -30,6 +34,11 @@
   height: 206px;
   border-radius: 1.44px;
   overflow: hidden;
+  // Paint the gradient straight onto the cover box so the card shows a filled
+  // spine immediately — both for cover-less objects and while next/image is
+  // still fetching/optimizing a freshly uploaded cover (which otherwise left a
+  // blank gap on add).
+  background: var(--gradient-book-placeholder);
 }
 
 .coverImage {

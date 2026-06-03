@@ -53,18 +53,18 @@ export function AudioCard({
         </div>
       </div>
 
-      {tags.length > 0 && (
-        <div className={styles.tags} aria-label="Tags">
-          {tags.map(tag => (
-            <span
-              key={tag.id}
-              className={styles.tagDot}
-              style={{ backgroundColor: tag.attributes.color }}
-              title={tag.attributes.name}
-            />
-          ))}
-        </div>
-      )}
+      {/* Always render the tag column (even when empty) so the card keeps a
+          consistent width whether or not the object has tags. */}
+      <div className={styles.tags} aria-label="Tags">
+        {tags.map(tag => (
+          <span
+            key={tag.id}
+            className={styles.tagDot}
+            style={{ backgroundColor: tag.attributes.color }}
+            title={tag.attributes.name}
+          />
+        ))}
+      </div>
     </div>
   );
 }

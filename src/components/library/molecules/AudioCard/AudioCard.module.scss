@@ -3,13 +3,19 @@
   flex-direction: row;
   align-items: stretch;
   gap: 10px;
+  // Fixed container so every audio object occupies the same cell whether or not
+  // it has tags (the tag column is always reserved below).
+  width: 256px;
+  height: 194px;
 }
 
 .card {
   position: relative;
-  width: 190px;
-  height: 190px;
-  flex-shrink: 0;
+  // Fill the cell minus the reserved tag column + gap so the cover size is
+  // identical with or without tags.
+  flex: 1;
+  min-width: 0;
+  height: 100%;
   cursor: pointer;
   background: transparent;
   border: none;

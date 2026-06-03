@@ -1,11 +1,10 @@
 .card {
-  // Without explicit border-box the 12px padding adds 24px to both dimensions,
-  // so the card rendered at 279×204 instead of the design's 255×181.
+  // Without explicit border-box the 12px padding adds 24px to both dimensions.
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  width: 255px;
-  height: 181px;
+  width: 318px;
+  height: 183px;
   padding: 12px;
   background: var(--off-white);
   border-radius: 0 0 20px 20px;
@@ -24,8 +23,9 @@
 
 .thumbWrap {
   position: relative;
-  width: 231px;
-  height: 125px;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .thumb {
@@ -57,7 +57,7 @@
 }
 
 .bar {
-  width: 231px;
+  width: 100%;
   height: 6px;
   background: var(--brown);
 }
