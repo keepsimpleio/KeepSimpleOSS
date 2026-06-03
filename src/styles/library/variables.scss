@@ -83,18 +83,35 @@
 
   /* Gradient */
 
-  --gradient-shelf-color: linear-gradient(to bottom, #d2c6af 0%, rgba(230, 223, 217, 0) 100%);
+  --gradient-shelf-color: linear-gradient(
+    to bottom,
+    #d2c6af 0%,
+    rgba(230, 223, 217, 0) 100%
+  );
   --gradient-object-shadow: linear-gradient(
     to bottom,
     rgba(35, 34, 28, 0.4) 0%,
     rgba(226, 220, 176, 0) 100%
   );
-  --gradient-cover-placeholder: linear-gradient(135deg, var(--cream) 0%, var(--beige) 100%);
-  --gradient-book-placeholder: linear-gradient(135deg, #d4cfb4 0%, #b5ad8a 100%);
+  --gradient-cover-placeholder: linear-gradient(
+    135deg,
+    var(--cream) 0%,
+    var(--beige) 100%
+  );
+  --gradient-book-placeholder: linear-gradient(
+    135deg,
+    #d4cfb4 0%,
+    #b5ad8a 100%
+  );
 
   /* Box Shadow */
   --tooltip-shadow: 0px 0px 22px 0px #00000033;
   --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   --sidebar-shadow: -18px 31px 19.2px 0px #533a3a08;
   --card-shadow: 0px 4px 12px 0px #00000014;
+
+  /* Fonts — the upstream library injected these via next/font on <body>;
+     here we declare them directly with web-safe fallbacks. */
+  --font-source-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-lato: 'Lato', system-ui, -apple-system, Arial, sans-serif;
 }

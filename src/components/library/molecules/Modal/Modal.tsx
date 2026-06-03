@@ -108,7 +108,7 @@ export function Modal(props: ModalProps): JSX.Element {
   useLockBodyScroll(true);
 
   return createPortal(
-    <>
+    <div className="library">
       <div
         role="dialog"
         aria-modal="true"
@@ -141,7 +141,7 @@ export function Modal(props: ModalProps): JSX.Element {
           {children}
         </div>
       </div>
-    </>,
+    </div>,
     document.body,
   );
 }

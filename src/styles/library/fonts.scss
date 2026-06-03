@@ -1,2 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&display=swap');
+// Self-host the upstream library's primary typeface. The library injected
+// 'Source Serif 4' via next/font; the Google Fonts @import that used to live
+// here is blocked by the site CSP, so we declare the faces directly against
+// the static weights already shipped in /public/fonts. keepsimple declares
+// Source Serif under per-weight family names ('Source-Serif-Regular', etc.),
+// so the 'Source Serif 4' family name here is additive — no collision.
+//
+// 'Lato' (referenced by --font-lato) is already declared globally in
+// src/styles/globals.scss, so it needs no @font-face here.
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-SemiBold.ttf')
+    format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-Bold.ttf')
+    format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

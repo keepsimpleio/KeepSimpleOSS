@@ -93,34 +93,36 @@ function ColoredSelect<T extends string | number>(
   const menu =
     isOpen && !readOnly && menuPos && typeof document !== 'undefined'
       ? createPortal(
-          <div
-            role="listbox"
-            className={styles.menu}
-            style={{
-              position: 'fixed',
-              top: menuPos.top,
-              left: menuPos.left,
-              width: menuPos.width,
-              zIndex: 1500,
-            }}
-            // Keep clicks inside the portaled menu from triggering useClickOutside.
-            onPointerDown={e => e.stopPropagation()}
-          >
-            {options.map(opt => (
-              <button
-                key={String(opt)}
-                type="button"
-                role="option"
-                aria-selected={opt === value}
-                className={classNames(styles.option, {
-                  [styles.selected]: opt === value,
-                })}
-                onClick={() => handleSelect(opt)}
-                style={{ color: getColor(opt) }}
-              >
-                {renderLabel(opt)}
-              </button>
-            ))}
+          <div className="library">
+            <div
+              role="listbox"
+              className={styles.menu}
+              style={{
+                position: 'fixed',
+                top: menuPos.top,
+                left: menuPos.left,
+                width: menuPos.width,
+                zIndex: 1500,
+              }}
+              // Keep clicks inside the portaled menu from triggering useClickOutside.
+              onPointerDown={e => e.stopPropagation()}
+            >
+              {options.map(opt => (
+                <button
+                  key={String(opt)}
+                  type="button"
+                  role="option"
+                  aria-selected={opt === value}
+                  className={classNames(styles.option, {
+                    [styles.selected]: opt === value,
+                  })}
+                  onClick={() => handleSelect(opt)}
+                  style={{ color: getColor(opt) }}
+                >
+                  {renderLabel(opt)}
+                </button>
+              ))}
+            </div>
           </div>,
           document.body,
         )

@@ -1,5 +1,6 @@
 .wrapper {
   flex: 1;
+  min-width: 0;
 
   @media (max-width: 1024px) {
     padding: 16px;
@@ -32,5 +33,34 @@
 
   .button {
     width: auto !important;
+  }
+}
+
+.shelfList {
+  display: flex;
+  flex-direction: column;
+}
+
+// Played once right after a reorder commits: dip the list's opacity so shelves
+// visibly fade out and back in as they snap to their new positions.
+.resequencing {
+  animation: shelf-resequence 0.45s ease;
+}
+
+@keyframes shelf-resequence {
+  0% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resequencing {
+    animation: none;
   }
 }

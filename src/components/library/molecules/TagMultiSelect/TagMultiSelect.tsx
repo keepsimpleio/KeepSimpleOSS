@@ -131,7 +131,10 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
           );
 
           return portal && typeof document !== 'undefined'
-            ? createPortal(menuContent, document.body)
+            ? createPortal(
+                <div className="library">{menuContent}</div>,
+                document.body,
+              )
             : menuContent;
         })()}
 

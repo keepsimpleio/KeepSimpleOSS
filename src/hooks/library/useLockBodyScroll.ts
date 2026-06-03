@@ -4,20 +4,20 @@ import { useEffect } from 'react';
 // ConfirmationModal) compose: lock when the count goes 0→1, unlock when it
 // returns to 0.
 let lockCount = 0;
-let savedPaddingRight = '';
+let savedOverflowY = '';
 
 const lock = () => {
   if (lockCount === 0) {
-    // Compensate for the vanishing scrollbar with padding-right so the page
-    // doesn't reflow under the modal (which read as "right-panel data
-    // disappearing" — the sticky Sidebar was shifting off-screen).
-    // `scrollbar-gutter: stable` does not apply with overflow:hidden per spec.
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    savedPaddingRight = document.body.style.paddingRight;
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-    document.body.style.overflow = 'hidden';
+    // The page scroll container is <html> (`html { overflow-y: overlay }` in
+    // globals.scss), NOT <body> — so locking body.overflow left the background
+    // scrolling behind the modal. Match keepsimple's core Modal: lock the
+    // documentElement's overflow and flag it with `hide-body-move`. The global
+    // `html { scrollbar-gutter: stable }` keeps the gutter reserved, so there's
+    // no horizontal jump when the scrollbar vanishes.
+    const root = document.documentElement;
+    savedOverflowY = root.style.overflowY;
+    root.style.overflowY = 'hidden';
+    root.classList.add('hide-body-move');
   }
   lockCount += 1;
 };
@@ -25,8 +25,11 @@ const lock = () => {
 const unlock = () => {
   lockCount = Math.max(0, lockCount - 1);
   if (lockCount === 0) {
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = savedPaddingRight;
+    const root = document.documentElement;
+    // Restoring the inline style to its prior value (usually '') lets the
+    // stylesheet's `overflow-y: overlay` take back over.
+    root.style.overflowY = savedOverflowY;
+    root.classList.remove('hide-body-move');
   }
 };
 

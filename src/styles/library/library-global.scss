@@ -1,0 +1,15 @@
+// Global entry for the library feature — imported once from `pages/_app.tsx`
+// (Pages Router only allows non-module global CSS there).
+//
+// - variables.scss  -> :root custom properties (colors, shadows, fonts).
+//                      keepsimple defines no :root vars, so there are no
+//                      collisions; harmless on non-library pages.
+// - fonts.scss      -> @font-face for 'Source Serif 4' (referenced by
+//                      --font-source-serif), self-hosted from /public/fonts.
+// - animations.scss -> @keyframes used by library modals.
+// - global.scss     -> base resets/element styles, scoped under `.library`
+//                      so they never affect the rest of the site.
+@use './variables.scss';
+@use './fonts.scss';
+@use './animations.scss';
+@use './global.scss';
