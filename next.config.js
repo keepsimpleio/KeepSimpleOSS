@@ -125,7 +125,25 @@ module.exports = withBundleAnalyzer({
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
-      use: ['@svgr/webpack'],
+      use: [
+        {
+          loader: '@svgr/webpack',
+          options: {
+            // SVGO's preset-default strips viewBox, which breaks icons rendered
+            // at a smaller width/height than their intrinsic size (e.g. a 44x44
+            // icon shown at 14px clips to its top-left corner instead of
+            // scaling). Keep the viewBox so downscaled icons render fully.
+            svgoConfig: {
+              plugins: [
+                {
+                  name: 'preset-default',
+                  params: { overrides: { removeViewBox: false } },
+                },
+              ],
+            },
+          },
+        },
+      ],
     });
     return config;
   },
