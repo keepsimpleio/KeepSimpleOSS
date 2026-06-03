@@ -1,5 +1,5 @@
 import type { StrapiSingleShelfEntry } from '@local-types/library';
-import type { IObject } from '@local-types/library/object';
+import type { IObject, IReorderObjectEntry } from '@local-types/library/object';
 
 export interface ShelfProps {
   className?: string;
@@ -26,5 +26,13 @@ export interface ShelfProps {
     fromShelfId: number,
     toShelfId: number,
     object: IObject,
+  ) => void;
+  /**
+   * Fired after a step-2 drag reorder is saved — carries every object's new
+   * position so the library can re-sequence this shelf without a refetch.
+   */
+  onObjectsReordered?: (
+    shelfId: number,
+    ordered: IReorderObjectEntry[],
   ) => void;
 }

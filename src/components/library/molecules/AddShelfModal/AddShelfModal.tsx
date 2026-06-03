@@ -3,6 +3,7 @@ import React, { JSX, useState } from 'react';
 
 import { shelfCardData } from '@constants/library/common';
 
+import { Loader } from '@components/library/atoms/Loader';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import { Button, ButtonSize, ButtonType } from '../Button';
@@ -20,13 +21,19 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
   const { closeRef, close } = useModalClose(onClose);
   const [activeItem, setActiveItem] = useState<ShelfType>('books');
   const [name, setName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const trimmedName = name.trim();
-  const canSubmit = trimmedName.length > 0;
+  const canSubmit = trimmedName.length > 0 && !isSubmitting;
 
-  const handleAddShelf = () => {
+  const handleAddShelf = async () => {
     if (!canSubmit) return;
-    onAddShelf(activeItem, trimmedName);
+    setIsSubmitting(true);
+    try {
+      await onAddShelf(activeItem, trimmedName);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -37,6 +44,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
       closeRef={closeRef}
     >
       <div className={styles.wrapper}>
+        {isSubmitting && <Loader />}
         <div className={styles.field}>
           <Text variant={TypographyVariant.TextSmall} className={styles.label}>
             Shelf name
@@ -80,7 +88,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
             className={styles.close}
           />
           <Button
-            label="Add shelf"
+            label={isSubmitting ? 'Adding…' : 'Add shelf'}
             onClick={handleAddShelf}
             type={ButtonType.Primary}
             size={ButtonSize.Wide}

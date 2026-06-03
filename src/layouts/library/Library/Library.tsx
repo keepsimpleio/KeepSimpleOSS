@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import classNames from 'classnames';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { LIBRARY_SHELVES_REFETCH_EVENT } from '@constants/library/common';
 
@@ -25,6 +32,7 @@ import {
   ButtonSize,
   ButtonType,
 } from '@components/library/molecules/Button';
+import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
 import { Shelf } from '@components/library/organisms/Shelf';
 
 import type { LibraryTemplateProps } from './Library.types';
@@ -41,13 +49,25 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [library, setLibrary] = useState<StrapiLibraryEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Briefly true right after a reorder so the shelf list can fade out/in as it
+  // re-sequences into the new order (see `resequencing` in Library.module.scss).
+  const [isResequencing, setIsResequencing] = useState(false);
+  const resequenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { accountData } = useAuth();
   const { setCurrentShelves } = useGlobalState();
 
+  // Ownership is decided by the loaded library's owner, not the URL slug — the
+  // slug is sometimes a numeric library id (Sidebar dropdown, LibraryCard
+  // fallback) which never equals a username. The slug check is kept only as a
+  // fallback so a logged-in user visiting their own `/library/[username]` can
+  // still bootstrap a library before one exists (nothing to load owner from).
+  const ownerUsername =
+    library?.attributes.user?.data?.attributes.username ?? null;
+  const myUsername = accountData?.username?.toLowerCase() ?? null;
   const isOwner =
-    !!accountData?.username &&
-    !!libraryId &&
-    accountData.username.toLowerCase() === libraryId.toLowerCase();
+    !!myUsername &&
+    ((!!ownerUsername && ownerUsername.toLowerCase() === myUsername) ||
+      (!!libraryId && libraryId.toLowerCase() === myUsername));
 
   // URL param is `/library/[username]` — accept either a numeric id or a username slug.
   const resolveLibraryId = useCallback(async (): Promise<number | null> => {
@@ -59,24 +79,29 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     return getLibraryIdByUsername(libraryId);
   }, [libraryId]);
 
-  const loadLibrary = useCallback(async () => {
-    if (!libraryId?.trim()) {
-      setLibrary(null);
-      setIsLoading(false);
-      return;
-    }
+  const loadLibrary = useCallback(
+    async (options?: { silent?: boolean }) => {
+      if (!libraryId?.trim()) {
+        setLibrary(null);
+        setIsLoading(false);
+        return;
+      }
 
-    setIsLoading(true);
-    const resolvedId = await resolveLibraryId();
-    if (resolvedId == null) {
-      setLibrary(null);
+      // Silent reloads (e.g. right after creating a shelf) skip the loading
+      // flag so the shelf list stays on screen instead of flashing "Loading…".
+      if (!options?.silent) setIsLoading(true);
+      const resolvedId = await resolveLibraryId();
+      if (resolvedId == null) {
+        setLibrary(null);
+        setIsLoading(false);
+        return;
+      }
+      const result = await getSingleLibrary(resolvedId);
+      setLibrary(result?.data ?? null);
       setIsLoading(false);
-      return;
-    }
-    const result = await getSingleLibrary(resolvedId);
-    setLibrary(result?.data ?? null);
-    setIsLoading(false);
-  }, [libraryId, resolveLibraryId]);
+    },
+    [libraryId, resolveLibraryId],
+  );
 
   useEffect(() => {
     void loadLibrary();
@@ -93,6 +118,13 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
       window.removeEventListener(LIBRARY_SHELVES_REFETCH_EVENT, onRefetch);
     };
   }, [loadLibrary]);
+
+  useEffect(
+    () => () => {
+      if (resequenceTimer.current) clearTimeout(resequenceTimer.current);
+    },
+    [],
+  );
 
   const modalToggler = () => {
     setIsOpen(open => !open);
@@ -115,23 +147,51 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
       return;
     }
 
+    // Append at the end: stamp the new shelf with an order past the current
+    // max so it lands last instead of colliding at order 0 (which sorts into
+    // the middle of the existing shelves).
+    const existingShelves = library?.attributes.singleShelves?.data ?? [];
+    const nextOrder =
+      existingShelves.reduce(
+        (max, s) => Math.max(max, s.attributes.order ?? 0),
+        -1,
+      ) + 1;
+
     const type = modalTypeToApi[modalShelfType];
     try {
       await createShelf({
         name,
         type,
         library: resolvedId,
+        order: nextOrder,
         ...(accountData?.id != null ? { owner: accountData.id } : {}),
       });
+      // Silent reload keeps the shelves on screen (no "Loading…" swap) while the
+      // AddShelfModal shows its own in-flight spinner until this resolves.
+      await loadLibrary({ silent: true });
       setIsOpen(false);
-      void loadLibrary();
     } catch (e) {
       console.error('[Library] create shelf failed', e);
     }
   };
 
-  const shelves: StrapiSingleShelfEntry[] =
-    library?.attributes.singleShelves?.data ?? [];
+  // Render in persisted-order sequence. Strapi's `populate` of singleShelves
+  // does NOT honor the schema's admin-only defaultSort, and the public REST
+  // API defaults to id order — so without this client-side sort the saved
+  // `order` (from POST /single-shelves/reorder) never shows on refresh.
+  // Memoized so the array identity stays stable until `library` changes,
+  // keeping the setCurrentShelves effect below from firing every render.
+  const shelves: StrapiSingleShelfEntry[] = useMemo(() => {
+    const data = library?.attributes.singleShelves?.data ?? [];
+    // Private shelves are owner-only — hide them from visitors so the
+    // public/private toggle actually controls who can see a shelf.
+    const visible = isOwner
+      ? data
+      : data.filter(s => s.attributes.visibility !== 'private');
+    return [...visible].sort(
+      (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+    );
+  }, [library, isOwner]);
 
   // Publish the current library's shelves so the Header's Jump-to nav can
   // render the right list without owning its own fetch. NOTE: no cleanup —
@@ -195,6 +255,62 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     [mutateShelfObjects],
   );
 
+  const handleObjectsReordered = useCallback(
+    (shelfId: number, ordered: { id: number; order: number }[]) => {
+      const orderById = new Map(ordered.map(o => [o.id, o.order]));
+      mutateShelfObjects(shelfId, objects =>
+        objects.map(o =>
+          orderById.has(o.id)
+            ? {
+                ...o,
+                attributes: { ...o.attributes, order: orderById.get(o.id) },
+              }
+            : o,
+        ),
+      );
+    },
+    [mutateShelfObjects],
+  );
+
+  const handleShelvesReordered = useCallback(
+    (ordered: { id: number; order: number }[]) => {
+      const orderById = new Map(ordered.map(o => [o.id, o.order]));
+      // Kick the fade: clear it first so a rapid re-save restarts the animation
+      // instead of being swallowed (re-adding a still-present class won't replay).
+      setIsResequencing(false);
+      if (resequenceTimer.current) clearTimeout(resequenceTimer.current);
+      requestAnimationFrame(() => {
+        setIsResequencing(true);
+        resequenceTimer.current = setTimeout(
+          () => setIsResequencing(false),
+          450,
+        );
+      });
+      // Only stamp the new `order` onto each shelf; the `shelves` memo
+      // re-sorts by `order` at render, so no need to reorder the array here.
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        const next = shelvesData.map(s =>
+          orderById.has(s.id)
+            ? {
+                ...s,
+                attributes: { ...s.attributes, order: orderById.get(s.id)! },
+              }
+            : s,
+        );
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: { data: next },
+          },
+        };
+      });
+    },
+    [],
+  );
+
   const handleShelfDeleted = useCallback((shelfId: number) => {
     setLibrary(current => {
       if (!current) return current;
@@ -253,6 +369,13 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
 
   return (
     <div className={styles.wrapper}>
+      {isOwner && shelves.length > 0 && (
+        <LibraryToolbar
+          shelves={shelves}
+          onAddShelf={modalToggler}
+          onShelvesReordered={handleShelvesReordered}
+        />
+      )}
       {isLoading ? (
         <Text variant={TypographyVariant.TextBase}>Loading…</Text>
       ) : shelves.length === 0 ? (
@@ -274,20 +397,27 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
           />
         </div>
       ) : (
-        shelves.map(shelf => (
-          <Shelf
-            key={shelf.id}
-            title={shelf.attributes.name}
-            shelf={shelf}
-            ownerUsername={libraryId}
-            isOwner={isOwner}
-            onObjectCreated={handleObjectCreated}
-            onObjectUpdated={handleObjectUpdated}
-            onObjectDeleted={handleObjectDeleted}
-            onObjectMoved={handleObjectMoved}
-            onShelfDeleted={handleShelfDeleted}
-          />
-        ))
+        <div
+          className={classNames(styles.shelfList, {
+            [styles.resequencing]: isResequencing,
+          })}
+        >
+          {shelves.map(shelf => (
+            <Shelf
+              key={shelf.id}
+              title={shelf.attributes.name}
+              shelf={shelf}
+              ownerUsername={libraryId}
+              isOwner={isOwner}
+              onObjectCreated={handleObjectCreated}
+              onObjectUpdated={handleObjectUpdated}
+              onObjectDeleted={handleObjectDeleted}
+              onObjectMoved={handleObjectMoved}
+              onObjectsReordered={handleObjectsReordered}
+              onShelfDeleted={handleShelfDeleted}
+            />
+          ))}
+        </div>
       )}
 
       {isOpen && (

@@ -64,105 +64,111 @@
       }
     }
   }
+}
 
-  .menu {
-    width: 100%;
-    position: absolute;
-    top: calc(100% + 4px);
-    right: 0;
-    background: var(--white);
-    border: 1px solid var(--brown-border);
-    border-radius: 8px;
-    box-shadow: var(--dropdown-shadow);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    overflow: visible;
+// Menu and option styles live at the top level (not nested under `.dropdown`)
+// because when `portal` is set the menu is rendered into document.body, outside
+// the `.dropdown` element. Nesting them would scope the selectors to
+// `.dropdown .menu`, which never matches the portaled node — so the menu would
+// render with no background or border. Keeping them flat lets the same classes
+// style the menu whether it's inline or portaled.
+.menu {
+  width: 100%;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: 8px;
+  box-shadow: var(--dropdown-shadow);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.optionWrapper {
+  position: relative;
+
+  &:first-child > .option {
+    border-radius: 8px 8px 0 0;
   }
 
-  .optionWrapper {
-    position: relative;
+  &:last-child > .option {
+    border-radius: 0 0 8px 8px;
+  }
+}
 
-    &:first-child > .option {
+.option {
+  padding: 9px 12px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:hover {
+    background: var(--off-white);
+  }
+
+  &.selected {
+    background: var(--off-white);
+    font-weight: 600;
+  }
+
+  &.hasSubMenu {
+    gap: 8px;
+  }
+}
+
+.subArrow {
+  flex-shrink: 0;
+  transform: rotate(0deg);
+  transition: transform 0.2s ease;
+
+  path {
+    fill: var(--brown);
+  }
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+.check {
+  flex-shrink: 0;
+  margin-left: 12px;
+
+  path {
+    fill: var(--brown);
+  }
+}
+
+.subMenu {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 4px);
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: 8px;
+  box-shadow: var(--dropdown-shadow);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  min-width: 100%;
+  white-space: nowrap;
+
+  .option {
+    &:first-child {
       border-radius: 8px 8px 0 0;
     }
 
-    &:last-child > .option {
+    &:last-child {
       border-radius: 0 0 8px 8px;
-    }
-  }
-
-  .option {
-    padding: 9px 12px;
-    text-align: left;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    color: var(--gray-200);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    &:hover {
-      background: var(--off-white);
-    }
-
-    &.selected {
-      background: var(--off-white);
-      font-weight: 600;
-    }
-
-    &.hasSubMenu {
-      gap: 8px;
-    }
-  }
-
-  .subArrow {
-    flex-shrink: 0;
-    transform: rotate(0deg);
-    transition: transform 0.2s ease;
-
-    path {
-      fill: var(--brown);
-    }
-
-    &.rotated {
-      transform: rotate(180deg);
-    }
-  }
-
-  .check {
-    flex-shrink: 0;
-    margin-left: 12px;
-
-    path {
-      fill: var(--brown);
-    }
-  }
-
-  .subMenu {
-    position: absolute;
-    top: 0;
-    left: calc(100% + 4px);
-    background: var(--white);
-    border: 1px solid var(--brown-border);
-    border-radius: 8px;
-    box-shadow: var(--dropdown-shadow);
-    z-index: 1001;
-    display: flex;
-    flex-direction: column;
-    min-width: 100%;
-    white-space: nowrap;
-
-    .option {
-      &:first-child {
-        border-radius: 8px 8px 0 0;
-      }
-
-      &:last-child {
-        border-radius: 0 0 8px 8px;
-      }
     }
   }
 }

@@ -198,7 +198,10 @@ export function Dropdown(props: DropdownProps): JSX.Element {
       )}
       {isOpen &&
         (portal && typeof document !== 'undefined' && menuPos
-          ? createPortal(menuContent, document.body)
+          ? createPortal(
+              <div className="library">{menuContent}</div>,
+              document.body,
+            )
           : menuContent)}
     </div>
   );

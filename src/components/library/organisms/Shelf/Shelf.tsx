@@ -1,6 +1,13 @@
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { JSX, useCallback, useState } from 'react';
+import React, {
+  JSX,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
@@ -40,6 +47,58 @@ import type { ShelfProps } from './Shelf.types';
 
 import styles from './Shelf.module.scss';
 
+// useLayoutEffect warns during SSR; fall back to useEffect on the server.
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+// FLIP: when `orderKey` changes, glide each card slot from its previous
+// position to its new one via the Web Animations API. Pure transient
+// transforms — no dependency, no layout thrash, and a no-op under
+// prefers-reduced-motion. Slots are matched across renders by `data-flip-id`.
+function useFlipReorder(orderKey: string) {
+  const ref = useRef<HTMLDivElement>(null);
+  const prevRects = useRef<Map<string, DOMRect>>(new Map());
+
+  useIsomorphicLayoutEffect(() => {
+    const container = ref.current;
+    if (!container) return;
+
+    const slots = Array.from(container.children) as HTMLElement[];
+    const nextRects = new Map<string, DOMRect>();
+    slots.forEach(slot => {
+      const id = slot.dataset.flipId;
+      if (id) nextRects.set(id, slot.getBoundingClientRect());
+    });
+
+    const prev = prevRects.current;
+    prevRects.current = nextRects;
+
+    // First paint (or a hidden shelf): nothing to animate from.
+    if (prev.size === 0) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    slots.forEach(slot => {
+      const id = slot.dataset.flipId;
+      if (!id) return;
+      const before = prev.get(id);
+      const after = nextRects.get(id);
+      if (!before || !after) return;
+      const dx = before.left - after.left;
+      const dy = before.top - after.top;
+      if (dx === 0 && dy === 0) return;
+      slot.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px)` },
+          { transform: 'translate(0, 0)' },
+        ],
+        { duration: 320, easing: 'cubic-bezier(0.2, 0, 0, 1)' },
+      );
+    });
+  }, [orderKey]);
+
+  return ref;
+}
+
 const SHELF_TYPE_ICON: Record<string, JSX.Element> = {
   video: <VideoIcon />,
   book: <BookIcon />,
@@ -61,7 +120,6 @@ const SETTINGS_OPTIONS = [
       { value: 'public', label: 'Public' },
     ],
   },
-  { value: 'edit', label: 'Edit shelf name' },
   { value: 'delete', label: 'Delete shelf' },
 ];
 
@@ -80,9 +138,19 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onObjectDeleted,
     onShelfDeleted,
     onObjectMoved,
+    onObjectsReordered,
   } = props;
   const shelfType = shelf.attributes.type as ObjectType;
-  const objects = shelf.attributes.objects?.data ?? [];
+  // Render in persisted-order sequence. Strapi's populate doesn't sort the
+  // relation, so without this the drag order (saved via reorderObjects) never
+  // shows. Stable: objects with no `order` keep their natural position.
+  const objects = [...(shelf.attributes.objects?.data ?? [])].sort(
+    (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+  );
+
+  // Glide cards to their new slots when the persisted order changes (e.g. after
+  // a save-time reorder) instead of snapping.
+  const cardsRef = useFlipReorder(objects.map(o => o.id).join(','));
 
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
@@ -102,6 +170,44 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const [renameLoading, setRenameLoading] = useState(false);
   const [renameError, setRenameError] = useState<string | null>(null);
 
+  // Horizontal scroller: keep every card on one row and page through them with
+  // the arrows. Arrows only show when the row actually overflows; each click
+  // advances by one card width (+ the 24px gap).
+  const itemsRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const syncScrollState = useCallback(() => {
+    const el = itemsRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 1);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    const el = itemsRef.current;
+    if (!el) return;
+    syncScrollState();
+    el.addEventListener('scroll', syncScrollState, { passive: true });
+    const observer = new ResizeObserver(syncScrollState);
+    observer.observe(el);
+    return () => {
+      el.removeEventListener('scroll', syncScrollState);
+      observer.disconnect();
+    };
+  }, [syncScrollState, objects.length]);
+
+  const scrollByCard = (direction: -1 | 1) => {
+    const el = itemsRef.current;
+    if (!el) return;
+    const firstCard = el.querySelector<HTMLElement>(`.${styles.cards} > *`);
+    const step = firstCard ? firstCard.offsetWidth + 35 : el.clientWidth * 0.8;
+    el.scrollBy({ left: direction * step, behavior: 'smooth' });
+  };
+
+  const isOverflowing = canScrollLeft || canScrollRight;
+
   const closeRename = useCallback(() => {
     if (renameLoading) return;
     setRenameOpen(false);
@@ -115,16 +221,16 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const openObject = (object: IObject) => setActiveObject(object);
   const closeObject = () => setActiveObject(null);
 
+  const openRename = () => {
+    setRenameError(null);
+    setRenameValue(shelfName);
+    setRenameOpen(true);
+  };
+
   const handleSettingsChange = (value: string) => {
     if (value === 'delete') {
       setDeleteShelfError(null);
       setDeleteShelfOpen(true);
-      return;
-    }
-    if (value === 'edit') {
-      setRenameError(null);
-      setRenameValue(shelfName);
-      setRenameOpen(true);
       return;
     }
     if (value === 'private' || value === 'public') {
@@ -213,6 +319,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
             <Dropdown
               className={styles.settingsDropdown}
               menuClassName={styles.settingsMenu}
+              triggerClassName={styles.settingsTrigger}
               options={SETTINGS_OPTIONS}
               onChange={handleSettingsChange}
               value={visibility}
@@ -230,7 +337,18 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
-          <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
+          {isOwner ? (
+            <button
+              type="button"
+              className={styles.nameButton}
+              onClick={openRename}
+              aria-label="Edit shelf name"
+            >
+              <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
+            </button>
+          ) : (
+            <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
+          )}
         </div>
 
         <div className={styles.right}>
@@ -260,14 +378,22 @@ export function Shelf(props: ShelfProps): JSX.Element {
       </div>
 
       <div className={styles.content}>
-        <Button
-          className={styles.arrow}
-          onClick={() => {}}
-          type={ButtonType.Secondary}
-          Icon={<ArrowIcon />}
-          ariaLabel="Next page"
-        />
-        <div className={styles.items}>
+        {isOverflowing && (
+          <Button
+            className={classNames(styles.arrow, styles.arrowLeft)}
+            onClick={() => scrollByCard(-1)}
+            type={ButtonType.Secondary}
+            Icon={<ArrowIcon />}
+            ariaLabel="Previous"
+            disabled={!canScrollLeft}
+          />
+        )}
+        <div
+          className={classNames(styles.items, {
+            [styles.scrollable]: isOverflowing,
+          })}
+          ref={itemsRef}
+        >
           {objects.length === 0 ? (
             <div className={styles.empty}>
               <Text
@@ -288,32 +414,39 @@ export function Shelf(props: ShelfProps): JSX.Element {
               )}
             </div>
           ) : (
-            <div className={styles.cards}>
+            <div className={styles.cards} ref={cardsRef}>
               {objects.map(obj => {
-                if (shelfType === 'video') {
-                  return (
-                    <VideoCard key={obj.id} object={obj} onClick={openObject} />
+                const card =
+                  shelfType === 'video' ? (
+                    <VideoCard object={obj} onClick={openObject} />
+                  ) : shelfType === 'audio' ? (
+                    <AudioCard object={obj} onClick={openObject} />
+                  ) : (
+                    <BookCard object={obj} onClick={openObject} />
                   );
-                }
-                if (shelfType === 'audio') {
-                  return (
-                    <AudioCard key={obj.id} object={obj} onClick={openObject} />
-                  );
-                }
                 return (
-                  <BookCard key={obj.id} object={obj} onClick={openObject} />
+                  <div
+                    key={obj.id}
+                    className={styles.cardSlot}
+                    data-flip-id={String(obj.id)}
+                  >
+                    {card}
+                  </div>
                 );
               })}
             </div>
           )}
         </div>
-        <Button
-          className={styles.arrow}
-          onClick={() => {}}
-          type={ButtonType.Secondary}
-          Icon={<ArrowIcon />}
-          ariaLabel="Next page"
-        />
+        {isOverflowing && (
+          <Button
+            className={styles.arrow}
+            onClick={() => scrollByCard(1)}
+            type={ButtonType.Secondary}
+            Icon={<ArrowIcon />}
+            ariaLabel="Next"
+            disabled={!canScrollRight}
+          />
+        )}
 
         <div className={styles.banner}>
           <Image src={shelfBackground} alt="" />
@@ -327,6 +460,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
           shelfObjects={objects}
           onClose={closeAdd}
           onCreated={handleCreated}
+          onReordered={ordered => onObjectsReordered?.(shelf.id, ordered)}
         />
       )}
 
@@ -336,9 +470,13 @@ export function Shelf(props: ShelfProps): JSX.Element {
           isOwner={isOwner}
           ownerUsername={ownerUsername}
           shelfObjects={objects}
+          defaultShelfId={shelf.id}
           onClose={closeObject}
           onUpdated={handleUpdated}
           onDeleted={handleDeleted}
+          onObjectsReordered={ordered =>
+            onObjectsReordered?.(shelf.id, ordered)
+          }
         />
       )}
 
@@ -361,6 +499,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 type="text"
                 value={renameValue}
                 onChange={e => setRenameValue(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !renameLoading) {
+                    e.preventDefault();
+                    void confirmRename();
+                  }
+                }}
                 placeholder="My shelf"
                 placeholderColor="#9E9E9E"
                 ariaLabel="Shelf name"
