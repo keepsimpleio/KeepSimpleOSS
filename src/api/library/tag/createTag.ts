@@ -9,7 +9,13 @@ export interface CreateTagRequest {
 }
 
 export const createTag = async (tagData: CreateTagRequest) => {
-  const { data } = await axiosInstance.post('/api/tags', { data: tagData });
+  // The tag content-type has draftAndPublish enabled, so a plain POST creates
+  // an unpublished draft: it comes back in this response (and shows in the UI)
+  // but the default GET /api/tags only returns published entries, so it
+  // vanishes on refresh. Stamp publishedAt to publish it immediately.
+  const { data } = await axiosInstance.post('/api/tags', {
+    data: { ...tagData, publishedAt: new Date().toISOString() },
+  });
 
   return data;
 };
