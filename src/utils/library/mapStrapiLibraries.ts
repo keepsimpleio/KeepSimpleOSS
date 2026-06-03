@@ -34,7 +34,7 @@ function resolveMediaUrl(
   return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
-function countObjectsByType(shelves: StrapiSingleShelfEntry[]) {
+export function countObjectsByType(shelves: StrapiSingleShelfEntry[]) {
   let bookCount = 0;
   let videoCount = 0;
   let songCount = 0;

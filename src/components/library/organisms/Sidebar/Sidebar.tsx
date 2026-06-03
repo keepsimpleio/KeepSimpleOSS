@@ -1,7 +1,10 @@
-import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibraries';
+import {
+  countObjectsByType,
+  mapStrapiLibrariesResponseToCards,
+} from '@utils/library/mapStrapiLibraries';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo,useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { KEEPSIMPLE_URL } from '@constants/library/common';
 
@@ -65,6 +68,7 @@ export function Sidebar() {
     toggleSidebar,
     toggleGuestMode,
     libraries,
+    currentShelves,
   } = useGlobalState();
 
   const currentLibraryId = pathname?.split('/').pop() || '';
@@ -102,9 +106,28 @@ export function Sidebar() {
     libraryCards[0] ??
     null;
 
-  const bookCount = selectedLibrary?.bookCount ?? 0;
-  const videoCount = selectedLibrary?.videoCount ?? 0;
-  const songCount = selectedLibrary?.songCount ?? 0;
+  // `selectedLibrary` counts come from a one-shot getLibrariesList fetch and go
+  // stale the moment an object is added. `currentShelves` is the live, optimistically
+  // updated shelf set published by LibraryTemplate for the library on screen — prefer
+  // it for the totals so the count bumps immediately on upload.
+  const isViewingSelectedLibrary =
+    !!selectedLibrary?.username &&
+    selectedLibrary.username === currentLibraryId;
+  const liveCounts = useMemo(
+    () => countObjectsByType(currentShelves),
+    [currentShelves],
+  );
+  const useLiveCounts = isViewingSelectedLibrary && currentShelves.length > 0;
+
+  const bookCount = useLiveCounts
+    ? liveCounts.bookCount
+    : (selectedLibrary?.bookCount ?? 0);
+  const videoCount = useLiveCounts
+    ? liveCounts.videoCount
+    : (selectedLibrary?.videoCount ?? 0);
+  const songCount = useLiveCounts
+    ? liveCounts.songCount
+    : (selectedLibrary?.songCount ?? 0);
 
   const authorName = accountData?.username || accountData?.name || 'Anonymous';
   const authorAvatarUrl = accountData?.picture;
@@ -218,6 +241,19 @@ export function Sidebar() {
       return () => clearTimeout(timer);
     }
   }, [isCopied]);
+
+  // Load the tag list on mount. `setTags` is otherwise only called after a
+  // create/edit/delete, so without this the Tags panel renders empty on every
+  // fresh page load until the user mutates a tag.
+  useEffect(() => {
+    let cancelled = false;
+    getTagsList().then(({ data }) => {
+      if (!cancelled) setTags(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [setTags]);
 
   // Auto-detect the user's library on mount so the Edit button works after refresh.
   useEffect(() => {
