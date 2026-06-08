@@ -11,6 +11,8 @@ import type { IShelf } from '@local-types/library/shelf';
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
+import { sanitizeHtml } from '@lib/sanitizeHtml';
+
 import { deleteObject } from '@api/library/object/deleteObject';
 import { updateObject } from '@api/library/object/updateObject';
 import { getShelvesList } from '@api/library/shelf/getShelvesList';
@@ -497,7 +499,9 @@ export function ObjectOverviewModal(
               {attributes.description ? (
                 <div
                   className={styles.description}
-                  dangerouslySetInnerHTML={{ __html: attributes.description }}
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(attributes.description),
+                  }}
                 />
               ) : (
                 <Text

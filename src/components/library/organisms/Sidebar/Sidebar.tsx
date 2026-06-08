@@ -99,11 +99,16 @@ export function Sidebar() {
   const [isEditLibraryOpen, setIsEditLibraryOpen] = useState(false);
   const [myLibrary, setMyLibrary] = useState<ILibrary | null>(null);
   const [selectedLibraryId, setSelectedLibraryId] = useState(
-    currentLibraryId || (libraryCards[0] ? String(libraryCards[0].id) : ''),
+    currentLibraryId ||
+      (libraryCards[0]
+        ? (libraryCards[0].username ?? String(libraryCards[0].id))
+        : ''),
   );
 
   const selectedLibrary =
-    libraryCards.find(lib => String(lib.id) === selectedLibraryId) ??
+    libraryCards.find(
+      lib => (lib.username ?? String(lib.id)) === selectedLibraryId,
+    ) ??
     libraryCards[0] ??
     null;
 
@@ -135,7 +140,9 @@ export function Sidebar() {
   const aboutAuthorText = stripHtml(myLibrary?.attributes.aboutMe);
 
   const dropdownOptions = libraryCards.map(lib => ({
-    value: String(lib.id),
+    // Navigate by the URL slug (username) — the route is /library/[username].
+    // Fall back to the numeric id only when a library has no linked username.
+    value: lib.username ?? String(lib.id),
     label: lib.libraryName,
   }));
 
@@ -158,7 +165,9 @@ export function Sidebar() {
     try {
       if (!accountData?.id) return;
 
-      const slug = `${formData.name.toLowerCase()}-1`;
+      // Strapi enforces unique slugs; a timestamp suffix keeps two tags whose
+      // names normalize to the same string from colliding on write.
+      const slug = `${formData.name.toLowerCase()}-${Date.now()}`;
       const body: CreateTagRequest = {
         name: formData.name,
         description: formData.description,
@@ -181,7 +190,7 @@ export function Sidebar() {
     try {
       if (!selectedTag || !accountData?.id) return;
 
-      const slug = `${formData.name.toLowerCase()}-1`;
+      const slug = `${formData.name.toLowerCase()}-${Date.now()}`;
       const body: UpdateTagRequest = {
         name: formData.name,
         description: formData.description,
@@ -231,7 +240,9 @@ export function Sidebar() {
       return;
     }
 
-    setSelectedLibraryId(String(libraryCards[0].id));
+    setSelectedLibraryId(
+      libraryCards[0].username ?? String(libraryCards[0].id),
+    );
   }, [libraryCards, selectedLibraryId]);
 
   useEffect(() => {
