@@ -1,0 +1,57 @@
+.object {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 120px;
+  border-radius: 8px;
+  background: transparent;
+
+  .icon {
+    display: flex;
+    background: transparent;
+    border-radius: 8px 0 0 8px;
+    padding: 3px 4px 3px 0;
+  }
+
+  .count {
+    color: var(--gray-darkest);
+    padding: 0;
+    height: -webkit-fill-available;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    p {
+      @extend %text-small;
+    }
+  }
+
+  &.border {
+    background: var(--white);
+    border: 1px solid var(--brown-border);
+
+    .icon {
+      padding: 8px;
+      background: var(--white-warm);
+      border-right: 0;
+      border-right: 1px solid var(--brown-border);
+    }
+
+    .count {
+      color: var(--color-text);
+      padding: 0 8px;
+
+      p {
+        @extend %text-regular;
+      }
+    }
+  }
+}
+
+.wrapper {
+  padding: 8px;
+  background: var(--white);
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+}

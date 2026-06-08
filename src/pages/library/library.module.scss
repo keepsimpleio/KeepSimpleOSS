@@ -1,0 +1,13 @@
+.dashboard {
+  display: flex;
+
+  .content {
+    width: 100%;
+    // Without min-width:0 the inner max-content card scroller forces this flex
+    // item wider than the viewport, pushing the Sidebar off-screen.
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+}

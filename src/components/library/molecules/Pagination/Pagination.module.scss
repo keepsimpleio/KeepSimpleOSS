@@ -1,0 +1,53 @@
+.pagination {
+  gap: 8px;
+  display: flex;
+  align-items: center;
+
+  .page {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    color: var(--black-transparent-300) !important;
+
+    &.arrow {
+      padding: 0 !important;
+
+      svg {
+        width: 12px !important;
+        height: 12px !important;
+      }
+
+      &:first-child svg {
+        transform: rotate(180deg);
+      }
+
+      &:disabled {
+        background: var(--gray-light) !important;
+        border: none !important;
+      }
+    }
+
+    &:hover {
+      color: var(--brown) !important;
+      border: 1px solid var(--brown) !important;
+      background: var(--white) !important;
+    }
+
+    &.ellipsis {
+      border: 1px solid var(--beige) !important;
+      color: var(--black-transparent-300) !important;
+      cursor: text;
+    }
+  }
+
+  .active {
+    color: var(--brown) !important;
+    border: 1px solid var(--brown) !important;
+  }
+}
+
+.stori {
+  color: var(--green-100);
+  text-align: center;
+  margin-bottom: 16px;
+}

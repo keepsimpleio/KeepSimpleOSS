@@ -1,0 +1,30 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 16px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  background: var(--white);
+  color: var(--gray-darkest);
+  box-shadow: var(--card-shadow);
+
+  p {
+    color: inherit;
+  }
+
+  &:hover {
+    background: var(--off-white);
+  }
+
+  &.selected {
+    background: var(--brown);
+    color: var(--white);
+
+    &:hover {
+      background: var(--brown-100);
+    }
+  }
+}

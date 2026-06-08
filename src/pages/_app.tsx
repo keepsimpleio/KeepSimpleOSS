@@ -23,6 +23,7 @@ import { LongevityProvider, useLongevity } from '../context/LongevityContext';
 import '../styles/globals.scss';
 import '../styles/vibesuite.scss';
 import '../styles/ai-atlas.css';
+import '../styles/library/library-global.scss';
 // import '../styles/tom.scss';
 
 type TApp = {
@@ -301,6 +302,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
   );
 
   useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_MIXPANEL_TOKEN) return;
     if (!accountData?.id || !accountData?.createdAt) return;
 
     import('../../lib/mixpanel').then(({ default: mixpanel }) => {

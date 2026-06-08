@@ -1,0 +1,117 @@
+:root {
+  /* Blue */
+  --blue-100: #0268ab;
+  --blue-200: #007ccc;
+  --blue-300: #009bff;
+  --blue-400: #67c3ff;
+  --blue-500: #7fb0fa;
+
+  /* Green */
+  --green-100: #228858;
+  --green-200: #2db675;
+  --green-300: #37e391;
+  --green-400: #88eebe;
+  --green-500: #79891c;
+  --green-600: #cae42e;
+  --green-700: #dfef82;
+
+  /* Magenta */
+  --magenta-100: #903e92;
+  --magenta-200: #b851ba;
+  --magenta-300: #e064e2;
+  --magenta-400: #eca2ee;
+
+  /* Orange */
+  --orange-100: #995c01;
+  --orange-200: #df8804;
+  --orange-300: #ff9a00;
+  --orange-400: #ffc267;
+  --orange-500: #ff9900;
+
+  /* Purple */
+  --purple-100: #6b3fb3;
+  --purple-200: #8654d9;
+  --purple-300: #a171ef;
+  --purple-400: #c7a5ff;
+
+  /* Red */
+  --red-100: #933e19;
+  --red-200: #c45222;
+  --red-300: #f5672a;
+  --red-400: #f78555;
+  --red-500: #ff0000;
+  --red-600: #e4002d;
+  --red-700: #b20000;
+
+  /* Neutral */
+  --black: #000000;
+  --black-100: #00000033;
+  --black-rich: #23221c;
+  --black-transparent-100: #00000029;
+  --black-transparent-200: #0000000f;
+  --black-transparent-300: #000000a6;
+  --gray: #8e8e93;
+  --gray-100: #d9d9d9;
+  --gray-200: #333;
+  --gray-medium: #9e9e9e;
+  --gray-light: #c4c4c4;
+  --gray-darkest: #494949;
+  --gray-darker: #515151;
+
+  --brown: #af6a34;
+  --brown-100: #7b4a24;
+  --brown-200: #65350f;
+  --brown-border: #876c4233;
+
+  --taupe: #c0b6ae;
+  --beige: #e0dcd9;
+  --cream: #f8f1e5;
+
+  --white: #ffffff;
+  --white-100: #eae3df;
+  --white-200: #fffcf7;
+  --white-300: #fffcf5;
+  --off-white: #f9f4eb;
+  --white-warm: #fffbf4;
+
+  --white-transparent-400: rgba(248, 241, 229, 0.4);
+  --white-overlay: rgba(255, 255, 255, 0.18);
+  --surface-overlay: rgba(229, 229, 229, 0.03);
+
+  /* Focus */
+  --focus-ring: #017ccc;
+
+  /* Gradient */
+
+  --gradient-shelf-color: linear-gradient(
+    to bottom,
+    #d2c6af 0%,
+    rgba(230, 223, 217, 0) 100%
+  );
+  --gradient-object-shadow: linear-gradient(
+    to bottom,
+    rgba(35, 34, 28, 0.4) 0%,
+    rgba(226, 220, 176, 0) 100%
+  );
+  --gradient-cover-placeholder: linear-gradient(
+    135deg,
+    var(--cream) 0%,
+    var(--beige) 100%
+  );
+  --gradient-book-placeholder: linear-gradient(
+    135deg,
+    #d4cfb4 0%,
+    #b5ad8a 100%
+  );
+
+  /* Box Shadow */
+  --tooltip-shadow: 0px 0px 22px 0px #00000033;
+  --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  --sidebar-shadow: -18px 31px 19.2px 0px #533a3a08;
+  --card-shadow: 0px 4px 12px 0px #00000014;
+
+  /* Fonts — the upstream library injected these via next/font on <body>;
+     here we declare them directly with web-safe fallbacks. */
+  --font-source-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-lato: 'Lato', system-ui, -apple-system, Arial, sans-serif;
+}

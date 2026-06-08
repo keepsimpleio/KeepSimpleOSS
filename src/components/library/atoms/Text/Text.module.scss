@@ -1,0 +1,51 @@
+.title-primary {
+  @extend %title-primary;
+}
+
+.title-secondary-bold {
+  @extend %title-secondary-bold;
+}
+
+.subtitle-secondary-semi {
+  @extend %subtitle-secondary-semi;
+}
+
+.subtitle-secondary-bold {
+  @extend %subtitle-secondary-bold;
+}
+
+.subtitle-secondary-alt {
+  @extend %subtitle-secondary-alt;
+}
+
+.text-base-bold {
+  @extend %text-base-bold;
+}
+
+.text-base {
+  @extend %text-base;
+}
+
+.text-regular {
+  @extend %text-regular;
+}
+
+.text-base-semibold {
+  @extend %text-base-semibold;
+}
+
+.text-quaternary {
+  @extend %text-quaternary;
+}
+
+.text-small {
+  @extend %text-small;
+}
+
+.text-tin {
+  @extend %text-tiny;
+}
+
+.base {
+  color: var(--green-100);
+}
