@@ -11,7 +11,7 @@ import React, {
 
 import { IUser } from '@local-types/library/user';
 
-import { getCookie, removeCookie } from '@lib/library/cookie';
+import { getAccessToken, removeCookie } from '@lib/library/cookie';
 
 import { logout } from '@api/auth';
 
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   useEffect(() => {
-    const accessToken = getCookie('accessToken') as string | undefined;
+    const accessToken = getAccessToken();
     setToken(accessToken || null);
   }, [session]);
 

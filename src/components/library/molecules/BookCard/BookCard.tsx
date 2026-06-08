@@ -5,6 +5,8 @@ import React, { JSX } from 'react';
 
 import { BookShadowIcon } from '@icons/library/svg';
 
+import { SelectToggle } from '@components/library/molecules/SelectToggle';
+
 import type { BookCardProps } from './BookCard.types';
 
 import styles from './BookCard.module.scss';
@@ -13,6 +15,8 @@ export function BookCard({
   object,
   onClick,
   className,
+  selected = false,
+  onSelectToggle,
 }: BookCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -33,13 +37,18 @@ export function BookCard({
   return (
     <div className={classNames(styles.row, className)}>
       <div
-        className={styles.card}
+        className={classNames(styles.card, { [styles.selected]: selected })}
         role="button"
         tabIndex={0}
         aria-label={`Open ${title}`}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
       >
+        {onSelectToggle && (
+          <div className={styles.select}>
+            <SelectToggle selected={selected} onToggle={onSelectToggle} />
+          </div>
+        )}
         <div className={styles.cover}>
           {coverUrl ? (
             <Image

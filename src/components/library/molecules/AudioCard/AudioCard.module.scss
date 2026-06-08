@@ -28,10 +28,35 @@
   }
 }
 
+// Hover/focus-revealed selection toggle, centered over the cover's top edge.
+.select {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.card:hover .select,
+.card:focus-within .select {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.card.selected .cover {
+  opacity: 0.55;
+}
+
 .cover {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  transition: opacity 0.15s ease;
 }
 
 .coverImage {

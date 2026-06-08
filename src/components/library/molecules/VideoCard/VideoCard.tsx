@@ -6,6 +6,7 @@ import React, { JSX } from 'react';
 import { VideoShadowIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
 import type { VideoCardProps } from './VideoCard.types';
 
@@ -15,6 +16,8 @@ export function VideoCard({
   object,
   onClick,
   className,
+  selected = false,
+  onSelectToggle,
 }: VideoCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -33,13 +36,20 @@ export function VideoCard({
 
   return (
     <div
-      className={classNames(styles.card, className)}
+      className={classNames(styles.card, className, {
+        [styles.selected]: selected,
+      })}
       role="button"
       tabIndex={0}
       aria-label={`Open ${title}`}
       onClick={handleActivate}
       onKeyDown={handleKeyDown}
     >
+      {onSelectToggle && (
+        <div className={styles.select}>
+          <SelectToggle selected={selected} onToggle={onSelectToggle} />
+        </div>
+      )}
       <div className={styles.thumbWrap}>
         <div className={styles.thumb}>
           {coverUrl ? (

@@ -230,6 +230,22 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   const onSubmitForm: SubmitHandler<AddObjectFormData> = async data => {
     setSubmitError(null);
+
+    // Object titles must be unique within a shelf — warn before saving instead
+    // of letting the backend reject it. Only on create; an edit keeps its title.
+    if (!editing) {
+      const newTitle = data.title.trim().toLowerCase();
+      const isDuplicate = (shelfObjects ?? []).some(
+        o => o.attributes.title.trim().toLowerCase() === newTitle,
+      );
+      if (isDuplicate) {
+        setSubmitError(
+          `A ${objectType} with this title already exists on this shelf.`,
+        );
+        return;
+      }
+    }
+
     setIsSubmittingForm(true);
     try {
       let coverImageId: number | null | undefined;
@@ -436,10 +452,14 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       setShowSuccess(true);
     } catch (e) {
+      // Axios failures carry a raw "Request failed with status code 500" — not
+      // useful to a user. Show a friendly line (the title is the usual culprit)
+      // and only fall back to a specific message when it isn't an HTTP error.
+      const isHttpError = !!(e as { response?: unknown })?.response;
       const message =
-        e instanceof Error
-          ? e.message
-          : 'Something went wrong. Please try again.';
+        isHttpError || !(e instanceof Error)
+          ? `Could not save this ${objectType}. Please try a different title.`
+          : e.message;
       setSubmitError(message);
     } finally {
       setIsSubmittingForm(false);

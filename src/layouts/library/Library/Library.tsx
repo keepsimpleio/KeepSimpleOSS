@@ -54,7 +54,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   const [isResequencing, setIsResequencing] = useState(false);
   const resequenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { accountData } = useAuth();
-  const { setCurrentShelves } = useGlobalState();
+  const { setCurrentShelves, setIsCreateBlocked } = useGlobalState();
 
   // Ownership is decided by the loaded library's owner, not the URL slug — the
   // slug is sometimes a numeric library id (Sidebar dropdown, LibraryCard
@@ -69,6 +69,15 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     ((!!ownerUsername && ownerUsername.toLowerCase() === myUsername) ||
       (!!libraryId && libraryId.toLowerCase() === myUsername));
 
+  // Creating a library is gated by the `can-create-library` feature flag from
+  // GET /api/users/me. The gate only matters before a library exists — once one
+  // is created, owners keep full control. Decide at render time from the flag,
+  // never by probing POST /api/libraries (that would create one for flag-holders).
+  const canCreateLibrary =
+    accountData?.featureNames?.includes('can-create-library') ?? false;
+  const showNoCreatePermission =
+    isOwner && library === null && !canCreateLibrary;
+
   // URL param is `/library/[username]` — accept either a numeric id or a username slug.
   const resolveLibraryId = useCallback(async (): Promise<number | null> => {
     if (!libraryId?.trim()) return null;
@@ -80,8 +89,8 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   }, [libraryId]);
 
   const loadLibrary = useCallback(
-    async (options?: { silent?: boolean }) => {
-      if (!libraryId?.trim()) {
+    async (options?: { silent?: boolean; libraryId?: number }) => {
+      if (options?.libraryId == null && !libraryId?.trim()) {
         setLibrary(null);
         setIsLoading(false);
         return;
@@ -90,7 +99,11 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
       // Silent reloads (e.g. right after creating a shelf) skip the loading
       // flag so the shelf list stays on screen instead of flashing "Loading…".
       if (!options?.silent) setIsLoading(true);
-      const resolvedId = await resolveLibraryId();
+      // Prefer an explicitly supplied id over re-resolving the slug. Right after
+      // bootstrapping a brand-new library, the username lookup is a filtered
+      // read-after-write that can still return null (publish/replication lag) —
+      // a direct GET by the id we just created is reliable.
+      const resolvedId = options?.libraryId ?? (await resolveLibraryId());
       if (resolvedId == null) {
         setLibrary(null);
         setIsLoading(false);
@@ -141,8 +154,14 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
 
     if (resolvedId == null) {
       console.warn(
-        '[Library] cannot add shelf — no library found for',
-        libraryId,
+        '[Library] cannot add shelf — no library could be resolved',
+        {
+          libraryId,
+          isOwner,
+          hasAccount: !!accountData,
+          accountId: accountData?.id,
+          accountUsername: accountData?.username,
+        },
       );
       return;
     }
@@ -167,11 +186,16 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         ...(accountData?.id != null ? { owner: accountData.id } : {}),
       });
       // Silent reload keeps the shelves on screen (no "Loading…" swap) while the
-      // AddShelfModal shows its own in-flight spinner until this resolves.
-      await loadLibrary({ silent: true });
+      // AddShelfModal shows its own in-flight spinner until this resolves. Pass
+      // the resolved id so a freshly bootstrapped library loads by id instead of
+      // re-resolving the slug (which can lag and return null on first create).
+      await loadLibrary({ silent: true, libraryId: resolvedId });
       setIsOpen(false);
     } catch (e) {
       console.error('[Library] create shelf failed', e);
+      // Surface the failure so AddShelfModal can warn (e.g. duplicate name)
+      // instead of silently swallowing it and leaving the modal hanging.
+      throw e;
     }
   };
 
@@ -201,6 +225,12 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   useEffect(() => {
     setCurrentShelves(shelves);
   }, [shelves, setCurrentShelves]);
+
+  // Mirror the no-permission screen into GlobalState so the Sidebar (right
+  // panel) hides itself when we're showing only the permission message.
+  useEffect(() => {
+    setIsCreateBlocked(showNoCreatePermission);
+  }, [showNoCreatePermission, setIsCreateBlocked]);
 
   const mutateShelfObjects = useCallback(
     (shelfId: number, mutator: (objects: IObject[]) => IObject[]) => {
@@ -311,6 +341,26 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     [],
   );
 
+  const handleShelfRenamed = useCallback((shelfId: number, name: string) => {
+    setLibrary(current => {
+      if (!current) return current;
+      const shelvesData = current.attributes.singleShelves?.data ?? [];
+      return {
+        ...current,
+        attributes: {
+          ...current.attributes,
+          singleShelves: {
+            data: shelvesData.map(s =>
+              s.id === shelfId
+                ? { ...s, attributes: { ...s.attributes, name } }
+                : s,
+            ),
+          },
+        },
+      };
+    });
+  }, []);
+
   const handleShelfDeleted = useCallback((shelfId: number) => {
     setLibrary(current => {
       if (!current) return current;
@@ -378,6 +428,15 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
       )}
       {isLoading ? (
         <Text variant={TypographyVariant.TextBase}>Loading…</Text>
+      ) : showNoCreatePermission ? (
+        <div className={styles.empty}>
+          <Text
+            variant={TypographyVariant.TitleSecondaryBold}
+            className={styles.text}
+          >
+            You don&apos;t have permission to create a library
+          </Text>
+        </div>
       ) : shelves.length === 0 ? (
         <div className={styles.empty}>
           <Text
@@ -415,13 +474,18 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
               onObjectMoved={handleObjectMoved}
               onObjectsReordered={handleObjectsReordered}
               onShelfDeleted={handleShelfDeleted}
+              onShelfRenamed={handleShelfRenamed}
             />
           ))}
         </div>
       )}
 
       {isOpen && (
-        <AddShelfModal onClose={modalToggler} onAddShelf={handleCreateShelf} />
+        <AddShelfModal
+          onClose={modalToggler}
+          onAddShelf={handleCreateShelf}
+          existingNames={shelves.map(s => s.attributes.name)}
+        />
       )}
     </div>
   );

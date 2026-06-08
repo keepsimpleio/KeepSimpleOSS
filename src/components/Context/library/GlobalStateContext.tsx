@@ -16,7 +16,7 @@ import type {
 } from '@local-types/library/library';
 import type { IUser } from '@local-types/library/user';
 
-import { getCookie } from '@lib/library/cookie';
+import { getAccessToken } from '@lib/library/cookie';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
 import { getUserInfo } from '@api/library/user/getUserInfo';
@@ -41,6 +41,13 @@ interface GlobalStateContextValue {
    */
   currentShelves: StrapiSingleShelfEntry[];
   setCurrentShelves: (shelves: StrapiSingleShelfEntry[]) => void;
+  /**
+   * True when the owner is on their own library with no library yet and lacks
+   * the `can-create-library` feature flag. Published by `LibraryTemplate` so the
+   * Sidebar (right panel) can hide itself alongside the no-permission screen.
+   */
+  isCreateBlocked: boolean;
+  setIsCreateBlocked: (value: boolean) => void;
 }
 
 const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(
@@ -61,6 +68,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [currentShelves, setCurrentShelves] = useState<
     StrapiSingleShelfEntry[]
   >([]);
+  const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const didAttemptUserLoad = useRef(false);
   const didAttemptLibrariesLoad = useRef(false);
 
@@ -85,7 +93,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const hasToken = Boolean(getCookie('accessToken'));
+    const hasToken = Boolean(getAccessToken());
     if (!hasToken) {
       didAttemptUserLoad.current = false;
       return;
@@ -124,6 +132,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       refetchLibraries,
       currentShelves,
       setCurrentShelves,
+      isCreateBlocked,
+      setIsCreateBlocked,
     }),
     [
       isGuestMode,
@@ -136,6 +146,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       refetchLibraries,
       currentShelves,
       setCurrentShelves,
+      isCreateBlocked,
+      setIsCreateBlocked,
     ],
   );
 

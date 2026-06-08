@@ -26,6 +26,31 @@
   }
 }
 
+// Hover/focus-revealed selection toggle, centered over the cover's top edge.
+.select {
+  position: absolute;
+  top: 8px;
+  left: 33px;
+  width: 146px;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.card:hover .select,
+.card:focus-within .select {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// Dim the cover while selected so the state reads at a glance.
+.card.selected .cover {
+  opacity: 0.55;
+}
+
 .cover {
   position: absolute;
   top: 0;
@@ -34,6 +59,7 @@
   height: 206px;
   border-radius: 1.44px;
   overflow: hidden;
+  transition: opacity 0.15s ease;
   // Paint the gradient straight onto the cover box so the card shows a filled
   // spine immediately — both for cover-less objects and while next/image is
   // still fetching/optimizing a freshly uploaded cover (which otherwise left a

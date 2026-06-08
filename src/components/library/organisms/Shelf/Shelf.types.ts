@@ -17,6 +17,8 @@ export interface ShelfProps {
   onObjectDeleted?: (shelfId: number, objectId: number) => void;
   /** Fired after the shelf itself is deleted — used to drop it from the library list. */
   onShelfDeleted?: (shelfId: number) => void;
+  /** Fired after the shelf is renamed — lets the library (and toolbar jump-to nav) update in the same render. */
+  onShelfRenamed?: (shelfId: number, name: string) => void;
   /**
    * Fired when an object on this shelf is moved to another shelf (PUT shelf: id).
    * Lets the library remove the object from the source shelf and add it to the

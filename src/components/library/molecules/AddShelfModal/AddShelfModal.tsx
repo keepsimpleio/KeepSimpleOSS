@@ -17,20 +17,40 @@ import styles from './AddShelfModal.module.scss';
 const SHELF_NAME_MAX_LENGTH = 50;
 
 export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
-  const { onClose, onAddShelf } = props;
+  const { onClose, onAddShelf, existingNames = [] } = props;
   const { closeRef, close } = useModalClose(onClose);
   const [activeItem, setActiveItem] = useState<ShelfType>('books');
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const trimmedName = name.trim();
   const canSubmit = trimmedName.length > 0 && !isSubmitting;
 
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (error) setError(null);
+  };
+
   const handleAddShelf = async () => {
     if (!canSubmit) return;
+
+    const isDuplicate = existingNames.some(
+      n => n.trim().toLowerCase() === trimmedName.toLowerCase(),
+    );
+    if (isDuplicate) {
+      setError('A shelf with this name already exists.');
+      return;
+    }
+
+    setError(null);
     setIsSubmitting(true);
     try {
       await onAddShelf(activeItem, trimmedName);
+    } catch {
+      // The create failed server-side (e.g. a name collision the client list
+      // didn't know about) — keep the modal open and warn instead of crashing.
+      setError('Could not create the shelf. Please try a different name.');
     } finally {
       setIsSubmitting(false);
     }
@@ -52,12 +72,13 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
           <Input
             type="text"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={e => handleNameChange(e.target.value)}
             placeholder="My shelf"
             placeholderColor="#9E9E9E"
             ariaLabel="Shelf name"
             maxLength={SHELF_NAME_MAX_LENGTH}
           />
+          {error && <p className={styles.error}>{error}</p>}
         </div>
 
         <div className={styles.content}>

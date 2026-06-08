@@ -66,9 +66,19 @@ export function Sidebar() {
     toggleGuestMode,
     libraries,
     currentShelves,
+    isCreateBlocked,
   } = useGlobalState();
 
   const currentLibraryId = pathname?.split('/').pop() || '';
+
+  // Share the link to the library being viewed (`/library/[username]`) on the
+  // current environment's host (NEXT_PUBLIC_DOMAIN — localhost in dev, the real
+  // domain in prod) rather than a hardcoded URL. Falls back to keepsimple.io if
+  // the env var is unset, and to the bare host when there's no library slug.
+  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
+  const shareUrl = currentLibraryId
+    ? `${baseUrl}/library/${currentLibraryId}`
+    : baseUrl;
 
   const libraryCards = useMemo(() => {
     if (!libraries || !Array.isArray(libraries.data)) {
@@ -137,7 +147,7 @@ export function Sidebar() {
 
   const handleCopyUrl = async () => {
     try {
-      await navigator.clipboard.writeText(KEEPSIMPLE_URL);
+      await navigator.clipboard.writeText(shareUrl);
       setIsCopied(true);
     } catch (err) {
       console.error('Failed to copy URL:', err);
@@ -260,6 +270,10 @@ export function Sidebar() {
       cancelled = true;
     };
   }, [accountData?.id, myLibrary]);
+
+  // Hide the right panel entirely when the owner lacks permission to create a
+  // library — the page shows only the centered no-permission message.
+  if (isCreateBlocked) return null;
 
   return (
     <>
@@ -419,7 +433,7 @@ export function Sidebar() {
               <div className={styles.shareInputContainer}>
                 <Input
                   type="text"
-                  value={KEEPSIMPLE_URL}
+                  value={shareUrl}
                   placeholder=""
                   onChange={() => {}}
                   disabled

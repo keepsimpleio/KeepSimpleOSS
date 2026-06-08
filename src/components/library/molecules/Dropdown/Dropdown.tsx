@@ -37,10 +37,12 @@ export function Dropdown(props: DropdownProps): JSX.Element {
 
   const dropdownRef = useClickOutside(handleClose);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // When portaled the menu is detached from the trigger's box, so its position
-  // is tracked against the trigger and recomputed on scroll/resize.
-  const menuPos = useAnchoredPosition(triggerRef, portal && isOpen);
+  // is tracked against the trigger and recomputed on scroll/resize. It flips
+  // above the trigger when it would overflow the bottom of the viewport.
+  const menuPos = useAnchoredPosition(triggerRef, portal && isOpen, menuRef);
 
   const selectedOption = options.find(opt => opt.value === value);
 
@@ -68,12 +70,19 @@ export function Dropdown(props: DropdownProps): JSX.Element {
 
   const menuContent = (
     <div
+      ref={menuRef}
       className={classNames(styles.menu, menuClassName, {
         [styles.menuPortal]: portal && menuPos,
       })}
       style={
         portal && menuPos
-          ? { top: menuPos.top, left: menuPos.left, width: menuPos.width }
+          ? {
+              top: menuPos.top,
+              left: menuPos.left,
+              width: menuPos.width,
+              transform:
+                menuPos.placement === 'top' ? 'translateY(-100%)' : undefined,
+            }
           : undefined
       }
       // Portaled menu sits outside dropdownRef, so useClickOutside would close

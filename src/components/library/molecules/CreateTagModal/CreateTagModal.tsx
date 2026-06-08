@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createTagSchema } from '@utils/library/schema/createTagSchema';
 import classNames from 'classnames';
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -44,6 +44,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
   const isSelectTag = isEdit && !activeTag;
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showCreateSuccessConfirmation, setShowCreateSuccessConfirmation] =
     useState(false);
@@ -72,11 +73,31 @@ export function CreateTagModal(props: CreateTagModalProps) {
   };
 
   const onSubmitForm = async (data: CreateTagFormData) => {
-    if (onSubmit) {
+    if (!onSubmit) return;
+    setSubmitError(null);
+
+    // Tag names must be unique — warn before saving. Exclude the tag being
+    // edited so re-saving it with its own name isn't flagged as a duplicate.
+    const newName = data.name.trim().toLowerCase();
+    const isDuplicate = tags.some(
+      t =>
+        t.id !== activeTag?.id &&
+        t.attributes.name.trim().toLowerCase() === newName,
+    );
+    if (isDuplicate) {
+      setSubmitError('A tag with this name already exists.');
+      return;
+    }
+
+    try {
       await onSubmit(data);
       if (!isEdit) {
         setShowCreateSuccessConfirmation(true);
       }
+    } catch {
+      // Keep the modal open and warn instead of bubbling the rejection up into
+      // an unhandled runtime error.
+      setSubmitError('Could not save the tag. Please try a different name.');
     }
   };
 
@@ -163,6 +184,9 @@ export function CreateTagModal(props: CreateTagModalProps) {
                     />
                     {errors.name && (
                       <p className={styles.error}>{errors.name.message}</p>
+                    )}
+                    {submitError && (
+                      <p className={styles.error}>{submitError}</p>
                     )}
                   </div>
 

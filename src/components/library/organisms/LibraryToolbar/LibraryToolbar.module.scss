@@ -3,7 +3,7 @@
   position: sticky;
   top: 48px;
   z-index: 20;
-  background: var(--white-warm);
+  background: var(--cream);
   padding: 0 16px 12px;
 
   // The global header switches to a fixed 55px bar at this breakpoint.
@@ -91,6 +91,11 @@
   flex-shrink: 0;
   width: 300px;
   max-width: 100%;
+
+  input {
+    border-radius: 12px !important;
+    background: var(--white-300) !important;
+  }
 }
 
 .addShelfWrap {

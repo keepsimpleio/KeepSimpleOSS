@@ -72,9 +72,11 @@ function ColoredSelect<T extends string | number>(
   const close = useCallback(() => setIsOpen(false), []);
   const ref = useClickOutside(close);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  // Keep the portaled menu glued to the trigger as the modal/page scrolls.
-  const menuPos = useAnchoredPosition(triggerRef, isOpen);
+  // Keep the portaled menu glued to the trigger as the modal/page scrolls, and
+  // flip it above the trigger when it would overflow the bottom of the viewport.
+  const menuPos = useAnchoredPosition(triggerRef, isOpen, menuRef);
 
   const handleToggle = () => {
     if (readOnly) return;
@@ -95,6 +97,7 @@ function ColoredSelect<T extends string | number>(
       ? createPortal(
           <div className="library">
             <div
+              ref={menuRef}
               role="listbox"
               className={styles.menu}
               style={{
@@ -103,6 +106,8 @@ function ColoredSelect<T extends string | number>(
                 left: menuPos.left,
                 width: menuPos.width,
                 zIndex: 1500,
+                transform:
+                  menuPos.placement === 'top' ? 'translateY(-100%)' : undefined,
               }}
               // Keep clicks inside the portaled menu from triggering useClickOutside.
               onPointerDown={e => e.stopPropagation()}

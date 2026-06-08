@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import Image from 'next/image';
 import React, { JSX } from 'react';
 
+import { SelectToggle } from '@components/library/molecules/SelectToggle';
+
 import type { AudioCardProps } from './AudioCard.types';
 
 import styles from './AudioCard.module.scss';
@@ -11,6 +13,8 @@ export function AudioCard({
   object,
   onClick,
   className,
+  selected = false,
+  onSelectToggle,
 }: AudioCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -31,13 +35,18 @@ export function AudioCard({
   return (
     <div className={classNames(styles.row, className)}>
       <div
-        className={styles.card}
+        className={classNames(styles.card, { [styles.selected]: selected })}
         role="button"
         tabIndex={0}
         aria-label={`Open ${title}`}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
       >
+        {onSelectToggle && (
+          <div className={styles.select}>
+            <SelectToggle selected={selected} onToggle={onSelectToggle} />
+          </div>
+        )}
         <div className={styles.cover}>
           {coverUrl ? (
             <Image

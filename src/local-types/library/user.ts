@@ -5,6 +5,8 @@ export interface IUser {
   email?: string;
   picture?: string;
   image?: string;
+  // Feature flags from GET /api/users/me. Empty array when the user has none.
+  featureNames?: string[];
 }
 
 // PUT /api/user/me — body allowlist per docs/user-api.md §3.

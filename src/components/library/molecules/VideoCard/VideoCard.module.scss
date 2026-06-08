@@ -21,6 +21,30 @@
   }
 }
 
+// Hover/focus-revealed selection toggle, centered over the thumbnail's top.
+.select {
+  position: absolute;
+  top: 20px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.card:hover .select,
+.card:focus-within .select {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.card.selected .thumb {
+  opacity: 0.55;
+}
+
 .thumbWrap {
   position: relative;
   width: 100%;
@@ -33,6 +57,7 @@
   inset: 0;
   background: var(--white);
   overflow: hidden;
+  transition: opacity 0.15s ease;
 }
 
 .coverImage {

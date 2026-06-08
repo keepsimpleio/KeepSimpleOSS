@@ -137,6 +137,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onObjectUpdated,
     onObjectDeleted,
     onShelfDeleted,
+    onShelfRenamed,
     onObjectMoved,
     onObjectsReordered,
   } = props;
@@ -157,6 +158,16 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [activeObject, setActiveObject] = useState<IObject | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+  const toggleSelected = useCallback((id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
   const [deleteShelfOpen, setDeleteShelfOpen] = useState(false);
   const [deleteShelfLoading, setDeleteShelfLoading] = useState(false);
   const [deleteShelfError, setDeleteShelfError] = useState<string | null>(null);
@@ -255,6 +266,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     try {
       await updateShelf(shelf.id, { name: trimmed });
       setShelfName(trimmed);
+      onShelfRenamed?.(shelf.id, trimmed);
       setRenameOpen(false);
     } catch (e) {
       const message =
@@ -416,13 +428,32 @@ export function Shelf(props: ShelfProps): JSX.Element {
           ) : (
             <div className={styles.cards} ref={cardsRef}>
               {objects.map(obj => {
+                const selected = selectedIds.has(obj.id);
+                const onSelectToggle = isOwner
+                  ? () => toggleSelected(obj.id)
+                  : undefined;
                 const card =
                   shelfType === 'video' ? (
-                    <VideoCard object={obj} onClick={openObject} />
+                    <VideoCard
+                      object={obj}
+                      onClick={openObject}
+                      selected={selected}
+                      onSelectToggle={onSelectToggle}
+                    />
                   ) : shelfType === 'audio' ? (
-                    <AudioCard object={obj} onClick={openObject} />
+                    <AudioCard
+                      object={obj}
+                      onClick={openObject}
+                      selected={selected}
+                      onSelectToggle={onSelectToggle}
+                    />
                   ) : (
-                    <BookCard object={obj} onClick={openObject} />
+                    <BookCard
+                      object={obj}
+                      onClick={openObject}
+                      selected={selected}
+                      onSelectToggle={onSelectToggle}
+                    />
                   );
                 return (
                   <div
