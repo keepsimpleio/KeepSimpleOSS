@@ -11,10 +11,11 @@ import {
   VideoIcon,
 } from '@icons/library/svg';
 
-// Frontend gate for the Library feature. Only the exact string 'true' enables
-// it; unset/'false'/anything else stays disabled so a typo can't ship it to prod.
+// Frontend gate for the Library feature. Enabled everywhere except prod
+// (dev + staging) so it can't ship to prod until it's ready. Driven by the
+// shared NEXT_PUBLIC_ENV (dev | staging | prod) — no dedicated flag needed.
 export const isLibraryEnabled = (): boolean =>
-  process.env.NEXT_PUBLIC_ENABLE_LIBRARY === 'true';
+  process.env.NEXT_PUBLIC_ENV !== 'prod';
 
 export const title = 'Library';
 
