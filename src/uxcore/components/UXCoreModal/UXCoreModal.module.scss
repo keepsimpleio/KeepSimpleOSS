@@ -124,6 +124,13 @@
           background-color: #fff;
           isolation: isolate;
 
+          // Two-item variant (OffSec hidden): the sliding indicator spans
+          // half the track instead of a third so there's no empty phantom
+          // slot where the Cybersecurity tab used to sit.
+          &.twoCol::before {
+            width: calc(50% + 1px);
+          }
+
           &::before {
             content: '';
             position: absolute;
@@ -159,7 +166,7 @@
           .switcherItem {
             position: relative;
             z-index: 1;
-            width: 33.3333%;
+            flex: 1 1 0;
             text-align: center;
             height: 100%;
             padding: 8px 0;

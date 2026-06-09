@@ -12,6 +12,7 @@ import { getOffsecBiasContent } from '@uxcore/data/biasOffsec';
 import modalIntl from '@uxcore/data/modal';
 import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
+import { isOffsecEnabled } from '@uxcore/lib/offsec';
 import type { QuestionType, TagType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
@@ -214,7 +215,11 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
             <span className={styles.metaTitle}>{usage}</span>
           </div>
           <div className={styles.ModalBodyContent}>
-            <div className={styles.switcher}>
+            <div
+              className={cn(styles.switcher, {
+                [styles.twoCol]: !isOffsecEnabled,
+              })}
+            >
               <div
                 onClick={handleUseCaseClick}
                 data-cy="switch-product"
@@ -237,23 +242,31 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
                 <HrIcon />
                 <span className={styles.switcherItemText}> {hrText}</span>
               </div>
-              <div
-                onClick={handleUseCaseClick}
-                data-cy="switch-offsec"
-                data-usecase="offsec"
-                className={cn(styles.switcherItem, {
-                  [styles.activeOffsec]: isOffsecView,
-                })}
-              >
-                {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
-                <span className={styles.switcherItemText}> {offsecText}</span>
-              </div>
+              {isOffsecEnabled && (
+                <div
+                  onClick={handleUseCaseClick}
+                  data-cy="switch-offsec"
+                  data-usecase="offsec"
+                  className={cn(styles.switcherItem, {
+                    [styles.activeOffsec]: isOffsecView,
+                  })}
+                >
+                  {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+                  <span className={styles.switcherItemText}> {offsecText}</span>
+                </div>
+              )}
             </div>
             <div
-              key={isOffsecView ? 'offsec' : isProductView ? 'product' : 'hr'}
+              key={
+                isOffsecView && isOffsecEnabled
+                  ? 'offsec'
+                  : isProductView
+                    ? 'product'
+                    : 'hr'
+              }
               className={styles.usageFade}
             >
-              {isOffsecView ? (
+              {isOffsecView && isOffsecEnabled ? (
                 (() => {
                   const offsecContent = getOffsecBiasContent(biasNumber);
                   return offsecContent ? (
@@ -272,7 +285,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               )}
             </div>
           </div>
-          {!isOffsecView && data.title && (
+          {(!isOffsecView || !isOffsecEnabled) && data.title && (
             <BiasBody biasNumber={biasNumber} locale={locale} />
           )}
           {questions.length > 0 && (
