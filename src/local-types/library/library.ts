@@ -30,8 +30,30 @@ export interface StrapiAvatarField {
 export interface StrapiUserRelation {
   data: {
     id: number;
-    attributes: { username: string };
+    // Backend restricts the populated owner to a public allowlist on
+    // /api/libraries — only username, name, and picture come back here.
+    attributes: { username: string; name?: string; picture?: string };
   } | null;
+}
+
+/**
+ * Owner profile of the library currently being viewed, published to
+ * GlobalState for the Sidebar's Author panel. Sourced from the populated
+ * `user` relation (public allowlist above) plus the library's own `aboutMe`.
+ */
+export interface LibraryOwner {
+  /** Numeric id of the owning account from the populated `user` relation.
+   * The reliable signal for "is this my library" — compare to accountData.id
+   * instead of matching usernames, which the public role can't always read. */
+  id?: number;
+  username?: string;
+  name?: string;
+  /** Account OAuth photo from the populated `user` relation (auth role only). */
+  picture?: string;
+  /** The library's own uploaded avatar — readable by the public role, so this
+   * is what a logged-out visitor sees. Raw Strapi URL; resolve before use. */
+  avatar?: string;
+  aboutMe?: string;
 }
 
 export interface StrapiLibraryDetailsComponent {

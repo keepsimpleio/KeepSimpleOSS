@@ -11,6 +11,8 @@ import {
 } from 'react';
 
 import type {
+  ILibrary,
+  LibraryOwner,
   StrapiLibrariesResponse,
   StrapiSingleShelfEntry,
 } from '@local-types/library/library';
@@ -42,6 +44,20 @@ interface GlobalStateContextValue {
   currentShelves: StrapiSingleShelfEntry[];
   setCurrentShelves: (shelves: StrapiSingleShelfEntry[]) => void;
   /**
+   * Owner of the library currently being viewed — published by
+   * `LibraryTemplate` so the Sidebar's Author panel shows the library's owner
+   * rather than the logged-in viewer (`/api/users/me`).
+   */
+  currentOwner: LibraryOwner | null;
+  setCurrentOwner: (owner: LibraryOwner | null) => void;
+  /**
+   * The full library entry currently being viewed — published by
+   * `LibraryTemplate`. The Sidebar edits this directly when it's the owner's
+   * own library, so there's no separate fetch to disagree with what's on screen.
+   */
+  currentLibrary: ILibrary | null;
+  setCurrentLibrary: (library: ILibrary | null) => void;
+  /**
    * True when the owner is on their own library with no library yet and lacks
    * the `can-create-library` feature flag. Published by `LibraryTemplate` so the
    * Sidebar (right panel) can hide itself alongside the no-permission screen.
@@ -68,6 +84,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [currentShelves, setCurrentShelves] = useState<
     StrapiSingleShelfEntry[]
   >([]);
+  const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(null);
+  const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const didAttemptUserLoad = useRef(false);
   const didAttemptLibrariesLoad = useRef(false);
@@ -132,6 +150,10 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       refetchLibraries,
       currentShelves,
       setCurrentShelves,
+      currentOwner,
+      setCurrentOwner,
+      currentLibrary,
+      setCurrentLibrary,
       isCreateBlocked,
       setIsCreateBlocked,
     }),
@@ -146,6 +168,10 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       refetchLibraries,
       currentShelves,
       setCurrentShelves,
+      currentOwner,
+      setCurrentOwner,
+      currentLibrary,
+      setCurrentLibrary,
       isCreateBlocked,
       setIsCreateBlocked,
     ],

@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import type { IUpdateLibraryPayload } from '@local-types/library/library';
 import type { IUpdateMeErrorBody } from '@local-types/library/user';
 
-import { getMyLibrary } from '@api/library/getMyLibrary';
+import { createLibrary } from '@api/library/createLibrary';
 import { updateLibrary } from '@api/library/updateLibrary';
 import { uploadFile } from '@api/library/upload/uploadFile';
 import { getUserInfo } from '@api/library/user/getUserInfo';
@@ -68,11 +68,11 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const { closeRef, close } = useModalClose(onClose);
 
   const currentAvatarUrl = absoluteUrl(
-    library.attributes.avatar?.data?.attributes.url,
+    library?.attributes.avatar?.data?.attributes.url,
   );
-  const currentAboutMe = stripHtml(library.attributes.aboutMe);
+  const currentAboutMe = stripHtml(library?.attributes.aboutMe);
   const currentAboutLibrary = stripHtml(
-    library.attributes.libraryDetails?.aboutLibrary,
+    library?.attributes.libraryDetails?.aboutLibrary,
   );
   const currentUsername = accountData?.username ?? '';
 
@@ -167,11 +167,26 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
       if (uploadedAvatarId !== undefined)
         libraryPayload.avatar = uploadedAvatarId;
 
+      const hasLibraryChanges = Object.keys(libraryPayload).length > 0;
+
+      // Bootstrap the library on first save — a permitted owner can open this
+      // modal before any library row exists (the row is created lazily, the
+      // same way adding the first shelf does). Only create one if there's an
+      // actual library change to persist; a username-only edit needs no library.
+      let libraryId = library?.id ?? null;
+      if (hasLibraryChanges && libraryId == null && accountData?.id != null) {
+        libraryId = await createLibrary(accountData.id);
+        if (libraryId == null) {
+          setTopError('Could not create your library. Please try again.');
+          return;
+        }
+      }
+
       const usernameChanged = data.username !== currentUsername;
 
       const [libraryResult, userResult] = await Promise.allSettled([
-        Object.keys(libraryPayload).length > 0
-          ? updateLibrary(library.id, libraryPayload)
+        hasLibraryChanges && libraryId != null
+          ? updateLibrary(libraryId, libraryPayload)
           : Promise.resolve(null),
         usernameChanged
           ? updateMe({ username: data.username })
@@ -198,13 +213,12 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
         return; // leave the modal open so the user can fix it
       }
 
-      // 3. Refresh accountData (username may have changed) and fetch fresh library.
-      const [freshUser, freshLibrary] = await Promise.all([
-        getUserInfo(),
-        accountData?.id ? getMyLibrary(accountData.id) : Promise.resolve(null),
-      ]);
+      // 3. Refresh accountData (username may have changed). The library is
+      // reloaded by the caller via the resolved id — a direct GET by id, which
+      // (unlike the owner relation-filter) reliably resolves a just-created row.
+      const freshUser = await getUserInfo();
       if (freshUser) setAccountData(freshUser);
-      if (freshLibrary) onSaved?.(freshLibrary);
+      if (libraryId != null) onSaved?.(libraryId);
       onClose();
     } catch (error) {
       console.error('EditLibraryModal save failed:', error);
