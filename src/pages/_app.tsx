@@ -1,5 +1,6 @@
 import { getOurProjects } from '@uxcore/api/our-projects';
 import { GlobalContext as UXCoreGlobalContext } from '@uxcore/components/Context/GlobalContext';
+import { NewUpdateModalContainer } from '@uxcore/components/NewUpdateModal';
 import UXCoreLayoutShell from '@uxcore/layouts/Layout';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
@@ -375,6 +376,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
           <UXCoreGlobalContext.Provider value={uxcoreContextValue}>
             <UXCoreLayoutShell>
               <Component {...pageProps} />
+              <NewUpdateModalContainer />
             </UXCoreLayoutShell>
           </UXCoreGlobalContext.Provider>
         ) : (
