@@ -11,6 +11,25 @@
 .content {
   text-align: left;
   padding: 8px 30px 0 30px;
+
+  a {
+    color: #4d4d4d;
+    text-decoration: underline;
+
+    &:hover {
+      color: #262626;
+    }
+  }
+}
+
+:global(body.darkTheme) .content {
+  a {
+    color: #dadada;
+
+    &:hover {
+      color: #ffffff;
+    }
+  }
 }
 
 .instaIcon {
