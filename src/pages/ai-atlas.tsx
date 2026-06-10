@@ -2255,21 +2255,23 @@ function AiAtlasApp() {
                   />
                 ))}
 
-                {data.projects.members.map((p: any) => (
-                  <NodeBody
-                    key={p.id}
-                    node={p}
-                    x={points[p.id].x}
-                    y={points[p.id].y}
-                    active={focusId === p.id}
-                    dimmed={isDim(p.id)}
-                    highlighted={!!highlightId && highlight.has(p.id)}
-                    hovered={hoverNode === p.id}
-                    onSelect={onSelect}
-                    w={210}
-                    h={p.sub ? 72 : 52}
-                  />
-                ))}
+                {data.projects.members
+                  .filter((p: any) => p.id !== 'terminal')
+                  .map((p: any) => (
+                    <NodeBody
+                      key={p.id}
+                      node={p}
+                      x={points[p.id].x}
+                      y={points[p.id].y}
+                      active={focusId === p.id}
+                      dimmed={isDim(p.id)}
+                      highlighted={!!highlightId && highlight.has(p.id)}
+                      hovered={hoverNode === p.id}
+                      onSelect={onSelect}
+                      w={210}
+                      h={p.sub ? 72 : 52}
+                    />
+                  ))}
 
                 {data.projects.members.map((p: any) => {
                   const id = `lead-${p.id}`;
@@ -2289,6 +2291,24 @@ function AiAtlasApp() {
                     />
                   );
                 })}
+
+                {data.projects.members
+                  .filter((p: any) => p.id === 'terminal')
+                  .map((p: any) => (
+                    <NodeBody
+                      key={p.id}
+                      node={p}
+                      x={points[p.id].x}
+                      y={points[p.id].y}
+                      active={focusId === p.id}
+                      dimmed={isDim(p.id)}
+                      highlighted={!!highlightId && highlight.has(p.id)}
+                      hovered={hoverNode === p.id}
+                      onSelect={onSelect}
+                      w={210}
+                      h={p.sub ? 72 : 52}
+                    />
+                  ))}
 
                 {data.projects.members
                   .filter((p: any) => p.leadDiamond2)
