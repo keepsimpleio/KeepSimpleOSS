@@ -58,7 +58,7 @@ export function AudioCard({
           </div>
         )}
         <div className={styles.cover}>
-          {coverUrl ? (
+          {coverUrl && (
             <Image
               src={coverUrl}
               alt={title}
@@ -66,8 +66,6 @@ export function AudioCard({
               sizes="190px"
               className={styles.coverImage}
             />
-          ) : (
-            <div className={styles.coverPlaceholder} />
           )}
         </div>
       </div>

@@ -57,6 +57,9 @@
   inset: 0;
   overflow: hidden;
   transition: opacity 0.15s ease;
+  // Placeholder vinyl artwork — also covers the loading state while next/image
+  // fetches a freshly uploaded cover.
+  background: url('/assets/library/audio-cover.png') center / cover no-repeat;
 }
 
 .coverImage {
@@ -64,12 +67,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.coverPlaceholder {
-  width: 100%;
-  height: 100%;
-  background: var(--white);
 }
 
 .tags {
