@@ -86,8 +86,11 @@ const STRINGS = {
       subAgents: 'ai sub-agents',
       products: 'products',
     },
-    introDossierTitle: 'THIS ATLAS',
-    introDossierCjk: '此地図',
+    introDossierTitle: 'THE ATLAS',
+    introDossierCjk: '地図帳',
+    introStoryBody:
+      'In March 2026 we decided to build the future of Agentic AI. We’ve built companies and products from scratch before, so we approached it the same way — learning every bit of vibecode data from the web and the available docs, then building on top of it with our own expertise. Every project we vibecoded brought us closer to the essence of Agentic AI and made our instructions sharper, more efficient, more striking.',
+    introStoryLink: 'Our journey, in guide form, is here.',
     introQuestionsBefore: 'Got questions? Drop those to our',
     introQuestionsLink: 'Telegram',
     introQuestionsAfter: '.',
@@ -308,8 +311,11 @@ const STRINGS = {
       subAgents: 'ИИ-субагентов',
       products: 'продуктов',
     },
-    introDossierTitle: 'ЭТОТ АТЛАС',
-    introDossierCjk: '此地図',
+    introDossierTitle: 'АТЛАС',
+    introDossierCjk: '地図帳',
+    introStoryBody:
+      'В марте 2026 мы решили строить будущее агентного ИИ. Мы и раньше строили компании и продукты с нуля, поэтому подошли так же — изучили все данные о вайбкоде из сети и доступных доков, а затем надстроили поверх собственную экспертизу. Каждый вайбкод-проект приближал нас к сути агентного ИИ и делал наши инструкции точнее, эффективнее, острее.',
+    introStoryLink: 'Наш путь — в формате гайда — здесь.',
     introQuestionsBefore: 'Есть вопросы? Пишите нам в',
     introQuestionsLink: 'Telegram',
     introQuestionsAfter: '.',
@@ -971,7 +977,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
   const padTop = Math.max(28, titleH + 14);
   return (
     <div className="panel panel--dossier" style={{ paddingTop: padTop + 'px' }}>
-      <span className="panel__corner-mark">凸</span>
+      <span className="panel__corner-mark">印</span>
       <span ref={titleRef} className="panel__title" key={'t-' + data.title}>
         {data.title} <span className="cjk">{data.cjk}</span>
       </span>
@@ -1054,6 +1060,17 @@ function buildIntroDossier(data: any, now: Date, t: T) {
     cjk: t.introDossierCjk,
     desc: (
       <>
+        {t.introStoryBody}{' '}
+        <a
+          className="dossier__link"
+          href="https://keepsimple.io/articles/vibecoding-ladder-llm-agent"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t.introStoryLink}
+        </a>
+        <br />
+        <br />
         {t.introQuestionsBefore}{' '}
         <a
           className="dossier__link"
