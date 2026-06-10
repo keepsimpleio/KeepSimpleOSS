@@ -217,6 +217,12 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .dmd.blue { background: var(--blue); }
 .dmd.gold { background: var(--gold); }
+.dmd.subagent {
+  /* half-filled: the span is rotated 45deg, so "to bottom right" reads
+     as a clean vertical split — blue half, white half, blue outline */
+  background: linear-gradient(to bottom right, var(--blue) 50%, #fff 50%);
+  box-shadow: inset 0 0 0 1.5px var(--blue);
+}
 
 /* iOS Safari mangles the rotated-div diamond inside foreignObject.
    On touch iOS, drop the diamond marker entirely and color the card
@@ -235,6 +241,10 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
     }
     .canvas--orbital .node--dmd-gold {
       outline: 2px solid var(--gold);
+      outline-offset: -1px;
+    }
+    .canvas--orbital .node--dmd-subagent {
+      outline: 2px dashed var(--blue);
       outline-offset: -1px;
     }
   }
