@@ -306,11 +306,11 @@
     "reception": {
       "title": "RECEPTIONIST",
       "cjk": "受付",
-      "desc": "The front desk. Lives outside every ring, faces the public internet, and answers to Wolf directly — public entities knock here first.",
+      "desc": "Public Telegram front desk. Greets visitors, verifies who they are, and opens authorized doors: talk to Wolf's agents or take a guided tour of the Atlas. Strangers stay outside; nothing spends or escalates without Wolf.",
+      "claudeMdLines": 84,
       "rows": [
         { "k": "kind", "v": "ai agent", "cls": "blue" },
         { "k": "role", "v": "public front desk" },
-        { "k": "faces", "v": "public internet" },
         { "k": "reports", "v": "wolf", "cls": "gold" },
         { "k": "ring", "v": "outside all rings" }
       ]
