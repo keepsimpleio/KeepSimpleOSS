@@ -414,6 +414,22 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .wire { transition: opacity 0.2s ease, stroke 0.2s ease; }
 .wire.is-dim { opacity: 0.18; }
 
+/* public internet globe */
+.globe-mark { transition: opacity 0.2s ease; }
+.globe-mark circle,
+.globe-mark ellipse,
+.globe-mark line {
+  stroke: var(--ink-3);
+  stroke-width: 0.9;
+}
+.globe-mark__label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  fill: var(--ink-3);
+}
+.globe-mark.is-dim { opacity: 0.28; }
+
 /* ---------- node ---------- */
 .node-wrap {
   width: 100%; height: 100%;

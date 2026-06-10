@@ -77,6 +77,7 @@ const STRINGS = {
     apexFounderFallback: 'founder',
     redactedPlaceholder: 'REDACTED',
     engLeadLabel: 'Eng. Lead',
+    publicInternetLabel: 'PUBLIC INTERNET',
     claudeMdLabel: 'claude.md',
     linesValue: (n: number) => `${n.toLocaleString()} lines`,
     canvasStats: {
@@ -287,6 +288,7 @@ const STRINGS = {
     apexFounderFallback: 'основатель',
     redactedPlaceholder: 'СКРЫТО',
     engLeadLabel: 'Тех. Лид',
+    publicInternetLabel: 'ПУБЛИЧНЫЙ ИНТЕРНЕТ',
     claudeMdLabel: 'claude.md',
     linesValue: (n: number) => {
       const m10 = n % 10;
@@ -763,6 +765,32 @@ function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
   );
 }
 
+/* ---------- public internet globe ---------- */
+
+function GlobeMark({ x, y, label, dim }: any) {
+  const r = 15;
+  const lat = r * 0.5;
+  const latW = r * 0.866;
+  return (
+    <g className={'globe-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
+      <circle cx={x} cy={y} r={r} fill="var(--paper)" />
+      <ellipse cx={x} cy={y} rx={r * 0.45} ry={r} fill="none" />
+      <line x1={x - r} y1={y} x2={x + r} y2={y} />
+      <line x1={x - latW} y1={y - lat} x2={x + latW} y2={y - lat} />
+      <line x1={x - latW} y1={y + lat} x2={x + latW} y2={y + lat} />
+      <text
+        x={x - r - 9}
+        y={y}
+        textAnchor="end"
+        dominantBaseline="middle"
+        className="globe-mark__label"
+      >
+        {label}
+      </text>
+    </g>
+  );
+}
+
 function TerritoryArc({ project, R }: any) {
   if (!project.territoryArc) return null;
   const half = project.territoryArc / 2;
@@ -1003,6 +1031,8 @@ function tallyDiamonds(data: any) {
   };
   if (data.apex) tally(data.apex.diamond);
   if (data.order && data.order.member) tally(data.order.member.diamond);
+  if (data.reception && data.reception.member)
+    tally(data.reception.member.diamond);
   ((data.devEnv && data.devEnv.members) || []).forEach((n: any) =>
     tally(n.diamond),
   );
@@ -1613,6 +1643,14 @@ function AiAtlasApp() {
       const p = POL(data.order.r, n.theta);
       m[n.id] = { ...p, ring: 'order', node: n };
     }
+    if (data.reception) {
+      const n = data.reception.member;
+      const p = POL(data.reception.r, n.theta);
+      m[n.id] = { ...p, ring: 'outside', node: n };
+      // Globe sits further out on the same radial, so globe → reception →
+      // wolf reads as a single straight line from the public internet inward.
+      m['globe'] = { ...POL(data.reception.globeR, n.theta), ring: 'outside' };
+    }
     data.devEnv.members.forEach((n: any) => {
       const p = POL(data.devEnv.r, n.theta);
       m[n.id] = { ...p, ring: 'dev', node: n };
@@ -1800,6 +1838,10 @@ function AiAtlasApp() {
       set.add('order');
       set.add('terminal');
       set.add('lead-terminal');
+      if (data.reception) set.add('reception');
+    }
+    if (highlightId === 'reception') {
+      set.add('wolf');
     }
     if (highlightId === 'order') {
       set.add('wolf');
@@ -1935,6 +1977,25 @@ function AiAtlasApp() {
                   dim={isDim('wolf') || isDim('order')}
                   glow={spokeGlow('wolf', 'order')}
                 />
+
+                {data.reception && (
+                  <>
+                    <Spoke
+                      from={points['globe']}
+                      to={points['reception']}
+                      kind="advisory"
+                      dim={isDim('reception')}
+                      glow={spokeGlow('reception', 'wolf')}
+                    />
+                    <Spoke
+                      from={points['reception']}
+                      to={points['wolf']}
+                      kind="auth"
+                      dim={isDim('reception') || isDim('wolf')}
+                      glow={spokeGlow('reception', 'wolf')}
+                    />
+                  </>
+                )}
 
                 {data.devEnv.members.map((n: any) => (
                   <Spoke
@@ -2074,6 +2135,29 @@ function AiAtlasApp() {
                   w={170}
                   h={50}
                 />
+
+                {data.reception && (
+                  <>
+                    <GlobeMark
+                      x={points['globe'].x}
+                      y={points['globe'].y}
+                      label={t.publicInternetLabel}
+                      dim={isDim('reception')}
+                    />
+                    <NodeBody
+                      node={data.reception.member}
+                      x={points['reception'].x}
+                      y={points['reception'].y}
+                      active={focusId === 'reception'}
+                      dimmed={isDim('reception')}
+                      highlighted={!!highlightId && highlight.has('reception')}
+                      hovered={hoverNode === 'reception'}
+                      onSelect={onSelect}
+                      w={165}
+                      h={42}
+                    />
+                  </>
+                )}
 
                 {data.devEnv.members.map((n: any) => (
                   <NodeBody
