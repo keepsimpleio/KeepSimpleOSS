@@ -796,12 +796,26 @@ function TelegramMark({ x, y, dim }: any) {
   return (
     <g className={'globe-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
       <title>Telegram</title>
-      <circle cx={x} cy={y} r={14} fill="var(--paper)" />
+      <circle cx={x} cy={y} r={16} fill="var(--paper)" />
       <path
-        d={`M ${x + 6.5} ${y - 5} L ${x - 7} ${y + 0.5} L ${x - 2} ${y + 2.2} L ${x + 1.2} ${y + 5.5} Z`}
-        fill="none"
+        className="globe-mark__plane"
+        d={`M ${x + 8} ${y - 6}
+            L ${x - 8.5} ${y + 1}
+            L ${x - 3} ${y + 3.2}
+            L ${x - 1.6} ${y + 7.4}
+            L ${x + 0.8} ${y + 4.6}
+            L ${x + 4.6} ${y + 6.4}
+            Z`}
       />
-      <path d={`M ${x - 2} ${y + 2.2} L ${x + 6.5} ${y - 5}`} fill="none" />
+      <text
+        x={x - 16 - 9}
+        y={y}
+        textAnchor="end"
+        dominantBaseline="middle"
+        className="globe-mark__label globe-mark__label--sm"
+      >
+        TELEGRAM
+      </text>
     </g>
   );
 }
