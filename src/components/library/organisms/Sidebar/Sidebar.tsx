@@ -2,16 +2,18 @@ import {
   countObjectsByType,
   mapStrapiLibrariesResponseToCards,
 } from '@utils/library/mapStrapiLibraries';
+import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { KEEPSIMPLE_URL } from '@constants/library/common';
+import {
+  KEEPSIMPLE_URL,
+  LIBRARY_SHELVES_REFETCH_EVENT,
+} from '@constants/library/common';
 
-import type { ILibrary } from '@local-types/library/library';
 import { ITagAttributes } from '@local-types/library/tag';
 
-import { getMyLibrary } from '@api/library/getMyLibrary';
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
 import { getTagsList } from '@api/library/tag/getTagsList';
@@ -55,7 +57,6 @@ const stripHtml = (s?: string | null) =>
 
 export function Sidebar() {
   const router = useRouter();
-  const pathname = router.asPath;
 
   const { accountData } = useAuth();
   const { tags, setTags } = useDashboard();
@@ -66,10 +67,18 @@ export function Sidebar() {
     toggleGuestMode,
     libraries,
     currentShelves,
+    currentOwner,
+    currentLibrary,
     isCreateBlocked,
   } = useGlobalState();
 
-  const currentLibraryId = pathname?.split('/').pop() || '';
+  // The library being viewed is always the `[username]` route segment — read it
+  // from the router params, not the URL tail. On nested routes
+  // (`/library/[username]/[slug]`, `/library/[username]/share/[token]`) the tail
+  // is the object slug or share token, not the library.
+  const usernameParam = router.query.username;
+  const currentLibraryId =
+    (Array.isArray(usernameParam) ? usernameParam[0] : usernameParam) ?? '';
 
   // Share the link to the library being viewed (`/library/[username]`) on the
   // current environment's host (NEXT_PUBLIC_DOMAIN — localhost in dev, the real
@@ -97,7 +106,6 @@ export function Sidebar() {
   const [selectedTag, setSelectedTag] = useState<ITagAttributes | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isEditLibraryOpen, setIsEditLibraryOpen] = useState(false);
-  const [myLibrary, setMyLibrary] = useState<ILibrary | null>(null);
   const [selectedLibraryId, setSelectedLibraryId] = useState(
     currentLibraryId ||
       (libraryCards[0]
@@ -105,39 +113,76 @@ export function Sidebar() {
         : ''),
   );
 
-  const selectedLibrary =
-    libraryCards.find(
-      lib => (lib.username ?? String(lib.id)) === selectedLibraryId,
-    ) ??
-    libraryCards[0] ??
-    null;
-
-  // `selectedLibrary` counts come from a one-shot getLibrariesList fetch and go
-  // stale the moment an object is added. `currentShelves` is the live, optimistically
-  // updated shelf set published by LibraryTemplate for the library on screen — prefer
-  // it for the totals so the count bumps immediately on upload.
-  const isViewingSelectedLibrary =
-    !!selectedLibrary?.username &&
-    selectedLibrary.username === currentLibraryId;
-  const liveCounts = useMemo(
+  // Object totals always come from the live shelves of the library on screen
+  // (`currentShelves`, published by LibraryTemplate) — never from the viewer's
+  // own library list, which would show the wrong counts on someone else's page.
+  const { bookCount, videoCount, songCount } = useMemo(
     () => countObjectsByType(currentShelves),
     [currentShelves],
   );
-  const useLiveCounts = isViewingSelectedLibrary && currentShelves.length > 0;
 
-  const bookCount = useLiveCounts
-    ? liveCounts.bookCount
-    : (selectedLibrary?.bookCount ?? 0);
-  const videoCount = useLiveCounts
-    ? liveCounts.videoCount
-    : (selectedLibrary?.videoCount ?? 0);
-  const songCount = useLiveCounts
-    ? liveCounts.songCount
-    : (selectedLibrary?.songCount ?? 0);
+  // The whole panel is decided by one question: is this my library, and am I
+  // logged in? Yes → editable, showing my account identity. No (someone else's
+  // library, or logged out) → read-only, showing the viewed library's public
+  // data. Guest mode lets an owner preview that read-only view.
+  //
+  // Ownership matches the loaded owner against my account by any reliable
+  // signal: account id (most specific, but `/api/users/me` and the library's
+  // `user` relation don't always share an id space), then username, then the
+  // URL slug for the window before the owner relation resolves. Matching on
+  // `currentOwner` is safe from cross-page bleed because LibraryTemplate nulls
+  // the previous library on navigation, so this never reflects a prior owner.
+  const viewerUsername = accountData?.username?.toLowerCase() ?? null;
+  const viewerId = accountData?.id != null ? String(accountData.id) : null;
+  const isMyLibrary =
+    (!!viewerId || !!viewerUsername) &&
+    ((!!viewerId &&
+      currentOwner?.id != null &&
+      String(currentOwner.id) === viewerId) ||
+      (!!viewerUsername &&
+        (currentOwner?.username?.toLowerCase() === viewerUsername ||
+          currentLibraryId.toLowerCase() === viewerUsername)));
+  const canEdit = isMyLibrary && !isGuestMode;
 
-  const authorName = accountData?.username || accountData?.name || 'Anonymous';
-  const authorAvatarUrl = accountData?.picture;
-  const aboutAuthorText = stripHtml(myLibrary?.attributes.aboutMe);
+  // An owner can edit their About panel before any library row exists — the
+  // row is created lazily on first save. So the editable affordance is gated on
+  // the `can-create-library` permission, not on a loaded library (the same flag
+  // LibraryTemplate uses to allow bootstrapping via the first shelf).
+  const canCreateLibrary =
+    accountData?.featureNames?.includes('can-create-library') ?? false;
+  const canEditLibrary = canEdit && (!!currentLibrary || canCreateLibrary);
+
+  // Identity, bio and avatar all read from the viewed library's public data
+  // (`currentOwner` + `currentLibrary.avatar`). For my own library that *is* my
+  // data; for a visitor the populated `user` relation is hidden from the public
+  // role, so fall back to the URL slug for the name (`/library/[username]`) and
+  // to my account name/photo when it's mine.
+  const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
+  const authorName = isMyLibrary
+    ? accountData?.username || currentOwner?.username || 'Anonymous'
+    : currentOwner?.username || slugName || 'Anonymous';
+  const authorAvatarUrl =
+    resolveStrapiUrl(currentOwner?.avatar) ??
+    (isMyLibrary ? accountData?.picture : undefined);
+  const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
+
+  // Owner sees their full, editable tag palette; a visitor sees the tags
+  // actually used on this library's objects — no cross-account tag fetch.
+  const libraryTags = useMemo(() => {
+    const byName = new Map<string, { name: string; color: string }>();
+    for (const shelf of currentShelves) {
+      for (const obj of shelf.attributes.objects?.data ?? []) {
+        for (const tag of obj.attributes.tags?.data ?? []) {
+          byName.set(tag.attributes.name, tag.attributes);
+        }
+      }
+    }
+    return Array.from(byName.values());
+  }, [currentShelves]);
+
+  const displayedTags = canEdit
+    ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
+    : libraryTags;
 
   const dropdownOptions = libraryCards.map(lib => ({
     // Navigate by the URL slug (username) — the route is /library/[username].
@@ -228,12 +273,10 @@ export function Sidebar() {
   };
 
   useEffect(() => {
-    const idFromPath = pathname?.split('/').pop() || '';
-
-    if (idFromPath) {
-      setSelectedLibraryId(idFromPath);
+    if (currentLibraryId) {
+      setSelectedLibraryId(currentLibraryId);
     }
-  }, [pathname]);
+  }, [currentLibraryId]);
 
   useEffect(() => {
     if (selectedLibraryId || libraryCards.length === 0) {
@@ -266,21 +309,6 @@ export function Sidebar() {
       cancelled = true;
     };
   }, [setTags]);
-
-  // Auto-detect the user's library on mount so the Edit button works after refresh.
-  useEffect(() => {
-    if (!accountData?.id || myLibrary) return;
-    let cancelled = false;
-    (async () => {
-      const lib = await getMyLibrary(accountData.id as string);
-      if (!cancelled && lib) {
-        setMyLibrary(lib);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [accountData?.id, myLibrary]);
 
   // Hide the right panel entirely when the owner lacks permission to create a
   // library — the page shows only the centered no-permission message.
@@ -318,7 +346,7 @@ export function Sidebar() {
           <div className={styles.about}>
             <div className={styles.header}>
               <Text className={styles.label}>About</Text>
-              {!isGuestMode && myLibrary && (
+              {canEditLibrary && (
                 <Button
                   label="Edit"
                   onClick={() => setIsEditLibraryOpen(true)}
@@ -335,7 +363,8 @@ export function Sidebar() {
             <div className={styles.content}>
               <div>
                 <Text className={styles.label}>
-                  {selectedLibrary?.description ?? ''}
+                  {currentLibrary?.attributes.libraryDetails?.aboutLibrary ??
+                    ''}
                 </Text>
               </div>
               <div className={styles.divider} />
@@ -393,7 +422,7 @@ export function Sidebar() {
           <div className={styles.about}>
             <div className={styles.header}>
               <Text className={styles.label}>Tags</Text>
-              {!isGuestMode && (
+              {canEdit && (
                 <Button
                   label="Edit"
                   ariaLabel="Edit"
@@ -410,14 +439,10 @@ export function Sidebar() {
             </div>
             <div className={styles.content}>
               <div className={styles.tags}>
-                {tags.map(({ attributes }) => (
-                  <Tag
-                    key={attributes.name}
-                    label={attributes.name}
-                    color={attributes.color}
-                  />
+                {displayedTags.map(tag => (
+                  <Tag key={tag.name} label={tag.name} color={tag.color} />
                 ))}
-                {!isGuestMode && (
+                {canEdit && (
                   <Button
                     label="Create Tag"
                     ariaLabel="Create Tag"
@@ -496,11 +521,22 @@ export function Sidebar() {
           }
         />
       )}
-      {isEditLibraryOpen && myLibrary && (
+      {isEditLibraryOpen && canEditLibrary && (
         <EditLibraryModal
-          library={myLibrary}
+          library={currentLibrary}
           onClose={() => setIsEditLibraryOpen(false)}
-          onSaved={updated => setMyLibrary(updated)}
+          onSaved={libraryId => {
+            setIsEditLibraryOpen(false);
+            // Reload the viewed library so the panel (avatar/bio/name) reflects
+            // the save; LibraryTemplate re-publishes currentLibrary/currentOwner.
+            // Carry the resolved id so a just-bootstrapped library loads by a
+            // direct GET instead of the restricted owner relation-filter.
+            window.dispatchEvent(
+              new CustomEvent(LIBRARY_SHELVES_REFETCH_EVENT, {
+                detail: { libraryId },
+              }),
+            );
+          }}
         />
       )}
     </>

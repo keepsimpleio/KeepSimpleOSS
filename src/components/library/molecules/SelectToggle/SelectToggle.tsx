@@ -11,6 +11,7 @@ export function SelectToggle({
   selected,
   onToggle,
   className,
+  disabled = false,
 }: SelectToggleProps): JSX.Element {
   // The toggle sits on top of a card that is itself a button, so keep the
   // click/press/drag from bubbling up and opening the object overview.
@@ -26,10 +27,12 @@ export function SelectToggle({
       type="button"
       className={classNames(styles.toggle, className, {
         [styles.selected]: selected,
+        [styles.disabled]: disabled,
       })}
       onClick={handleClick}
       onPointerDown={stop}
       onKeyDown={stop}
+      disabled={disabled}
       aria-pressed={selected}
       aria-label={selected ? 'Remove from selection' : 'Select'}
     >

@@ -1,0 +1,176 @@
+.panel {
+  position: fixed;
+  left: 0;
+  // Stop at the sidebar's left edge (331px sticky column) so the sheet spans
+  // only the main library area; the sidebar overlays below 1024px, so go
+  // full-width there.
+  right: 331px;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  max-height: 440px;
+  background: var(--white-warm);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 1024px) {
+    right: 0;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 32px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--beige);
+}
+
+.heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.chevron {
+  width: 24px;
+  height: 24px;
+  color: #868686;
+  transition: transform 0.2s ease;
+
+  &.chevronCollapsed {
+    transform: rotate(180deg);
+  }
+}
+
+.title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #868686;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+// Animated collapse wrapper. The grid 1fr→0fr transition smoothly shrinks the
+// whole section to nothing (the chevron points at the header), and a single 1fr
+// row in this flex child resolves to the body's content height when the panel
+// is uncapped, or to the leftover space (so .body scrolls) when it hits 440px.
+.bodyWrap {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.28s ease;
+}
+
+.bodyWrapCollapsed {
+  grid-template-rows: 0fr;
+}
+
+.body {
+  // border-box so the 24px padding collapses to zero too (otherwise it would
+  // leave a ~48px stub when the grid row reaches 0fr).
+  box-sizing: border-box;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 32px;
+  overflow-y: auto;
+}
+
+.warning {
+  color: var(--brown);
+}
+
+.error {
+  color: var(--red-600);
+}
+
+.scroller {
+  min-height: 0;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.removePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  padding: 0 16px;
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--white);
+  box-shadow: 0 2.27px 4.55px rgba(0, 0, 0, 0.06);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--off-white);
+  }
+}
+
+.sequence {
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-align: center;
+  color: #868686;
+}
+
+.cardHandle {
+  &.draggable {
+    cursor: grab;
+    touch-action: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--beige);
+  border-radius: 8px;
+  background: var(--off-white);
+}
+
+.linkText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

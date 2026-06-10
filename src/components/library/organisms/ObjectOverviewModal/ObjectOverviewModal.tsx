@@ -1,13 +1,12 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
-import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { JSX, useCallback, useMemo, useState } from 'react';
 
 import type {
   Difficulty,
   IObject,
   OverallRating,
 } from '@local-types/library/object';
-import type { IShelf } from '@local-types/library/shelf';
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
@@ -15,7 +14,6 @@ import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 import { deleteObject } from '@api/library/object/deleteObject';
 import { updateObject } from '@api/library/object/updateObject';
-import { getShelvesList } from '@api/library/shelf/getShelvesList';
 
 import {
   CalendarIcon,
@@ -26,6 +24,7 @@ import {
   ShareIcon,
 } from '@icons/library/svg';
 
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { IconName } from '@components/library/atoms/Icon';
 import {
   TagType,
@@ -110,7 +109,7 @@ export function ObjectOverviewModal(
   const [moveLoading, setMoveLoading] = useState(false);
   const [moveError, setMoveError] = useState<string | null>(null);
 
-  const [shelfOptions, setShelfOptions] = useState<IShelf[]>([]);
+  const { currentShelves } = useGlobalState();
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const menuRef = useClickOutside(closeMenu);
@@ -158,25 +157,27 @@ export function ObjectOverviewModal(
     // Depends on a public-read endpoint or signed URL from backend.
   };
 
-  const currentShelfId = attributes.shelf?.data?.id;
+  // Fall back to `defaultShelfId` (the shelf this object is rendered under):
+  // PUT responses don't populate the `shelf` relation, so after a rating edit
+  // `attributes.shelf?.data?.id` can be empty — without the fallback the
+  // current shelf leaks back into the Move-To options.
+  const currentShelfId = attributes.shelf?.data?.id ?? defaultShelfId;
 
-  useEffect(() => {
-    if (!isOwner) return;
-    let cancelled = false;
-    getShelvesList(objectType).then(res => {
-      if (cancelled) return;
-      setShelfOptions(res?.data ?? []);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [isOwner, objectType]);
+  // Move-To targets come from the viewed library's own shelves (published to
+  // GlobalState by LibraryTemplate), not a global `/single-shelves` fetch —
+  // that returned every user's public shelves, so the dropdown offered foreign
+  // shelves the backend then 403s on move. Scope to this object's type since a
+  // book can't move into a video shelf.
+  const ownShelves = useMemo(
+    () => currentShelves.filter(s => s.attributes.type === objectType),
+    [currentShelves, objectType],
+  );
 
   const moveToOptions = useMemo(() => {
-    return shelfOptions
+    return ownShelves
       .filter(s => s.id !== currentShelfId)
       .map(s => ({ value: String(s.id), label: s.attributes.name }));
-  }, [shelfOptions, currentShelfId]);
+  }, [ownShelves, currentShelfId]);
 
   // PUT responses don't populate relations we didn't touch, so a rating-only
   // update drops cover/tags/shelf from the response. Carry them forward from
@@ -231,7 +232,7 @@ export function ObjectOverviewModal(
     if (!value) return;
     const targetId = Number(value);
     if (!Number.isFinite(targetId)) return;
-    const targetShelf = shelfOptions.find(s => s.id === targetId);
+    const targetShelf = ownShelves.find(s => s.id === targetId);
     if (!targetShelf) return;
     setMoveToShelfId(value);
     setMoveLoading(true);
@@ -251,7 +252,7 @@ export function ObjectOverviewModal(
               id: targetShelf.id,
               attributes: {
                 name: targetShelf.attributes.name,
-                type: targetShelf.attributes.type,
+                type: objectType,
                 order: targetShelf.attributes.order,
               },
             },

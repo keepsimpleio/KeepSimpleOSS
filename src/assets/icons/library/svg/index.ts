@@ -6,6 +6,7 @@ import BookIcon from './book.svg';
 import BookShadowIcon from './book-shadow.svg';
 import CalendarIcon from './calendar.svg';
 import CheckIcon from './check.svg';
+import ChevronUpIcon from './chevron-up.svg';
 import CloseIcon from './close.svg';
 import CompanyIcon from './company.svg';
 import CopyIcon from './copy.svg';
@@ -35,6 +36,7 @@ export {
   BookShadowIcon,
   CalendarIcon,
   CheckIcon,
+  ChevronUpIcon,
   CloseIcon,
   CompanyIcon,
   CopyIcon,

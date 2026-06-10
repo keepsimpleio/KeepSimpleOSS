@@ -22,6 +22,7 @@ import { createShelf } from '@api/library/shelf/createShelf';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
   AddShelfModal,
@@ -33,6 +34,7 @@ import {
   ButtonType,
 } from '@components/library/molecules/Button';
 import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
+import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
 import { Shelf } from '@components/library/organisms/Shelf';
 
 import type { LibraryTemplateProps } from './Library.types';
@@ -54,7 +56,19 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   const [isResequencing, setIsResequencing] = useState(false);
   const resequenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { accountData } = useAuth();
-  const { setCurrentShelves, setIsCreateBlocked } = useGlobalState();
+  const {
+    setCurrentShelves,
+    setCurrentOwner,
+    setCurrentLibrary,
+    setIsCreateBlocked,
+  } = useGlobalState();
+  const {
+    selectedObjects,
+    limitReached,
+    reorder: reorderSelection,
+    remove: removeSelection,
+    clear: clearSelection,
+  } = useShareSelection();
 
   // Ownership is decided by the loaded library's owner, not the URL slug — the
   // slug is sometimes a numeric library id (Sidebar dropdown, LibraryCard
@@ -98,7 +112,14 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
 
       // Silent reloads (e.g. right after creating a shelf) skip the loading
       // flag so the shelf list stays on screen instead of flashing "Loading…".
-      if (!options?.silent) setIsLoading(true);
+      // A non-silent load is a navigation to a (possibly different) library, so
+      // drop the previous library first — otherwise its owner stays published to
+      // GlobalState and the Sidebar shows the prior page's identity (e.g. mine)
+      // over someone else's library until the new data arrives.
+      if (!options?.silent) {
+        setIsLoading(true);
+        setLibrary(null);
+      }
       // Prefer an explicitly supplied id over re-resolving the slug. Right after
       // bootstrapping a brand-new library, the username lookup is a filtered
       // read-after-write that can still return null (publish/replication lag) —
@@ -121,8 +142,15 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   }, [loadLibrary]);
 
   useEffect(() => {
-    const onRefetch = () => {
-      void loadLibrary();
+    const onRefetch = (event: Event) => {
+      // EditLibraryModal may carry the resolved (possibly just-created) library
+      // id so we reload by a direct GET — the slug→id resolution can't find a
+      // freshly bootstrapped row through the restricted owner relation-filter.
+      const id = (event as CustomEvent<{ libraryId?: number }>).detail
+        ?.libraryId;
+      void loadLibrary(
+        id != null ? { silent: true, libraryId: id } : undefined,
+      );
     };
 
     window.addEventListener(LIBRARY_SHELVES_REFETCH_EVENT, onRefetch);
@@ -225,6 +253,32 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   useEffect(() => {
     setCurrentShelves(shelves);
   }, [shelves, setCurrentShelves]);
+
+  // Publish the viewed library's owner so the Sidebar's Author panel shows the
+  // library owner (populated `user` relation + the library's `aboutMe`) rather
+  // than the logged-in viewer from /api/users/me.
+  const owner = useMemo(() => {
+    if (!library) return null;
+    const ownerAttributes = library.attributes.user?.data?.attributes;
+    return {
+      id: library.attributes.user?.data?.id,
+      username: ownerAttributes?.username,
+      name: ownerAttributes?.name,
+      picture: ownerAttributes?.picture,
+      avatar: library.attributes.avatar?.data?.attributes?.url,
+      aboutMe: library.attributes.aboutMe,
+    };
+  }, [library]);
+
+  useEffect(() => {
+    setCurrentOwner(owner);
+  }, [owner, setCurrentOwner]);
+
+  // Publish the full viewed library so the Sidebar edits exactly what's on
+  // screen — no second `getMyLibrary` fetch that can disagree or come back null.
+  useEffect(() => {
+    setCurrentLibrary(library);
+  }, [library, setCurrentLibrary]);
 
   // Mirror the no-permission screen into GlobalState so the Sidebar (right
   // panel) hides itself when we're showing only the permission message.
@@ -485,6 +539,17 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
           onClose={modalToggler}
           onAddShelf={handleCreateShelf}
           existingNames={shelves.map(s => s.attributes.name)}
+        />
+      )}
+
+      {isOwner && (
+        <ShareSelectionPanel
+          objects={selectedObjects}
+          ownerUsername={ownerUsername ?? libraryId}
+          limitReached={limitReached}
+          onReorder={reorderSelection}
+          onRemove={removeSelection}
+          onClear={clearSelection}
         />
       )}
     </div>

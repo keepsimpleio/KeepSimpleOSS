@@ -86,3 +86,15 @@
   border-radius: 2px;
   display: block;
 }
+
+// Compact variant for the share-selection panel: a square 138×138 cover tile.
+// The tag column is dropped so the cover fills the cell.
+.row.compact {
+  width: 138px;
+  height: 138px;
+  gap: 0;
+
+  .tags {
+    display: none;
+  }
+}

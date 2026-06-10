@@ -110,3 +110,35 @@
   border-radius: 2px;
   display: block;
 }
+
+// Compact variant for the share-selection panel: a smaller cover-only tile
+// (97×138 cover, keeping the spine offset and shadow). Tags are dropped.
+.row.compact {
+  width: 119px;
+  height: 138px;
+
+  .card {
+    width: 119px;
+    height: 138px;
+  }
+
+  .cover {
+    left: 22px;
+    width: 97px;
+    height: 138px;
+  }
+
+  .shadow {
+    width: 119px;
+    height: 138px;
+  }
+
+  .select {
+    left: 22px;
+    width: 97px;
+  }
+
+  .tags {
+    display: none;
+  }
+}
