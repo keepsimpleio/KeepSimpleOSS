@@ -7,4 +7,9 @@ export interface AudioCardProps {
   selected?: boolean;
   // When provided, a hover Select/Remove toggle is shown on the card.
   onSelectToggle?: () => void;
+  // Disables the Select chip (e.g. share-selection cap reached) while still
+  // allowing an already-selected card to be removed.
+  selectDisabled?: boolean;
+  // Shrinks the card to a square cover-only tile for the share-selection panel.
+  compact?: boolean;
 }

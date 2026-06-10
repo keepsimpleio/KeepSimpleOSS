@@ -18,6 +18,8 @@ export function VideoCard({
   className,
   selected = false,
   onSelectToggle,
+  selectDisabled = false,
+  compact = false,
 }: VideoCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -38,6 +40,7 @@ export function VideoCard({
     <div
       className={classNames(styles.card, className, {
         [styles.selected]: selected,
+        [styles.compact]: compact,
       })}
       role="button"
       tabIndex={0}
@@ -47,7 +50,11 @@ export function VideoCard({
     >
       {onSelectToggle && (
         <div className={styles.select}>
-          <SelectToggle selected={selected} onToggle={onSelectToggle} />
+          <SelectToggle
+            selected={selected}
+            onToggle={onSelectToggle}
+            disabled={selectDisabled && !selected}
+          />
         </div>
       )}
       <div className={styles.thumbWrap}>

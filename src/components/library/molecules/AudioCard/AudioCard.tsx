@@ -15,6 +15,8 @@ export function AudioCard({
   className,
   selected = false,
   onSelectToggle,
+  selectDisabled = false,
+  compact = false,
 }: AudioCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -33,7 +35,11 @@ export function AudioCard({
   };
 
   return (
-    <div className={classNames(styles.row, className)}>
+    <div
+      className={classNames(styles.row, className, {
+        [styles.compact]: compact,
+      })}
+    >
       <div
         className={classNames(styles.card, { [styles.selected]: selected })}
         role="button"
@@ -44,7 +50,11 @@ export function AudioCard({
       >
         {onSelectToggle && (
           <div className={styles.select}>
-            <SelectToggle selected={selected} onToggle={onSelectToggle} />
+            <SelectToggle
+              selected={selected}
+              onToggle={onSelectToggle}
+              disabled={selectDisabled && !selected}
+            />
           </div>
         )}
         <div className={styles.cover}>

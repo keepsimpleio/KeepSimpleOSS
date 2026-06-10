@@ -79,3 +79,7 @@ export const LIBRARY_SHELVES_REFETCH_EVENT = 'library-shelves-refetch';
 // Backend caps a library at 21 shelves; the Add shelf control disables once a
 // library reaches this count.
 export const MAX_SHELVES_PER_LIBRARY = 21;
+
+// Backend caps a share link at 21 objects; the Select chip disables once the
+// selection reaches this count.
+export const MAX_SHARE_OBJECTS = 21;

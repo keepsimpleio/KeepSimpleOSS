@@ -96,3 +96,23 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+// Compact variant for the share-selection panel: a bare 231×138 thumbnail
+// (no padding, no title bar, no caption).
+.card.compact {
+  width: 231px;
+  height: 138px;
+  padding: 0;
+  border-radius: 0;
+
+  .bar,
+  .title {
+    display: none;
+  }
+
+  .select {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+}

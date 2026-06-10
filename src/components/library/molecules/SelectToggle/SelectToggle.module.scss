@@ -27,4 +27,13 @@
       background: var(--brown-100);
     }
   }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+
+    &:hover {
+      background: var(--white);
+    }
+  }
 }
