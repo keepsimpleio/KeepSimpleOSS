@@ -1890,6 +1890,7 @@ function AiAtlasApp() {
     }
     if (highlightId === 'terminal') {
       if (data.order.member.diamond === 'blue') set.add(data.order.member.id);
+      if (data.reception) set.add('reception');
       data.devEnv.members.forEach((n: any) => {
         if (n.diamond === 'blue' || n.diamond === 'subagent') set.add(n.id);
       });
