@@ -83,6 +83,7 @@ const STRINGS = {
     canvasStats: {
       humans: 'humans',
       agents: 'ai agents',
+      subAgents: 'ai sub-agents',
       products: 'products',
     },
     introDossierTitle: 'THIS ATLAS',
@@ -91,10 +92,10 @@ const STRINGS = {
     introQuestionsLink: 'Telegram',
     introQuestionsAfter: '.',
     introDepthLabel: 'depth',
-    introDepthValue: '5 rings · 3 actor types',
+    introDepthValue: '5 rings · 4 actor types',
     introInhabitantsLabel: 'inhabitants',
-    introInhabitantsTpl: (h: number, a: number, p: number) =>
-      `${h} humans · ${a} ai agents · ${p} products`,
+    introInhabitantsTpl: (h: number, a: number, s: number, p: number) =>
+      `${h} humans · ${a} ai agents · ${s} sub-agents · ${p} products`,
     introPrincipleLabel: 'principle',
     principles: [
       'single host · single source · single owner',
@@ -109,6 +110,8 @@ const STRINGS = {
     legendHumanDesc: 'direction · final judgment',
     legendAgentLabel: 'ai agent',
     legendAgentDesc: 'dedicated AI · custom memory · CLAUDE.md persona',
+    legendSubAgentLabel: 'ai sub-agent',
+    legendSubAgentDesc: 'scoped AI · serves a parent agent',
     legendProductLabel: 'product',
     legendProductDesc: 'products we build',
     legendSolidLabel: '— solid',
@@ -302,6 +305,7 @@ const STRINGS = {
     canvasStats: {
       humans: 'людей',
       agents: 'ИИ-агентов',
+      subAgents: 'ИИ-субагентов',
       products: 'продуктов',
     },
     introDossierTitle: 'ЭТОТ АТЛАС',
@@ -310,10 +314,10 @@ const STRINGS = {
     introQuestionsLink: 'Telegram',
     introQuestionsAfter: '.',
     introDepthLabel: 'глубина',
-    introDepthValue: '5 колец · 3 типа сущностей',
+    introDepthValue: '5 колец · 4 типа сущностей',
     introInhabitantsLabel: 'обитатели',
-    introInhabitantsTpl: (h: number, a: number, p: number) =>
-      `${h} людей · ${a} ИИ-агентов · ${p} продуктов`,
+    introInhabitantsTpl: (h: number, a: number, s: number, p: number) =>
+      `${h} людей · ${a} ИИ-агентов · ${s} субагентов · ${p} продуктов`,
     introPrincipleLabel: 'принцип',
     principles: [
       'один хост · один источник · один владелец',
@@ -328,6 +332,8 @@ const STRINGS = {
     legendHumanDesc: 'направление · финальное решение',
     legendAgentLabel: 'ИИ-агент',
     legendAgentDesc: 'выделенный ИИ · своя память · персона CLAUDE.md',
+    legendSubAgentLabel: 'ИИ-субагент',
+    legendSubAgentDesc: 'узкий ИИ · служит родительскому агенту',
     legendProductLabel: 'продукт',
     legendProductDesc: 'продукты, которые мы строим',
     legendSolidLabel: '— сплошная',
@@ -501,7 +507,16 @@ type T = (typeof STRINGS)['en'];
 
 /* ---------- diamond ---------- */
 function Diamond({ kind = 'red' }: { kind?: string }) {
-  const cls = ['dmd', kind === 'blue' ? 'blue' : kind === 'gold' ? 'gold' : '']
+  const cls = [
+    'dmd',
+    kind === 'blue'
+      ? 'blue'
+      : kind === 'gold'
+        ? 'gold'
+        : kind === 'subagent'
+          ? 'subagent'
+          : '',
+  ]
     .filter(Boolean)
     .join(' ');
   return <span className={cls} aria-hidden="true" />;
@@ -1019,7 +1034,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
 }
 
 function buildIntroDossier(data: any, now: Date, t: T) {
-  const { humans, agents, products } = tallyDiamonds(data);
+  const { humans, agents, subAgents, products } = tallyDiamonds(data);
   const idx = Math.floor(now.getTime() / 60000) % t.principles.length;
   return {
     title: t.introDossierTitle,
@@ -1042,7 +1057,7 @@ function buildIntroDossier(data: any, now: Date, t: T) {
       { k: t.introDepthLabel, v: t.introDepthValue },
       {
         k: t.introInhabitantsLabel,
-        v: t.introInhabitantsTpl(humans, agents, products),
+        v: t.introInhabitantsTpl(humans, agents, subAgents, products),
       },
       { k: t.introPrincipleLabel, v: t.principles[idx] },
     ],
@@ -1052,10 +1067,12 @@ function buildIntroDossier(data: any, now: Date, t: T) {
 function tallyDiamonds(data: any) {
   let humans = 0,
     agents = 0,
+    subAgents = 0,
     products = 0;
   const tally = (d: string | undefined) => {
     if (d === 'gold') humans++;
     else if (d === 'blue') agents++;
+    else if (d === 'subagent') subAgents++;
     else if (d === 'red') products++;
   };
   if (data.apex) tally(data.apex.diamond);
@@ -1071,11 +1088,11 @@ function tallyDiamonds(data: any) {
     if (p.leadDiamond2) tally(p.leadDiamond2);
     (p.children || []).forEach((c: any) => tally(c.diamond));
   });
-  return { humans, agents, products };
+  return { humans, agents, subAgents, products };
 }
 
 function CanvasStats({ data, t }: { data: any; t: T }) {
-  const { humans, agents, products } = tallyDiamonds(data);
+  const { humans, agents, subAgents, products } = tallyDiamonds(data);
   return (
     <div className="canvas-stats" aria-hidden="true">
       <div className="canvas-stats__row">
@@ -1085,6 +1102,10 @@ function CanvasStats({ data, t }: { data: any; t: T }) {
       <div className="canvas-stats__row">
         <span className="k">{t.canvasStats.agents}</span>
         <span className="v">{agents}</span>
+      </div>
+      <div className="canvas-stats__row">
+        <span className="k">{t.canvasStats.subAgents}</span>
+        <span className="v">{subAgents}</span>
       </div>
       <div className="canvas-stats__row">
         <span className="k">{t.canvasStats.products}</span>
@@ -1114,6 +1135,13 @@ function Legend({ t }: { t: T }) {
             {t.legendAgentLabel}
           </span>
           <span className="v">{t.legendAgentDesc}</span>
+        </li>
+        <li>
+          <span className="k">
+            <Diamond kind="subagent" />
+            {t.legendSubAgentLabel}
+          </span>
+          <span className="v">{t.legendSubAgentDesc}</span>
         </li>
         <li>
           <span className="k">
@@ -1850,7 +1878,7 @@ function AiAtlasApp() {
     if (highlightId === 'terminal') {
       if (data.order.member.diamond === 'blue') set.add(data.order.member.id);
       data.devEnv.members.forEach((n: any) => {
-        if (n.diamond === 'blue') set.add(n.id);
+        if (n.diamond === 'blue' || n.diamond === 'subagent') set.add(n.id);
       });
       data.projects.members.forEach((p: any) => {
         if (p.leadDiamond === 'blue') set.add(`lead-${p.id}`);
