@@ -14,7 +14,6 @@ import {
 
 import { ITagAttributes } from '@local-types/library/tag';
 
-import { getMyLibrary } from '@api/library/getMyLibrary';
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
 import { getTagsList } from '@api/library/tag/getTagsList';
@@ -58,7 +57,6 @@ const stripHtml = (s?: string | null) =>
 
 export function Sidebar() {
   const router = useRouter();
-  const pathname = router.asPath;
 
   const { accountData } = useAuth();
   const { tags, setTags } = useDashboard();
@@ -74,7 +72,13 @@ export function Sidebar() {
     isCreateBlocked,
   } = useGlobalState();
 
-  const currentLibraryId = pathname?.split('/').pop() || '';
+  // The library being viewed is always the `[username]` route segment — read it
+  // from the router params, not the URL tail. On nested routes
+  // (`/library/[username]/[slug]`, `/library/[username]/share/[token]`) the tail
+  // is the object slug or share token, not the library.
+  const usernameParam = router.query.username;
+  const currentLibraryId =
+    (Array.isArray(usernameParam) ? usernameParam[0] : usernameParam) ?? '';
 
   // Share the link to the library being viewed (`/library/[username]`) on the
   // current environment's host (NEXT_PUBLIC_DOMAIN — localhost in dev, the real
@@ -269,12 +273,10 @@ export function Sidebar() {
   };
 
   useEffect(() => {
-    const idFromPath = pathname?.split('/').pop() || '';
-
-    if (idFromPath) {
-      setSelectedLibraryId(idFromPath);
+    if (currentLibraryId) {
+      setSelectedLibraryId(currentLibraryId);
     }
-  }, [pathname]);
+  }, [currentLibraryId]);
 
   useEffect(() => {
     if (selectedLibraryId || libraryCards.length === 0) {
@@ -307,23 +309,6 @@ export function Sidebar() {
       cancelled = true;
     };
   }, [setTags]);
-
-  // TEMP DEBUG: verify whether the authenticated `filters[user][id]` relation
-  // query actually resolves the owner's library in the browser (it 500s for the
-  // public role). Remove once the backend exposes `user` on /api/libraries.
-  useEffect(() => {
-    if (!accountData?.id) {
-      console.log('[myLibrary debug] no accountData.id yet', { accountData });
-      return;
-    }
-    getMyLibrary(accountData.id).then(lib => {
-      console.log('[myLibrary debug] getMyLibrary result', {
-        accountId: accountData.id,
-        username: accountData.username,
-        myLibrary: lib,
-      });
-    });
-  }, [accountData?.id, accountData?.username, accountData]);
 
   // Hide the right panel entirely when the owner lacks permission to create a
   // library — the page shows only the centered no-permission message.
