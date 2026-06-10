@@ -34,6 +34,18 @@
     }
   },
 
+  "reception": {
+    "r": 1.13,
+    "globeR": 1.33,
+    "member": {
+      "id": "reception",
+      "label": "Reception",
+      "diamond": "blue",
+      "theta": -45,
+      "status": "ok"
+    }
+  },
+
   "devEnv": {
     "r": 0.4,
     "members": [
@@ -288,6 +300,19 @@
         { "k": "authority", "v": "full · secrets · infra · ingress" },
         { "k": "reports", "v": "wolf", "cls": "gold" },
         { "k": "ring", "v": "I — orchestrators" }
+      ]
+    },
+
+    "reception": {
+      "title": "RECEPTION",
+      "cjk": "受付",
+      "desc": "The front desk. Lives outside every ring, faces the public internet, and answers to Wolf directly — public entities knock here first.",
+      "rows": [
+        { "k": "kind", "v": "ai agent", "cls": "blue" },
+        { "k": "role", "v": "public front desk" },
+        { "k": "faces", "v": "public internet" },
+        { "k": "reports", "v": "wolf", "cls": "gold" },
+        { "k": "ring", "v": "outside all rings" }
       ]
     },
 
