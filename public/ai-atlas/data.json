@@ -39,7 +39,7 @@
     "globeR": 1.33,
     "member": {
       "id": "reception",
-      "label": "Reception",
+      "label": "Receptionist",
       "diamond": "blue",
       "theta": -45,
       "status": "ok"
@@ -304,7 +304,7 @@
     },
 
     "reception": {
-      "title": "RECEPTION",
+      "title": "RECEPTIONIST",
       "cjk": "受付",
       "desc": "The front desk. Lives outside every ring, faces the public internet, and answers to Wolf directly — public entities knock here first.",
       "rows": [
