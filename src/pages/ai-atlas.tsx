@@ -1063,7 +1063,7 @@ function buildIntroDossier(data: any, now: Date, t: T) {
         {t.introStoryBody}{' '}
         <a
           className="dossier__link"
-          href="https://keepsimple.io/articles/vibecoding-ladder-llm-agent"
+          href="https://keepsimple.io/articles/vibecoding-ladder-llm-agents"
           target="_blank"
           rel="noopener noreferrer"
         >
