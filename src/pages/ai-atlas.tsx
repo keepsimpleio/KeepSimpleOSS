@@ -768,7 +768,7 @@ function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
 /* ---------- public internet globe ---------- */
 
 function GlobeMark({ x, y, label, dim }: any) {
-  const r = 15;
+  const r = 21;
   const lat = r * 0.5;
   const latW = r * 0.866;
   return (
@@ -779,7 +779,7 @@ function GlobeMark({ x, y, label, dim }: any) {
       <line x1={x - latW} y1={y - lat} x2={x + latW} y2={y - lat} />
       <line x1={x - latW} y1={y + lat} x2={x + latW} y2={y + lat} />
       <text
-        x={x - r - 9}
+        x={x - r - 11}
         y={y}
         textAnchor="end"
         dominantBaseline="middle"
@@ -787,6 +787,21 @@ function GlobeMark({ x, y, label, dim }: any) {
       >
         {label}
       </text>
+    </g>
+  );
+}
+
+/* Telegram paper-plane relay marker, sits on the globe → receptionist wire. */
+function TelegramMark({ x, y, dim }: any) {
+  return (
+    <g className={'globe-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
+      <title>Telegram</title>
+      <circle cx={x} cy={y} r={14} fill="var(--paper)" />
+      <path
+        d={`M ${x + 6.5} ${y - 5} L ${x - 7} ${y + 0.5} L ${x - 2} ${y + 2.2} L ${x + 1.2} ${y + 5.5} Z`}
+        fill="none"
+      />
+      <path d={`M ${x - 2} ${y + 2.2} L ${x + 6.5} ${y - 5}`} fill="none" />
     </g>
   );
 }
@@ -1650,6 +1665,10 @@ function AiAtlasApp() {
       // Globe sits further out on the same radial, so globe → reception →
       // wolf reads as a single straight line from the public internet inward.
       m['globe'] = { ...POL(data.reception.globeR, n.theta), ring: 'outside' };
+      m['tg-relay'] = {
+        ...POL((data.reception.r + data.reception.globeR) / 2, n.theta),
+        ring: 'outside',
+      };
     }
     data.devEnv.members.forEach((n: any) => {
       const p = POL(data.devEnv.r, n.theta);
@@ -2142,6 +2161,11 @@ function AiAtlasApp() {
                       x={points['globe'].x}
                       y={points['globe'].y}
                       label={t.publicInternetLabel}
+                      dim={isDim('reception')}
+                    />
+                    <TelegramMark
+                      x={points['tg-relay'].x}
+                      y={points['tg-relay'].y}
                       dim={isDim('reception')}
                     />
                     <NodeBody

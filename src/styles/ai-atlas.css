@@ -424,7 +424,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .globe-mark__label {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.22em;
   fill: var(--ink-3);
 }
