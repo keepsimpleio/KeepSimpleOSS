@@ -20,7 +20,11 @@ interface ShareSelectionContextValue {
   isSelected: (id: number) => boolean;
   /** Append if absent, remove if already selected. Append is a no-op at the cap. */
   toggle: (object: IObject) => void;
+  /** Append every object not already selected, stopping at the cap. */
+  selectMany: (objects: IObject[]) => void;
   remove: (id: number) => void;
+  /** Drop every object whose id is in the set — used to purge a shelf at once. */
+  removeMany: (ids: number[]) => void;
   reorder: (next: IObject[]) => void;
   clear: () => void;
 }
@@ -48,8 +52,28 @@ export function ShareSelectionProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const selectMany = useCallback((objects: IObject[]) => {
+    setSelectedObjects(prev => {
+      const seen = new Set(prev.map(o => o.id));
+      const additions: IObject[] = [];
+      for (const object of objects) {
+        if (prev.length + additions.length >= MAX_SHARE_OBJECTS) break;
+        if (seen.has(object.id)) continue;
+        seen.add(object.id);
+        additions.push(object);
+      }
+      return additions.length ? [...prev, ...additions] : prev;
+    });
+  }, []);
+
   const remove = useCallback((id: number) => {
     setSelectedObjects(prev => prev.filter(o => o.id !== id));
+  }, []);
+
+  const removeMany = useCallback((ids: number[]) => {
+    if (ids.length === 0) return;
+    const drop = new Set(ids);
+    setSelectedObjects(prev => prev.filter(o => !drop.has(o.id)));
   }, []);
 
   const reorder = useCallback((next: IObject[]) => {
@@ -65,11 +89,22 @@ export function ShareSelectionProvider({ children }: { children: ReactNode }) {
       limitReached: selectedObjects.length >= MAX_SHARE_OBJECTS,
       isSelected,
       toggle,
+      selectMany,
       remove,
+      removeMany,
       reorder,
       clear,
     }),
-    [selectedObjects, isSelected, toggle, remove, reorder, clear],
+    [
+      selectedObjects,
+      isSelected,
+      toggle,
+      selectMany,
+      remove,
+      removeMany,
+      reorder,
+      clear,
+    ],
   );
 
   return (

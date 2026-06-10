@@ -1,9 +1,9 @@
-import { mapSharedObject } from '@utils/library/mapSharedObject';
 import axios from 'axios';
 
 import type { IShareLinkView } from '@local-types/library/shareLink';
 
 import axiosInstance from '@lib/library/axios';
+import { mapSharedObject } from '@lib/library/mapSharedObject';
 
 // Dig the ordered objects out of whatever wrapper the controller returns. The
 // success shape isn't pinned, so probe the likely spots in turn: the share-link

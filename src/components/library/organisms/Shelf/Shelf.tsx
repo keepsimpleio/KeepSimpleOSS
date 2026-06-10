@@ -1,4 +1,3 @@
-import { objectIdFromSlug, objectSlug } from '@utils/library/objectSlug';
 import classNames from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -13,6 +12,8 @@ import React, {
 
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
+
+import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
 import { deleteShelf } from '@api/library/shelf/deleteShelf';
 import { updateShelf } from '@api/library/shelf/updateShelf';
@@ -178,6 +179,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const {
     isSelected,
     toggle: toggleSelection,
+    selectMany,
+    removeMany,
     limitReached,
   } = useShareSelection();
   const [deleteShelfOpen, setDeleteShelfOpen] = useState(false);
@@ -265,6 +268,18 @@ export function Shelf(props: ShelfProps): JSX.Element {
       ? (objects.find(o => o.id === activeObjectId) ?? null)
       : null;
 
+  // "Select shelf" bulk-toggles every object on this shelf into the share
+  // selection. Like the per-card chip, it's owner-only and public-only since
+  // private objects aren't shareable. When all are already selected it clears
+  // them; otherwise it adds them (selectMany stops at the cap).
+  const canSelectShelf = isOwner && visibility === 'public';
+  const allSelected =
+    objects.length > 0 && objects.every(o => isSelected(o.id));
+  const handleSelectShelf = () => {
+    if (allSelected) removeMany(objects.map(o => o.id));
+    else selectMany(objects);
+  };
+
   const openRename = () => {
     setRenameError(null);
     setRenameValue(shelfName);
@@ -281,6 +296,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
       const previous = visibility;
       if (previous === value) return;
       setVisibility(value);
+      // Only public-shelf objects are shareable. Going private strips this
+      // shelf's objects from the share selection now, so the selection never
+      // carries objects the backend would reject when the link is minted.
+      if (value === 'private') {
+        removeMany(objects.map(o => o.id));
+      }
       updateShelf(shelf.id, { visibility: value }).catch(e => {
         console.error('[Shelf] failed to update visibility', e);
         setVisibility(previous);
@@ -398,15 +419,18 @@ export function Shelf(props: ShelfProps): JSX.Element {
         </div>
 
         <div className={styles.right}>
-          <Button
-            label="Select shelf"
-            ariaLabel="Select shelf"
-            onClick={() => {}}
-            type={ButtonType.Secondary}
-            size={ButtonSize.Default}
-            className={styles.button}
-            labelClassName={styles.text}
-          />
+          {canSelectShelf && (
+            <Button
+              label={allSelected ? 'Deselect shelf' : 'Select shelf'}
+              ariaLabel={allSelected ? 'Deselect shelf' : 'Select shelf'}
+              onClick={handleSelectShelf}
+              disabled={objects.length === 0 || (!allSelected && limitReached)}
+              type={ButtonType.Secondary}
+              size={ButtonSize.Default}
+              className={styles.button}
+              labelClassName={styles.text}
+            />
+          )}
 
           {isOwner && (
             <Button
