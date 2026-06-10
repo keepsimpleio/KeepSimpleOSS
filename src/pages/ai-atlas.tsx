@@ -979,6 +979,18 @@ function Dossier({ data, onSelect, dossiers }: any) {
         {data.desc && (
           <div className="dossier__desc">{renderDossierValue(data.desc)}</div>
         )}
+        {data.link && (
+          <div className="dossier__desc">
+            <a
+              className="dossier__link"
+              href={data.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {data.link}
+            </a>
+          </div>
+        )}
         <ul className="kv">
           {data.rows.map((r: any, i: number) => {
             const isUrl = r.k === 'url';
@@ -1011,6 +1023,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
                   {r.cls === 'red' && <Diamond kind="red" />}
                   {r.cls === 'blue' && <Diamond kind="blue" />}
                   {r.cls === 'gold' && <Diamond kind="gold" />}
+                  {r.cls === 'subagent' && <Diamond kind="subagent" />}
                   {isUrl ? (
                     <a
                       href={href as string}

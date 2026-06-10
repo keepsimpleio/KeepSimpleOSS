@@ -204,6 +204,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .kv li .v.red  { color: var(--red); }
 .kv li .v.blue { color: var(--blue); }
 .kv li .v.gold { color: var(--gold); }
+.kv li .v.subagent { color: var(--blue); }
 .kv li .v.v--ref { cursor: pointer; transition: filter 0.15s ease; }
 .kv li .v.v--ref:hover { filter: brightness(1.15); }
 .legend-kv li { padding: 8px 0; }
