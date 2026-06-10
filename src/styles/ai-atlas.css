@@ -428,6 +428,11 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   letter-spacing: 0.22em;
   fill: var(--ink-3);
 }
+.globe-mark__label--sm { font-size: 12px; }
+.globe-mark__plane {
+  fill: var(--ink-3);
+  stroke: none;
+}
 .globe-mark.is-dim { opacity: 0.28; }
 
 /* ---------- node ---------- */
