@@ -1,5 +1,7 @@
+import { objectIdFromSlug, objectSlug } from '@utils/library/objectSlug';
 import classNames from 'classnames';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import React, {
   JSX,
   useCallback,
@@ -25,6 +27,7 @@ import {
   VideoIcon,
 } from '@icons/library/svg';
 
+import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AudioCard } from '@components/library/molecules/AudioCard';
@@ -156,18 +159,27 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
 
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [activeObject, setActiveObject] = useState<IObject | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const router = useRouter();
+  // The opened object is addressed by the URL, not local state: the last path
+  // segment is the object slug (see objectSlug). We match on the slug's trailing
+  // id so the right shelf — the one actually holding that object — renders the
+  // overview, with its real shelf context, and a title edit can't orphan the URL.
+  const usernameParam = router.query.username;
+  const urlUsername = Array.isArray(usernameParam)
+    ? usernameParam[0]
+    : (usernameParam ?? '');
+  const objectParam = router.query.object;
+  const activeSlug = Array.isArray(objectParam) ? objectParam[0] : objectParam;
+  const activeObjectId = objectIdFromSlug(activeSlug);
 
-  const toggleSelected = useCallback((id: number) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  // Selection is shared across all shelves (one share link spans the whole
+  // library), so it lives in context rather than per-shelf local state.
+  const {
+    isSelected,
+    toggle: toggleSelection,
+    limitReached,
+  } = useShareSelection();
   const [deleteShelfOpen, setDeleteShelfOpen] = useState(false);
   const [deleteShelfLoading, setDeleteShelfLoading] = useState(false);
   const [deleteShelfError, setDeleteShelfError] = useState<string | null>(null);
@@ -229,8 +241,29 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const openAdd = () => setIsAddOpen(true);
   const closeAdd = () => setIsAddOpen(false);
-  const openObject = (object: IObject) => setActiveObject(object);
-  const closeObject = () => setActiveObject(null);
+
+  // Open/close are URL transitions, kept shallow so the library underneath is
+  // never refetched or unmounted — only the overview modal appears/disappears
+  // over the current page. `scroll: false` keeps the shelf scroll position.
+  const openObject = (object: IObject) => {
+    void router.push(
+      `/library/${encodeURIComponent(urlUsername)}/${objectSlug(object)}`,
+      undefined,
+      { shallow: true, scroll: false },
+    );
+  };
+  const closeObject = () => {
+    void router.push(`/library/${encodeURIComponent(urlUsername)}`, undefined, {
+      shallow: true,
+      scroll: false,
+    });
+  };
+
+  // The object this shelf currently owns *and* the URL points at, if any.
+  const activeObject =
+    activeObjectId != null
+      ? (objects.find(o => o.id === activeObjectId) ?? null)
+      : null;
 
   const openRename = () => {
     setRenameError(null);
@@ -311,8 +344,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
       closeObject();
       return;
     }
+    // No need to track the object locally — it flows back through `objects` and
+    // the URL still points at its id, so the overview re-renders with the edit.
     onObjectUpdated?.(shelf.id, updated);
-    setActiveObject(updated);
   };
 
   const handleDeleted = (id: number) => {
@@ -428,9 +462,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
           ) : (
             <div className={styles.cards} ref={cardsRef}>
               {objects.map(obj => {
-                const selected = selectedIds.has(obj.id);
-                const onSelectToggle = isOwner
-                  ? () => toggleSelected(obj.id)
+                const selected = isSelected(obj.id);
+                // Only the owner can build a share link, and only public-shelf
+                // objects are shareable — so hide the Select chip elsewhere.
+                const canSelect = isOwner && visibility === 'public';
+                const onSelectToggle = canSelect
+                  ? () => toggleSelection(obj)
                   : undefined;
                 const card =
                   shelfType === 'video' ? (
@@ -439,6 +476,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
                       onClick={openObject}
                       selected={selected}
                       onSelectToggle={onSelectToggle}
+                      selectDisabled={limitReached}
                     />
                   ) : shelfType === 'audio' ? (
                     <AudioCard
@@ -446,6 +484,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
                       onClick={openObject}
                       selected={selected}
                       onSelectToggle={onSelectToggle}
+                      selectDisabled={limitReached}
                     />
                   ) : (
                     <BookCard
@@ -453,6 +492,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
                       onClick={openObject}
                       selected={selected}
                       onSelectToggle={onSelectToggle}
+                      selectDisabled={limitReached}
                     />
                   );
                 return (
