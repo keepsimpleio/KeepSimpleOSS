@@ -52,10 +52,29 @@
   opacity: 0.55;
 }
 
+// The vinyl mockup body (sleeve + disc edge baked in). Always rendered behind
+// the cover so an uncovered object reads as a blank sleeve and a covered one
+// keeps the disc peeking out on the right.
+.placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 230px;
+  height: 194px;
+  z-index: 0;
+  background: url('/assets/library/audio-cover.png') center / cover no-repeat;
+}
+
+// The uploaded album art sits on the square sleeve only — 190×190, flush to the
+// right edge so the placeholder's disc edge stays exposed on the left.
 .cover {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  width: 190px;
+  height: 190px;
   overflow: hidden;
+  z-index: 1;
   transition: opacity 0.15s ease;
 }
 
@@ -64,12 +83,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.coverPlaceholder {
-  width: 100%;
-  height: 100%;
-  background: var(--white);
 }
 
 .tags {
@@ -93,6 +106,15 @@
   width: 138px;
   height: 138px;
   gap: 0;
+
+  .placeholder,
+  .cover {
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 
   .tags {
     display: none;

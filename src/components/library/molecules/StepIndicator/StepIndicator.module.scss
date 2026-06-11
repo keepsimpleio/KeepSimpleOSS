@@ -1,4 +1,5 @@
 .wrapper {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: start;
@@ -23,8 +24,9 @@
   }
 
   .circle {
-    width: 28px;
-    height: 28px;
+    box-sizing: border-box;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -35,6 +37,7 @@
     transition:
       background 0.3s ease,
       border-color 0.3s ease,
+      box-shadow 0.3s ease,
       color 0.3s ease;
   }
 
@@ -59,10 +62,13 @@
     transition: color 0.3s ease;
   }
 
+  // Active/completed: a green disc with a white inner gap and a green outer
+  // ring — the white 3px border carves the gap, the box-shadow draws the ring.
   &.active {
     .circle {
       background: var(--green-200);
-      border-color: var(--green-200);
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 2px var(--green-200);
       color: var(--white);
     }
 
@@ -74,7 +80,8 @@
   &.completed {
     .circle {
       background: var(--green-200);
-      border-color: var(--green-200);
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 2px var(--green-200);
       color: var(--white);
 
       svg path {
@@ -88,12 +95,17 @@
   }
 }
 
+// Span the line circle-to-circle, not column-to-column: anchored to the
+// wrapper so the wide step labels can't squeeze it. 46px = 36px circle + a
+// 10px gap on each side; top 18px centers it on the circle (radius 18px).
 .connector {
+  position: absolute;
+  top: 18px;
+  left: 46px;
+  right: 46px;
   height: 1px;
   background: var(--gray-100);
-  position: relative;
   overflow: hidden;
-  margin-top: 14px;
 }
 
 .connectorFill {

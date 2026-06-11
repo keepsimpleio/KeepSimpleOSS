@@ -57,6 +57,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   const resequenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { accountData } = useAuth();
   const {
+    isGuestMode,
     setCurrentShelves,
     setCurrentOwner,
     setCurrentLibrary,
@@ -82,6 +83,12 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     !!myUsername &&
     ((!!ownerUsername && ownerUsername.toLowerCase() === myUsername) ||
       (!!libraryId && libraryId.toLowerCase() === myUsername));
+
+  // Guest mode lets an owner preview their library exactly as a public visitor
+  // sees it. Owner-only data logic (library bootstrap, create-permission gating)
+  // still keys off the real `isOwner`; everything user-facing — edit/add UI and
+  // private-shelf visibility — keys off this so the preview is faithful.
+  const viewAsOwner = isOwner && !isGuestMode;
 
   // Creating a library is gated by the `can-create-library` feature flag from
   // GET /api/users/me. The gate only matters before a library exists — once one
@@ -237,13 +244,13 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     const data = library?.attributes.singleShelves?.data ?? [];
     // Private shelves are owner-only — hide them from visitors so the
     // public/private toggle actually controls who can see a shelf.
-    const visible = isOwner
+    const visible = viewAsOwner
       ? data
       : data.filter(s => s.attributes.visibility !== 'private');
     return [...visible].sort(
       (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
     );
-  }, [library, isOwner]);
+  }, [library, viewAsOwner]);
 
   // Publish the current library's shelves so the Header's Jump-to nav can
   // render the right list without owning its own fetch. NOTE: no cleanup —
@@ -473,7 +480,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
 
   return (
     <div className={styles.wrapper}>
-      {isOwner && shelves.length > 0 && (
+      {viewAsOwner && shelves.length > 0 && (
         <LibraryToolbar
           shelves={shelves}
           onAddShelf={modalToggler}
@@ -497,17 +504,21 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
             variant={TypographyVariant.TitleSecondaryBold}
             className={styles.text}
           >
-            Begin your journey by adding your first shelf
+            {viewAsOwner
+              ? 'Begin your journey by adding your first shelf'
+              : 'This library is empty'}
           </Text>
 
-          <Button
-            label="Add shelf"
-            onClick={modalToggler}
-            type={ButtonType.Primary}
-            size={ButtonSize.Wide}
-            ariaLabel="Add shelf"
-            className={styles.button}
-          />
+          {viewAsOwner && (
+            <Button
+              label="Add shelf"
+              onClick={modalToggler}
+              type={ButtonType.Primary}
+              size={ButtonSize.Wide}
+              ariaLabel="Add shelf"
+              className={styles.button}
+            />
+          )}
         </div>
       ) : (
         <div
@@ -521,7 +532,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
               title={shelf.attributes.name}
               shelf={shelf}
               ownerUsername={libraryId}
-              isOwner={isOwner}
+              isOwner={viewAsOwner}
               onObjectCreated={handleObjectCreated}
               onObjectUpdated={handleObjectUpdated}
               onObjectDeleted={handleObjectDeleted}
@@ -542,7 +553,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         />
       )}
 
-      {isOwner && (
+      {viewAsOwner && (
         <ShareSelectionPanel
           objects={selectedObjects}
           ownerUsername={ownerUsername ?? libraryId}
