@@ -204,6 +204,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .kv li .v.red  { color: var(--red); }
 .kv li .v.blue { color: var(--blue); }
 .kv li .v.gold { color: var(--gold); }
+.kv li .v.subagent { color: var(--blue); }
 .kv li .v.v--ref { cursor: pointer; transition: filter 0.15s ease; }
 .kv li .v.v--ref:hover { filter: brightness(1.15); }
 .legend-kv li { padding: 8px 0; }
@@ -217,6 +218,12 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .dmd.blue { background: var(--blue); }
 .dmd.gold { background: var(--gold); }
+.dmd.subagent {
+  /* half-filled: the span is rotated 45deg, so "to bottom right" reads
+     as a clean vertical split — blue half, white half, blue outline */
+  background: linear-gradient(to bottom right, var(--blue) 50%, #fff 50%);
+  box-shadow: inset 0 0 0 1.5px var(--blue);
+}
 
 /* iOS Safari mangles the rotated-div diamond inside foreignObject.
    On touch iOS, drop the diamond marker entirely and color the card
@@ -235,6 +242,10 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
     }
     .canvas--orbital .node--dmd-gold {
       outline: 2px solid var(--gold);
+      outline-offset: -1px;
+    }
+    .canvas--orbital .node--dmd-subagent {
+      outline: 2px dashed var(--blue);
       outline-offset: -1px;
     }
   }
@@ -413,6 +424,46 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 /* wires */
 .wire { transition: opacity 0.2s ease, stroke 0.2s ease; }
 .wire.is-dim { opacity: 0.18; }
+
+/* public internet globe */
+.globe-mark { transition: opacity 0.2s ease; }
+.globe-mark circle,
+.globe-mark ellipse,
+.globe-mark line {
+  stroke: var(--ink-3);
+  stroke-width: 0.9;
+}
+.globe-mark__label {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  fill: var(--ink-3);
+}
+.globe-mark__label--sm { font-size: 12px; }
+.globe-mark__plane {
+  fill: var(--ink-3);
+  stroke: none;
+}
+.globe-mark.is-dim { opacity: 0.28; }
+
+/* telegram relay marker */
+.telegram-mark { transition: opacity 0.2s ease; }
+.telegram-mark circle {
+  stroke: var(--ink-3);
+  stroke-width: 0.9;
+}
+.telegram-mark__label {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  fill: var(--ink-3);
+}
+.telegram-mark__label--sm { font-size: 12px; }
+.telegram-mark__plane {
+  fill: var(--ink-3);
+  stroke: none;
+}
+.telegram-mark.is-dim { opacity: 0.28; }
 
 /* ---------- node ---------- */
 .node-wrap {
