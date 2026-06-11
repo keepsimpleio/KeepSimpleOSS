@@ -817,29 +817,37 @@ function GlobeMark({ x, y, label, dim }: any) {
 /* Telegram paper-plane relay marker, sits on the globe → receptionist wire. */
 function TelegramMark({ x, y, label, dim }: any) {
   return (
-    <g className={'telegram-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
-      <title>Telegram</title>
-      <circle cx={x} cy={y} r={16} fill="var(--paper)" />
-      <path
-        className="telegram-mark__plane"
-        d={`M ${x + 8} ${y - 6}
-            L ${x - 8.5} ${y + 1}
-            L ${x - 3} ${y + 3.2}
-            L ${x - 1.6} ${y + 7.4}
-            L ${x + 0.8} ${y + 4.6}
-            L ${x + 4.6} ${y + 6.4}
-            Z`}
-      />
-      <text
-        x={x - 16 - 9}
-        y={y}
-        textAnchor="end"
-        dominantBaseline="middle"
-        className="telegram-mark__label telegram-mark__label--sm"
-      >
-        {label}
-      </text>
-    </g>
+    <a
+      href="https://t.me/WolfsReceptionist_bot"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ cursor: 'pointer', pointerEvents: 'all' }}
+      aria-label="Open Wolf's Receptionist bot in Telegram"
+    >
+      <g className={'telegram-mark' + (dim ? ' is-dim' : '')}>
+        <title>Telegram</title>
+        <circle cx={x} cy={y} r={16} fill="var(--paper)" />
+        <path
+          className="telegram-mark__plane"
+          d={`M ${x + 8} ${y - 6}
+              L ${x - 8.5} ${y + 1}
+              L ${x - 3} ${y + 3.2}
+              L ${x - 1.6} ${y + 7.4}
+              L ${x + 0.8} ${y + 4.6}
+              L ${x + 4.6} ${y + 6.4}
+              Z`}
+        />
+        <text
+          x={x - 16 - 9}
+          y={y}
+          textAnchor="end"
+          dominantBaseline="middle"
+          className="telegram-mark__label telegram-mark__label--sm"
+        >
+          {label}
+        </text>
+      </g>
+    </a>
   );
 }
 
