@@ -149,7 +149,23 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
       // 1. Upload avatar first if a new file was picked — we need the id for the PUT.
       let uploadedAvatarId: number | null | undefined;
       if (avatarFile) {
-        const uploaded = await uploadFile(avatarFile);
+        let uploaded: Awaited<ReturnType<typeof uploadFile>>;
+        try {
+          uploaded = await uploadFile(avatarFile);
+        } catch (uploadErr) {
+          // Avatar uploads straight to Strapi; an over-limit image returns 413
+          // (or is dropped by the proxy, surfacing as a bare network error).
+          // Show a size message on the avatar field instead of a generic error.
+          const status = (uploadErr as { response?: { status?: number } })
+            ?.response?.status;
+          const hasResponse = !!(uploadErr as { response?: unknown })?.response;
+          setAvatarError(
+            status === 413 || !hasResponse
+              ? 'Avatar must be 5 MB or smaller.'
+              : "Couldn't upload the avatar. Please try again.",
+          );
+          return;
+        }
         uploadedAvatarId = uploaded.id;
       } else if (avatarRemoved) {
         uploadedAvatarId = null;

@@ -57,13 +57,14 @@ export function BookCard({
             />
           </div>
         )}
+        <div className={styles.placeholder} aria-hidden="true" />
         <div className={styles.cover}>
           {coverUrl && (
             <Image
               src={coverUrl}
               alt={attributes.title}
               fill
-              sizes="180px"
+              sizes="146px"
               className={styles.coverImage}
             />
           )}

@@ -257,7 +257,24 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         size: number;
       } | null = null;
       if (data.coverImage instanceof File) {
-        const uploaded = await uploadFile(data.coverImage);
+        let uploaded: Awaited<ReturnType<typeof uploadFile>>;
+        try {
+          uploaded = await uploadFile(data.coverImage);
+        } catch (uploadErr) {
+          // The image goes straight to Strapi. When it exceeds the server's
+          // upload limit the request is rejected with 413 — or dropped by the
+          // proxy so axios sees a bare network error (no response). Either way,
+          // surface a clear size message instead of the generic save error.
+          const status = (uploadErr as { response?: { status?: number } })
+            ?.response?.status;
+          const hasResponse = !!(uploadErr as { response?: unknown })?.response;
+          setSubmitError(
+            status === 413 || !hasResponse
+              ? 'Image is too large. Maximum size is 5 MB.'
+              : "Couldn't upload the image. Please try again.",
+          );
+          return;
+        }
         coverImageId = uploaded.id;
         uploadedCover = uploaded;
       } else if (editing) {

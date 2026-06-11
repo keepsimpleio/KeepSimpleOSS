@@ -57,6 +57,7 @@ export function AudioCard({
             />
           </div>
         )}
+        <div className={styles.placeholder} aria-hidden="true" />
         <div className={styles.cover}>
           {coverUrl && (
             <Image

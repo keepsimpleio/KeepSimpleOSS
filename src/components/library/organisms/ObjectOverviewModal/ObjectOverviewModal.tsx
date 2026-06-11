@@ -276,9 +276,16 @@ export function ObjectOverviewModal(
   );
   const tagsList = attributes.tags?.data ?? [];
   const shelfData = attributes.shelf?.data;
+  // Prefer the live shelf from GlobalState (matched by id) so a rename reflects
+  // instantly — the object's embedded `shelf.data` is frozen at fetch time.
+  const liveShelf = currentShelves.find(s => s.id === currentShelfId);
   const shelfDisplayName =
-    shelfData?.attributes.name ?? attributes.shelfName ?? '—';
-  const shelfPosition = shelfData?.attributes.order;
+    liveShelf?.attributes.name ??
+    shelfData?.attributes.name ??
+    attributes.shelfName ??
+    '—';
+  const shelfPosition =
+    liveShelf?.attributes.order ?? shelfData?.attributes.order;
   const publishedFormatted = formatDate(attributes.publicationDate);
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';

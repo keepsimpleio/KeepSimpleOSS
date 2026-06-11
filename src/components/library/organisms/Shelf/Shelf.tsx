@@ -20,7 +20,6 @@ import { updateShelf } from '@api/library/shelf/updateShelf';
 
 import shelfBackground from '@icons/library/images/shelfBackground.png';
 import {
-  ArrowIcon,
   AudioIcon,
   BookIcon,
   PlusIcon,
@@ -196,9 +195,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const [renameLoading, setRenameLoading] = useState(false);
   const [renameError, setRenameError] = useState<string | null>(null);
 
-  // Horizontal scroller: keep every card on one row and page through them with
-  // the arrows. Arrows only show when the row actually overflows; each click
-  // advances by one card width (+ the 24px gap).
+  // Horizontal scroller: keep every card on one row. When the row overflows we
+  // expose the styled scrollbar (`.scrollable`) so the overflow is discoverable
+  // by drag/swipe.
   const itemsRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -223,14 +222,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
       observer.disconnect();
     };
   }, [syncScrollState, objects.length]);
-
-  const scrollByCard = (direction: -1 | 1) => {
-    const el = itemsRef.current;
-    if (!el) return;
-    const firstCard = el.querySelector<HTMLElement>(`.${styles.cards} > *`);
-    const step = firstCard ? firstCard.offsetWidth + 35 : el.clientWidth * 0.8;
-    el.scrollBy({ left: direction * step, behavior: 'smooth' });
-  };
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
@@ -448,16 +439,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
       </div>
 
       <div className={styles.content}>
-        {isOverflowing && (
-          <Button
-            className={classNames(styles.arrow, styles.arrowLeft)}
-            onClick={() => scrollByCard(-1)}
-            type={ButtonType.Secondary}
-            Icon={<ArrowIcon />}
-            ariaLabel="Previous"
-            disabled={!canScrollLeft}
-          />
-        )}
         <div
           className={classNames(styles.items, {
             [styles.scrollable]: isOverflowing,
@@ -532,17 +513,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </div>
           )}
         </div>
-        {isOverflowing && (
-          <Button
-            className={styles.arrow}
-            onClick={() => scrollByCard(1)}
-            type={ButtonType.Secondary}
-            Icon={<ArrowIcon />}
-            ariaLabel="Next"
-            disabled={!canScrollRight}
-          />
-        )}
-
         <div className={styles.banner}>
           <Image src={shelfBackground} alt="" />
         </div>
