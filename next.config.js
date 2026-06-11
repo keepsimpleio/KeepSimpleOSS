@@ -92,6 +92,23 @@ module.exports = withBundleAnalyzer({
   compiler: {
     removeConsole: process.env.NODE_ENV === 'prod',
   },
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'src/styles')],
+    // Library SCSS modules rely on placeholder selectors (e.g. %text-base)
+    // that the original app injected globally. Scope that injection to the
+    // migrated library files only so keepsimple's own SCSS stays untouched.
+    additionalData: (content, loaderContext) => {
+      const resourcePath = (loaderContext && loaderContext.resourcePath) || '';
+      const isLibraryModule =
+        /[\\/]src[\\/](components|layouts|pages)[\\/]library[\\/]/.test(
+          resourcePath,
+        );
+      if (isLibraryModule) {
+        return `@use "library/styles.scss" as *;\n${content}`;
+      }
+      return content;
+    },
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -108,7 +125,25 @@ module.exports = withBundleAnalyzer({
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
-      use: ['@svgr/webpack'],
+      use: [
+        {
+          loader: '@svgr/webpack',
+          options: {
+            // SVGO's preset-default strips viewBox, which breaks icons rendered
+            // at a smaller width/height than their intrinsic size (e.g. a 44x44
+            // icon shown at 14px clips to its top-left corner instead of
+            // scaling). Keep the viewBox so downscaled icons render fully.
+            svgoConfig: {
+              plugins: [
+                {
+                  name: 'preset-default',
+                  params: { overrides: { removeViewBox: false } },
+                },
+              ],
+            },
+          },
+        },
+      ],
     });
     return config;
   },

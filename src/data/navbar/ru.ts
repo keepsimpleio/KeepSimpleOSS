@@ -4,6 +4,7 @@ const ru = {
   articles: 'Статьи',
   contributorsTxt: 'участники',
   tools: 'Инструменты',
+  library: 'Библиотека',
   longevity: 'Протокол Долголетия',
   aiAtlas: 'AI Атлас',
 };

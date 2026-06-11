@@ -338,6 +338,32 @@
   }
 }
 
+// Library has no dark theme: force the warm light header on every library
+// page, overriding the dark-theme background and text colors.
+.header.library,
+.header.library.darkTheme {
+  background-color: #f8f1e5 !important;
+
+  & .actions {
+    background: #f8f1e5;
+
+    .toggleLanguage .languageTitle {
+      color: #252626;
+    }
+  }
+
+  & .burgerMenu div {
+    background-color: #5d6063;
+  }
+
+  & .closeButton {
+    &:after,
+    &:before {
+      background-color: #5d6063;
+    }
+  }
+}
+
 @media (max-width: 960px) {
   .header.darkTheme {
     & .actions {

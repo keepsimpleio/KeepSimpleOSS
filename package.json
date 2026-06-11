@@ -27,8 +27,13 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@hookform/resolvers": "^5.2.2",
     "@next/bundle-analyzer": "^16.2.3",
     "@svgr/webpack": "^8.1.0",
+    "axios": "^1.13.4",
     "classnames": "2.3.1",
     "cookie": "0.6.0",
     "cross-env": "7.0.3",
@@ -43,6 +48,7 @@
     "geoip-lite": "1.4.2",
     "html2canvas": "^1.4.1",
     "isomorphic-dompurify": "^3.12.0",
+    "js-cookie": "^3.0.5",
     "lodash.debounce": "4.0.8",
     "lodash.unescape": "4.0.1",
     "mixpanel-browser": "^2.65.0",
@@ -54,8 +60,11 @@
     "react-beautiful-dnd": "13.1.1",
     "react-confetti": "6.1.0",
     "react-confetti-explosion": "2.1.2",
+    "react-day-picker": "^10.0.0",
     "react-dom": "19.0.3",
+    "react-dropzone": "^15.0.0",
     "react-ga4": "1.4.1",
+    "react-hook-form": "^7.71.1",
     "react-icalendar-link": "3.0.2",
     "react-intersection-observer": "^9.16.0",
     "react-loading-skeleton": "3.4.0",
@@ -74,7 +83,8 @@
     "slick-carousel": "1.8.1",
     "topojson-client": "^3.1.0",
     "uuid": "8.3.2",
-    "victory": "36.3.0"
+    "victory": "36.3.0",
+    "zod": "^4.3.6"
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
@@ -94,6 +104,7 @@
     "@types/classnames": "2.2.11",
     "@types/d3-geo": "^3.1.0",
     "@types/geojson": "^7946.0.16",
+    "@types/js-cookie": "^3.0.6",
     "@types/lodash.debounce": "4.0.7",
     "@types/lodash.unescape": "4.0.7",
     "@types/node": "^24.5.2",

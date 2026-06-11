@@ -1,0 +1,44 @@
+.modal {
+  width: 100% !important;
+  max-width: 391px !important;
+  background-color: var(--white) !important;
+
+  .wrapper {
+    padding: 32px;
+    border-top: 1px solid var(--brown-border);
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+
+      .icon {
+        color: var(--gray-darkest);
+      }
+
+      .title {
+        color: var(--gray-darkest);
+      }
+
+      .text {
+        color: var(--black-transparent-300);
+        max-width: 100%;
+      }
+    }
+
+    .footer {
+      gap: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 32px 0;
+
+      .cancelButton,
+      .actionButton {
+        width: auto !important;
+      }
+    }
+  }
+}

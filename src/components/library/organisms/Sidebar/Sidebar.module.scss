@@ -1,0 +1,187 @@
+.sidebar {
+  width: 100%;
+  max-width: 331px;
+  height: 100vh;
+  background: var(--white-warm);
+  box-shadow: var(--sidebar-shadow);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  transition: transform 0.3s ease;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+
+  @media (max-width: 1024px) {
+    position: fixed;
+    right: 0;
+    z-index: 20;
+    transform: translateX(100%);
+  }
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+
+  &.open {
+    transform: translateX(0);
+  }
+
+  .close {
+    display: flex;
+    justify-content: flex-end;
+    display: none;
+
+    @media (max-width: 768px) {
+      display: flex;
+    }
+  }
+
+  .main {
+    gap: 24px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 94px);
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .dropdown {
+    width: 100%;
+  }
+
+  .header {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+
+    p {
+      line-height: 30px;
+    }
+
+    .button {
+      width: auto;
+      padding: 3px 8px;
+    }
+
+    .text {
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 600;
+    }
+  }
+
+  .content {
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--off-white);
+
+    .totalObjects {
+      gap: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .objects {
+      gap: 12px;
+      display: flex;
+      align-items: center;
+    }
+
+    .avatar {
+      gap: 8px;
+      display: flex;
+
+      .avatarImage {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    .tags {
+      gap: 8px;
+      display: flex;
+      flex-wrap: wrap;
+
+      .button {
+        color: var(--brown);
+        height: 26px;
+      }
+    }
+
+    .shareInputContainer {
+      gap: 8px;
+      display: flex;
+      align-items: center;
+
+      .shareInputWrapper {
+        flex: 1;
+      }
+
+      .shareInput {
+        width: 100%;
+      }
+
+      .copyButton {
+        width: auto;
+        min-width: auto;
+        padding: 8px;
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+
+        &.copied {
+          animation: copyPulse 0.4s ease;
+        }
+      }
+    }
+  }
+
+  .about {
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+
+    &:last-child {
+      margin-bottom: 80px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--brown-border);
+    }
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--off-white);
+    padding: 8px 12px;
+    border-radius: 4px;
+
+    .label {
+      font-weight: 600;
+    }
+  }
+}
+
+@keyframes copyPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

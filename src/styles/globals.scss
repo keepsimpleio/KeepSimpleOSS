@@ -378,6 +378,38 @@ body {
   font-display: swap;
 }
 
+// 'Source Serif 4' — for the Library feature (referenced by
+// --font-source-serif, see styles/library/variables.scss). One family with
+// weight variants, self-hosted from /public/fonts. Kept here rather than in a
+// separate library stylesheet so all Source Serif faces live in one place;
+// distinct from the per-weight 'Source-Serif-*' families above.
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-SemiBold.ttf')
+    format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/Source-Serif-4/static/SourceSerif4-Bold.ttf')
+    format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 // YujiSyuku-Regular for Japanese
 @font-face {
   font-family: 'YujiSyuku-Regular';
