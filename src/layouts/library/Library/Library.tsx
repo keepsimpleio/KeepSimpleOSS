@@ -23,6 +23,7 @@ import { createShelf } from '@api/library/shelf/createShelf';
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
+import { Loader } from '@components/library/atoms/Loader';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
   AddShelfModal,
@@ -488,7 +489,9 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         />
       )}
       {isLoading ? (
-        <Text variant={TypographyVariant.TextBase}>Loading…</Text>
+        <div className={styles.loading}>
+          <Loader />
+        </div>
       ) : showNoCreatePermission ? (
         <div className={styles.empty}>
           <Text

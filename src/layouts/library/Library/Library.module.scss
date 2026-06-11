@@ -17,6 +17,13 @@
     padding: 24px;
   }
 
+  // Gives the absolute-positioned Loader a sized, positioned region to fill so
+  // the spinner centers in the content area instead of collapsing to the top.
+  .loading {
+    position: relative;
+    min-height: 60vh;
+  }
+
   .text {
     font-weight: 600;
     color: var(--black-transparent-300);
