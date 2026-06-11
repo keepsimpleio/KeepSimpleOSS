@@ -78,6 +78,7 @@ const STRINGS = {
     redactedPlaceholder: 'REDACTED',
     engLeadLabel: 'Eng. Lead',
     publicInternetLabel: 'PUBLIC INTERNET',
+    telegramLabel: 'TELEGRAM',
     claudeMdLabel: 'claude.md',
     linesValue: (n: number) => `${n.toLocaleString()} lines`,
     canvasStats: {
@@ -295,6 +296,7 @@ const STRINGS = {
     redactedPlaceholder: 'СКРЫТО',
     engLeadLabel: 'Тех. Лид',
     publicInternetLabel: 'ПУБЛИЧНЫЙ ИНТЕРНЕТ',
+    telegramLabel: 'TELEGRAM',
     claudeMdLabel: 'claude.md',
     linesValue: (n: number) => {
       const m10 = n % 10;
@@ -813,13 +815,13 @@ function GlobeMark({ x, y, label, dim }: any) {
 }
 
 /* Telegram paper-plane relay marker, sits on the globe → receptionist wire. */
-function TelegramMark({ x, y, dim }: any) {
+function TelegramMark({ x, y, label, dim }: any) {
   return (
-    <g className={'globe-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
+    <g className={'telegram-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
       <title>Telegram</title>
       <circle cx={x} cy={y} r={16} fill="var(--paper)" />
       <path
-        className="globe-mark__plane"
+        className="telegram-mark__plane"
         d={`M ${x + 8} ${y - 6}
             L ${x - 8.5} ${y + 1}
             L ${x - 3} ${y + 3.2}
@@ -833,9 +835,9 @@ function TelegramMark({ x, y, dim }: any) {
         y={y}
         textAnchor="end"
         dominantBaseline="middle"
-        className="globe-mark__label globe-mark__label--sm"
+        className="telegram-mark__label telegram-mark__label--sm"
       >
-        TELEGRAM
+        {label}
       </text>
     </g>
   );
@@ -993,7 +995,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {data.link}
+              {data.linkLabel || data.link}
             </a>
           </div>
         )}
@@ -2239,6 +2241,7 @@ function AiAtlasApp() {
                     <TelegramMark
                       x={points['tg-relay'].x}
                       y={points['tg-relay'].y}
+                      label={t.telegramLabel}
                       dim={isDim('reception')}
                     />
                     <NodeBody

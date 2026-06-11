@@ -337,6 +337,7 @@
       "cjk": "受付",
       "desc": "Public Telegram front desk. Greets visitors, verifies who they are, and opens authorized doors: talk to Wolf's agents or take a guided tour of the Atlas. Strangers stay outside; nothing spends or escalates without Wolf.",
       "link": "https://t.me/WolfsReceptionist_bot",
+      "linkLabel": "t.me/WolfsReceptionist_bot",
       "claudeMdLines": 84,
       "rows": [
         {
