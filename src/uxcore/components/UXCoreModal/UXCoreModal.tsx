@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import {
   FC,
   KeyboardEvent,
+  TouchEvent,
   useCallback,
   useEffect,
   useRef,
@@ -121,6 +122,31 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
     setIsModalClosed(false);
   }, []);
 
+  // Touch swipe left/right navigates next/prev bias (replaces the gesture
+  // the retired UXCoreModalMobile slider used to provide).
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: TouchEvent) => {
+      const start = touchStart.current;
+      touchStart.current = null;
+      if (!start) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - start.x;
+      const dy = t.clientY - start.y;
+      // Require a clearly horizontal gesture so vertical scrolling never
+      // triggers navigation.
+      if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      handleArrowClick({ active: 'true', dir: dx < 0 ? 'next' : 'prev' });
+    },
+    [handleArrowClick],
+  );
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
@@ -182,6 +208,8 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
           [styles.hyLang]: locale === 'hy',
         })}
         onClick={handleModalClick}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         data-cy="modal-body"
       >
         <UXCoreModalHeader
@@ -298,8 +326,8 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               </div>
             </>
           )}
+          <ModalRaiting id={biasNumber} type="bias" />
         </div>
-        <ModalRaiting id={biasNumber} type="bias" />
         <div className={styles.ModalButtons}>
           <div
             aria-disabled={!prevBiasName}

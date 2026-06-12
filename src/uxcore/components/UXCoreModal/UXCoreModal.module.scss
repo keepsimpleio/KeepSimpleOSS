@@ -13,6 +13,9 @@
   display: flex;
   width: 100vw;
   height: 100vh;
+  /* iOS Safari: 100vh includes the area behind the URL bar; dvh tracks the
+     actually visible viewport so the modal bottom is never cut off. */
+  height: 100dvh;
   position: fixed;
   top: 0;
   left: 0;
@@ -123,17 +126,18 @@
           border-radius: 8px;
           background-color: #fff;
           isolation: isolate;
+          overflow: hidden;
 
           &::before {
             content: '';
             position: absolute;
-            top: -1px;
-            bottom: -1px;
-            left: -1px;
-            width: calc(33.3333% + 1px);
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 33.3333%;
             background-color: #e8f0fb;
             border: 1px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 7px;
             transform: translateX(0);
             transition:
               transform 450ms cubic-bezier(0.22, 0.95, 0.35, 1),
@@ -145,13 +149,13 @@
           }
 
           &:has(.activeHr)::before {
-            transform: translateX(calc(100% - 1px));
+            transform: translateX(100%);
           }
 
           // OffSec uses Hexens-crimson for the sliding indicator so the
           // mode shift reads as "different domain", not just "different tab".
           &:has(.activeOffsec)::before {
-            transform: translateX(calc(200% - 2px));
+            transform: translateX(200%);
             background-color: #fdecea;
             border-color: #c8412a;
           }
@@ -173,6 +177,18 @@
 
             svg {
               transition: fill 300ms ease;
+            }
+
+            & + .switcherItem::after {
+              content: '';
+              position: absolute;
+              left: 0;
+              top: 9px;
+              bottom: 9px;
+              width: 1px;
+              background-color: #e0e0e0;
+              z-index: -1;
+              pointer-events: none;
             }
           }
 
@@ -590,6 +606,10 @@ ol {
     color: rgba(218, 218, 218, 0.7) !important;
   }
 
+  .ModalBodyContent .switcher .switcherItem + .switcherItem::after {
+    background-color: #303338 !important;
+  }
+
   .ModalBodyContent .switcher .switcherItem svg {
     fill: rgba(218, 218, 218, 0.7) !important;
   }
@@ -630,4 +650,70 @@ ol {
 
 :global(body.darkTheme) .span {
   border-left-color: #4d5566;
+}
+
+// Mobile: three long labels (RU "Наступательная кибербезопасность" etc.)
+// can't share one horizontal row — stack the use-case switcher vertically
+// and slide the pill on the Y axis instead. Selector chain mirrors the
+// base nesting so this later block wins at equal specificity.
+@media (max-width: 800px) {
+  // Bottom-sheet: modal fills the viewport edge-to-edge down to the bottom,
+  // leaving only the site navbar strip visible above. Kills the "cut modal
+  // with page background peeking underneath" effect.
+  .ModalOverlay {
+    align-items: flex-end;
+
+    .Modal {
+      width: 100%;
+      height: calc(100% - 52px);
+      display: flex;
+      flex-direction: column;
+      border: none;
+      border-radius: 0;
+
+      .ModalBody {
+        max-height: none;
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  .ModalOverlay .Modal .ModalBody .ModalBodyContent .switcher {
+    flex-direction: column;
+
+    &::before {
+      width: 100%;
+      height: 33.3333%;
+      transform: translateY(0);
+    }
+
+    &:has(.activeHr)::before {
+      transform: translateY(100%);
+    }
+
+    &:has(.activeOffsec)::before {
+      transform: translateY(200%);
+    }
+
+    .switcherItem {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 10px 14px;
+      gap: 10px;
+      text-align: left;
+
+      svg {
+        flex-shrink: 0;
+      }
+
+      & + .switcherItem::after {
+        top: 0;
+        bottom: auto;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        height: 1px;
+      }
+    }
+  }
 }

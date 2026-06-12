@@ -1380,12 +1380,14 @@
 }
 
 .ks-aux-dark .ks-aux-pill {
-  background: #ece3d2;
-  color: #1f1d1a;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  background: #29251f;
+  color: #ece3d2;
+  box-shadow:
+    0 0 0 1px #3a342d,
+    0 4px 18px rgba(0, 0, 0, 0.45);
 }
 .ks-aux-dark .ks-aux-pill-open {
-  background: #d6cdb9;
+  background: #1f1c19;
 }
 .ks-aux-dark .ks-aux-pill-icon {
   color: #c75d3e;
@@ -1599,4 +1601,30 @@
 
 .ks-aux-dark .ks-aux-card-dot {
   background: #3a342d;
+}
+
+/* ===== Touch devices (Android/iOS): no pulsation ===== The pulse glow
+   competes with reading on small screens; keep the pill static and the
+   shadow quiet. `hover:none + pointer:coarse` catches phones/tablets
+   regardless of viewport width; the width fallback covers desktop-mode
+   mobile browsers that lie about pointer capabilities. */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  .ks-aux-pill,
+  .ks-aux-pill-relevance:not(.ks-aux-pill-open) {
+    animation: none;
+  }
+
+  .ks-aux-pill {
+    box-shadow: 0 3px 12px rgba(31, 29, 26, 0.18);
+  }
+
+  .ks-aux-pill-relevance:not(.ks-aux-pill-open) {
+    box-shadow: 0 3px 12px rgba(199, 93, 62, 0.3);
+  }
+
+  .ks-aux-dark .ks-aux-pill {
+    box-shadow:
+      0 0 0 1px #3a342d,
+      0 3px 12px rgba(0, 0, 0, 0.4);
+  }
 }
