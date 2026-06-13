@@ -15,30 +15,38 @@
     background: #fff;
     z-index: 50;
     padding: 0;
-  }
+    border: 1px solid #cbcbcb;
 
-  &:hover {
-    .dropdown {
-      visibility: visible;
-      opacity: 100%;
-      border: 1px solid #cbcbcb;
+    .link {
+      display: block;
+      text-decoration: none;
+      font-size: 14px;
+      color: #000;
+      padding: 10px;
 
-      .link {
-        display: block;
-        text-decoration: none;
-        font-size: 14px;
-        color: #000;
-        padding: 10px;
+      .flag {
+        padding-right: 10px;
+      }
 
-        .flag {
-          padding-right: 10px;
-        }
-
-        &:hover {
-          background: #f5f5f5;
-        }
+      &:hover {
+        background: #f5f5f5;
       }
     }
+  }
+
+  // Hover-open is desktop-only: on touch devices :hover sticks after a tap,
+  // which kept the dropdown open across the locale switch. Touch opens via
+  // the .open class toggled in React instead.
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .dropdown {
+      visibility: visible;
+      opacity: 100%;
+    }
+  }
+
+  &.open .dropdown {
+    visibility: visible;
+    opacity: 100%;
   }
 
   .switcher {
@@ -83,7 +91,7 @@
 // rules apply a saturate(0)/invert filter to images — explicitly null it
 // out on the flag icons so the colour stripes survive).
 :global(body.darkTheme) .languageSwitcher {
-  &:hover .dropdown {
+  .dropdown {
     background: #1b1e26;
     border-color: #303338 !important;
 

@@ -123,11 +123,11 @@
       }
 
       & .ModalHeaderCloseButtonContainer {
-        width: 75px;
+        flex-shrink: 0;
         display: flex;
         justify-content: flex-end;
-        align-items: flex-end;
-        gap: 24px;
+        align-items: center;
+        gap: 16px;
 
         & .ModalHeaderCloseButton {
           text-align: right;
@@ -325,6 +325,86 @@
   }
 }
 
+.MobileNavButtons {
+  display: none;
+}
+
+@media (max-width: 800px) {
+  // Full-screen sheet: the centered-card layout leaked the page behind the
+  // modal at the bottom edge and let the browser bar clip the nav pills.
+  .ModalOverlay {
+    height: 100vh;
+    height: 100dvh;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .ModalOverlay .Modal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    border: none;
+    border-radius: 0;
+    box-sizing: border-box;
+    // Desktop arrows sit at ±100px outside the modal — off-screen on phones.
+    // Reserve a bottom strip for the pills so they never cover the rating row.
+    padding-bottom: 56px;
+
+    .ModalHeader {
+      flex: 0 0 auto;
+    }
+
+    // Body takes all remaining height, so the rating row + pill strip stay
+    // pinned to the bottom regardless of content length.
+    .ModalBody {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto !important;
+    }
+
+    .ModalButtons {
+      display: none;
+    }
+
+    .MobileNavButtons {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      bottom: 8px;
+      left: 16px;
+      right: 16px;
+      z-index: 5;
+      pointer-events: none;
+
+      .MobileNavButton {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 20px;
+        background: #ffffff;
+        color: #1f1d1a;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        pointer-events: auto;
+        box-shadow:
+          0 0 0 1px #d9d2c5,
+          0 3px 12px rgba(31, 29, 26, 0.18);
+
+        img {
+          height: 14px;
+          filter: invert(1) brightness(0.4);
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 1440px) {
   .ModalOverlay {
     & .Modal {
@@ -429,5 +509,22 @@
         color: #7fb3d5 !important;
       }
     }
+  }
+}
+
+// Specificity must beat the 4-class mobile rule above.
+:global(body.darkTheme)
+  .ModalOverlay
+  .Modal
+  .MobileNavButtons
+  .MobileNavButton {
+  background: #262b36;
+  color: #e8eaf0;
+  box-shadow:
+    0 0 0 1px #3a4150,
+    0 3px 12px rgba(0, 0, 0, 0.45);
+
+  img {
+    filter: none;
   }
 }

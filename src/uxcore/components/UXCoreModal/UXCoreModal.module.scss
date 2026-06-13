@@ -41,6 +41,7 @@
       max-height: calc(100vh - 315px);
       overflow: auto;
       overflow-y: overlay;
+      overscroll-behavior: contain;
 
       /* width */
       &::-webkit-scrollbar {
@@ -257,6 +258,88 @@
       }
     }
   }
+}
+
+// Crossfade while a Prev/Next navigation is in flight: opacity only — cheap,
+// GPU-composited, reliable on every mobile browser. Nav controls stay solid.
+.Modal > *:not(.MobileNavButtons):not(.ModalButtons) {
+  transition: opacity 0.18s ease;
+}
+
+.Modal.biasSwitching > *:not(.MobileNavButtons):not(.ModalButtons) {
+  opacity: 0.15;
+}
+
+// Mobile-only Prev/Next pills; desktop keeps the side arrows.
+.MobileNavButtons {
+  display: none;
+}
+
+// full chain to outweigh the base .ModalOverlay .Modal … rule in the media query
+// Cool blue-grey to match the dark modal palette (#1b1e26 surfaces, #303338
+// borders) — the widget's warm brown pill looks alien inside this modal.
+:global(body.darkTheme)
+  .ModalOverlay
+  .Modal
+  .MobileNavButtons
+  .MobileNavButton {
+  background: #262b36;
+  color: #e8eaf0;
+  box-shadow:
+    0 0 0 1px #3a4150,
+    0 3px 12px rgba(0, 0, 0, 0.45);
+
+  img {
+    // caret SVGs are white already — keep them white on the dark pill
+    filter: none;
+  }
+}
+
+// Closing the modal navigates to the list route; cover the modal while that
+// hop resolves so a slow connection doesn't read as a dead tap.
+.ClosingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(1.5px);
+  animation: modalCloseOverlayIn 0.15s ease;
+}
+
+.ClosingSpinner {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3px solid rgba(40, 88, 123, 0.25);
+  border-top-color: #28587b;
+  animation: modalCloseSpin 0.7s linear infinite;
+}
+
+@keyframes modalCloseSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes modalCloseOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:global(body.darkTheme) .ModalOverlay .ClosingOverlay {
+  background: rgba(15, 17, 22, 0.6);
+}
+
+:global(body.darkTheme) .ModalOverlay .ClosingSpinner {
+  border-color: rgba(127, 179, 213, 0.25);
+  border-top-color: #7fb3d5;
 }
 
 .hyLang {
@@ -657,15 +740,14 @@ ol {
 // and slide the pill on the Y axis instead. Selector chain mirrors the
 // base nesting so this later block wins at equal specificity.
 @media (max-width: 800px) {
-  // Bottom-sheet: modal fills the viewport edge-to-edge down to the bottom,
-  // leaving only the site navbar strip visible above. Kills the "cut modal
-  // with page background peeking underneath" effect.
+  // Full-screen modal: covers the whole viewport including the navbar strip,
+  // so no page background peeks through above or below.
   .ModalOverlay {
     align-items: flex-end;
 
     .Modal {
       width: 100%;
-      height: calc(100% - 52px);
+      height: 100%;
       display: flex;
       flex-direction: column;
       border: none;
@@ -674,6 +756,45 @@ ol {
       .ModalBody {
         max-height: none;
         flex: 1 1 auto;
+        // room for the floating Prev/Next pills
+        padding-bottom: 76px;
+      }
+
+      .MobileNavButtons {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        z-index: 5;
+        pointer-events: none;
+
+        .MobileNavButton {
+          pointer-events: auto;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          height: 40px;
+          padding: 0 18px;
+          border: none;
+          border-radius: 20px;
+          background: #ffffff;
+          color: #1f1d1a;
+          font-family: inherit;
+          font-size: 14px;
+          font-weight: 600;
+          box-shadow:
+            0 0 0 1px #d9d2c5,
+            0 3px 12px rgba(31, 29, 26, 0.18);
+          cursor: pointer;
+
+          img {
+            height: 14px;
+            // caret SVGs are white — ink them dark for the light pill
+            filter: invert(1) brightness(0.4);
+          }
+        }
       }
     }
   }
@@ -697,6 +818,8 @@ ol {
 
     .switcherItem {
       width: 100%;
+      // width:100% + side padding spills past the viewport without border-box
+      box-sizing: border-box;
       justify-content: flex-start;
       padding: 10px 14px;
       gap: 10px;

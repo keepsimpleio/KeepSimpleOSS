@@ -13,6 +13,12 @@
   pointer-events: auto;
 }
 
+/* Hide the whole widget while any UX Core / UXCG modal is open — the modal
+   owns the bottom corners (Prev/Next navigation pills live there). */
+body:has([class*='ModalOverlay']) .ks-aux-root {
+  display: none;
+}
+
 @keyframes ks-aux-pulse {
   0%, 100% {
     box-shadow: 0 4px 16px rgba(31, 29, 26, 0.16);

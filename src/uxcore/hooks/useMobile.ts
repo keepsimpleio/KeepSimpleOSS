@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-
 import { CustomHookType, DispatchFuntion } from '@uxcore/local-types/global';
+import { useEffect, useState } from 'react';
 
 interface TState {
   isMobile: boolean;
@@ -32,7 +31,14 @@ const handleResize = () => {
 };
 
 /* INIT */
+// Nothing calls initUseMobile since the UXCoreOSS fold-in (the old _app did),
+// so the hook self-initializes on first mount; the guard keeps a single
+// app-lifetime resize listener.
+let initialized = false;
+
 const initUseMobile = () => {
+  if (initialized) return;
+  initialized = true;
   handleResize();
   window.addEventListener('resize', handleResize);
 };
@@ -42,6 +48,7 @@ const useMobile = (): CustomHookType => {
   const newListener = useState()[1];
 
   useEffect(() => {
+    initUseMobile();
     listeners.push(newListener);
 
     return () => {

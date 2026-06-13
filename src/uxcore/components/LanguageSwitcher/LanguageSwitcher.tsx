@@ -1,10 +1,9 @@
+import { useClickOutside } from '@uxcore/hooks/useClickOutside';
 import cn from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FC } from 'react';
-
-import { useClickOutside } from '@uxcore/hooks/useClickOutside';
+import { FC, useState } from 'react';
 
 import styles from './LanguageSwitcher.module.scss';
 
@@ -30,6 +29,9 @@ const LanguageSwitcher: FC<LanguageSwitcherProps> = ({
   withText = true,
 }) => {
   const router = useRouter();
+  // Touch devices open via this state (hover-open is desktop-only in CSS),
+  // so the dropdown reliably closes after a language is picked.
+  const [isOpen, setIsOpen] = useState(false);
 
   const locales = ['en', 'hy', 'ru'];
   const { asPath } = router;
@@ -62,6 +64,7 @@ const LanguageSwitcher: FC<LanguageSwitcherProps> = ({
   };
 
   const closeDropdown = () => {
+    setIsOpen(false);
     detectingLangSwitch && handleDetectingLangSwitch();
   };
 
@@ -72,11 +75,19 @@ const LanguageSwitcher: FC<LanguageSwitcherProps> = ({
 
   return (
     <div
-      className={cn(styles.languageSwitcher, className)}
+      className={cn(styles.languageSwitcher, className, {
+        [styles.open]: isOpen,
+      })}
       ref={ref}
       data-cy={'language-switcher'}
     >
-      <button onClick={closeDropdown} className={styles.switcher}>
+      <button
+        onClick={() => {
+          setIsOpen(prev => !prev);
+          detectingLangSwitch && handleDetectingLangSwitch();
+        }}
+        className={styles.switcher}
+      >
         {withFlag && (
           <Image
             src={currentLang.flag}

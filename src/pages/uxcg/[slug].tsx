@@ -4,8 +4,6 @@ import { getStrapiQuestions } from '@uxcore/api/questions';
 import { getTags } from '@uxcore/api/tags';
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import UXCGModal from '@uxcore/components/UXCGModal';
-import UXCGModalMobile from '@uxcore/components/UXCGModalMobile';
-import useMobile from '@uxcore/hooks/useMobile';
 import UXCGLayout from '@uxcore/layouts/UXCGLayout';
 import { getUXCGRedirects } from '@uxcore/lib/getUXCGRedirects';
 import {
@@ -67,11 +65,9 @@ const Slug: FC<UXCGIdProps> = ({
       : typeof searchQuery === 'string'
         ? searchQuery
         : undefined;
-  const { isMobile } = useMobile()[1];
 
   const [isModalClosed, setIsModalClosed] = useState<boolean>(true);
   const [questionId, setQuestionId] = useState<number>(id);
-  const [clickedQuestionId, setClickedQuestionId] = useState<number>(null);
   const [answerId, setAnswerId] = useState<number>(null);
   const [searchValue, setSearchValue] = useState<string>(searchTerm as string);
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
@@ -112,7 +108,7 @@ const Slug: FC<UXCGIdProps> = ({
       router.push(`/uxcg/${newSlug}`, undefined, { scroll: false });
       setQuestionId(Number(newId));
     },
-    [router, isMobile],
+    [router],
   );
 
   // Copy link to clipboard
@@ -130,7 +126,6 @@ const Slug: FC<UXCGIdProps> = ({
   const handleQuestionClick = useCallback(
     (number, slug) => {
       handleSelectedQuestion(Number(number), slug);
-      setClickedQuestionId(Number(number));
     },
     [handleSelectedQuestion],
   );
@@ -179,48 +174,27 @@ const Slug: FC<UXCGIdProps> = ({
         createdDate={'2021-07-16'}
       />
       <h1 className={styles.title}>{title}</h1>
-      {isMobile ? (
-        <UXCGModalMobile
-          tags={tags}
-          biases={biases?.[locale]}
-          answerId={answerId}
-          onClose={closeModal}
-          questions={questions}
-          questionId={questionId}
-          clickedQuestionId={clickedQuestionId}
-          closeModal={closeModal}
-          data={!!id && modalData}
-          handleCopyLink={handleCopyLink}
-          setIsModalClosed={setIsModalClosed}
-          onChangeQuestionId={handleSelectedQuestion}
-          isCopyTooltipVisible={isCopyTooltipVisible}
-          handleQuestionClick={handleQuestionClick}
-          nextQuestion={next}
-          prevQuestion={prev}
-          id={id}
-          slugs={languageSwitchSlugs}
-        />
-      ) : (
-        <UXCGModal
-          data={id && modalData}
-          setIsModalClosed={setIsModalClosed}
-          questionId={questionId}
-          answerId={answerId}
-          biases={biases?.[locale]}
-          tags={tags}
-          totalLength={questionsLength}
-          onChangeQuestionId={handleSelectedQuestion}
-          closeModal={closeModal}
-          handleQuestionClick={handleQuestionClick}
-          relatedQuestions={answerRelatedQuestions}
-          handleCopyLink={handleCopyLink}
-          isCopyTooltipVisible={isCopyTooltipVisible}
-          nextQuestion={next}
-          prevQuestion={prev}
-          id={id}
-          slugs={languageSwitchSlugs}
-        />
-      )}
+      {/* UXCGModal carries its own mobile layout now (pills, dark theme,
+          loaders) — the legacy UXCGModalMobile swap is retired. */}
+      <UXCGModal
+        data={id && modalData}
+        setIsModalClosed={setIsModalClosed}
+        questionId={questionId}
+        answerId={answerId}
+        biases={biases?.[locale]}
+        tags={tags}
+        totalLength={questionsLength}
+        onChangeQuestionId={handleSelectedQuestion}
+        closeModal={closeModal}
+        handleQuestionClick={handleQuestionClick}
+        relatedQuestions={answerRelatedQuestions}
+        handleCopyLink={handleCopyLink}
+        isCopyTooltipVisible={isCopyTooltipVisible}
+        nextQuestion={next}
+        prevQuestion={prev}
+        id={id}
+        slugs={languageSwitchSlugs}
+      />
       <UXCGLayout
         questions={allQuestions[locale]}
         tags={tags}

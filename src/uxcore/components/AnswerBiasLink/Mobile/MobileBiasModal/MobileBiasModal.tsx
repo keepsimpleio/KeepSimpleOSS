@@ -25,8 +25,11 @@ const MobileBiasModal: FC<MobileBiasModalProps> = ({
   return (
     <>
       {createPortal(
-        <div className={styles.MobileBiasModalOverlay}>
-          <div className={styles.MobileBiasModal}>
+        <div className={styles.MobileBiasModalOverlay} onClick={onClose}>
+          <div
+            className={styles.MobileBiasModal}
+            onClick={e => e.stopPropagation()}
+          >
             <BiasPopupContent
               title={title}
               locale={locale}
