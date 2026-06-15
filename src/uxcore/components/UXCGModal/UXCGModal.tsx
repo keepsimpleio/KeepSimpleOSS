@@ -1,3 +1,26 @@
+import AnswerContentGenerator from '@uxcore/components/AnswerContentGenerator';
+import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
+import ModalRaiting from '@uxcore/components/ModalRaiting';
+import RouteLoadingOverlay, {
+  useRouteLoading,
+} from '@uxcore/components/RouteLoadingOverlay';
+import Tag from '@uxcore/components/Tag';
+import Tooltip from '@uxcore/components/Tooltip';
+import Share from '@uxcore/components/UXCGModalSubComponents/Share';
+import modalIntl from '@uxcore/data/modal';
+import useMobile from '@uxcore/hooks/useMobile';
+import useTooltip from '@uxcore/hooks/useTooltip';
+import {
+  copyToClipboard,
+  generateSocialLinks,
+  updateVH,
+} from '@uxcore/lib/helpers';
+import type {
+  QuestionType,
+  StrapiBiasType,
+  TagType,
+} from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -12,22 +35,7 @@ import React, {
   useState,
 } from 'react';
 
-import type { QuestionType, StrapiBiasType, TagType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useMobile from '@uxcore/hooks/useMobile';
-import useTooltip from '@uxcore/hooks/useTooltip';
-
-import { copyToClipboard, generateSocialLinks, updateVH } from '@uxcore/lib/helpers';
-
-import modalIntl from '@uxcore/data/modal';
-
-import AnswerContentGenerator from '@uxcore/components/AnswerContentGenerator';
-import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
-import ModalRaiting from '@uxcore/components/ModalRaiting';
-import Tag from '@uxcore/components/Tag';
-import Tooltip from '@uxcore/components/Tooltip';
-import Share from '@uxcore/components/UXCGModalSubComponents/Share';
+import ThemeToggle from '@components/ThemeToggle';
 
 import styles from './UXCGModal.module.scss';
 
@@ -85,6 +93,7 @@ const UXCGModal: FC<TUXCGModal> = ({
 
   const [highlightAnswer, setHighlightAnswer] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(105);
+  const [isNavigating, startNavigation] = useRouteLoading();
 
   const modalBodyRef = useRef(null);
   const modalHeaderRef = useRef(null);
@@ -103,11 +112,17 @@ const UXCGModal: FC<TUXCGModal> = ({
           nextQuestionId = id === 1 ? 63 : id - 1;
         }
         const questionSlug = dir === 'next' ? nextQuestion : prevQuestion;
+        startNavigation();
         onChangeQuestionId(nextQuestionId, questionSlug);
       }
     },
-    [onChangeQuestionId, id, nextQuestion, prevQuestion],
+    [onChangeQuestionId, id, nextQuestion, prevQuestion, startNavigation],
   );
+
+  const handleClose = useCallback(() => {
+    startNavigation();
+    closeModal();
+  }, [closeModal, startNavigation]);
 
   const handleHeightCalc = useCallback(() => {
     updateVH();
@@ -158,7 +173,7 @@ const UXCGModal: FC<TUXCGModal> = ({
       if (isOpen) {
         const arrowClickData: any = {};
 
-        if (e.key === 'Escape') closeModal();
+        if (e.key === 'Escape') handleClose();
         if (e.key === 'ArrowLeft') {
           arrowClickData.active = String(id >= 1);
           arrowClickData.dir = 'prev';
@@ -264,8 +279,15 @@ const UXCGModal: FC<TUXCGModal> = ({
     hy: '/hy',
   };
 
-  const { copyLink, copied, share, answersLabel, relatedQuestionsLabel } =
-    modalIntl[locale];
+  const {
+    copyLink,
+    copied,
+    share,
+    answersLabel,
+    relatedQuestionsLabel,
+    nextLabel,
+    prevLabel,
+  } = modalIntl[locale];
 
   const {
     number,
@@ -298,7 +320,7 @@ const UXCGModal: FC<TUXCGModal> = ({
   );
 
   return (
-    <div className={styles.ModalOverlay} onClick={closeModal} ref={modalRef}>
+    <div className={styles.ModalOverlay} onClick={handleClose} ref={modalRef}>
       <div
         className={cn(styles.Modal, {
           [styles.hyLang]: locale === 'hy',
@@ -322,6 +344,7 @@ const UXCGModal: FC<TUXCGModal> = ({
               })}
             </div>
             <div className={styles.ModalHeaderCloseButtonContainer}>
+              <ThemeToggle />
               <LanguageSwitcher
                 section={'uxcg'}
                 withFlag
@@ -330,7 +353,7 @@ const UXCGModal: FC<TUXCGModal> = ({
               <div className={styles.ModalHeaderCloseButton}>
                 <img
                   src="/assets/biases/cross.svg"
-                  onClick={closeModal}
+                  onClick={handleClose}
                   alt="modal close button"
                 />
               </div>
@@ -420,9 +443,10 @@ const UXCGModal: FC<TUXCGModal> = ({
                       key={index}
                       className={styles.QuestionLink}
                       data-cy={'related-question'}
-                      onClick={() =>
-                        handleQuestionClick(question.number, slugs[locale])
-                      }
+                      onClick={() => {
+                        startNavigation();
+                        handleQuestionClick(question.number, slugs[locale]);
+                      }}
                     >
                       <span className={styles.questionNumber}>
                         #{question.number}.
@@ -434,8 +458,28 @@ const UXCGModal: FC<TUXCGModal> = ({
               </div>
             </>
           )}
+          <ModalRaiting id={id} type="question" />
         </div>
-        <ModalRaiting id={id} type="question" />
+        <div className={styles.MobileNavButtons}>
+          <button
+            type="button"
+            className={styles.MobileNavButton}
+            data-cy="mobile-prev"
+            onClick={() => handleArrowClick({ active: 'true', dir: 'prev' })}
+          >
+            <img src="/assets/biases/caret-left.svg" alt="" />
+            {prevLabel}
+          </button>
+          <button
+            type="button"
+            className={styles.MobileNavButton}
+            data-cy="mobile-next"
+            onClick={() => handleArrowClick({ active: 'true', dir: 'next' })}
+          >
+            {nextLabel}
+            <img src="/assets/biases/caret-right.svg" alt="" />
+          </button>
+        </div>
         <div className={styles.ModalButtons}>
           <div
             data-cy="arrow-prev"
@@ -459,6 +503,7 @@ const UXCGModal: FC<TUXCGModal> = ({
           </div>
         </div>
       </div>
+      <RouteLoadingOverlay active={isNavigating} />
     </div>
   );
 };

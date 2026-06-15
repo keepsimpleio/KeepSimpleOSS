@@ -1,45 +1,49 @@
-// No quoted figures by policy. Surface here is a chat DM (LinkedIn /
-// Slack-style), not email — multi-touch grooming is more legible as a
-// thread where the second and third messages feel like a relationship
-// you already have.
+// No quoted figures by policy. Surface is a chat DM (LinkedIn /
+// Slack-style). The lever here is the repeated CLAIM ("our account
+// changed"), not the sender's familiarity — that's the sibling case,
+// mere-exposure. Before = the claim heard for the first time; after =
+// the identical claim on its third repetition, still with zero proof.
+// `priorContext` must spell out that the earlier messages repeated the
+// claim, not that they built rapport.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'A new contact spent two weeks softly introducing themselves over LinkedIn — small notes, no asks. By week three, when they finally request a wire change, the name in your DMs already feels familiar enough to trust.',
+    'Same sender, same sentence, third week in a row: “our bank account has changed.” No document, no confirmation, no proof — yet somewhere between the first message and the third, the claim quietly stopped feeling like it needed any.',
   visualLabel: 'Scenario',
   visual: {
     before: {
       kind: 'chat',
-      tag: 'Cold ask',
+      tag: 'First time you read it',
       senderName: 'Klaus Lange',
-      senderHandle: 'Acme Supplier · finance',
+      senderHandle: 'Nordvik Components · finance',
       timestamp: 'Thu, 9:30 AM',
-      body: 'Hello — I’m Klaus from Acme Supplier finance. We’ve changed our account details, please update before the next payment run.',
+      body: 'Hello — I’m Klaus from Nordvik Components finance. We’ve changed our account details, please update before the next payment run.',
     },
     after: {
       kind: 'chat',
-      tag: 'Third touch',
+      tag: 'Third time you read it',
       senderName: 'Klaus Lange',
-      senderHandle: 'Acme Supplier · finance',
+      senderHandle: 'Nordvik Components · finance',
       timestamp: 'Thu, 9:30 AM',
-      priorContext: '2 messages this month — last seen yesterday',
-      body: 'Hi again — as mentioned last week, our account moved. Sending the final details now so payment lands on the new IBAN. Appreciate the quick turnaround 🙌',
+      priorContext:
+        'Two earlier notes this month mentioned the account move in passing — no documents, no details, no ask. Just the claim, twice.',
+      body: 'Hi again — as mentioned in my last two notes, our account moved. Sending the final details now so payment lands on the new IBAN. Appreciate the quick turnaround 🙌',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'Illusory truth effect — the brain treats fluency as evidence. The first time you saw this person’s name, it felt new and needed scrutiny. By the third touch, processing is cheap; cheap feels familiar; familiar feels true. The two prior messages carried no ask at all — that’s the point. They were a deposit into your credibility account. The third withdraws.',
+    'In the first message, a stranger claims their bank account changed — your proof reflex fires instantly. In the second, the exact same claim arrives for the third time, and the reflex stays quiet. That’s the illusory truth effect: the brain uses ease of processing as a stand-in for truth. A sentence you’ve already read twice goes down smoothly, and smooth feels true — no evidence required, just repetition. Notice what actually changed: not your trust in Klaus, but your belief in his sentence. The first two messages weren’t small talk; they were rehearsals of the lie.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'While your security team handles the perimeter — here’s your homework.',
     moves: [
-      'Thread length is not verification. Two friendly notes followed by a money ask is a pattern, not a coincidence — the prior messages were the setup.',
-      'Any time a sender first asks for money, credentials, or bank details, treat them as new — no matter how familiar the chat history makes them feel. Verify out of band, every time, even on the fifth message.',
-      'Watch for relationship-builders that never ask for anything. Cheerful check-ins from someone you have never met outside this app should raise the question — what is this conversation actually for?',
-      'Cross-check the contact against records you keep elsewhere — CRM, signed contracts, a colleague who knows them. If they exist only inside this DM thread, the familiarity is staged.',
+      'Repetition is not evidence. Hearing a claim three times gives you exactly as much proof as hearing it once: none. If it wasn’t verified the first time, it still isn’t.',
+      'A bank-details change is a documents-and-callback event, never a chat message. Call the number from the signed contract — not one the sender gives you — and ask them to confirm.',
+      'Watch for claims introduced “in passing.” A real account change arrives once, formally, with paperwork. A lie gets mentioned casually several times first — it’s being rehearsed on you.',
+      'Track where you first learned a “fact.” If every mention of the new IBAN traces back to the same chat thread, you don’t have three confirmations — you have one unverified source, repeated.',
     ],
   },
 };

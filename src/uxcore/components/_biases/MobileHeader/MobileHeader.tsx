@@ -2,7 +2,6 @@ import { getMyInfo } from '@uxcore/api/strapi';
 import { userInfoUpdate } from '@uxcore/api/uxcat/settings';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 import MoonIcon from '@uxcore/assets/icons/MoonIcon';
-import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
 import SunIcon from '@uxcore/assets/icons/SunIcon';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
@@ -21,9 +20,7 @@ import { FC, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './MobileHeader.module.scss';
 
 type MobileHeaderProps = {
-  setHeaderPodcastOpen?: (updater: (prev: boolean) => boolean) => void;
   setUpdatedSettingsInfo?: (data: UserTypes) => void;
-  isPodcastOpen?: boolean;
   changeUserUrl?: boolean;
   instantSave?: boolean;
   isUserProfile?: boolean;
@@ -35,8 +32,6 @@ type MobileHeaderProps = {
   blockLanguageSwitcher?: boolean;
 };
 const MobileHeader: FC<MobileHeaderProps> = ({
-  setHeaderPodcastOpen,
-  isPodcastOpen,
   changeUserUrl,
   setSelectedTitle,
   isUserProfile,
@@ -89,9 +84,6 @@ const MobileHeader: FC<MobileHeaderProps> = ({
   };
 
   const title = changedTitle ? userInfo?.title : userInfo?.title;
-  const openPodcast = () => {
-    setHeaderPodcastOpen(prev => !prev);
-  };
 
   const handleOpenSettings = () => {
     setOpenSettings(true);
@@ -168,16 +160,6 @@ const MobileHeader: FC<MobileHeaderProps> = ({
         </a>
       </div>
       <div className={styles.Actions}>
-        {router.pathname === '/uxcore' && locale !== 'hy' && (
-          <div
-            className={cn(styles.PodcastWrapper, {
-              [styles.active]: isPodcastOpen,
-            })}
-            onClick={openPodcast}
-          >
-            <PodcastIcon />
-          </div>
-        )}
         <button
           type="button"
           className={styles.themeToggle}

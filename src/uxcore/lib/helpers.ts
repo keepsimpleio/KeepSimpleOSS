@@ -1,10 +1,11 @@
-import type { MutableRefObject } from 'react';
-
-import type { BiasType, QuestionType, StrapiBiasType } from '@uxcore/local-types/data';
-
 import { downloadLinksEn, downloadLinksRu } from '@uxcore/api/questions';
-
 import biasesCategories from '@uxcore/data/biasesCategories';
+import type {
+  BiasType,
+  QuestionType,
+  StrapiBiasType,
+} from '@uxcore/local-types/data';
+import type { MutableRefObject } from 'react';
 
 export function scrollToImage(src: string) {
   function getOffset(el: HTMLImageElement) {
@@ -280,7 +281,19 @@ export const calculateTooltipPostion = (
    */
 
   const outsideHalfPart = (tooltipWidth - blockWidth) / 2;
-  const calculatedLeft = left - outsideHalfPart;
+  let calculatedLeft = left - outsideHalfPart;
+
+  // Centering on the link can push the popup past the viewport on narrow
+  // screens — clamp it so the text is never cut off by the screen edge.
+  if (typeof window !== 'undefined') {
+    const margin = 8;
+    const viewportWidth = document.documentElement.clientWidth;
+    calculatedLeft = Math.min(
+      calculatedLeft,
+      viewportWidth - tooltipWidth - margin,
+    );
+    calculatedLeft = Math.max(calculatedLeft, margin);
+  }
 
   return { left: calculatedLeft, top: calculatedTop };
 };

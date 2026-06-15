@@ -103,10 +103,12 @@
       }
     }
 
+    // Full-bleed: counter the .content 8px side margins exactly; -14px was
+    // overshooting and clipped the card 6px past the left screen edge.
     .content > .userProfile,
     .leaderboard {
-      margin: 0 -14px;
-      width: 100%;
+      margin: 0 -8px;
+      width: auto;
     }
   }
 }

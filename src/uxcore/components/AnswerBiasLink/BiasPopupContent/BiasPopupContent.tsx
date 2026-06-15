@@ -1,12 +1,9 @@
+import ContentParser from '@uxcore/components/ContentParser';
+import biasPopupIntl from '@uxcore/data/biasPopup';
+import useMobile from '@uxcore/hooks/useMobile';
 import cn from 'classnames';
 import Link from 'next/link';
 import { FC } from 'react';
-
-import useMobile from '@uxcore/hooks/useMobile';
-
-import biasPopupIntl from '@uxcore/data/biasPopup';
-
-import ContentParser from '@uxcore/components/ContentParser';
 
 import UxCoreStyle from '../../UXCoreModal/UXCoreModal.module.scss';
 import styles from './BiasPopupContent.module.scss';
@@ -49,7 +46,7 @@ const BiasPopupContent: FC<BiasPopupContentProps> = ({
       >
         {!customTip && (
           <Link href={`/uxcore/${slug}`} legacyBehavior>
-            <a target="_blank" data-cy={'open-bias'}>
+            <a target={isMobile ? '_self' : '_blank'} data-cy={'open-bias'}>
               {text}
             </a>
           </Link>
