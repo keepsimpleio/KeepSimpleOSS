@@ -284,8 +284,12 @@ export function ObjectOverviewModal(
     shelfData?.attributes.name ??
     attributes.shelfName ??
     '—';
-  const shelfPosition =
-    liveShelf?.attributes.order ?? shelfData?.attributes.order;
+  // The object's own position within its shelf — not the shelf's order. Siblings
+  // arrive already sorted by `order` ASC, so the array index is the true rank
+  // (contiguous 1..N even when persisted `order` values have gaps). Fall back to
+  // the object's raw `order` when siblings weren't passed.
+  const positionIndex = shelfObjects?.findIndex(o => o.id === id) ?? -1;
+  const objectPosition = positionIndex >= 0 ? positionIndex : attributes.order;
   const publishedFormatted = formatDate(attributes.publicationDate);
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
@@ -588,7 +592,9 @@ export function ObjectOverviewModal(
                     variant={TypographyVariant.TextBase}
                     className={styles.rowValue}
                   >
-                    {shelfPosition !== undefined ? String(shelfPosition) : '—'}
+                    {objectPosition !== undefined
+                      ? String(objectPosition + 1)
+                      : '—'}
                   </Text>
                 </div>
               </div>

@@ -236,6 +236,7 @@ export function ShareSelectionPanel({
               onClick={() => onClear?.()}
               type={ButtonType.Outlined}
               size={ButtonSize.Default}
+              className={styles.removeAll}
             />
           </div>
         )}
@@ -243,12 +244,7 @@ export function ShareSelectionPanel({
 
       {/* Always mounted so the chevron can animate the whole section open/closed
           via the grid-rows collapse (see .bodyWrap) instead of unmounting. */}
-      <div
-        className={classNames(styles.bodyWrap, {
-          [styles.bodyWrapCollapsed]: collapsed,
-        })}
-        aria-hidden={collapsed}
-      >
+      <div className={styles.bodyWrap} aria-hidden={collapsed}>
         <div className={styles.body}>
           {!readOnly && limitReached && (
             <Text

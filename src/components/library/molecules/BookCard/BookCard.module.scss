@@ -26,14 +26,21 @@
   }
 }
 
-// Hover/focus-revealed selection toggle, centered over the cover's top edge.
+// Hover/focus-revealed selection toggle, floated just above the cover (in the
+// shelf's headroom) so it never overlaps the book art. The 6px `padding-bottom`
+// is a transparent hover bridge: it keeps the hit area continuous from the card
+// up to the pill so the toggle doesn't drop `:hover` (and vanish) as the cursor
+// crosses the visual gap to click it.
 .select {
   position: absolute;
-  top: 8px;
-  left: 0;
-  width: 100%;
+  bottom: 100%;
+  // Span the cover art (146px, flush right) — not the full card — so the toggle
+  // centers over the artwork rather than the exposed spine on the left.
+  right: 0;
+  width: 146px;
   display: flex;
   justify-content: center;
+  padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
   pointer-events: none;
@@ -99,8 +106,10 @@
   display: block;
 }
 
-// Compact variant for the share-selection panel: a smaller cover-only tile
-// (97×138 cover, keeping the spine offset and shadow). Tags are dropped.
+// Compact variant for the share-selection panel: a flat cover tile that fills
+// the cell (no spine offset — placeholder + cover stretch edge-to-edge so a
+// covered book reads as a framed thumbnail). Tags are dropped; a double frame
+// (inner 1.5px cream, outer 1px brown) wraps the art.
 .row.compact {
   width: 119px;
   height: 138px;
@@ -108,18 +117,18 @@
   .card {
     width: 119px;
     height: 138px;
+    box-shadow:
+      0 0 0 1.5px #f9f4eb,
+      0 0 0 2.5px #af6a34;
   }
 
+  .placeholder,
   .cover {
-    top: 1px;
-    right: 0;
-    width: 97px;
-    height: 137px;
-  }
-
-  .select {
+    inset: 0;
+    top: 0;
     left: 0;
     width: 100%;
+    height: 100%;
   }
 
   .tags {

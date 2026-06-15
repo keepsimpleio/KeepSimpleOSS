@@ -14,7 +14,6 @@
   cursor: pointer;
   border: none;
   outline: none;
-  overflow: hidden;
 
   &:focus-visible {
     box-shadow:
@@ -24,14 +23,19 @@
   }
 }
 
-// Hover/focus-revealed selection toggle, centered over the thumbnail's top.
+// Hover/focus-revealed selection toggle, floated just above the card (in the
+// shelf's headroom) so it never overlaps the thumbnail. The 6px `padding-bottom`
+// is a transparent hover bridge: it keeps the hit area continuous from the card
+// up to the pill so the toggle doesn't drop `:hover` (and vanish) as the cursor
+// crosses the visual gap to click it.
 .select {
   position: absolute;
-  top: 20px;
-  left: 12px;
-  right: 12px;
+  bottom: 100%;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
+  padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
   pointer-events: none;
@@ -108,6 +112,11 @@
   height: 138px;
   padding: 0;
   border-radius: 0;
+  // Swap the floating drop shadow for the double frame (inner 1.5px cream,
+  // outer 1px brown) so it matches the book/audio tiles in the panel.
+  box-shadow:
+    0 0 0 1.5px #f9f4eb,
+    0 0 0 2.5px #af6a34;
 
   .thumbWrap {
     height: 100%;
@@ -116,11 +125,5 @@
   .bar,
   .title {
     display: none;
-  }
-
-  .select {
-    top: 8px;
-    left: 8px;
-    right: 8px;
   }
 }

@@ -7,13 +7,15 @@
     min-height: calc(100vh - 168px);
   }
 
+  // Fill the viewport below the 48px sticky header so the content centers in the
+  // real available space rather than the top 60vh (which sat it too high).
   .empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 28px;
-    min-height: 60vh;
+    min-height: calc(100vh - 48px);
     padding: 24px;
   }
 
@@ -21,7 +23,7 @@
   // the spinner centers in the content area instead of collapsing to the top.
   .loading {
     position: relative;
-    min-height: 60vh;
+    min-height: calc(100vh - 48px);
   }
 
   .text {

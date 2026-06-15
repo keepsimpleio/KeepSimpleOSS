@@ -50,6 +50,7 @@ const modalTypeToApi: Record<ShelfType, ObjectType> = {
 
 export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const [library, setLibrary] = useState<StrapiLibraryEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   // Briefly true right after a reorder so the shelf list can fade out/in as it
@@ -252,6 +253,37 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
       (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
     );
   }, [library, viewAsOwner]);
+
+  // Search filters the in-memory object tree — the whole library is already
+  // client-side, so no API round-trip. Match title + author + tag names (the
+  // fields people search by); description is intentionally excluded to keep
+  // results predictable. Shelves with no match drop out so results stay dense.
+  const normalizedSearch = search.trim().toLowerCase();
+  const displayedShelves: StrapiSingleShelfEntry[] = useMemo(() => {
+    if (!normalizedSearch) return shelves;
+    return shelves.reduce<StrapiSingleShelfEntry[]>((acc, shelf) => {
+      const objects = shelf.attributes.objects?.data ?? [];
+      const matched = objects.filter(o => {
+        const { title, author, tags } = o.attributes;
+        const haystack = [
+          title,
+          author,
+          ...(tags?.data ?? []).map(t => t.attributes.name),
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        return haystack.includes(normalizedSearch);
+      });
+      if (matched.length > 0) {
+        acc.push({
+          ...shelf,
+          attributes: { ...shelf.attributes, objects: { data: matched } },
+        });
+      }
+      return acc;
+    }, []);
+  }, [shelves, normalizedSearch]);
 
   // Publish the current library's shelves so the Header's Jump-to nav can
   // render the right list without owning its own fetch. NOTE: no cleanup —
@@ -481,11 +513,15 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
 
   return (
     <div className={styles.wrapper}>
-      {viewAsOwner && shelves.length > 0 && (
+      {shelves.length > 0 && (
         <LibraryToolbar
           shelves={shelves}
           onAddShelf={modalToggler}
           onShelvesReordered={handleShelvesReordered}
+          isOwner={viewAsOwner}
+          ownerName={ownerUsername ?? libraryId}
+          search={search}
+          onSearchChange={setSearch}
         />
       )}
       {isLoading ? (
@@ -523,13 +559,22 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
             />
           )}
         </div>
+      ) : normalizedSearch && displayedShelves.length === 0 ? (
+        <div className={styles.empty}>
+          <Text
+            variant={TypographyVariant.TitleSecondaryBold}
+            className={styles.text}
+          >
+            Nothing matches “{search.trim()}”
+          </Text>
+        </div>
       ) : (
         <div
           className={classNames(styles.shelfList, {
             [styles.resequencing]: isResequencing,
           })}
         >
-          {shelves.map(shelf => (
+          {displayedShelves.map(shelf => (
             <Shelf
               key={shelf.id}
               title={shelf.attributes.name}

@@ -28,14 +28,21 @@
   }
 }
 
-// Hover/focus-revealed selection toggle, centered over the cover's top edge.
+// Hover/focus-revealed selection toggle, floated just above the cover (in the
+// shelf's headroom) so it never overlaps the album art. The 6px `padding-bottom`
+// is a transparent hover bridge: it keeps the hit area continuous from the card
+// up to the pill so the toggle doesn't drop `:hover` (and vanish) as the cursor
+// crosses the visual gap to click it.
 .select {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
+  bottom: 100%;
+  // Span the album art (190px, flush right) — not the full card — so the toggle
+  // centers over the artwork rather than the exposed disc edge on the left.
+  right: 0;
+  width: 190px;
   display: flex;
   justify-content: center;
+  padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
   pointer-events: none;
@@ -106,6 +113,13 @@
   width: 138px;
   height: 138px;
   gap: 0;
+
+  // Double frame (inner 1.5px cream, outer 1px brown) around the cover tile.
+  .card {
+    box-shadow:
+      0 0 0 1.5px #f9f4eb,
+      0 0 0 2.5px #af6a34;
+  }
 
   .placeholder,
   .cover {
