@@ -2824,6 +2824,16 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   );
   useEffect(() => {
     if (!isHighlightEnabledPage()) return;
+    /* Host highlighting is gated on the panel being open: the Copilot
+       lights up page elements only while it is ACTIVE. Collapsed pill =
+       not active = no host highlight. Re-arm the flash guard on collapse
+       so re-opening re-applies the highlight for the current answer
+       (open = highlighted, closed = not — a state, not a one-shot). The
+       effect's own cleanup clears any live halo when `open` flips false. */
+    if (!open) {
+      lastFlashedTurnIdRef.current = null;
+      return;
+    }
     const last = turns[turns.length - 1];
     if (!last || last.kind === 'nav' || last.isStreaming) return;
     if (!last.citations || last.citations.length === 0) return;
@@ -2859,7 +2869,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       );
       handle.cleanup();
     };
-  }, [turns]);
+  }, [turns, open]);
 
   /* Typewriter constants — every bit of bot-authored text in the
      widget (concierge stream, homepage starters, landing turns) runs
