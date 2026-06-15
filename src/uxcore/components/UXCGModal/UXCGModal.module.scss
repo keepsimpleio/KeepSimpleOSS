@@ -356,8 +356,8 @@
       flex: 0 0 auto;
     }
 
-    // Body takes all remaining height, so the rating row + pill strip stay
-    // pinned to the bottom regardless of content length.
+    // Body takes all remaining height and scrolls; the rating row lives
+    // inside it so only the pill strip stays pinned to the bottom.
     .ModalBody {
       flex: 1 1 auto;
       min-height: 0;

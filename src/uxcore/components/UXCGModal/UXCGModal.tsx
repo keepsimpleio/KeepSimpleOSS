@@ -458,8 +458,8 @@ const UXCGModal: FC<TUXCGModal> = ({
               </div>
             </>
           )}
+          <ModalRaiting id={id} type="question" />
         </div>
-        <ModalRaiting id={id} type="question" />
         <div className={styles.MobileNavButtons}>
           <button
             type="button"
