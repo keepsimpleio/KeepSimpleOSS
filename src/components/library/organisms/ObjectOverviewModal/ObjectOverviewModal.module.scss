@@ -98,6 +98,22 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #c0b6ae transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c0b6ae;
+    border-radius: 5px;
+  }
 }
 
 .left {
@@ -268,4 +284,34 @@
   color: var(--red-600);
   font-size: 12px;
   margin: 4px 0 0;
+}
+
+// On phones/tablets fill the viewport minus a 15px top/bottom gap (the flex
+// backdrop centers the content, so the gap lands evenly). `.left` already
+// precedes `.right` in the DOM, so collapsing the grid to one column stacks the
+// cover above the data.
+@media (max-width: 960px) {
+  .modal {
+    width: calc(100dvw - 32px) !important;
+    max-width: none !important;
+    height: calc(100dvh - 30px);
+    max-height: calc(100dvh - 30px);
+    margin: 0;
+  }
+
+  .header {
+    padding: 20px 16px;
+  }
+
+  .body {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 20px 16px;
+  }
+
+  // Keep the cover from swallowing the screen on tall portrait art.
+  .cover {
+    max-width: 220px;
+    margin: 0 auto;
+  }
 }

@@ -76,6 +76,10 @@
       gap: 16px;
     }
 
+    .selectShelfWrap {
+      display: inline-flex;
+    }
+
     .button {
       color: var(--brown);
     }
@@ -183,6 +187,11 @@
       .cardSlot {
         display: flex;
         will-change: transform;
+        // Cards that mount (initial paint, or re-entering as a search widens)
+        // fade-and-rise in rather than snapping. FLIP skips newly-entering slots
+        // — they aren't in its prev-rect map — so this never fights the reorder
+        // glide; only one of the two runs per card.
+        animation: card-enter 0.28s ease both;
       }
     }
 
@@ -240,5 +249,23 @@
 
   button {
     width: auto;
+  }
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardSlot {
+    animation: none;
   }
 }

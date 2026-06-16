@@ -338,10 +338,8 @@
   }
 }
 
-// Library has no dark theme: force the warm light header on every library
-// page, overriding the dark-theme background and text colors.
-.header.library,
-.header.library.darkTheme {
+// Library light theme: warm cream header.
+.header.library {
   background-color: #f8f1e5 !important;
 
   & .actions {
@@ -360,6 +358,31 @@
     &:after,
     &:before {
       background-color: #5d6063;
+    }
+  }
+}
+
+// Library dark theme: match the site-wide dark header. The 3-class selector +
+// !important outranks the light `.header.library` rule above.
+.header.library.darkTheme {
+  background-color: #151a26 !important;
+
+  & .actions {
+    background: #151a26;
+
+    .toggleLanguage .languageTitle {
+      color: #dadada;
+    }
+  }
+
+  & .burgerMenu div {
+    background-color: #fff;
+  }
+
+  & .closeButton {
+    &:after,
+    &:before {
+      background-color: #fff;
     }
   }
 }

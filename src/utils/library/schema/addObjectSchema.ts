@@ -49,6 +49,8 @@ const videoSchema = z.object({
     .max(5000, 'Description must be 5000 chars or less.')
     .optional(),
   coverImage: coverImageSchema.optional().nullable(),
+  // Auto-derived from the URL host (e.g. "YouTube") — not user-entered.
+  source: z.string().max(100).optional(),
 });
 
 const audioSchema = z.object({
@@ -67,6 +69,10 @@ const audioSchema = z.object({
     .max(5000, 'Description must be 5000 chars or less.')
     .optional(),
   coverImage: coverImageSchema.optional().nullable(),
+  // Both auto-derived, never user-entered: `source` from the URL host,
+  // `duration` (whole seconds) from the selected iTunes track.
+  source: z.string().max(100).optional(),
+  duration: z.number().int().nonnegative().optional(),
 });
 
 export const schemaByType = {

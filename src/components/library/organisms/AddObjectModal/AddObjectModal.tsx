@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { detectSource } from '@utils/library/detectSource';
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import {
   type AddObjectFormData,
@@ -8,9 +9,14 @@ import {
 import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
 
+import type { IAutofillSuggestion } from '@local-types/library/autofill';
 import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
 
+import { fetchCoverFile } from '@api/library/autofill/fetchCoverFile';
+import { lookupVideoByUrl } from '@api/library/autofill/lookupVideoByUrl';
+import { searchAudioSuggestions } from '@api/library/autofill/searchAudioSuggestions';
+import { searchBookSuggestions } from '@api/library/autofill/searchBookSuggestions';
 import { createObject } from '@api/library/object/createObject';
 import { reorderObjects } from '@api/library/object/reorderObjects';
 import { updateObject } from '@api/library/object/updateObject';
@@ -40,6 +46,7 @@ import { StepIndicator } from '@components/library/molecules/StepIndicator';
 import { TagMultiSelect } from '@components/library/molecules/TagMultiSelect';
 import type { TagOption } from '@components/library/molecules/TagMultiSelect/TagMultiSelect.types';
 import { Textarea } from '@components/library/molecules/Textarea';
+import { TitleAutocomplete } from '@components/library/molecules/TitleAutocomplete';
 
 import { configByType } from './AddObjectModal.config';
 import type { AddObjectModalProps, FieldKey } from './AddObjectModal.types';
@@ -65,6 +72,8 @@ function buildDefaults(
     author: a.author ?? '',
     description: a.description ?? '',
     sourceUrl: a.sourceUrl ?? '',
+    source: a.source ?? '',
+    duration: a.duration ?? undefined,
     publicationDate: a.publicationDate ? new Date(a.publicationDate) : null,
     coverImage: null,
   };
@@ -72,6 +81,14 @@ function buildDefaults(
 }
 
 const DRAFT_REORDER_ID = 'draft-new';
+
+// Google Books dates come as "2019", "2019-10" or "2019-10-15".
+function parsePublicationDate(raw: string): Date | null {
+  const [y, m, d] = raw.split('-').map(Number);
+  if (!y || Number.isNaN(y)) return null;
+  const date = new Date(y, (m || 1) - 1, d || 1);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 
 // Pull the status + Strapi error message out of an axios failure so a rejected
 // reorder reports *why* (e.g. 403 permission, 400 "All objects must belong to
@@ -124,6 +141,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
+  const [isFetchingVideoMeta, setIsFetchingVideoMeta] = useState(false);
 
   const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
@@ -159,8 +178,90 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors, isValid },
   } = form;
+
+  // Push a provider suggestion into the form. Values are clamped to the zod
+  // limits so an autofill can never leave the form invalid; the cover is
+  // best-effort — fields land first, the image follows when the proxy resolves.
+  const applySuggestion = async (s: IAutofillSuggestion) => {
+    const isBook = objectType === 'book';
+    const setOptions = { shouldValidate: true, shouldDirty: true } as const;
+
+    setValue('title', s.title.slice(0, isBook ? 200 : 150), setOptions);
+    if (s.author) {
+      setValue('author', s.author.slice(0, isBook ? 150 : 100), setOptions);
+    }
+    if (s.description) {
+      setValue(
+        'description',
+        s.description.slice(0, isBook ? 4000 : 5000),
+        setOptions,
+      );
+    }
+    if (!isBook) {
+      // A suggestion's link is the provider's own — for audio it's always an
+      // Apple/iTunes trackViewUrl. Only seed the URL when the user hasn't
+      // entered their own, so a pasted Spotify (etc.) link isn't clobbered.
+      // Either way derive Source from whatever URL ends up in the form, never
+      // from the suggestion link directly — otherwise Source could read
+      // "Apple Music" while the URL field shows a Spotify link.
+      const currentUrl = (
+        form.getValues('sourceUrl' as never) as unknown as string
+      )?.trim();
+      if (!currentUrl && s.sourceUrl) {
+        setValue('sourceUrl' as never, s.sourceUrl as never, setOptions);
+      }
+      const effectiveUrl = currentUrl || s.sourceUrl;
+      if (effectiveUrl) {
+        const detected = detectSource(effectiveUrl);
+        if (detected) {
+          setValue('source' as never, detected as never, setOptions);
+        }
+      }
+    }
+    if (objectType === 'audio' && s.durationSeconds != null) {
+      setValue('duration' as never, s.durationSeconds as never, setOptions);
+    }
+    if (isBook && s.publicationDate) {
+      const date = parsePublicationDate(s.publicationDate);
+      if (date) {
+        setValue('publicationDate' as never, date as never, setOptions);
+      }
+    }
+    if (s.coverUrl) {
+      const file = await fetchCoverFile(s.coverUrl, s.title);
+      if (file) setValue('coverImage', file, setOptions);
+    }
+  };
+
+  const handleVideoUrlFetch = async (rawUrl?: string) => {
+    const url = (
+      rawUrl ?? (form.getValues('sourceUrl' as never) as unknown as string)
+    )?.trim();
+    setAutofillNotice(null);
+    if (!url) return;
+    setIsFetchingVideoMeta(true);
+    try {
+      const result = await lookupVideoByUrl(url);
+      if (result.status === 'unsupported') {
+        setAutofillNotice(
+          'Autofill supports YouTube links — fill the details manually.',
+        );
+        return;
+      }
+      if (result.status === 'error') {
+        setAutofillNotice(
+          "Couldn't fetch video details. Please fill them manually.",
+        );
+        return;
+      }
+      await applySuggestion(result.suggestion);
+    } finally {
+      setIsFetchingVideoMeta(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -311,6 +412,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           author: data.author || undefined,
           description: data.description || undefined,
           sourceUrl: 'sourceUrl' in data ? data.sourceUrl : undefined,
+          source: 'source' in data ? data.source || undefined : undefined,
+          duration: 'duration' in data ? data.duration : undefined,
           publicationDate,
           tags,
           shelf,
@@ -334,6 +437,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           author: data.author || undefined,
           description: data.description || undefined,
           sourceUrl: 'sourceUrl' in data ? data.sourceUrl : undefined,
+          source: 'source' in data ? data.source || undefined : undefined,
+          duration: 'duration' in data ? data.duration : undefined,
           publicationDate,
           coverImage: coverImageId ?? undefined,
           tags,
@@ -487,7 +592,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     const label = config.labels[key] ?? key;
 
     switch (key) {
-      case 'title':
+      case 'title': {
+        // Typeahead autofill is create-only (silently rewriting an object the
+        // user opened to edit would be hostile) and not for video — videos
+        // autofill from a pasted YouTube URL instead.
+        const hasTypeahead = isCreate && objectType !== 'video';
         return (
           <div key={key} className={styles.field}>
             <Text
@@ -496,18 +605,34 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
             >
               {label}
             </Text>
-            <Input
-              type="text"
-              ariaLabel={label}
-              placeholder={label}
-              placeholderColor="#9E9E9E"
-              {...register('title')}
-            />
+            {hasTypeahead ? (
+              <TitleAutocomplete
+                registration={register('title')}
+                ariaLabel={label}
+                placeholder={label}
+                placeholderColor="#9E9E9E"
+                fetchSuggestions={
+                  objectType === 'book'
+                    ? searchBookSuggestions
+                    : searchAudioSuggestions
+                }
+                onSelect={applySuggestion}
+              />
+            ) : (
+              <Input
+                type="text"
+                ariaLabel={label}
+                placeholder={label}
+                placeholderColor="#9E9E9E"
+                {...register('title')}
+              />
+            )}
             {errors.title && (
               <p className={styles.error}>{errors.title.message}</p>
             )}
           </div>
         );
+      }
       case 'author':
         return (
           <div key={key} className={styles.field}>
@@ -608,7 +733,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
             )}
           </div>
         );
-      case 'sourceUrl':
+      case 'sourceUrl': {
+        const sourceUrlReg = register('sourceUrl' as never);
         return (
           <div key={key} className={styles.field}>
             <Text
@@ -624,24 +750,51 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                 placeholder="https://…"
                 placeholderColor="#9E9E9E"
                 wrapperClassName={styles.urlInput}
-                {...register('sourceUrl' as never)}
-              />
-              <Button
-                type={ButtonType.Outlined}
-                size={ButtonSize.Default}
-                label="Search"
-                ariaLabel="Fetch metadata from URL"
-                Icon={<SearchIcon />}
-                onClick={() => {
-                  // TODO: hook up URL metadata auto-fetch (YouTube / Spotify / generic OG)
+                {...sourceUrlReg}
+                onBlur={e => {
+                  sourceUrlReg.onBlur(e);
+                  // Derive the platform name (Spotify, YouTube…) from the link
+                  // so `source` fills itself — never typed by the user.
+                  const detected = detectSource(e.target.value);
+                  if (detected) {
+                    setValue('source' as never, detected as never, {
+                      shouldDirty: true,
+                    });
+                  }
                 }}
+                onPaste={
+                  objectType === 'video'
+                    ? e => {
+                        const pasted = e.clipboardData.getData('text');
+                        // Fire only for YouTube-looking links; the route does
+                        // the real video-id validation.
+                        if (/youtu\.?be/i.test(pasted)) {
+                          handleVideoUrlFetch(pasted);
+                        }
+                      }
+                    : undefined
+                }
               />
+              {objectType === 'video' && (
+                <Button
+                  type={ButtonType.Outlined}
+                  size={ButtonSize.Default}
+                  label={isFetchingVideoMeta ? 'Fetching…' : 'Autofill'}
+                  ariaLabel="Fetch video details from URL"
+                  Icon={<SearchIcon />}
+                  disabled={isFetchingVideoMeta}
+                  onClick={() => handleVideoUrlFetch()}
+                />
+              )}
             </div>
-            {'sourceUrl' in errors && errors.sourceUrl?.message && (
+            {'sourceUrl' in errors && errors.sourceUrl?.message ? (
               <p className={styles.error}>{String(errors.sourceUrl.message)}</p>
+            ) : (
+              autofillNotice && <p className={styles.hint}>{autofillNotice}</p>
             )}
           </div>
         );
+      }
       default:
         return null;
     }

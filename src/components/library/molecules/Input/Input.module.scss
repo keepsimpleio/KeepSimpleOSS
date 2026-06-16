@@ -29,6 +29,14 @@
       font-size: 16px;
       border-radius: 10px;
       padding: 0 34px 0 16px;
+
+      // Hide WebKit's native search clear button so it doesn't double up with
+      // our own `onClear` icon.
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration {
+        appearance: none;
+        -webkit-appearance: none;
+      }
     }
 
     &:focus-visible {

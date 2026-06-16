@@ -12,10 +12,19 @@
   max-height: 440px;
   background: var(--white-warm);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+  transition: max-height 0.3s ease;
 
   @media (max-width: 1024px) {
     right: 0;
   }
+}
+
+// Collapsed: fold the panel down to just the header bar (still pinned to the
+// bottom of the viewport). The body is clipped by .bodyWrap's overflow:hidden.
+// Selecting more objects from the library while minimized still works — they're
+// added to the hidden body and show up when the panel is expanded again.
+.collapsed {
+  max-height: 87px;
 }
 
 .header {
@@ -61,20 +70,19 @@
   gap: 16px;
 }
 
-// Animated collapse wrapper. The grid 1fr→0fr transition smoothly shrinks the
-// whole section to nothing (the chevron points at the header), and a single 1fr
-// row in this flex child resolves to the body's content height when the panel
-// is uncapped, or to the leftover space (so .body scrolls) when it hits 440px.
+// Outlined button defaults to a filled surface; on the cream header the
+// "Remove all" control should read as a bare bordered button.
+.removeAll {
+  background: transparent !important;
+}
+
+// Fills the space under the header and clips its content as the panel collapses
+// (the panel's max-height drives the accordion). `flex: 1` + `min-height: 0`
+// let .body scroll when the panel hits its 440px cap with many objects.
 .bodyWrap {
   flex: 1;
   min-height: 0;
-  display: grid;
-  grid-template-rows: 1fr;
-  transition: grid-template-rows 0.28s ease;
-}
-
-.bodyWrapCollapsed {
-  grid-template-rows: 0fr;
+  overflow: hidden;
 }
 
 .body {

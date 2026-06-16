@@ -77,23 +77,29 @@ const STRINGS = {
     apexFounderFallback: 'founder',
     redactedPlaceholder: 'REDACTED',
     engLeadLabel: 'Eng. Lead',
+    publicInternetLabel: 'PUBLIC INTERNET',
+    telegramLabel: 'TELEGRAM',
     claudeMdLabel: 'claude.md',
     linesValue: (n: number) => `${n.toLocaleString()} lines`,
     canvasStats: {
       humans: 'humans',
       agents: 'ai agents',
+      subAgents: 'ai sub-agents',
       products: 'products',
     },
-    introDossierTitle: 'THIS ATLAS',
-    introDossierCjk: '此地図',
+    introDossierTitle: 'THE ATLAS',
+    introDossierCjk: '地図帳',
+    introStoryBody:
+      'In March 2026 we decided to build the future of Agentic AI. We’ve built companies and products from scratch before, so we approached it the same way — learning every bit of vibecode data from the web and the available docs, then building on top of it with our own expertise. Every project we vibecoded brought us closer to the essence of Agentic AI and made our instructions sharper, more efficient, more striking.',
+    introStoryLink: 'Our journey, in guide form, is here.',
     introQuestionsBefore: 'Got questions? Drop those to our',
     introQuestionsLink: 'Telegram',
     introQuestionsAfter: '.',
     introDepthLabel: 'depth',
-    introDepthValue: '5 rings · 3 actor types',
+    introDepthValue: '5 rings · 4 actor types',
     introInhabitantsLabel: 'inhabitants',
-    introInhabitantsTpl: (h: number, a: number, p: number) =>
-      `${h} humans · ${a} ai agents · ${p} products`,
+    introInhabitantsTpl: (h: number, a: number, s: number, p: number) =>
+      `${h} humans · ${a} ai agents · ${s} sub-agents · ${p} products`,
     introPrincipleLabel: 'principle',
     principles: [
       'single host · single source · single owner',
@@ -108,6 +114,8 @@ const STRINGS = {
     legendHumanDesc: 'direction · final judgment',
     legendAgentLabel: 'ai agent',
     legendAgentDesc: 'dedicated AI · custom memory · CLAUDE.md persona',
+    legendSubAgentLabel: 'ai sub-agent',
+    legendSubAgentDesc: 'scoped AI · serves a parent agent',
     legendProductLabel: 'product',
     legendProductDesc: 'products we build',
     legendSolidLabel: '— solid',
@@ -287,6 +295,8 @@ const STRINGS = {
     apexFounderFallback: 'основатель',
     redactedPlaceholder: 'СКРЫТО',
     engLeadLabel: 'Тех. Лид',
+    publicInternetLabel: 'ПУБЛИЧНЫЙ ИНТЕРНЕТ',
+    telegramLabel: 'TELEGRAM',
     claudeMdLabel: 'claude.md',
     linesValue: (n: number) => {
       const m10 = n % 10;
@@ -300,18 +310,22 @@ const STRINGS = {
     canvasStats: {
       humans: 'людей',
       agents: 'ИИ-агентов',
+      subAgents: 'ИИ-субагентов',
       products: 'продуктов',
     },
-    introDossierTitle: 'ЭТОТ АТЛАС',
-    introDossierCjk: '此地図',
+    introDossierTitle: 'АТЛАС',
+    introDossierCjk: '地図帳',
+    introStoryBody:
+      'В марте 2026 мы решили строить будущее агентного ИИ. Мы и раньше строили компании и продукты с нуля, поэтому подошли так же — изучили все данные о вайбкоде из сети и доступных доков, а затем надстроили поверх собственную экспертизу. Каждый вайбкод-проект приближал нас к сути агентного ИИ и делал наши инструкции точнее, эффективнее, острее.',
+    introStoryLink: 'Наш путь — в формате гайда — здесь.',
     introQuestionsBefore: 'Есть вопросы? Пишите нам в',
     introQuestionsLink: 'Telegram',
     introQuestionsAfter: '.',
     introDepthLabel: 'глубина',
-    introDepthValue: '5 колец · 3 типа сущностей',
+    introDepthValue: '5 колец · 4 типа сущностей',
     introInhabitantsLabel: 'обитатели',
-    introInhabitantsTpl: (h: number, a: number, p: number) =>
-      `${h} людей · ${a} ИИ-агентов · ${p} продуктов`,
+    introInhabitantsTpl: (h: number, a: number, s: number, p: number) =>
+      `${h} людей · ${a} ИИ-агентов · ${s} субагентов · ${p} продуктов`,
     introPrincipleLabel: 'принцип',
     principles: [
       'один хост · один источник · один владелец',
@@ -326,6 +340,8 @@ const STRINGS = {
     legendHumanDesc: 'направление · финальное решение',
     legendAgentLabel: 'ИИ-агент',
     legendAgentDesc: 'выделенный ИИ · своя память · персона CLAUDE.md',
+    legendSubAgentLabel: 'ИИ-субагент',
+    legendSubAgentDesc: 'узкий ИИ · служит родительскому агенту',
     legendProductLabel: 'продукт',
     legendProductDesc: 'продукты, которые мы строим',
     legendSolidLabel: '— сплошная',
@@ -499,7 +515,16 @@ type T = (typeof STRINGS)['en'];
 
 /* ---------- diamond ---------- */
 function Diamond({ kind = 'red' }: { kind?: string }) {
-  const cls = ['dmd', kind === 'blue' ? 'blue' : kind === 'gold' ? 'gold' : '']
+  const cls = [
+    'dmd',
+    kind === 'blue'
+      ? 'blue'
+      : kind === 'gold'
+        ? 'gold'
+        : kind === 'subagent'
+          ? 'subagent'
+          : '',
+  ]
     .filter(Boolean)
     .join(' ');
   return <span className={cls} aria-hidden="true" />;
@@ -763,6 +788,61 @@ function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
   );
 }
 
+/* ---------- public internet globe ---------- */
+
+function GlobeMark({ x, y, label, dim }: any) {
+  const r = 21;
+  const lat = r * 0.5;
+  const latW = r * 0.866;
+  return (
+    <g className={'globe-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
+      <circle cx={x} cy={y} r={r} fill="var(--paper)" />
+      <ellipse cx={x} cy={y} rx={r * 0.45} ry={r} fill="none" />
+      <line x1={x - r} y1={y} x2={x + r} y2={y} />
+      <line x1={x - latW} y1={y - lat} x2={x + latW} y2={y - lat} />
+      <line x1={x - latW} y1={y + lat} x2={x + latW} y2={y + lat} />
+      <text
+        x={x - r - 11}
+        y={y}
+        textAnchor="end"
+        dominantBaseline="middle"
+        className="globe-mark__label"
+      >
+        {label}
+      </text>
+    </g>
+  );
+}
+
+/* Telegram paper-plane relay marker, sits on the globe → receptionist wire. */
+function TelegramMark({ x, y, label, dim }: any) {
+  return (
+    <g className={'telegram-mark' + (dim ? ' is-dim' : '')} aria-hidden="true">
+      <title>Telegram</title>
+      <circle cx={x} cy={y} r={16} fill="var(--paper)" />
+      <path
+        className="telegram-mark__plane"
+        d={`M ${x + 8} ${y - 6}
+            L ${x - 8.5} ${y + 1}
+            L ${x - 3} ${y + 3.2}
+            L ${x - 1.6} ${y + 7.4}
+            L ${x + 0.8} ${y + 4.6}
+            L ${x + 4.6} ${y + 6.4}
+            Z`}
+      />
+      <text
+        x={x - 16 - 9}
+        y={y}
+        textAnchor="end"
+        dominantBaseline="middle"
+        className="telegram-mark__label telegram-mark__label--sm"
+      >
+        {label}
+      </text>
+    </g>
+  );
+}
+
 function TerritoryArc({ project, R }: any) {
   if (!project.territoryArc) return null;
   const half = project.territoryArc / 2;
@@ -899,13 +979,25 @@ function Dossier({ data, onSelect, dossiers }: any) {
   const padTop = Math.max(28, titleH + 14);
   return (
     <div className="panel panel--dossier" style={{ paddingTop: padTop + 'px' }}>
-      <span className="panel__corner-mark">凸</span>
+      <span className="panel__corner-mark">印</span>
       <span ref={titleRef} className="panel__title" key={'t-' + data.title}>
         {data.title} <span className="cjk">{data.cjk}</span>
       </span>
       <div className="dossier__body" key={data.title}>
         {data.desc && (
           <div className="dossier__desc">{renderDossierValue(data.desc)}</div>
+        )}
+        {data.link && (
+          <div className="dossier__desc">
+            <a
+              className="dossier__link"
+              href={data.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {data.linkLabel || data.link}
+            </a>
+          </div>
         )}
         <ul className="kv">
           {data.rows.map((r: any, i: number) => {
@@ -939,6 +1031,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
                   {r.cls === 'red' && <Diamond kind="red" />}
                   {r.cls === 'blue' && <Diamond kind="blue" />}
                   {r.cls === 'gold' && <Diamond kind="gold" />}
+                  {r.cls === 'subagent' && <Diamond kind="subagent" />}
                   {isUrl ? (
                     <a
                       href={href as string}
@@ -962,13 +1055,24 @@ function Dossier({ data, onSelect, dossiers }: any) {
 }
 
 function buildIntroDossier(data: any, now: Date, t: T) {
-  const { humans, agents, products } = tallyDiamonds(data);
+  const { humans, agents, subAgents, products } = tallyDiamonds(data);
   const idx = Math.floor(now.getTime() / 60000) % t.principles.length;
   return {
     title: t.introDossierTitle,
     cjk: t.introDossierCjk,
     desc: (
       <>
+        {t.introStoryBody}{' '}
+        <a
+          className="dossier__link"
+          href="https://keepsimple.io/articles/vibecoding-ladder-llm-agents"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t.introStoryLink}
+        </a>
+        <br />
+        <br />
         {t.introQuestionsBefore}{' '}
         <a
           className="dossier__link"
@@ -985,7 +1089,7 @@ function buildIntroDossier(data: any, now: Date, t: T) {
       { k: t.introDepthLabel, v: t.introDepthValue },
       {
         k: t.introInhabitantsLabel,
-        v: t.introInhabitantsTpl(humans, agents, products),
+        v: t.introInhabitantsTpl(humans, agents, subAgents, products),
       },
       { k: t.introPrincipleLabel, v: t.principles[idx] },
     ],
@@ -995,14 +1099,18 @@ function buildIntroDossier(data: any, now: Date, t: T) {
 function tallyDiamonds(data: any) {
   let humans = 0,
     agents = 0,
+    subAgents = 0,
     products = 0;
   const tally = (d: string | undefined) => {
     if (d === 'gold') humans++;
     else if (d === 'blue') agents++;
+    else if (d === 'subagent') subAgents++;
     else if (d === 'red') products++;
   };
   if (data.apex) tally(data.apex.diamond);
   if (data.order && data.order.member) tally(data.order.member.diamond);
+  if (data.reception && data.reception.member)
+    tally(data.reception.member.diamond);
   ((data.devEnv && data.devEnv.members) || []).forEach((n: any) =>
     tally(n.diamond),
   );
@@ -1012,11 +1120,11 @@ function tallyDiamonds(data: any) {
     if (p.leadDiamond2) tally(p.leadDiamond2);
     (p.children || []).forEach((c: any) => tally(c.diamond));
   });
-  return { humans, agents, products };
+  return { humans, agents, subAgents, products };
 }
 
 function CanvasStats({ data, t }: { data: any; t: T }) {
-  const { humans, agents, products } = tallyDiamonds(data);
+  const { humans, agents, subAgents, products } = tallyDiamonds(data);
   return (
     <div className="canvas-stats" aria-hidden="true">
       <div className="canvas-stats__row">
@@ -1026,6 +1134,10 @@ function CanvasStats({ data, t }: { data: any; t: T }) {
       <div className="canvas-stats__row">
         <span className="k">{t.canvasStats.agents}</span>
         <span className="v">{agents}</span>
+      </div>
+      <div className="canvas-stats__row">
+        <span className="k">{t.canvasStats.subAgents}</span>
+        <span className="v">{subAgents}</span>
       </div>
       <div className="canvas-stats__row">
         <span className="k">{t.canvasStats.products}</span>
@@ -1055,6 +1167,13 @@ function Legend({ t }: { t: T }) {
             {t.legendAgentLabel}
           </span>
           <span className="v">{t.legendAgentDesc}</span>
+        </li>
+        <li>
+          <span className="k">
+            <Diamond kind="subagent" />
+            {t.legendSubAgentLabel}
+          </span>
+          <span className="v">{t.legendSubAgentDesc}</span>
         </li>
         <li>
           <span className="k">
@@ -1613,6 +1732,18 @@ function AiAtlasApp() {
       const p = POL(data.order.r, n.theta);
       m[n.id] = { ...p, ring: 'order', node: n };
     }
+    if (data.reception) {
+      const n = data.reception.member;
+      const p = POL(data.reception.r, n.theta);
+      m[n.id] = { ...p, ring: 'outside', node: n };
+      // Globe sits further out on the same radial, so globe → reception →
+      // wolf reads as a single straight line from the public internet inward.
+      m['globe'] = { ...POL(data.reception.globeR, n.theta), ring: 'outside' };
+      m['tg-relay'] = {
+        ...POL((data.reception.r + data.reception.globeR) / 2, n.theta),
+        ring: 'outside',
+      };
+    }
     data.devEnv.members.forEach((n: any) => {
       const p = POL(data.devEnv.r, n.theta);
       m[n.id] = { ...p, ring: 'dev', node: n };
@@ -1778,8 +1909,9 @@ function AiAtlasApp() {
     }
     if (highlightId === 'terminal') {
       if (data.order.member.diamond === 'blue') set.add(data.order.member.id);
+      if (data.reception) set.add('reception');
       data.devEnv.members.forEach((n: any) => {
-        if (n.diamond === 'blue') set.add(n.id);
+        if (n.diamond === 'blue' || n.diamond === 'subagent') set.add(n.id);
       });
       data.projects.members.forEach((p: any) => {
         if (p.leadDiamond === 'blue') set.add(`lead-${p.id}`);
@@ -1800,6 +1932,10 @@ function AiAtlasApp() {
       set.add('order');
       set.add('terminal');
       set.add('lead-terminal');
+      if (data.reception) set.add('reception');
+    }
+    if (highlightId === 'reception') {
+      set.add('wolf');
     }
     if (highlightId === 'order') {
       set.add('wolf');
@@ -1935,6 +2071,25 @@ function AiAtlasApp() {
                   dim={isDim('wolf') || isDim('order')}
                   glow={spokeGlow('wolf', 'order')}
                 />
+
+                {data.reception && (
+                  <>
+                    <Spoke
+                      from={points['globe']}
+                      to={points['reception']}
+                      kind="advisory"
+                      dim={isDim('reception')}
+                      glow={spokeGlow('reception', 'wolf')}
+                    />
+                    <Spoke
+                      from={points['reception']}
+                      to={points['wolf']}
+                      kind="auth"
+                      dim={isDim('reception') || isDim('wolf')}
+                      glow={spokeGlow('reception', 'wolf')}
+                    />
+                  </>
+                )}
 
                 {data.devEnv.members.map((n: any) => (
                   <Spoke
@@ -2075,6 +2230,35 @@ function AiAtlasApp() {
                   h={50}
                 />
 
+                {data.reception && (
+                  <>
+                    <GlobeMark
+                      x={points['globe'].x}
+                      y={points['globe'].y}
+                      label={t.publicInternetLabel}
+                      dim={isDim('reception')}
+                    />
+                    <TelegramMark
+                      x={points['tg-relay'].x}
+                      y={points['tg-relay'].y}
+                      label={t.telegramLabel}
+                      dim={isDim('reception')}
+                    />
+                    <NodeBody
+                      node={data.reception.member}
+                      x={points['reception'].x}
+                      y={points['reception'].y}
+                      active={focusId === 'reception'}
+                      dimmed={isDim('reception')}
+                      highlighted={!!highlightId && highlight.has('reception')}
+                      hovered={hoverNode === 'reception'}
+                      onSelect={onSelect}
+                      w={165}
+                      h={42}
+                    />
+                  </>
+                )}
+
                 {data.devEnv.members.map((n: any) => (
                   <NodeBody
                     key={n.id}
@@ -2091,21 +2275,23 @@ function AiAtlasApp() {
                   />
                 ))}
 
-                {data.projects.members.map((p: any) => (
-                  <NodeBody
-                    key={p.id}
-                    node={p}
-                    x={points[p.id].x}
-                    y={points[p.id].y}
-                    active={focusId === p.id}
-                    dimmed={isDim(p.id)}
-                    highlighted={!!highlightId && highlight.has(p.id)}
-                    hovered={hoverNode === p.id}
-                    onSelect={onSelect}
-                    w={210}
-                    h={p.sub ? 72 : 52}
-                  />
-                ))}
+                {data.projects.members
+                  .filter((p: any) => p.id !== 'terminal')
+                  .map((p: any) => (
+                    <NodeBody
+                      key={p.id}
+                      node={p}
+                      x={points[p.id].x}
+                      y={points[p.id].y}
+                      active={focusId === p.id}
+                      dimmed={isDim(p.id)}
+                      highlighted={!!highlightId && highlight.has(p.id)}
+                      hovered={hoverNode === p.id}
+                      onSelect={onSelect}
+                      w={210}
+                      h={p.sub ? 72 : 52}
+                    />
+                  ))}
 
                 {data.projects.members.map((p: any) => {
                   const id = `lead-${p.id}`;
@@ -2125,6 +2311,24 @@ function AiAtlasApp() {
                     />
                   );
                 })}
+
+                {data.projects.members
+                  .filter((p: any) => p.id === 'terminal')
+                  .map((p: any) => (
+                    <NodeBody
+                      key={p.id}
+                      node={p}
+                      x={points[p.id].x}
+                      y={points[p.id].y}
+                      active={focusId === p.id}
+                      dimmed={isDim(p.id)}
+                      highlighted={!!highlightId && highlight.has(p.id)}
+                      hovered={hoverNode === p.id}
+                      onSelect={onSelect}
+                      w={210}
+                      h={p.sub ? 72 : 52}
+                    />
+                  ))}
 
                 {data.projects.members
                   .filter((p: any) => p.leadDiamond2)

@@ -260,12 +260,18 @@ export function Shelf(props: ShelfProps): JSX.Element {
       : null;
 
   // "Select shelf" bulk-toggles every object on this shelf into the share
-  // selection. Like the per-card chip, it's owner-only and public-only since
-  // private objects aren't shareable. When all are already selected it clears
-  // them; otherwise it adds them (selectMany stops at the cap).
-  const canSelectShelf = isOwner && visibility === 'public';
+  // selection. It's owner-only and stays visible regardless of visibility — the
+  // private/public toggle only governs guest access, not the owner's toolbar.
+  // The share backend 400s on non-public objects, so on a private shelf the
+  // button is shown but disabled (with a tooltip) rather than vanishing. When
+  // all are already selected it clears them; otherwise it adds them (selectMany
+  // stops at the cap).
   const allSelected =
     objects.length > 0 && objects.every(o => isSelected(o.id));
+  const selectShelfDisabled =
+    visibility !== 'public' ||
+    objects.length === 0 ||
+    (!allSelected && limitReached);
   const handleSelectShelf = () => {
     if (allSelected) removeMany(objects.map(o => o.id));
     else selectMany(objects);
@@ -410,17 +416,26 @@ export function Shelf(props: ShelfProps): JSX.Element {
         </div>
 
         <div className={styles.right}>
-          {canSelectShelf && (
-            <Button
-              label={allSelected ? 'Deselect shelf' : 'Select shelf'}
-              ariaLabel={allSelected ? 'Deselect shelf' : 'Select shelf'}
-              onClick={handleSelectShelf}
-              disabled={objects.length === 0 || (!allSelected && limitReached)}
-              type={ButtonType.Secondary}
-              size={ButtonSize.Default}
-              className={styles.button}
-              labelClassName={styles.text}
-            />
+          {isOwner && (
+            <span
+              className={styles.selectShelfWrap}
+              title={
+                visibility !== 'public'
+                  ? 'Make this shelf public to add its items to a share link.'
+                  : undefined
+              }
+            >
+              <Button
+                label={allSelected ? 'Deselect shelf' : 'Select shelf'}
+                ariaLabel={allSelected ? 'Deselect shelf' : 'Select shelf'}
+                onClick={handleSelectShelf}
+                disabled={selectShelfDisabled}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Default}
+                className={styles.button}
+                labelClassName={styles.text}
+              />
+            </span>
           )}
 
           {isOwner && (
