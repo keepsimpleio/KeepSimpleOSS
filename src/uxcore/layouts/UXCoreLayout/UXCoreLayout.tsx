@@ -13,6 +13,7 @@ import biasesLocalization from '@uxcore/data/biases';
 import biasesMobile from '@uxcore/data/biasesMobile';
 import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
+import { isOffsecEnabled } from '@uxcore/lib/offsec';
 import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
@@ -94,7 +95,7 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
     if (hash === '#hr' && isProductView) {
       toggleIsProductView();
     }
-    if (hash === '#offsec' && !isOffsecView) {
+    if (hash === '#offsec' && !isOffsecView && isOffsecEnabled) {
       toggleIsOffsecView();
     }
   }, [mounted]);
@@ -213,17 +214,19 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
                 )}
                 <span>HR</span>
               </div>
-              <div
-                data-cy="switch-offsec"
-                onClick={() => handleUseCaseClick('offsec')}
-                className={cn(styles.useCaseRow, {
-                  [styles.active]: isOffsecView,
-                })}
-              >
-                {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
-                <span className={styles.cybersecFull}>Cybersecurity</span>
-                <span className={styles.cybersecShort}>OffSec</span>
-              </div>
+              {isOffsecEnabled && (
+                <div
+                  data-cy="switch-offsec"
+                  onClick={() => handleUseCaseClick('offsec')}
+                  className={cn(styles.useCaseRow, {
+                    [styles.active]: isOffsecView,
+                  })}
+                >
+                  {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+                  <span className={styles.cybersecFull}>Cybersecurity</span>
+                  <span className={styles.cybersecShort}>OffSec</span>
+                </div>
+              )}
             </div>
             {isCoreView && <Search biases={strapiBiases} />}
             {isCoreView && (
