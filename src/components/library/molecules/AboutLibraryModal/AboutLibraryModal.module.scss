@@ -1,0 +1,35 @@
+.modal {
+  max-width: 518px !important;
+
+  .wrapper {
+    color: var(--gray-darkest);
+    padding: 32px;
+    border-color: var(--brown-border);
+    border-style: solid;
+    border-width: 1px 0 1px 0;
+
+    .text {
+      margin-bottom: 14px;
+
+      a {
+        text-decoration: none;
+        color: var(--gray-darkest);
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .footer {
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .close {
+      max-width: 70px;
+    }
+  }
+}

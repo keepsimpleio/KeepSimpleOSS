@@ -117,6 +117,7 @@ const Header: FC = () => {
         className={cn(styles.header, {
           [styles.darkTheme]: isDarkTheme,
           [styles.openedSidebar]: isOpenedSidebar,
+          [styles.library]: router.pathname.startsWith('/library'),
         })}
       >
         <div>

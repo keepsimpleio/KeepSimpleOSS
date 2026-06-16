@@ -1,0 +1,48 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+.label {
+  width: 44px;
+  height: 24px;
+  display: block;
+  background: var(--gray);
+  border-radius: 60px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.5s;
+
+  &::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: var(--white);
+    position: absolute;
+    border-radius: 70px;
+    top: 2px;
+    left: 2px;
+    transition: 0.3s;
+  }
+
+  &.disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.input:checked + .label {
+  background: var(--brown);
+
+  &::after {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+  }
+}

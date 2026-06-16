@@ -161,6 +161,8 @@
 @media (max-width: 901px) {
   .userProfile {
     width: 100%;
+    // width:100% + side padding overflows the wrapper without border-box.
+    box-sizing: border-box;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -187,8 +189,6 @@
 
 @media (max-width: 800px) {
   .userProfile {
-    max-width: unset;
-
     .wrapper {
       .userInfo {
         justify-content: center;
@@ -222,7 +222,8 @@
   }
 
   .btnWrapperMobile {
-    width: 97vw;
+    // 97vw ignored the side margins and ran flush into the right screen edge.
+    width: auto;
     margin: 0 12px;
   }
 }

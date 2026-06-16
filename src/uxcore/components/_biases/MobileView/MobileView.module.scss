@@ -12,6 +12,71 @@
   text-decoration: none;
 }
 
+// Tap-to-open feedback: full-screen dim + spinner while the bias route loads.
+.BiasLoadingOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(1.5px);
+  animation: biasOverlayIn 0.15s ease;
+}
+
+.BiasLoadingSpinner {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3px solid rgba(40, 88, 123, 0.25);
+  border-top-color: #28587b;
+  animation: biasSpin 0.7s linear infinite;
+}
+
+@keyframes biasSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes biasOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Hairline divider with a centered diamond — replaces the old "About" link
+// between the intro text and the logos strip.
+.sectionDivider {
+  position: relative;
+  width: min(220px, 64%);
+  height: 1px;
+  margin: 26px auto 4px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    #c8d4e0 18%,
+    #c8d4e0 82%,
+    transparent
+  );
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background: #fff;
+    border: 1px solid #5b88bd;
+  }
+}
+
 .Title,
 .Subtitle {
   font-family: 'RedHatDisplay';
@@ -235,6 +300,30 @@
 
   .link {
     color: #7fb3d5;
+  }
+
+  .sectionDivider {
+    background: linear-gradient(
+      to right,
+      transparent,
+      #3a3f4a 18%,
+      #3a3f4a 82%,
+      transparent
+    );
+
+    &::after {
+      background: #1b1e26;
+      border-color: #7fb3d5;
+    }
+  }
+
+  .BiasLoadingOverlay {
+    background: rgba(15, 17, 22, 0.6);
+  }
+
+  .BiasLoadingSpinner {
+    border-color: rgba(127, 179, 213, 0.25);
+    border-top-color: #7fb3d5;
   }
 
   .BiasCategory {

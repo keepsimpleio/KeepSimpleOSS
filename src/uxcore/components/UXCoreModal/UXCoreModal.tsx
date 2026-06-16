@@ -68,12 +68,19 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const [isQuestionHovered, setIsQuestionHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // Closing the modal navigates back to the list route; on a slow connection
+  // that hop is visibly delayed, so dim + spin until the route settles.
+  const [isClosing, setIsClosing] = useState(false);
   const tooltipTimer: { current: any } = useRef();
   const modalBodyRef = useRef(null);
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   const { locale } = router as TRouter;
   const isOpen = !!biasNumber && data;
+  // biasNumber flips instantly on Prev/Next tap, while data (and the title)
+  // arrives only after the route change — dim everything until both agree so
+  // the swap reads as a single motion instead of a staggered repaint.
+  const isBiasSwitching = !!data && Number(data.number) !== Number(biasNumber);
 
   const handleUseCaseClick = useCallback(
     e => {
@@ -122,12 +129,42 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
     setIsModalClosed(false);
   }, []);
 
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    const stop = () => setIsClosing(false);
+    router.events.on('routeChangeComplete', stop);
+    router.events.on('routeChangeError', stop);
+    return () => {
+      router.events.off('routeChangeComplete', stop);
+      router.events.off('routeChangeError', stop);
+    };
+  }, [router.events]);
+
+  // Each bias starts reading from the top; keep the page behind the modal
+  // from scrolling along (iOS scroll chaining).
+  useEffect(() => {
+    modalBodyRef.current?.scrollTo?.(0, 0);
+  }, [biasNumber]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
       const arrowClickData: any = {};
 
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
       if (e.key === 'ArrowLeft') {
         arrowClickData.active = String(biasNumber >= 1);
         arrowClickData.dir = 'prev';
@@ -146,7 +183,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
       // @ts-ignore
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [biasNumber, handleArrowClick, isOpen]);
+  }, [biasNumber, handleArrowClick, handleClose, isOpen]);
 
   useEffect(() => {
     data ? setIsLoading(false) : setIsLoading(true);
@@ -167,6 +204,8 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
     hrText,
     offsecText,
     offsecComingSoon,
+    nextLabel,
+    prevLabel,
   } = modalIntl[locale];
 
   const { linkedIn, facebook, tweeter } = generateSocialLinks(
@@ -177,10 +216,11 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   return isLoading ? (
     <Spinner />
   ) : (
-    <div className={styles.ModalOverlay} onClick={onClose}>
+    <div className={styles.ModalOverlay} onClick={handleClose}>
       <div
         className={cn(styles.Modal, {
           [styles.hyLang]: locale === 'hy',
+          [styles.biasSwitching]: isBiasSwitching,
         })}
         onClick={handleModalClick}
         data-cy="modal-body"
@@ -193,7 +233,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
           number={data.number}
           productValue={productValue}
           managementValue={managementValue}
-          onClose={onClose}
+          onClose={handleClose}
           linkedIn={linkedIn}
           facebook={facebook}
           tweeter={tweeter}
@@ -311,8 +351,28 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               </div>
             </>
           )}
+          <ModalRaiting id={biasNumber} type="bias" />
         </div>
-        <ModalRaiting id={biasNumber} type="bias" />
+        <div className={styles.MobileNavButtons}>
+          <button
+            type="button"
+            className={styles.MobileNavButton}
+            data-cy="mobile-prev"
+            onClick={() => handleArrowClick({ active: 'true', dir: 'prev' })}
+          >
+            <img src="/assets/biases/caret-left.svg" alt="" />
+            {prevLabel}
+          </button>
+          <button
+            type="button"
+            className={styles.MobileNavButton}
+            data-cy="mobile-next"
+            onClick={() => handleArrowClick({ active: 'true', dir: 'next' })}
+          >
+            {nextLabel}
+            <img src="/assets/biases/caret-right.svg" alt="" />
+          </button>
+        </div>
         <div className={styles.ModalButtons}>
           <div
             aria-disabled={!prevBiasName}
@@ -341,6 +401,11 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
           </div>
         </div>
       </div>
+      {isClosing && (
+        <div className={styles.ClosingOverlay} aria-live="polite">
+          <span className={styles.ClosingSpinner} />
+        </div>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ const hy = {
   articles: 'Articles',
   contributorsTxt: 'contributors',
   tools: 'Tools',
+  library: 'Library',
   longevity: 'Longevity Protocol',
   aiAtlas: 'AI Atlas',
 };

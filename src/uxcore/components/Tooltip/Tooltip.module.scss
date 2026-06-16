@@ -70,7 +70,9 @@
   .Popup {
     width: 100%;
     left: 50%;
-    max-width: 380px;
+    // 380px barely fits a 390px phone — leave breathing room for the
+    // JS clamp (8px margins) so the popup never touches the screen edge.
+    max-width: calc(100vw - 16px);
   }
 }
 

@@ -269,17 +269,23 @@
         margin-top: 6px;
       }
 
+      // Theme toggle + language + close live as one centered row pinned
+      // to the modal's top-right corner (mirrors desktop). The language
+      // switcher button carries chunky paddings at this breakpoint, so the
+      // row is locked to 24px height and centered instead of flex-end —
+      // otherwise the sun icon and "EN" drift apart vertically.
       .LangAndCloseBtn {
+        position: absolute;
+        top: 14px;
+        right: 20px;
+        height: 24px;
+        align-items: center;
         justify-content: flex-end;
+        gap: 14px;
 
         .closeBtn {
-          position: absolute;
-        }
-
-        .closeBtn {
-          position: absolute;
-          right: 20px;
-          top: 16px;
+          position: static;
+          padding: 0;
         }
       }
     }

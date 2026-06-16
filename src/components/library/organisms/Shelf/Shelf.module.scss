@@ -1,0 +1,271 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        svg {
+          display: block;
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .nameButton {
+        padding: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: inherit;
+        text-align: left;
+
+        &:hover,
+        &:focus-visible {
+          text-decoration: underline;
+        }
+      }
+
+      .settingsDropdown {
+        width: auto;
+      }
+
+      // The settings dropdown's trigger only wraps the gear button, which has
+      // its own border — drop the generic Dropdown trigger border so the gear
+      // doesn't get a doubled outline.
+      .settingsTrigger {
+        border: none !important;
+      }
+
+      .settingsMenu {
+        width: max-content;
+        min-width: 140px;
+        left: 0;
+      }
+
+      .settings {
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        border: 1px solid var(--brown);
+
+        &:hover {
+          border: 1px solid var(--brown);
+        }
+      }
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .selectShelfWrap {
+      display: inline-flex;
+    }
+
+    .button {
+      color: var(--brown);
+    }
+  }
+
+  .content {
+    min-height: 342px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    // Raises the bottom of the scroll row (and so the overflow scrollbar) up
+    // onto the visible shelf board, out of the board PNG's transparent lower
+    // zone. The absolute `.banner` (bottom: 0) is unaffected, and `.items`
+    // drops the same amount from its own padding-bottom so the cards stay
+    // seated. This is the knob: increase to slide the scrollbar up the board.
+    padding-bottom: 65px;
+
+    .banner {
+      width: -webkit-fill-available;
+      position: absolute;
+      bottom: 0;
+      margin-right: -32px;
+      // Sit the shelf board behind the cards so each object rests fully opaque
+      // *on* the shelf instead of bleeding through the board's translucent top
+      // edge. Cards are z-index 1 (see .items).
+      z-index: 0;
+      pointer-events: none;
+
+      img {
+        width: inherit;
+      }
+    }
+
+    .items {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-end;
+      min-height: 208px;
+      // Give the cards 40px of headroom so their tops aren't clipped by the
+      // shelf's `overflow: hidden`; they still bottom-align onto the shelf.
+      padding-top: 40px;
+      // Paired with `.content`'s 65px padding-bottom: the two sum to 100px so
+      // the cards' seating line is unchanged while the scrollbar rides higher.
+      padding-bottom: 35px;
+      position: relative;
+      z-index: 1;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      // Arrows (and trackpad/touch swipe) drive navigation — hide the native
+      // scrollbar so it doesn't cut across the shelf artwork.
+      scrollbar-width: none;
+      padding-left: 58px;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    // When the row overflows (arrows present), expose a styled horizontal
+    // scrollbar so the overflow is discoverable by drag, not just the arrows.
+    .scrollable {
+      // Must be `auto`, not `thin`: when scrollbar-width is thin/none, Chrome
+      // 121+ renders the standard scrollbar and IGNORES the ::-webkit-scrollbar
+      // rules below — so the custom 12px #c0b6ae bar never showed. `auto` keeps
+      // the webkit pseudo-element styling active. (Overrides `.items`' `none`.)
+      scrollbar-width: auto;
+      // Firefox can't honor the 12px height, but still gets the tint.
+      scrollbar-color: #c0b6ae transparent;
+
+      &::-webkit-scrollbar {
+        display: block;
+        height: 12px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #c0b6ae;
+        border-radius: 6px;
+      }
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: row;
+      gap: 35px;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: max-content;
+      min-width: 100%;
+
+      > * {
+        flex: 0 0 auto;
+      }
+
+      // Wraps each card so the FLIP reorder animation has a stable element to
+      // measure and translate; shrink-wraps the card with no layout change.
+      .cardSlot {
+        display: flex;
+        will-change: transform;
+        // Cards that mount (initial paint, or re-entering as a search widens)
+        // fade-and-rise in rather than snapping. FLIP skips newly-entering slots
+        // — they aren't in its prev-rect map — so this never fights the reorder
+        // glide; only one of the two runs per card.
+        animation: card-enter 0.28s ease both;
+      }
+    }
+
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: auto;
+
+      .emptyText {
+        color: var(--gray-medium);
+      }
+
+      button {
+        width: 48px;
+        height: 48px;
+        box-shadow: 0px 4px 4px 0px var(--black-transparent-200);
+      }
+    }
+  }
+}
+
+.renameModal {
+  width: 100% !important;
+  max-width: 456px !important;
+}
+
+.renameWrapper {
+  padding: 32px;
+  border-top: 1px solid var(--brown-border);
+}
+
+.renameField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.renameLabel {
+  color: var(--gray-darkest);
+}
+
+.renameError {
+  color: var(--red, #d33);
+}
+
+.renameFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+
+  button {
+    width: auto;
+  }
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardSlot {
+    animation: none;
+  }
+}

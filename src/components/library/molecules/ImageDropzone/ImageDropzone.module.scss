@@ -1,0 +1,134 @@
+.wrapper {
+  width: 100%;
+}
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed var(--brown-border);
+  border-radius: 6px;
+  background: var(--white-warm);
+  padding: 24px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+  min-height: 132px;
+
+  &:hover {
+    border-color: var(--brown);
+  }
+
+  &.dragging {
+    border-color: var(--brown);
+    background: var(--cream);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &.hasFile {
+    padding: 12px;
+    cursor: default;
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.plus {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brown);
+  margin-bottom: 4px;
+
+  svg path {
+    fill: var(--brown);
+  }
+}
+
+.title {
+  color: var(--black-rich);
+}
+
+.hint {
+  color: var(--gray-darker);
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+
+  .previewImage {
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .previewMeta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .fileName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--black-rich);
+  }
+
+  .fileSize {
+    color: var(--gray-darker);
+  }
+
+  .removeButton {
+    background: var(--white);
+    border: 1px solid var(--brown-border);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: var(--brown);
+
+    &:hover {
+      background: var(--white-warm);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.error {
+  color: var(--red-600);
+  font-size: 12px;
+  margin-top: 6px;
+  margin-bottom: 0;
+}

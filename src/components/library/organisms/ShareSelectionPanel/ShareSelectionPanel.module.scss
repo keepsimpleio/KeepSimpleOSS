@@ -1,0 +1,184 @@
+.panel {
+  position: fixed;
+  left: 0;
+  // Stop at the sidebar's left edge (331px sticky column) so the sheet spans
+  // only the main library area; the sidebar overlays below 1024px, so go
+  // full-width there.
+  right: 331px;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  max-height: 440px;
+  background: var(--white-warm);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+  transition: max-height 0.3s ease;
+
+  @media (max-width: 1024px) {
+    right: 0;
+  }
+}
+
+// Collapsed: fold the panel down to just the header bar (still pinned to the
+// bottom of the viewport). The body is clipped by .bodyWrap's overflow:hidden.
+// Selecting more objects from the library while minimized still works — they're
+// added to the hidden body and show up when the panel is expanded again.
+.collapsed {
+  max-height: 87px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 32px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--beige);
+}
+
+.heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.chevron {
+  width: 24px;
+  height: 24px;
+  color: #868686;
+  transition: transform 0.2s ease;
+
+  &.chevronCollapsed {
+    transform: rotate(180deg);
+  }
+}
+
+.title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #868686;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+// Outlined button defaults to a filled surface; on the cream header the
+// "Remove all" control should read as a bare bordered button.
+.removeAll {
+  background: transparent !important;
+}
+
+// Fills the space under the header and clips its content as the panel collapses
+// (the panel's max-height drives the accordion). `flex: 1` + `min-height: 0`
+// let .body scroll when the panel hits its 440px cap with many objects.
+.bodyWrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.body {
+  // border-box so the 24px padding collapses to zero too (otherwise it would
+  // leave a ~48px stub when the grid row reaches 0fr).
+  box-sizing: border-box;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 32px;
+  overflow-y: auto;
+}
+
+.warning {
+  color: var(--brown);
+}
+
+.error {
+  color: var(--red-600);
+}
+
+.scroller {
+  min-height: 0;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.removePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  padding: 0 16px;
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--white);
+  box-shadow: 0 2.27px 4.55px rgba(0, 0, 0, 0.06);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--off-white);
+  }
+}
+
+.sequence {
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-align: center;
+  color: #868686;
+}
+
+.cardHandle {
+  &.draggable {
+    cursor: grab;
+    touch-action: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--beige);
+  border-radius: 8px;
+  background: var(--off-white);
+}
+
+.linkText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

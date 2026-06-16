@@ -71,8 +71,8 @@ $ks-crimson-deep: #7a2618;
 
   .scenario {
     margin: 0 0 4px;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 150%;
     color: $ks-ink-soft;
   }
 }
@@ -163,7 +163,7 @@ $ks-crimson-deep: #7a2618;
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     color: $ks-ink;
     line-height: 1.3;
@@ -185,8 +185,8 @@ $ks-crimson-deep: #7a2618;
   }
 
   .cardPreview {
-    font-size: 12.5px;
-    line-height: 1.45;
+    font-size: 14px;
+    line-height: 1.5;
     color: $ks-ink-soft;
   }
 
@@ -292,7 +292,7 @@ $ks-crimson-deep: #7a2618;
     align-items: center;
     gap: 6px;
     padding: 12px 14px 0;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     color: $ks-ink;
     line-height: 1.3;
@@ -304,8 +304,8 @@ $ks-crimson-deep: #7a2618;
 
   .browserPageBody {
     padding: 8px 14px 0;
-    font-size: 12.5px;
-    line-height: 1.45;
+    font-size: 14px;
+    line-height: 1.5;
     color: $ks-ink-soft;
   }
 
@@ -372,15 +372,15 @@ $ks-crimson-deep: #7a2618;
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.3;
     color: $ks-ink;
   }
 
   .notifBody {
-    font-size: 12.5px;
-    line-height: 1.45;
+    font-size: 14px;
+    line-height: 1.5;
     color: $ks-ink-soft;
   }
 }
@@ -441,7 +441,7 @@ $ks-crimson-deep: #7a2618;
   }
 
   .chatPrior {
-    font-size: 11.5px;
+    font-size: 13px;
     font-style: italic;
     color: $ks-ink-soft;
     padding-left: 4px;
@@ -456,7 +456,7 @@ $ks-crimson-deep: #7a2618;
     border-radius: 12px;
     border-top-left-radius: 4px;
     padding: 10px 12px;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
     color: $ks-ink;
   }
@@ -490,8 +490,8 @@ $ks-crimson-deep: #7a2618;
 
   p {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.55;
+    font-size: 16px;
+    line-height: 150%;
     color: $ks-ink;
   }
 }
@@ -548,8 +548,8 @@ $ks-crimson-deep: #7a2618;
   li {
     position: relative;
     padding-left: 18px;
-    font-size: 14px;
-    line-height: 1.55;
+    font-size: 16px;
+    line-height: 150%;
     color: $ks-ink;
 
     &::before {
@@ -582,8 +582,12 @@ $ks-crimson-deep: #7a2618;
     color: $dk-text;
   }
 
-  .eyebrow {
-    color: $dk-crimson;
+  // Class stacked + !important to out-specify the modal's dark-theme
+  // span neutralizer (`body.darkTheme .ModalOverlay … .ModalBodyContent
+  // span:not(.switcherItemText)` — 4 classes + 2 elements), which would
+  // otherwise grey these section titles out.
+  .root span.eyebrow.eyebrow.eyebrow {
+    color: $dk-crimson !important;
   }
 
   .visualBlock {

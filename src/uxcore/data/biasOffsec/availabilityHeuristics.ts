@@ -14,17 +14,18 @@ import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'A major company just got breached and the news is everywhere. You go looking for answers — and the page you land on is anchored to the headline you just read.',
+    'A major company just got breached and the news is everywhere. Two phishing pages ask you for the exact same thing — your work login. The only difference between them: one name-drops the breach you just read about.',
   visualLabel: 'Scenario',
   visual: {
     before: {
       kind: 'browser',
-      tag: 'Generic',
-      host: 'vendor-portal.acme.com',
-      path: '/billing',
-      pageHeading: 'Q3 invoice summary',
+      tag: 'No news hook',
+      host: 'account-check.acme-vendor-security.com',
+      path: '/sso',
+      pageHeading: 'Verify your account to continue',
       pageBody:
-        'Your invoice for the previous billing period is ready. Routine summary — no action required this cycle.',
+        'Routine security check. Sign in with your work account to confirm your access is still valid.',
+      cta: 'Sign in with SSO',
     },
     after: {
       kind: 'browser',
@@ -40,7 +41,7 @@ const content: OffsecBiasContent = {
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'Availability heuristic colliding with base-rate neglect. After a breach saturates the news, your brain stops asking “how likely is this real?” and starts asking “how easy is it to recall?” — and right now, the answer is everywhere. You substitute “I just read about this” for “I should verify this URL,” and pattern-match the landing page to the news cycle, not to phishing. Identical payload; the news desk is doing the social engineering.',
+    'The first page earns instant suspicion — a login request out of nowhere. The second one asks for exactly the same thing, yet feels expected, because the breach is everywhere this week. That’s the availability heuristic: your brain stops asking “how likely is this real?” and starts asking “how easily can I recall it?” — and right now, recall is effortless. You substitute “I just read about this” for “I should verify this URL.” Identical payload; the news desk is doing the social engineering.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'While your security team handles the perimeter — here’s your homework.',

@@ -3,11 +3,19 @@
     position: fixed;
     top: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.5);
     width: 100vw;
     height: 100vh;
-    z-index: 10;
+    height: 100dvh;
+    background-color: rgba(0, 0, 0, 0.55);
+    // Must sit above the UXCG modal overlay (z-index 10).
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
   }
 
-  width: calc(100% - 10px);
+  width: 100%;
+  max-width: 420px;
 }

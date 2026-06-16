@@ -1,0 +1,17 @@
+// Global entry for the library feature — imported once from `pages/_app.tsx`
+// (Pages Router only allows non-module global CSS there).
+//
+// - variables.scss  -> :root custom properties (colors, shadows, fonts).
+//                      keepsimple defines no :root vars, so there are no
+//                      collisions; harmless on non-library pages.
+// - global.scss     -> base resets/element styles, scoped under `.library`
+//                      so they never affect the rest of the site.
+//
+// Modal @keyframes are NOT here: CSS-Modules scopes animation-name identifiers,
+// so a global keyframe never resolves from a *.module.scss reference. They live
+// locally in each modal's module instead.
+//
+// The 'Source Serif 4' @font-face (referenced by --font-source-serif) lives in
+// styles/globals.scss alongside the other Source Serif faces — not here.
+@use './variables.scss';
+@use './global.scss';

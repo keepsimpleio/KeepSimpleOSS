@@ -1,0 +1,28 @@
+.errorModal {
+  width: 100% !important;
+  max-width: 420px !important;
+  background-color: var(--white) !important;
+}
+
+.errorBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 32px 32px;
+  text-align: center;
+}
+
+.errorTitle {
+  color: var(--gray-darkest);
+}
+
+.errorText {
+  max-width: 320px;
+  color: var(--black-transparent-300);
+}
+
+.errorAction {
+  margin-top: 8px;
+  width: auto !important;
+}

@@ -137,7 +137,7 @@ const UserProfile: FC<UserProfileProps> = ({
               {`${
                 levelTitle ? levelTitle : guestLevel.attributes.lavelName
               } (${lvl} ${userLevel || 0}) ${
-                !!userLevel ? '' : guestLevel?.attributes?.description
+                !!userLevel ? '' : guestLevel?.attributes?.description || ''
               } `}
             </span>
             {!loggedIn ? (

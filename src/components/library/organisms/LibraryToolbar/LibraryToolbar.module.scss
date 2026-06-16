@@ -1,0 +1,239 @@
+.toolbar {
+  // Stick directly beneath keepsimple's global header (48px tall, sticky).
+  position: sticky;
+  top: 48px;
+  z-index: 20;
+  background: var(--cream);
+  padding: 1px 16px 12px;
+
+  // The global header switches to a fixed 55px bar at this breakpoint.
+  @media (max-width: 1140px) {
+    top: 55px;
+  }
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--black-100);
+  margin: 16px 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  animation: toolbar-fade 0.3s ease;
+
+  // On phones everything crammed onto one row collapsed the flex:1 pill
+  // scroller to near-zero, leaving only the overlapping arrows. Stack into a
+  // column so each control gets a full-width row: jump label, pill scroller,
+  // actions, then search.
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+
+// Visitor / guest-preview banner that replaces the owner's shelf controls.
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: toolbar-fade 0.3s ease;
+}
+
+.welcomeTitle {
+  color: var(--brown-200);
+}
+
+.welcomeText {
+  color: var(--brown-200);
+}
+
+// Fades whichever variant is mounted, so toggling guest mode in your own
+// library swaps the content smoothly instead of a hard cut.
+@keyframes toolbar-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.text {
+  font-family: 'Lato', sans-serif;
+  white-space: nowrap;
+}
+
+.jumpButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+// Horizontal scroller variant (non-reorder mode): keep pills on one row and
+// page through them with the arrows.
+.jumpScrollerWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.jumpScroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  min-width: 0;
+  scroll-behavior: smooth;
+  // Arrows drive navigation; hide the native scrollbar in the toolbar.
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > * {
+    flex: 0 0 auto;
+  }
+}
+
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 43px;
+  height: 43px;
+  border-radius: 10px;
+  background: #fefdf9 !important;
+  box-shadow: 0px 4.84px 12.1px rgba(0, 0, 0, 0.15);
+}
+
+.arrowLeft svg {
+  transform: rotate(180deg);
+}
+
+.search {
+  flex-shrink: 0;
+  width: 300px;
+  max-width: 100%;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  input {
+    border-radius: 12px !important;
+    background: var(--white-300) !important;
+  }
+}
+
+.addShelfWrap {
+  display: inline-flex;
+}
+
+// Default state: white pill, dark text, soft shadow, no border accent.
+.jumpButton {
+  padding: 6px 16px;
+  border-radius: 12px;
+  white-space: nowrap;
+  background: var(--white) !important;
+  color: var(--gray-darkest) !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0px 4px 4px 0px var(--black-transparent-200);
+
+  &:hover:not(:disabled) {
+    background: var(--white) !important;
+    color: var(--gray-darkest) !important;
+  }
+}
+
+// Selected state: brown border ring + brown text on the same shape.
+.jumpSelected {
+  border: 2px solid var(--brown) !important;
+  color: var(--brown) !important;
+}
+
+// While reordering: the dragged pill leaving the row flips this on, signalling
+// the drop will be rejected.
+.rejecting {
+  cursor: not-allowed;
+
+  .pillSlot,
+  .reorderPill {
+    cursor: not-allowed;
+  }
+}
+
+// Sortable wrapper carries dnd-kit's translate transform; the inner pill does
+// the wiggle, so the two transforms never collide.
+.pillSlot {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.reorderPill {
+  display: inline-flex;
+  align-items: center;
+  // Hint at draggability with a gentle, continuous wiggle.
+  animation: pill-wiggle 0.45s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.dragging {
+  animation: none;
+  cursor: grabbing;
+  opacity: 0.6;
+  box-shadow: 0px 8px 16px 0px var(--black-transparent-200) !important;
+}
+
+@keyframes pill-wiggle {
+  0%,
+  100% {
+    transform: rotate(-1.4deg);
+  }
+  50% {
+    transform: rotate(1.4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reorderPill {
+    animation: none;
+  }
+}
+
+.error {
+  color: var(--warning, #d14343);
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+// Button's `text` type defaults to white (built for dark surfaces); on this
+// light toolbar the label inherits that and disappears. Force brown — matches
+// the brown `plus` glyph already baked into the icon.
+.button {
+  color: var(--brown) !important;
+}

@@ -136,6 +136,9 @@ QA_RECON.md
 TODO.md
 marys-notes.md
 
+# Library feature scratch TODO — local-only, never commit.
+LIBRARY_TODO.md
+
 # Playwright MCP cache
 .playwright-mcp/
 
