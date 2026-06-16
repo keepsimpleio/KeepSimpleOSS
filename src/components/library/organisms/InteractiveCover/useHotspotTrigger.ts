@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 
 /**
  * Interaction model for the cover hotspots. The whole feature is wired through
@@ -12,7 +12,7 @@ interface UseHotspotTriggerArgs {
   id: string;
   mode: HotspotMode;
   activeId: string | null;
-  setActiveId: (id: string | null) => void;
+  setActiveId: Dispatch<SetStateAction<string | null>>;
 }
 
 /** Event handlers to spread onto a hotspot trigger, shaped by the active mode. */
@@ -24,13 +24,16 @@ export function useHotspotTrigger({
 }: UseHotspotTriggerArgs) {
   const isActive = activeId === id;
 
+  // Functional updaters so the handlers never read a stale activeId from
+  // closure scope under React's batched/concurrent updates.
   const open = useCallback(() => setActiveId(id), [id, setActiveId]);
-  const close = useCallback(() => {
-    setActiveId(activeId === id ? null : activeId);
-  }, [activeId, id, setActiveId]);
+  const close = useCallback(
+    () => setActiveId(prev => (prev === id ? null : prev)),
+    [id, setActiveId],
+  );
   const toggle = useCallback(
-    () => setActiveId(isActive ? null : id),
-    [id, isActive, setActiveId],
+    () => setActiveId(prev => (prev === id ? null : id)),
+    [id, setActiveId],
   );
 
   const triggerProps = useMemo(() => {

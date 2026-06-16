@@ -5,7 +5,9 @@
   --info-card-bg: rgba(32, 54, 44, 0.35);
 
   width: 392px;
-  height: 314px;
+  // Design height, but let real (longer) library copy grow the card instead
+  // of overflowing the fixed 314px box.
+  min-height: 314px;
   max-width: 100%;
   padding: 20px 16px;
   display: flex;
@@ -35,7 +37,7 @@
 
   @media (max-width: 768px) {
     width: 100%;
-    height: auto;
+    min-height: 0;
   }
 }
 

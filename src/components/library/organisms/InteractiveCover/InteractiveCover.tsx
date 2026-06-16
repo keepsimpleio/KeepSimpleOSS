@@ -1,6 +1,13 @@
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { LibraryInfoCard } from '@components/library/molecules/LibraryInfoCard';
 
@@ -14,7 +21,7 @@ interface HotspotProps {
   hotspot: CoverHotspot;
   mode: HotspotMode;
   activeId: string | null;
-  setActiveId: (id: string | null) => void;
+  setActiveId: Dispatch<SetStateAction<string | null>>;
 }
 
 function Hotspot({ hotspot, mode, activeId, setActiveId }: HotspotProps) {
@@ -83,7 +90,7 @@ export function InteractiveCover({
       return;
     }
 
-    const onPointerDown = (event: MouseEvent) => {
+    const onMouseDown = (event: MouseEvent) => {
       if (!frameRef.current?.contains(event.target as Node)) {
         setActiveId(null);
       }
@@ -94,10 +101,10 @@ export function InteractiveCover({
       }
     };
 
-    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('keydown', onKeyDown);
     return () => {
-      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [mode, activeId]);

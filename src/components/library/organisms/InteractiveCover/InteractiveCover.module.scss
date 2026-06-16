@@ -53,7 +53,9 @@ $cover-aspect: calc(3 / 2);
     transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
     clip-path 0.65s cubic-bezier(0.22, 1, 0.36, 1),
     filter 0.6s ease;
-  will-change: opacity, transform, clip-path, filter;
+  // Only hint the cheap compositor-friendly props; promoting clip-path and
+  // filter as well permanently allocated 4 layers per hotspot (20 total).
+  will-change: opacity, transform;
 
   &.active {
     opacity: 1;
