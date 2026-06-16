@@ -1,0 +1,106 @@
+.card {
+  // Translucent green wash + blur so the cover art reads through the card,
+  // matching the Figma "glass" panel. Exposed as a variable so it can be
+  // dropped to fully transparent without touching the rest of the styles.
+  --info-card-bg: rgba(32, 54, 44, 0.35);
+
+  width: 392px;
+  height: 314px;
+  max-width: 100%;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  border-radius: 4px;
+  // Start fully transparent with no blur, then ramp both up on activation.
+  // Animating the blur *value* (not just the parent's opacity) forces the
+  // browser to composite the backdrop progressively, so the glass fades in
+  // smoothly instead of popping in once the reveal settles.
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  transition:
+    background 0.45s ease,
+    border-color 0.45s ease,
+    backdrop-filter 0.45s ease,
+    -webkit-backdrop-filter 0.45s ease;
+
+  &.active {
+    background: var(--info-card-bg);
+    border-color: #ffffff;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+  }
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-source-serif);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.divider {
+  display: block;
+  height: 1px;
+  width: 100%;
+  margin: 16px 0;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.section + .section {
+  margin-top: 20px;
+}
+
+.label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.about {
+  margin-top: 8px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.objects {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+
+.object {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+}

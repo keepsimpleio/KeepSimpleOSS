@@ -1,5 +1,4 @@
 import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibraries';
-import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import type { HomeLibraryCardView } from '@local-types/library/library';
@@ -15,6 +14,7 @@ import {
 } from '@components/library/molecules/Button';
 import { Input } from '@components/library/molecules/Input';
 import { Pagination } from '@components/library/molecules/Pagination';
+import { InteractiveCover } from '@components/library/organisms/InteractiveCover';
 import { LibraryCard } from '@components/library/organisms/LibraryCard';
 
 import { HomeTemplateProps } from './Home.types';
@@ -140,22 +140,21 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   return (
     <main className="library">
       <section className={styles.banner}>
-        <Image
-          className={styles.image}
-          src="/library/images/readmeImages/cover.png"
-          alt="Next.js logo"
-          width={1980}
-          height={900}
-          priority
-        />
-        <Button
-          label="What is this place?"
-          onClick={modalToggler}
-          type={ButtonType.Primary}
-          size={ButtonSize.Wide}
-          ariaLabel="What is this place modal"
-          className={styles.button}
-        />
+        <div className={styles.bannerInner}>
+          <InteractiveCover
+            className={styles.image}
+            src="/assets/library/library.png"
+            alt="Keep Simple library cover"
+          />
+          <Button
+            label="What is this place?"
+            onClick={modalToggler}
+            type={ButtonType.Primary}
+            size={ButtonSize.Wide}
+            ariaLabel="What is this place modal"
+            className={styles.button}
+          />
+        </div>
       </section>
 
       <section className={styles.libraries} id={sectionId}>
