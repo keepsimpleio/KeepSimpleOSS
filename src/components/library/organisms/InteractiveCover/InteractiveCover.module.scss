@@ -1,0 +1,106 @@
+// Coordinates in coverHotspots.ts are percentages of the cover frame, so the
+// frame is locked to the artwork's native 1536x1024 (3:2) ratio and every
+// hotspot tracks the art as it scales. No runtime measurement needed.
+$cover-aspect: calc(3 / 2);
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: $cover-aspect;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+.trigger {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  // Sits above the highlight art so the pointer always hits the building.
+  z-index: 2;
+
+  &:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.highlight {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  // 0 -> 100 reveal: invisible glow, scaled down, clipped from the bottom up.
+  opacity: 0;
+  transform: scale(0.96);
+  transform-origin: 50% 100%;
+  clip-path: inset(100% 0 0 0);
+  filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.6s ease;
+  // Only hint the cheap compositor-friendly props; promoting clip-path and
+  // filter as well permanently allocated 4 layers per hotspot (20 total).
+  will-change: opacity, transform;
+
+  &.active {
+    opacity: 1;
+    transform: scale(1);
+    clip-path: inset(0 0 0 0);
+    filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.55));
+  }
+}
+
+.card {
+  position: absolute;
+  z-index: 3;
+  width: 392px;
+  max-width: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.4s ease 0.12s,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+
+  &.cardActive {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+// Respect reduced-motion: reveal everything instantly, no rise or glow ramp.
+@media (prefers-reduced-motion: reduce) {
+  .highlight,
+  .card {
+    transition: opacity 0.2s ease;
+    transform: none;
+    clip-path: none;
+  }
+
+  .highlight.active {
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 60%;
+    min-width: 0;
+  }
+}
