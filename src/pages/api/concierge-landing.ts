@@ -17,6 +17,19 @@ import {
 
 type LandingPayload = { text: string; suggestions: string[] };
 
+/* Human backstop: the organic greeting is a paid call, gated client-side
+   on the panel being open (a real click). This rejects known crawlers and
+   header-less scripted requests so we never pay a machine that reaches the
+   route anyway. Greeting is non-critical — a blocked caller just gets no
+   line, never an error. */
+const BOT_UA_RE =
+  /bot|crawl|spider|slurp|mediapartners|ahrefs|semrush|mj12|dotbot|bingpreview|facebookexternalhit|embedly|slackbot|telegrambot|whatsapp|headless|phantomjs|python-requests|curl\/|wget|go-http-client|scrapy|yandex(?:bot)?|baidu|duckduckbot/i;
+
+function isBotUserAgent(ua: string | undefined): boolean {
+  if (!ua || !ua.trim()) return true;
+  return BOT_UA_RE.test(ua);
+}
+
 async function callClaude(
   system: string,
   user: string,
@@ -265,6 +278,14 @@ export default async function handler(
     return res.status(405).json({ error: 'method_not_allowed' });
   }
   if (!OPENAI_KEY && !ANTHROPIC_KEY) {
+    return res.status(200).json({ text: '' });
+  }
+
+  const ua =
+    typeof req.headers['user-agent'] === 'string'
+      ? req.headers['user-agent']
+      : undefined;
+  if (isBotUserAgent(ua)) {
     return res.status(200).json({ text: '' });
   }
 

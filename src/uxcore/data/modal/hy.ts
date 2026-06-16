@@ -21,5 +21,7 @@ const hy = {
   usageOffsec: 'Example of use by Offensive Cybersecurity',
   offsecComingSoon:
     'Offensive Cybersecurity use cases — coming soon. We are curating attacker-side and defender-side scenarios for every bias in UX Core.',
+  nextLabel: 'Հաջորդը',
+  prevLabel: 'Նախորդը',
 };
 export default hy;

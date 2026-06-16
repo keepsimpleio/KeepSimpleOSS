@@ -795,6 +795,8 @@ const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
 };
 
 const CURATED_LANDING_FIRED_KEY = 'ks_aux_curated_landing_v1';
+const OPEN_KEY = 'ks_aux_open_v1';
+const GREETED_PAGES_KEY = 'ks_aux_greeted_pages_v1';
 const curatedLandingPathKey = (rawUrl: string): string | null => {
   try {
     const u = new URL(rawUrl, window.location.origin);
@@ -830,6 +832,48 @@ const markCuratedLandingFired = (key: string) => {
     sessionStorage.setItem(CURATED_LANDING_FIRED_KEY, JSON.stringify(obj));
   } catch {
     /* sessionStorage disabled — fall through; landing will fire each visit */
+  }
+};
+
+/* Widget open/closed — remembered per tab so the panel follows the
+   visitor across page loads (incl. hard reloads into UX Core / other
+   route groups). Opening the pill is a deliberate human gesture, so an
+   open panel is what gates the paid organic greeting. Clears on tab
+   close; a brand-new visit always starts closed. */
+const readOpenFlag = (): boolean => {
+  try {
+    return sessionStorage.getItem(OPEN_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+const writeOpenFlag = (isOpen: boolean) => {
+  try {
+    sessionStorage.setItem(OPEN_KEY, isOpen ? '1' : '0');
+  } catch {
+    /* sessionStorage disabled — open state not remembered across nav */
+  }
+};
+
+/* Per-page greeting cache — once the organic greeting has fired for a
+   page in this tab session, never pay for it again on that page (revisits
+   and back/forth are free). Keyed by canonical path. */
+const hasGreetedPage = (key: string): boolean => {
+  try {
+    const raw = sessionStorage.getItem(GREETED_PAGES_KEY) || '{}';
+    return !!JSON.parse(raw)[key];
+  } catch {
+    return false;
+  }
+};
+const markGreetedPage = (key: string) => {
+  try {
+    const raw = sessionStorage.getItem(GREETED_PAGES_KEY) || '{}';
+    const obj = JSON.parse(raw);
+    obj[key] = Date.now();
+    sessionStorage.setItem(GREETED_PAGES_KEY, JSON.stringify(obj));
+  } catch {
+    /* sessionStorage disabled — greeting may re-fire on revisit */
   }
 };
 
@@ -1766,10 +1810,19 @@ const applyHostHighlight = (
 
 export function AskUxCore({ lang }: { lang: Lang }) {
   const initial = typeof window !== 'undefined' ? loadState() : null;
-  // Always boot closed. The widget should never reveal itself or its
-  // effects (host-page highlights, etc.) until the visitor explicitly
-  // opens the pill — even if the previous session ended with it open.
-  const [open, setOpen] = useState<boolean>(false);
+  // Restore the open/closed panel per tab so it follows the visitor
+  // across page loads (incl. hard reloads into UX Core). A brand-new
+  // visit (fresh tab) has no flag and boots closed.
+  const [open, setOpen] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? readOpenFlag() : false,
+  );
+  /* Fresh mirror of `open` for the once-mounted nav effect, whose
+     closure would otherwise capture the initial render's value. */
+  const openRef = useRef(open);
+  openRef.current = open;
+  useEffect(() => {
+    writeOpenFlag(open);
+  }, [open]);
   const [text, setText] = useState('');
   const [turns, setTurns] = useState<Turn[]>(initial?.turns ?? []);
   const [loading, setLoading] = useState(false);
@@ -2201,6 +2254,19 @@ export function AskUxCore({ lang }: { lang: Lang }) {
         }, 2200);
         return;
       }
+
+      /* Cost gate: the organic greeting is a paid AI call. Spend it
+         only when the panel is open — opening the pill is a deliberate
+         human gesture, and the open panel now follows the visitor across
+         pages, so an open panel marks a real user. Passers-by and
+         crawlers never open it; the server greeting route also drops
+         known-bot user-agents as a backstop. Then never pay twice for
+         the same page this session. Curated landings above are local
+         (free) and ungated. */
+      if (!openRef.current) return;
+      const greetKey = canonicalPathKey(rawUrl);
+      if (hasGreetedPage(greetKey)) return;
+      markGreetedPage(greetKey);
 
       const ctrl = new AbortController();
       organicAbortRef.current = ctrl;
@@ -2758,6 +2824,16 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   );
   useEffect(() => {
     if (!isHighlightEnabledPage()) return;
+    /* Host highlighting is gated on the panel being open: the Copilot
+       lights up page elements only while it is ACTIVE. Collapsed pill =
+       not active = no host highlight. Re-arm the flash guard on collapse
+       so re-opening re-applies the highlight for the current answer
+       (open = highlighted, closed = not — a state, not a one-shot). The
+       effect's own cleanup clears any live halo when `open` flips false. */
+    if (!open) {
+      lastFlashedTurnIdRef.current = null;
+      return;
+    }
     const last = turns[turns.length - 1];
     if (!last || last.kind === 'nav' || last.isStreaming) return;
     if (!last.citations || last.citations.length === 0) return;
@@ -2793,7 +2869,7 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       );
       handle.cleanup();
     };
-  }, [turns]);
+  }, [turns, open]);
 
   /* Typewriter constants — every bit of bot-authored text in the
      widget (concierge stream, homepage starters, landing turns) runs

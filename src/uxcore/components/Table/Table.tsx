@@ -1,3 +1,11 @@
+import Button from '@uxcore/components/Button';
+import RouteLoadingOverlay, {
+  useRouteLoading,
+} from '@uxcore/components/RouteLoadingOverlay';
+import Tag, { TTag } from '@uxcore/components/Tag';
+import tableIntl from '@uxcore/data/table';
+import type { QuestionType, TagType } from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -10,14 +18,6 @@ import {
   useRef,
   useState,
 } from 'react';
-
-import type { QuestionType, TagType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
-import tableIntl from '@uxcore/data/table';
-
-import Button from '@uxcore/components/Button';
-import Tag, { TTag } from '@uxcore/components/Tag';
 
 import Search from './TableSearch';
 
@@ -73,6 +73,7 @@ const Table: FC<TableProps> = ({
   const [data, setData] = useState(incomingData);
   const [displayedItems, setDisplayedItems] = useState(data.length);
   const [isActive, setIsActive] = useState(false);
+  const [isNavigating, startNavigation] = useRouteLoading();
 
   const {
     allQuestionsButtonLabel,
@@ -175,6 +176,7 @@ const Table: FC<TableProps> = ({
   const openQuestion = useCallback(
     (number: number, biasNumber: number, answerIndex: number) => {
       persistUXCGScrollPosition();
+      startNavigation();
       const basePath =
         router.locale === 'ru'
           ? '/ru/uxcg'
@@ -187,7 +189,7 @@ const Table: FC<TableProps> = ({
         { scroll: false },
       );
     },
-    [biasNumber, router, persistUXCGScrollPosition],
+    [biasNumber, router, persistUXCGScrollPosition, startNavigation],
   );
 
   useEffect(() => {
@@ -365,6 +367,7 @@ const Table: FC<TableProps> = ({
           )}
         </div>
       </div>
+      <RouteLoadingOverlay active={isNavigating} />
     </>
   );
 };

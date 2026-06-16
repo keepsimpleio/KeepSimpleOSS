@@ -1,3 +1,20 @@
+import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
+import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
+import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
+import { PMIcon } from '@uxcore/assets/icons/PMIcon';
+import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
+import MobileHeader from '@uxcore/components/_biases/MobileHeader';
+import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
+import Logos from '@uxcore/components/Logos';
+import OurProjectsModal from '@uxcore/components/OurProjectsModal';
+import PageSwitcher from '@uxcore/components/PageSwitcher';
+import biasesCategories from '@uxcore/data/biasesCategories';
+import toolHeaderData from '@uxcore/data/toolHeader';
+import useBiasSearch from '@uxcore/hooks/useBiasSearch';
+import { groupFilteredData } from '@uxcore/lib/helpers';
+import type { StrapiBiasType } from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
+import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -13,37 +30,16 @@ import React, {
   useState,
 } from 'react';
 
-import type { StrapiBiasType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-import { UserTypes } from '@uxcore/local-types/uxcat-types/types';
-
-import useBiasSearch from '@uxcore/hooks/useBiasSearch';
-
-import { groupFilteredData } from '@uxcore/lib/helpers';
-
-import biasesMetadata from '@uxcore/data/biases';
-import biasesCategories from '@uxcore/data/biasesCategories';
-import toolHeaderData from '@uxcore/data/toolHeader';
-
-import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
-import { HRIconBlue } from '@uxcore/assets/icons/HRIconBlue';
-import { HRIconGrey } from '@uxcore/assets/icons/HRIconGrey';
-import { PMIcon } from '@uxcore/assets/icons/PMIcon';
-import { PMIconGrey } from '@uxcore/assets/icons/PMIconGrey';
-
-import MobileHeader from '@uxcore/components/_biases/MobileHeader';
-import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
-import Logos from '@uxcore/components/Logos';
-import OurProjectsModal from '@uxcore/components/OurProjectsModal';
-import PageSwitcher from '@uxcore/components/PageSwitcher';
-
 import Search from '../Search';
 
 import styles from './MobileView.module.scss';
 
-const ViewSwitcher = dynamic(() => import('@uxcore/components/_biases/ViewSwitcher'), {
-  ssr: false,
-});
+const ViewSwitcher = dynamic(
+  () => import('@uxcore/components/_biases/ViewSwitcher'),
+  {
+    ssr: false,
+  },
+);
 
 type MobileViewProps = {
   containerClassName: string;
@@ -56,8 +52,6 @@ type MobileViewProps = {
   isSwitched?: boolean;
   isOpen?: boolean;
   biasSelected?: boolean;
-  headerPodcastOpen?: (updater: (prev: boolean) => boolean) => void;
-  isPodcastOpen?: boolean;
   handleSnackbarOpening?: () => void;
   description?: string;
   userInfo?: UserTypes;
@@ -74,8 +68,6 @@ const MobileView: FC<MobileViewProps> = ({
   defaultViewLabel,
   setIsSwitched,
   isSwitched,
-  headerPodcastOpen,
-  isPodcastOpen,
   handleSnackbarOpening,
   description,
   userInfo,
@@ -94,10 +86,23 @@ const MobileView: FC<MobileViewProps> = ({
   const [openOurProjects, setOpenOurProjects] = useState(false);
   const router = useRouter();
   const { locale } = router as TRouter;
-  const { explanationLink } = biasesMetadata[locale];
   const { ourProjects, done } = toolHeaderData[locale];
   const { ourProjectsModalData } = useContext(GlobalContext);
   const [mobileScrollPosition, setMobileScrollPosition] = useState(0);
+  // On a slow connection the bias route fetches in the background with no
+  // visible feedback — tapping feels broken. Dim + spinner from tap until the
+  // route resolves so the wait reads as intentional.
+  const [isOpeningBias, setIsOpeningBias] = useState(false);
+
+  useEffect(() => {
+    const stop = () => setIsOpeningBias(false);
+    router.events.on('routeChangeComplete', stop);
+    router.events.on('routeChangeError', stop);
+    return () => {
+      router.events.off('routeChangeComplete', stop);
+      router.events.off('routeChangeError', stop);
+    };
+  }, [router.events]);
 
   function getStickyElements() {
     return offsetsRef.current.reduce((acc, offset, index) => {
@@ -222,6 +227,7 @@ const MobileView: FC<MobileViewProps> = ({
         bias => String(bias.attributes.number) === String(id),
       );
 
+      setIsOpeningBias(true);
       router.push(`/uxcore/${matchedBias.attributes.slug}`, undefined, {
         scroll: false,
       });
@@ -264,8 +270,6 @@ const MobileView: FC<MobileViewProps> = ({
         <MobileHeader
           userInfo={userInfo}
           setUserInfo={setUserInfo}
-          setHeaderPodcastOpen={headerPodcastOpen}
-          isPodcastOpen={isPodcastOpen}
           blockLanguageSwitcher={blockLanguageSwitcher}
         />
       </div>
@@ -281,9 +285,7 @@ const MobileView: FC<MobileViewProps> = ({
         <h1 className={styles.Title}>UX CORE</h1>
         <span className={styles.Subtitle}>uxcore.io</span>
         <p className={styles.uxcoreDescription}>{description}</p>
-        <a href={explanationLink.link} className={styles.link}>
-          {explanationLink.title}
-        </a>
+        <div className={styles.sectionDivider} aria-hidden="true" />
         <Logos />
         <ViewSwitcher
           isSecondView={isSecondView}
@@ -365,6 +367,11 @@ const MobileView: FC<MobileViewProps> = ({
             </Fragment>
           );
         })}
+      {isOpeningBias && (
+        <div className={styles.BiasLoadingOverlay} aria-live="polite">
+          <span className={styles.BiasLoadingSpinner} />
+        </div>
+      )}
       {openOurProjects && (
         <OurProjectsModal
           projects={

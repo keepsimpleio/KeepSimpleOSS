@@ -3,8 +3,6 @@ import { getStrapiQuestions } from '@uxcore/api/questions';
 import { getTags } from '@uxcore/api/tags';
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import UXCoreModal from '@uxcore/components/UXCoreModal';
-import UXCoreModalMobile from '@uxcore/components/UXCoreModalMobile';
-import useMobile from '@uxcore/hooks/useMobile';
 import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import UXCoreLayout from '@uxcore/layouts/UXCoreLayout';
 import { getRedirectMap } from '@uxcore/lib/getUXCoreRedirects';
@@ -44,9 +42,8 @@ const UXCoreIds: FC<UXCoreProps> = ({
 }) => {
   const [activeBiasNumber, setActiveBiasNumber] = useState<number>(null);
   const [isModalClosed, setIsModalClosed] = useState<boolean>(true);
-  const [{ toggleIsProductView }, { isProductView }] = useUXCoreGlobals();
+  const [, { isProductView }] = useUXCoreGlobals();
   const router = useRouter();
-  const { isMobile } = useMobile()[1];
   const { locale } = router as TRouter;
 
   const slugs = {
@@ -149,42 +146,25 @@ const UXCoreIds: FC<UXCoreProps> = ({
         modifiedDate={currentActiveBias.updatedAt}
       />
       <h1 className={styles.headingTitle}>{currentActiveBias.title}</h1>
-      {isMobile ? (
-        <UXCoreModalMobile
-          toggleIsCoreView={toggleIsProductView}
-          isProductView={!isProductView}
-          biasNumber={activeBiasNumber}
-          isSecondView={!isProductView}
-          secondViewLabel={'hr'}
-          defaultViewLabel="product"
-          questions={mentionedQuestions}
-          uxCoreData={biases[locale]}
-          tags={tags}
-          onClose={openPage}
-          onChangeBiasId={openSelectedBias}
-          nextBiasName={next}
-          prevBiasName={prev}
-          slugs={languageSwitchSlugs}
-        />
-      ) : (
-        <UXCoreModal
-          headingTitle={currentActiveBias.title}
-          isProductView={!isProductView}
-          setIsModalClosed={setIsModalClosed}
-          biasNumber={activeBiasNumber}
-          isSecondView={!isProductView}
-          secondViewLabel={'hr'}
-          defaultViewLabel="product"
-          questions={mentionedQuestions}
-          tags={tags}
-          data={Number(currentActiveBias.number) && currentActiveBias}
-          onClose={openPage}
-          onChangeBiasId={openSelectedBias}
-          nextBiasName={next}
-          prevBiasName={prev}
-          slugs={languageSwitchSlugs}
-        />
-      )}
+      {/* UXCoreModal carries its own mobile layout now (pills, dark theme,
+          loaders) — the legacy UXCoreModalMobile swap is retired. */}
+      <UXCoreModal
+        headingTitle={currentActiveBias.title}
+        isProductView={!isProductView}
+        setIsModalClosed={setIsModalClosed}
+        biasNumber={activeBiasNumber}
+        isSecondView={!isProductView}
+        secondViewLabel={'hr'}
+        defaultViewLabel="product"
+        questions={mentionedQuestions}
+        tags={tags}
+        data={Number(currentActiveBias.number) && currentActiveBias}
+        onClose={openPage}
+        onChangeBiasId={openSelectedBias}
+        nextBiasName={next}
+        prevBiasName={prev}
+        slugs={languageSwitchSlugs}
+      />
       {biases[locale] ? (
         <UXCoreLayout
           strapiBiases={biases[locale]}
