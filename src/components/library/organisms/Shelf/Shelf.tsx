@@ -10,6 +10,11 @@ import React, {
   useState,
 } from 'react';
 
+import {
+  MAX_OBJECTS_PER_SHELF,
+  SHELF_NAME_MAX_LENGTH,
+} from '@constants/library/common';
+
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
 
@@ -20,6 +25,7 @@ import { updateShelf } from '@api/library/shelf/updateShelf';
 
 import shelfBackground from '@icons/library/images/shelfBackground.png';
 import {
+  ArrowIcon,
   AudioIcon,
   BookIcon,
   PlusIcon,
@@ -28,6 +34,7 @@ import {
 } from '@icons/library/svg';
 
 import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
+import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AudioCard } from '@components/library/molecules/AudioCard';
@@ -126,9 +133,6 @@ const SETTINGS_OPTIONS = [
   { value: 'delete', label: 'Delete shelf' },
 ];
 
-// Matches the single-shelf `name` constraint (`maxLength: 50`) in the backend schema.
-const SHELF_NAME_MAX_LENGTH = 50;
-
 export function Shelf(props: ShelfProps): JSX.Element {
   const {
     className,
@@ -158,6 +162,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
+
+  // Backend caps a shelf at 21 objects (all types combined). Pre-disable the
+  // Add control once the shelf is full — the backend stays the source of truth
+  // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
+  const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
 
   const router = useRouter();
   // The opened object is addressed by the URL, not local state: the last path
@@ -225,6 +234,13 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
+  // Page the row by most of a viewport, matching the LibraryToolbar jump arrows.
+  const scrollJump = (direction: -1 | 1) => {
+    const el = itemsRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+  };
+
   const closeRename = useCallback(() => {
     if (renameLoading) return;
     setRenameOpen(false);
@@ -233,7 +249,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const { closeRef: renameCloseRef, close: closeRenameAnimated } =
     useModalClose(closeRename);
 
-  const openAdd = () => setIsAddOpen(true);
+  const openAdd = () => {
+    if (atObjectLimit) return;
+    setIsAddOpen(true);
+  };
   const closeAdd = () => setIsAddOpen(false);
 
   // Open/close are URL transitions, kept shallow so the library underneath is
@@ -439,21 +458,57 @@ export function Shelf(props: ShelfProps): JSX.Element {
           )}
 
           {isOwner && (
-            <Button
-              label={`Add ${typeLabel}`}
-              ariaLabel={`Add ${typeLabel}`}
-              onClick={openAdd}
-              type={ButtonType.Text}
-              size={ButtonSize.Default}
-              Icon={<PlusIcon />}
-              iconPosition={IconPosition.Right}
-              className={styles.button}
-            />
+            <span className={styles.count}>
+              {objects.length}/{MAX_OBJECTS_PER_SHELF}
+            </span>
+          )}
+
+          {isOwner && (
+            <span
+              className={styles.addWrap}
+              title={
+                atObjectLimit
+                  ? `This shelf is full (max ${MAX_OBJECTS_PER_SHELF} items). Delete an item to add a new one.`
+                  : undefined
+              }
+            >
+              <Button
+                label={`Add ${typeLabel}`}
+                ariaLabel={`Add ${typeLabel}`}
+                onClick={openAdd}
+                type={ButtonType.Text}
+                size={ButtonSize.Default}
+                Icon={<PlusIcon />}
+                iconPosition={IconPosition.Right}
+                className={styles.button}
+                disabled={atObjectLimit}
+              />
+            </span>
           )}
         </div>
       </div>
 
       <div className={styles.content}>
+        {isOverflowing && (
+          <>
+            <Button
+              className={classNames(styles.arrow, styles.arrowLeft)}
+              onClick={() => scrollJump(-1)}
+              type={ButtonType.Secondary}
+              Icon={<ArrowIcon />}
+              ariaLabel={`Scroll ${typeLabel}s left`}
+              disabled={!canScrollLeft}
+            />
+            <Button
+              className={styles.arrow}
+              onClick={() => scrollJump(1)}
+              type={ButtonType.Secondary}
+              Icon={<ArrowIcon />}
+              ariaLabel={`Scroll ${typeLabel}s right`}
+              disabled={!canScrollRight}
+            />
+          </>
+        )}
         <div
           className={classNames(styles.items, {
             [styles.scrollable]: isOverflowing,
@@ -476,6 +531,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
                   type={ButtonType.Secondary}
                   Icon={<PlusIcon />}
                   ariaLabel={`Add ${typeLabel}`}
+                  disabled={atObjectLimit}
                 />
               )}
             </div>
@@ -589,6 +645,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 placeholderColor="#9E9E9E"
                 ariaLabel="Shelf name"
                 maxLength={SHELF_NAME_MAX_LENGTH}
+              />
+              <CharCount
+                current={renameValue.length}
+                max={SHELF_NAME_MAX_LENGTH}
               />
               {renameError && (
                 <Text

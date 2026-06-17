@@ -2,6 +2,8 @@ import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import React, { JSX, useCallback, useMemo, useState } from 'react';
 
+import { SHELF_FULL_MESSAGE } from '@constants/library/common';
+
 import type {
   Difficulty,
   IObject,
@@ -10,6 +12,7 @@ import type {
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
+import { isShelfFullError } from '@lib/library/shelfFull';
 import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 import { deleteObject } from '@api/library/object/deleteObject';
@@ -263,7 +266,13 @@ export function ObjectOverviewModal(
       };
       onUpdated?.(moved);
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Could not move object.';
+      // The target shelf may already hold 21 objects — the backend rejects the
+      // move with a 400. Surface the dedicated full-shelf copy.
+      const message = isShelfFullError(e)
+        ? SHELF_FULL_MESSAGE
+        : e instanceof Error
+          ? e.message
+          : 'Could not move object.';
       setMoveError(message);
       setMoveToShelfId(undefined);
     } finally {

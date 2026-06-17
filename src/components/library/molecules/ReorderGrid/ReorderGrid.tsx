@@ -6,6 +6,8 @@ import {
   closestCenter,
   DndContext,
   type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -20,7 +22,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
-import React, { JSX } from 'react';
+import React, { JSX, useState } from 'react';
 
 import { PlusIcon } from '@icons/library/svg';
 
@@ -38,6 +40,27 @@ import type {
 } from './ReorderGrid.types';
 
 import styles from './ReorderGrid.module.scss';
+
+function CardCover(props: { item: ReorderItem }) {
+  const { item } = props;
+  return (
+    <div className={styles.cover}>
+      {item.coverUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.coverUrl}
+          alt={item.title}
+          className={styles.coverImage}
+          // Suppress the browser's native image drag-ghost, which would
+          // otherwise preempt dnd-kit's pointer drag and break reordering.
+          draggable={false}
+        />
+      ) : (
+        <div className={styles.coverPlaceholder} aria-hidden="true" />
+      )}
+    </div>
+  );
+}
 
 function SortableCard(props: {
   item: ReorderItem;
@@ -59,7 +82,6 @@ function SortableCard(props: {
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.6 : 1,
   };
 
   return (
@@ -71,25 +93,16 @@ function SortableCard(props: {
       })}
     >
       <div
-        className={classNames(styles.card, styles[shape])}
+        className={classNames(styles.card, styles[shape], {
+          // While this card is the one being dragged, the solid clone follows
+          // the cursor in the DragOverlay — this slot, which the sorting
+          // strategy slides to the drop position, becomes the dashed target.
+          [styles.placeholder]: isDragging,
+        })}
         {...attributes}
         {...listeners}
       >
-        <div className={styles.cover}>
-          {item.coverUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={item.coverUrl}
-              alt={item.title}
-              className={styles.coverImage}
-              // Suppress the browser's native image drag-ghost, which would
-              // otherwise preempt dnd-kit's pointer drag and break reordering.
-              draggable={false}
-            />
-          ) : (
-            <div className={styles.coverPlaceholder} aria-hidden="true" />
-          )}
-        </div>
+        <CardCover item={item} />
       </div>
       <Text variant={TypographyVariant.TextSmall} className={styles.position}>
         {position}
@@ -108,6 +121,9 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
     emptyState = 'No objects yet — add one to test reordering.',
   } = props;
 
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const activeItem = items.find(i => i.id === activeId) ?? null;
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(KeyboardSensor, {
@@ -115,7 +131,12 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
     }),
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = items.findIndex(i => i.id === active.id);
@@ -134,7 +155,9 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
+          onDragCancel={() => setActiveId(null)}
         >
           <SortableContext
             items={items.map(i => i.id)}
@@ -151,6 +174,19 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
               ))}
             </div>
           </SortableContext>
+          <DragOverlay>
+            {activeItem ? (
+              <div
+                className={classNames(
+                  styles.card,
+                  styles[itemShape],
+                  styles.overlayCard,
+                )}
+              >
+                <CardCover item={activeItem} />
+              </div>
+            ) : null}
+          </DragOverlay>
         </DndContext>
       )}
 

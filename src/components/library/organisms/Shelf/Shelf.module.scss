@@ -80,6 +80,15 @@
       display: inline-flex;
     }
 
+    .addWrap {
+      display: inline-flex;
+    }
+
+    .count {
+      color: var(--gray-medium);
+      font-variant-numeric: tabular-nums;
+    }
+
     .button {
       color: var(--brown);
     }
@@ -98,6 +107,40 @@
     // drops the same amount from its own padding-bottom so the cards stay
     // seated. This is the knob: increase to slide the scrollbar up the board.
     padding-bottom: 65px;
+
+    // Carousel arrows, same pill as the LibraryToolbar jump arrows, overlaid on
+    // the shelf at each end and vertically centred on the card band. Only shown
+    // while the row overflows; each disables at its scroll extreme.
+    .arrow {
+      position: absolute;
+      top: 45%;
+      transform: translateY(-50%);
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 43px;
+      height: 43px;
+      padding: 0;
+      border-radius: 10px;
+      background: #fefdf9 !important;
+      box-shadow: 0px 4.84px 12.1px rgba(0, 0, 0, 0.15);
+      right: 16px;
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+
+    .arrowLeft {
+      left: 16px;
+      right: auto;
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
 
     .banner {
       width: -webkit-fill-available;
@@ -137,6 +180,12 @@
       // scrollbar so it doesn't cut across the shelf artwork.
       scrollbar-width: none;
       padding-left: 58px;
+      // Cards scrolled off the left should disappear *into* the shelf, not float
+      // past its end. Clip the scroll viewport with a straight vertical left
+      // edge so a card sliding left is cut cleanly upright instead of on a
+      // diagonal (which read as a slanted/rotated cover). The first card rests
+      // at padding-left (58px), so at rest nothing is clipped.
+      clip-path: polygon(58px 0, 100% 0, 100% 100%, 58px 100%);
 
       &::-webkit-scrollbar {
         display: none;
