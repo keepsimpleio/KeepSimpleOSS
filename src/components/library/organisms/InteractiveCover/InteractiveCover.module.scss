@@ -113,10 +113,3 @@ $cover-aspect-wide: calc(3840 / 1704);
     transform: none;
   }
 }
-
-@media (max-width: 768px) {
-  .card {
-    width: 60%;
-    min-width: 0;
-  }
-}
