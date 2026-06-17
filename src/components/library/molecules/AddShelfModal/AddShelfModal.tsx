@@ -1,7 +1,10 @@
 import classNames from 'classnames';
 import React, { JSX, useState } from 'react';
 
-import { shelfCardData } from '@constants/library/common';
+import {
+  SHELF_NAME_MAX_LENGTH,
+  shelfCardData,
+} from '@constants/library/common';
 
 import { CharCount } from '@components/library/atoms/CharCount';
 import { Loader } from '@components/library/atoms/Loader';
@@ -13,9 +16,6 @@ import { Modal, useModalClose } from '../Modal';
 import type { AddShelfModalProps, ShelfType } from './AddShelfModal.types';
 
 import styles from './AddShelfModal.module.scss';
-
-// Mirrors the single-shelf `name` constraint in the backend schema.
-const SHELF_NAME_MAX_LENGTH = 100;
 
 export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
   const { onClose, onAddShelf, existingNames = [] } = props;

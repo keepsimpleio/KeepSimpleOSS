@@ -90,3 +90,7 @@ export const MAX_SHARE_OBJECTS = 21;
 export const MAX_OBJECTS_PER_SHELF = 21;
 
 export const SHELF_FULL_MESSAGE = `This shelf is full (max ${MAX_OBJECTS_PER_SHELF} items).`;
+
+// Mirrors the single-shelf `name` constraint in the backend schema. Shared so
+// the create (AddShelfModal) and rename (Shelf) inputs stay in sync.
+export const SHELF_NAME_MAX_LENGTH = 100;

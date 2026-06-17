@@ -10,7 +10,10 @@ import React, {
   useState,
 } from 'react';
 
-import { MAX_OBJECTS_PER_SHELF } from '@constants/library/common';
+import {
+  MAX_OBJECTS_PER_SHELF,
+  SHELF_NAME_MAX_LENGTH,
+} from '@constants/library/common';
 
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
@@ -129,9 +132,6 @@ const SETTINGS_OPTIONS = [
   },
   { value: 'delete', label: 'Delete shelf' },
 ];
-
-// Mirrors the single-shelf `name` constraint in the backend schema.
-const SHELF_NAME_MAX_LENGTH = 100;
 
 export function Shelf(props: ShelfProps): JSX.Element {
   const {
@@ -531,6 +531,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
                   type={ButtonType.Secondary}
                   Icon={<PlusIcon />}
                   ariaLabel={`Add ${typeLabel}`}
+                  disabled={atObjectLimit}
                 />
               )}
             </div>
