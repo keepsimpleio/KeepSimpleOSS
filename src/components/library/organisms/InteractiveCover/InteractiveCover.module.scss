@@ -1,7 +1,13 @@
 // Coordinates in coverHotspots.ts are percentages of the cover frame, so the
-// frame is locked to the artwork's native 1536x1024 (3:2) ratio and every
-// hotspot tracks the art as it scales. No runtime measurement needed.
+// frame is locked to the artwork's native aspect ratio and every hotspot tracks
+// the art as it scales. No runtime measurement needed.
+//
+// Mobile (<768px) shows the taller 3:2 library.png; 768px+ shows the wide
+// library-wide.png (3840x1704). The frame matches whichever art is visible so
+// the cover always fills the width edge-to-edge with no crop and the height
+// stays proportional across every desktop/tablet width.
 $cover-aspect: calc(3 / 2);
+$cover-aspect-wide: calc(3840 / 1704);
 
 .frame {
   position: relative;
@@ -10,7 +16,17 @@ $cover-aspect: calc(3 / 2);
   overflow: hidden;
 }
 
+@media (min-width: 768px) {
+  .frame {
+    aspect-ratio: $cover-aspect-wide;
+  }
+}
+
 .image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center;
 }
@@ -95,12 +111,5 @@ $cover-aspect: calc(3 / 2);
 
   .highlight.active {
     transform: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .card {
-    width: 60%;
-    min-width: 0;
   }
 }

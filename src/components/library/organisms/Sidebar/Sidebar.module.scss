@@ -1,7 +1,10 @@
 .sidebar {
   width: 100%;
   max-width: 331px;
-  height: 100vh;
+  // Stick below the global header rather than scrolling under it. The header is
+  // sticky 48px on desktop; offset by that and shorten the panel to the leftover
+  // viewport so the pinned guest-mode footer stays on screen while scrolling.
+  height: calc(100vh - 48px);
   background: var(--white-warm);
   box-shadow: var(--sidebar-shadow);
   padding: 16px;
@@ -11,12 +14,22 @@
   gap: 16px;
   transition: transform 0.3s ease;
   position: sticky;
-  top: 0;
+  top: 48px;
   align-self: flex-start;
+
+  // 1025–1140px: the header switches to position:fixed at 55px, so match the
+  // larger offset/height in that band.
+  @media (max-width: 1140px) {
+    top: 55px;
+    height: calc(100vh - 55px);
+  }
 
   @media (max-width: 1024px) {
     position: fixed;
+    // Full-height slide-in drawer overlay, above the fixed header.
+    top: 0;
     right: 0;
+    height: 100vh;
     // Above the fixed global header (z-index up to 113 on mobile) so the
     // drawer's own top controls aren't hidden beneath it when open.
     z-index: 130;

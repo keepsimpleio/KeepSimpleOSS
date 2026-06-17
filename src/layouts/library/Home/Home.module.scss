@@ -1,15 +1,11 @@
 .banner {
   position: relative;
-  // The artwork is authored at 1440px wide; on wider screens the cover is
-  // centered and the surrounding gutters are filled with the painting's own
-  // misty green so the banner reads edge-to-edge.
-  background: #5b7d6f;
 
+  // The cover always spans the full viewport width; its aspect-ratio keeps the
+  // height proportional, so there are no side gutters to fill.
   .bannerInner {
     position: relative;
     width: 100%;
-    max-width: 1440px;
-    margin: 0 auto;
   }
 
   .image {

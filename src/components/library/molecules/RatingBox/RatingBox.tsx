@@ -74,9 +74,13 @@ function ColoredSelect<T extends string | number>(
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Keep the portaled menu glued to the trigger as the modal/page scrolls, and
-  // flip it above the trigger when it would overflow the bottom of the viewport.
-  const menuPos = useAnchoredPosition(triggerRef, isOpen, menuRef);
+  // Keep the portaled menu glued to the trigger as the modal/page scrolls.
+  // Placement is decided by viewport width, not measured space: open upward at
+  // 1920px and below, downward only on wider screens. Width-based placement is
+  // settled before the menu paints, so it never opens one way then jumps.
+  const menuPos = useAnchoredPosition(triggerRef, isOpen, menuRef, {
+    openUpMaxWidth: 1920,
+  });
 
   const handleToggle = () => {
     if (readOnly) return;

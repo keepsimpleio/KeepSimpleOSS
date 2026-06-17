@@ -23,7 +23,7 @@ import styles from './Home.module.scss';
 
 const sectionId = 'libraries-section';
 
-const perPage = 8;
+const perPage = 6;
 
 export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const [value, setValue] = useState('');
@@ -144,6 +144,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
           <InteractiveCover
             className={styles.image}
             src="/assets/library/library.png"
+            wideSrc="/assets/library/library-wide.png"
             alt="Keep Simple library cover"
           />
           <Button
@@ -187,9 +188,11 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             )}
           </div>
 
-          <div className={styles.pagination}>
-            <Pagination count={totalPages} onChange={handlePageChange} />
-          </div>
+          {totalPages > 1 && (
+            <div className={styles.pagination}>
+              <Pagination count={totalPages} onChange={handlePageChange} />
+            </div>
+          )}
         </div>
       </section>
 

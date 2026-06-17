@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import type { JSX } from 'react';
+import { useEffect } from 'react';
 
 import { IconName, IconProps } from './Icon.types';
 
@@ -29,6 +30,41 @@ const ICON_VIEWBOX: Record<IconName, string> = {
   [IconName.Copy]: '0 0 16 16',
 };
 
+const SPRITE_URL = '/library/images/icons/all.svg';
+const SPRITE_DOM_ID = 'library-icon-sprite';
+
+let spritePromise: Promise<void> | null = null;
+
+// Safari (and some WebViews) ignore external `<use href="file.svg#id">`, so the
+// sprite never resolves and every icon renders blank there. Fetch the sprite
+// once and inline it into the document, then reference symbols same-document via
+// `<use href="#id">`, which every browser supports.
+function ensureSprite() {
+  if (typeof document === 'undefined' || spritePromise) {
+    return;
+  }
+  if (document.getElementById(SPRITE_DOM_ID)) {
+    return;
+  }
+  spritePromise = fetch(SPRITE_URL)
+    .then(res => res.text())
+    .then(markup => {
+      if (document.getElementById(SPRITE_DOM_ID)) {
+        return;
+      }
+      const container = document.createElement('div');
+      container.id = SPRITE_DOM_ID;
+      container.setAttribute('aria-hidden', 'true');
+      container.style.cssText =
+        'position:absolute;width:0;height:0;overflow:hidden';
+      container.innerHTML = markup;
+      document.body.prepend(container);
+    })
+    .catch(() => {
+      spritePromise = null;
+    });
+}
+
 export function Icon(props: IconProps): JSX.Element {
   const {
     width = 40,
@@ -37,6 +73,10 @@ export function Icon(props: IconProps): JSX.Element {
     className,
     name,
   } = props;
+
+  useEffect(() => {
+    ensureSprite();
+  }, []);
 
   return (
     <svg
@@ -48,7 +88,7 @@ export function Icon(props: IconProps): JSX.Element {
       viewBox={ICON_VIEWBOX[name]}
       role="graphics-document"
     >
-      <use href={`/library/images/icons/all.svg#${name}`} />
+      <use href={`#${name}`} />
     </svg>
   );
 }
