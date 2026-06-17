@@ -8,6 +8,9 @@
 
   .icon {
     display: flex;
+    // Icons are currentColor sprites; the cover card recolors them white. Here,
+    // on light cards/sidebar, pin a dark tone so they don't inherit white.
+    color: var(--gray-darkest);
     background: transparent;
     border-radius: 8px 0 0 8px;
     padding: 3px 4px 3px 0;
