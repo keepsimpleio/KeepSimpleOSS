@@ -3,6 +3,7 @@ import React, { JSX, useState } from 'react';
 
 import { shelfCardData } from '@constants/library/common';
 
+import { CharCount } from '@components/library/atoms/CharCount';
 import { Loader } from '@components/library/atoms/Loader';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
@@ -13,8 +14,8 @@ import type { AddShelfModalProps, ShelfType } from './AddShelfModal.types';
 
 import styles from './AddShelfModal.module.scss';
 
-// Matches the single-shelf `name` constraint (`maxLength: 50`) in the backend schema.
-const SHELF_NAME_MAX_LENGTH = 50;
+// Mirrors the single-shelf `name` constraint in the backend schema.
+const SHELF_NAME_MAX_LENGTH = 100;
 
 export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
   const { onClose, onAddShelf, existingNames = [] } = props;
@@ -78,6 +79,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
             ariaLabel="Shelf name"
             maxLength={SHELF_NAME_MAX_LENGTH}
           />
+          <CharCount current={name.length} max={SHELF_NAME_MAX_LENGTH} />
           {error && <p className={styles.error}>{error}</p>}
         </div>
 

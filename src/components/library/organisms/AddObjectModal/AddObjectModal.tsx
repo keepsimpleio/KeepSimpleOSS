@@ -5,13 +5,18 @@ import {
   type AddObjectFormData,
   type BookFormData,
   getSchemaForType,
+  OBJECT_FIELD_LIMITS,
 } from '@utils/library/schema/addObjectSchema';
 import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
 
+import { SHELF_FULL_MESSAGE } from '@constants/library/common';
+
 import type { IAutofillSuggestion } from '@local-types/library/autofill';
 import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
+
+import { isShelfFullError } from '@lib/library/shelfFull';
 
 import { fetchCoverFile } from '@api/library/autofill/fetchCoverFile';
 import { lookupVideoByUrl } from '@api/library/autofill/lookupVideoByUrl';
@@ -27,6 +32,7 @@ import { uploadFile } from '@api/library/upload/uploadFile';
 import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
@@ -182,6 +188,12 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     formState: { errors, isValid },
   } = form;
 
+  // Live lengths for the character counters. `author`/`description` are optional
+  // on every schema, so coalesce to '' before measuring.
+  const titleLength = (watch('title') ?? '').length;
+  const authorLength = (watch('author') ?? '').length;
+  const descriptionLength = (watch('description') ?? '').length;
+
   // Push a provider suggestion into the form. Values are clamped to the zod
   // limits so an autofill can never leave the form invalid; the cover is
   // best-effort — fields land first, the image follows when the proxy resolves.
@@ -189,14 +201,18 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     const isBook = objectType === 'book';
     const setOptions = { shouldValidate: true, shouldDirty: true } as const;
 
-    setValue('title', s.title.slice(0, isBook ? 200 : 150), setOptions);
+    setValue('title', s.title.slice(0, OBJECT_FIELD_LIMITS.title), setOptions);
     if (s.author) {
-      setValue('author', s.author.slice(0, isBook ? 150 : 100), setOptions);
+      setValue(
+        'author',
+        s.author.slice(0, OBJECT_FIELD_LIMITS.author),
+        setOptions,
+      );
     }
     if (s.description) {
       setValue(
         'description',
-        s.description.slice(0, isBook ? 4000 : 5000),
+        s.description.slice(0, OBJECT_FIELD_LIMITS.description),
         setOptions,
       );
     }
@@ -574,6 +590,13 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       setShowSuccess(true);
     } catch (e) {
+      // Backend caps each shelf at 21 objects (all types combined) and rejects
+      // an over-limit create — or a move into a full shelf via the shelf
+      // dropdown — with a 400. Surface the dedicated full-shelf copy.
+      if (isShelfFullError(e)) {
+        setSubmitError(SHELF_FULL_MESSAGE);
+        return;
+      }
       // Axios failures carry a raw "Request failed with status code 500" — not
       // useful to a user. Show a friendly line (the title is the usual culprit)
       // and only fall back to a specific message when it isn't an HTTP error.
@@ -627,6 +650,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                 {...register('title')}
               />
             )}
+            <CharCount current={titleLength} max={OBJECT_FIELD_LIMITS.title} />
             {errors.title && (
               <p className={styles.error}>{errors.title.message}</p>
             )}
@@ -648,6 +672,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               placeholder={label}
               placeholderColor="#9E9E9E"
               {...register('author')}
+            />
+            <CharCount
+              current={authorLength}
+              max={OBJECT_FIELD_LIMITS.author}
             />
             {errors.author && (
               <p className={styles.error}>{errors.author.message}</p>
@@ -698,6 +726,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               className={styles.textarea}
               rows={5}
               {...register('description')}
+            />
+            <CharCount
+              current={descriptionLength}
+              max={OBJECT_FIELD_LIMITS.description}
             />
             {errors.description && (
               <p className={styles.error}>{errors.description.message}</p>

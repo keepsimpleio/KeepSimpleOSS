@@ -227,6 +227,10 @@
 .description {
   color: var(--gray-darkest);
   line-height: 1.5;
+  // Preserve the line breaks the user typed — the description is plain text, so
+  // without this the browser collapses every newline into a single space.
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 
   p {
     margin: 0 0 8px;
