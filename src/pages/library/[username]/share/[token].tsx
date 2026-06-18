@@ -4,6 +4,7 @@ import React, { JSX, useEffect, useState } from 'react';
 import { isLibraryEnabled } from '@constants/library/common';
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
+import type { IObject } from '@local-types/library/object';
 import type {
   IShareLinkView,
   ShareLinkStatus,
@@ -23,6 +24,7 @@ import {
 } from '@components/library/molecules/Button';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { SharedWithYouModal } from '@components/library/molecules/SharedWithYouModal';
+import { ObjectOverviewModal } from '@components/library/organisms/ObjectOverviewModal';
 import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
 import { Sidebar } from '@components/library/organisms/Sidebar';
 import SeoGenerator from '@components/SeoGenerator';
@@ -104,6 +106,7 @@ function ShareRecipientView({ username, token }: SharePageProps): JSX.Element {
   const [introOpen, setIntroOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [errorDismissed, setErrorDismissed] = useState(false);
+  const [activeObject, setActiveObject] = useState<IObject | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -144,6 +147,16 @@ function ShareRecipientView({ username, token }: SharePageProps): JSX.Element {
           objects={view.objects}
           ownerUsername={username}
           readOnly
+          onObjectClick={setActiveObject}
+        />
+      )}
+
+      {activeObject && (
+        <ObjectOverviewModal
+          object={activeObject}
+          isOwner={false}
+          ownerUsername={username}
+          onClose={() => setActiveObject(null)}
         />
       )}
 
