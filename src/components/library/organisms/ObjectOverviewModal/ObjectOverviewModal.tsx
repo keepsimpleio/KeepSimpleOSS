@@ -2,7 +2,7 @@ import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import React, { JSX, useCallback, useMemo, useState } from 'react';
 
-import { SHELF_FULL_MESSAGE } from '@constants/library/common';
+import { KEEPSIMPLE_URL, SHELF_FULL_MESSAGE } from '@constants/library/common';
 
 import type {
   Difficulty,
@@ -12,6 +12,7 @@ import type {
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
+import { objectSlug } from '@lib/library/objectSlug';
 import { isShelfFullError } from '@lib/library/shelfFull';
 import { sanitizeHtml } from '@lib/sanitizeHtml';
 
@@ -50,6 +51,10 @@ import { overviewConfigByType } from './ObjectOverviewModal.config';
 import type { ObjectOverviewModalProps } from './ObjectOverviewModal.types';
 
 import styles from './ObjectOverviewModal.module.scss';
+
+// Canonical public host for shareable links — env-driven in staging/prod,
+// falling back to the production domain (mirrors ShareSelectionPanel).
+const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
 
 function formatDate(iso?: string): string | null {
   if (!iso) return null;
@@ -112,6 +117,8 @@ export function ObjectOverviewModal(
   const [moveLoading, setMoveLoading] = useState(false);
   const [moveError, setMoveError] = useState<string | null>(null);
 
+  const [shareCopied, setShareCopied] = useState(false);
+
   const { currentShelves } = useGlobalState();
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
@@ -154,10 +161,24 @@ export function ObjectOverviewModal(
     }
   };
 
-  const handleShare = () => {
-    // TODO: Implement Share when sharing route + tokens exist.
-    // Likely: copy a public URL to clipboard like /share/objects/<slug or shareToken>.
-    // Depends on a public-read endpoint or signed URL from backend.
+  const handleShare = async () => {
+    const url = `${SHARE_BASE_URL}/library/${ownerUsername}/${objectSlug(object)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Clipboard API is unavailable on insecure origins / older browsers —
+      // fall back to a throwaway textarea + execCommand so copy still works.
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
   };
 
   // Fall back to `defaultShelfId` (the shelf this object is rendered under):
@@ -347,8 +368,8 @@ export function ObjectOverviewModal(
                 <Button
                   type={ButtonType.Primary}
                   size={ButtonSize.Default}
-                  label="Share"
-                  ariaLabel="Share"
+                  label={shareCopied ? 'Copied' : 'Share'}
+                  ariaLabel={shareCopied ? 'Link copied' : 'Share'}
                   Icon={<ShareIcon />}
                   onClick={handleShare}
                 />

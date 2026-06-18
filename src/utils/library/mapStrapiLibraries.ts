@@ -67,14 +67,18 @@ export function mapStrapiLibraryEntryToCard(
   );
   const aboutMePlain = stripHtml(attributes.aboutMe);
 
-  const libraryName =
-    attributes.name?.trim() || aboutLibraryPlain || `Library ${id}`;
+  const username = attributes.user?.data?.attributes?.username;
+
+  // Libraries are owner-scoped, so present them as "<owner>'s library" rather
+  // than the raw `name`/id. Fall back to the explicit name, then about text,
+  // then the id only when there's no linked username to build the label from.
+  const libraryName = username
+    ? `${username}'s library`
+    : attributes.name?.trim() || aboutLibraryPlain || `Library ${id}`;
 
   const description = aboutMePlain || aboutLibraryPlain;
 
   const avatarUrl = attributes.avatar?.data?.attributes?.url;
-
-  const username = attributes.user?.data?.attributes?.username;
 
   return {
     id,
