@@ -141,6 +141,17 @@ export function InteractiveCover({
 
   return (
     <div ref={frameRef} className={classNames(styles.frame, className)}>
+      {/* Blurred fill so the side gaps on viewports wider than the art read as
+          intentional. Decorative — the <picture> below carries the real alt. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className={styles.background}
+        src={wideSrc ?? src}
+        alt=""
+        aria-hidden
+        draggable={false}
+      />
+
       <picture>
         {wideSrc && <source media="(min-width: 768px)" srcSet={wideSrc} />}
         <img
