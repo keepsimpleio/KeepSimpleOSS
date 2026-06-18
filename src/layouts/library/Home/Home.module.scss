@@ -1,8 +1,8 @@
 .banner {
   position: relative;
 
-  // The cover always spans the full viewport width; its aspect-ratio keeps the
-  // height proportional, so there are no side gutters to fill.
+  // The cover always spans the full viewport width at a fixed 852px height, so
+  // there are no side gutters to fill.
   .bannerInner {
     position: relative;
     width: 100%;

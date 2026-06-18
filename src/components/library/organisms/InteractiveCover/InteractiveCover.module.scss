@@ -1,39 +1,60 @@
-// Coordinates in coverHotspots.ts are percentages of the cover frame, so the
-// frame is locked to the artwork's native aspect ratio and every hotspot tracks
-// the art as it scales. No runtime measurement needed.
+// The cover keeps the art's aspect ratio and is never stretched or cropped.
+// Below the art's natural width (1920px) the whole band scales down with the
+// viewport — width fills, height shrinks proportionally. At/above 1920px it
+// caps at its natural 1920×852 size, centered, with the blurred .background
+// filling the side gaps so they read as intentional rather than empty.
+//
+// The .image and .layer share the same box (width: 100% capped at 1920px,
+// centered), so the percentage hotspot coordinates in coverHotspots.ts track
+// the art exactly at every width.
 //
 // Mobile (<768px) shows the taller 3:2 library.png; 768px+ shows the wide
-// library-wide.png (3840x1704). The frame matches whichever art is visible so
-// the cover always fills the width edge-to-edge with no crop and the height
-// stays proportional across every desktop/tablet width.
-$cover-aspect: calc(3 / 2);
+// library-wide.png (3840x1704).
+$cover-height: 852px;
+$cover-max-width: 1920px;
 $cover-aspect-wide: calc(3840 / 1704);
 
 .frame {
   position: relative;
   width: 100%;
-  aspect-ratio: $cover-aspect;
+  aspect-ratio: $cover-aspect-wide;
+  max-height: $cover-height;
   overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .frame {
-    aspect-ratio: $cover-aspect-wide;
-  }
-}
-
-.image {
+// Blurred copy of the art behind everything, so the side gaps on screens wider
+// than the art read as intentional rather than empty bands.
+.background {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  filter: blur(24px);
+  transform: scale(1.1);
+  z-index: 0;
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: $cover-max-width;
+  height: auto;
+  z-index: 1;
 }
 
 .layer {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: $cover-max-width;
+  height: 100%;
+  z-index: 2;
 }
 
 .trigger {
