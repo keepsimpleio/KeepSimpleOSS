@@ -209,7 +209,11 @@ export function ShareSelectionPanel({
       })}
       aria-label={readOnly ? 'Shared selection' : 'Share selection'}
     >
-      <div className={styles.header}>
+      <div
+        className={classNames(styles.header, {
+          [styles.headerReadOnly]: readOnly,
+        })}
+      >
         <button
           type="button"
           className={styles.heading}
