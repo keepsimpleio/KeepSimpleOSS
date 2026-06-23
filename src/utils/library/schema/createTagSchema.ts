@@ -10,11 +10,14 @@ export const createTagSchema = z.object({
     .string()
     .min(1, 'Tag name is required')
     .min(2, 'Tag name must be at least 2 characters')
-    .max(50, 'Tag name must be 50 characters or less.')
+    .max(20, 'Tag name must be 20 characters or less.')
     .regex(
       TAG_NAME_REGEX,
-      'Use letters, numbers, or - _ . ~ only (no spaces or special characters).'
+      'Use letters, numbers, or - _ . ~ only (no spaces or special characters).',
     ),
-  description: z.string().max(500, 'Description must be 500 characters or less').optional(),
+  description: z
+    .string()
+    .max(500, 'Description must be 500 characters or less')
+    .optional(),
   color: z.string().min(1, 'Color is required'),
 });

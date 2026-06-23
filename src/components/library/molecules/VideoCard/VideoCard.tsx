@@ -38,50 +38,53 @@ export function VideoCard({
 
   return (
     <div
-      className={classNames(styles.card, className, {
-        [styles.selected]: selected,
+      className={classNames(styles.wrap, className, {
         [styles.compact]: compact,
       })}
-      role="button"
-      tabIndex={0}
-      aria-label={`Open ${title}`}
-      onClick={handleActivate}
-      onKeyDown={handleKeyDown}
     >
-      {onSelectToggle && (
-        <div className={styles.select}>
-          <SelectToggle
-            selected={selected}
-            onToggle={onSelectToggle}
-            disabled={selectDisabled && !selected}
-          />
-        </div>
-      )}
-      <div className={styles.thumbWrap}>
-        <div className={styles.thumb}>
-          {coverUrl ? (
-            <Image
-              src={coverUrl}
-              alt={title}
-              fill
-              sizes="231px"
-              className={styles.coverImage}
-            />
-          ) : (
-            <div className={styles.coverPlaceholder} />
-          )}
-        </div>
-        <VideoShadowIcon className={styles.shadow} aria-hidden />
-      </div>
-
-      <div className={styles.bar} aria-hidden />
-
-      <Text
-        variant={TypographyVariant.TextBaseSemibold}
-        className={styles.title}
+      {!compact && <VideoShadowIcon className={styles.shadow} aria-hidden />}
+      <div
+        className={classNames(styles.card, { [styles.selected]: selected })}
+        role="button"
+        tabIndex={0}
+        aria-label={`Open ${title}`}
+        onClick={handleActivate}
+        onKeyDown={handleKeyDown}
       >
-        {title}
-      </Text>
+        {onSelectToggle && (
+          <div className={styles.select}>
+            <SelectToggle
+              selected={selected}
+              onToggle={onSelectToggle}
+              disabled={selectDisabled && !selected}
+            />
+          </div>
+        )}
+        <div className={styles.thumbWrap}>
+          <div className={styles.thumb}>
+            {coverUrl ? (
+              <Image
+                src={coverUrl}
+                alt={title}
+                fill
+                sizes="231px"
+                className={styles.coverImage}
+              />
+            ) : (
+              <div className={styles.coverPlaceholder} />
+            )}
+          </div>
+        </div>
+
+        <div className={styles.bar} aria-hidden />
+
+        <Text
+          variant={TypographyVariant.TextBaseSemibold}
+          className={styles.title}
+        >
+          {title}
+        </Text>
+      </div>
     </div>
   );
 }

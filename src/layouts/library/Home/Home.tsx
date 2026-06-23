@@ -27,6 +27,7 @@ const perPage = 6;
 
 export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const [value, setValue] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [remoteItems, setRemoteItems] = useState<HomeLibraryCardView[]>([]);
@@ -34,6 +35,17 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const [isLoading, setIsLoading] = useState(!dataOverride);
 
   const isControlled = dataOverride !== undefined;
+
+  // Debounce the raw input so each keystroke doesn't fire a request.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(value.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [value]);
+
+  // A new query changes the result set, so jump back to the first page.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     if (isControlled) {
@@ -44,7 +56,11 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
     const load = async () => {
       setIsLoading(true);
-      const response = await getLibrariesPaginated(currentPage, perPage);
+      const response = await getLibrariesPaginated(
+        currentPage,
+        perPage,
+        debouncedQuery,
+      );
       if (cancelled) {
         return;
       }
@@ -64,11 +80,19 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     return () => {
       cancelled = true;
     };
-  }, [isControlled, currentPage]);
+  }, [isControlled, currentPage, debouncedQuery]);
 
   const { totalPages, currentLibraries } = useMemo(() => {
     if (isControlled) {
-      const data = dataOverride ?? [];
+      const all = dataOverride ?? [];
+      const q = debouncedQuery.toLowerCase();
+      const data = q
+        ? all.filter(lib =>
+            [lib.username, lib.libraryName]
+              .filter(Boolean)
+              .some(field => field!.toLowerCase().includes(q)),
+          )
+        : all;
       const pages = Math.max(1, Math.ceil(data.length / perPage));
       const startIndex = (currentPage - 1) * perPage;
 
@@ -82,7 +106,14 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
       totalPages: Math.max(1, remotePageCount),
       currentLibraries: remoteItems,
     };
-  }, [isControlled, dataOverride, currentPage, remoteItems, remotePageCount]);
+  }, [
+    isControlled,
+    dataOverride,
+    debouncedQuery,
+    currentPage,
+    remoteItems,
+    remotePageCount,
+  ]);
 
   const modalToggler = () => {
     setIsOpen(!isOpen);
@@ -145,6 +176,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             className={styles.image}
             src="/assets/library/library.png"
             wideSrc="/assets/library/library-wide.png"
+            ultraWideSrc="/assets/library/library-test.png"
             alt="Keep Simple library cover"
           />
           <Button
@@ -182,6 +214,12 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             {isLoading && !isControlled ? (
               <Text variant={TypographyVariant.TextBase}>
                 Loading libraries…
+              </Text>
+            ) : currentLibraries.length === 0 ? (
+              <Text variant={TypographyVariant.TextBase}>
+                {debouncedQuery
+                  ? `No libraries match “${debouncedQuery}”.`
+                  : 'No libraries yet.'}
               </Text>
             ) : (
               renderLibraryCards

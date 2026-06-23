@@ -72,6 +72,19 @@
     }
   }
 
+  .menuItem.disabled {
+    color: #9e9e9e;
+    cursor: not-allowed;
+
+    .menuIcon {
+      opacity: 0.4;
+    }
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
   .menuIcon {
     flex-shrink: 0;
   }

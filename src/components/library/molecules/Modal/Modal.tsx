@@ -15,7 +15,6 @@ import { CloseIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
-import { Button, ButtonSize, ButtonType } from '../Button';
 import type { ModalProps } from './Modal.types';
 
 import styles from './Modal.module.scss';
@@ -129,13 +128,14 @@ export function Modal(props: ModalProps): JSX.Element {
               >
                 {title}
               </Text>
-              <Button
+              <button
+                type="button"
+                className={styles.close}
+                aria-label="Close"
                 onClick={requestClose}
-                type={ButtonType.Text}
-                size={ButtonSize.Default}
-                ariaLabel="Close"
-                Icon={<CloseIcon />}
-              />
+              >
+                <CloseIcon width={16} height={16} />
+              </button>
             </div>
           )}
           {children}

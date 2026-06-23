@@ -65,7 +65,6 @@ export function mapStrapiLibraryEntryToCard(
   const aboutLibraryPlain = stripHtml(
     attributes.libraryDetails?.aboutLibrary ?? '',
   );
-  const aboutMePlain = stripHtml(attributes.aboutMe);
 
   const username = attributes.user?.data?.attributes?.username;
 
@@ -76,7 +75,9 @@ export function mapStrapiLibraryEntryToCard(
     ? `${username}'s library`
     : attributes.name?.trim() || aboutLibraryPlain || `Library ${id}`;
 
-  const description = aboutMePlain || aboutLibraryPlain;
+  // The card's "About" blurb is the library's own description, not the owner's
+  // personal bio (`aboutMe`) — that's surfaced separately in the Author panel.
+  const description = aboutLibraryPlain;
 
   const avatarUrl = attributes.avatar?.data?.attributes?.url;
 

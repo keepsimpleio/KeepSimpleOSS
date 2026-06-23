@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 32px;
+  padding: 24px 32px;
   border-bottom: 1px solid var(--brown-border);
   flex-shrink: 0;
 }
@@ -23,9 +23,23 @@
 }
 
 .actions {
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+}
+
+// The shared Button's `default` size is a 2px-padded inline pill — too short
+// here, which clipped the 16px share glyph. Give it height to match the dots
+// button and stop the icon from being squeezed by the flex row.
+.shareButton {
+  height: 36px;
+  padding: 0 14px;
+
+  svg {
+    flex-shrink: 0;
+  }
 }
 
 .iconButton {
@@ -43,6 +57,28 @@
 
   &:hover {
     border-color: var(--brown);
+  }
+}
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  svg {
+    width: 16px;
+    height: 16px;
+
+    path {
+      fill: #aaaaaa;
+    }
   }
 }
 
@@ -92,9 +128,9 @@
 
 .body {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 378px 1fr;
   gap: 32px;
-  padding: 32px;
+  padding: 16px 32px 26px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -133,7 +169,9 @@
   color: var(--gray);
 
   &.portrait {
-    aspect-ratio: 2 / 3;
+    width: 378px;
+    height: 560px;
+    border-radius: 0;
   }
 
   &.landscape {
@@ -169,7 +207,7 @@
 }
 
 .metaLabel {
-  color: var(--black-transparent-300);
+  color: var(--gray-medium);
 }
 
 .metaValue {
@@ -185,6 +223,7 @@
 
 .objectTitle {
   color: var(--gray-darkest);
+  font-weight: 400;
   word-break: break-word;
 }
 
@@ -206,7 +245,7 @@
 }
 
 .rowLabel {
-  color: var(--black-transparent-300);
+  color: var(--gray-medium);
 }
 
 .rowValue {
@@ -243,30 +282,6 @@
   gap: 8px;
 }
 
-.tagsHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tagsEditButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--brown-border);
-  border-radius: 4px;
-  background: var(--white);
-  color: var(--gray-darkest);
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-
-  &:hover {
-    border-color: var(--brown);
-  }
-}
-
 // `cursor: pointer` is scoped here — Tag elsewhere stays presentational.
 .tag {
   cursor: pointer;
@@ -274,14 +289,47 @@
 
 .destination {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px 24px;
 }
 
-.destinationCell {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.destinationLine {
+  color: var(--gray-darkest);
+}
+
+.destinationKey {
+  color: var(--gray-medium);
+}
+
+// The Move-To control is a shared Dropdown; its internal element classes are
+// hashed in another module, so we override by element with !important (mirrors
+// the Shelf settings-trigger override). Compact pill, not a full-width field.
+.moveToTrigger {
+  width: fit-content !important;
+  padding: 7px 12px !important;
+  background: var(--white) !important;
+  border: 1px solid var(--beige) !important;
+  border-radius: 8px;
+  box-shadow: 0px 4px 4px 0px var(--black-transparent-200);
+  color: var(--brown);
+
+  p {
+    padding: 0 !important;
+    color: var(--brown);
+  }
+
+  // Chevron wrapper — drop the divider/side padding the default trigger adds.
+  div {
+    border-left: none !important;
+    padding: 0 0 0 8px !important;
+    height: auto !important;
+  }
+
+  svg path {
+    fill: #aaaaaa !important;
+  }
 }
 
 .error {
@@ -317,5 +365,13 @@
   .cover {
     max-width: 220px;
     margin: 0 auto;
+  }
+
+  // The book cover is a fixed 378×560 on desktop; drop back to a fluid,
+  // aspect-locked box once it's stacked above the data on small screens.
+  .cover.portrait {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
   }
 }

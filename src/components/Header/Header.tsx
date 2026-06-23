@@ -45,6 +45,12 @@ const Header: FC = () => {
   const { accountData, setAccountData } = useContext(GlobalContext);
   const [{ toggleSidebar }, { isDarkTheme, isOpenedSidebar }] = useGlobals();
 
+  // Creating a library is gated by the `can-create-library` feature flag from
+  // GET /api/users/me (same flag the library page enforces). Drives whether the
+  // dropdown's "Create library" item is actionable.
+  const canCreateLibrary =
+    accountData?.featureNames?.includes('can-create-library') ?? false;
+
   useEffect(() => {
     const storedToken = localStorage.getItem('accessToken');
     setToken(storedToken);
@@ -160,6 +166,7 @@ const Header: FC = () => {
               setOpenLoginModal={setOpenLogin}
               userImage={accountData?.picture}
               handleOpenSettings={handleOpenSettings}
+              canCreateLibrary={canCreateLibrary}
               hideDropdown={isOpenedSidebar}
               hideUsername
             />
@@ -239,6 +246,7 @@ const Header: FC = () => {
                 setOpenLoginModal={setOpenLogin}
                 userImage={accountData?.picture}
                 handleOpenSettings={handleOpenSettings}
+                canCreateLibrary={canCreateLibrary}
               />
             )}
           </div>

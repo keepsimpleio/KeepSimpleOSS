@@ -14,25 +14,20 @@
   flex-direction: column;
   color: #ffffff;
   border-radius: 4px;
-  // Start fully transparent with no blur, then ramp both up on activation.
-  // Animating the blur *value* (not just the parent's opacity) forces the
-  // browser to composite the backdrop progressively, so the glass fades in
-  // smoothly instead of popping in once the reveal settles.
+  // Keep the glass blur on at all times so it's there the instant the card
+  // reveals rather than ramping in after; only the background wash and border
+  // fade on activation.
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0);
-  backdrop-filter: blur(0);
-  -webkit-backdrop-filter: blur(0);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition:
     background 0.45s ease,
-    border-color 0.45s ease,
-    backdrop-filter 0.45s ease,
-    -webkit-backdrop-filter 0.45s ease;
+    border-color 0.45s ease;
 
   &.active {
     background: var(--info-card-bg);
     border-color: #ffffff;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
   @media (max-width: 768px) {

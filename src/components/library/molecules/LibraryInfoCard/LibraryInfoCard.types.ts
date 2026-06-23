@@ -4,7 +4,7 @@ export interface LibraryInfoCardProps {
   bookCount: number;
   videoCount: number;
   songCount: number;
-  /** Drives the glass background/blur fade-in so it ramps instead of popping. */
+  /** Fades the glass background wash and border in on reveal. */
   isActive?: boolean;
   className?: string;
 }

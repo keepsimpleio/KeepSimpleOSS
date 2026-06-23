@@ -10,7 +10,7 @@ const en = {
   saveBtn: 'Save',
   cancelBtn: 'Cancel',
   usernameValidationMessage:
-    'Must be 6-30 characters. No special characters allowed.',
+    'Must be 3-30 characters. No special characters allowed.',
   invalidLinkedIn: 'Please enter a valid LinkedIn URL.',
 };
 
