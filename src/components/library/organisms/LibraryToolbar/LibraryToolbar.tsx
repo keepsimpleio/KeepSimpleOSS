@@ -300,20 +300,33 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
       <div className={classNames(styles.toolbar, className)}>
         <div className={styles.divider} />
 
-        <div className={styles.welcome}>
-          <Text
-            variant={TypographyVariant.TitleSecondaryBold}
-            className={styles.welcomeTitle}
-          >
-            Welcome to {ownerName}&rsquo;s hive
-          </Text>
-          <Text
-            variant={TypographyVariant.TextSmall}
-            className={styles.welcomeText}
-          >
-            Discover and explore {collectionsClause}along with an incredible
-            playlist full of his favorite songs.
-          </Text>
+        <div className={styles.controls}>
+          <div className={styles.welcome}>
+            <Text
+              variant={TypographyVariant.TitleSecondaryBold}
+              className={styles.welcomeTitle}
+            >
+              Welcome to {ownerName}&rsquo;s hive
+            </Text>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.welcomeText}
+            >
+              Discover and explore {collectionsClause}along with an incredible
+              playlist full of his favorite songs.
+            </Text>
+          </div>
+
+          <Input
+            type="search"
+            value={search}
+            placeholder="Search everywhere"
+            placeholderColor="#C4C4C4"
+            onChange={e => onSearchChange?.(e.target.value)}
+            onClear={() => onSearchChange?.('')}
+            wrapperClassName={styles.search}
+            ariaLabel="Search everywhere"
+          />
         </div>
       </div>
     );

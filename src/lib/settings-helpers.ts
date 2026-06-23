@@ -6,7 +6,7 @@ export const isValidEmail = email => {
 export const linkedInRegex =
   /^(https?:\/\/)?(www\.)?(linkedin\.com\/in\/|lnkd\.in\/)[a-zA-Z0-9-]{3,30}\/?$/;
 
-export const usernameRegex = /^(?!.*[&%:;*|></\\#?"=])[^\s]{6,30}$/;
+export const usernameRegex = /^(?!.*[&%:;*|></\\#?"=])[^\s]{3,30}$/;
 
 // Twitter OAuth never gives us the user's real email — Strapi assigns a
 // synthetic `twitter_{id}@users.noreply.keepsimple.io` placeholder. The

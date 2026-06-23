@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 // Mirrors the backend username regex from docs/user-api.md §3:
-// ^(?!.*[&%:;*|></\\#?"=])[^\s]{6,30}$
-const USERNAME_REGEX = /^(?!.*[&%:;*|></\\#?"=])\S{6,30}$/;
+// ^(?!.*[&%:;*|></\\#?"=])[^\s]{3,30}$
+const USERNAME_REGEX = /^(?!.*[&%:;*|></\\#?"=])\S{3,30}$/;
 
 // Backend limits per docs/library-api.md §"Library attributes (schema)":
 //   aboutMe        ≤ 2000 chars
@@ -14,10 +14,16 @@ export const editLibrarySchema = z.object({
     .min(1, 'Username is required')
     .regex(
       USERNAME_REGEX,
-      'Username must be 6-30 characters, no whitespace, and must not contain & % : ; * | > < \\ # ? " ='
+      'Username must be 3-30 characters, no whitespace, and must not contain & % : ; * | > < \\ # ? " =',
     ),
-  aboutMe: z.string().max(2000, 'About author must be 2000 characters or less').optional(),
-  aboutLibrary: z.string().max(4000, 'About library must be 4000 characters or less').optional(),
+  aboutMe: z
+    .string()
+    .max(2000, 'About author must be 2000 characters or less')
+    .optional(),
+  aboutLibrary: z
+    .string()
+    .max(4000, 'About library must be 4000 characters or less')
+    .optional(),
 });
 
 export type EditLibraryFormData = z.infer<typeof editLibrarySchema>;

@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
-import { ArrowIcon } from '@icons/library/svg';
+import { ArrowIcon, CheckMarkIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tag } from '@components/library/molecules/Tag';
@@ -117,12 +117,11 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
                       >
                         <Tag label={option.name} color={option.color} />
                         {selected && (
-                          <Text
-                            variant={TypographyVariant.TextSmall}
+                          <CheckMarkIcon
+                            width={15}
+                            height={12}
                             className={styles.checkmark}
-                          >
-                            ✓
-                          </Text>
+                          />
                         )}
                       </div>
                     );

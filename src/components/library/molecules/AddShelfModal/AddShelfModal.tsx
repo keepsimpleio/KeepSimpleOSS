@@ -74,6 +74,12 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
             type="text"
             value={name}
             onChange={e => handleNameChange(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddShelf();
+              }
+            }}
             placeholder="My shelf"
             placeholderColor="#9E9E9E"
             ariaLabel="Shelf name"

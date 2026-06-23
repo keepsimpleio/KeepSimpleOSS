@@ -2,12 +2,13 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
+  padding: 16px 0 16px 0;
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 16px;
 
     .left {
       display: flex;
@@ -19,11 +20,14 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        padding: 7px 10px;
+        border-radius: 16px;
+        background: var(--off-white);
 
         svg {
           display: block;
-          width: 24px;
-          height: 24px;
+          width: 13px;
+          height: 11px;
         }
       }
 
@@ -146,6 +150,7 @@
       width: -webkit-fill-available;
       position: absolute;
       bottom: 0;
+      right: -15px;
       margin-right: -32px;
       // Sit the shelf board behind the cards so each object rests fully opaque
       // *on* the shelf instead of bleeding through the board's translucent top
@@ -179,13 +184,13 @@
       // Arrows (and trackpad/touch swipe) drive navigation — hide the native
       // scrollbar so it doesn't cut across the shelf artwork.
       scrollbar-width: none;
-      padding-left: 58px;
+      padding-left: 80px;
       // Cards scrolled off the left should disappear *into* the shelf, not float
       // past its end. Clip the scroll viewport with a straight vertical left
       // edge so a card sliding left is cut cleanly upright instead of on a
       // diagonal (which read as a slanted/rotated cover). The first card rests
-      // at padding-left (58px), so at rest nothing is clipped.
-      clip-path: polygon(58px 0, 100% 0, 100% 100%, 58px 100%);
+      // at padding-left (80px), so at rest nothing is clipped.
+      clip-path: polygon(80px 0, 100% 0, 100% 100%, 80px 100%);
 
       &::-webkit-scrollbar {
         display: none;
@@ -195,6 +200,11 @@
     // When the row overflows (arrows present), expose a styled horizontal
     // scrollbar so the overflow is discoverable by drag, not just the arrows.
     .scrollable {
+      // The 12px scrollbar consumes content-box height, which would lift the
+      // bottom-aligned cards by 12px the moment overflow appears. Shave the same
+      // 12px off padding-bottom (35px → 23px) so the cards' seating line is
+      // unchanged — the bar rides in the freed space and reads as an overlay.
+      padding-bottom: 23px;
       // Must be `auto`, not `thin`: when scrollbar-width is thin/none, Chrome
       // 121+ renders the standard scrollbar and IGNORES the ::-webkit-scrollbar
       // rules below — so the custom 12px #c0b6ae bar never showed. `auto` keeps
@@ -212,6 +222,14 @@
         background: transparent;
       }
 
+      // Drop the platform's default increment/decrement arrow buttons at the
+      // bar's ends so only the thumb shows.
+      &::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+
       &::-webkit-scrollbar-thumb {
         background: #c0b6ae;
         border-radius: 6px;
@@ -221,7 +239,7 @@
     .cards {
       display: flex;
       flex-direction: row;
-      gap: 35px;
+      gap: 38px;
       flex-wrap: nowrap;
       justify-content: flex-start;
       width: max-content;

@@ -37,6 +37,12 @@
   border-bottom: 1px solid var(--beige);
 }
 
+// Recipient view has no action buttons, so the tall padding leaves the bare
+// title floating; tighten the vertical padding to keep the bar compact.
+.headerReadOnly {
+  padding: 5px 32px;
+}
+
 .heading {
   display: inline-flex;
   align-items: center;

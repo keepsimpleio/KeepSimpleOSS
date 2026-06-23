@@ -809,7 +809,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               />
               {objectType === 'video' && (
                 <Button
-                  type={ButtonType.Outlined}
+                  type={ButtonType.Secondary}
                   size={ButtonSize.Default}
                   label={isFetchingVideoMeta ? 'Fetching…' : 'Autofill'}
                   ariaLabel="Fetch video details from URL"

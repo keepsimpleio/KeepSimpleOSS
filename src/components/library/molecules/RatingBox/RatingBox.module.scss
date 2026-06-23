@@ -1,31 +1,29 @@
 .wrapper {
-  border: 1px solid var(--brown-border);
-  border-radius: 12px;
-  padding: 16px;
-  background: var(--white-200);
+  border: 1px solid var(--beige);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--white);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .header {
-  color: var(--black-transparent-300);
+  color: var(--gray-medium);
 }
 
 .row {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-
-  > * {
-    flex: 1;
-    min-width: 0;
-  }
 }
 
 .field {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   position: relative;
 }
 
@@ -38,10 +36,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  width: 100%;
-  padding: 10px 12px;
+  width: 120px;
+  flex-shrink: 0;
+  padding: 4px 12px;
   background: var(--white);
-  border: 1px solid var(--brown-border);
+  border: 1px solid var(--beige);
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.2s ease;
@@ -57,12 +56,15 @@
 }
 
 .value {
-  font-weight: 600;
+  font-weight: 400;
 
   &.placeholder {
     color: var(--gray);
-    font-weight: 400;
   }
+}
+
+.suffix {
+  color: var(--gray-200);
 }
 
 .chevron {
@@ -86,7 +88,7 @@
   left: 0;
   right: 0;
   background: var(--white);
-  border: 1px solid var(--brown-border);
+  border: 1px solid var(--beige);
   border-radius: 8px;
   box-shadow: var(--dropdown-shadow);
   z-index: 1000;
@@ -97,12 +99,12 @@
 }
 
 .option {
-  padding: 9px 12px;
+  padding: 4px 12px;
   text-align: left;
   background: transparent;
   border: none;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 400;
   transition: background-color 0.2s ease;
 
   &:hover {

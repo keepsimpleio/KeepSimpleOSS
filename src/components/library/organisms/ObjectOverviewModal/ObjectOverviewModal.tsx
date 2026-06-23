@@ -39,6 +39,7 @@ import {
   Button,
   ButtonSize,
   ButtonType,
+  IconPosition,
 } from '@components/library/molecules/Button';
 import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Dropdown } from '@components/library/molecules/Dropdown';
@@ -362,65 +363,66 @@ export function ObjectOverviewModal(
             {config.modalTitle}
           </Text>
 
-          <div className={styles.actions}>
-            {isOwner && (
-              <>
-                <Button
-                  type={ButtonType.Primary}
-                  size={ButtonSize.Default}
-                  label={shareCopied ? 'Copied' : 'Share'}
-                  ariaLabel={shareCopied ? 'Link copied' : 'Share'}
-                  Icon={<ShareIcon />}
-                  onClick={handleShare}
-                />
-                <div ref={menuRef} className={styles.menuWrapper}>
-                  <button
-                    type="button"
-                    className={styles.iconButton}
-                    aria-label="More actions"
-                    aria-haspopup="menu"
-                    aria-expanded={menuOpen}
-                    onClick={() => setMenuOpen(prev => !prev)}
-                  >
-                    <DotsVerticalIcon />
-                  </button>
-                  {menuOpen && (
-                    <div role="menu" className={styles.menu}>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        className={styles.menuItem}
-                        onClick={handleEdit}
-                      >
-                        <EditIcon />
-                        <Text variant={TypographyVariant.TextBase}>Edit</Text>
-                      </button>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        className={classNames(styles.menuItem, styles.danger)}
-                        onClick={handleDelete}
-                      >
-                        <DeleteIcon />
-                        <Text variant={TypographyVariant.TextBase}>Delete</Text>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-            <button
-              type="button"
-              className={styles.iconButton}
-              aria-label="Close"
-              onClick={close}
-            >
-              <CloseIcon />
-            </button>
-          </div>
+          <button
+            type="button"
+            className={styles.closeButton}
+            aria-label="Close"
+            onClick={close}
+          >
+            <CloseIcon width={16} height={16} />
+          </button>
         </div>
 
         <div className={styles.body}>
+          <div className={styles.actions}>
+            <Button
+              type={ButtonType.Primary}
+              size={ButtonSize.Default}
+              className={styles.shareButton}
+              label={shareCopied ? 'Copied' : 'Share'}
+              ariaLabel={shareCopied ? 'Link copied' : 'Share'}
+              Icon={<ShareIcon />}
+              iconPosition={IconPosition.Right}
+              onClick={handleShare}
+            />
+            {isOwner && (
+              <div ref={menuRef} className={styles.menuWrapper}>
+                <button
+                  type="button"
+                  className={styles.iconButton}
+                  aria-label="More actions"
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen(prev => !prev)}
+                >
+                  <DotsVerticalIcon />
+                </button>
+                {menuOpen && (
+                  <div role="menu" className={styles.menu}>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={styles.menuItem}
+                      onClick={handleEdit}
+                    >
+                      <EditIcon />
+                      <Text variant={TypographyVariant.TextBase}>Edit</Text>
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={classNames(styles.menuItem, styles.danger)}
+                      onClick={handleDelete}
+                    >
+                      <DeleteIcon />
+                      <Text variant={TypographyVariant.TextBase}>Delete</Text>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className={styles.left}>
             <div
               className={classNames(styles.cover, styles[config.coverShape])}
@@ -557,24 +559,12 @@ export function ObjectOverviewModal(
 
             {tagsList.length > 0 && (
               <div className={styles.row}>
-                <div className={styles.tagsHeader}>
-                  <Text
-                    variant={TypographyVariant.TextSmall}
-                    className={styles.rowLabel}
-                  >
-                    Tags
-                  </Text>
-                  {isOwner && (
-                    <button
-                      type="button"
-                      className={styles.tagsEditButton}
-                      onClick={handleEdit}
-                      aria-label="Edit tags"
-                    >
-                      <EditIcon width={14} height={14} />
-                    </button>
-                  )}
-                </div>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.rowLabel}
+                >
+                  Tags
+                </Text>
                 <div className={styles.tags}>
                   {tagsList.map(t => (
                     <Tag
@@ -597,57 +587,38 @@ export function ObjectOverviewModal(
                 Destination
               </Text>
               <div className={styles.destination}>
-                <div className={styles.destinationCell}>
-                  <Text
-                    variant={TypographyVariant.TextSmall}
-                    className={styles.rowLabel}
-                  >
-                    SHELF
-                  </Text>
-                  <Text
-                    variant={TypographyVariant.TextBase}
-                    className={styles.rowValue}
-                  >
-                    {shelfDisplayName}
-                  </Text>
-                </div>
-                <div className={styles.destinationCell}>
-                  <Text
-                    variant={TypographyVariant.TextSmall}
-                    className={styles.rowLabel}
-                  >
-                    Position
-                  </Text>
-                  <Text
-                    variant={TypographyVariant.TextBase}
-                    className={styles.rowValue}
-                  >
-                    {objectPosition !== undefined
-                      ? String(objectPosition + 1)
-                      : '—'}
-                  </Text>
-                </div>
+                <Text
+                  variant={TypographyVariant.TextBase}
+                  className={styles.destinationLine}
+                >
+                  <span className={styles.destinationKey}>SHELF:</span>{' '}
+                  {shelfDisplayName}
+                </Text>
+                <Text
+                  variant={TypographyVariant.TextBase}
+                  className={styles.destinationLine}
+                >
+                  <span className={styles.destinationKey}>Position:</span>{' '}
+                  {objectPosition !== undefined
+                    ? String(objectPosition + 1)
+                    : '—'}
+                </Text>
               </div>
             </div>
 
             {isOwner && (
               <div className={styles.row}>
-                <Text
-                  variant={TypographyVariant.TextSmall}
-                  className={styles.rowLabel}
-                >
-                  Move To
-                </Text>
                 <Dropdown
                   value={moveToShelfId}
                   onChange={handleMoveToChange}
+                  triggerClassName={styles.moveToTrigger}
                   options={moveToOptions}
                   placeholder={
                     moveToOptions.length === 0
                       ? 'No other shelves of this type'
                       : moveLoading
                         ? 'Moving…'
-                        : 'Select a shelf'
+                        : 'Move To'
                   }
                   disabled={moveToOptions.length === 0 || moveLoading}
                   portal
