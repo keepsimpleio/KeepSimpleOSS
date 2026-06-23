@@ -176,7 +176,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             className={styles.image}
             src="/assets/library/library.png"
             wideSrc="/assets/library/library-wide.png"
-            ultraWideSrc="/assets/library/library-test.png"
+            ultraWideSrc="/assets/library/library-ultrawide.png"
             alt="Keep Simple library cover"
           />
           <Button

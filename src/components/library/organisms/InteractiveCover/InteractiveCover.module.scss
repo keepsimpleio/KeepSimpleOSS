@@ -5,7 +5,7 @@
 // scales with the viewport (width fills, height shrinks), capping at its
 // natural 1920x852 at 1920px. The full art always shows, never cropped.
 //
-// 1920px and up: the 4000x852 panorama (library-test.png) in a fixed 852px
+// 1920px and up: the 4000x852 panorama (library-ultrawide.png) in a fixed 852px
 // band, shown at full height and centered, so the frame clips it left/right
 // only (never top/bottom). Below 4000px the sides crop inward; at 4000px+ the
 // whole panorama is visible and the blurred .background fills any side gap.

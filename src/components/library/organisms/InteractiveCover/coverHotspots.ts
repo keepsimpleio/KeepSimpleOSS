@@ -37,7 +37,7 @@ export interface CoverHotspot {
   /** Geometry for the wide `library-wide.png` cover, used at 768–1920px. */
   wide: HotspotGeometry;
   /**
-   * Geometry for the `library-test.png` panorama (4000x852), used at 1920px+.
+   * Geometry for the `library-ultrawide.png` panorama (4000x852), used at 1920px+.
    * Derived from `wide` (see `toUltraWide`), with optional per-hotspot tweaks.
    */
   ultraWide: HotspotGeometry;
