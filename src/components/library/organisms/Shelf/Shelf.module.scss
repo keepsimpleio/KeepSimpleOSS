@@ -96,6 +96,45 @@
     .button {
       color: var(--brown);
     }
+
+    // Mobile: split the cramped single row into two. Promote `.right`'s children
+    // into the header's flex flow (display: contents) so a zero-height full-width
+    // break can drop the two action buttons onto their own row:
+    //   Row 1: settings + type icon + name (left)  ·  count (right)
+    //   Row 2: Select shelf (left)  ·  Add object (right)
+    @media (max-width: 768px) {
+      flex-wrap: wrap;
+
+      .right {
+        display: contents;
+      }
+
+      .left {
+        order: 1;
+        min-width: 0;
+      }
+
+      .count {
+        order: 2;
+      }
+
+      &::after {
+        content: '';
+        flex-basis: 100%;
+        height: 0;
+        order: 3;
+      }
+
+      .selectShelfWrap {
+        order: 4;
+        margin-top: 12px;
+      }
+
+      .addWrap {
+        order: 5;
+        margin-top: 12px;
+      }
+    }
   }
 
   .content {
@@ -157,6 +196,22 @@
       // edge. Cards are z-index 1 (see .items).
       z-index: 0;
       pointer-events: none;
+
+      // Mobile: pull the board wider past both edges so it spans the narrow
+      // viewport. left/right set the box, so width is implied — drop the
+      // desktop fill-available width and its negative margin.
+      @media (max-width: 768px) {
+        left: -148px;
+        right: -35px;
+        width: auto;
+        margin-right: 0;
+
+        // The box is now sized by left/right (width: auto), so the inherited
+        // `auto` would shrink the board to its intrinsic width — fill instead.
+        img {
+          width: 100%;
+        }
+      }
 
       img {
         width: inherit;

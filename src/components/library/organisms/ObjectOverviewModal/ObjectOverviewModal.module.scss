@@ -359,6 +359,11 @@
     grid-template-columns: 1fr;
     gap: 24px;
     padding: 20px 16px;
+    // Stacked single-column grid in a flex:1 (full-height) body: grid's default
+    // align-content stretches the auto rows to fill leftover vertical space,
+    // ballooning `.actions` and `.left` far past their content. Pack rows to the
+    // top so each sizes to its content; extra space stays at the bottom.
+    align-content: start;
   }
 
   // Keep the cover from swallowing the screen on tall portrait art.

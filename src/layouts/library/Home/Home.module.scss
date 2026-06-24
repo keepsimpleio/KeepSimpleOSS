@@ -21,9 +21,12 @@
     // context, so the button needs to sit above them to stay clickable.
     z-index: 4;
 
-    @media (max-width: 590px) {
-      top: 20px;
-      left: 16px;
+    // Mobile: the cover is a full-bleed 448px band under the fixed 55px header.
+    // Center the button and sit it 22px below the header (55 + 22).
+    @media (max-width: 767px) {
+      top: 77px;
+      left: 50%;
+      transform: translateX(-50%);
       max-width: calc(100% - 32px);
     }
   }
