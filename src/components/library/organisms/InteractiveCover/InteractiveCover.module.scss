@@ -78,6 +78,26 @@ $cover-aspect-ultrawide: calc(4000 / 852);
   }
 }
 
+// Mobile (<768px): a fixed 448px portrait band. The hotspot layer isn't
+// rendered below 768px (see InteractiveCover.tsx `isWide`), so the cover is a
+// static image — the 3:2 art is covered into the box, cropping left/right.
+@media (max-width: 767px) {
+  .frame {
+    aspect-ratio: auto;
+    height: 448px;
+    max-height: none;
+  }
+
+  .image {
+    left: 0;
+    transform: none;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+}
+
 .trigger {
   position: absolute;
   margin: 0;

@@ -26,7 +26,7 @@
   .dropdown {
     position: absolute;
     top: calc(100% + 8px);
-    right: 24px;
+    right: 0;
     min-width: 180px;
     background-image: url('/keepsimple_/assets/user-dropdown/white-bg.png');
     background-size: cover;
@@ -36,6 +36,10 @@
     z-index: 200;
     display: flex;
     flex-direction: column;
+    // The home hero <video> is GPU-composited while playing and can paint over
+    // this menu even though z-index puts it on top; promoting the dropdown to
+    // its own layer forces the compositor to honour that order.
+    transform: translateZ(0);
   }
 
   .userNameDropdown {

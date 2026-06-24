@@ -82,6 +82,38 @@
   background: transparent !important;
 }
 
+// Mobile: the two action buttons crammed beside the heading squeezed the
+// "Share selection via link" label into a 3-line wrap. Stack the buttons under
+// one another, and pin each label to one 14px line.
+@media (max-width: 768px) {
+  .header {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .actions button {
+    width: 100%;
+    justify-content: center;
+
+    span {
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  }
+
+  // Two stacked buttons make the header taller than the desktop 87px bar, so
+  // grow the collapsed cap to fit it — otherwise the lower button is clipped.
+  .collapsed {
+    max-height: 120px;
+  }
+}
+
 // Fills the space under the header and clips its content as the panel collapses
 // (the panel's max-height drives the accordion). `flex: 1` + `min-height: 0`
 // let .body scroll when the panel hits its 440px cap with many objects.

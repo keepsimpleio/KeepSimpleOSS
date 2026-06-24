@@ -234,11 +234,22 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
-  // Page the row by most of a viewport, matching the LibraryToolbar jump arrows.
+  // Advance one card per click. The stride is the distance between two adjacent
+  // slots (card width + gap); with a single card fall back to its own width, and
+  // with none to most of a viewport.
   const scrollJump = (direction: -1 | 1) => {
     const el = itemsRef.current;
     if (!el) return;
-    el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+    const slots = cardsRef.current?.children;
+    let step = el.clientWidth * 0.8;
+    if (slots && slots.length > 0) {
+      const first = slots[0] as HTMLElement;
+      step =
+        slots.length > 1
+          ? (slots[1] as HTMLElement).offsetLeft - first.offsetLeft
+          : first.offsetWidth;
+    }
+    el.scrollBy({ left: direction * step, behavior: 'smooth' });
   };
 
   const closeRename = useCallback(() => {
