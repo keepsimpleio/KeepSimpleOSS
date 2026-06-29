@@ -1,0 +1,229 @@
+// Two regimes meet at 1920px.
+//
+// 768–1920px: the previous wide art (library-wide.png, 3840x1704) in the
+// original resizable band — the whole band keeps the art's 2.25:1 aspect and
+// scales with the viewport (width fills, height shrinks), capping at its
+// natural 1920x852 at 1920px. The full art always shows, never cropped.
+//
+// 1920px and up: the 4000x852 panorama (library-ultrawide.png) in a fixed 852px
+// band, shown at full height and centered, so the frame clips it left/right
+// only (never top/bottom). Below 4000px the sides crop inward; at 4000px+ the
+// whole panorama is visible and the blurred .background fills any side gap.
+//
+// .image and .layer share the same box in each regime, so the percentage
+// hotspot coordinates in coverHotspots.ts track whichever art is shown.
+//
+// Mobile (<768px) shows the taller 3:2 library.png.
+$cover-height: 852px;
+$cover-max-width: 1920px;
+$cover-aspect-wide: calc(3840 / 1704);
+$cover-aspect-ultrawide: calc(4000 / 852);
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: $cover-aspect-wide;
+  max-height: $cover-height;
+  overflow: hidden;
+}
+
+// Blurred copy of the art behind everything, so the side gaps on screens wider
+// than the art read as intentional rather than empty bands.
+.background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(24px);
+  transform: scale(1.1);
+  z-index: 0;
+}
+
+.image,
+.layer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: $cover-max-width;
+}
+
+.image {
+  height: auto;
+  z-index: 1;
+}
+
+.layer {
+  height: 100%;
+  z-index: 2;
+}
+
+// 1920px+ : swap to the panorama — fixed-height band, art at full height,
+// frame clips the sides only. .image and .layer get the same 4000x852 box.
+@media (min-width: 1920px) {
+  .frame {
+    aspect-ratio: auto;
+    height: $cover-height;
+    max-height: none;
+  }
+
+  .image,
+  .layer {
+    height: $cover-height;
+    width: auto;
+    max-width: none;
+    aspect-ratio: $cover-aspect-ultrawide;
+  }
+}
+
+// Mobile (<768px): a fixed 448px portrait band. The hotspot layer isn't
+// rendered below 768px (see InteractiveCover.tsx `isWide`), so the cover is a
+// static image — the 3:2 art is covered into the box, cropping left/right.
+@media (max-width: 767px) {
+  .frame {
+    aspect-ratio: auto;
+    height: 448px;
+    max-height: none;
+  }
+
+  .image {
+    left: 0;
+    transform: none;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+}
+
+.trigger {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  // Sits above the highlight art so the pointer always hits the building.
+  z-index: 2;
+
+  &:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// --- Calibration overlay (?coverDebug=1), dev-only ---------------------------
+.debugLayer {
+  outline: 2px solid rgba(255, 0, 0, 0.6);
+}
+
+.debugGrid {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  // 5% gridlines (every 10% emphasised) so building positions read off directly.
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 0, 0.7) 0 1px,
+      transparent 1px 10%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 0, 0.7) 0 1px,
+      transparent 1px 10%
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.3) 0 1px,
+      transparent 1px 5%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.3) 0 1px,
+      transparent 1px 5%
+    );
+}
+
+.debugHit {
+  z-index: 6;
+  background: rgba(0, 128, 255, 0.22);
+  outline: 1px solid rgba(0, 128, 255, 0.9);
+
+  &::after {
+    content: attr(data-hotspot);
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1px 4px;
+    font-size: 11px;
+    font-family: monospace;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+.highlight {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  // 0 -> 100 reveal: invisible glow, scaled down, clipped from the bottom up.
+  opacity: 0;
+  transform: scale(0.96);
+  transform-origin: 50% 100%;
+  clip-path: inset(100% 0 0 0);
+  filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.6s ease;
+  // Only hint the cheap compositor-friendly props; promoting clip-path and
+  // filter as well permanently allocated 4 layers per hotspot (20 total).
+  will-change: opacity, transform;
+
+  &.active {
+    opacity: 1;
+    transform: scale(1);
+    clip-path: inset(0 0 0 0);
+    filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.55));
+  }
+}
+
+.card {
+  position: absolute;
+  z-index: 3;
+  width: 392px;
+  max-width: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.4s ease 0.12s,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+
+  &.cardActive {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+// Respect reduced-motion: reveal everything instantly, no rise or glow ramp.
+@media (prefers-reduced-motion: reduce) {
+  .highlight,
+  .card {
+    transition: opacity 0.2s ease;
+    transform: none;
+    clip-path: none;
+  }
+
+  .highlight.active {
+    transform: none;
+  }
+}

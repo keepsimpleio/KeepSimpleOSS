@@ -224,11 +224,13 @@
     justify-content: center;
     z-index: 113;
     /* Desktop sets gap: 74px which pushes children past the viewport
-       on phones. Reset for mobile and clip any residual overflow. */
+       on phones. Reset for mobile. Don't add overflow-x: hidden here — it
+       forces overflow-y to auto, turning the fixed header into a scroll
+       container that clips the user-profile dropdown (which opens below it).
+       The root <html> already clips residual horizontal overflow. */
     gap: 0;
     max-width: 100vw;
     max-width: 100dvw;
-    overflow-x: hidden;
 
     .actions {
       display: block;

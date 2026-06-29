@@ -12,5 +12,8 @@ export interface ShareSelectionPanelProps {
   onReorder?: (next: IObject[]) => void;
   onRemove?: (id: number) => void;
   onClear?: () => void;
+  // Recipient view only: open the object's overview modal on card click,
+  // mirroring how a shelf card opens it.
+  onObjectClick?: (object: IObject) => void;
   className?: string;
 }

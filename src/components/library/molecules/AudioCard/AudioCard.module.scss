@@ -90,6 +90,14 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  // Fade the album art in once it decodes so it no longer pops in over the
+  // vinyl-sleeve placeholder; `.coverImageLoaded` is added on load.
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.coverImageLoaded {
+  opacity: 1;
 }
 
 .tags {

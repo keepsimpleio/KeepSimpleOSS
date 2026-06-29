@@ -1,25 +1,44 @@
+// The cell that frames the object plus its drop shadow. The shadow SVG fills
+// the full 292×182 box while the object (255×181) sits flush to the right
+// edge, so the soft shadow only peeks out on the left and bottom — matching the
+// book/audio cards where the spine/disc is exposed on the left.
+.wrap {
+  position: relative;
+  width: 292px;
+  height: 182px;
+}
+
+// Drop shadow behind the object, spanning the full cell. `none` on the SVG so
+// it stretches edge-to-edge instead of letterboxing inside the box.
+.shadow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .card {
   // Without explicit border-box the 12px padding adds 24px to both dimensions.
   box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   width: 255px;
-  height: 183px;
+  height: 181px;
   padding: 12px;
   background: var(--off-white);
   border-radius: 0 0 20px 20px;
-  box-shadow:
-    0px 6px 16px 0px #0000001a,
-    0px 16px 40px 0px #00000014;
   cursor: pointer;
   border: none;
   outline: none;
 
   &:focus-visible {
-    box-shadow:
-      0 0 0 2px var(--brown),
-      0px 6px 16px 0px #0000001a,
-      0px 16px 40px 0px #00000014;
+    box-shadow: 0 0 0 2px var(--brown);
   }
 }
 
@@ -106,17 +125,23 @@
 }
 
 // Compact variant for the share-selection panel: a bare 231×138 thumbnail
-// (no padding, no title bar, no caption).
-.card.compact {
+// (no shadow, no padding, no title bar, no caption).
+.wrap.compact {
   width: 231px;
   height: 138px;
-  padding: 0;
-  border-radius: 0;
-  // Swap the floating drop shadow for the double frame (inner 1.5px cream,
-  // outer 1px brown) so it matches the book/audio tiles in the panel.
-  box-shadow:
-    0 0 0 1.5px #f9f4eb,
-    0 0 0 2.5px #af6a34;
+
+  .card {
+    position: static;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border-radius: 0;
+    // Swap the floating drop shadow for the double frame (inner 1.5px cream,
+    // outer 1px brown) so it matches the book/audio tiles in the panel.
+    box-shadow:
+      0 0 0 1.5px #f9f4eb,
+      0 0 0 2.5px #af6a34;
+  }
 
   .thumbWrap {
     height: 100%;

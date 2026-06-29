@@ -9,6 +9,14 @@ export interface AnchoredPosition {
   placement: 'top' | 'bottom';
 }
 
+export interface AnchoredPositionOptions {
+  // When set, placement is decided purely by viewport width: open upward when
+  // `window.innerWidth <= openUpMaxWidth`, downward otherwise. This skips the
+  // measure-then-flip pass (the menu's height is not consulted), so the menu
+  // lands in its final position on first paint with no reposition flicker.
+  openUpMaxWidth?: number;
+}
+
 // Track the viewport position of an anchor element so a portaled menu can be
 // glued to it via `position: fixed`. Recomputes on scroll/resize while enabled,
 // so the menu stays attached as a modal or page scrolls. Returns null until the
@@ -18,12 +26,17 @@ export interface AnchoredPosition {
 // the viewport and there's more room above the trigger, it anchors above
 // instead. The menu's height is read from `menuRef` once it has mounted (a
 // rAF re-measure follows the first paint), so until then it defaults to 'bottom'.
+//
+// Pass `options.openUpMaxWidth` to bypass that measurement and pick placement by
+// viewport width alone (open up at/below the width, down above it).
 export const useAnchoredPosition = (
   anchorRef: RefObject<HTMLElement | null>,
   enabled: boolean,
   menuRef?: RefObject<HTMLElement | null>,
+  options?: AnchoredPositionOptions,
 ): AnchoredPosition | null => {
   const [position, setPosition] = useState<AnchoredPosition | null>(null);
+  const openUpMaxWidth = options?.openUpMaxWidth;
 
   useEffect(() => {
     if (!enabled) return;
@@ -38,9 +51,11 @@ export const useAnchoredPosition = (
       const spaceBelow = window.innerHeight - rect.bottom;
       const spaceAbove = rect.top;
       const openUp =
-        menuHeight > 0 &&
-        spaceBelow < menuHeight + margin &&
-        spaceAbove > spaceBelow;
+        openUpMaxWidth != null
+          ? window.innerWidth <= openUpMaxWidth
+          : menuHeight > 0 &&
+            spaceBelow < menuHeight + margin &&
+            spaceAbove > spaceBelow;
 
       const next: AnchoredPosition = {
         top: openUp ? rect.top - gap : rect.bottom + gap,
@@ -69,7 +84,7 @@ export const useAnchoredPosition = (
       window.removeEventListener('scroll', update, true);
       window.removeEventListener('resize', update);
     };
-  }, [anchorRef, enabled, menuRef]);
+  }, [anchorRef, enabled, menuRef, openUpMaxWidth]);
 
   return position;
 };

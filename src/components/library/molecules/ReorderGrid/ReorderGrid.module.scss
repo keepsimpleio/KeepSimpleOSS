@@ -18,7 +18,7 @@
   align-items: center;
   gap: 6px;
 
-  &.current .card {
+  &.current .card:not(.placeholder) {
     border-color: var(--brown);
     box-shadow: 0 0 0 2px var(--brown);
   }
@@ -29,13 +29,30 @@
   background: var(--white);
   border: 1px solid var(--brown-border);
   border-radius: 4px;
-  padding: 8px;
   cursor: grab;
   user-select: none;
   touch-action: none;
 
   &:active {
     cursor: grabbing;
+  }
+
+  // The slot left behind by the card being dragged. The solid clone rides the
+  // cursor in the DragOverlay; this dashed outline marks where it will land.
+  &.placeholder {
+    background: transparent;
+    border: 1px dashed #cebda1;
+    box-shadow: none;
+
+    .cover {
+      opacity: 0;
+    }
+  }
+
+  // The clone under the cursor — lift it off the grid so it reads as picked up.
+  &.overlayCard {
+    cursor: grabbing;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
   }
 
   .cover {
