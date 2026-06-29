@@ -1,7 +1,10 @@
 .sidebar {
   width: 100%;
   max-width: 331px;
-  height: 100vh;
+  // Stick below the global header rather than scrolling under it. The header is
+  // sticky 48px on desktop; offset by that and shorten the panel to the leftover
+  // viewport so the pinned guest-mode footer stays on screen while scrolling.
+  height: calc(100vh - 48px);
   background: var(--white-warm);
   box-shadow: var(--sidebar-shadow);
   padding: 16px;
@@ -11,13 +14,25 @@
   gap: 16px;
   transition: transform 0.3s ease;
   position: sticky;
-  top: 0;
+  top: 48px;
   align-self: flex-start;
+
+  // 1025–1140px: the header switches to position:fixed at 55px, so match the
+  // larger offset/height in that band.
+  @media (max-width: 1140px) {
+    top: 55px;
+    height: calc(100vh - 55px);
+  }
 
   @media (max-width: 1024px) {
     position: fixed;
+    // Full-height slide-in drawer overlay, above the fixed header.
+    top: 0;
     right: 0;
-    z-index: 20;
+    height: 100vh;
+    // Above the fixed global header (z-index up to 113 on mobile) so the
+    // drawer's own top controls aren't hidden beneath it when open.
+    z-index: 130;
     transform: translateX(100%);
   }
 
@@ -30,11 +45,12 @@
   }
 
   .close {
-    display: flex;
     justify-content: flex-end;
     display: none;
 
-    @media (max-width: 768px) {
+    // Shown wherever the panel is a slide-in drawer (≤1024px), not just on
+    // phones — otherwise the 769–1024px range could open it with no way to close.
+    @media (max-width: 1024px) {
       display: flex;
     }
   }
@@ -43,7 +59,11 @@
     gap: 24px;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 94px);
+    // Fill the space between the library dropdown and the pinned footer, then
+    // scroll internally. A hardcoded height here overflowed the 100vh sidebar
+    // and pushed the guest-mode footer below the fold.
+    flex: 1;
+    min-height: 0;
     overflow: auto;
 
     &::-webkit-scrollbar {
@@ -161,9 +181,13 @@
   }
 
   .footer {
+    // Stays pinned at the bottom of the sticky full-height sidebar so the
+    // guest-mode toggle is always reachable while the library scrolls.
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 65px;
     background: var(--off-white);
     padding: 8px 12px;
     border-radius: 4px;
@@ -171,6 +195,48 @@
     .label {
       font-weight: 600;
     }
+  }
+}
+
+// Edge tab that opens the drawer — mobile only. A half-pill anchored to the
+// right edge, vertically centered so it clears both the fixed header (top) and
+// the share-selection bar (bottom).
+.openTab {
+  display: none;
+}
+
+// Dims the page behind the open drawer; tapping it closes the panel.
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .openTab {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 52px;
+    padding: 0;
+    border: none;
+    border-radius: 10px 0 0 10px;
+    background: var(--white-warm);
+    box-shadow: var(--sidebar-shadow);
+    color: var(--brown);
+    cursor: pointer;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: block;
+    background: var(--black-100);
   }
 }
 

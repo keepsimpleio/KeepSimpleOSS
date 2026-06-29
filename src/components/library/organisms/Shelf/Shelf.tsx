@@ -10,6 +10,11 @@ import React, {
   useState,
 } from 'react';
 
+import {
+  MAX_OBJECTS_PER_SHELF,
+  SHELF_NAME_MAX_LENGTH,
+} from '@constants/library/common';
+
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
 
@@ -29,6 +34,7 @@ import {
 } from '@icons/library/svg';
 
 import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
+import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AudioCard } from '@components/library/molecules/AudioCard';
@@ -127,9 +133,6 @@ const SETTINGS_OPTIONS = [
   { value: 'delete', label: 'Delete shelf' },
 ];
 
-// Matches the single-shelf `name` constraint (`maxLength: 50`) in the backend schema.
-const SHELF_NAME_MAX_LENGTH = 50;
-
 export function Shelf(props: ShelfProps): JSX.Element {
   const {
     className,
@@ -159,6 +162,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
+
+  // Backend caps a shelf at 21 objects (all types combined). Pre-disable the
+  // Add control once the shelf is full — the backend stays the source of truth
+  // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
+  const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
 
   const router = useRouter();
   // The opened object is addressed by the URL, not local state: the last path
@@ -196,9 +204,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const [renameLoading, setRenameLoading] = useState(false);
   const [renameError, setRenameError] = useState<string | null>(null);
 
-  // Horizontal scroller: keep every card on one row and page through them with
-  // the arrows. Arrows only show when the row actually overflows; each click
-  // advances by one card width (+ the 24px gap).
+  // Horizontal scroller: keep every card on one row. When the row overflows we
+  // expose the styled scrollbar (`.scrollable`) so the overflow is discoverable
+  // by drag/swipe.
   const itemsRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -224,15 +232,25 @@ export function Shelf(props: ShelfProps): JSX.Element {
     };
   }, [syncScrollState, objects.length]);
 
-  const scrollByCard = (direction: -1 | 1) => {
+  const isOverflowing = canScrollLeft || canScrollRight;
+
+  // Advance one card per click. The stride is the distance between two adjacent
+  // slots (card width + gap); with a single card fall back to its own width, and
+  // with none to most of a viewport.
+  const scrollJump = (direction: -1 | 1) => {
     const el = itemsRef.current;
     if (!el) return;
-    const firstCard = el.querySelector<HTMLElement>(`.${styles.cards} > *`);
-    const step = firstCard ? firstCard.offsetWidth + 35 : el.clientWidth * 0.8;
+    const slots = cardsRef.current?.children;
+    let step = el.clientWidth * 0.8;
+    if (slots && slots.length > 0) {
+      const first = slots[0] as HTMLElement;
+      step =
+        slots.length > 1
+          ? (slots[1] as HTMLElement).offsetLeft - first.offsetLeft
+          : first.offsetWidth;
+    }
     el.scrollBy({ left: direction * step, behavior: 'smooth' });
   };
-
-  const isOverflowing = canScrollLeft || canScrollRight;
 
   const closeRename = useCallback(() => {
     if (renameLoading) return;
@@ -242,7 +260,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const { closeRef: renameCloseRef, close: closeRenameAnimated } =
     useModalClose(closeRename);
 
-  const openAdd = () => setIsAddOpen(true);
+  const openAdd = () => {
+    if (atObjectLimit) return;
+    setIsAddOpen(true);
+  };
   const closeAdd = () => setIsAddOpen(false);
 
   // Open/close are URL transitions, kept shallow so the library underneath is
@@ -269,12 +290,18 @@ export function Shelf(props: ShelfProps): JSX.Element {
       : null;
 
   // "Select shelf" bulk-toggles every object on this shelf into the share
-  // selection. Like the per-card chip, it's owner-only and public-only since
-  // private objects aren't shareable. When all are already selected it clears
-  // them; otherwise it adds them (selectMany stops at the cap).
-  const canSelectShelf = isOwner && visibility === 'public';
+  // selection. It's owner-only and stays visible regardless of visibility — the
+  // private/public toggle only governs guest access, not the owner's toolbar.
+  // The share backend 400s on non-public objects, so on a private shelf the
+  // button is shown but disabled (with a tooltip) rather than vanishing. When
+  // all are already selected it clears them; otherwise it adds them (selectMany
+  // stops at the cap).
   const allSelected =
     objects.length > 0 && objects.every(o => isSelected(o.id));
+  const selectShelfDisabled =
+    visibility !== 'public' ||
+    objects.length === 0 ||
+    (!allSelected && limitReached);
   const handleSelectShelf = () => {
     if (allSelected) removeMany(objects.map(o => o.id));
     else selectMany(objects);
@@ -419,44 +446,79 @@ export function Shelf(props: ShelfProps): JSX.Element {
         </div>
 
         <div className={styles.right}>
-          {canSelectShelf && (
-            <Button
-              label={allSelected ? 'Deselect shelf' : 'Select shelf'}
-              ariaLabel={allSelected ? 'Deselect shelf' : 'Select shelf'}
-              onClick={handleSelectShelf}
-              disabled={objects.length === 0 || (!allSelected && limitReached)}
-              type={ButtonType.Secondary}
-              size={ButtonSize.Default}
-              className={styles.button}
-              labelClassName={styles.text}
-            />
+          {isOwner && (
+            <span
+              className={styles.selectShelfWrap}
+              title={
+                visibility !== 'public'
+                  ? 'Make this shelf public to add its items to a share link.'
+                  : undefined
+              }
+            >
+              <Button
+                label={allSelected ? 'Deselect shelf' : 'Select shelf'}
+                ariaLabel={allSelected ? 'Deselect shelf' : 'Select shelf'}
+                onClick={handleSelectShelf}
+                disabled={selectShelfDisabled}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Default}
+                className={styles.button}
+                labelClassName={styles.text}
+              />
+            </span>
           )}
 
           {isOwner && (
-            <Button
-              label={`Add ${typeLabel}`}
-              ariaLabel={`Add ${typeLabel}`}
-              onClick={openAdd}
-              type={ButtonType.Text}
-              size={ButtonSize.Default}
-              Icon={<PlusIcon />}
-              iconPosition={IconPosition.Right}
-              className={styles.button}
-            />
+            <span className={styles.count}>
+              {objects.length}/{MAX_OBJECTS_PER_SHELF}
+            </span>
+          )}
+
+          {isOwner && (
+            <span
+              className={styles.addWrap}
+              title={
+                atObjectLimit
+                  ? `This shelf is full (max ${MAX_OBJECTS_PER_SHELF} items). Delete an item to add a new one.`
+                  : undefined
+              }
+            >
+              <Button
+                label={`Add ${typeLabel}`}
+                ariaLabel={`Add ${typeLabel}`}
+                onClick={openAdd}
+                type={ButtonType.Text}
+                size={ButtonSize.Default}
+                Icon={<PlusIcon />}
+                iconPosition={IconPosition.Right}
+                className={styles.button}
+                disabled={atObjectLimit}
+              />
+            </span>
           )}
         </div>
       </div>
 
       <div className={styles.content}>
         {isOverflowing && (
-          <Button
-            className={classNames(styles.arrow, styles.arrowLeft)}
-            onClick={() => scrollByCard(-1)}
-            type={ButtonType.Secondary}
-            Icon={<ArrowIcon />}
-            ariaLabel="Previous"
-            disabled={!canScrollLeft}
-          />
+          <>
+            <Button
+              className={classNames(styles.arrow, styles.arrowLeft)}
+              onClick={() => scrollJump(-1)}
+              type={ButtonType.Secondary}
+              Icon={<ArrowIcon />}
+              ariaLabel={`Scroll ${typeLabel}s left`}
+              disabled={!canScrollLeft}
+            />
+            <Button
+              className={styles.arrow}
+              onClick={() => scrollJump(1)}
+              type={ButtonType.Secondary}
+              Icon={<ArrowIcon />}
+              ariaLabel={`Scroll ${typeLabel}s right`}
+              disabled={!canScrollRight}
+            />
+          </>
         )}
         <div
           className={classNames(styles.items, {
@@ -480,6 +542,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
                   type={ButtonType.Secondary}
                   Icon={<PlusIcon />}
                   ariaLabel={`Add ${typeLabel}`}
+                  disabled={atObjectLimit}
                 />
               )}
             </div>
@@ -532,17 +595,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </div>
           )}
         </div>
-        {isOverflowing && (
-          <Button
-            className={styles.arrow}
-            onClick={() => scrollByCard(1)}
-            type={ButtonType.Secondary}
-            Icon={<ArrowIcon />}
-            ariaLabel="Next"
-            disabled={!canScrollRight}
-          />
-        )}
-
         <div className={styles.banner}>
           <Image src={shelfBackground} alt="" />
         </div>
@@ -604,6 +656,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 placeholderColor="#9E9E9E"
                 ariaLabel="Shelf name"
                 maxLength={SHELF_NAME_MAX_LENGTH}
+              />
+              <CharCount
+                current={renameValue.length}
+                max={SHELF_NAME_MAX_LENGTH}
               />
               {renameError && (
                 <Text

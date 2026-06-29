@@ -2,6 +2,8 @@ import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import React, { JSX, useCallback, useMemo, useState } from 'react';
 
+import { KEEPSIMPLE_URL, SHELF_FULL_MESSAGE } from '@constants/library/common';
+
 import type {
   Difficulty,
   IObject,
@@ -10,6 +12,8 @@ import type {
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
+import { objectSlug } from '@lib/library/objectSlug';
+import { isShelfFullError } from '@lib/library/shelfFull';
 import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 import { deleteObject } from '@api/library/object/deleteObject';
@@ -35,6 +39,7 @@ import {
   Button,
   ButtonSize,
   ButtonType,
+  IconPosition,
 } from '@components/library/molecules/Button';
 import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Dropdown } from '@components/library/molecules/Dropdown';
@@ -47,6 +52,10 @@ import { overviewConfigByType } from './ObjectOverviewModal.config';
 import type { ObjectOverviewModalProps } from './ObjectOverviewModal.types';
 
 import styles from './ObjectOverviewModal.module.scss';
+
+// Canonical public host for shareable links — env-driven in staging/prod,
+// falling back to the production domain (mirrors ShareSelectionPanel).
+const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
 
 function formatDate(iso?: string): string | null {
   if (!iso) return null;
@@ -109,6 +118,8 @@ export function ObjectOverviewModal(
   const [moveLoading, setMoveLoading] = useState(false);
   const [moveError, setMoveError] = useState<string | null>(null);
 
+  const [shareCopied, setShareCopied] = useState(false);
+
   const { currentShelves } = useGlobalState();
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
@@ -151,10 +162,24 @@ export function ObjectOverviewModal(
     }
   };
 
-  const handleShare = () => {
-    // TODO: Implement Share when sharing route + tokens exist.
-    // Likely: copy a public URL to clipboard like /share/objects/<slug or shareToken>.
-    // Depends on a public-read endpoint or signed URL from backend.
+  const handleShare = async () => {
+    const url = `${SHARE_BASE_URL}/library/${ownerUsername}/${objectSlug(object)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Clipboard API is unavailable on insecure origins / older browsers —
+      // fall back to a throwaway textarea + execCommand so copy still works.
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
   };
 
   // Fall back to `defaultShelfId` (the shelf this object is rendered under):
@@ -263,7 +288,13 @@ export function ObjectOverviewModal(
       };
       onUpdated?.(moved);
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Could not move object.';
+      // The target shelf may already hold 21 objects — the backend rejects the
+      // move with a 400. Surface the dedicated full-shelf copy.
+      const message = isShelfFullError(e)
+        ? SHELF_FULL_MESSAGE
+        : e instanceof Error
+          ? e.message
+          : 'Could not move object.';
       setMoveError(message);
       setMoveToShelfId(undefined);
     } finally {
@@ -276,9 +307,20 @@ export function ObjectOverviewModal(
   );
   const tagsList = attributes.tags?.data ?? [];
   const shelfData = attributes.shelf?.data;
+  // Prefer the live shelf from GlobalState (matched by id) so a rename reflects
+  // instantly — the object's embedded `shelf.data` is frozen at fetch time.
+  const liveShelf = currentShelves.find(s => s.id === currentShelfId);
   const shelfDisplayName =
-    shelfData?.attributes.name ?? attributes.shelfName ?? '—';
-  const shelfPosition = shelfData?.attributes.order;
+    liveShelf?.attributes.name ??
+    shelfData?.attributes.name ??
+    attributes.shelfName ??
+    '—';
+  // The object's own position within its shelf — not the shelf's order. Siblings
+  // arrive already sorted by `order` ASC, so the array index is the true rank
+  // (contiguous 1..N even when persisted `order` values have gaps). Fall back to
+  // the object's raw `order` when siblings weren't passed.
+  const positionIndex = shelfObjects?.findIndex(o => o.id === id) ?? -1;
+  const objectPosition = positionIndex >= 0 ? positionIndex : attributes.order;
   const publishedFormatted = formatDate(attributes.publicationDate);
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
@@ -321,65 +363,66 @@ export function ObjectOverviewModal(
             {config.modalTitle}
           </Text>
 
-          <div className={styles.actions}>
-            {isOwner && (
-              <>
-                <Button
-                  type={ButtonType.Primary}
-                  size={ButtonSize.Default}
-                  label="Share"
-                  ariaLabel="Share"
-                  Icon={<ShareIcon />}
-                  onClick={handleShare}
-                />
-                <div ref={menuRef} className={styles.menuWrapper}>
-                  <button
-                    type="button"
-                    className={styles.iconButton}
-                    aria-label="More actions"
-                    aria-haspopup="menu"
-                    aria-expanded={menuOpen}
-                    onClick={() => setMenuOpen(prev => !prev)}
-                  >
-                    <DotsVerticalIcon />
-                  </button>
-                  {menuOpen && (
-                    <div role="menu" className={styles.menu}>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        className={styles.menuItem}
-                        onClick={handleEdit}
-                      >
-                        <EditIcon />
-                        <Text variant={TypographyVariant.TextBase}>Edit</Text>
-                      </button>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        className={classNames(styles.menuItem, styles.danger)}
-                        onClick={handleDelete}
-                      >
-                        <DeleteIcon />
-                        <Text variant={TypographyVariant.TextBase}>Delete</Text>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-            <button
-              type="button"
-              className={styles.iconButton}
-              aria-label="Close"
-              onClick={close}
-            >
-              <CloseIcon />
-            </button>
-          </div>
+          <button
+            type="button"
+            className={styles.closeButton}
+            aria-label="Close"
+            onClick={close}
+          >
+            <CloseIcon width={16} height={16} />
+          </button>
         </div>
 
         <div className={styles.body}>
+          <div className={styles.actions}>
+            <Button
+              type={ButtonType.Primary}
+              size={ButtonSize.Default}
+              className={styles.shareButton}
+              label={shareCopied ? 'Copied' : 'Share'}
+              ariaLabel={shareCopied ? 'Link copied' : 'Share'}
+              Icon={<ShareIcon />}
+              iconPosition={IconPosition.Right}
+              onClick={handleShare}
+            />
+            {isOwner && (
+              <div ref={menuRef} className={styles.menuWrapper}>
+                <button
+                  type="button"
+                  className={styles.iconButton}
+                  aria-label="More actions"
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen(prev => !prev)}
+                >
+                  <DotsVerticalIcon />
+                </button>
+                {menuOpen && (
+                  <div role="menu" className={styles.menu}>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={styles.menuItem}
+                      onClick={handleEdit}
+                    >
+                      <EditIcon />
+                      <Text variant={TypographyVariant.TextBase}>Edit</Text>
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={classNames(styles.menuItem, styles.danger)}
+                      onClick={handleDelete}
+                    >
+                      <DeleteIcon />
+                      <Text variant={TypographyVariant.TextBase}>Delete</Text>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className={styles.left}>
             <div
               className={classNames(styles.cover, styles[config.coverShape])}
@@ -516,24 +559,12 @@ export function ObjectOverviewModal(
 
             {tagsList.length > 0 && (
               <div className={styles.row}>
-                <div className={styles.tagsHeader}>
-                  <Text
-                    variant={TypographyVariant.TextSmall}
-                    className={styles.rowLabel}
-                  >
-                    Tags
-                  </Text>
-                  {isOwner && (
-                    <button
-                      type="button"
-                      className={styles.tagsEditButton}
-                      onClick={handleEdit}
-                      aria-label="Edit tags"
-                    >
-                      <EditIcon width={14} height={14} />
-                    </button>
-                  )}
-                </div>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.rowLabel}
+                >
+                  Tags
+                </Text>
                 <div className={styles.tags}>
                   {tagsList.map(t => (
                     <Tag
@@ -556,55 +587,38 @@ export function ObjectOverviewModal(
                 Destination
               </Text>
               <div className={styles.destination}>
-                <div className={styles.destinationCell}>
-                  <Text
-                    variant={TypographyVariant.TextSmall}
-                    className={styles.rowLabel}
-                  >
-                    SHELF
-                  </Text>
-                  <Text
-                    variant={TypographyVariant.TextBase}
-                    className={styles.rowValue}
-                  >
-                    {shelfDisplayName}
-                  </Text>
-                </div>
-                <div className={styles.destinationCell}>
-                  <Text
-                    variant={TypographyVariant.TextSmall}
-                    className={styles.rowLabel}
-                  >
-                    Position
-                  </Text>
-                  <Text
-                    variant={TypographyVariant.TextBase}
-                    className={styles.rowValue}
-                  >
-                    {shelfPosition !== undefined ? String(shelfPosition) : '—'}
-                  </Text>
-                </div>
+                <Text
+                  variant={TypographyVariant.TextBase}
+                  className={styles.destinationLine}
+                >
+                  <span className={styles.destinationKey}>SHELF:</span>{' '}
+                  {shelfDisplayName}
+                </Text>
+                <Text
+                  variant={TypographyVariant.TextBase}
+                  className={styles.destinationLine}
+                >
+                  <span className={styles.destinationKey}>Position:</span>{' '}
+                  {objectPosition !== undefined
+                    ? String(objectPosition + 1)
+                    : '—'}
+                </Text>
               </div>
             </div>
 
             {isOwner && (
               <div className={styles.row}>
-                <Text
-                  variant={TypographyVariant.TextSmall}
-                  className={styles.rowLabel}
-                >
-                  Move To
-                </Text>
                 <Dropdown
                   value={moveToShelfId}
                   onChange={handleMoveToChange}
+                  triggerClassName={styles.moveToTrigger}
                   options={moveToOptions}
                   placeholder={
                     moveToOptions.length === 0
                       ? 'No other shelves of this type'
                       : moveLoading
                         ? 'Moving…'
-                        : 'Select a shelf'
+                        : 'Move To'
                   }
                   disabled={moveToOptions.length === 0 || moveLoading}
                   portal

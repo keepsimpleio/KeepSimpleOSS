@@ -3,8 +3,6 @@ import classNames from 'classnames';
 import Image from 'next/image';
 import React, { JSX } from 'react';
 
-import { BookShadowIcon } from '@icons/library/svg';
-
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
 import type { BookCardProps } from './BookCard.types';
@@ -59,8 +57,9 @@ export function BookCard({
             />
           </div>
         )}
+        <div className={styles.placeholder} aria-hidden="true" />
         <div className={styles.cover}>
-          {coverUrl ? (
+          {coverUrl && (
             <Image
               src={coverUrl}
               alt={attributes.title}
@@ -68,12 +67,8 @@ export function BookCard({
               sizes="146px"
               className={styles.coverImage}
             />
-          ) : (
-            <div className={styles.coverPlaceholder} />
           )}
-          <div className={styles.alpha} aria-hidden />
         </div>
-        <BookShadowIcon className={styles.shadow} aria-hidden />
       </div>
 
       {/* Always render the tag column (even when empty) so the card keeps a

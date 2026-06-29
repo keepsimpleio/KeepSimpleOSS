@@ -20,7 +20,13 @@ import { getTagsList } from '@api/library/tag/getTagsList';
 import { updateTag, UpdateTagRequest } from '@api/library/tag/updateTag';
 
 import avatarImage from '@icons/library/images/avatar.png';
-import { CloseIcon, CopyIcon, EditIcon, PlusIcon } from '@icons/library/svg';
+import {
+  CloseIcon,
+  CopyIcon,
+  EditIcon,
+  InfoIcon,
+  PlusIcon,
+} from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useDashboard } from '@components/Context/library/DashboardContext';
@@ -316,6 +322,27 @@ export function Sidebar() {
 
   return (
     <>
+      {/* Mobile-only: the panel is a fixed off-screen drawer at ≤1024px, so it
+          needs its own opener (the Header burger drives a different, global
+          nav). The edge tab pulls it in; the backdrop taps it closed. Both are
+          hidden on desktop, where the panel is a static sticky column. */}
+      {!isSidebarOpen && (
+        <button
+          type="button"
+          className={styles.openTab}
+          onClick={toggleSidebar}
+          aria-label="Open library info panel"
+        >
+          <InfoIcon />
+        </button>
+      )}
+      {isSidebarOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
+      )}
       <aside
         className={classNames(styles.sidebar, {
           [styles.open]: isSidebarOpen,
@@ -422,7 +449,7 @@ export function Sidebar() {
           <div className={styles.about}>
             <div className={styles.header}>
               <Text className={styles.label}>Tags</Text>
-              {canEdit && (
+              {canEdit && displayedTags.length > 0 && (
                 <Button
                   label="Edit"
                   ariaLabel="Edit"
@@ -496,14 +523,16 @@ export function Sidebar() {
           </div>
         </div>
 
-        <div className={styles.footer}>
-          <Text className={styles.label}>Guest mode</Text>
-          <Toggle
-            checked={isGuestMode}
-            onChange={toggleGuestMode}
-            ariaLabel="Guest mode"
-          />
-        </div>
+        {isMyLibrary && (
+          <div className={styles.footer}>
+            <Text className={styles.label}>Guest mode</Text>
+            <Toggle
+              checked={isGuestMode}
+              onChange={toggleGuestMode}
+              ariaLabel="Guest mode"
+            />
+          </div>
+        )}
       </aside>
       {isOpenTagModal && (
         <CreateTagModal

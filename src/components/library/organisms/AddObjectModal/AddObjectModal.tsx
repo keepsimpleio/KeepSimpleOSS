@@ -1,16 +1,27 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { detectSource } from '@utils/library/detectSource';
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import {
   type AddObjectFormData,
   type BookFormData,
   getSchemaForType,
+  OBJECT_FIELD_LIMITS,
 } from '@utils/library/schema/addObjectSchema';
 import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
 
+import { SHELF_FULL_MESSAGE } from '@constants/library/common';
+
+import type { IAutofillSuggestion } from '@local-types/library/autofill';
 import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
 
+import { isShelfFullError } from '@lib/library/shelfFull';
+
+import { fetchCoverFile } from '@api/library/autofill/fetchCoverFile';
+import { lookupVideoByUrl } from '@api/library/autofill/lookupVideoByUrl';
+import { searchAudioSuggestions } from '@api/library/autofill/searchAudioSuggestions';
+import { searchBookSuggestions } from '@api/library/autofill/searchBookSuggestions';
 import { createObject } from '@api/library/object/createObject';
 import { reorderObjects } from '@api/library/object/reorderObjects';
 import { updateObject } from '@api/library/object/updateObject';
@@ -21,6 +32,7 @@ import { uploadFile } from '@api/library/upload/uploadFile';
 import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
@@ -40,6 +52,7 @@ import { StepIndicator } from '@components/library/molecules/StepIndicator';
 import { TagMultiSelect } from '@components/library/molecules/TagMultiSelect';
 import type { TagOption } from '@components/library/molecules/TagMultiSelect/TagMultiSelect.types';
 import { Textarea } from '@components/library/molecules/Textarea';
+import { TitleAutocomplete } from '@components/library/molecules/TitleAutocomplete';
 
 import { configByType } from './AddObjectModal.config';
 import type { AddObjectModalProps, FieldKey } from './AddObjectModal.types';
@@ -65,6 +78,8 @@ function buildDefaults(
     author: a.author ?? '',
     description: a.description ?? '',
     sourceUrl: a.sourceUrl ?? '',
+    source: a.source ?? '',
+    duration: a.duration ?? undefined,
     publicationDate: a.publicationDate ? new Date(a.publicationDate) : null,
     coverImage: null,
   };
@@ -72,6 +87,14 @@ function buildDefaults(
 }
 
 const DRAFT_REORDER_ID = 'draft-new';
+
+// Google Books dates come as "2019", "2019-10" or "2019-10-15".
+function parsePublicationDate(raw: string): Date | null {
+  const [y, m, d] = raw.split('-').map(Number);
+  if (!y || Number.isNaN(y)) return null;
+  const date = new Date(y, (m || 1) - 1, d || 1);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 
 // Pull the status + Strapi error message out of an axios failure so a rejected
 // reorder reports *why* (e.g. 403 permission, 400 "All objects must belong to
@@ -124,6 +147,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
+  const [isFetchingVideoMeta, setIsFetchingVideoMeta] = useState(false);
 
   const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
@@ -159,8 +184,100 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors, isValid },
   } = form;
+
+  // Live lengths for the character counters. `author`/`description` are optional
+  // on every schema, so coalesce to '' before measuring.
+  const titleLength = (watch('title') ?? '').length;
+  const authorLength = (watch('author') ?? '').length;
+  const descriptionLength = (watch('description') ?? '').length;
+
+  // Push a provider suggestion into the form. Values are clamped to the zod
+  // limits so an autofill can never leave the form invalid; the cover is
+  // best-effort — fields land first, the image follows when the proxy resolves.
+  const applySuggestion = async (s: IAutofillSuggestion) => {
+    const isBook = objectType === 'book';
+    const setOptions = { shouldValidate: true, shouldDirty: true } as const;
+
+    setValue('title', s.title.slice(0, OBJECT_FIELD_LIMITS.title), setOptions);
+    if (s.author) {
+      setValue(
+        'author',
+        s.author.slice(0, OBJECT_FIELD_LIMITS.author),
+        setOptions,
+      );
+    }
+    if (s.description) {
+      setValue(
+        'description',
+        s.description.slice(0, OBJECT_FIELD_LIMITS.description),
+        setOptions,
+      );
+    }
+    if (!isBook) {
+      // A suggestion's link is the provider's own — for audio it's always an
+      // Apple/iTunes trackViewUrl. Only seed the URL when the user hasn't
+      // entered their own, so a pasted Spotify (etc.) link isn't clobbered.
+      // Either way derive Source from whatever URL ends up in the form, never
+      // from the suggestion link directly — otherwise Source could read
+      // "Apple Music" while the URL field shows a Spotify link.
+      const currentUrl = (
+        form.getValues('sourceUrl' as never) as unknown as string
+      )?.trim();
+      if (!currentUrl && s.sourceUrl) {
+        setValue('sourceUrl' as never, s.sourceUrl as never, setOptions);
+      }
+      const effectiveUrl = currentUrl || s.sourceUrl;
+      if (effectiveUrl) {
+        const detected = detectSource(effectiveUrl);
+        if (detected) {
+          setValue('source' as never, detected as never, setOptions);
+        }
+      }
+    }
+    if (objectType === 'audio' && s.durationSeconds != null) {
+      setValue('duration' as never, s.durationSeconds as never, setOptions);
+    }
+    if (isBook && s.publicationDate) {
+      const date = parsePublicationDate(s.publicationDate);
+      if (date) {
+        setValue('publicationDate' as never, date as never, setOptions);
+      }
+    }
+    if (s.coverUrl) {
+      const file = await fetchCoverFile(s.coverUrl, s.title);
+      if (file) setValue('coverImage', file, setOptions);
+    }
+  };
+
+  const handleVideoUrlFetch = async (rawUrl?: string) => {
+    const url = (
+      rawUrl ?? (form.getValues('sourceUrl' as never) as unknown as string)
+    )?.trim();
+    setAutofillNotice(null);
+    if (!url) return;
+    setIsFetchingVideoMeta(true);
+    try {
+      const result = await lookupVideoByUrl(url);
+      if (result.status === 'unsupported') {
+        setAutofillNotice(
+          'Autofill supports YouTube links — fill the details manually.',
+        );
+        return;
+      }
+      if (result.status === 'error') {
+        setAutofillNotice(
+          "Couldn't fetch video details. Please fill them manually.",
+        );
+        return;
+      }
+      await applySuggestion(result.suggestion);
+    } finally {
+      setIsFetchingVideoMeta(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -257,7 +374,24 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         size: number;
       } | null = null;
       if (data.coverImage instanceof File) {
-        const uploaded = await uploadFile(data.coverImage);
+        let uploaded: Awaited<ReturnType<typeof uploadFile>>;
+        try {
+          uploaded = await uploadFile(data.coverImage);
+        } catch (uploadErr) {
+          // The image goes straight to Strapi. When it exceeds the server's
+          // upload limit the request is rejected with 413 — or dropped by the
+          // proxy so axios sees a bare network error (no response). Either way,
+          // surface a clear size message instead of the generic save error.
+          const status = (uploadErr as { response?: { status?: number } })
+            ?.response?.status;
+          const hasResponse = !!(uploadErr as { response?: unknown })?.response;
+          setSubmitError(
+            status === 413 || !hasResponse
+              ? 'Image is too large. Maximum size is 5 MB.'
+              : "Couldn't upload the image. Please try again.",
+          );
+          return;
+        }
         coverImageId = uploaded.id;
         uploadedCover = uploaded;
       } else if (editing) {
@@ -294,6 +428,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           author: data.author || undefined,
           description: data.description || undefined,
           sourceUrl: 'sourceUrl' in data ? data.sourceUrl : undefined,
+          source: 'source' in data ? data.source || undefined : undefined,
+          duration: 'duration' in data ? data.duration : undefined,
           publicationDate,
           tags,
           shelf,
@@ -317,6 +453,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           author: data.author || undefined,
           description: data.description || undefined,
           sourceUrl: 'sourceUrl' in data ? data.sourceUrl : undefined,
+          source: 'source' in data ? data.source || undefined : undefined,
+          duration: 'duration' in data ? data.duration : undefined,
           publicationDate,
           coverImage: coverImageId ?? undefined,
           tags,
@@ -452,6 +590,13 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       setShowSuccess(true);
     } catch (e) {
+      // Backend caps each shelf at 21 objects (all types combined) and rejects
+      // an over-limit create — or a move into a full shelf via the shelf
+      // dropdown — with a 400. Surface the dedicated full-shelf copy.
+      if (isShelfFullError(e)) {
+        setSubmitError(SHELF_FULL_MESSAGE);
+        return;
+      }
       // Axios failures carry a raw "Request failed with status code 500" — not
       // useful to a user. Show a friendly line (the title is the usual culprit)
       // and only fall back to a specific message when it isn't an HTTP error.
@@ -470,7 +615,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     const label = config.labels[key] ?? key;
 
     switch (key) {
-      case 'title':
+      case 'title': {
+        // Typeahead autofill is create-only (silently rewriting an object the
+        // user opened to edit would be hostile) and not for video — videos
+        // autofill from a pasted YouTube URL instead.
+        const hasTypeahead = isCreate && objectType !== 'video';
         return (
           <div key={key} className={styles.field}>
             <Text
@@ -479,18 +628,35 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
             >
               {label}
             </Text>
-            <Input
-              type="text"
-              ariaLabel={label}
-              placeholder={label}
-              placeholderColor="#9E9E9E"
-              {...register('title')}
-            />
+            {hasTypeahead ? (
+              <TitleAutocomplete
+                registration={register('title')}
+                ariaLabel={label}
+                placeholder={label}
+                placeholderColor="#9E9E9E"
+                fetchSuggestions={
+                  objectType === 'book'
+                    ? searchBookSuggestions
+                    : searchAudioSuggestions
+                }
+                onSelect={applySuggestion}
+              />
+            ) : (
+              <Input
+                type="text"
+                ariaLabel={label}
+                placeholder={label}
+                placeholderColor="#9E9E9E"
+                {...register('title')}
+              />
+            )}
+            <CharCount current={titleLength} max={OBJECT_FIELD_LIMITS.title} />
             {errors.title && (
               <p className={styles.error}>{errors.title.message}</p>
             )}
           </div>
         );
+      }
       case 'author':
         return (
           <div key={key} className={styles.field}>
@@ -506,6 +672,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               placeholder={label}
               placeholderColor="#9E9E9E"
               {...register('author')}
+            />
+            <CharCount
+              current={authorLength}
+              max={OBJECT_FIELD_LIMITS.author}
             />
             {errors.author && (
               <p className={styles.error}>{errors.author.message}</p>
@@ -557,6 +727,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               rows={5}
               {...register('description')}
             />
+            <CharCount
+              current={descriptionLength}
+              max={OBJECT_FIELD_LIMITS.description}
+            />
             {errors.description && (
               <p className={styles.error}>{errors.description.message}</p>
             )}
@@ -591,7 +765,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
             )}
           </div>
         );
-      case 'sourceUrl':
+      case 'sourceUrl': {
+        const sourceUrlReg = register('sourceUrl' as never);
         return (
           <div key={key} className={styles.field}>
             <Text
@@ -607,24 +782,51 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                 placeholder="https://…"
                 placeholderColor="#9E9E9E"
                 wrapperClassName={styles.urlInput}
-                {...register('sourceUrl' as never)}
-              />
-              <Button
-                type={ButtonType.Outlined}
-                size={ButtonSize.Default}
-                label="Search"
-                ariaLabel="Fetch metadata from URL"
-                Icon={<SearchIcon />}
-                onClick={() => {
-                  // TODO: hook up URL metadata auto-fetch (YouTube / Spotify / generic OG)
+                {...sourceUrlReg}
+                onBlur={e => {
+                  sourceUrlReg.onBlur(e);
+                  // Derive the platform name (Spotify, YouTube…) from the link
+                  // so `source` fills itself — never typed by the user.
+                  const detected = detectSource(e.target.value);
+                  if (detected) {
+                    setValue('source' as never, detected as never, {
+                      shouldDirty: true,
+                    });
+                  }
                 }}
+                onPaste={
+                  objectType === 'video'
+                    ? e => {
+                        const pasted = e.clipboardData.getData('text');
+                        // Fire only for YouTube-looking links; the route does
+                        // the real video-id validation.
+                        if (/youtu\.?be/i.test(pasted)) {
+                          handleVideoUrlFetch(pasted);
+                        }
+                      }
+                    : undefined
+                }
               />
+              {objectType === 'video' && (
+                <Button
+                  type={ButtonType.Secondary}
+                  size={ButtonSize.Default}
+                  label={isFetchingVideoMeta ? 'Fetching…' : 'Autofill'}
+                  ariaLabel="Fetch video details from URL"
+                  Icon={<SearchIcon />}
+                  disabled={isFetchingVideoMeta}
+                  onClick={() => handleVideoUrlFetch()}
+                />
+              )}
             </div>
-            {'sourceUrl' in errors && errors.sourceUrl?.message && (
+            {'sourceUrl' in errors && errors.sourceUrl?.message ? (
               <p className={styles.error}>{String(errors.sourceUrl.message)}</p>
+            ) : (
+              autofillNotice && <p className={styles.hint}>{autofillNotice}</p>
             )}
           </div>
         );
+      }
       default:
         return null;
     }

@@ -7,14 +7,29 @@
     min-height: calc(100vh - 168px);
   }
 
+  // Mobile: drop the top padding so the sticky toolbar's divider sits flush
+  // against the fixed header instead of floating below a 16px gap.
+  @media (max-width: 768px) {
+    padding-top: 0;
+  }
+
+  // Fill the viewport below the 48px sticky header so the content centers in the
+  // real available space rather than the top 60vh (which sat it too high).
   .empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 28px;
-    min-height: 60vh;
+    min-height: calc(100vh - 48px);
     padding: 24px;
+  }
+
+  // Gives the absolute-positioned Loader a sized, positioned region to fill so
+  // the spinner centers in the content area instead of collapsing to the top.
+  .loading {
+    position: relative;
+    min-height: calc(100vh - 48px);
   }
 
   .text {

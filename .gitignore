@@ -8,6 +8,9 @@
 # Local-only — never commit.
 /attachments/
 
+# Pasted/dropped image scratch — local-only, never commit.
+/dropped-images/
+
 # Logs
 logs
 *.log

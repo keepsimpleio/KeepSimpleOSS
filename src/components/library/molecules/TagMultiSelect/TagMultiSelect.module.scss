@@ -1,6 +1,11 @@
 .wrapper {
-  position: relative;
   width: 100%;
+}
+
+// Anchors the dropdown menu to the trigger alone — kept separate from the
+// selected chips below so the chips' height never pushes the menu off the box.
+.field {
+  position: relative;
 }
 
 .trigger {
@@ -71,7 +76,7 @@
   }
 
   .checkmark {
-    color: var(--green-200);
+    flex-shrink: 0;
   }
 }
 

@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
-import { ArrowIcon } from '@icons/library/svg';
+import { ArrowIcon, CheckMarkIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tag } from '@components/library/molecules/Tag';
@@ -51,92 +51,93 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
 
   return (
     <div ref={rootRef} className={classNames(className, styles.wrapper)}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className={classNames(styles.trigger, { [styles.open]: isOpen })}
-        onClick={() => !disabled && setIsOpen(prev => !prev)}
-        disabled={disabled}
-        aria-label={ariaLabel}
-        aria-expanded={isOpen}
-      >
-        <Text
-          variant={TypographyVariant.TextBase}
-          className={styles.placeholder}
+      <div className={styles.field}>
+        <button
+          ref={triggerRef}
+          type="button"
+          className={classNames(styles.trigger, { [styles.open]: isOpen })}
+          onClick={() => !disabled && setIsOpen(prev => !prev)}
+          disabled={disabled}
+          aria-label={ariaLabel}
+          aria-expanded={isOpen}
         >
-          {value.length > 0 ? `${value.length} selected` : placeholder}
-        </Text>
-        <ArrowIcon
-          width={16}
-          height={16}
-          className={classNames(styles.icon, { [styles.rotated]: isOpen })}
-        />
-      </button>
-      {isOpen &&
-        (!portal || menuPos) &&
-        (() => {
-          const menuContent = (
-            <div
-              className={styles.menu}
-              role="listbox"
-              style={
-                portal && menuPos
-                  ? {
-                      position: 'fixed',
-                      top: menuPos.top,
-                      left: menuPos.left,
-                      width: menuPos.width,
-                      zIndex: 1500,
-                    }
-                  : undefined
-              }
-              // Portaled menu sits outside rootRef, so useClickOutside would close
-              // it on the click that's about to toggle an option. Stop the
-              // pointerdown from reaching the document-level listener.
-              onPointerDown={portal ? e => e.stopPropagation() : undefined}
-            >
-              {options.length === 0 ? (
-                <div className={styles.empty}>
-                  <Text variant={TypographyVariant.TextSmall}>
-                    {emptyState}
-                  </Text>
-                </div>
-              ) : (
-                options.map(option => {
-                  const selected = isSelected(option);
-                  return (
-                    <div
-                      key={option.id}
-                      role="option"
-                      aria-selected={selected}
-                      className={classNames(styles.option, {
-                        [styles.selected]: selected,
-                      })}
-                      onClick={() => toggle(option)}
-                    >
-                      <Tag label={option.name} color={option.color} />
-                      {selected && (
-                        <Text
-                          variant={TypographyVariant.TextSmall}
-                          className={styles.checkmark}
-                        >
-                          ✓
-                        </Text>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          );
+          <Text
+            variant={TypographyVariant.TextBase}
+            className={styles.placeholder}
+          >
+            {value.length > 0 ? `${value.length} selected` : placeholder}
+          </Text>
+          <ArrowIcon
+            width={16}
+            height={16}
+            className={classNames(styles.icon, { [styles.rotated]: isOpen })}
+          />
+        </button>
+        {isOpen &&
+          (!portal || menuPos) &&
+          (() => {
+            const menuContent = (
+              <div
+                className={styles.menu}
+                role="listbox"
+                style={
+                  portal && menuPos
+                    ? {
+                        position: 'fixed',
+                        top: menuPos.top,
+                        left: menuPos.left,
+                        width: menuPos.width,
+                        zIndex: 1500,
+                      }
+                    : undefined
+                }
+                // Portaled menu sits outside rootRef, so useClickOutside would close
+                // it on the click that's about to toggle an option. Stop the
+                // pointerdown from reaching the document-level listener.
+                onPointerDown={portal ? e => e.stopPropagation() : undefined}
+              >
+                {options.length === 0 ? (
+                  <div className={styles.empty}>
+                    <Text variant={TypographyVariant.TextSmall}>
+                      {emptyState}
+                    </Text>
+                  </div>
+                ) : (
+                  options.map(option => {
+                    const selected = isSelected(option);
+                    return (
+                      <div
+                        key={option.id}
+                        role="option"
+                        aria-selected={selected}
+                        className={classNames(styles.option, {
+                          [styles.selected]: selected,
+                        })}
+                        onClick={() => toggle(option)}
+                      >
+                        <Tag label={option.name} color={option.color} />
+                        {selected && (
+                          <CheckMarkIcon
+                            width={15}
+                            height={12}
+                            className={styles.checkmark}
+                          />
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            );
 
-          return portal && typeof document !== 'undefined'
-            ? createPortal(
-                <div className="library">{menuContent}</div>,
-                document.body,
-              )
-            : menuContent;
-        })()}
+            return portal && typeof document !== 'undefined'
+              ? createPortal(
+                  <div className="library">{menuContent}</div>,
+                  document.body,
+                )
+              : menuContent;
+          })()}
+      </div>
 
       {value.length > 0 && (
         <div className={styles.chips}>

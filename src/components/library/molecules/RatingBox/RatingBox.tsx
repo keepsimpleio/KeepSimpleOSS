@@ -16,10 +16,10 @@ import type { RatingBoxProps } from './RatingBox.types';
 import styles from './RatingBox.module.scss';
 
 const OVERALL_COLORS: Record<OverallRating, string> = {
-  1: '#e4002d',
+  1: '#c45222',
   2: '#ff9a00',
-  3: '#f5b800',
-  4: '#88eebe',
+  3: '#d9b800',
+  4: '#2db675',
   5: '#228858',
 };
 
@@ -29,10 +29,10 @@ interface DifficultyMeta {
 }
 
 const DIFFICULTY_META: Record<Difficulty, DifficultyMeta> = {
-  very_hard: { label: 'Very Hard', color: '#e4002d' },
+  very_hard: { label: 'Very Hard', color: '#c45222' },
   hard: { label: 'Hard', color: '#ff9a00' },
-  moderate: { label: 'Moderate', color: '#f5b800' },
-  easy: { label: 'Easy', color: '#228858' },
+  moderate: { label: 'Moderate', color: '#d9b800' },
+  easy: { label: 'Easy', color: '#2db675' },
 };
 
 const OVERALL_VALUES: OverallRating[] = [1, 2, 3, 4, 5];
@@ -52,6 +52,7 @@ interface ColoredSelectProps<T extends string | number> {
   onChange?: (value: T) => void;
   readOnly: boolean;
   placeholder: string;
+  valueSuffix?: string;
 }
 
 function ColoredSelect<T extends string | number>(
@@ -66,6 +67,7 @@ function ColoredSelect<T extends string | number>(
     onChange,
     readOnly,
     placeholder,
+    valueSuffix,
   } = props;
   const [isOpen, setIsOpen] = useState(false);
 
@@ -74,9 +76,13 @@ function ColoredSelect<T extends string | number>(
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Keep the portaled menu glued to the trigger as the modal/page scrolls, and
-  // flip it above the trigger when it would overflow the bottom of the viewport.
-  const menuPos = useAnchoredPosition(triggerRef, isOpen, menuRef);
+  // Keep the portaled menu glued to the trigger as the modal/page scrolls.
+  // Placement is decided by viewport width, not measured space: open upward at
+  // 1920px and below, downward only on wider screens. Width-based placement is
+  // settled before the menu paints, so it never opens one way then jumps.
+  const menuPos = useAnchoredPosition(triggerRef, isOpen, menuRef, {
+    openUpMaxWidth: 1920,
+  });
 
   const handleToggle = () => {
     if (readOnly) return;
@@ -161,11 +167,14 @@ function ColoredSelect<T extends string | number>(
           <span style={displayColor ? { color: displayColor } : undefined}>
             {displayLabel}
           </span>
+          {hasValue && valueSuffix && (
+            <span className={styles.suffix}>{valueSuffix}</span>
+          )}
         </Text>
         {!readOnly && (
           <ArrowIcon
-            width={16}
-            height={16}
+            width={12}
+            height={12}
             className={classNames(styles.chevron, { [styles.rotated]: isOpen })}
           />
         )}
@@ -194,7 +203,7 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
       </Text>
       <div className={styles.row}>
         <ColoredSelect<OverallRating>
-          label="Overall"
+          label="Overall:"
           value={overallRating}
           options={OVERALL_VALUES}
           renderLabel={v => String(v)}
@@ -202,9 +211,10 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
           onChange={onOverallChange}
           readOnly={readOnly}
           placeholder="—"
+          valueSuffix="/5"
         />
         <ColoredSelect<Difficulty>
-          label="Difficulty"
+          label="Difficulty:"
           value={difficulty}
           options={DIFFICULTY_VALUES}
           renderLabel={v => DIFFICULTY_META[v].label}

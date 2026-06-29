@@ -83,3 +83,14 @@ export const MAX_SHELVES_PER_LIBRARY = 21;
 // Backend caps a share link at 21 objects; the Select chip disables once the
 // selection reaches this count.
 export const MAX_SHARE_OBJECTS = 21;
+
+// Backend caps a shelf at 21 objects (all types combined); the Add control
+// disables once a shelf reaches this count, and a rejected create/move surfaces
+// SHELF_FULL_MESSAGE. Backend is the source of truth — see isShelfFullError.
+export const MAX_OBJECTS_PER_SHELF = 21;
+
+export const SHELF_FULL_MESSAGE = `This shelf is full (max ${MAX_OBJECTS_PER_SHELF} items).`;
+
+// Mirrors the single-shelf `name` constraint in the backend schema. Shared so
+// the create (AddShelfModal) and rename (Shelf) inputs stay in sync.
+export const SHELF_NAME_MAX_LENGTH = 100;

@@ -36,18 +36,18 @@
       }
 
       .avatar {
-        width: 100%;
-        max-width: 208px;
-        height: -webkit-fill-available;
+        width: 208px;
+        height: 208px;
+        flex-shrink: 0;
 
         @media (max-width: 590px) {
           width: 100px;
           height: 100px;
-          min-width: none;
         }
       }
 
       .info {
+        width: 100%;
         border: 1px solid var(--brown-border);
         border-radius: 8px;
 
@@ -71,6 +71,15 @@
 
         .text {
           color: var(--gray-darkest);
+          // Clamp the description to 3 lines with a trailing ellipsis, and
+          // reserve that full height (3 × 22px line-height) even for a
+          // one-line bio so every card's "About" block stays the same size.
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          line-height: 22px;
+          min-height: 66px;
 
           @media (max-width: 590px) {
             font-size: 14px;

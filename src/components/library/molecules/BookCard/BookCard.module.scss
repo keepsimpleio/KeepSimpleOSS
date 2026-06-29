@@ -26,14 +26,21 @@
   }
 }
 
-// Hover/focus-revealed selection toggle, centered over the cover's top edge.
+// Hover/focus-revealed selection toggle, floated just above the cover (in the
+// shelf's headroom) so it never overlaps the book art. The 6px `padding-bottom`
+// is a transparent hover bridge: it keeps the hit area continuous from the card
+// up to the pill so the toggle doesn't drop `:hover` (and vanish) as the cursor
+// crosses the visual gap to click it.
 .select {
   position: absolute;
-  top: 8px;
-  left: 33px;
+  bottom: 100%;
+  // Span the cover art (146px, flush right) — not the full card — so the toggle
+  // centers over the artwork rather than the exposed spine on the left.
+  right: 0;
   width: 146px;
   display: flex;
   justify-content: center;
+  padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
   pointer-events: none;
@@ -51,20 +58,30 @@
   opacity: 0.55;
 }
 
+// The book body: a complete 3D mockup (spine + binding + drop shadow baked in).
+// Always rendered behind the cover so an uncovered book reads as a blank book
+// and a covered one keeps its spine and shadow. Spans the full 180×208 card.
+.placeholder {
+  position: absolute;
+  bottom: -7px;
+  left: -3px;
+  width: 180px;
+  height: 208px;
+  z-index: 0;
+  background: url('/assets/library/book-cover.png') center / cover no-repeat;
+}
+
+// The uploaded cover art sits on the book's front face only — 146×206, flush to
+// the right edge so the placeholder's 34px spine stays exposed on the left.
 .cover {
   position: absolute;
-  top: 0;
-  left: 33px;
+  top: 1px;
+  right: 0;
   width: 146px;
   height: 206px;
-  border-radius: 1.44px;
   overflow: hidden;
+  z-index: 1;
   transition: opacity 0.15s ease;
-  // Paint the gradient straight onto the cover box so the card shows a filled
-  // spine immediately — both for cover-less objects and while next/image is
-  // still fetching/optimizing a freshly uploaded cover (which otherwise left a
-  // blank gap on add).
-  background: var(--gradient-book-placeholder);
 }
 
 .coverImage {
@@ -72,28 +89,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.coverPlaceholder {
-  width: 100%;
-  height: 100%;
-  background: var(--gradient-book-placeholder);
-}
-
-.alpha {
-  position: absolute;
-  inset: 0;
-  background: var(--surface-overlay);
-  pointer-events: none;
-}
-
-.shadow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 180px;
-  height: 208px;
-  pointer-events: none;
 }
 
 .tags {
@@ -111,8 +106,10 @@
   display: block;
 }
 
-// Compact variant for the share-selection panel: a smaller cover-only tile
-// (97×138 cover, keeping the spine offset and shadow). Tags are dropped.
+// Compact variant for the share-selection panel: a flat cover tile that fills
+// the cell (no spine offset — placeholder + cover stretch edge-to-edge so a
+// covered book reads as a framed thumbnail). Tags are dropped; a double frame
+// (inner 1.5px cream, outer 1px brown) wraps the art.
 .row.compact {
   width: 119px;
   height: 138px;
@@ -120,22 +117,18 @@
   .card {
     width: 119px;
     height: 138px;
+    box-shadow:
+      0 0 0 1.5px #f9f4eb,
+      0 0 0 2.5px #af6a34;
   }
 
+  .placeholder,
   .cover {
-    left: 22px;
-    width: 97px;
-    height: 138px;
-  }
-
-  .shadow {
-    width: 119px;
-    height: 138px;
-  }
-
-  .select {
-    left: 22px;
-    width: 97px;
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .tags {
