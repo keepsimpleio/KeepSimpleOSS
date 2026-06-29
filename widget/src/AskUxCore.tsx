@@ -589,6 +589,33 @@ const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
         },
       ],
     },
+    '/uxcg': {
+      message:
+        "You're in **UXCG** — the UX Core Guide. Start from a real business problem and we hand you the exact biases bending it, plus concrete nudges to act on. 1000+ worked examples for product, growth, and HR teams — the applied half of UX Core.",
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb: 'The library every case here is built on — 100+ biases',
+        },
+        {
+          title: 'Awareness Test',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb: 'See which biases bend your own calls first — under 7 minutes',
+        },
+        {
+          title: 'Persona Map',
+          url: '/uxcp',
+          type: 'project',
+          nominated: true,
+          blurb: 'Build a persona out of the biases that actually drive people',
+        },
+      ],
+    },
     '/tools/longevity-protocol': {
       message:
         "You're in the **Longevity Protocol** — our take on long-haul health, distilled into a small set of practices we actually run on ourselves. Same principle as the rest of keepsimple: smart defaults beat willpower.",
@@ -705,6 +732,35 @@ const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
         },
       ],
     },
+    '/uxcg': {
+      message:
+        'Ты в **UXCG** — это гайд UX Core. Начинаешь с реальной бизнес-проблемы, а мы отдаём тебе те самые искажения, что её гнут, плюс конкретные нуджи, чтобы действовать. 1000+ разобранных примеров для продукта, роста и HR — прикладная половина UX Core.',
+      cards: [
+        {
+          title: 'UX Core',
+          url: '/uxcore',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'Библиотека, на которой стоит каждый кейс здесь — 100+ искажений',
+        },
+        {
+          title: 'Тест осознанности',
+          url: '/uxcat',
+          type: 'project',
+          nominated: true,
+          blurb:
+            'Сначала узнай, какие искажения гнут твои решения — меньше 7 минут',
+        },
+        {
+          title: 'Persona Map',
+          url: '/uxcp',
+          type: 'project',
+          nominated: true,
+          blurb: 'Собери персону из искажений, которые реально движут людьми',
+        },
+      ],
+    },
     '/tools/longevity-protocol': {
       message:
         'Ты в **Longevity Protocol** — это наш взгляд на долгое здоровье, упакованный в небольшой набор практик, которые мы сами на себе и используем. Тот же принцип что и в остальном keepsimple: умные дефолты бьют силу воли.',
@@ -797,6 +853,20 @@ const PAGE_LANDINGS: Record<Lang, Record<string, PageLanding>> = {
 const CURATED_LANDING_FIRED_KEY = 'ks_aux_curated_landing_v1';
 const OPEN_KEY = 'ks_aux_open_v1';
 const GREETED_PAGES_KEY = 'ks_aux_greeted_pages_v1';
+
+/* True when the widget root is CSS-hidden (e.g. the mobile rule that
+   drops it while a bias modal is open). The open/closed flag follows the
+   visitor across pages and can stay `open` while the widget is invisible,
+   so it is NOT a safe gate for paid work on its own. Movement tracking
+   (page_view, dwell — all free/internal) keeps running while hidden; only
+   token-spending calls consult this so a hidden widget never burns money
+   by accident. */
+const isWidgetHidden = (): boolean => {
+  if (typeof document === 'undefined') return false;
+  const root = document.querySelector('.ks-aux-root');
+  if (!root) return false;
+  return window.getComputedStyle(root).display === 'none';
+};
 const curatedLandingPathKey = (rawUrl: string): string | null => {
   try {
     const u = new URL(rawUrl, window.location.origin);
@@ -2256,14 +2326,16 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       }
 
       /* Cost gate: the organic greeting is a paid AI call. Spend it
-         only when the panel is open — opening the pill is a deliberate
-         human gesture, and the open panel now follows the visitor across
-         pages, so an open panel marks a real user. Passers-by and
-         crawlers never open it; the server greeting route also drops
-         known-bot user-agents as a backstop. Then never pay twice for
-         the same page this session. Curated landings above are local
-         (free) and ungated. */
-      if (!openRef.current) return;
+         only when the panel is open AND actually visible. Opening the
+         pill is a deliberate human gesture, and the open panel follows
+         the visitor across pages — but it can stay `open` while the
+         widget is CSS-hidden (mobile bias-modal rule), so we also bail
+         when hidden: a widget the visitor can't see must never burn
+         tokens. Passers-by and crawlers never open it; the server
+         greeting route also drops known-bot user-agents as a backstop.
+         Then never pay twice for the same page this session. Curated
+         landings above are local (free) and ungated. */
+      if (!openRef.current || isWidgetHidden()) return;
       const greetKey = canonicalPathKey(rawUrl);
       if (hasGreetedPage(greetKey)) return;
       markGreetedPage(greetKey);
@@ -2666,6 +2738,18 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       }
     }
 
+    /* Same wallet guard as the organic greeting: a hidden widget never
+       spends. The card-click landing is user-initiated, but if the
+       destination renders the widget invisible (mobile bias-modal rule)
+       the line would be paid for and never seen — skip it. */
+    if (isWidgetHidden()) {
+      if (pending.placeholderId !== undefined) {
+        const pid = pending.placeholderId;
+        setTurns(cur => cur.filter(tt => tt.id !== pid));
+      }
+      return;
+    }
+
     let cancelled = false;
     fetch('/api/concierge-landing', {
       method: 'POST',
@@ -2824,6 +2908,17 @@ export function AskUxCore({ lang }: { lang: Lang }) {
   );
   useEffect(() => {
     if (!isHighlightEnabledPage()) return;
+    /* No host highlighting while a UX Core / UXCG bias modal is open.
+       On desktop the widget now stays visible over the modal so the
+       visitor can talk about the bias they're reading — but lighting up
+       elements underneath the overlay is pointless (they're covered) and
+       noisy. The visitor can still be guided OUT to other pages via the
+       answer's cards; we just skip the in-page halo here. */
+    if (
+      typeof document !== 'undefined' &&
+      document.querySelector('[class*="ModalOverlay"]')
+    )
+      return;
     /* Host highlighting is gated on the panel being open: the Copilot
        lights up page elements only while it is ACTIVE. Collapsed pill =
        not active = no host highlight. Re-arm the flash guard on collapse
@@ -2871,68 +2966,32 @@ export function AskUxCore({ lang }: { lang: Lang }) {
     };
   }, [turns, open]);
 
-  /* Typewriter constants — every bit of bot-authored text in the
-     widget (concierge stream, homepage starters, landing turns) runs
-     through the same throttle so the panel reads at one consistent
-     tempo. 1 char / 22ms ≈ 45 chars/sec — smooth char-by-char reveal,
-     reads as deliberate rather than firehosed. */
-  const STREAM_CHUNK = 1;
-  const STREAM_TICK = 22;
+  /* Settle delay before cards/suggestions attach after the text lands. */
   const SETTLE_MS = 200;
 
-  /* Streaming typewriter — accepts a growing target via push() and
-     drips it into the named turn at the typewriter tempo. finish()
-     marks the target final and runs onDone once the displayed text
-     has caught up. Works for both live server streams (where the
-     target keeps growing) and pre-canned text (single push). */
+  /* Bot-text reveal — every bit of bot-authored copy (concierge answer,
+     homepage starters, landing turns) goes through this. We deliberately
+     do NOT type char/word-by-char: progressive text re-parses the whole
+     markdown tree and reflows the line box on every step, which reads as
+     jittery. Instead the full message is committed once and the bubble
+     fades in smoothly via the `.ks-aux-a` CSS animation — one clean,
+     reflow-free reveal. push() keeps the latest target (server tokens
+     arrive in bursts; we just keep the newest), finish() paints it and
+     runs onDone after a short settle. */
   const createTypewriter = (turnId: string) => {
     let target = '';
-    let displayed = '';
-    let timerActive = false;
-    let streamDone = false;
-    let pendingDone: (() => void) | null = null;
-
-    const advance = () => {
-      if (displayed.length < target.length) {
-        const next = Math.min(displayed.length + STREAM_CHUNK, target.length);
-        displayed = target.slice(0, next);
-        setTurns(prev =>
-          prev.map(tt =>
-            tt.id === turnId ? { ...tt, answer: displayed } : tt,
-          ),
-        );
-      }
-      if (displayed.length < target.length) {
-        window.setTimeout(advance, STREAM_TICK);
-        return;
-      }
-      timerActive = false;
-      if (streamDone && pendingDone) {
-        const cb = pendingDone;
-        pendingDone = null;
-        window.setTimeout(cb, SETTLE_MS);
-      }
-    };
-    const kick = () => {
-      if (timerActive) return;
-      if (displayed.length >= target.length) return;
-      timerActive = true;
-      advance();
-    };
-
     return {
       push: (next: string) => {
         target = next;
-        kick();
       },
       finish: (onDone: () => void) => {
-        streamDone = true;
-        if (displayed.length >= target.length) {
-          window.setTimeout(onDone, SETTLE_MS);
-        } else {
-          pendingDone = onDone;
-          kick();
-        }
+        const finalText = target;
+        setTurns(prev =>
+          prev.map(tt =>
+            tt.id === turnId ? { ...tt, answer: finalText } : tt,
+          ),
+        );
+        window.setTimeout(onDone, SETTLE_MS);
       },
     };
   };
