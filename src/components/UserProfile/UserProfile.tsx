@@ -4,6 +4,8 @@ import { NextRouter, useRouter } from 'next/router';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
+import { isLibraryEnabled } from '@constants/library/common';
+
 import { logout } from '@api/auth';
 
 import LibraryIcon from '@icons/library/svg/library.svg';
@@ -171,7 +173,7 @@ const UserProfile: FC<UserProfileProps> = ({
         )}
         {isDropdownOpen && isAccessTokenExist && (
           <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
-            {username && (
+            {isLibraryEnabled() && username && (
               <div className={styles.menuItem} onClick={handleMyLibrary}>
                 <LibraryIcon
                   width={20}
@@ -183,22 +185,24 @@ const UserProfile: FC<UserProfileProps> = ({
                 <span>{t.myLibrary}</span>
               </div>
             )}
-            <div
-              className={cn(styles.menuItem, {
-                [styles.disabled]: !canCreateLibrary,
-              })}
-              onClick={handleCreateLibrary}
-              aria-disabled={!canCreateLibrary}
-            >
-              <PlusIcon
-                width={14}
-                height={14}
-                className={cn(styles.menuIcon, {
-                  [styles.menuIconDark]: isDarkTheme,
+            {isLibraryEnabled() && (
+              <div
+                className={cn(styles.menuItem, {
+                  [styles.disabled]: !canCreateLibrary,
                 })}
-              />
-              <span>{t.createLibrary}</span>
-            </div>
+                onClick={handleCreateLibrary}
+                aria-disabled={!canCreateLibrary}
+              >
+                <PlusIcon
+                  width={14}
+                  height={14}
+                  className={cn(styles.menuIcon, {
+                    [styles.menuIconDark]: isDarkTheme,
+                  })}
+                />
+                <span>{t.createLibrary}</span>
+              </div>
+            )}
             <div className={styles.menuItem} onClick={handleSettings}>
               <Image
                 src="/keepsimple_/assets/icons/user-dropdown/settings.svg"
