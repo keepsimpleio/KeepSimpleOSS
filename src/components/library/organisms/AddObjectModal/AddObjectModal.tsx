@@ -281,7 +281,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   useEffect(() => {
     let cancelled = false;
-    getTagsList().then(res => {
+    getTagsList(accountData?.id).then(res => {
       if (cancelled) return;
       const opts: TagOption[] = res.data.map(t => ({
         id: t.id,
@@ -293,7 +293,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [accountData?.id]);
 
   // Preset the object's existing tags exactly once, from the object's OWN
   // populated tag data — not by filtering the fetched options. An unpublished

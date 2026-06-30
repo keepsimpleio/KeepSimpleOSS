@@ -20,6 +20,7 @@ type UserProfileProps = {
   hideDropdown?: boolean;
   hideUsername?: boolean;
   canCreateLibrary?: boolean;
+  hasLibrary?: boolean;
   setAccountData?: (updater: (prev: boolean) => boolean) => void;
   setOpenLoginModal?: (openModal: boolean) => void;
   handleOpenSettings?: () => void;
@@ -54,6 +55,7 @@ const UserProfile: FC<UserProfileProps> = ({
   hideDropdown,
   hideUsername,
   canCreateLibrary,
+  hasLibrary,
   setAccountData,
   setOpenLoginModal,
   handleOpenSettings,
@@ -82,10 +84,15 @@ const UserProfile: FC<UserProfileProps> = ({
     handleOpenSettings?.();
   }, [handleOpenSettings]);
 
+  // With neither an existing library nor create permission, the user has no
+  // library page to open, so the item is inert.
+  const myLibraryDisabled = !hasLibrary && !canCreateLibrary;
+
   const handleMyLibrary = useCallback(() => {
+    if (myLibraryDisabled) return;
     setIsDropdownOpen(false);
     router.push(`/library/${username}`);
-  }, [router, username]);
+  }, [router, username, myLibraryDisabled]);
 
   // A library has no standalone create step — it's bootstrapped on the owner's
   // own page once they add content (gated server-side by the same feature
@@ -172,7 +179,13 @@ const UserProfile: FC<UserProfileProps> = ({
         {isDropdownOpen && isAccessTokenExist && (
           <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
             {username && (
-              <div className={styles.menuItem} onClick={handleMyLibrary}>
+              <div
+                className={cn(styles.menuItem, {
+                  [styles.disabled]: myLibraryDisabled,
+                })}
+                onClick={handleMyLibrary}
+                aria-disabled={myLibraryDisabled}
+              >
                 <LibraryIcon
                   width={20}
                   height={11}

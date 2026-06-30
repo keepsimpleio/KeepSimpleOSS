@@ -298,9 +298,7 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
   if (!isOwner) {
     return (
       <div className={classNames(styles.toolbar, className)}>
-        <div className={styles.divider} />
-
-        <div className={styles.controls}>
+        <div className={classNames(styles.controls, styles.controlsGuest)}>
           <div className={styles.welcome}>
             <Text
               variant={TypographyVariant.TitleSecondaryBold}

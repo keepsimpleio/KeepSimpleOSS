@@ -1,10 +1,15 @@
 import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibraries';
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import type { HomeLibraryCardView } from '@local-types/library/library';
 
 import { getLibrariesPaginated } from '@api/library/getLibrariesPaginated';
+import { getMyLibrary } from '@api/library/getMyLibrary';
 
+import PlusIcon from '@icons/library/svg/plus.svg';
+
+import { useAuth } from '@components/Context/library/AuthContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AboutLibraryModal } from '@components/library/molecules/AboutLibraryModal';
 import {
@@ -26,6 +31,41 @@ const sectionId = 'libraries-section';
 const perPage = 6;
 
 export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
+  const router = useRouter();
+  const { accountData } = useAuth();
+
+  // Creating a library is gated by the `can-create-library` feature flag from
+  // GET /api/users/me — the same gate the user dropdown's "Create library" item
+  // uses. A library has no standalone create step: it's bootstrapped on the
+  // owner's own page, so the button just routes there when the flag is present.
+  const canCreateLibrary =
+    accountData?.featureNames?.includes('can-create-library') ?? false;
+
+  // A user may create at most one library, so the button is also disabled once
+  // they already own one. Check via the owner-scoped lookup the library page
+  // uses, not the home grid (which is paginated and may not include theirs).
+  const [hasLibrary, setHasLibrary] = useState(false);
+  useEffect(() => {
+    if (!accountData?.id) {
+      setHasLibrary(false);
+      return;
+    }
+    let cancelled = false;
+    getMyLibrary(accountData.id).then(lib => {
+      if (!cancelled) setHasLibrary(lib !== null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [accountData?.id]);
+
+  const createDisabled = !canCreateLibrary || hasLibrary;
+
+  const handleCreateLibrary = () => {
+    if (createDisabled || !accountData?.username) return;
+    router.push(`/library/${accountData.username}`);
+  };
+
   const [value, setValue] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -199,15 +239,26 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             >
               Libraries
             </Text>
-            <Input
-              type="search"
-              value={value}
-              placeholder="Search everywhere"
-              placeholderColor="#C4C4C4"
-              onChange={changeValueHandler}
-              onClear={() => setValue('')}
-              wrapperClassName={styles.input}
-            />
+            <div className={styles.searchGroup}>
+              <Input
+                type="search"
+                value={value}
+                placeholder="Search everywhere"
+                placeholderColor="#C4C4C4"
+                onChange={changeValueHandler}
+                onClear={() => setValue('')}
+                wrapperClassName={styles.input}
+              />
+              <Button
+                label="Create Library"
+                ariaLabel="Create library"
+                type={ButtonType.Primary}
+                Icon={<PlusIcon width={14} height={14} />}
+                onClick={handleCreateLibrary}
+                disabled={createDisabled}
+                className={styles.createButton}
+              />
+            </div>
           </div>
 
           <div className={styles.content}>

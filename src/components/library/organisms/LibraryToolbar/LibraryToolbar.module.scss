@@ -43,6 +43,12 @@
   }
 }
 
+// Guest view of someone else's library: the divider is dropped, so restore the
+// vertical breathing room on the controls row itself.
+.controlsGuest {
+  padding: 24px 10px;
+}
+
 // Visitor / guest-preview banner that replaces the owner's shelf controls.
 .welcome {
   display: flex;
