@@ -70,7 +70,9 @@ export default function MapClient({
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    const learned: string[] = accountData?.learnedSkills ?? [];
+    const learned: string[] = Array.isArray(accountData?.learnedSkills)
+      ? accountData.learnedSkills
+      : [];
     if (learned.length === 0) return;
     const hydrated: UserProgress = {};
     for (const id of learned) {
