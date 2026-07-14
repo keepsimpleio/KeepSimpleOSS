@@ -569,10 +569,8 @@ export function ObjectOverviewModal(
                   {tagsList.map(t => (
                     <Tag
                       key={t.id}
-                      className={styles.tag}
                       label={t.attributes.name}
                       color={t.attributes.color}
-                      onClick={isOwner ? handleEdit : undefined}
                     />
                   ))}
                 </div>

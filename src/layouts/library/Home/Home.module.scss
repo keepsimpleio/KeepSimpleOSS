@@ -60,6 +60,18 @@
       }
     }
 
+    .searchGroup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      @media (max-width: 590px) {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
     .input {
       max-width: 348px;
       border-radius: 6px;
@@ -75,6 +87,17 @@
 
       svg {
         top: 9px;
+      }
+    }
+
+    .createButton {
+      flex-shrink: 0;
+      white-space: nowrap;
+
+      // The shared plus icon ships a hardcoded brown fill, which disappears on
+      // the brown primary button — force it (and the label) white.
+      svg path {
+        fill: var(--white);
       }
     }
   }
