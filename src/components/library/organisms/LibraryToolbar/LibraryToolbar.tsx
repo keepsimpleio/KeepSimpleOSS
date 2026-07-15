@@ -332,8 +332,6 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
 
   return (
     <div className={classNames(styles.toolbar, className)}>
-      <div className={styles.divider} />
-
       <div className={styles.controls}>
         <Text className={styles.text}>
           {isReordering ? 'Drag to reorder →' : 'Jump to →'}

@@ -171,6 +171,9 @@ export function Sidebar() {
     resolveStrapiUrl(currentOwner?.avatar) ??
     (isMyLibrary ? accountData?.picture : undefined);
   const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
+  const aboutLibraryText = stripHtml(
+    currentLibrary?.attributes.libraryDetails?.aboutLibrary,
+  );
 
   // Owner sees their full tag palette; a true visitor sees only the tags
   // actually used on this library's objects — no cross-account tag fetch.
@@ -397,7 +400,7 @@ export function Sidebar() {
                     ''}
                 </Text>
               </div>
-              <div className={styles.divider} />
+              {aboutLibraryText && <div className={styles.divider} />}
 
               <div className={styles.totalObjects}>
                 <Text className={styles.label}>Total objects:</Text>
@@ -468,7 +471,14 @@ export function Sidebar() {
               )}
             </div>
             <div className={styles.content}>
-              <div className={styles.tags}>
+              <div
+                className={classNames(styles.tags, {
+                  [styles.tagsEmpty]: displayedTags.length === 0,
+                })}
+              >
+                {displayedTags.length === 0 && (
+                  <Text className={styles.emptyTags}>No tags yet.</Text>
+                )}
                 {displayedTags.map(tag => (
                   <Tag key={tag.name} label={tag.name} color={tag.color} />
                 ))}
