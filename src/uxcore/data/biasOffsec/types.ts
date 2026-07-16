@@ -9,7 +9,7 @@
 interface OffsecBiasCardCommon {
   tag: string;
   flagged?: boolean;
-  // Soft context note rendered above the card body — grounds the reader
+  // Soft context note rendered above the card body: grounds the reader
   // in prior history when the lever needs it (repetition, a live
   // incident, an earlier seeding message).
   priorContext?: string;
@@ -43,7 +43,7 @@ export interface OffsecBiasChatCard extends OffsecBiasCardCommon {
   attachment?: string;
 }
 
-// Faux browser tab — used for biases where the attack surface is a web
+// Faux browser tab: used for biases where the attack surface is a web
 // page (lookalike domain, sponsored result, fake breach-checker landing).
 // The `host` field is split out so we can highlight the deceptive part
 // (e.g., the second-level domain) without forcing the data file to ship
@@ -59,7 +59,7 @@ export interface OffsecBiasBrowserCard extends OffsecBiasCardCommon {
 }
 
 // Incoming phone call (vishing). `transcript` is what the voice says
-// the moment you pick up — rendered as a quoted line over a fake
+// the moment you pick up: rendered as a quoted line over a fake
 // accept/decline row.
 export interface OffsecBiasCallCard extends OffsecBiasCardCommon {
   kind: 'call';
@@ -84,7 +84,7 @@ export interface OffsecBiasDocumentCard extends OffsecBiasCardCommon {
 }
 
 // Physical printed poster with a QR code. The QR pattern is decorative
-// and drawn by the component — data never ships a scannable code.
+// and drawn by the component: data never ships a scannable code.
 export interface OffsecBiasPosterCard extends OffsecBiasCardCommon {
   kind: 'poster';
   heading: string;
@@ -92,7 +92,7 @@ export interface OffsecBiasPosterCard extends OffsecBiasCardCommon {
   qrCaption?: string;
 }
 
-// Vertical sequence of small sightings across days — for biases where
+// Vertical sequence of small sightings across days: for biases where
 // the lever is the pattern itself (frequency illusion), not any single
 // artifact.
 export interface OffsecBiasTimelineCard extends OffsecBiasCardCommon {

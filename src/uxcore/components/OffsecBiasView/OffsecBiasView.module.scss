@@ -871,7 +871,7 @@ $ks-crimson-deep: #7a2618;
 
   // Class stacked + !important to out-specify the modal's dark-theme
   // span neutralizer (`body.darkTheme .ModalOverlay … .ModalBodyContent
-  // span:not(.switcherItemText)` — 4 classes + 2 elements), which would
+  // span:not(.switcherItemText)`, 4 classes + 2 elements), which would
   // otherwise grey these section titles out.
   .root span.eyebrow.eyebrow.eyebrow {
     color: $dk-crimson !important;
