@@ -267,6 +267,15 @@ body {
   font-display: block;
 }
 
+@font-face {
+  font-family: 'Source Sans Pro';
+  src: url('/keepsimple_/fonts/SourceSansPro/SourceSansPro-Regular.woff2')
+    format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
 // Aldrich is being used in Company Management(new)
 @font-face {
   font-family: 'Aldrich';

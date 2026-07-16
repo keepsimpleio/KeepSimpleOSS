@@ -12,24 +12,14 @@
   }
 }
 
-.divider {
-  width: 100%;
-  height: 1px;
-  background: var(--black-100);
-  margin: 16px 0;
-
-  // Mobile: collapse the top margin so the divider connects to the fixed
-  // header (paired with the layout wrapper dropping its top padding).
-  @media (max-width: 768px) {
-    margin-top: 0;
-  }
-}
-
 .controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  // Replaces the removed divider's 16px top margin so the controls keep their
+  // breathing room below the global header.
+  margin-top: 16px;
   animation: toolbar-fade 0.3s ease;
 
   // On phones everything crammed onto one row collapsed the flex:1 pill
@@ -40,12 +30,17 @@
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+    // Collapse the top margin on mobile so the controls connect to the fixed
+    // header (paired with the layout wrapper dropping its top padding), matching
+    // the removed divider's mobile behavior.
+    margin-top: 0;
   }
 }
 
 // Guest view of someone else's library: the divider is dropped, so restore the
 // vertical breathing room on the controls row itself.
 .controlsGuest {
+  margin-top: 0;
   padding: 24px 10px;
 }
 
