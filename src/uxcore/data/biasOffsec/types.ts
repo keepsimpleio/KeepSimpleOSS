@@ -9,6 +9,10 @@
 interface OffsecBiasCardCommon {
   tag: string;
   flagged?: boolean;
+  // Soft context note rendered above the card body — grounds the reader
+  // in prior history when the lever needs it (repetition, a live
+  // incident, an earlier seeding message).
+  priorContext?: string;
 }
 
 export interface OffsecBiasEmailCard extends OffsecBiasCardCommon {
@@ -33,10 +37,10 @@ export interface OffsecBiasChatCard extends OffsecBiasCardCommon {
   senderName: string;
   senderHandle?: string;
   timestamp?: string;
-  // Soft pre-bubble note that grounds the reader in the prior history
-  // for biases where context-building matters (e.g., illusory truth).
-  priorContext?: string;
   body: string;
+  // Attached media shown under the bubble (e.g. a meme the payload
+  // rides on for humor-effect).
+  attachment?: string;
 }
 
 // Faux browser tab — used for biases where the attack surface is a web
@@ -54,11 +58,62 @@ export interface OffsecBiasBrowserCard extends OffsecBiasCardCommon {
   cta?: string;
 }
 
+// Incoming phone call (vishing). `transcript` is what the voice says
+// the moment you pick up — rendered as a quoted line over a fake
+// accept/decline row.
+export interface OffsecBiasCallCard extends OffsecBiasCardCommon {
+  kind: 'call';
+  callerName: string;
+  callerLabel?: string;
+  timestamp?: string;
+  transcript: string;
+}
+
+// Paper-like document surface: an invoice, a signed procedure, a policy
+// memo. Generic enough to be the "before" (the rule you signed) or the
+// "after" (the invoice that shouldn't be paid).
+export interface OffsecBiasDocumentCard extends OffsecBiasCardCommon {
+  kind: 'document';
+  docLabel: string;
+  // Small letterhead glyph (e.g. the llama mascot for bizarreness-effect).
+  logo?: string;
+  title: string;
+  meta?: string;
+  body: string;
+  footer?: string;
+}
+
+// Physical printed poster with a QR code. The QR pattern is decorative
+// and drawn by the component — data never ships a scannable code.
+export interface OffsecBiasPosterCard extends OffsecBiasCardCommon {
+  kind: 'poster';
+  heading: string;
+  body: string;
+  qrCaption?: string;
+}
+
+// Vertical sequence of small sightings across days — for biases where
+// the lever is the pattern itself (frequency illusion), not any single
+// artifact.
+export interface OffsecBiasTimelineCard extends OffsecBiasCardCommon {
+  kind: 'timeline';
+  items: {
+    label: string;
+    source: string;
+    text: string;
+    flagged?: boolean;
+  }[];
+}
+
 export type OffsecBiasCard =
   | OffsecBiasEmailCard
   | OffsecBiasNotificationCard
   | OffsecBiasChatCard
-  | OffsecBiasBrowserCard;
+  | OffsecBiasBrowserCard
+  | OffsecBiasCallCard
+  | OffsecBiasDocumentCard
+  | OffsecBiasPosterCard
+  | OffsecBiasTimelineCard;
 
 export interface OffsecBiasContent {
   scenario: string;

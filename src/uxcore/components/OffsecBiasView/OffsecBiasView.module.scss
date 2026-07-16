@@ -220,6 +220,14 @@ $ks-crimson-deep: #7a2618;
   }
 }
 
+// Generic lead-in line (mirrors .chatPrior) for non-chat surfaces.
+.cardPrior {
+  font-size: 13px;
+  font-style: italic;
+  color: $ks-ink-soft;
+  padding-left: 4px;
+}
+
 // === Browser surface =======================================================
 
 .card_browser {
@@ -465,6 +473,285 @@ $ks-crimson-deep: #7a2618;
 .card_chat.cardFlagged .chatBubble {
   background: rgba(200, 65, 42, 0.08);
   border-color: $ks-crimson;
+}
+
+// === Call surface ==========================================================
+
+.card_call {
+  gap: 8px;
+
+  .callHeader {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .callIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: $ks-crimson;
+    color: #ffffff;
+    flex-shrink: 0;
+  }
+
+  .callIdentity {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .callKicker {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $ks-crimson;
+  }
+
+  .callName {
+    font-size: 15px;
+    font-weight: 700;
+    color: $ks-ink;
+    margin-top: 2px;
+  }
+
+  .callSub {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    margin-top: 2px;
+  }
+
+  .callTranscript {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.5;
+    font-style: italic;
+    color: $ks-ink;
+  }
+
+  .callActions {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 4px;
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 13px;
+      color: #ffffff;
+    }
+
+    .callDecline {
+      background: $ks-crimson;
+    }
+
+    .callAccept {
+      background: #2a8a4a;
+    }
+  }
+}
+
+// === Document surface ======================================================
+
+.card_document {
+  gap: 6px;
+  // Paper feel: a subtle top "letterhead" band via border.
+  border-top: 3px solid $ks-rule;
+
+  .docHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .docLogo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 15px;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .docLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .docMeta {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+  }
+
+  .docFooter {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px dashed $ks-rule;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+  }
+}
+
+.card_document.cardFlagged {
+  border-top-color: $ks-crimson;
+}
+
+// === Poster surface ========================================================
+
+.card_poster {
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  background: $ks-paper;
+  position: relative;
+
+  // Bit of "tape" holding the poster to the wall.
+  .posterTape {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 52px;
+    height: 12px;
+    background: rgba(27, 30, 38, 0.08);
+    border: 1px solid rgba(27, 30, 38, 0.06);
+  }
+
+  .posterHeading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: $ks-ink;
+    line-height: 1.3;
+  }
+
+  .posterBody {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: $ks-ink-soft;
+    max-width: 260px;
+  }
+
+  .posterQr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    margin-top: 2px;
+    background: #ffffff;
+    border: 1px solid $ks-rule;
+    border-radius: 4px;
+    color: $ks-ink;
+  }
+
+  .posterCaption {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: $ks-ink-soft;
+  }
+}
+
+.card_poster.cardFlagged .posterQr {
+  border-color: $ks-crimson;
+  color: $ks-crimson-deep;
+}
+
+// === Timeline surface ======================================================
+
+.card_timeline {
+  gap: 0;
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .timelineItem {
+    display: flex;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px dashed $ks-rule-soft;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 2px;
+    }
+  }
+
+  .timelineLabel {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+    flex-shrink: 0;
+    width: 56px;
+    padding-top: 2px;
+  }
+
+  .timelineBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .timelineSource {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    color: $ks-ink-soft;
+    opacity: 0.8;
+  }
+
+  .timelineText {
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: $ks-ink;
+  }
+
+  .timelineItemFlagged {
+    .timelineLabel,
+    .timelineSource {
+      color: $ks-crimson;
+      opacity: 1;
+    }
+
+    .timelineText {
+      font-weight: 600;
+    }
+  }
 }
 
 .cardDivider {
@@ -731,6 +1018,104 @@ $ks-crimson-deep: #7a2618;
     .browserHost,
     .browserPadlock {
       color: $dk-crimson;
+    }
+  }
+
+  .cardPrior {
+    color: $dk-text-soft;
+  }
+
+  .card_call {
+    .callKicker {
+      color: $dk-crimson;
+    }
+
+    .callName,
+    .callTranscript {
+      color: $dk-text;
+    }
+
+    .callSub {
+      color: $dk-text-soft;
+    }
+
+    .callIcon,
+    .callActions .callDecline {
+      background: $dk-crimson;
+    }
+  }
+
+  .card_document {
+    border-top-color: $dk-rule;
+
+    .docLabel,
+    .docMeta,
+    .docFooter {
+      color: $dk-text-soft;
+    }
+
+    .docLogo {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+    }
+
+    .docFooter {
+      border-top-color: $dk-rule;
+    }
+  }
+
+  .card_document.cardFlagged {
+    border-top-color: $dk-crimson;
+  }
+
+  .card_poster {
+    background: $dk-card-soft;
+
+    .posterTape {
+      background: rgba(230, 232, 238, 0.08);
+      border-color: rgba(230, 232, 238, 0.06);
+    }
+
+    .posterHeading {
+      color: $dk-text;
+    }
+
+    .posterBody,
+    .posterCaption {
+      color: $dk-text-soft;
+    }
+
+    .posterQr {
+      background: $dk-card;
+      border-color: $dk-rule;
+      color: $dk-text;
+    }
+  }
+
+  .card_poster.cardFlagged .posterQr {
+    border-color: $dk-crimson;
+    color: $dk-crimson;
+  }
+
+  .card_timeline {
+    .timelineItem {
+      border-bottom-color: $dk-rule-soft;
+    }
+
+    .timelineLabel,
+    .timelineSource {
+      color: $dk-text-soft;
+    }
+
+    .timelineText {
+      color: $dk-text;
+    }
+
+    .timelineItemFlagged {
+      .timelineLabel,
+      .timelineSource {
+        color: $dk-crimson;
+      }
     }
   }
 
