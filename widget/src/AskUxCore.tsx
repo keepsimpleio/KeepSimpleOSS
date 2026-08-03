@@ -2184,9 +2184,19 @@ export function AskUxCore({ lang }: { lang: Lang }) {
       const occluded = vv
         ? Math.max(0, window.innerHeight - (vv.height + vv.offsetTop))
         : 0;
+      // Host pages can lift the widget off the bottom edge (--ks-aux-lift).
+      // That clearance eats into the room the panel has, so subtract it or
+      // the panel overflows the top of short screens.
+      const widget = document.querySelector('.ks-aux-root');
+      const lift = widget
+        ? parseFloat(getComputedStyle(widget).getPropertyValue('--ks-aux-lift'))
+        : 0;
       root.style.setProperty('--ks-aux-vh', `${h}px`);
       root.style.setProperty('--ks-aux-bottom-offset', `${occluded}px`);
-      root.style.setProperty('--ks-aux-panel-h', `${Math.max(220, h - 96)}px`);
+      root.style.setProperty(
+        '--ks-aux-panel-h',
+        `${Math.max(220, h - 96 - (lift || 0))}px`,
+      );
     };
     setVh();
     const vv = window.visualViewport;
