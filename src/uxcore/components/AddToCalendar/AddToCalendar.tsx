@@ -1,16 +1,13 @@
+import CalendarItems from '@uxcore/components/CalendarItems';
+import Modal from '@uxcore/components/Modal';
+import calendar from '@uxcore/data/uxcat/calendar';
+import { useClickOutside } from '@uxcore/hooks/useClickOutside';
+import useMobile from '@uxcore/hooks/useMobile';
+import { getEventWindow, toICalUTC } from '@uxcore/lib/ics';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { FC, useState } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { useClickOutside } from '@uxcore/hooks/useClickOutside';
-import useMobile from '@uxcore/hooks/useMobile';
-
-import calendar from '@uxcore/data/uxcat/calendar';
-
-import CalendarItems from '@uxcore/components/CalendarItems';
-import Modal from '@uxcore/components/Modal';
 
 import styles from './AddToCalendar.module.scss';
 
@@ -33,18 +30,23 @@ const AddToCalendar: FC<AddToCalendarProps> = ({
   const currentLocale = locale === 'ru' ? 'ru' : 'en';
 
   const { addToCalendar, title, description } = calendar[currentLocale];
-  const calendarDescription = `${description} ${process.env.NEXT_PUBLIC_DOMAIN}/uxcat/start-test`;
+  const testUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/uxcat/start-test`;
+  const calendarDescription = `${description} ${testUrl}`;
+
+  const eventWindow = getEventWindow(startTime);
+  if (!eventWindow) return null;
 
   const event = {
-    title: title,
-    startTime: startTime?.toString(),
+    title,
+    start: eventWindow.start,
+    end: eventWindow.end,
     description: calendarDescription,
-    url: `${process.env.NEXT_PUBLIC_DOMAIN}/uxcat/start-test`,
+    url: testUrl,
   };
 
-  const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.startTime}&details=${encodeURIComponent(calendarDescription)}`;
+  const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${toICalUTC(eventWindow.start)}/${toICalUTC(eventWindow.end)}&details=${encodeURIComponent(calendarDescription)}`;
 
-  const outlookCalendarUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(event.title)}&body=${encodeURIComponent(calendarDescription)}&startdt=${event.startTime}`;
+  const outlookCalendarUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(calendarDescription)}&startdt=${eventWindow.start.toISOString()}&enddt=${eventWindow.end.toISOString()}`;
 
   return (
     <>
