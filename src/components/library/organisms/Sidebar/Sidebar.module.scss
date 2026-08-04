@@ -87,7 +87,8 @@
 
     .button {
       width: auto;
-      padding: 3px 8px;
+      height: auto;
+      padding: 4px 8px;
     }
 
     .text {
@@ -131,6 +132,15 @@
       gap: 8px;
       display: flex;
       flex-wrap: wrap;
+
+      &.tagsEmpty {
+        height: 50px;
+        align-items: center;
+      }
+
+      .emptyTags {
+        color: var(--gray-medium);
+      }
 
       .button {
         color: var(--brown);

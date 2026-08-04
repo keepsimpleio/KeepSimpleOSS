@@ -25,6 +25,9 @@
     position: relative;
     z-index: 80;
     border-radius: 4px;
+    // Without a ceiling the wrapper grows past the viewport and the centered
+    // overlay clips it at both ends, putting the header and footer out of reach.
+    max-height: calc(100vh - 40px);
     animation: wrapperIn 0.2s ease-out;
 
     &.wrapperClosing {
@@ -44,6 +47,7 @@
     .header {
       width: 100%;
       display: flex;
+      flex-shrink: 0;
       justify-content: space-between;
       padding-top: 13px;
       padding-bottom: 8px;
@@ -74,6 +78,10 @@
 
     .body {
       padding: 16px 28px;
+      flex: 1 1 auto;
+      // min-height:0 lets this flex child shrink below its content height —
+      // otherwise overflow:auto never engages and nothing scrolls.
+      min-height: 0;
       overflow: auto;
 
       // Slim styled scrollbar so the inside of the modal does not look

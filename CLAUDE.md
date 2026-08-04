@@ -4,7 +4,9 @@
 
 MemPalace wing: `keepsimple` (protocol lives in `~/.claude/CLAUDE.md`).
 
-Human-readable agent guidelines live in `AGENTS.md` next to this file; this file is the machine-facing version. See `AGENTS.md` for repo conventions, build/test commands, and contribution rules.
+Human-readable agent guidelines live in `AGENTS.md` next to this file; this file is the machine-facing version. See `AGENTS.md` for repo conventions, build/test commands, and contribution rules — imported below so it loads automatically.
+
+@AGENTS.md
 
 ## Code search — prefer CodeGraph over Grep
 

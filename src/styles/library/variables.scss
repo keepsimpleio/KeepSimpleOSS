@@ -113,5 +113,7 @@
   /* Fonts — the upstream library injected these via next/font on <body>;
      here we declare them directly with web-safe fallbacks. */
   --font-source-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-source-sans:
+    'Source Sans Pro', system-ui, -apple-system, Arial, sans-serif;
   --font-lato: 'Lato', system-ui, -apple-system, Arial, sans-serif;
 }

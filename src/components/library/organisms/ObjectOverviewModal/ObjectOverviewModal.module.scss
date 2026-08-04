@@ -282,11 +282,6 @@
   gap: 8px;
 }
 
-// `cursor: pointer` is scoped here — Tag elsewhere stays presentational.
-.tag {
-  cursor: pointer;
-}
-
 .destination {
   display: flex;
   flex-direction: row;

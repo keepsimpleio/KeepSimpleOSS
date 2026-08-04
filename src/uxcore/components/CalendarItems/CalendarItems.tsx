@@ -1,11 +1,11 @@
+import { buildICS, CalendarEvent, downloadICS } from '@uxcore/lib/ics';
 import Image from 'next/image';
 import { FC } from 'react';
-import ICalendarLink from 'react-icalendar-link';
 
 import styles from './CalendarItems.module.scss';
 
 type CalendarItemsProps = {
-  event: any;
+  event: CalendarEvent;
   googleCalendarUrl: string;
   outlookCalendarUrl: string;
 };
@@ -17,8 +17,11 @@ const CalendarItems: FC<CalendarItemsProps> = ({
   return (
     <div className={styles.body}>
       <div className={styles.iconAndLink}>
-        {/*@ts-ignore*/}
-        <ICalendarLink event={event} className={styles.apple} isCrappyIE>
+        <button
+          type="button"
+          className={styles.apple}
+          onClick={() => downloadICS(buildICS(event), 'uxcat-reminder.ics')}
+        >
           <Image
             src={'/assets/calendar/apple.png'}
             alt={'apple calendar'}
@@ -27,7 +30,7 @@ const CalendarItems: FC<CalendarItemsProps> = ({
             height={24}
           />
           Apple
-        </ICalendarLink>
+        </button>
       </div>
       <div className={styles.iconAndLink}>
         <a
