@@ -123,6 +123,7 @@ const BiasPanel = forwardRef<HTMLDivElement, BiasPanelProps>(
           <div className={styles.Header}>
             <FlagImage
               countryCode={country.id}
+              countryName={country.name}
               size={40}
               className={styles.HeaderFlag}
             />
