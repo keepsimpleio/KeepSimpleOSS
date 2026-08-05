@@ -163,8 +163,11 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
     return clean;
   }
 
+  // A lone "/" here yields .../ru/ or .../hy/, which 308-redirects to the
+  // slashless form and makes the canonical point at a redirect.
+  const canonicalPath = cleanURL(alternateLink).replace(/^\/(?=$|[?#])/, '');
   const originalUrl =
-    process.env.NEXT_PUBLIC_DOMAIN + localePath + cleanURL(alternateLink);
+    process.env.NEXT_PUBLIC_DOMAIN + localePath + canonicalPath;
   const favIcon = `${process.env.NEXT_PUBLIC_DOMAIN}${favIconPath}`;
   const schema = generateSchema(
     title,
