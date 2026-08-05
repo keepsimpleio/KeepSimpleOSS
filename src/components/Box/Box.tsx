@@ -38,7 +38,7 @@ const Box: FC<CookiesBoxProps> = ({ setIsSeen }) => {
           >
             <Image
               src="/keepsimple_/assets/cookies/close.svg"
-              alt=""
+              alt="Close cookie notice"
               width={26}
               height={26}
               className={styles.closeIcon}
