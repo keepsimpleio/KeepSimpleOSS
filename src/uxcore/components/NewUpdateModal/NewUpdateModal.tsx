@@ -1,10 +1,9 @@
+import Button from '@uxcore/components/Button';
+import Modal from '@uxcore/components/Modal';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
 import ReactMarkdown from 'react-markdown';
-
-import Button from '@uxcore/components/Button';
-import Modal from '@uxcore/components/Modal';
 
 import type { NewUpdateModalProps } from './NewUpdateModal.types';
 

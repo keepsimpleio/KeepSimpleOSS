@@ -12,6 +12,7 @@ export interface NewUpdateData {
   'Close button text'?: string;
   'Frontend modal visibility'?: boolean;
   'Appears after x seconds'?: number;
+  updatedAt?: string;
 }
 
 export interface NewUpdateModalProps {
