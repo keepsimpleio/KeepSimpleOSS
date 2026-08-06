@@ -5,6 +5,8 @@ import { FC, useEffect, useState } from 'react';
 import NewUpdateModal from './NewUpdateModal';
 import type { NewUpdateData } from './NewUpdateModal.types';
 
+const DISMISSED_KEY = 'uxcoreNewUpdateDismissed';
+
 const NewUpdateModalContainer: FC = () => {
   const router = useRouter();
   const [data, setData] = useState<NewUpdateData | null>(null);
@@ -21,6 +23,11 @@ const NewUpdateModalContainer: FC = () => {
         );
 
         if (cancelled || !res || !res['Frontend modal visibility']) return;
+
+        // Dismissal is keyed to the CMS updatedAt: closing hides this update
+        // for the rest of the session, but a newly published one shows again.
+        if (sessionStorage.getItem(DISMISSED_KEY) === (res.updatedAt ?? 'seen'))
+          return;
 
         setData(res);
 
@@ -42,9 +49,18 @@ const NewUpdateModalContainer: FC = () => {
     };
   }, [router.locale]);
 
+  const handleClose = () => {
+    setOpen(false);
+    try {
+      sessionStorage.setItem(DISMISSED_KEY, data?.updatedAt ?? 'seen');
+    } catch {
+      // Storage can be unavailable (private mode); closing still works.
+    }
+  };
+
   if (!open || !data) return null;
 
-  return <NewUpdateModal data={data} onClose={() => setOpen(false)} />;
+  return <NewUpdateModal data={data} onClose={handleClose} />;
 };
 
 export default NewUpdateModalContainer;

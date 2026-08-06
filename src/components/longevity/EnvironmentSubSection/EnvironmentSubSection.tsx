@@ -25,7 +25,7 @@ const EnvironmentSubSection: FC<EnvironmentSubSectionProps> = ({
       })}
     >
       <div className={styles.titleAndIcon}>
-        <Image src={iconUrl} alt={''} width={24} height={24} unoptimized />
+        <Image src={iconUrl} alt={name} width={24} height={24} unoptimized />
         <span className={styles.title}> {name}</span>
       </div>
       <hr className={styles.hr} />
