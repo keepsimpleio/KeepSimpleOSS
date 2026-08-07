@@ -25,8 +25,8 @@ const NewUpdateModalContainer: FC = () => {
         if (cancelled || !res || !res['Frontend modal visibility']) return;
 
         // Dismissal is keyed to the CMS updatedAt: closing hides this update
-        // for the rest of the session, but a newly published one shows again.
-        if (sessionStorage.getItem(DISMISSED_KEY) === (res.updatedAt ?? 'seen'))
+        // until site data is cleared, but a newly published one shows again.
+        if (localStorage.getItem(DISMISSED_KEY) === (res.updatedAt ?? 'seen'))
           return;
 
         setData(res);
@@ -52,7 +52,7 @@ const NewUpdateModalContainer: FC = () => {
   const handleClose = () => {
     setOpen(false);
     try {
-      sessionStorage.setItem(DISMISSED_KEY, data?.updatedAt ?? 'seen');
+      localStorage.setItem(DISMISSED_KEY, data?.updatedAt ?? 'seen');
     } catch {
       // Storage can be unavailable (private mode); closing still works.
     }
