@@ -10,19 +10,52 @@ on:
   pull_request_review:
     types: [submitted]
 
+# Serialise per issue/PR so a burst of mentions queues instead of running in
+# parallel. Deliberately NOT cancel-in-progress: a superseded @claude task is
+# still doing work someone asked for, unlike a stale PR review.
+concurrency:
+  group: claude-mention-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
 jobs:
   claude:
+    # This repo is PUBLIC and has issues enabled. Unlike `pull_request` runs from
+    # a fork, `issues` and `issue_comment` events execute in this repo's context
+    # and therefore DO see repository secrets. Matching on the text "@claude"
+    # alone let any GitHub user run this job with CLAUDE_CODE_OAUTH_TOKEN in the
+    # environment — and since the action executes the instructions in the
+    # comment that tagged it, no injection trick was even required.
+    #
+    # So gate on author_association as well. OWNER/MEMBER/COLLABORATOR are
+    # people with org membership or explicit repo access. CONTRIBUTOR is NOT
+    # enough: it only means a commit of theirs was merged once.
+    # The association is checked per event against the person who actually
+    # triggered it. Do NOT flatten this into one shared OR: on issue_comment the
+    # payload carries BOTH comment.author_association (the commenter) and
+    # issue.author_association (whoever opened the thread), so a shared OR would
+    # let an untrusted account comment "@claude ..." on an issue opened by a
+    # trusted one and pass the gate.
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      (github.event_name == 'issue_comment' &&
+        contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review_comment' &&
+        contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review' &&
+        contains(github.event.review.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+      (github.event_name == 'issues' &&
+        (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association))
     runs-on: ubuntu-latest
+    # Without this a wedged run bills against the Max subscription for the full
+    # 6h default.
+    timeout-minutes: 15
     permissions:
       contents: read
       pull-requests: read
       issues: read
-      id-token: write
       actions: read # Required for Claude to read CI results on PRs
     steps:
       - name: Checkout repository
