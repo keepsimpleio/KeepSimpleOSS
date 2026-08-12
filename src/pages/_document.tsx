@@ -11,7 +11,15 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+          {/* Umami, self-hosted, cookieless. data-domains keeps preview/staging traffic out. */}
+          <script
+            defer
+            src="https://analytics.administration.ae/script.js"
+            data-website-id="7fbd94ec-0f10-4b46-bd04-d0df64a58c9e"
+            data-domains="keepsimple.io,www.keepsimple.io"
+          />
+        </Head>
         <body>
           <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
           <Main />
