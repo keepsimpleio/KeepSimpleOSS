@@ -33,6 +33,8 @@ module.exports = withBundleAnalyzer({
       'https://www.googletagmanager.com',
       'https://www.google-analytics.com',
       'https://cdn.mxpnl.com',
+      // Self-hosted Umami tracker.
+      'https://analytics.administration.ae',
     ]
       .filter(Boolean)
       .join(' ');
@@ -42,6 +44,8 @@ module.exports = withBundleAnalyzer({
       isDev ? 'ws:' : '',
       'https://*.keepsimple.io',
       'https://metrics.administration.ae',
+      // Self-hosted Umami event collection.
+      'https://analytics.administration.ae',
       'https://api.mixpanel.com',
       'https://api-js.mixpanel.com',
       'https://www.google-analytics.com',
