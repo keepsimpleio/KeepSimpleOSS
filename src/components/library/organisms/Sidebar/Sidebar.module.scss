@@ -133,13 +133,15 @@
       display: flex;
       flex-wrap: wrap;
 
+      // 20px row + the wrapper's 12px padding = a 44px box.
       &.tagsEmpty {
-        height: 50px;
+        height: 20px;
         align-items: center;
       }
 
       .emptyTags {
         color: var(--gray-medium);
+        line-height: 20px;
       }
 
       .button {
