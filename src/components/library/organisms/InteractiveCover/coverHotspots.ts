@@ -123,11 +123,39 @@ const makeHotspot = (
 const lorem =
   'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cih sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus';
 
+// Hit boxes are sized to the glow silhouette each hotspot lights up, so the
+// whole building answers the pointer rather than just its roofline.
+//
+// Order matters: overlapping triggers share a z-index, so the last one declared
+// wins the pointer. The tree (house-2) is the backdrop the buildings sit in
+// front of, so it goes first and the buildings keep their own hover areas.
 export const coverHotspots: CoverHotspot[] = [
+  makeHotspot(
+    'house-2',
+    {
+      // The glow here traces the tree, not a building — hence the wide box.
+      hit: { left: 17.76, top: 0, width: 30.85, height: 55 },
+      highlight: {
+        src: '/library/images/hotspots/house-2.svg',
+        alt: '',
+        left: 17.98,
+        top: 0,
+        width: 47.06,
+      },
+      card: { left: 53.0, top: 19.01 },
+    },
+    {
+      libraryName: 'Sarah’s Library',
+      about: lorem,
+      bookCount: 88,
+      videoCount: 34,
+      songCount: 12,
+    },
+  ),
   makeHotspot(
     'house-1',
     {
-      hit: { left: 37.73, top: 11.9, width: 12.55, height: 35.9 },
+      hit: { left: 41.45, top: 20.02, width: 13.13, height: 29.79 },
       highlight: {
         src: '/library/images/hotspots/house-1.svg',
         alt: '',
@@ -145,36 +173,15 @@ export const coverHotspots: CoverHotspot[] = [
       songCount: 17,
     },
     {
-      hit: { left: 45.8, top: 11.9, width: 6 },
+      // The panorama art sits 0.33% lower here, matching the highlight offset.
+      hit: { top: 20.35 },
       highlight: { left: 45.6, top: 7.9 },
     },
   ),
   makeHotspot(
-    'house-2',
-    {
-      hit: { left: 14.13, top: 2, width: 22.41, height: 60 },
-      highlight: {
-        src: '/library/images/hotspots/house-2.svg',
-        alt: '',
-        left: 17.98,
-        top: 0,
-        width: 47.06,
-      },
-      card: { left: 53.0, top: 19.01 },
-    },
-    {
-      libraryName: 'Sarah’s Library',
-      about: lorem,
-      bookCount: 88,
-      videoCount: 34,
-      songCount: 12,
-    },
-    { hit: { left: 34.7824, top: 0 } },
-  ),
-  makeHotspot(
     'house-3',
     {
-      hit: { left: 27.58, top: 43, width: 12.7, height: 34 },
+      hit: { left: 31.13, top: 50.79, width: 15.57, height: 37.59 },
       highlight: {
         src: '/library/images/hotspots/house-3.svg',
         alt: '',
@@ -192,14 +199,14 @@ export const coverHotspots: CoverHotspot[] = [
       songCount: 9,
     },
     {
-      hit: { left: 41, top: 52, width: 7.096, height: 34 },
+      hit: { top: 49.79 },
       highlight: { left: 40.4, top: 17.5 },
     },
   ),
   makeHotspot(
     'house-4',
     {
-      hit: { left: 17.12, top: 57, width: 10.46, height: 17 },
+      hit: { left: 20.02, top: 61.73, width: 11.43, height: 22.42 },
       highlight: {
         src: '/library/images/hotspots/house-4.svg',
         alt: '',
@@ -217,7 +224,7 @@ export const coverHotspots: CoverHotspot[] = [
       songCount: 6,
     },
     {
-      hit: { left: 35.6, top: 66 },
+      hit: { top: 60.83 },
       highlight: { left: 35.552, top: 28 },
     },
   ),
@@ -225,7 +232,7 @@ export const coverHotspots: CoverHotspot[] = [
     'house-5',
     {
       // Leader line exits to the LEFT, so the card sits left of the lantern.
-      hit: { left: 61.94, top: 38, width: 8.96, height: 26 },
+      hit: { left: 65.44, top: 49.75, width: 8.59, height: 24.69 },
       highlight: {
         src: '/library/images/hotspots/house-5.svg',
         alt: '',
@@ -242,6 +249,5 @@ export const coverHotspots: CoverHotspot[] = [
       videoCount: 14,
       songCount: 4,
     },
-    { hit: { left: 57.7312, top: 44, width: 4.3008, height: 28 } },
   ),
 ];

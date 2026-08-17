@@ -67,11 +67,13 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
           >
             {value.length > 0 ? `${value.length} selected` : placeholder}
           </Text>
-          <ArrowIcon
-            width={16}
-            height={16}
-            className={classNames(styles.icon, { [styles.rotated]: isOpen })}
-          />
+          <div className={styles.iconWrapper}>
+            <ArrowIcon
+              width={16}
+              height={16}
+              className={classNames(styles.icon, { [styles.rotated]: isOpen })}
+            />
+          </div>
         </button>
         {isOpen &&
           (!portal || menuPos) &&
