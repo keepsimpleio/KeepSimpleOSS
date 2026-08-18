@@ -12,6 +12,7 @@ import { getOffsecBiasContent } from '@uxcore/data/biasOffsec';
 import modalIntl from '@uxcore/data/modal';
 import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
+import { isOffsecEnabled } from '@uxcore/lib/offsec';
 import type { QuestionType, TagType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
@@ -68,8 +69,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
   // the dev preview, keep it dark on staging/prod until it's ready. Gating the
   // active state too (not just the switch) means a persisted isOffsecView=true
   // from a prior dev session can't leak the layer onto a public build.
-  const offsecEnabled =
-    (process.env.NEXT_PUBLIC_ENV || '').toLowerCase() === 'dev';
+  const offsecEnabled = isOffsecEnabled;
   const offsecActive = offsecEnabled && isOffsecView;
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const [isQuestionHovered, setIsQuestionHovered] = useState(false);

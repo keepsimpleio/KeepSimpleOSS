@@ -11,8 +11,11 @@ import Spinner from '@uxcore/components/Spinner';
 import ToolFooter from '@uxcore/components/ToolFooter';
 import biasesLocalization from '@uxcore/data/biases';
 import biasesMobile from '@uxcore/data/biasesMobile';
-import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
+import useUXCoreGlobals, {
+  initUseUXCoreGlobals,
+} from '@uxcore/hooks/useUXCoreGlobals';
 import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
+import { isOffsecEnabled } from '@uxcore/lib/offsec';
 import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
@@ -89,12 +92,16 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   useEffect(() => {
     if (!mounted) return;
 
+    // Restore the persisted view choices first, then let an explicit URL
+    // hash win over them. Reconcile against the restored state, not the
+    // (stale) closure values.
+    const restored = initUseUXCoreGlobals();
     const hash = window.location.hash;
 
-    if (hash === '#hr' && isProductView) {
-      toggleIsProductView();
+    if (hash === '#hr' && (restored.isProductView || restored.isOffsecView)) {
+      setUseCase('hr');
     }
-    if (hash === '#offsec' && !isOffsecView) {
+    if (hash === '#offsec' && !restored.isOffsecView && isOffsecEnabled) {
       toggleIsOffsecView();
     }
   }, [mounted]);
@@ -213,17 +220,19 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
                 )}
                 <span>HR</span>
               </div>
-              <div
-                data-cy="switch-offsec"
-                onClick={() => handleUseCaseClick('offsec')}
-                className={cn(styles.useCaseRow, {
-                  [styles.active]: isOffsecView,
-                })}
-              >
-                {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
-                <span className={styles.cybersecFull}>Cybersecurity</span>
-                <span className={styles.cybersecShort}>OffSec</span>
-              </div>
+              {isOffsecEnabled && (
+                <div
+                  data-cy="switch-offsec"
+                  onClick={() => handleUseCaseClick('offsec')}
+                  className={cn(styles.useCaseRow, {
+                    [styles.active]: isOffsecView,
+                  })}
+                >
+                  {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
+                  <span className={styles.cybersecFull}>Cybersecurity</span>
+                  <span className={styles.cybersecShort}>OffSec</span>
+                </div>
+              )}
             </div>
             {isCoreView && <Search biases={strapiBiases} />}
             {isCoreView && (

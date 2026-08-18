@@ -21,6 +21,15 @@ When writing copy that ships to users (microcopy, page headings, marketing blurb
 - No AI-isms — no "let me know if…", no "happy to help", no preamble before the answer.
 - Reference piece: **"The Rise of the Choice Architect"** (article on keepsimple.io). Match its register.
 
+## Design passport — type scale
+
+<!-- font-passport: allowed=10,11,12,13,14,15,16,18,20,22,24,28,32,36,40,48,64; floor=10; contrast=4.5 -->
+
+New or edited styles use only the sizes above (px). Legacy off-scale values
+(8px, 10.5px, 13.5px, …) stay until their surface is next reworked; do not
+introduce new off-scale sizes. Readable prose is 16px/150%. A new size enters
+this passport first, in the same commit that uses it.
+
 ## ⚠️ UX Core data is canonical
 
 The 100+ cognitive biases in UX Core are the product of 5+ years of curation and are referenced by Duke, Harvard, MIT, Google, Yandex, Amazon, and others.
