@@ -58,5 +58,6 @@ const en = {
   overWriteText: 'Overwrite',
   savedPersonasText: 'Saved Personas',
   pleaseInputName: 'Please input Persona Name',
+  saveFailed: 'Could not save the Persona. Please try again.',
 };
 export default en;

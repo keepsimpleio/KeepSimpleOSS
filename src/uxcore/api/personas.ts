@@ -1,13 +1,23 @@
-const headers =
-  typeof window !== 'undefined'
-    ? {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${
-          localStorage.getItem('accessToken') ||
-          localStorage.getItem('googleToken')
-        }`,
-      }
-    : null;
+// Auth headers are built per call: a module-level snapshot would freeze the
+// token present at first page load, so a user who logs in afterwards would
+// keep POSTing "Bearer null".
+const getAuthHeaders = () => {
+  if (typeof window === 'undefined') return null;
+  const token =
+    localStorage.getItem('accessToken') || localStorage.getItem('googleToken');
+  if (!token) return null;
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+const parseOrThrow = async (response: Response) => {
+  if (!response.ok) {
+    throw new Error(`Persona request failed with status ${response.status}.`);
+  }
+  return response.json();
+};
 
 export const getPersonaList = async () => {
   const token =
@@ -35,8 +45,9 @@ export const addPersona = async (
   decisionTable: string,
   accountName: string,
 ) => {
+  const headers = getAuthHeaders();
   if (!headers) {
-    return;
+    throw new Error('Not authorized: no access token for saving a persona.');
   }
   const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/personas`;
   const body = JSON.stringify({
@@ -47,7 +58,7 @@ export const addPersona = async (
     method: 'POST',
     headers,
     body,
-  }).then(data => data.json());
+  }).then(parseOrThrow);
 };
 
 export const updatePersona = async (
@@ -56,8 +67,9 @@ export const updatePersona = async (
   decisionTable: string,
   accountName: string,
 ) => {
+  const headers = getAuthHeaders();
   if (!headers) {
-    return;
+    throw new Error('Not authorized: no access token for saving a persona.');
   }
   const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/personas/${Number(
     String(entryId).slice(1),
@@ -70,12 +82,13 @@ export const updatePersona = async (
     method: 'PUT',
     headers,
     body,
-  }).then(data => data.json());
+  }).then(parseOrThrow);
 };
 
 export const deletePersona = async (entryId: number | string) => {
+  const headers = getAuthHeaders();
   if (!headers) {
-    return;
+    throw new Error('Not authorized: no access token for deleting a persona.');
   }
   const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/personas/${Number(
     String(entryId).slice(1),
@@ -84,7 +97,7 @@ export const deletePersona = async (entryId: number | string) => {
   return await fetch(url, {
     method: 'DELETE',
     headers,
-  }).then(data => data.json());
+  }).then(parseOrThrow);
 };
 
 export const getPersona = async (entryId: string, accountName: string) => {

@@ -60,5 +60,6 @@ const hy = {
   overWriteText: 'Վերագրել ',
   savedPersonasText: 'Պահպանված պերսոնաներ',
   pleaseInputName: 'Խնդրում ենք մուտքագրել Պերսոնայի անունը',
+  saveFailed: 'Could not save the Persona. Please try again.',
 };
 export default hy;
