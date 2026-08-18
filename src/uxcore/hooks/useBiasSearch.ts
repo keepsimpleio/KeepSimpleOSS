@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react';
-
 import { CustomHookType, DispatchFuntion } from '@uxcore/local-types/global';
+import { useEffect, useState } from 'react';
 
 interface StateType {
   searchResults: number[];
+  // True while a non-empty query is applied. Distinguishes "no search"
+  // from "search with zero hits" — both have searchResults = [].
+  isSearchActive: boolean;
 }
 
 let listeners: DispatchFuntion[] = [];
 
 let state: StateType = {
   searchResults: [],
+  isSearchActive: false,
 };
 
 const reducer = (newState: any) => {
@@ -24,8 +27,11 @@ const reducer = (newState: any) => {
 };
 
 /* ACTIONS */
-const setSearchResults = (searchResults: number[]) => {
-  reducer({ searchResults });
+const setSearchResults = (
+  searchResults: number[],
+  isSearchActive: boolean = searchResults.length > 0,
+) => {
+  reducer({ searchResults, isSearchActive });
 };
 
 /* CUSTOM HOOK */
