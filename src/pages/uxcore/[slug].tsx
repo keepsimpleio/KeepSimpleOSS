@@ -10,6 +10,7 @@ import {
   getAdjacentBiasTitles,
   mergeBiasesLocalization,
 } from '@uxcore/lib/helpers';
+import { isOffsecEnabled } from '@uxcore/lib/offsec';
 import { getUXCoreTextPaths } from '@uxcore/lib/paths';
 import type {
   QuestionType,
@@ -41,8 +42,8 @@ const UXCoreIds: FC<UXCoreProps> = ({
   uxcgLocalizedData,
 }) => {
   const [activeBiasNumber, setActiveBiasNumber] = useState<number>(null);
-  const [isModalClosed, setIsModalClosed] = useState<boolean>(true);
-  const [, { isProductView }] = useUXCoreGlobals();
+  const [, setIsModalClosed] = useState<boolean>(true);
+  const [, { isProductView, isOffsecView }] = useUXCoreGlobals();
   const router = useRouter();
   const { locale } = router as TRouter;
 
@@ -53,10 +54,19 @@ const UXCoreIds: FC<UXCoreProps> = ({
 
   const strapiQuestions = uxcgLocalizedData?.[locale] ?? [];
 
+  // mentionedQuestionsIds comes from Strapi as a JSON string; a null/garbage
+  // value must degrade to "no mentions", not crash the whole bias page.
+  const mentionedQuestionIds = useMemo(() => {
+    try {
+      const parsed = JSON.parse(currentModalData?.mentionedQuestionsIds);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }, [currentModalData?.mentionedQuestionsIds]);
+
   const mentionedQuestions = strapiQuestions.filter(({ attributes }) =>
-    JSON.parse(currentModalData.mentionedQuestionsIds).includes(
-      attributes?.number,
-    ),
+    mentionedQuestionIds.includes(attributes?.number),
   );
 
   const openSelectedBias = (number, slug) => {
@@ -100,7 +110,7 @@ const UXCoreIds: FC<UXCoreProps> = ({
           ogImage: {
             data: {
               attributes: {
-                url: currentModalData[`OGTags${lang}`]?.OGTags?.ogImage?.data
+                url: currentModalData[`OGTags${lang}`]?.ogImage?.data
                   ?.attributes?.url,
                 staticUrl: '/assets/ogImages/UXCore.png',
               },
@@ -111,21 +121,24 @@ const UXCoreIds: FC<UXCoreProps> = ({
     }
   }, [currentActiveBias.number, locale]);
 
+  // Keep the modal's bias in sync with the route. Depending on the prop (not
+  // mount-only) makes browser Back/Forward land on the right bias instead of
+  // leaving the modal stuck on the previously viewed one.
   useEffect(() => {
     setActiveBiasNumber(Number(currentActiveBias.number));
-    if (!isModalClosed) {
-      setActiveBiasNumber(null);
-    }
-  }, []);
+  }, [currentActiveBias.number]);
 
   useEffect(() => {
-    const newHash = isProductView ? '' : 'hr';
+    const offsecActive = isOffsecEnabled && isOffsecView;
+    const newHash = offsecActive ? 'offsec' : isProductView ? '' : 'hr';
     const currentPath = router.asPath.split('#')[0];
     const newUrl = `${currentPath}${newHash ? '#' + newHash : ''}`;
     if (router.asPath !== newUrl) {
-      router.push(newUrl, undefined, { shallow: false });
+      // Hash-only change: shallow, no scroll — switching the use case inside
+      // the modal must not refetch the page or jump to the top.
+      router.push(newUrl, undefined, { shallow: true, scroll: false });
     }
-  }, [isProductView, router.asPath]);
+  }, [isProductView, isOffsecView, router.asPath]);
 
   const openPage = () => {
     router.push(`/uxcore`, undefined, { scroll: true });

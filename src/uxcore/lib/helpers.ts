@@ -111,16 +111,19 @@ const searchPostfixes = {
   ],
 };
 
-const getSearchLabels = (length: number) => {
+const getSearchLabels = (length: number, locale: string) => {
+  // searchPostfixes is keyed by locale — index into the locale's pair list,
+  // not the top-level object, or every label resolves to undefined.
+  const postfixes = searchPostfixes[locale === 'ru' ? 'ru' : 'en'];
   const mainNumber = length % 100;
   const lastNumber = mainNumber % 10;
 
   if (mainNumber >= 10 && mainNumber < 20) {
-    return searchPostfixes[0];
+    return postfixes[0];
   } else {
-    if (lastNumber == 1) return searchPostfixes[1];
-    else if (lastNumber > 1 && lastNumber < 5) return searchPostfixes[2];
-    else return searchPostfixes[0];
+    if (lastNumber == 1) return postfixes[1];
+    else if (lastNumber > 1 && lastNumber < 5) return postfixes[2];
+    else return postfixes[0];
   }
 };
 
@@ -150,7 +153,7 @@ export const getSearchResults = (
       }, []);
   }
 
-  const searchLabels = getSearchLabels(results?.length);
+  const searchLabels = getSearchLabels(results?.length || 0, locale);
   return { results, searchLabels };
 };
 
@@ -175,7 +178,7 @@ export const getSearchResultsUxcp = (
     }, []);
   }
 
-  const searchLabels = getSearchLabels(results.length);
+  const searchLabels = getSearchLabels(results.length, locale);
   return { results, searchLabels };
 };
 
@@ -205,11 +208,17 @@ export function groupFilteredData(
   return groups;
 }
 
-export const generateSocialLinks = (url: string, title: string) => ({
-  linkedIn: `https://www.linkedin.com/shareArticle?url=${url}&title=${title}`,
-  facebook: `https://www.facebook.com/sharer/sharer.php?title=${title}&u=${url}`,
-  tweeter: `https://twitter.com/share?url=${url}&text=${title}`,
-});
+export const generateSocialLinks = (url: string, title: string) => {
+  // Callers pass raw values (window.location.href may carry a #hr hash,
+  // titles may carry &/'/spaces) — encode here so the share payload survives.
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  return {
+    linkedIn: `https://www.linkedin.com/shareArticle?url=${encodedUrl}&title=${encodedTitle}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?title=${encodedTitle}&u=${encodedUrl}`,
+    tweeter: `https://twitter.com/share?url=${encodedUrl}&text=${encodedTitle}`,
+  };
+};
 
 export const copyToClipboard = (str: string) => {
   const el = document.createElement('textarea');
