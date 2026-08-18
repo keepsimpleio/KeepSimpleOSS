@@ -252,6 +252,14 @@ $white: #fafafa;
     }
   }
 
+  .submitError {
+    text-align: center;
+    color: #fb1717;
+    font-size: 16px;
+    line-height: 150%;
+    margin-top: 16px;
+  }
+
   .btnWrapper {
     display: flex;
     justify-content: center;
