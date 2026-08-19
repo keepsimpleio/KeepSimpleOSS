@@ -5,6 +5,7 @@ import availabilityHeuristics from './availabilityHeuristics';
 import baseRateFallacy from './baseRateFallacy';
 import bizarrenessEffect from './bizarrenessEffect';
 import confirmationBias from './confirmationBias';
+import congruenceBias from './congruenceBias';
 import conservatism from './conservatism';
 import contextEffect from './contextEffect';
 import contrastEffect from './contrastEffect';
@@ -19,6 +20,7 @@ import mereExposureEffect from './mereExposureEffect';
 import moneyIllusion from './moneyIllusion';
 import moodCongruentMemoryBias from './moodCongruentMemoryBias';
 import negativityBias from './negativityBias';
+import observerExpectancyEffect from './observerExpectancyEffect';
 import omissionBias from './omissionBias';
 import ostrichEffect from './ostrichEffect';
 import pictureSuperiorityEffect from './pictureSuperiorityEffect';
@@ -55,8 +57,10 @@ const offsecBySlug: Record<string, OffsecBiasContent> = {
   'money-illusion': moneyIllusion,
   'weber-fechner-law': weberFechnerLaw,
   'confirmation-bias': confirmationBias,
+  'congruence-bias': congruenceBias,
   'post-purchase-rationalization': postPurchaseRationalization,
   'selective-perception': selectivePerception,
+  'observer-expectancy-effect': observerExpectancyEffect,
   'ostrich-effect': ostrichEffect,
 };
 
