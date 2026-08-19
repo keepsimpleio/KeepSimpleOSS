@@ -122,14 +122,18 @@ const KemmioCredit = () => {
 
               <ul className={styles.facts}>
                 <li>
-                  Authored the Aptos critical-vulnerability research. Unpatched,
-                  the flaw would have erased over $1T from Web3.
-                </li>
-                <li>
-                  Authored the disclosure behind the largest critical
-                  vulnerability in Web3 history: $500M of instant loss and $1.7T
-                  of cascade-effect damage on the table. Caught in private
-                  disclosure; exploitation never landed.
+                  Made the largest security finding in the history of digital
+                  finance: one bug put $70B+ in crypto at risk, confirmed by
+                  international experts and covered by{' '}
+                  <a
+                    href="https://www.coindesk.com/tech/2026/07/04/how-ethical-hackers-with-just-a-usd3-000-server-found-a-flaw-that-could-ve-put-usd70-billion-in-crypto-at-risk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.researchLink}
+                  >
+                    CoinDesk
+                  </a>
+                  .
                 </li>
                 <li>
                   Uncovered the first critical Solidity compiler vulnerability
@@ -143,6 +147,23 @@ const KemmioCredit = () => {
                     TSTORE poison bug
                   </a>
                   .
+                </li>
+                <li>
+                  Leads the only company in the Web3 space with zero post-audit
+                  hacks across 300+ engagements.
+                </li>
+                <li>
+                  Author of{' '}
+                  <a
+                    href="https://hexens.io/solutions/glider-monitor"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.researchLink}
+                  >
+                    Glider
+                  </a>
+                  , the tech that has saved over $250M in real-world Web3
+                  assets.
                 </li>
               </ul>
             </div>
