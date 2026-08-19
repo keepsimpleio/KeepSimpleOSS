@@ -1,50 +1,48 @@
-// Surface is an identity card. Before is a profile you treat as a genuine
-// unknown, so you verify; after is the same profile you feel you have "pegged"
-// as a harmless junior recruiter, so you drop your guard. The lever is the
-// illusion of asymmetric insight: you believe you see straight through them
-// while they cannot read you, and that false certainty switches off the checks.
+// Surface is a recruiter DM, twice. The lever is the illusion of asymmetric
+// insight: you believe you read other people far better than they read you.
+// Attackers exploit it by handing you an easy read on purpose: the same CV
+// ask arrives once as a neutral professional message you treat as an unknown,
+// and once wrapped in a performed, transparently naive persona. The moment
+// you feel you have seen through someone, you stop watching them, and the
+// "obvious junior" costume is built precisely to be seen through.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'The moment you feel you have someone figured out is the moment you stop watching them. Feeling unreadable yourself does not make the other person an open book.',
+  tell: 'When a stranger is easy to see through, consider that they were built that way. The read you get handed for free is the read that switches your guard off.',
   scenario:
-    'A recruiter messages you asking for a quick call and a copy of your current CV with project details. Reading them as a genuine unknown, you keep your guard up and verify the firm before sharing anything. Reading them as an obvious junior recruiter chasing a commission, someone you feel you have completely pegged, you relax: you are sure you can see exactly what they want and that they cannot see you at all, so you hand over the internal project detail without a second thought. The profile is the same. Your certainty that you have their number is the only thing that changed.',
+    'A recruiter asks for your current CV with recent project details. Written straight, the message is an unknown quantity: you verify the firm before sharing anything. Written as a flustered rookie, third week on the job, terrified of their manager, begging for the same document, it hands you an instant diagnosis: harmless junior chasing a placement, seen through in one glance. Feeling like the one who reads people, you relax and send the internal project details. The person behind both messages is the same professional, and the naive persona is a script whose only job was to be transparent.',
   visualLabel: 'Scenario',
   visual: {
     before: {
-      kind: 'profile',
+      kind: 'chat',
       tag: 'A stranger you treat as unknown',
-      name: 'Marcus Feld',
-      handle: '@marcus.recruits',
-      initial: 'MF',
-      title: 'Recruiter, reaching out about a role',
-      note: 'A genuine unknown. The firm is unverified and nothing sensitive has been shared.',
+      senderName: 'Marcus Feld',
+      senderHandle: '@marcus.recruits',
+      timestamp: 'Tue, 4:10 PM',
+      body: 'Hi, I am recruiting for a senior platform role that matches your background. Could we set up a short call this week? I would also need your current CV with recent project details for the client.',
     },
     after: {
-      kind: 'profile',
+      kind: 'chat',
       tag: 'A stranger you feel you have pegged',
-      priorContext:
-        'Same profile, same message, same request for your CV and project details. Nothing about them changed. Your read of them did.',
-      name: 'Marcus Feld',
-      handle: '@marcus.recruits',
-      initial: 'MF',
-      title: 'Junior Talent Partner, Northgate Recruiting',
-      note: 'The same profile, now read as an open book: an obvious junior, harmless, easily seen through. The felt asymmetry (clear to you, blind on their side) is the whole opening.',
+      senderName: 'Marcus Feld',
+      senderHandle: '@marcus.recruits',
+      timestamp: 'Tue, 4:10 PM',
+      body: 'hii sorry to bother you!! 😅 super new to this, week three, and my manager will not let me book a single call until the profile has a current CV with recent project details attached... could you just send yours over? you would honestly be saving my week 🙏',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is the illusion of asymmetric insight. We consistently believe we know others better than they know us, and better than we actually do. From a few surface cues we build a confident, tidy read of a stranger, "just a junior recruiter", while assuming our own motives stay opaque to them. The profile carries identical risk in both cards, but the felt sense of having someone pegged does the damage: certainty that you can see through a person quietly cancels the verification you would run on someone genuinely unknown. Attackers present exactly the persona you will feel you have figured out, harmless, low-status, easy to read, because a target who is sure they have the measure of you is a target who has stopped checking, which is the whole point.',
+    'This is the illusion of asymmetric insight. We are convinced we read other people better than they read us: their motives feel obvious while our own side feels hidden. The ask is identical in both messages. The straight version gives you nothing to diagnose, so the stranger stays a stranger and the checks stay on. The rookie version hands you a complete, flattering diagnosis in one glance, and a person you have "figured out" no longer feels like a threat worth watching. That felt asymmetry runs exactly backwards. You are reading a costume that was written to be read, while a professional on the other end is reading your real behaviour: what flatters you, what you skip verifying, what you will attach to help someone beneath your level. The easier the read, the more likely someone authored it.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'Your team can set verification rules. Not trusting your own read of a stranger is the part only you can do.',
+    lede: 'Your team can vet firms and requests. Not trusting your own instant diagnosis of a stranger is your part.',
     moves: [
-      'Verify on the request, never on your read of the person. "I can tell exactly what they are" is a feeling, not a fact you can act on.',
-      'When you feel you have someone completely figured out, treat that as a cue to slow down. Confident reads of strangers are usually thinner than they feel.',
-      'Assume the persona in front of you was chosen for how easily you would dismiss it. Harmless and low-status is a costume, not a clearance.',
-      'Run the same identity check on someone you find transparent as on someone who unsettles you. The one you think you have pegged is the one who gets through.',
+      'Verify the person and the firm through channels you find yourself, especially when your read of them feels complete. Confidence in a diagnosis is not verification.',
+      'Treat "obviously harmless" as a property someone can perform. Clumsiness, panic and inexperience are cheap costumes, and they collect the same documents competence would.',
+      'Judge the ask, never the persona: a CV with internal project details is sensitive whoever claims to need it, however sympathetic their story reads.',
+      'Notice the moment you feel like the smarter party in an exchange with a stranger. That feeling is the product being sold to you, and it is the point where checks usually stop.',
     ],
   },
 };
