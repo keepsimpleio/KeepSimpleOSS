@@ -1,75 +1,78 @@
-// Surface is a vertical timeline of the events that led up to an incident.
-// The lever is hindsight bias: once you know the breach happened, scattered
-// ambiguous prior events get relabelled as an obvious chain everyone "saw
-// coming". Same events both ways. Only the after-the-fact framing changes.
-// The flagged version is a post-incident message that reframes noise as
-// foreseeable to push a paid remediation and steer the blame.
+// Surface is the same three log events, twice: as they looked during an
+// ordinary week, and replayed in a vendor's "post-incident review" after a
+// breach was announced. The lever is hindsight bias: once the ending is
+// known, ordinary noise looks like an obvious chain of warnings. The rows
+// stay short and parallel; the sales pitch lives outside the log, in the
+// context line, so the artifact stays a log.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'After a breach, everything reads as an obvious warning you should have caught. Someone who reframes ordinary noise as a chain you "clearly missed" is manipulating that feeling to sell you a fix or pin the blame.',
+  tell: 'Once the ending is known, every ordinary event before it looks like an obvious warning. Anyone replaying your past as "you should have seen it" is using knowledge nobody had at the time.',
   scenario:
-    'A week after a minor security incident, you get a message walking you through the "obvious escalation" that led to it: a login alert, a slow morning, a vendor email, each now labelled Step 1, Step 2, Step 3 of an attack anyone could have foreseen. The events are real and you did see them. At the time they were unremarkable background. Reframed as a chain you failed to connect, the shame lands, and the message offers a paid remediation to make sure you never miss the signs again.',
+    'Three moments from an ordinary week: a routine login alert, a slow shared drive, an odd supplier email. Each was checked, resolved, forgotten. Then a breach is announced, and a vendor\'s "post-incident review" replays the same three moments as Step 1, Step 2, Step 3 of a chain anyone should have caught. No new facts, only a known ending, and the ending is what makes the past look obvious. The shame of "you missed it" is the lever: it sells their monitoring, and it works just as well when the three events had nothing to do with the breach at all.',
   visualLabel: 'Scenario',
   visual: {
     before: {
       kind: 'timeline',
-      tag: 'The events as they actually looked',
+      tag: 'The week, as it looked at the time',
       items: [
         {
           label: 'Tue',
           source: 'Sign-in alert',
-          text: 'A login from a new city. You travel, a colleague travels, this fires most weeks. You glance and move on.',
+          text: 'Login from a new city. Resolved: employee travel.',
         },
         {
           label: 'Wed',
           source: 'Helpdesk',
-          text: 'Someone reports the shared drive felt slow before lunch. It was fine by the afternoon.',
+          text: 'Shared drive slow before lunch. Closed by afternoon.',
         },
         {
           label: 'Thu',
           source: 'Inbox',
-          text: 'A supplier emails asking you to confirm bank details "for our records". Odd phrasing, nothing you act on.',
+          text: 'Supplier email asks to confirm bank details. Marked as spam.',
         },
       ],
     },
     after: {
       kind: 'timeline',
-      tag: 'The same events, relabelled after the breach',
+      tag: 'The same week, replayed after the breach',
       priorContext:
-        'These are the identical three events. Nothing new was discovered. Only the labels were added, a week later, by someone who already knows how the story ended.',
+        'A week after the incident, a vendor\'s "post-incident review" replays your log with labels written by someone who already knows the ending. The closing page sells their monitoring service.',
       items: [
         {
           label: 'Step 1',
           source: 'Sign-in alert',
-          text: 'The initial foothold. The attacker logs in from abroad and the warning is ignored, as attackers count on.',
+          text: 'The foothold. The warning that was ignored.',
+          flagged: true,
         },
         {
           label: 'Step 2',
           source: 'Helpdesk',
-          text: 'Lateral movement. The "slow drive" was data being staged for exfiltration in plain sight.',
+          text: 'The staging. Data moving in plain sight.',
+          flagged: true,
         },
         {
           label: 'Step 3',
           source: 'Inbox',
-          text: 'The payload. The breach we all predicted, and the one anyone paying attention would have stopped. Book the paid remediation before it repeats.',
+          text: 'The attacker making contact. Missed again.',
           flagged: true,
         },
       ],
+      flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is hindsight bias. Once you know an outcome, your memory quietly rewrites how predictable it felt beforehand, and the messy, ambiguous run-up collapses into a clean line that "obviously" pointed here. The three events are identical in both timelines. All that changed is that someone who knows the ending added the labels, turning background noise into Step 1, Step 2, and the breach you should have called. Attackers and opportunists exploit the "knew it all along" feeling because it does two useful things at once: it makes you feel culpable, which makes you compliant, and it makes the attacker look like they simply read a pattern you were too careless to see. The shame is the product. It softens you up for whatever they are selling, whether that is a paid fix, a rushed decision, or a quiet reassignment of blame.',
+    'This is hindsight bias. Once you know how a story ended, the events before it stop looking like the noise they were and start looking like a chain of obvious clues, and "it was predictable" replaces the truth, which is that nobody could have told these three moments apart from a thousand identical harmless ones. The log is the same in both cards. The vendor adds no evidence, only labels written with the ending in hand, and the labels do two jobs: they manufacture guilt ("anyone paying attention would have caught this") and they sell the cure for that guilt. The trick needs no connection between the events and the breach. It only needs you to feel, looking backwards, that the signs were always there.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: "Your team runs the real post-incident review. Refusing to accept a stranger's tidy story about it is your part.",
+    lede: 'Your team runs real postmortems with evidence. Refusing manufactured obviousness is your part.',
     moves: [
-      'Ask what was actually knowable at the time, not what is obvious now. A signal only counts if it stood out before you knew the ending.',
-      'Distrust any post-incident narrative that arrives with a fix attached. Manufactured hindsight and a payment link in the same message is a sales tactic, not an analysis.',
-      'Run the real review internally, with the people who were there, before you accept anyone else\'s labelled chain of "obvious" steps.',
-      'Notice the pull to feel you should have seen it coming. That feeling is the lever, and it is aimed at getting you to act fast to make the shame go away.',
+      'Ask of every "obvious warning sign": obvious compared to what? Count the identical events that week that led to nothing, because that denominator is what the storyteller deleted.',
+      'A real postmortem shows how events connect with evidence: logs, timestamps, causality. Labels like "Step 1" are narrative, and narrative is free.',
+      'Be suspicious of any retelling that arrives together with a product, a contract, or a person to blame. Hindsight is the cheapest sales pitch in security.',
+      'Judge past decisions by what was knowable at the time, not by the ending. That standard protects your team from blame games and you from buying protection against a story.',
     ],
   },
 };
