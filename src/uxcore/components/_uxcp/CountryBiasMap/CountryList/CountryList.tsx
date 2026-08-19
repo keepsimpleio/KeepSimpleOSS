@@ -120,7 +120,7 @@ const CountryList: FC<CountryListProps> = ({
                 [styles.CardSelected]: isSelected,
               })}
             >
-              <FlagImage countryCode={c.id} size={18} />
+              <FlagImage countryCode={c.id} countryName={c.name} size={18} />
               <span className={styles.CardName}>{c.name}</span>
               <span className={styles.CardConfidence}>
                 {Math.round(c.confidence * 100)}%

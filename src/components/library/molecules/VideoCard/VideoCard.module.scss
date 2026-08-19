@@ -1,34 +1,60 @@
+// The cell that frames the object plus its drop shadow. The shadow SVG fills
+// the full 292×182 box while the object (255×181) sits flush to the right
+// edge, so the soft shadow only peeks out on the left and bottom — matching the
+// book/audio cards where the spine/disc is exposed on the left.
+.wrap {
+  position: relative;
+  width: 292px;
+  height: 182px;
+}
+
+// Drop shadow behind the object, spanning the full cell. `none` on the SVG so
+// it stretches edge-to-edge instead of letterboxing inside the box.
+.shadow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .card {
   // Without explicit border-box the 12px padding adds 24px to both dimensions.
   box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  width: 318px;
-  height: 183px;
+  width: 255px;
+  height: 181px;
   padding: 12px;
   background: var(--off-white);
   border-radius: 0 0 20px 20px;
-  box-shadow: var(--card-shadow);
   cursor: pointer;
   border: none;
   outline: none;
-  overflow: hidden;
 
   &:focus-visible {
-    box-shadow:
-      0 0 0 2px var(--brown),
-      var(--card-shadow);
+    box-shadow: 0 0 0 2px var(--brown);
   }
 }
 
-// Hover/focus-revealed selection toggle, centered over the thumbnail's top.
+// Hover/focus-revealed selection toggle, floated just above the card (in the
+// shelf's headroom) so it never overlaps the thumbnail. The 6px `padding-bottom`
+// is a transparent hover bridge: it keeps the hit area continuous from the card
+// up to the pill so the toggle doesn't drop `:hover` (and vanish) as the cursor
+// crosses the visual gap to click it.
 .select {
   position: absolute;
-  top: 20px;
-  left: 12px;
-  right: 12px;
+  bottom: 100%;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
+  padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
   pointer-events: none;
@@ -47,9 +73,10 @@
 
 .thumbWrap {
   position: relative;
+  // 231×125 cover: full inner width (255 − 24 padding) at a fixed thumbnail height.
   width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
+  height: 125px;
+  flex: 0 0 auto;
 }
 
 .thumb {
@@ -98,21 +125,30 @@
 }
 
 // Compact variant for the share-selection panel: a bare 231×138 thumbnail
-// (no padding, no title bar, no caption).
-.card.compact {
+// (no shadow, no padding, no title bar, no caption).
+.wrap.compact {
   width: 231px;
   height: 138px;
-  padding: 0;
-  border-radius: 0;
+
+  .card {
+    position: static;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border-radius: 0;
+    // Swap the floating drop shadow for the double frame (inner 1.5px cream,
+    // outer 1px brown) so it matches the book/audio tiles in the panel.
+    box-shadow:
+      0 0 0 1.5px #f9f4eb,
+      0 0 0 2.5px #af6a34;
+  }
+
+  .thumbWrap {
+    height: 100%;
+  }
 
   .bar,
   .title {
     display: none;
-  }
-
-  .select {
-    top: 8px;
-    left: 8px;
-    right: 8px;
   }
 }

@@ -21,6 +21,9 @@
 
   .text {
     display: inline;
+    // Beats the global `.library p` serif rule (0,2,0 > 0,1,1) so tag labels
+    // use the sans face.
+    font-family: var(--font-source-sans);
   }
 
   .removeButton {
@@ -44,6 +47,10 @@
     svg {
       width: 10px;
       height: 10px;
+
+      path {
+        fill: var(--white);
+      }
     }
   }
 }

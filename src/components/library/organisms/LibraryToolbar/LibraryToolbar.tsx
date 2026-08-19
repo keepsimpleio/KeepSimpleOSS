@@ -16,7 +16,14 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
-import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  JSX,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { MAX_SHELVES_PER_LIBRARY } from '@constants/library/common';
 
@@ -86,7 +93,16 @@ function SortablePill(props: { shelf: StrapiSingleShelfEntry }): JSX.Element {
 }
 
 export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
-  const { shelves, onAddShelf, onShelvesReordered, className } = props;
+  const {
+    shelves,
+    onAddShelf,
+    onShelvesReordered,
+    isOwner = true,
+    ownerName,
+    search = '',
+    onSearchChange,
+    className,
+  } = props;
   const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(
     null,
   );
@@ -100,9 +116,6 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
   // revert the live reordering instead of committing it.
   const dragStartOrder = useRef<StrapiSingleShelfEntry[]>([]);
   const listRef = useRef<HTMLDivElement>(null);
-
-  // Search is UI-only for now — no query wiring yet.
-  const [search, setSearch] = useState('');
 
   // Horizontal scroller for the jump pills: when the row overflows, page
   // through it with the same arrows the shelves use.
@@ -139,6 +152,38 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
 
   const jumpOverflowing = canJumpLeft || canJumpRight;
   const atShelfLimit = shelves.length >= MAX_SHELVES_PER_LIBRARY;
+
+  // Visitor banner: the tags actually used on this library's objects, deduped
+  // by name (no cross-account tag fetch — mirror the Sidebar's derivation).
+  const tagNames = useMemo(() => {
+    const names = new Set<string>();
+    for (const shelf of shelves) {
+      for (const obj of shelf.attributes.objects?.data ?? []) {
+        for (const tag of obj.attributes.tags?.data ?? []) {
+          names.add(tag.attributes.name);
+        }
+      }
+    }
+    return Array.from(names);
+  }, [shelves]);
+
+  // Pick two distinct tags to tease in the welcome line; re-rolls only when the
+  // available tag set changes, not on every render.
+  const featuredTags = useMemo(() => {
+    const pool = [...tagNames];
+    for (let i = pool.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, 2);
+  }, [tagNames]);
+
+  const collectionsClause =
+    featuredTags.length >= 2
+      ? `curated collections on ${featuredTags[0]} and ${featuredTags[1]}, `
+      : featuredTags.length === 1
+        ? `curated collections on ${featuredTags[0]}, `
+        : 'curated collections, ';
 
   // Keep the working copy aligned with the source list while idle; freeze it
   // during a reorder session so incoming prop updates can't clobber the drag.
@@ -250,10 +295,43 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     }
   };
 
+  if (!isOwner) {
+    return (
+      <div className={classNames(styles.toolbar, className)}>
+        <div className={classNames(styles.controls, styles.controlsGuest)}>
+          <div className={styles.welcome}>
+            <Text
+              variant={TypographyVariant.TitleSecondaryBold}
+              className={styles.welcomeTitle}
+            >
+              Welcome to {ownerName}&rsquo;s hive
+            </Text>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.welcomeText}
+            >
+              Discover and explore {collectionsClause}along with an incredible
+              playlist full of his favorite songs.
+            </Text>
+          </div>
+
+          <Input
+            type="search"
+            value={search}
+            placeholder="Search everywhere"
+            placeholderColor="#C4C4C4"
+            onChange={e => onSearchChange?.(e.target.value)}
+            onClear={() => onSearchChange?.('')}
+            wrapperClassName={styles.search}
+            ariaLabel="Search everywhere"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={classNames(styles.toolbar, className)}>
-      <div className={styles.divider} />
-
       <div className={styles.controls}>
         <Text className={styles.text}>
           {isReordering ? 'Drag to reorder →' : 'Jump to →'}
@@ -401,8 +479,8 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
           value={search}
           placeholder="Search everywhere"
           placeholderColor="#C4C4C4"
-          onChange={e => setSearch(e.target.value)}
-          onClear={() => setSearch('')}
+          onChange={e => onSearchChange?.(e.target.value)}
+          onClear={() => onSearchChange?.('')}
           wrapperClassName={styles.search}
           ariaLabel="Search everywhere"
         />

@@ -18,17 +18,32 @@ const coverImageSchema = z
 
 const URL_REGEX = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/;
 
+// Single source of truth for the user-entered field limits, shared between the
+// zod schemas and the CharCount indicators in AddObjectModal so the counter's
+// `max` can never drift from what validation actually enforces.
+export const OBJECT_FIELD_LIMITS = {
+  title: 200,
+  author: 100,
+  description: 5000,
+} as const;
+
 const bookSchema = z.object({
   type: z.literal('book'),
   title: z
     .string()
     .min(1, 'Book title is required')
-    .max(200, 'Title must be 200 chars or less.'),
-  author: z.string().max(150, 'Author must be 150 chars or less.').optional(),
+    .max(OBJECT_FIELD_LIMITS.title, 'Title must be 200 chars or less.'),
+  author: z
+    .string()
+    .max(OBJECT_FIELD_LIMITS.author, 'Author must be 100 chars or less.')
+    .optional(),
   publicationDate: z.date().optional().nullable(),
   description: z
     .string()
-    .max(4000, 'Description must be 4000 chars or less.')
+    .max(
+      OBJECT_FIELD_LIMITS.description,
+      'Description must be 5000 chars or less.',
+    )
     .optional(),
   coverImage: coverImageSchema.optional().nullable(),
 });
@@ -42,13 +57,21 @@ const videoSchema = z.object({
   title: z
     .string()
     .min(1, 'Video title is required')
-    .max(150, 'Title must be 150 chars or less.'),
-  author: z.string().max(100, 'Creator must be 100 chars or less.').optional(),
+    .max(OBJECT_FIELD_LIMITS.title, 'Title must be 200 chars or less.'),
+  author: z
+    .string()
+    .max(OBJECT_FIELD_LIMITS.author, 'Creator must be 100 chars or less.')
+    .optional(),
   description: z
     .string()
-    .max(5000, 'Description must be 5000 chars or less.')
+    .max(
+      OBJECT_FIELD_LIMITS.description,
+      'Description must be 5000 chars or less.',
+    )
     .optional(),
   coverImage: coverImageSchema.optional().nullable(),
+  // Auto-derived from the URL host (e.g. "YouTube") — not user-entered.
+  source: z.string().max(100).optional(),
 });
 
 const audioSchema = z.object({
@@ -60,13 +83,23 @@ const audioSchema = z.object({
   title: z
     .string()
     .min(1, 'Audio title is required')
-    .max(150, 'Title must be 150 chars or less.'),
-  author: z.string().max(100, 'Artist must be 100 chars or less.').optional(),
+    .max(OBJECT_FIELD_LIMITS.title, 'Title must be 200 chars or less.'),
+  author: z
+    .string()
+    .max(OBJECT_FIELD_LIMITS.author, 'Artist must be 100 chars or less.')
+    .optional(),
   description: z
     .string()
-    .max(5000, 'Description must be 5000 chars or less.')
+    .max(
+      OBJECT_FIELD_LIMITS.description,
+      'Description must be 5000 chars or less.',
+    )
     .optional(),
   coverImage: coverImageSchema.optional().nullable(),
+  // Both auto-derived, never user-entered: `source` from the URL host,
+  // `duration` (whole seconds) from the selected iTunes track.
+  source: z.string().max(100).optional(),
+  duration: z.number().int().nonnegative().optional(),
 });
 
 export const schemaByType = {

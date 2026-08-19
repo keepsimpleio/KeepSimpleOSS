@@ -78,7 +78,7 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
     {
       name: library,
       path: '/library',
-      logo: <LibraryIcon />,
+      logo: <LibraryIcon className={styles.libraryIcon} />,
       target: '',
       id: 'library',
       activeMatch: '/library',

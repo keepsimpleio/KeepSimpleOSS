@@ -2,6 +2,10 @@
   position: fixed;
   right: 24px;
   bottom: 24px;
+  /* Extra clearance for host pages that park their own controls in the
+     bottom-right corner. Margin (not `bottom`) so it composes with the
+     mobile keyboard offset below without rewriting that calc. */
+  margin-bottom: var(--ks-aux-lift, 0px);
   z-index: 2147483600;
   font-family: 'Jost-Regular', 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
@@ -13,10 +17,22 @@
   pointer-events: auto;
 }
 
-/* Hide the whole widget while any UX Core / UXCG modal is open — the modal
-   owns the bottom corners (Prev/Next navigation pills live there). */
-body:has([class*='ModalOverlay']) .ks-aux-root {
-  display: none;
+/* Hide the whole widget while any UX Core / UXCG modal is open — but only
+   on mobile, where the modal's Prev/Next pills live in the bottom corners
+   and would collide. On desktop the modal's arrows sit on the side edges,
+   so the bottom-right corner is free: we keep the widget visible there so
+   the visitor can talk to it about the bias they're reading. */
+@media (max-width: 480px) {
+  body:has([class*='ModalOverlay']) .ks-aux-root {
+    display: none;
+  }
+}
+
+/* UX Core surfaces (uxcore + bias pages, uxcg + questions, uxcp, uxcat,
+   uxcore-api) keep their own chrome in the bottom-right corner. `_app.tsx`
+   sets body.uxcorePage for exactly those routes. */
+body.uxcorePage .ks-aux-root {
+  --ks-aux-lift: 70px;
 }
 
 @keyframes ks-aux-pulse {
@@ -882,11 +898,11 @@ body:has([class*='ModalOverlay']) .ks-aux-root {
   line-height: 1.6;
   color: #1f1d1a;
   word-wrap: break-word;
-  animation: ks-aux-fade-in 320ms ease both;
+  animation: ks-aux-fade-in 460ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 @keyframes ks-aux-fade-in {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -1307,7 +1323,10 @@ body:has([class*='ModalOverlay']) .ks-aux-root {
     right: 0;
     bottom: 60px; /* sits just above the pill */
     width: auto;
-    height: var(--ks-aux-panel-h, calc(100dvh - 96px));
+    height: var(
+      --ks-aux-panel-h,
+      calc(100dvh - 96px - var(--ks-aux-lift, 0px))
+    );
     max-height: 640px;
     border-radius: 14px;
   }

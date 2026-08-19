@@ -1,44 +1,97 @@
-name: Claude Code Review
+name: Claude PR Review
 
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+
+# Only review the latest push: rapid pushes to the same PR would otherwise
+# spawn overlapping runs that race on the tracking comment and burn
+# Max-subscription quota.
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-
+    # Skip draft PRs, and skip fork PRs: forked pull_request runs get no
+    # repo secrets and a read-only GITHUB_TOKEN, so the job would fail
+    # loudly on auth instead of skipping cleanly.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       pull-requests: write
-      issues: write
-      id-token: write
-
+      actions: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
-      - name: Run Claude Code Review
-        id: claude-review
+      - name: Claude PR Review
         uses: anthropics/claude-code-action@v1
         with:
+          # Authenticates against Mary's Claude Max subscription (OAuth token,
+          # not an API key). Secret set at repo level: CLAUDE_CODE_OAUTH_TOKEN.
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
-          plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
 
+          # Use the workflow's own token so we don't need to install the
+          # third-party Claude GitHub App on the org. Requires the job
+          # permissions block below (pull-requests: write).
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Live progress checklist comment on the PR while reviewing.
+          track_progress: true
+
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            You are reviewing the KeepSimpleOSS codebase: a Next.js **Pages
+            Router** app (React 19, TypeScript with strict off), styled with
+            SCSS Modules. See AGENTS.md for the full conventions.
+
+            Review this PR and focus on:
+
+            1. Correctness & React best practices
+               - Hooks rules, effect dependencies, stale closures
+               - Unnecessary re-renders, missing keys, prop drilling
+               - SSR/hydration safety: no `window`/`localStorage`/`document`
+                 at module top level (guard in effects or use ssr:false)
+            2. TypeScript quality
+               - Avoid `any`, prefer precise types, exhaustive unions
+            3. Project conventions (AGENTS.md) — flag violations:
+               - App Router patterns (`'use client'`, `next/navigation`,
+                 `src/app/`)
+               - Tailwind, styled-components, CSS-in-JS, or inline styles
+               - New state libraries (Redux, Zustand, Jotai, SWR, React Query)
+               - Global CSS imported anywhere except `_app.tsx`
+               - `<img src={svg}>` instead of importing SVGs as components
+               - Named exports from `index.ts` barrels, or empty barrels
+               - Import-order / path-alias violations
+               - Changes to UX Core bias data, slugs, or schema (these need
+                 explicit approval — flag, don't wave through)
+            4. Accessibility & UX
+               - Semantic HTML, aria attributes, keyboard nav
+            5. Security
+               - XSS via dangerouslySetInnerHTML, unsanitized input,
+                 leaked secrets/env, unsafe URL handling
+            6. Styling
+               - SCSS module hygiene; no hardcoded colors/spacing/breakpoints
+                 that bypass the design tokens (keepsimple-style)
+
+            Leave inline comments for specific issues via the inline-comment
+            tool. Put your overall assessment and any praise in the tracking
+            comment summary. Be concise and actionable; skip nitpicks that a
+            linter would catch.
+
+          # Only the PR/commit-scoped inline-comment tool is granted. We
+          # deliberately do NOT grant raw `gh pr comment/view/diff`: those are
+          # unscoped, and since the review reads untrusted PR content (diff,
+          # description) a prompt-injection payload could steer them at other
+          # PRs/issues. PR context + diff are already injected via track_progress.
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment"

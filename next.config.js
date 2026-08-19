@@ -33,6 +33,8 @@ module.exports = withBundleAnalyzer({
       'https://www.googletagmanager.com',
       'https://www.google-analytics.com',
       'https://cdn.mxpnl.com',
+      // Self-hosted Umami tracker.
+      'https://analytics.administration.ae',
     ]
       .filter(Boolean)
       .join(' ');
@@ -42,6 +44,8 @@ module.exports = withBundleAnalyzer({
       isDev ? 'ws:' : '',
       'https://*.keepsimple.io',
       'https://metrics.administration.ae',
+      // Self-hosted Umami event collection.
+      'https://analytics.administration.ae',
       'https://api.mixpanel.com',
       'https://api-js.mixpanel.com',
       'https://www.google-analytics.com',
@@ -139,6 +143,15 @@ module.exports = withBundleAnalyzer({
                   name: 'preset-default',
                   params: { overrides: { removeViewBox: false } },
                 },
+                // preset-default's cleanupIds minifies internal ids to short
+                // strings (a, b, c…) per file. SVGR inlines every icon into the
+                // same DOM, so icons that reference their own clipPath/filter/
+                // gradient via url(#id) (book, video, their shadows, delete,
+                // edit) end up with colliding ids — url(#a) resolves to whichever
+                // #a renders first, pointing at the wrong def and rendering blank.
+                // prefixIds namespaces each file's ids by filename so they stay
+                // unique across icons.
+                'prefixIds',
               ],
             },
           },

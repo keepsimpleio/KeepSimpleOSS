@@ -20,7 +20,13 @@ import { getTagsList } from '@api/library/tag/getTagsList';
 import { updateTag, UpdateTagRequest } from '@api/library/tag/updateTag';
 
 import avatarImage from '@icons/library/images/avatar.png';
-import { CloseIcon, CopyIcon, EditIcon, PlusIcon } from '@icons/library/svg';
+import {
+  CloseIcon,
+  CopyIcon,
+  EditIcon,
+  InfoIcon,
+  PlusIcon,
+} from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useDashboard } from '@components/Context/library/DashboardContext';
@@ -165,8 +171,11 @@ export function Sidebar() {
     resolveStrapiUrl(currentOwner?.avatar) ??
     (isMyLibrary ? accountData?.picture : undefined);
   const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
+  const aboutLibraryText = stripHtml(
+    currentLibrary?.attributes.libraryDetails?.aboutLibrary,
+  );
 
-  // Owner sees their full, editable tag palette; a visitor sees the tags
+  // Owner sees their full tag palette; a true visitor sees only the tags
   // actually used on this library's objects — no cross-account tag fetch.
   const libraryTags = useMemo(() => {
     const byName = new Map<string, { name: string; color: string }>();
@@ -180,7 +189,10 @@ export function Sidebar() {
     return Array.from(byName.values());
   }, [currentShelves]);
 
-  const displayedTags = canEdit
+  // Show the owner's palette whenever it's their own library — including guest
+  // mode (only an owner can toggle that, so we always have their tags loaded).
+  // Editing stays gated on `canEdit`, so guest preview shows them read-only.
+  const displayedTags = isMyLibrary
     ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
     : libraryTags;
 
@@ -222,7 +234,7 @@ export function Sidebar() {
       };
 
       await createTag(body);
-      const { data } = await getTagsList();
+      const { data } = await getTagsList(accountData?.id);
 
       setTags(data);
     } catch (error) {
@@ -245,7 +257,7 @@ export function Sidebar() {
       };
 
       await updateTag(selectedTag.id, body);
-      const { data } = await getTagsList();
+      const { data } = await getTagsList(accountData?.id);
 
       setTags(data);
       setIsOpenTagModal(null);
@@ -261,7 +273,7 @@ export function Sidebar() {
 
     try {
       await deleteTag(selectedTag.id);
-      const { data } = await getTagsList();
+      const { data } = await getTagsList(accountData?.id);
 
       setTags(data);
       setIsOpenTagModal(null);
@@ -302,13 +314,13 @@ export function Sidebar() {
   // fresh page load until the user mutates a tag.
   useEffect(() => {
     let cancelled = false;
-    getTagsList().then(({ data }) => {
+    getTagsList(accountData?.id).then(({ data }) => {
       if (!cancelled) setTags(data);
     });
     return () => {
       cancelled = true;
     };
-  }, [setTags]);
+  }, [setTags, accountData?.id]);
 
   // Hide the right panel entirely when the owner lacks permission to create a
   // library — the page shows only the centered no-permission message.
@@ -316,6 +328,27 @@ export function Sidebar() {
 
   return (
     <>
+      {/* Mobile-only: the panel is a fixed off-screen drawer at ≤1024px, so it
+          needs its own opener (the Header burger drives a different, global
+          nav). The edge tab pulls it in; the backdrop taps it closed. Both are
+          hidden on desktop, where the panel is a static sticky column. */}
+      {!isSidebarOpen && (
+        <button
+          type="button"
+          className={styles.openTab}
+          onClick={toggleSidebar}
+          aria-label="Open library info panel"
+        >
+          <InfoIcon />
+        </button>
+      )}
+      {isSidebarOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
+      )}
       <aside
         className={classNames(styles.sidebar, {
           [styles.open]: isSidebarOpen,
@@ -367,7 +400,7 @@ export function Sidebar() {
                     ''}
                 </Text>
               </div>
-              <div className={styles.divider} />
+              {aboutLibraryText && <div className={styles.divider} />}
 
               <div className={styles.totalObjects}>
                 <Text className={styles.label}>Total objects:</Text>
@@ -422,7 +455,7 @@ export function Sidebar() {
           <div className={styles.about}>
             <div className={styles.header}>
               <Text className={styles.label}>Tags</Text>
-              {canEdit && (
+              {canEdit && displayedTags.length > 0 && (
                 <Button
                   label="Edit"
                   ariaLabel="Edit"
@@ -438,7 +471,14 @@ export function Sidebar() {
               )}
             </div>
             <div className={styles.content}>
-              <div className={styles.tags}>
+              <div
+                className={classNames(styles.tags, {
+                  [styles.tagsEmpty]: displayedTags.length === 0,
+                })}
+              >
+                {displayedTags.length === 0 && (
+                  <Text className={styles.emptyTags}>No tags yet.</Text>
+                )}
                 {displayedTags.map(tag => (
                   <Tag key={tag.name} label={tag.name} color={tag.color} />
                 ))}
@@ -496,14 +536,16 @@ export function Sidebar() {
           </div>
         </div>
 
-        <div className={styles.footer}>
-          <Text className={styles.label}>Guest mode</Text>
-          <Toggle
-            checked={isGuestMode}
-            onChange={toggleGuestMode}
-            ariaLabel="Guest mode"
-          />
-        </div>
+        {isMyLibrary && (
+          <div className={styles.footer}>
+            <Text className={styles.label}>Guest mode</Text>
+            <Toggle
+              checked={isGuestMode}
+              onChange={toggleGuestMode}
+              ariaLabel="Guest mode"
+            />
+          </div>
+        )}
       </aside>
       {isOpenTagModal && (
         <CreateTagModal

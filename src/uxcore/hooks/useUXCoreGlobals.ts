@@ -52,6 +52,15 @@ const toggleIsProductView = () => {
   }
 };
 const toggleIsOffsecView = () => {
+  // Hard gate: OffSec cannot be entered in production, regardless of how the
+  // toggle is reached (hash, localStorage, or a stray UI handler).
+  if (!isOffsecEnabled) {
+    if (state.isOffsecView) {
+      localStorage.setItem('isOffsecView', 'false');
+      reducer({ isOffsecView: false });
+    }
+    return;
+  }
   localStorage.setItem('isOffsecView', String(!state.isOffsecView));
   reducer({ isOffsecView: !state.isOffsecView });
 };
@@ -62,7 +71,11 @@ const toggleIsOffsecView = () => {
 // Cybersecurity and return to the canonical pair.
 const setUseCase = (target: 'product' | 'hr' | 'offsec') => {
   let resolved: 'product' | 'hr' | 'offsec' = target;
-  if (target === 'offsec' && state.isOffsecView) {
+  // In production OffSec is unavailable — coerce any request for it back to
+  // the last PM/HR view so it can never become the active use case.
+  if (target === 'offsec' && !isOffsecEnabled) {
+    resolved = state.lastBaseUseCase || 'hr';
+  } else if (target === 'offsec' && state.isOffsecView) {
     resolved = state.lastBaseUseCase || 'hr';
   }
   const next: Partial<TState> = {

@@ -44,14 +44,20 @@ import styles from './ShareSelectionPanel.module.scss';
 
 const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
 
-function ObjectCard({ object }: { object: IObject }): JSX.Element {
+function ObjectCard({
+  object,
+  onClick,
+}: {
+  object: IObject;
+  onClick?: (object: IObject) => void;
+}): JSX.Element {
   switch (object.attributes.type) {
     case 'video':
-      return <VideoCard object={object} compact />;
+      return <VideoCard object={object} onClick={onClick} compact />;
     case 'audio':
-      return <AudioCard object={object} compact />;
+      return <AudioCard object={object} onClick={onClick} compact />;
     default:
-      return <BookCard object={object} compact />;
+      return <BookCard object={object} onClick={onClick} compact />;
   }
 }
 
@@ -60,8 +66,9 @@ function SortableItem(props: {
   position: number;
   readOnly: boolean;
   onRemove?: (id: number) => void;
+  onObjectClick?: (object: IObject) => void;
 }): JSX.Element {
-  const { object, position, readOnly, onRemove } = props;
+  const { object, position, readOnly, onRemove, onObjectClick } = props;
   const {
     attributes,
     listeners,
@@ -100,15 +107,19 @@ function SortableItem(props: {
         </button>
       )}
 
-      {/* Drag handle wraps the card; the card carries no onClick here, so a
-          pointer-press always starts a drag instead of opening the overview. */}
+      {/* Owner view: the handle wraps the card and the card carries no onClick,
+          so a pointer-press starts a drag instead of opening the overview.
+          Recipient view: no drag, so the card click opens the overview modal. */}
       <div
         className={classNames(styles.cardHandle, {
           [styles.draggable]: !readOnly,
         })}
         {...(readOnly ? {} : { ...attributes, ...listeners })}
       >
-        <ObjectCard object={object} />
+        <ObjectCard
+          object={object}
+          onClick={readOnly ? onObjectClick : undefined}
+        />
       </div>
 
       {!readOnly && sequence}
@@ -124,6 +135,7 @@ export function ShareSelectionPanel({
   onReorder,
   onRemove,
   onClear,
+  onObjectClick,
   className,
 }: ShareSelectionPanelProps): JSX.Element | null {
   const [collapsed, setCollapsed] = useState(false);
@@ -197,7 +209,11 @@ export function ShareSelectionPanel({
       })}
       aria-label={readOnly ? 'Shared selection' : 'Share selection'}
     >
-      <div className={styles.header}>
+      <div
+        className={classNames(styles.header, {
+          [styles.headerReadOnly]: readOnly,
+        })}
+      >
         <button
           type="button"
           className={styles.heading}
@@ -236,6 +252,7 @@ export function ShareSelectionPanel({
               onClick={() => onClear?.()}
               type={ButtonType.Outlined}
               size={ButtonSize.Default}
+              className={styles.removeAll}
             />
           </div>
         )}
@@ -243,12 +260,7 @@ export function ShareSelectionPanel({
 
       {/* Always mounted so the chevron can animate the whole section open/closed
           via the grid-rows collapse (see .bodyWrap) instead of unmounting. */}
-      <div
-        className={classNames(styles.bodyWrap, {
-          [styles.bodyWrapCollapsed]: collapsed,
-        })}
-        aria-hidden={collapsed}
-      >
+      <div className={styles.bodyWrap} aria-hidden={collapsed}>
         <div className={styles.body}>
           {!readOnly && limitReached && (
             <Text
@@ -278,6 +290,7 @@ export function ShareSelectionPanel({
                       position={index + 1}
                       readOnly={readOnly}
                       onRemove={setPendingRemoveId}
+                      onObjectClick={onObjectClick}
                     />
                   ))}
                 </div>

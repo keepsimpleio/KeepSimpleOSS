@@ -1,10 +1,20 @@
+## Font passport
+
+<!-- font-passport: allowed=8,9,9.14,9.5,10,10.5,11,11.5,11.52,12,12.5,13,13.5,13.6,13.76,14,14.344,14.4,15,16,17,17.6,18,18.4,20,21,22,22.4,23,24,25,26,28,30,32,34,34.56,35,36,38,40,45,48,64,76; floor=8; contrast=4.5 -->
+
+- Allowed sizes: **8, 9, 9.14, 9.5, 10, 10.5, 11, 11.5, 11.52, 12, 12.5, 13, 13.5, 13.6, 13.76, 14, 14.344, 14.4, 15, 16, 17, 17.6, 18, 18.4, 20, 21, 22, 22.4, 23, 24, 25, 26, 28, 30, 32, 34, 34.56, 35, 36, 38, 40, 45, 48, 64, 76px**. Hard floor: **8px**.
+- Contrast: **4.5:1** minimum, or **3:1** for text at 18px and above.
+- If text does not fit, fix the layout. This passport outranks template and skill defaults.
+
 # CLAUDE.md — keepsimple (for Claude Code agents)
 
 > **Global rules apply.** Communication style + Agent Directory routing live in `~/.claude/CLAUDE.md` — read that first. This project participates in the directory; use `/send-to` to ask peers.
 
 MemPalace wing: `keepsimple` (protocol lives in `~/.claude/CLAUDE.md`).
 
-Human-readable agent guidelines live in `AGENTS.md` next to this file; this file is the machine-facing version. See `AGENTS.md` for repo conventions, build/test commands, and contribution rules.
+Human-readable agent guidelines live in `AGENTS.md` next to this file; this file is the machine-facing version. See `AGENTS.md` for repo conventions, build/test commands, and contribution rules — imported below so it loads automatically.
+
+@AGENTS.md
 
 ## Code search — prefer CodeGraph over Grep
 
@@ -20,15 +30,6 @@ When writing copy that ships to users (microcopy, page headings, marketing blurb
 - Sparse profanity is fine when it lands; default to clean.
 - No AI-isms — no "let me know if…", no "happy to help", no preamble before the answer.
 - Reference piece: **"The Rise of the Choice Architect"** (article on keepsimple.io). Match its register.
-
-## Design passport — type scale
-
-<!-- font-passport: allowed=10,11,12,13,14,15,16,18,20,22,24,28,32,36,40,48,64; floor=10; contrast=4.5 -->
-
-New or edited styles use only the sizes above (px). Legacy off-scale values
-(8px, 10.5px, 13.5px, …) stay until their surface is next reworked; do not
-introduce new off-scale sizes. Readable prose is 16px/150%. A new size enters
-this passport first, in the same commit that uses it.
 
 ## ⚠️ UX Core data is canonical
 

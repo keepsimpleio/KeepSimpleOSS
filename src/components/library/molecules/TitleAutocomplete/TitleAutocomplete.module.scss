@@ -1,0 +1,84 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.menu {
+  width: 100%;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: 8px;
+  box-shadow: var(--dropdown-shadow);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: var(--gray-200);
+
+  &:hover,
+  &.active {
+    background: var(--off-white);
+  }
+}
+
+.thumb {
+  flex-shrink: 0;
+  width: 32px;
+  height: 44px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--off-white);
+}
+
+.thumbPlaceholder {
+  flex-shrink: 0;
+  width: 32px;
+  height: 44px;
+  border-radius: 4px;
+  background: var(--off-white);
+  border: 1px solid var(--gray-100);
+}
+
+.optionText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.optionTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.optionMeta {
+  color: var(--gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  padding: 10px 12px;
+  color: var(--gray);
+}

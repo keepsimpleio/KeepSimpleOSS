@@ -9,5 +9,14 @@
     display: flex;
     flex-direction: column;
     height: auto;
+
+    // The global header is sticky (in-flow) on desktop but switches to
+    // position:fixed at ≤1140px, so content would otherwise start at the
+    // viewport top, under it. Offset by the fixed header's height (55px) so the
+    // sticky toolbar — which sticks at that same top:55px — clears the header at
+    // rest instead of hiding beneath it.
+    @media (max-width: 1140px) {
+      padding-top: 55px;
+    }
   }
 }

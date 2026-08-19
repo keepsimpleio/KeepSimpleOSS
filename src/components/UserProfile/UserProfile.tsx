@@ -4,9 +4,12 @@ import { NextRouter, useRouter } from 'next/router';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
+import { isLibraryEnabled } from '@constants/library/common';
+
 import { logout } from '@api/auth';
 
 import LibraryIcon from '@icons/library/svg/library.svg';
+import PlusIcon from '@icons/library/svg/plus.svg';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './UserProfile.module.scss';
@@ -18,16 +21,29 @@ type UserProfileProps = {
   isDarkTheme?: boolean;
   hideDropdown?: boolean;
   hideUsername?: boolean;
+  canCreateLibrary?: boolean;
+  hasLibrary?: boolean;
   setAccountData?: (updater: (prev: boolean) => boolean) => void;
   setOpenLoginModal?: (openModal: boolean) => void;
   handleOpenSettings?: () => void;
 };
 
 const labels = {
-  en: { myLibrary: 'My Library', settings: 'Settings', logout: 'Log out' },
-  ru: { myLibrary: 'Моя библиотека', settings: 'Настройки', logout: 'Выйти' },
+  en: {
+    myLibrary: 'My Library',
+    createLibrary: 'Create library',
+    settings: 'Settings',
+    logout: 'Log out',
+  },
+  ru: {
+    myLibrary: 'Моя библиотека',
+    createLibrary: 'Создать библиотеку',
+    settings: 'Настройки',
+    logout: 'Выйти',
+  },
   hy: {
     myLibrary: 'Իմ գրադարանը',
+    createLibrary: 'Ստեղծել գրադարան',
     settings: 'Կարգավորումներ',
     logout: 'Դուրս գալ',
   },
@@ -40,6 +56,8 @@ const UserProfile: FC<UserProfileProps> = ({
   isDarkTheme,
   hideDropdown,
   hideUsername,
+  canCreateLibrary,
+  hasLibrary,
   setAccountData,
   setOpenLoginModal,
   handleOpenSettings,
@@ -68,10 +86,25 @@ const UserProfile: FC<UserProfileProps> = ({
     handleOpenSettings?.();
   }, [handleOpenSettings]);
 
+  // With neither an existing library nor create permission, the user has no
+  // library page to open, so the item is inert.
+  const myLibraryDisabled = !hasLibrary && !canCreateLibrary;
+
   const handleMyLibrary = useCallback(() => {
+    if (myLibraryDisabled) return;
     setIsDropdownOpen(false);
     router.push(`/library/${username}`);
-  }, [router, username]);
+  }, [router, username, myLibraryDisabled]);
+
+  // A library has no standalone create step — it's bootstrapped on the owner's
+  // own page once they add content (gated server-side by the same feature
+  // flag). So "Create library" just routes there; the flag drives whether the
+  // item is actionable at all.
+  const handleCreateLibrary = useCallback(() => {
+    if (!canCreateLibrary) return;
+    setIsDropdownOpen(false);
+    router.push(`/library/${username}`);
+  }, [router, username, canCreateLibrary]);
 
   useEffect(() => {
     if (hideDropdown) setIsDropdownOpen(false);
@@ -147,8 +180,14 @@ const UserProfile: FC<UserProfileProps> = ({
         )}
         {isDropdownOpen && isAccessTokenExist && (
           <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
-            {username && (
-              <div className={styles.menuItem} onClick={handleMyLibrary}>
+            {isLibraryEnabled() && username && (
+              <div
+                className={cn(styles.menuItem, {
+                  [styles.disabled]: myLibraryDisabled,
+                })}
+                onClick={handleMyLibrary}
+                aria-disabled={myLibraryDisabled}
+              >
                 <LibraryIcon
                   width={20}
                   height={11}
@@ -157,6 +196,24 @@ const UserProfile: FC<UserProfileProps> = ({
                   })}
                 />
                 <span>{t.myLibrary}</span>
+              </div>
+            )}
+            {isLibraryEnabled() && (
+              <div
+                className={cn(styles.menuItem, {
+                  [styles.disabled]: !canCreateLibrary,
+                })}
+                onClick={handleCreateLibrary}
+                aria-disabled={!canCreateLibrary}
+              >
+                <PlusIcon
+                  width={14}
+                  height={14}
+                  className={cn(styles.menuIcon, {
+                    [styles.menuIconDark]: isDarkTheme,
+                  })}
+                />
+                <span>{t.createLibrary}</span>
               </div>
             )}
             <div className={styles.menuItem} onClick={handleSettings}>

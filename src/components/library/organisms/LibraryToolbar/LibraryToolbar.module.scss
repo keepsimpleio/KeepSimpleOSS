@@ -4,7 +4,7 @@
   top: 48px;
   z-index: 20;
   background: var(--cream);
-  padding: 0 16px 12px;
+  padding: 1px 16px 12px;
 
   // The global header switches to a fixed 55px bar at this breakpoint.
   @media (max-width: 1140px) {
@@ -12,22 +12,64 @@
   }
 }
 
-.divider {
-  width: 100%;
-  height: 1px;
-  background: var(--black-100);
-  margin: 16px 0;
-}
-
 .controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  // Replaces the removed divider's 16px top margin so the controls keep their
+  // breathing room below the global header.
+  margin-top: 16px;
+  animation: toolbar-fade 0.3s ease;
 
+  // On phones everything crammed onto one row collapsed the flex:1 pill
+  // scroller to near-zero, leaving only the overlapping arrows. Stack into a
+  // column so each control gets a full-width row: jump label, pill scroller,
+  // actions, then search.
   @media (max-width: 768px) {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
     gap: 12px;
+    // Collapse the top margin on mobile so the controls connect to the fixed
+    // header (paired with the layout wrapper dropping its top padding), matching
+    // the removed divider's mobile behavior.
+    margin-top: 0;
+  }
+}
+
+// Guest view of someone else's library: the divider is dropped, so restore the
+// vertical breathing room on the controls row itself.
+.controlsGuest {
+  margin-top: 0;
+  padding: 24px 10px;
+}
+
+// Visitor / guest-preview banner that replaces the owner's shelf controls.
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  animation: toolbar-fade 0.3s ease;
+}
+
+.welcomeTitle {
+  color: var(--brown-200);
+}
+
+.welcomeText {
+  color: var(--brown-200);
+}
+
+// Fades whichever variant is mounted, so toggling guest mode in your own
+// library swaps the content smoothly instead of a hard cut.
+@keyframes toolbar-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -52,6 +94,10 @@
   gap: 12px;
   flex: 1;
   min-width: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 }
 
 .jumpScroll {
@@ -91,6 +137,10 @@
   flex-shrink: 0;
   width: 300px;
   max-width: 100%;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 
   input {
     border-radius: 12px !important;
@@ -183,6 +233,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 // Button's `text` type defaults to white (built for dark surfaces); on this

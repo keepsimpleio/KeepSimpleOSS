@@ -5,6 +5,7 @@ import styles from './FlagImage.module.scss';
 
 interface FlagImageProps {
   countryCode: string;
+  countryName?: string;
   size?: number;
   className?: string;
 }
@@ -20,6 +21,7 @@ const codeToEmoji = (code: string): string => {
 
 const FlagImage: FC<FlagImageProps> = ({
   countryCode,
+  countryName,
   size = 20,
   className = '',
 }) => {
@@ -58,7 +60,7 @@ const FlagImage: FC<FlagImageProps> = ({
       srcSet={`https://flagcdn.com/w${cdnW2x}/${code}.png 2x`}
       width={w}
       height={size}
-      alt=""
+      alt={`Flag of ${countryName || countryCode.toUpperCase()}`}
       className={cn(styles.Flag, className)}
       style={{ width: w, height: size }}
       loading="lazy"

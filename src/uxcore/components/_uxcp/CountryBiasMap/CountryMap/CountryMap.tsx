@@ -434,7 +434,11 @@ const CountryMap: FC<CountryMapProps> = ({
           }}
         >
           <div className={styles.TooltipHead}>
-            <FlagImage countryCode={hoveredData.id} size={16} />
+            <FlagImage
+              countryCode={hoveredData.id}
+              countryName={hoveredData.name}
+              size={16}
+            />
             <span className={styles.TooltipName}>{hoveredData.name}</span>
           </div>
           <div className={styles.TooltipMeta}>

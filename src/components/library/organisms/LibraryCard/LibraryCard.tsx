@@ -24,7 +24,11 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
   const router = useRouter();
 
   const handleViewLibrary = () => {
-    router.push(`/library/${username ?? id}`);
+    // Route by numeric id, not username: the route resolver short-circuits a
+    // numeric param to a findOne-by-id, sidestepping the username→id filter
+    // lookup that the public API currently 500s on. Falls back to username only
+    // if an id is somehow absent.
+    router.push(`/library/${id ?? username}`);
   };
 
   return (

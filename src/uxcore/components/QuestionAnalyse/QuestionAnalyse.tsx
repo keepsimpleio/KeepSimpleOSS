@@ -1,17 +1,13 @@
-import cn from 'classnames';
-import { useRouter } from 'next/router';
-import { FC, useContext, useEffect, useState } from 'react';
-
-import { StrapiBiasType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
-import { mergeBiasesLocalization } from '@uxcore/lib/helpers';
-
-import questionAnalyseData from '@uxcore/data/uxcat/questionAnalyse';
-
 import ContentParser from '@uxcore/components/ContentParser';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import Modal from '@uxcore/components/Modal';
+import questionAnalyseData from '@uxcore/data/uxcat/questionAnalyse';
+import { mergeBiasesLocalization } from '@uxcore/lib/helpers';
+import { StrapiBiasType } from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
+import cn from 'classnames';
+import { useRouter } from 'next/router';
+import { FC, useContext, useEffect, useState } from 'react';
 
 import styles from './QuestionAnalyse.module.scss';
 
@@ -73,7 +69,7 @@ const QuestionAnalyse: FC<QuestionAnalyseProps> = ({
         ),
       );
     }
-  }, []);
+  }, [uxCoreData]);
 
   return (
     <Modal

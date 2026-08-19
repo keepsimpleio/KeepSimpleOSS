@@ -464,6 +464,8 @@ Key variables:
 - `NEXT_PUBLIC_ENV` — `local` / `staging` / `prod`
 - `NEXT_PUBLIC_INDEXING` — `on` / `off` (controls GA tracking)
 - `NEXT_PUBLIC_DOMAIN` — canonical domain for SEO/OG tags
+- `GOOGLE_APIS_KEY` — server-only Google Cloud key with **Books API** enabled; powers Library book suggestions. Optional: book search degrades to the keyless anonymous quota without it.
+- `YOUTUBE_API_KEY` — server-only Google Cloud key with **YouTube Data API v3** enabled; powers Library video autofill. Falls back to `GOOGLE_APIS_KEY` if unset, so a single key with both APIs enabled also works. Video autofill is disabled if neither is set. Audio autofill (iTunes Search API) needs no key.
 
 The `next.config.js` loads env from `.env.{APP_ENV}` (e.g., `.env.local`, `.env.staging`, `.env.prod`).
 

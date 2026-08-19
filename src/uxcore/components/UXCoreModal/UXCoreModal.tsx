@@ -65,12 +65,6 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
 }) => {
   const router = useRouter();
   const [{ setUseCase }, { isOffsecView }] = useUXCoreGlobals();
-  // OffSec (Cybersecurity) is a work-in-progress use case: surface it only on
-  // the dev preview, keep it dark on staging/prod until it's ready. Gating the
-  // active state too (not just the switch) means a persisted isOffsecView=true
-  // from a prior dev session can't leak the layer onto a public build.
-  const offsecEnabled = isOffsecEnabled;
-  const offsecActive = offsecEnabled && isOffsecView;
   const [isCopyTooltipVisible, setIsCopyTooltipVisible] = useState(false);
   const [isQuestionHovered, setIsQuestionHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -261,13 +255,17 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
             <span className={styles.metaTitle}>{usage}</span>
           </div>
           <div className={styles.ModalBodyContent}>
-            <div className={styles.switcher}>
+            <div
+              className={cn(styles.switcher, {
+                [styles.twoCol]: !isOffsecEnabled,
+              })}
+            >
               <div
                 onClick={handleUseCaseClick}
                 data-cy="switch-product"
                 data-usecase="product"
                 className={cn(styles.switcherItem, {
-                  [styles.activeProduct]: !offsecActive && !isProductView,
+                  [styles.activeProduct]: !isOffsecView && !isProductView,
                 })}
               >
                 <ProductIcon />
@@ -278,31 +276,37 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
                 data-cy="switch-hr"
                 data-usecase="hr"
                 className={cn(styles.switcherItem, {
-                  [styles.activeHr]: !offsecActive && isProductView,
+                  [styles.activeHr]: !isOffsecView && isProductView,
                 })}
               >
                 <HrIcon />
                 <span className={styles.switcherItemText}> {hrText}</span>
               </div>
-              {offsecEnabled && (
+              {isOffsecEnabled && (
                 <div
                   onClick={handleUseCaseClick}
                   data-cy="switch-offsec"
                   data-usecase="offsec"
                   className={cn(styles.switcherItem, {
-                    [styles.activeOffsec]: offsecActive,
+                    [styles.activeOffsec]: isOffsecView,
                   })}
                 >
-                  {offsecActive ? <OffSecIcon /> : <OffSecIconGrey />}
+                  {isOffsecView ? <OffSecIcon /> : <OffSecIconGrey />}
                   <span className={styles.switcherItemText}> {offsecText}</span>
                 </div>
               )}
             </div>
             <div
-              key={offsecActive ? 'offsec' : isProductView ? 'product' : 'hr'}
+              key={
+                isOffsecView && isOffsecEnabled
+                  ? 'offsec'
+                  : isProductView
+                    ? 'product'
+                    : 'hr'
+              }
               className={styles.usageFade}
             >
-              {offsecActive ? (
+              {isOffsecView && isOffsecEnabled ? (
                 (() => {
                   const offsecContent = getOffsecBiasContent(biasNumber);
                   return offsecContent ? (
@@ -321,7 +325,7 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
               )}
             </div>
           </div>
-          {!offsecActive && data.title && (
+          {(!isOffsecView || !isOffsecEnabled) && data.title && (
             <BiasBody biasNumber={biasNumber} locale={locale} />
           )}
           {questions.length > 0 && (

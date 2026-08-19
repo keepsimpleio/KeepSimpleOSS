@@ -22,7 +22,7 @@ const Custom404: FC<Custom404Props> = ({ intl, locale }) => {
   return (
     <Fragment>
       <Head>
-        <meta name="robots" content={'index, follow'} />
+        <meta name="robots" content={'noindex, follow'} />
         <title>Keepsimple | Error Page</title>
         <link rel="shortcut icon" href={'/keepsimple_/assets/favicon.svg'} />
         <meta name="description" content={'404 page - page not found'} />

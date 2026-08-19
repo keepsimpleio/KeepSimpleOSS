@@ -88,7 +88,6 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const didAttemptUserLoad = useRef(false);
-  const didAttemptLibrariesLoad = useRef(false);
 
   const refetchUser = useCallback(async () => {
     setIsUserLoading(true);
@@ -124,15 +123,10 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   }, [accountData, session, refetchUser]);
 
   useEffect(() => {
-    if (!token) {
-      didAttemptLibrariesLoad.current = false;
-      setLibraries(null);
-      return;
-    }
-    if (didAttemptLibrariesLoad.current) {
-      return;
-    }
-    didAttemptLibrariesLoad.current = true;
+    // `/api/libraries` is publicly readable, so the right-panel library
+    // dropdown should populate for everyone — including logged-out/incognito
+    // visitors. Refetch when auth state (token/session) changes in case the
+    // visible set differs for an authenticated viewer.
     void refetchLibraries();
   }, [token, session, refetchLibraries]);
 

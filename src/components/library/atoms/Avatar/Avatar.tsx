@@ -14,7 +14,12 @@ export function Avatar(props: AvatarProps): JSX.Element {
   return (
     <div className={classNames(className, styles.avatar)}>
       {url ? (
-        <Image src={url} width={48} height={48} alt="Picture of the author" />
+        <Image
+          src={url}
+          fill
+          sizes="(max-width: 590px) 100px, 208px"
+          alt="Picture of the author"
+        />
       ) : (
         <AvatarIcon />
       )}

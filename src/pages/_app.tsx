@@ -1,5 +1,7 @@
+import { getSlimBiases } from '@uxcore/api/biases';
 import { getOurProjects } from '@uxcore/api/our-projects';
 import { GlobalContext as UXCoreGlobalContext } from '@uxcore/components/Context/GlobalContext';
+import { NewUpdateModalContainer } from '@uxcore/components/NewUpdateModal';
 import UXCoreLayoutShell from '@uxcore/layouts/Layout';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
@@ -41,6 +43,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
   const [selectedTitle, setSelectedTitle] = useState<string>('');
   const [updatedUsername, setUpdatedUsername] = useState<string>('');
   const [ourProjectsModalData, setOurProjectsModalData] = useState<any>(null);
+  const [uxCoreData, setUxCoreData] = useState<any>(null);
 
   const isIndexingOn = process.env.NEXT_PUBLIC_INDEXING === 'on';
   const isProduction = process.env.NEXT_PUBLIC_ENV === 'prod';
@@ -275,6 +278,24 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
     };
   }, [isUxcoreRoute, router.locale]);
 
+  const isUxcatRoute = router.pathname.startsWith('/uxcat');
+
+  useEffect(() => {
+    if (!isUxcatRoute || uxCoreData) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getSlimBiases();
+        if (!cancelled) setUxCoreData(data);
+      } catch (err) {
+        console.warn('[uxcat-biases] fetch failed:', err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isUxcatRoute, uxCoreData]);
+
   const uxcoreContextValue = useMemo(
     () => ({
       accountData,
@@ -288,7 +309,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
       setUpdatedUsername,
       ourProjectsModalData,
       setOurProjectsModalData,
-      uxCoreData: null,
+      uxCoreData,
       uxcgLocalizedData: null,
       uxcgData: null,
     }),
@@ -298,6 +319,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
       selectedTitle,
       updatedUsername,
       ourProjectsModalData,
+      uxCoreData,
     ],
   );
 
@@ -377,6 +399,7 @@ function AppContent({ Component, pageProps: { session, ...pageProps } }: TApp) {
           <UXCoreGlobalContext.Provider value={uxcoreContextValue}>
             <UXCoreLayoutShell>
               <Component {...pageProps} />
+              <NewUpdateModalContainer />
             </UXCoreLayoutShell>
           </UXCoreGlobalContext.Provider>
         ) : (

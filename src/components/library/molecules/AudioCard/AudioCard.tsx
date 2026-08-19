@@ -1,7 +1,7 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { JSX } from 'react';
+import React, { JSX, useCallback, useState } from 'react';
 
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
@@ -24,6 +24,16 @@ export function AudioCard({
   );
   const tags = attributes.tags?.data ?? [];
   const title = attributes.title;
+
+  const [coverLoaded, setCoverLoaded] = useState(false);
+
+  // A cached image can finish decoding before React attaches `onLoad`, leaving
+  // it stuck at opacity 0. Catch that case via the ref's `complete` flag.
+  const coverRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete) {
+      setCoverLoaded(true);
+    }
+  }, []);
 
   const handleActivate = () => onClick?.(object);
 
@@ -57,17 +67,20 @@ export function AudioCard({
             />
           </div>
         )}
+        <div className={styles.placeholder} aria-hidden="true" />
         <div className={styles.cover}>
-          {coverUrl ? (
+          {coverUrl && (
             <Image
+              ref={coverRef}
               src={coverUrl}
               alt={title}
               fill
               sizes="190px"
-              className={styles.coverImage}
+              className={classNames(styles.coverImage, {
+                [styles.coverImageLoaded]: coverLoaded,
+              })}
+              onLoad={() => setCoverLoaded(true)}
             />
-          ) : (
-            <div className={styles.coverPlaceholder} />
           )}
         </div>
       </div>
