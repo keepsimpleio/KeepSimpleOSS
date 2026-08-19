@@ -6,10 +6,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  technique: {
-    label: 'Fraud after-care',
-    tell: 'A vendor gushing about how smart your payment was, seconds after the money leaves, is buying your silence, not thanking you.',
-  },
+  tell: 'A vendor gushing about how smart your payment was, seconds after the money leaves, is buying your silence, not thanking you.',
   scenario:
     'You just paid an invoice to Brightwater Supplies. Moments later a confirmation lands. One version is a flat receipt. The other congratulates you, calls it the smart move, and hands you perks and next steps. Same payment, already gone. Only one of them makes you feel too good about it to go back and check.',
   visualLabel: 'Scenario',

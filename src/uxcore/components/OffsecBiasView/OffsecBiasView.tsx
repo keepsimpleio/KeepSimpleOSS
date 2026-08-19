@@ -291,15 +291,10 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
   return (
     <div className={styles.root}>
       <div className={styles.visualBlock}>
-        {content.technique && (
-          <div className={styles.technique}>
-            <span className={styles.techniqueLabel}>
-              {content.technique.label}
-            </span>
-            <div className={styles.techniqueTell}>
-              <span className={styles.techniqueTellKey}>The tell</span>
-              {content.technique.tell}
-            </div>
+        {content.tell && (
+          <div className={styles.tell}>
+            <span className={styles.tellKey}>The tell</span>
+            <span className={styles.tellText}>{content.tell}</span>
           </div>
         )}
         <span className={styles.eyebrow}>{content.visualLabel}</span>

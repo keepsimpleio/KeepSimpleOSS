@@ -6,10 +6,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  technique: {
-    label: 'Verify-through-us loop',
-    tell: 'If a warning hands you the way to check whether it is real, that check runs on the attacker’s turf and can only ever pass.',
-  },
+  tell: 'If a warning hands you the way to check whether it is real, that check runs on the attacker’s turf and can only ever pass.',
   scenario:
     'A fraud alert claims someone is draining your Kestrel Bank account. Version one just says so, and you instinctively open your banking app to see for yourself. Version two adds "to confirm this is really us, call the number below or tap Verify". You take the test it offers, the test can only confirm, and the one check that could expose it, contacting the bank through a channel you already trust, is the one you skip.',
   visualLabel: 'Scenario',

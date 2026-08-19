@@ -6,10 +6,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  technique: {
-    label: 'Make-it-go-away bait',
-    tell: 'The button that clears the scary warning in one tap is usually the one authorizing the thing the warning was about.',
-  },
+  tell: 'The button that clears the scary warning in one tap is usually the one authorizing the thing the warning was about.',
   scenario:
     'Your phone shows unsettling sign-in alerts. A rogue prompt from "SecurityCenter" wants you to confirm an action. Framed as "review and verify each of these three warnings", you avoid it, because looking closely feels bad. Framed as "clear all alerts in one tap and put this behind you", you take it gladly. Same confirmation, and it is the attacker you are approving.',
   visualLabel: 'Scenario',

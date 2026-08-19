@@ -6,10 +6,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  technique: {
-    label: 'Routine-artifact mimicry',
-    tell: 'When a message looks exactly like the thing you get every week, you stop reading it and start recognizing it. That gap is the attack.',
-  },
+  tell: 'When a message looks exactly like the thing you get every week, you stop reading it and start recognizing it. That gap is the attack.',
   scenario:
     'Every Monday your team shares the weekly metrics deck through the same tool. A phishing email copies that exact artifact. Land it on a random Thursday and the odd sender and link jump out. Land it Monday at 9 AM, right where the real one always sits, and you read "the weekly deck is ready" and click, never actually seeing that the address is wrong.',
   visualLabel: 'Scenario',

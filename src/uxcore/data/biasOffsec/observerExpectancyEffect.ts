@@ -6,10 +6,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  technique: {
-    label: 'Prompt-priming vishing',
-    tell: 'If someone warns you a prompt is about to appear and tells you to just approve it, they are scripting your reaction before the trap arrives.',
-  },
+  tell: 'If someone warns you a prompt is about to appear and tells you to just approve it, they are scripting your reaction before the trap arrives.',
   scenario:
     'Your phone is about to show an approval prompt an attacker triggered with your stolen password. Cold, with no warm-up, you would squint at it and deny. But if a caller claiming to be from IT has just told you "I am running a quick check, you will get a prompt in a second, that is normal, go ahead and approve it", the same prompt arrives pre-labeled as routine, and you approve the expectation instead of reading the request.',
   visualLabel: 'Scenario',
