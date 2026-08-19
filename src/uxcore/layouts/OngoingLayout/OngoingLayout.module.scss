@@ -1,4 +1,6 @@
 $white: #fafafa;
+// Error red shared with the UXCP DecisionTable error surface.
+$error-red: #fb1717;
 
 .ongoing {
   background-color: $white;
@@ -250,6 +252,16 @@ $white: #fafafa;
         transform: unset;
       }
     }
+  }
+
+  .submitError {
+    text-align: center;
+    // Same error red the UXCP DecisionTable error surface uses — reuse, not
+    // a new invented color.
+    color: $error-red;
+    font-size: 16px;
+    line-height: 150%;
+    margin-top: 16px;
   }
 
   .btnWrapper {

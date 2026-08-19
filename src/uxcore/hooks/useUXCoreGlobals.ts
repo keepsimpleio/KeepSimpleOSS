@@ -96,30 +96,33 @@ const toggleShowArrows = () => {
 };
 
 /* INIT */
-const initUseUXCoreGlobals = () => {
-  const changeState = (localStorage.getItem('isCoreView') || true) === 'false';
-  const changeStateView =
-    (localStorage.getItem('isProductView') || true) === 'false';
-  const changeStateOffsec =
+// Restores the persisted view choices. Applies absolute values (no toggles),
+// so calling it on every mount is safe. The OffSec flag only restores when
+// the layer is enabled for this build: a flag persisted on the dev preview
+// must not resurface the layer on a public build. Returns the merged state
+// so a caller can reconcile a URL hash against what was actually restored.
+export const initUseUXCoreGlobals = (): TState => {
+  const next: Partial<TState> = {};
+  const storedCore = localStorage.getItem('isCoreView');
+  if (storedCore !== null) {
+    next.isCoreView = storedCore !== 'false';
+  }
+  const storedProduct = localStorage.getItem('isProductView');
+  if (storedProduct !== null) {
+    next.isProductView = storedProduct !== 'false';
+  }
+  next.isOffsecView =
     isOffsecEnabled && localStorage.getItem('isOffsecView') === 'true';
-  const changeStateArrows =
-    (localStorage.getItem('showArrows') || true) === 'false';
+  const storedArrows = localStorage.getItem('showArrows');
+  if (storedArrows !== null) {
+    next.showArrows = storedArrows !== 'false';
+  }
   const storedBase = localStorage.getItem('lastBaseUseCase');
   if (storedBase === 'product' || storedBase === 'hr') {
-    reducer({ lastBaseUseCase: storedBase });
+    next.lastBaseUseCase = storedBase;
   }
-  if (changeState) {
-    toggleIsCoreView();
-  }
-  if (changeStateView) {
-    toggleIsProductView();
-  }
-  if (changeStateOffsec) {
-    toggleIsOffsecView();
-  }
-  if (changeStateArrows) {
-    toggleShowArrows();
-  }
+  reducer(next);
+  return state;
 };
 
 /* CUSTOM HOOK */

@@ -1,13 +1,11 @@
+import ZoomBox from '@uxcore/components/_biases/ZoomBox';
+import useBiasSearch from '@uxcore/hooks/useBiasSearch';
+import { generateLabelsData, isMobileDevice } from '@uxcore/lib/helpers';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { FC, MouseEvent, useEffect, useRef, useState } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { generateLabelsData, isMobileDevice } from '@uxcore/lib/helpers';
-
-import ZoomBox from '@uxcore/components/_biases/ZoomBox';
 
 import { BiasLabelProps } from './BiasLabel.types';
 
@@ -33,6 +31,7 @@ const BiasLabel: FC<BiasLabelProps> = ({
 
   const router = useRouter();
   const { locale } = router as TRouter;
+  const { isSearchActive } = useBiasSearch()[1];
 
   const [isZoomBoxVisible, setIsZoomBoxVisible] = useState(false);
   const [labelsData, setLabelsData] = useState(null);
@@ -109,11 +108,9 @@ const BiasLabel: FC<BiasLabelProps> = ({
         className={cn(styles.biasLabel, className, {
           [styles.secondRow]: sectionId === 2,
           [styles.searched]:
-            searchResults.length > 0 &&
-            searchResults.includes(Number(biasNumber)),
+            isSearchActive && searchResults.includes(Number(biasNumber)),
           [styles.faded]:
-            searchResults.length > 0 &&
-            !searchResults.includes(Number(biasNumber)),
+            isSearchActive && !searchResults.includes(Number(biasNumber)),
           [styles.isLeftSection]: isLeftSection,
           [styles.biasLabelHy]: locale === 'hy',
           // These are exceptional positions for left-top section labels

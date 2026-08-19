@@ -3,23 +3,38 @@ export const rateRequest = async (
   rating: number,
   type: 'bias' | 'question',
 ) => {
+  // Geo enrichment is best-effort: a failed /api/user lookup must not
+  // abort the vote itself.
+  type TUserGeo = {
+    country?: string;
+    region?: string;
+    city?: string;
+    ip?: string;
+  };
+  let userData: TUserGeo = {};
   try {
-    // TODO: keep data as it will be sent to avoid multiple requests
-    const userData = await fetch('/api/user').then(data => data.json());
-    const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/ratings`;
-    const headers = { 'Content-Type': 'application/json' };
-
-    const { country, region, city, ip } = userData;
-
-    const body = JSON.stringify({
-      data: { elemId: `${id}`, rating, country, region, city, ip, type },
-    });
-    return await fetch(url, {
-      method: 'POST',
-      headers,
-      body,
-    }).then(data => data.json());
-  } catch (err) {
-    throw new Error('Error occured while sending rating request.');
+    userData = await fetch('/api/user').then(data => data.json());
+  } catch {
+    userData = {};
   }
+
+  const url = `${process.env.NEXT_PUBLIC_STRAPI}/api/ratings`;
+  const headers = { 'Content-Type': 'application/json' };
+
+  const { country, region, city, ip } = userData;
+
+  const body = JSON.stringify({
+    data: { elemId: `${id}`, rating, country, region, city, ip, type },
+  });
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body,
+  });
+  // A 4xx/5xx from Strapi is a lost vote — surface it to the caller
+  // instead of counting it as success.
+  if (!response.ok) {
+    throw new Error(`Rating request failed with status ${response.status}.`);
+  }
+  return response.json();
 };

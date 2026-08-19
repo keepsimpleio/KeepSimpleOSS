@@ -1,28 +1,22 @@
-import cn from 'classnames';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { FC, useContext, useEffect, useState } from 'react';
-import Skeleton from 'react-loading-skeleton';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-
-import { StrapiBiasType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
-import { mergeBiasesLocalization } from '@uxcore/lib/helpers';
-
 import { getAchievement } from '@uxcore/api/uxcat/get-achievement';
 import { getUXCatSubmitTest } from '@uxcore/api/uxcat/submit-test';
-
-import ongoingTestData from '@uxcore/data/uxcat/ongoingTest';
-
 import ArrowRight from '@uxcore/assets/icons/ArrowRight';
-
 import Button from '@uxcore/components/Button';
 import ContentParser from '@uxcore/components/ContentParser';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import OngoingAnswerLines from '@uxcore/components/OngoingAnswerLines';
 import OngoingHeader from '@uxcore/components/OngoingHeader';
 import Toasts from '@uxcore/components/Toasts';
+import ongoingTestData from '@uxcore/data/uxcat/ongoingTest';
+import { mergeBiasesLocalization } from '@uxcore/lib/helpers';
+import { StrapiBiasType } from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
+import cn from 'classnames';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { FC, useContext, useEffect, useRef, useState } from 'react';
+import Skeleton from 'react-loading-skeleton';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './OngoingLayout.module.scss';
@@ -89,6 +83,10 @@ const OngoingLayout: FC<OngoingProps> = ({
   const [lastQuestionClicked, setLastQuestionClicked] = useState(false);
   const [fade, setFade] = useState(null);
   const [fadeAnswer, setFadeAnswer] = useState(null);
+  // Ref (not state) so two rapid clicks/Enter presses can't both pass the
+  // guard before a re-render lands.
+  const isSubmittingRef = useRef(false);
+  const [submitError, setSubmitError] = useState(false);
 
   const {
     title,
@@ -98,6 +96,7 @@ const OngoingLayout: FC<OngoingProps> = ({
     message,
     pickAnswer,
     skipQuestionTxt,
+    submitFailed,
   } = ongoingTestData[currentLocale];
 
   const questionsLeft = startTest?.questions?.length;
@@ -170,6 +169,9 @@ const OngoingLayout: FC<OngoingProps> = ({
     }
   };
 
+  // Returns whether the answer actually reached the server; the caller must
+  // not advance the test on a dropped request, or the answer is silently
+  // lost and the score is wrong.
   const submittedAnswer = async (testId, questionId, answerId) => {
     const response = await getUXCatSubmitTest(
       testId,
@@ -177,10 +179,14 @@ const OngoingLayout: FC<OngoingProps> = ({
       answerId,
       token,
     );
+    if (!response) {
+      return false;
+    }
     setTestResult(response);
     if (currentNumber === testLength) {
       router.push('/uxcat/test-result');
     }
+    return true;
   };
 
   const handleSubmit = () => {
@@ -188,7 +194,6 @@ const OngoingLayout: FC<OngoingProps> = ({
     setTimeout(() => {
       setFade(false);
       handleButtonClick();
-      setLastQuestionClicked(currentNumber === testLength);
     }, 0);
   };
 
@@ -197,7 +202,6 @@ const OngoingLayout: FC<OngoingProps> = ({
     setTimeout(() => {
       setFade(false);
       handleSkipButtonClick();
-      setLastQuestionClicked(currentNumber === testLength);
     }, 0);
   };
 
@@ -359,28 +363,39 @@ const OngoingLayout: FC<OngoingProps> = ({
     }
   }, [lastQuestionClicked]);
 
-  const handleButtonClick = () => {
+  const sendAnswer = async (submittedAnswerId: number) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    setSubmitError(false);
+
     if (fiveScsLeft && finishTestClicked) {
       const audio = new Audio('/audio/bomb.mp3');
       audio.play();
-      handleAnswerSubmit();
-      submittedAnswer(testId, questionId, answerId);
-      setSubmittedBiasNumber(findMatchingBias?.number);
-      setFinishTestClicked(true);
-    } else {
-      handleAnswerSubmit();
-      submittedAnswer(testId, questionId, answerId);
-      setSubmittedBiasNumber(findMatchingBias?.number);
-      setFinishTestClicked(true);
     }
-  };
 
-  const handleSkipButtonClick = () => {
+    const delivered = await submittedAnswer(
+      testId,
+      questionId,
+      submittedAnswerId,
+    );
+    isSubmittingRef.current = false;
+
+    if (!delivered) {
+      // Stay on the question and let the user retry.
+      setSubmitError(true);
+      setDefaultDisabled(false);
+      return;
+    }
+
+    setLastQuestionClicked(currentNumber === testLength);
     handleAnswerSubmit();
-    submittedAnswer(testId, questionId, 0);
     setSubmittedBiasNumber(findMatchingBias?.number);
     setFinishTestClicked(true);
   };
+
+  const handleButtonClick = () => sendAnswer(answerId);
+
+  const handleSkipButtonClick = () => sendAnswer(0);
 
   const handleScaleAnimation = () => {
     setScaleInAnimation(false);
@@ -391,7 +406,13 @@ const OngoingLayout: FC<OngoingProps> = ({
 
   useEffect(() => {
     const handleKeyPress = event => {
-      if (event.key === 'Enter' && selectedAnswer !== null) {
+      // Mirror the Next button's disabled state, otherwise Enter submits
+      // the same question twice before React clears the selection.
+      if (
+        event.key === 'Enter' &&
+        selectedAnswer !== null &&
+        !defaultDisabled
+      ) {
         handleSubmit();
         handleAnswerAnimation();
         setDefaultDisabled(true);
@@ -403,7 +424,7 @@ const OngoingLayout: FC<OngoingProps> = ({
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [selectedAnswer]);
+  }, [selectedAnswer, defaultDisabled]);
 
   return (
     <div
@@ -579,6 +600,7 @@ const OngoingLayout: FC<OngoingProps> = ({
         ) : (
           <Skeleton count={3} className={styles.skeleton} />
         )}
+        {submitError && <p className={styles.submitError}>{submitFailed}</p>}
         <div className={styles.btnWrapper}>
           <Button
             isBig

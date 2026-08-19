@@ -1,19 +1,15 @@
+import { deletePersona } from '@uxcore/api/personas';
+import PersonaDeleteModal from '@uxcore/components/_uxcp/PersonaDeleteModal';
+import Button from '@uxcore/components/Button';
+import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
+import Modal from '@uxcore/components/Modal';
+import decisionTable from '@uxcore/data/decisionTable';
+import { TRouter } from '@uxcore/local-types/global';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { FC, Fragment, useContext, useState } from 'react';
-
-import { TRouter } from '@uxcore/local-types/global';
-
-import { deletePersona } from '@uxcore/api/personas';
-
-import decisionTable from '@uxcore/data/decisionTable';
-
-import PersonaDeleteModal from '@uxcore/components/_uxcp/PersonaDeleteModal';
-import Button from '@uxcore/components/Button';
-import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
-import Modal from '@uxcore/components/Modal';
 
 import styles from './SavedPersonas.module.scss';
 
@@ -106,14 +102,20 @@ const SavedPersonas: FC<SavedPersonasProps> = ({
 
   const deleteChosenPersona = () => {
     if (deletePersonaById) {
-      deletePersona(deletePersonaById).then(r => {
-        console.log(r);
-        const updatedPersonas = savedPersonas.filter(
-          persona => persona.id !== deletePersonaById,
-        );
-        setSavedPersonas(updatedPersonas);
-        setDeletePersonaById(null);
-      });
+      deletePersona(deletePersonaById)
+        .then(() => {
+          const updatedPersonas = savedPersonas.filter(
+            persona => persona.id !== deletePersonaById,
+          );
+          setSavedPersonas(updatedPersonas);
+          setDeletePersonaById(null);
+        })
+        .catch(err => {
+          // Failed delete: keep the persona in the list instead of hiding
+          // an entry the server still has.
+          console.error('Persona delete failed:', err);
+          setDeletePersonaById(null);
+        });
     }
     setConfirmationModal(false);
   };

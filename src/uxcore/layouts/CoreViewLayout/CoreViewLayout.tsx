@@ -1,22 +1,17 @@
+import BiasEnvironment from '@uxcore/components/_biases/BiasEnvironment/BiasEnvironment';
+import BiasLabel from '@uxcore/components/_biases/BiasLabel';
+import UXCoreLines from '@uxcore/components/_biases/UXCoreLines/UXCoreLines';
+import biasesLocalization from '@uxcore/data/biases';
+import copyButtonData from '@uxcore/data/copyButton';
+import useBiasSearch from '@uxcore/hooks/useBiasSearch';
+import { useBrowserScale } from '@uxcore/hooks/useBrowserScale';
+import { copyToClipboard } from '@uxcore/lib/helpers';
+import type { StrapiBiasType } from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { FC, memo, useState } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-
-import type { StrapiBiasType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useBiasSearch from '@uxcore/hooks/useBiasSearch';
-import { useBrowserScale } from '@uxcore/hooks/useBrowserScale';
-
-import { copyToClipboard } from '@uxcore/lib/helpers';
-
-import biasesLocalization from '@uxcore/data/biases';
-import copyButtonData from '@uxcore/data/copyButton';
-
-import BiasEnvironment from '@uxcore/components/_biases/BiasEnvironment/BiasEnvironment';
-import BiasLabel from '@uxcore/components/_biases/BiasLabel';
-import UXCoreLines from '@uxcore/components/_biases/UXCoreLines/UXCoreLines';
 
 import styles from './CoreViewLayout.module.scss';
 
@@ -27,7 +22,7 @@ type TDesktopView = {
 const CoreViewLayout: FC<TDesktopView> = ({ biases }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
-  const { searchResults } = useBiasSearch()[1];
+  const { searchResults, isSearchActive } = useBiasSearch()[1];
 
   const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
 
@@ -109,7 +104,9 @@ const CoreViewLayout: FC<TDesktopView> = ({ biases }) => {
         index,
       }));
 
-    return searchResults.length
+    // Filter while a search is applied — even with zero hits, so an empty
+    // result renders as empty instead of falling back to the full library.
+    return isSearchActive
       ? withIndex.filter(bias => searchResults.includes(bias.attributes.number))
       : biases;
   };
