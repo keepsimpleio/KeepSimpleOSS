@@ -1,8 +1,7 @@
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
+import ModalThemeToggle from '@uxcore/components/ModalThemeToggle';
 import cn from 'classnames';
 import React, { FC } from 'react';
-
-import ThemeToggle from '@components/ThemeToggle';
 
 import styles from './UXCoreModalHeader.module.scss';
 
@@ -77,14 +76,14 @@ const UXCoreModalHeader: FC<UXCoreModalHeaderProps> = ({
             <img src="/assets/biases/wiki-logo.svg" alt="wiki-link" />
           </a>
         </div>
-        <div
-          className={cn(styles.LangAndCloseBtn, {
-            [styles.LangAndCloseBtnLongTxt]:
-              number === 7 || number === 19 || number === 87,
-          })}
-        >
-          <ThemeToggle />
-          <LanguageSwitcher section={'uxcore'} languageSwitchSlugs={slugs} />
+        <div className={styles.LangAndCloseBtn}>
+          <ModalThemeToggle />
+          <LanguageSwitcher
+            section={'uxcore'}
+            withFlag
+            withText={false}
+            languageSwitchSlugs={slugs}
+          />
           <img
             src="/assets/biases/cross.svg"
             onClick={onClose}

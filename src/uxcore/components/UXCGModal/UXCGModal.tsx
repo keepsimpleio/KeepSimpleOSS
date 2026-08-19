@@ -1,6 +1,7 @@
 import AnswerContentGenerator from '@uxcore/components/AnswerContentGenerator';
 import LanguageSwitcher from '@uxcore/components/LanguageSwitcher';
 import ModalRaiting from '@uxcore/components/ModalRaiting';
+import ModalThemeToggle from '@uxcore/components/ModalThemeToggle';
 import RouteLoadingOverlay, {
   useRouteLoading,
 } from '@uxcore/components/RouteLoadingOverlay';
@@ -34,8 +35,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-
-import ThemeToggle from '@components/ThemeToggle';
 
 import styles from './UXCGModal.module.scss';
 
@@ -344,10 +343,11 @@ const UXCGModal: FC<TUXCGModal> = ({
               })}
             </div>
             <div className={styles.ModalHeaderCloseButtonContainer}>
-              <ThemeToggle />
+              <ModalThemeToggle />
               <LanguageSwitcher
                 section={'uxcg'}
                 withFlag
+                withText={false}
                 languageSwitchSlugs={slugs}
               />
               <div className={styles.ModalHeaderCloseButton}>

@@ -289,7 +289,10 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
   const { before, after } = content.visual;
 
   return (
-    <div className={styles.root}>
+    // The global ks-offsec class opts this subtree out of the modal's
+    // dark-theme span neutralizer (see UXCoreModal.module.scss), so the
+    // card icons and badges keep their own backgrounds and colors.
+    <div className={cn(styles.root, 'ks-offsec')}>
       <div className={styles.visualBlock}>
         {content.tell && (
           <div className={styles.tell}>

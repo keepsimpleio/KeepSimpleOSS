@@ -55,20 +55,20 @@
       padding: 0 15px;
     }
 
+    // One centered row: moon toggle, flag switcher, close cross. The
+    // switcher button carries a 12px built-in left padding, so the gap
+    // stays small to keep the three controls visually equidistant.
     .LangAndCloseBtn {
       display: flex;
-      align-items: flex-end;
-      gap: 24px;
+      align-items: center;
+      gap: 10px;
 
       .closeBtn {
         cursor: pointer;
-        padding: 0 5px 5px 5px;
+        padding: 5px;
         display: flex;
         justify-content: flex-end;
       }
-    }
-    .LangAndCloseBtnLongTxt {
-      align-items: baseline;
     }
   }
 
@@ -270,22 +270,21 @@
       }
 
       // Theme toggle + language + close live as one centered row pinned
-      // to the modal's top-right corner (mirrors desktop). The language
-      // switcher button carries chunky paddings at this breakpoint, so the
-      // row is locked to 24px height and centered instead of flex-end —
-      // otherwise the sun icon and "EN" drift apart vertically.
+      // to the modal's top-right corner (mirrors desktop). The row is
+      // locked to the 32px toggle height and centered, so the moon, the
+      // flag and the cross sit on one axis.
       .LangAndCloseBtn {
         position: absolute;
-        top: 14px;
+        top: 10px;
         right: 20px;
-        height: 24px;
+        height: 32px;
         align-items: center;
         justify-content: flex-end;
-        gap: 14px;
+        gap: 10px;
 
         .closeBtn {
           position: static;
-          padding: 0;
+          padding: 5px;
         }
       }
     }
