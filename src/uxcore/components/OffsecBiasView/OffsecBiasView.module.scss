@@ -1251,19 +1251,36 @@ $ks-crimson-deep: #7a2618;
     flex-shrink: 0;
   }
 
-  .chartRowFlagged {
+  // Bar colour is semantic: green means a gain, crimson means a loss. A
+  // flagged bar is the one being sold to you, marked with an outline and a
+  // bold value so a positive number never gets painted in the loss colour.
+  .chartRowLoss {
     .chartFill {
       background: $ks-crimson;
     }
 
     .chartValue {
       color: $ks-crimson;
+    }
+  }
+
+  .chartRowFlagged {
+    .chartTrack {
+      box-shadow: inset 0 0 0 1px $ks-crimson;
+    }
+
+    .chartValue {
+      font-weight: 700;
+    }
+
+    .chartBarLabel {
+      color: $ks-ink;
       font-weight: 700;
     }
   }
 
   .chartRowGhost {
-    opacity: 0.45;
+    opacity: 0.5;
 
     .chartBarLabel,
     .chartValue {
@@ -2061,13 +2078,23 @@ $ks-crimson-deep: #7a2618;
       color: $dk-text;
     }
 
-    .chartRowFlagged {
+    .chartRowLoss {
       .chartFill {
         background: $dk-crimson;
       }
 
       .chartValue {
         color: $dk-crimson;
+      }
+    }
+
+    .chartRowFlagged {
+      .chartTrack {
+        box-shadow: inset 0 0 0 1px $dk-crimson;
+      }
+
+      .chartBarLabel {
+        color: $dk-text;
       }
     }
 

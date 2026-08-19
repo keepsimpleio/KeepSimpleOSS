@@ -10,7 +10,7 @@ import type { OffsecBiasContent } from './types';
 const content: OffsecBiasContent = {
   tell: 'A track record where every entry points up did not happen. It was edited. The failures were removed before you saw the chart, and the one bar left standing is the one they want your money on.',
   scenario:
-    'A "high-return strategy" is pitched to you with a chart of its cohort. The honest version of that chart also plots the funds in the same cohort that closed or lost, drawn faded because they did not survive, and next to them the winner looks like ordinary luck. The version you are actually shown has those losers deleted. Every remaining bar climbs, the flagged one climbs highest, and a coin flip that happened to land well reads as a repeatable edge.',
+    'A "high-return strategy" is pitched to you with a chart of its cohort. The honest version of that chart also plots the funds in the same cohort that closed or lost, drawn faded because they did not survive, and next to them the winner looks like ordinary luck. The version you are actually shown has those losers deleted. Every remaining bar climbs, the one they are selling climbs highest, and a coin flip that happened to land well reads as a repeatable edge.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -45,13 +45,13 @@ const content: OffsecBiasContent = {
         { label: 'Meridian Alpha', value: 31, display: '+31%', flagged: true },
       ],
       caption:
-        'The losers are gone from the chart. Every remaining bar climbs, and the flagged one climbs highest.',
+        'The losers are gone from the chart. Every remaining bar climbs, and the one being sold to you climbs highest.',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is survival bias. You judge a category by the members still standing, because the ones that failed left the sample and stopped generating evidence you could see. The dataset is identical across both charts. The only change is that the failed funds are plotted as ghost bars in one and erased in the other, and that single edit flips your read from "this was a coin flip" to "this is a strategy". A record built only from winners shows who has not lost yet, and says nothing about skill or about who falls next. Attackers and bad salespeople love it because they do not have to forge a single number. They just choose which real numbers you never see. The bar they flag is the survivor, dressed as the rule.',
+    'This is survival bias. You judge a category by the members still standing, because the ones that failed left the sample and stopped generating evidence you could see. The dataset is identical across both charts. The only change is that the failed funds are plotted as ghost bars in one and erased in the other, and that single edit flips your read from "this was a coin flip" to "this is a strategy". A record built only from winners shows who has not lost yet, and says nothing about skill or about who falls next. Attackers and bad salespeople love it because they do not have to forge a single number. They just choose which real numbers you never see. The bar they are selling is a survivor, dressed as the rule.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your firm can demand full disclosure in writing. Asking where the losers went is the part only you can do in the room.',

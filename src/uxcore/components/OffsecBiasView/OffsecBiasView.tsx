@@ -439,6 +439,11 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
               className={cn(styles.chartRow, {
                 [styles.chartRowGhost]: bar.ghost,
                 [styles.chartRowFlagged]: bar.flagged,
+                // Colour is semantic, never a highlight: gains read green,
+                // losses read crimson. A flagged bar is emphasised with an
+                // outline instead, so a positive number is never painted in
+                // the loss colour just because it is the one being sold.
+                [styles.chartRowLoss]: bar.value < 0,
               })}
             >
               <span className={styles.chartBarLabel}>{bar.label}</span>
