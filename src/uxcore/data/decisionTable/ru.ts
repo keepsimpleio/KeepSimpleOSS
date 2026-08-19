@@ -59,6 +59,7 @@ const ru = {
   overWriteText: 'Перезаписать',
   savedPersonasText: 'Сохраненные Персоны',
   pleaseInputName: 'Пожалуйста, введите имя Персоны',
+  saveFailed: 'Не удалось сохранить Персону. Пожалуйста, попробуйте еще раз.',
 };
 
 export default ru;

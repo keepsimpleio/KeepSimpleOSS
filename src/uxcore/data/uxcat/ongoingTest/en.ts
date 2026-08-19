@@ -8,6 +8,7 @@ const en = {
   message:
     'You are about to leave the page. Your test will continue until its time runs out',
   pickAnswer: 'Choose the answer',
+  submitFailed: 'The answer did not reach the server. Please try again.',
 };
 
 export default en;

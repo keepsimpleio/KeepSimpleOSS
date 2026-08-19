@@ -190,6 +190,14 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
     ? hrDescriptionRandom[0]
     : stripHTML(description);
   const favIcon = `${process.env.NEXT_PUBLIC_DOMAIN}${favIconPath}`;
+  // Scrapers ignore relative og:image URLs — absolutize both sources, and
+  // emit no URL at all when neither is present.
+  const ogImageAttributes = ogTags?.ogImage?.data?.attributes;
+  const ogImageUrl = ogImageAttributes?.url
+    ? `${process.env.NEXT_PUBLIC_STRAPI}${ogImageAttributes.url}`
+    : ogImageAttributes?.staticUrl
+      ? `${process.env.NEXT_PUBLIC_DOMAIN}${ogImageAttributes.staticUrl}`
+      : undefined;
   const schema = generateSchema(
     title,
     metaDescription,
@@ -275,14 +283,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
             isBiasHrView ? hrDescriptionRandom[0] : ogTags?.ogDescription
           }
         />
-        <meta
-          property="og:image"
-          content={
-            ogTags?.ogImage?.data?.attributes?.url
-              ? `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
-              : ogTags?.ogImage?.data?.attributes?.staticUrl
-          }
-        />
+        <meta property="og:image" content={ogImageUrl} />
         <meta
           property="og:image:alt"
           content={
@@ -310,18 +311,8 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
             isBiasHrView ? hrDescriptionRandom[0] : ogTags?.ogDescription
           }
         />
-        <meta
-          name="twitter:image"
-          content={
-            ogTags?.ogImage?.data?.attributes?.url
-              ? `${process.env.NEXT_PUBLIC_STRAPI}${ogTags?.ogImage?.data?.attributes?.url}`
-              : ogTags?.ogImage?.data?.attributes?.staticUrl
-          }
-        />
-        <meta
-          name="twitter:url"
-          content={`https://keepsimple.io/${localePath}${alternateLink}`}
-        />
+        <meta name="twitter:image" content={ogImageUrl} />
+        <meta name="twitter:url" content={originalUrl} />
         <meta name="twitter:label1" content="Written by" />
         <meta name="twitter:data1" content="Wolf Alexanyan" />
         <script

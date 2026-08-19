@@ -1,30 +1,8 @@
-import cn from 'classnames';
-import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
-import React, {
-  FC,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-
-import type { QuestionType, StrapiBiasType, TagType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useMobile from '@uxcore/hooks/useMobile';
-
-import { copyToClipboard } from '@uxcore/lib/helpers';
-import { calculateData, generateUXCPLink } from '@uxcore/lib/uxcp-helpers';
-
-import { addPersona, getPersonaList, updatePersona } from '@uxcore/api/personas';
-
-import decisionTable from '@uxcore/data/decisionTable';
-import uxcpLocalization from '@uxcore/data/uxcp';
-
+import {
+  addPersona,
+  getPersonaList,
+  updatePersona,
+} from '@uxcore/api/personas';
 import BiasSearch from '@uxcore/components/_uxcp/BiasSearch';
 import CountryBiasMap from '@uxcore/components/_uxcp/CountryBiasMap';
 import DecisionTable from '@uxcore/components/_uxcp/DecisionTable';
@@ -41,6 +19,30 @@ import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import Input from '@uxcore/components/Input';
 import Section from '@uxcore/components/Section';
 import ToolFooter from '@uxcore/components/ToolFooter';
+import decisionTable from '@uxcore/data/decisionTable';
+import uxcpLocalization from '@uxcore/data/uxcp';
+import useMobile from '@uxcore/hooks/useMobile';
+import { copyToClipboard } from '@uxcore/lib/helpers';
+import { calculateData, generateUXCPLink } from '@uxcore/lib/uxcp-helpers';
+import type {
+  QuestionType,
+  StrapiBiasType,
+  TagType,
+} from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
+import cn from 'classnames';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import styles from './UXCPLayout.module.scss';
 
@@ -111,7 +113,8 @@ const UXCPLayout: FC<UXCPLayoutProps> = ({
   const [temporarySavedBiases, setTemporarySavedBiases] = useState(null);
   const personaSectionRef = useRef<HTMLDivElement>(null);
   const { title, subSectionTitle, copyURL, copied } = uxcpLocalization[locale];
-  const { overWriteText, cancelBtn, pleaseInputName } = decisionTable[locale];
+  const { overWriteText, cancelBtn, pleaseInputName, saveFailed } =
+    decisionTable[locale];
   const { accountData } = useContext(GlobalContext);
   const { relevantQuestions, tagRelevancy, suggestedQuestionsList } = useMemo(
     () => calculateData(questions, selectedBiases),
@@ -309,22 +312,28 @@ const UXCPLayout: FC<UXCPLayoutProps> = ({
     }
     if (personaName && personaName.trim() !== '') {
       setErrorMessage('');
-      setSaved(true);
-      setIsChangesUnsaved('saved');
-      setFirstSaveClick(true);
+      // Confirm "saved" only after the request lands: an optimistic flag
+      // would tell the user their persona is safe when it never reached
+      // the server.
       addPersona(
         personaName,
         JSON.stringify(selectedBiasesDetails),
         accountData?.username,
-      ).then(r => {
-        console.log(r);
-        fetchData().then(r => console.log(r));
-        clearLocalStorageItems();
-      });
-
-      setTimeout(() => {
-        setSaved(false);
-      }, 2000);
+      )
+        .then(() => {
+          setSaved(true);
+          setIsChangesUnsaved('saved');
+          setFirstSaveClick(true);
+          fetchData();
+          clearLocalStorageItems();
+          setTimeout(() => {
+            setSaved(false);
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Persona save failed:', err);
+          setErrorMessage(saveFailed);
+        });
     }
   };
 
@@ -333,23 +342,26 @@ const UXCPLayout: FC<UXCPLayoutProps> = ({
       setErrorMessage(pleaseInputName);
     }
     if (findMatchingPersonaName) {
-      setPersonaExistWarning(true);
       updatePersona(
         findMatchingPersonaName.id,
         findMatchingPersonaName.name,
         JSON.stringify(selectedBiasesDetails),
         accountData?.username,
-      ).then(r => {
-        console.log(r);
-      });
-      clearLocalStorageItems();
-
-      setPersonaExistWarning(false);
-      setSaved(true);
-      setIsChangesUnsaved('saved');
-      setTimeout(() => {
-        setSaved(false);
-      }, 2000);
+      )
+        .then(() => {
+          clearLocalStorageItems();
+          setPersonaExistWarning(false);
+          setSaved(true);
+          setIsChangesUnsaved('saved');
+          setTimeout(() => {
+            setSaved(false);
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Persona overwrite failed:', err);
+          setPersonaExistWarning(false);
+          setErrorMessage(saveFailed);
+        });
     }
   };
   const saveToLocal = (key, value) => {

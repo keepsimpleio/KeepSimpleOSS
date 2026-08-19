@@ -68,7 +68,7 @@ const KemmioCredit = () => {
                 kemmio
                 <span className={styles.realName}>
                   {' '}
-                  — Vahe Karapetyan{' '}
+                  · Vahe Karapetyan{' '}
                   <span
                     className={styles.flagAM}
                     role="img"
@@ -115,25 +115,25 @@ const KemmioCredit = () => {
                   className={styles.hexensLink}
                 >
                   <strong>Hexens</strong>
-                </a>{' '}
-                — the cybersecurity firm whose audits have safeguarded over
+                </a>
+                , the cybersecurity firm whose audits have safeguarded over
                 $125B in assets.
               </p>
 
               <ul className={styles.facts}>
                 <li>
-                  Authored the Aptos critical-vulnerability research —
-                  unpatched, the flaw would have erased over $1T from Web3.
+                  Authored the Aptos critical-vulnerability research. Unpatched,
+                  the flaw would have erased over $1T from Web3.
                 </li>
                 <li>
                   Authored the disclosure behind the largest critical
-                  vulnerability in Web3 history — $500M of instant loss and
-                  $1.7T of cascade-effect damage on the table. Caught in private
+                  vulnerability in Web3 history: $500M of instant loss and $1.7T
+                  of cascade-effect damage on the table. Caught in private
                   disclosure; exploitation never landed.
                 </li>
                 <li>
                   Uncovered the first critical Solidity compiler vulnerability
-                  in over a decade — the{' '}
+                  in over a decade: the{' '}
                   <a
                     href="https://hexens.io/research/solidity-compiler-bug-tstore-poison"
                     target="_blank"

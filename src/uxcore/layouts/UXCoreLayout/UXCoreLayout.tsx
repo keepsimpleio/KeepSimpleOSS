@@ -11,7 +11,9 @@ import Spinner from '@uxcore/components/Spinner';
 import ToolFooter from '@uxcore/components/ToolFooter';
 import biasesLocalization from '@uxcore/data/biases';
 import biasesMobile from '@uxcore/data/biasesMobile';
-import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
+import useUXCoreGlobals, {
+  initUseUXCoreGlobals,
+} from '@uxcore/hooks/useUXCoreGlobals';
 import useUCoreMobile from '@uxcore/hooks/uxcoreMobile';
 import { isOffsecEnabled } from '@uxcore/lib/offsec';
 import type { TRouter } from '@uxcore/local-types/global';
@@ -90,12 +92,16 @@ const UXCoreLayout: FC<UXCoreLayoutProps> = ({
   useEffect(() => {
     if (!mounted) return;
 
+    // Restore the persisted view choices first, then let an explicit URL
+    // hash win over them. Reconcile against the restored state, not the
+    // (stale) closure values.
+    const restored = initUseUXCoreGlobals();
     const hash = window.location.hash;
 
-    if (hash === '#hr' && isProductView) {
-      toggleIsProductView();
+    if (hash === '#hr' && (restored.isProductView || restored.isOffsecView)) {
+      setUseCase('hr');
     }
-    if (hash === '#offsec' && !isOffsecView && isOffsecEnabled) {
+    if (hash === '#offsec' && !restored.isOffsecView && isOffsecEnabled) {
       toggleIsOffsecView();
     }
   }, [mounted]);

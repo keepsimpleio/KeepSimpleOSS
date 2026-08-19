@@ -1,3 +1,9 @@
+import biasesSearchData from '@uxcore/data/biasesSearch';
+import useBiasSearch from '@uxcore/hooks/useBiasSearch';
+import useMobile from '@uxcore/hooks/useMobile';
+import { getSearchResults } from '@uxcore/lib/helpers';
+import type { StrapiBiasType } from '@uxcore/local-types/data';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -9,16 +15,6 @@ import {
   useRef,
   useState,
 } from 'react';
-
-import type { StrapiBiasType } from '@uxcore/local-types/data';
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useBiasSearch from '@uxcore/hooks/useBiasSearch';
-import useMobile from '@uxcore/hooks/useMobile';
-
-import { getSearchResults } from '@uxcore/lib/helpers';
-
-import biasesSearchData from '@uxcore/data/biasesSearch';
 
 import styles from './Search.module.scss';
 
@@ -72,7 +68,7 @@ const Search: FC<SearchProps> = ({
         setBiasesList(e.target.value ? filteredBiasesList : biases);
         setIsSearching(!!e.target.value);
 
-        setSearchResults(results);
+        setSearchResults(results, !!searchValue.trim());
         setSearchResultsData({
           prefix: searchLabels?.[0],
           resultCount: results.length,
@@ -84,9 +80,12 @@ const Search: FC<SearchProps> = ({
   );
 
   const handleClear = useCallback(() => {
+    // Cancel any in-flight debounce so a pending search can't repopulate
+    // results over the just-cleared input.
+    clearTimeout(searchTimeout.current);
     setTimeout(() => {
       setIsSearching(false);
-      setSearchResults([]);
+      setSearchResults([], false);
       setBiasesList(biases);
     }, 0);
 

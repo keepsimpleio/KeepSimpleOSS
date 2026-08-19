@@ -1,23 +1,19 @@
-import { useRouter } from 'next/router';
-import React, { FC, useEffect, useState } from 'react';
-
-import { TRouter } from '@uxcore/local-types/global';
-import { UXCatDataTypes } from '@uxcore/local-types/uxcat-types/types';
-
 import { UXCatConfigs } from '@uxcore/api/uxcat/configs';
 import { getFinalTest } from '@uxcore/api/uxcat/final-test';
 import { getUXCatStartTest } from '@uxcore/api/uxcat/start-test';
 import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 import { getUXCatData } from '@uxcore/api/uxcat/uxcat';
-
-import { achievementSlugs } from '@uxcore/data/uxcat/ongoingTest/realTimeAchievements';
-
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import Spinner from '@uxcore/components/Spinner';
-
-import styles from '@uxcore/layouts/OngoingLayout/OngoingLayout.module.scss';
+import { achievementSlugs } from '@uxcore/data/uxcat/ongoingTest/realTimeAchievements';
+import { TRouter } from '@uxcore/local-types/global';
+import { UXCatDataTypes } from '@uxcore/local-types/uxcat-types/types';
+import { useRouter } from 'next/router';
+import React, { FC, useEffect, useState } from 'react';
 
 import OngoingLayout from 'src/uxcore/layouts/OngoingLayout';
+
+import styles from '@uxcore/layouts/OngoingLayout/OngoingLayout.module.scss';
 
 type OngoingProps = {
   configs: {
@@ -84,14 +80,20 @@ const Ongoing: FC<OngoingProps> = ({ configs, uxcatData }) => {
           const userInfo = await getUserInfo();
           setUserInfo(userInfo);
           const ongoingTest = userInfo?.ongoingTest;
-          if (isFinalTest) {
+          // When resuming, the server's isFinal flag is the source of truth:
+          // the localStorage flag can be stale (or absent in another
+          // browser), and a wrong test length breaks question numbering and
+          // ends a 30-question final at question 10.
+          const treatAsFinal = ongoingTest
+            ? !!ongoingTest.isFinal
+            : isFinalTest;
+          if (treatAsFinal) {
             const testResult = !ongoingTest
               ? await getFinalTest(accessToken)
               : ongoingTest;
             setTest(testResult);
             setTestLength(30);
-          }
-          if (!isFinalTest) {
+          } else {
             const testResult = !ongoingTest
               ? await getUXCatStartTest(accessToken)
               : ongoingTest;

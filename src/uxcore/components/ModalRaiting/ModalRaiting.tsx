@@ -1,16 +1,15 @@
+import { rateRequest } from '@uxcore/api/rating';
+import modalIntl from '@uxcore/data/modalRaiting';
+import useSpinner from '@uxcore/hooks/useSpinner';
+import {
+  getRatedItems,
+  saveInLocalStorage,
+  updateVH,
+} from '@uxcore/lib/helpers';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { FC, MouseEvent, useEffect, useState } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import useSpinner from '@uxcore/hooks/useSpinner';
-
-import { getRatedItems, saveInLocalStorage, updateVH } from '@uxcore/lib/helpers';
-
-import { rateRequest } from '@uxcore/api/rating';
-
-import modalIntl from '@uxcore/data/modalRaiting';
 
 import styles from './ModalRaiting.module.scss';
 
@@ -29,6 +28,7 @@ const ModalRaiting: FC<ModalRaitingProps> = ({ id, type }) => {
   const { setIsVisible } = useSpinner()[0];
   const [hoveredRangeItemId, setHoveredRangeItemId] = useState(null);
   const [isRateVisibile, setIsRateVisibile] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRangeItemMouseOver = (e: MouseEvent<HTMLDivElement>) => {
     const { raiting } = e.currentTarget.dataset;
@@ -40,18 +40,24 @@ const ModalRaiting: FC<ModalRaitingProps> = ({ id, type }) => {
   };
 
   const handleRate = async (e: MouseEvent<HTMLDivElement>) => {
+    // Guard against double clicks: each extra click would POST another vote.
+    if (isSubmitting) return;
     const { raiting } = e.currentTarget.dataset;
+    setIsSubmitting(true);
     setIsVisible(true);
 
     try {
       await rateRequest(id, Number(raiting), type);
       saveInLocalStorage(id, type);
+      // Swap to "thanks" only after the vote actually landed; on failure
+      // the row stays so the user can retry instead of losing the vote.
+      setIsRateVisibile(false);
     } catch (err) {
       console.error('Error while rating:', err);
     }
 
     setIsVisible(false);
-    setIsRateVisibile(false);
+    setIsSubmitting(false);
   };
 
   useEffect(() => {
