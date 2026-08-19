@@ -782,6 +782,755 @@ $ks-crimson-deep: #7a2618;
   }
 }
 
+// === Diff surface ==========================================================
+
+.card_diff {
+  gap: 8px;
+
+  .diffLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .diffRows {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $ks-rule;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .diffRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 10px;
+    border-bottom: 1px solid $ks-rule-soft;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .diffField {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    flex-shrink: 0;
+  }
+
+  .diffValue {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 12px;
+    color: $ks-ink;
+    text-align: right;
+    word-break: break-all;
+    min-width: 0;
+  }
+
+  .diffWas {
+    color: $ks-ink-soft;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  .diffArrow {
+    color: $ks-crimson;
+    flex-shrink: 0;
+  }
+
+  .diffNew {
+    color: $ks-crimson;
+    font-weight: 700;
+  }
+
+  .diffRowChanged {
+    background: $ks-crimson-soft;
+  }
+
+  .diffNote {
+    font-size: 13px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+}
+
+// === Permission surface ====================================================
+
+.card_permission {
+  gap: 8px;
+
+  .permHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .permGlyph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, $ks-crimson, $ks-crimson-deep);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .permIdentity {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+  }
+
+  .permAppName {
+    font-size: 14px;
+    font-weight: 700;
+    color: $ks-ink;
+  }
+
+  .permSubtitle {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    margin-top: 2px;
+  }
+
+  .permScopeLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+    margin-top: 2px;
+  }
+
+  .permScopes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .permScope {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: $ks-ink;
+  }
+
+  .permScopeTick {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(42, 138, 74, 0.14);
+    color: #2a8a4a;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .permScopeRisky {
+    color: $ks-crimson;
+    font-weight: 600;
+
+    .permScopeTick {
+      background: $ks-crimson-soft;
+      color: $ks-crimson;
+    }
+  }
+
+  .permCta {
+    align-self: stretch;
+    margin-top: 4px;
+    padding: 7px 12px;
+    text-align: center;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: $ks-crimson;
+    border-radius: 4px;
+  }
+}
+
+// === Profile surface =======================================================
+
+.card_profile {
+  gap: 8px;
+
+  .profileHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .profileAvatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $ks-crimson, $ks-crimson-deep);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .profileIdentity {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+    min-width: 0;
+  }
+
+  .profileName {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 15px;
+    font-weight: 700;
+    color: $ks-ink;
+  }
+
+  .profileVerified {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #2f7fd1;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .profileHandle {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+    margin-top: 2px;
+  }
+
+  .profileTitle {
+    font-size: 13px;
+    color: $ks-ink-soft;
+    margin-top: 2px;
+  }
+
+  .profileBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .profileBadge {
+    padding: 3px 8px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: $ks-ink-soft;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 999px;
+  }
+
+  .profileGroup {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .profileGroupItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .profileGroupAvatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: $ks-rule-soft;
+    color: $ks-ink-soft;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .profileGroupLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    color: $ks-ink-soft;
+    text-align: center;
+  }
+
+  .profileNote {
+    font-size: 13px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+}
+
+.card_profile.cardFlagged {
+  .profileVerified {
+    background: $ks-crimson;
+  }
+
+  .profileBadge {
+    border-color: $ks-crimson;
+    color: $ks-crimson;
+  }
+}
+
+// === Stats surface =========================================================
+
+.card_stats {
+  gap: 8px;
+
+  .statsTitle {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .statTile {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 10px;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 5px;
+  }
+
+  .statValue {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 18px;
+    font-weight: 800;
+    color: $ks-ink;
+    line-height: 1.1;
+  }
+
+  .statTrend {
+    font-size: 10px;
+  }
+
+  .trend_up {
+    color: #2a8a4a;
+  }
+
+  .trend_down {
+    color: $ks-crimson;
+  }
+
+  .trend_flat {
+    color: $ks-ink-soft;
+  }
+
+  .statLabel {
+    font-size: 11.5px;
+    color: $ks-ink-soft;
+    line-height: 1.3;
+  }
+
+  .statTileMuted {
+    opacity: 0.5;
+  }
+
+  .statTileFlagged {
+    border-color: $ks-crimson;
+    background: $ks-crimson-soft;
+
+    .statValue {
+      color: $ks-crimson;
+    }
+  }
+
+  .statsNote {
+    font-size: 13px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+}
+
+// === Chart surface =========================================================
+
+.card_chart {
+  gap: 8px;
+
+  .chartTitle {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .chartBars {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .chartRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chartBarLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    color: $ks-ink-soft;
+    width: 74px;
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chartTrack {
+    flex: 1 1 auto;
+    height: 12px;
+    background: $ks-rule-soft;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .chartFill {
+    display: block;
+    height: 100%;
+    background: #2a8a4a;
+    border-radius: 3px;
+  }
+
+  .chartValue {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    color: $ks-ink;
+    width: 46px;
+    flex-shrink: 0;
+  }
+
+  .chartRowFlagged {
+    .chartFill {
+      background: $ks-crimson;
+    }
+
+    .chartValue {
+      color: $ks-crimson;
+      font-weight: 700;
+    }
+  }
+
+  .chartRowGhost {
+    opacity: 0.45;
+
+    .chartBarLabel,
+    .chartValue {
+      font-style: italic;
+    }
+
+    .chartTrack {
+      background: repeating-linear-gradient(
+        45deg,
+        $ks-rule-soft,
+        $ks-rule-soft 4px,
+        transparent 4px,
+        transparent 8px
+      );
+    }
+
+    .chartFill {
+      background: transparent;
+      border: 1px dashed $ks-ink-soft;
+    }
+  }
+
+  .chartCaption {
+    font-size: 13px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+}
+
+// === Checklist surface =====================================================
+
+.card_checklist {
+  gap: 8px;
+
+  .checklistTitle {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .checkItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: $ks-ink;
+  }
+
+  .checkGlyph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .check_ok .checkGlyph {
+    background: rgba(42, 138, 74, 0.14);
+    color: #2a8a4a;
+  }
+
+  .check_warn .checkGlyph {
+    background: $ks-crimson-soft;
+    color: $ks-crimson;
+  }
+
+  .check_off .checkGlyph {
+    background: $ks-rule-soft;
+    color: $ks-ink-soft;
+  }
+
+  .checkItemFlagged {
+    color: $ks-crimson;
+    font-weight: 600;
+  }
+
+  .checklistFooter {
+    margin-top: 2px;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-ink-soft;
+  }
+}
+
+// === Progress surface ======================================================
+
+.card_progress {
+  gap: 10px;
+
+  .progressTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: $ks-ink;
+  }
+
+  .progressSteps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .progressStep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: $ks-ink-soft;
+  }
+
+  .progressDot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid $ks-rule;
+    background: #ffffff;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step_done {
+    color: $ks-ink;
+
+    .progressDot {
+      background: #2a8a4a;
+      border-color: #2a8a4a;
+    }
+  }
+
+  .step_active {
+    color: $ks-ink;
+    font-weight: 600;
+
+    .progressDot {
+      background: $ks-crimson;
+      border-color: $ks-crimson;
+    }
+  }
+
+  .step_pending {
+    opacity: 0.6;
+  }
+
+  .progressTrack {
+    display: block;
+    height: 8px;
+    background: $ks-rule-soft;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progressFill {
+    display: block;
+    height: 100%;
+    background: $ks-crimson;
+    border-radius: 4px;
+  }
+
+  .progressCaption {
+    font-size: 13px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+}
+
+// === Quiz surface ==========================================================
+
+.card_quiz {
+  gap: 10px;
+
+  .quizPrompt {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: $ks-ink;
+  }
+
+  .quizOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .quizOption {
+    padding: 5px 10px;
+    font-size: 12px;
+    color: $ks-ink-soft;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 999px;
+  }
+
+  .quizOptionChosen {
+    color: $ks-crimson;
+    border-color: $ks-crimson;
+    background: $ks-crimson-soft;
+    font-weight: 600;
+  }
+
+  .quizConfidence {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .quizConfidenceHead {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .quizConfidencePct {
+    color: $ks-crimson;
+    font-weight: 700;
+  }
+
+  .quizMeter {
+    display: block;
+    height: 10px;
+    background: $ks-rule-soft;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .quizMeterFill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, $ks-crimson, $ks-crimson-deep);
+    border-radius: 5px;
+  }
+
+  .quizVerdict {
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 600;
+    color: $ks-crimson;
+  }
+}
+
 .cardDivider {
   display: flex;
   align-items: center;
@@ -1158,6 +1907,289 @@ $ks-crimson-deep: #7a2618;
       .timelineSource {
         color: $dk-crimson;
       }
+    }
+  }
+
+  // --- Second-wave surfaces (51-75) ---------------------------------------
+
+  .card_diff {
+    .diffLabel,
+    .diffField,
+    .diffNote {
+      color: $dk-text-soft;
+    }
+
+    .diffRows {
+      border-color: $dk-rule;
+    }
+
+    .diffRow {
+      border-bottom-color: $dk-rule-soft;
+    }
+
+    .diffValue {
+      color: $dk-text;
+    }
+
+    .diffWas {
+      color: $dk-text-soft;
+    }
+
+    .diffArrow,
+    .diffNew {
+      color: $dk-crimson;
+    }
+
+    .diffRowChanged {
+      background: $dk-crimson-soft;
+    }
+  }
+
+  .card_permission {
+    .permAppName {
+      color: $dk-text;
+    }
+
+    .permSubtitle,
+    .permScopeLabel {
+      color: $dk-text-soft;
+    }
+
+    .permScope {
+      color: $dk-text;
+    }
+
+    .permScopeTick {
+      background: rgba(111, 207, 151, 0.16);
+      color: #6fcf97;
+    }
+
+    .permScopeRisky {
+      color: $dk-crimson;
+
+      .permScopeTick {
+        background: $dk-crimson-soft;
+        color: $dk-crimson;
+      }
+    }
+  }
+
+  .card_profile {
+    .profileName {
+      color: $dk-text;
+    }
+
+    .profileHandle,
+    .profileTitle,
+    .profileNote {
+      color: $dk-text-soft;
+    }
+
+    .profileBadge {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+      color: $dk-text-soft;
+    }
+
+    .profileGroupAvatar {
+      background: $dk-rule;
+      color: $dk-text-soft;
+    }
+
+    .profileGroupLabel {
+      color: $dk-text-soft;
+    }
+  }
+
+  .card_profile.cardFlagged {
+    .profileBadge {
+      border-color: $dk-crimson;
+      color: $dk-crimson;
+    }
+  }
+
+  .card_stats {
+    .statsTitle,
+    .statLabel,
+    .statsNote {
+      color: $dk-text-soft;
+    }
+
+    .statTile {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+    }
+
+    .statValue {
+      color: $dk-text;
+    }
+
+    .trend_up {
+      color: #6fcf97;
+    }
+
+    .trend_down {
+      color: $dk-crimson;
+    }
+
+    .statTileFlagged {
+      border-color: $dk-crimson;
+      background: $dk-crimson-soft;
+
+      .statValue {
+        color: $dk-crimson;
+      }
+    }
+  }
+
+  .card_chart {
+    .chartTitle,
+    .chartBarLabel,
+    .chartCaption {
+      color: $dk-text-soft;
+    }
+
+    .chartTrack {
+      background: $dk-rule-soft;
+    }
+
+    .chartFill {
+      background: #6fcf97;
+    }
+
+    .chartValue {
+      color: $dk-text;
+    }
+
+    .chartRowFlagged {
+      .chartFill {
+        background: $dk-crimson;
+      }
+
+      .chartValue {
+        color: $dk-crimson;
+      }
+    }
+
+    .chartRowGhost {
+      .chartTrack {
+        background: repeating-linear-gradient(
+          45deg,
+          $dk-rule,
+          $dk-rule 4px,
+          transparent 4px,
+          transparent 8px
+        );
+      }
+
+      .chartFill {
+        border-color: $dk-text-soft;
+      }
+    }
+  }
+
+  .card_checklist {
+    .checklistTitle,
+    .checklistFooter {
+      color: $dk-text-soft;
+    }
+
+    .checkItem {
+      color: $dk-text;
+    }
+
+    .check_ok .checkGlyph {
+      background: rgba(111, 207, 151, 0.16);
+      color: #6fcf97;
+    }
+
+    .check_warn .checkGlyph {
+      background: $dk-crimson-soft;
+      color: $dk-crimson;
+    }
+
+    .check_off .checkGlyph {
+      background: $dk-rule;
+      color: $dk-text-soft;
+    }
+
+    .checkItemFlagged {
+      color: $dk-crimson;
+    }
+  }
+
+  .card_progress {
+    .progressTitle {
+      color: $dk-text;
+    }
+
+    .progressStep {
+      color: $dk-text-soft;
+    }
+
+    .progressDot {
+      background: $dk-card;
+      border-color: $dk-rule;
+    }
+
+    .step_done {
+      color: $dk-text;
+
+      .progressDot {
+        background: #2a8a4a;
+        border-color: #2a8a4a;
+      }
+    }
+
+    .step_active {
+      color: $dk-text;
+
+      .progressDot {
+        background: $dk-crimson;
+        border-color: $dk-crimson;
+      }
+    }
+
+    .progressTrack {
+      background: $dk-rule-soft;
+    }
+
+    .progressCaption {
+      color: $dk-text-soft;
+    }
+  }
+
+  .card_quiz {
+    .quizPrompt {
+      color: $dk-text;
+    }
+
+    .quizOption {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+      color: $dk-text-soft;
+    }
+
+    .quizOptionChosen {
+      color: $dk-crimson;
+      border-color: $dk-crimson;
+      background: $dk-crimson-soft;
+    }
+
+    .quizConfidenceHead {
+      color: $dk-text-soft;
+    }
+
+    .quizConfidencePct {
+      color: $dk-crimson;
+    }
+
+    .quizMeter {
+      background: $dk-rule-soft;
+    }
+
+    .quizVerdict {
+      color: $dk-crimson;
     }
   }
 

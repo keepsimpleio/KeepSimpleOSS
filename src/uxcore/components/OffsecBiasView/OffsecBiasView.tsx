@@ -251,6 +251,324 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
     );
   }
 
+  if (card.kind === 'diff') {
+    return (
+      <>
+        {prior}
+        <div className={styles.diffLabel}>{card.label}</div>
+        <div className={styles.diffRows}>
+          {card.rows.map((row, i) => (
+            <div
+              key={i}
+              className={cn(styles.diffRow, {
+                [styles.diffRowChanged]: row.changed,
+              })}
+            >
+              <span className={styles.diffField}>{row.field}</span>
+              <span className={styles.diffValue}>
+                {row.was && (
+                  <>
+                    <span className={styles.diffWas}>{row.was}</span>
+                    <span className={styles.diffArrow} aria-hidden="true">
+                      →
+                    </span>
+                  </>
+                )}
+                <span
+                  className={cn({ [styles.diffNew]: row.changed && row.was })}
+                >
+                  {row.value}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+        {card.note && <div className={styles.diffNote}>{card.note}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'permission') {
+    return (
+      <>
+        {prior}
+        <div className={styles.permHeader}>
+          <span className={styles.permGlyph} aria-hidden="true">
+            {card.appGlyph || card.appName.charAt(0)}
+          </span>
+          <div className={styles.permIdentity}>
+            <span className={styles.permAppName}>{card.appName}</span>
+            {card.subtitle && (
+              <span className={styles.permSubtitle}>{card.subtitle}</span>
+            )}
+          </div>
+        </div>
+        <div className={styles.permScopeLabel}>Wants access to</div>
+        <ul className={styles.permScopes}>
+          {card.scopes.map((scope, i) => (
+            <li
+              key={i}
+              className={cn(styles.permScope, {
+                [styles.permScopeRisky]: scope.risky,
+              })}
+            >
+              <span className={styles.permScopeTick} aria-hidden="true">
+                {scope.risky ? '!' : '✓'}
+              </span>
+              {scope.label}
+            </li>
+          ))}
+        </ul>
+        {card.cta && <div className={styles.permCta}>{card.cta}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'profile') {
+    if (card.group) {
+      return (
+        <>
+          {prior}
+          <div className={styles.profileGroup}>
+            {card.group.map((member, i) => (
+              <div key={i} className={styles.profileGroupItem}>
+                <span className={styles.profileGroupAvatar} aria-hidden="true">
+                  {member.initial}
+                </span>
+                {member.label && (
+                  <span className={styles.profileGroupLabel}>
+                    {member.label}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+          {card.note && <div className={styles.profileNote}>{card.note}</div>}
+        </>
+      );
+    }
+    return (
+      <>
+        {prior}
+        <div className={styles.profileHeader}>
+          <span className={styles.profileAvatar} aria-hidden="true">
+            {card.initial}
+          </span>
+          <div className={styles.profileIdentity}>
+            <span className={styles.profileName}>
+              {card.name}
+              {card.verified && (
+                <span className={styles.profileVerified} aria-hidden="true">
+                  ✓
+                </span>
+              )}
+            </span>
+            {card.handle && (
+              <span className={styles.profileHandle}>{card.handle}</span>
+            )}
+            {card.title && (
+              <span className={styles.profileTitle}>{card.title}</span>
+            )}
+          </div>
+        </div>
+        {card.badges && card.badges.length > 0 && (
+          <div className={styles.profileBadges}>
+            {card.badges.map((badge, i) => (
+              <span key={i} className={styles.profileBadge}>
+                {badge}
+              </span>
+            ))}
+          </div>
+        )}
+        {card.note && <div className={styles.profileNote}>{card.note}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'stats') {
+    return (
+      <>
+        {prior}
+        {card.title && <div className={styles.statsTitle}>{card.title}</div>}
+        <div className={styles.statsGrid}>
+          {card.tiles.map((tile, i) => (
+            <div
+              key={i}
+              className={cn(styles.statTile, {
+                [styles.statTileMuted]: tile.muted,
+                [styles.statTileFlagged]: tile.flagged,
+              })}
+            >
+              <span className={styles.statValue}>
+                {tile.value}
+                {tile.trend && (
+                  <span
+                    className={cn(
+                      styles.statTrend,
+                      styles[`trend_${tile.trend}`],
+                    )}
+                    aria-hidden="true"
+                  >
+                    {tile.trend === 'up'
+                      ? '▲'
+                      : tile.trend === 'down'
+                        ? '▼'
+                        : '▬'}
+                  </span>
+                )}
+              </span>
+              <span className={styles.statLabel}>{tile.label}</span>
+            </div>
+          ))}
+        </div>
+        {card.note && <div className={styles.statsNote}>{card.note}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'chart') {
+    const max = Math.max(...card.bars.map(b => Math.abs(b.value)), 1);
+    return (
+      <>
+        {prior}
+        {card.title && <div className={styles.chartTitle}>{card.title}</div>}
+        <div className={styles.chartBars}>
+          {card.bars.map((bar, i) => (
+            <div
+              key={i}
+              className={cn(styles.chartRow, {
+                [styles.chartRowGhost]: bar.ghost,
+                [styles.chartRowFlagged]: bar.flagged,
+              })}
+            >
+              <span className={styles.chartBarLabel}>{bar.label}</span>
+              <span className={styles.chartTrack}>
+                <span
+                  className={styles.chartFill}
+                  style={{
+                    width: `${Math.max(4, (Math.abs(bar.value) / max) * 100)}%`,
+                  }}
+                />
+              </span>
+              <span className={styles.chartValue}>
+                {bar.display ?? String(bar.value)}
+              </span>
+            </div>
+          ))}
+        </div>
+        {card.caption && (
+          <div className={styles.chartCaption}>{card.caption}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'checklist') {
+    return (
+      <>
+        {prior}
+        {card.title && (
+          <div className={styles.checklistTitle}>{card.title}</div>
+        )}
+        <ul className={styles.checklist}>
+          {card.items.map((item, i) => (
+            <li
+              key={i}
+              className={cn(styles.checkItem, styles[`check_${item.state}`], {
+                [styles.checkItemFlagged]: item.flagged,
+              })}
+            >
+              <span className={styles.checkGlyph} aria-hidden="true">
+                {item.state === 'ok' ? '✓' : item.state === 'warn' ? '!' : '—'}
+              </span>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+        {card.footer && (
+          <div className={styles.checklistFooter}>{card.footer}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'progress') {
+    return (
+      <>
+        {prior}
+        {card.title && <div className={styles.progressTitle}>{card.title}</div>}
+        <ol className={styles.progressSteps}>
+          {card.steps.map((step, i) => (
+            <li
+              key={i}
+              className={cn(styles.progressStep, styles[`step_${step.state}`])}
+            >
+              <span className={styles.progressDot} aria-hidden="true">
+                {step.state === 'done' ? '✓' : ''}
+              </span>
+              <span className={styles.progressStepLabel}>{step.label}</span>
+            </li>
+          ))}
+        </ol>
+        {typeof card.percent === 'number' && (
+          <span className={styles.progressTrack}>
+            <span
+              className={styles.progressFill}
+              style={{ width: `${Math.min(100, Math.max(0, card.percent))}%` }}
+            />
+          </span>
+        )}
+        {card.caption && (
+          <div className={styles.progressCaption}>{card.caption}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'quiz') {
+    return (
+      <>
+        {prior}
+        <div className={styles.quizPrompt}>{card.prompt}</div>
+        {card.options && (
+          <div className={styles.quizOptions}>
+            {card.options.map((opt, i) => (
+              <span
+                key={i}
+                className={cn(styles.quizOption, {
+                  [styles.quizOptionChosen]: opt.chosen,
+                })}
+              >
+                {opt.label}
+              </span>
+            ))}
+          </div>
+        )}
+        {typeof card.confidence === 'number' && (
+          <div className={styles.quizConfidence}>
+            <div className={styles.quizConfidenceHead}>
+              <span>{card.confidenceLabel || 'Your confidence'}</span>
+              <span className={styles.quizConfidencePct}>
+                {Math.round(card.confidence)}%
+              </span>
+            </div>
+            <span className={styles.quizMeter}>
+              <span
+                className={styles.quizMeterFill}
+                style={{
+                  width: `${Math.min(100, Math.max(0, card.confidence))}%`,
+                }}
+              />
+            </span>
+          </div>
+        )}
+        {card.verdict && (
+          <div className={styles.quizVerdict}>{card.verdict}</div>
+        )}
+      </>
+    );
+  }
+
   // kind === 'chat'
   return (
     <>

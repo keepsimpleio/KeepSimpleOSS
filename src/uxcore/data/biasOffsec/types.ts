@@ -120,6 +120,140 @@ export interface OffsecBiasTimelineCard extends OffsecBiasCardCommon {
   }[];
 }
 
+// ===========================================================================
+// Second-wave surfaces (biases 51-75). These lean structural, not textual:
+// the deception lives in a highlighted diff row, a risky permission scope, a
+// glowing profile badge, a metric tile, a bar that isn't drawn, a green
+// checkmark, a stalled progress step, or a confidence meter. Prose is kept to
+// short labels so the *shape* carries the attack, not a paragraph. Reuse the
+// original eight surfaces when email/chat/etc. is genuinely the natural
+// channel; reach for these when the lever is visual.
+// ===========================================================================
+
+// Field-level diff / ledger: labelled rows, one quietly changed. The eye is
+// meant to catch (or miss) a single altered value among plausible ones.
+export interface OffsecBiasDiffCard extends OffsecBiasCardCommon {
+  kind: 'diff';
+  label: string;
+  rows: {
+    field: string;
+    value: string;
+    // When set, the row reads as "was → value" with the change marked.
+    was?: string;
+    changed?: boolean;
+  }[];
+  note?: string;
+}
+
+// App / OAuth consent screen: an app header plus a list of permission scopes,
+// each a small row. `risky` scopes read crimson; the lever is a dangerous
+// scope hiding among mundane ones, or a whole grant waved through.
+export interface OffsecBiasPermissionCard extends OffsecBiasCardCommon {
+  kind: 'permission';
+  appName: string;
+  appGlyph?: string;
+  subtitle?: string;
+  scopes: {
+    label: string;
+    risky?: boolean;
+  }[];
+  cta?: string;
+}
+
+// Identity card: a single profile (avatar, name, verified tick, title, badge
+// chips) OR a grid of near-identical avatars via `group` (out-group
+// homogeneity). The trust rides on the badges, not on any verified fact.
+export interface OffsecBiasProfileCard extends OffsecBiasCardCommon {
+  kind: 'profile';
+  name?: string;
+  handle?: string;
+  initial?: string;
+  verified?: boolean;
+  title?: string;
+  badges?: string[];
+  group?: {
+    initial: string;
+    label?: string;
+  }[];
+  note?: string;
+}
+
+// Metric tiles: a small grid of label + big value, optional trend arrow. A
+// tile can be `muted` (downplayed) or `flagged` (the one that matters).
+export interface OffsecBiasStatsCard extends OffsecBiasCardCommon {
+  kind: 'stats';
+  title?: string;
+  tiles: {
+    label: string;
+    value: string;
+    trend?: 'up' | 'down' | 'flat';
+    muted?: boolean;
+    flagged?: boolean;
+  }[];
+  note?: string;
+}
+
+// Horizontal bar chart. `value` sets bar width (relative to the max). A
+// `ghost` bar is drawn faded/dashed to represent data that was excluded
+// (survivorship): the bars you see all point one way because the others were
+// never plotted.
+export interface OffsecBiasChartCard extends OffsecBiasCardCommon {
+  kind: 'chart';
+  title?: string;
+  bars: {
+    label: string;
+    value: number;
+    display?: string;
+    flagged?: boolean;
+    ghost?: boolean;
+  }[];
+  caption?: string;
+}
+
+// Verification checklist: rows with an ok / warn / off status glyph. Used for
+// "all systems normal" boards and "protection active" theatre.
+export interface OffsecBiasChecklistCard extends OffsecBiasCardCommon {
+  kind: 'checklist';
+  title?: string;
+  items: {
+    label: string;
+    state: 'ok' | 'warn' | 'off';
+    flagged?: boolean;
+  }[];
+  footer?: string;
+}
+
+// Progress / stepper: a sequence of steps (done / active / pending) with an
+// optional progress bar and caption. For biases about time and expectation
+// (planning fallacy) or a process that quietly keeps you engaged.
+export interface OffsecBiasProgressCard extends OffsecBiasCardCommon {
+  kind: 'progress';
+  title?: string;
+  steps: {
+    label: string;
+    state: 'done' | 'active' | 'pending';
+  }[];
+  percent?: number;
+  caption?: string;
+}
+
+// Self-assessment / quiz: a prompt, optional chosen option chips, a
+// confidence meter (0-100), and an optional verdict line. For metacognitive
+// biases (overconfidence, Dunning-Kruger, hard-easy) where the gap between
+// felt confidence and actual correctness IS the attack surface.
+export interface OffsecBiasQuizCard extends OffsecBiasCardCommon {
+  kind: 'quiz';
+  prompt: string;
+  options?: {
+    label: string;
+    chosen?: boolean;
+  }[];
+  answerLabel?: string;
+  confidence?: number;
+  confidenceLabel?: string;
+  verdict?: string;
+}
+
 export type OffsecBiasCard =
   | OffsecBiasEmailCard
   | OffsecBiasNotificationCard
@@ -128,7 +262,15 @@ export type OffsecBiasCard =
   | OffsecBiasCallCard
   | OffsecBiasDocumentCard
   | OffsecBiasPosterCard
-  | OffsecBiasTimelineCard;
+  | OffsecBiasTimelineCard
+  | OffsecBiasDiffCard
+  | OffsecBiasPermissionCard
+  | OffsecBiasProfileCard
+  | OffsecBiasStatsCard
+  | OffsecBiasChartCard
+  | OffsecBiasChecklistCard
+  | OffsecBiasProgressCard
+  | OffsecBiasQuizCard;
 
 export interface OffsecBiasContent {
   // Optional one-line "tell": the single cue that gives this attack away.
