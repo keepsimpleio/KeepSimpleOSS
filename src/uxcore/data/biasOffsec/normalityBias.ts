@@ -15,8 +15,8 @@ const content: OffsecBiasContent = {
   visual: {
     before: {
       kind: 'stats',
-      tag: 'The anomaly, flagged clearly',
-      title: 'Systems status',
+      tag: 'The anomaly on its own screen',
+      title: 'Alert: first-contact outbound',
       tiles: [
         {
           label: 'DC-02 outbound',
@@ -24,36 +24,35 @@ const content: OffsecBiasContent = {
           trend: 'up',
           flagged: true,
         },
-        { label: 'Auth service', value: 'Normal', trend: 'flat' },
-        { label: 'Mail gateway', value: 'Normal', trend: 'flat' },
-        { label: 'Backup job', value: 'Normal', trend: 'flat' },
+        { label: 'Destination seen before', value: 'Never' },
+        { label: 'First seen', value: '03:12' },
+        { label: 'Volume since', value: '2.1 GB', trend: 'up' },
       ],
-      note: 'The new-host tile is called out on its own, flagged as the exception.',
+      note: 'One exception, one screen. Nothing around it to blend into.',
     },
     after: {
       kind: 'stats',
-      tag: 'The same anomaly, read as routine',
-      title: 'Systems status',
+      tag: 'The same anomaly, one line in the wall',
+      title: 'Systems status, morning board',
       priorContext:
         'This board has said "Normal" every morning for two years. You check it the way you check the weather, expecting nothing.',
       tiles: [
         { label: 'Auth service', value: 'Normal', trend: 'flat' },
         { label: 'Mail gateway', value: 'Normal', trend: 'flat' },
-        {
-          label: 'DC-02 outbound',
-          value: 'New host',
-          trend: 'up',
-          flagged: true,
-        },
+        { label: 'VPN concentrator', value: 'Normal', trend: 'flat' },
+        { label: 'DC-01 outbound', value: 'Normal', trend: 'flat' },
+        { label: 'DC-02 outbound', value: 'New host' },
         { label: 'Backup job', value: 'Normal', trend: 'flat' },
+        { label: 'Endpoint agents', value: 'Normal', trend: 'flat' },
+        { label: 'Patch status', value: 'Current', trend: 'flat' },
       ],
-      note: 'The identical new-host tile, now the third line in a grid of "Normal".',
+      note: 'The identical anomaly is on this board, styled like everything around it. Finding it takes a hunt, and a morning glance is not a hunt.',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is normality bias. We expect the near future to look like the recent past, and a system that has been fine for years builds a strong prior that it will stay fine, which quietly raises the bar for what counts as worth reacting to. The anomaly is identical in both cards: DC-02 reaching a host it has never contacted. What changes is the company it keeps. Alone, it is an exception that demands a look. Third in a column of "Normal", it inherits the calm of its neighbours and gets filed as more of the same. An attacker who has moved laterally and is exfiltrating does not need the board to hide the beacon, they only need it to sit among enough normal lines that your assumption of continuity does the dismissing. The signal is on the screen. The bias is what tells you it is nothing.',
+    'This is normality bias. We expect the near future to look like the recent past, and a system that has been fine for years builds a strong prior that it will stay fine, which quietly raises the bar for what counts as worth reacting to. The anomaly is identical in both cards: DC-02 reaching a host it has never contacted. What changes is the company it keeps. Alone on an alert screen, it is an exception that demands a look. Dressed like its neighbours in a wall of "Normal", it inherits their calm and gets filed as more of the same. An attacker who has moved laterally and is exfiltrating does not need the board to hide the beacon, they only need it to sit among enough normal lines that your assumption of continuity does the dismissing. The signal is on the screen. The bias is what tells you it is nothing.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your team tunes the alerts and baselines. Refusing to let a page of "Normal" answer for the one line that is not is your part.',

@@ -45,7 +45,6 @@ const content: OffsecBiasContent = {
           value: '412',
           trend: 'up',
           muted: true,
-          flagged: true,
         },
       ],
       note: 'The identical 412, now dimmed and last, sitting under three green tiles.',
