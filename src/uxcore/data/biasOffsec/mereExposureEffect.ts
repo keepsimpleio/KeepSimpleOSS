@@ -11,7 +11,7 @@ import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'Someone you have been chatting with for weeks finally asks for a small favour. Nothing about the ask changed, but your read on it did, because by now the name feels like a colleague, not a stranger. That warmth is the whole operation.',
+    'Dana, someone you have been chatting with for weeks, finally asks for a small favour. Nothing about the ask changed, but your read on it did, because by now the name feels like a colleague, not a stranger. That warmth is the whole operation.',
   visualLabel: 'Scenario',
   visual: {
     before: {

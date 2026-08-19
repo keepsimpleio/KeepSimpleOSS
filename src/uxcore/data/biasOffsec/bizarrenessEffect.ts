@@ -10,7 +10,7 @@ import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'Week one: an invoice arrives with a llama mascot, a cheerful font, and a sum too small to escalate. No urgency, no demand. Just weird enough to show a colleague, laugh, and archive. Week three: "the llama folks" send their quarterly invoice with updated bank details. And somehow they feel like a vendor you know.',
+    'Week one: an invoice from Andes Logistics arrives with a llama mascot, a cheerful font, and a sum too small to escalate. No urgency, no demand. Just weird enough to show a colleague, laugh, and archive. Week three: Andes Logistics, "the llama folks", send their quarterly invoice with updated bank details. And somehow they feel like a vendor you know.',
   visualLabel: 'Scenario',
   visual: {
     before: {

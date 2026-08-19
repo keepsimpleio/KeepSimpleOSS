@@ -10,7 +10,7 @@ import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'Same sender, same sentence, third week in a row: "our bank account has changed." No document, no confirmation, no proof. Yet somewhere between the first message and the third, the claim quietly stopped feeling like it needed any.',
+    'Klaus from the finance team of your supplier Nordvik Components writes the same sentence, third week in a row: "our bank account has changed." No document, no confirmation, no proof. Yet somewhere between the first message and the third, the claim quietly stopped feeling like it needed any.',
   visualLabel: 'Scenario',
   visual: {
     before: {

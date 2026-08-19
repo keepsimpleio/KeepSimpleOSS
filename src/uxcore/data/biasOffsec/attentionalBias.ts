@@ -10,7 +10,7 @@ import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'Two pings hit you inside the same minute, one a phone push, the other an email. One is loud and demands you act right now. The other is quiet and looks routine. Your attention has a budget, and the attacker chose where you spend it.',
+    'Two pings hit you inside the same minute. A phone push screams about an unauthorized sign-in and demands you act right now. A quiet supplier email asks to slip an invoice into today’s payment run. Your attention has a budget, and the attacker chose where you spend it.',
   visualLabel: 'Scenario',
   visual: {
     before: {
