@@ -5,6 +5,21 @@
 // otherwise pick the surface that matches the threat (push notification,
 // chat thread, browser alert, etc.). Add new kinds here as new biases
 // arrive.
+//
+// PLAUSIBILITY BAR (Wolf, 2026-08-19; violated once by the old lottery
+// case for neglect-of-probability, never again). Every flagged card must
+// pass the "competent target" test: a busy, intelligent adult could
+// plausibly act on it on a bad day. Banned in flagged cards: folklore
+// scams the world is already vaccinated against (lottery wins, unclaimed
+// inheritance, foreign princes, free devices, "you have been selected").
+// The lure must be something the target could genuinely expect in that
+// channel (an invoice, a sync alert, an IT prompt, a meeting invite, a
+// delivery, a settlement claim), with stakes sized to ordinary life, and
+// the bias lever must be the ONLY thing doing the persuading. Shipping
+// test: would a security-aware colleague admit "on a bad day this could
+// get me"? If the honest answer is "only an idiot falls for this", the
+// case is not done. A deliberately implausible BEFORE card is fine when
+// the bias itself is about what makes the same ask believable.
 
 interface OffsecBiasCardCommon {
   tag: string;
