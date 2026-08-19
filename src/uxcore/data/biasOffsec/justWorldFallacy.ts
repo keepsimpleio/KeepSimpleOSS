@@ -7,7 +7,7 @@ import type { OffsecBiasContent } from './types';
 const content: OffsecBiasContent = {
   tell: '"You have earned this" is built to skip the question "why me?". Deserving a reward is not evidence the reward is real.',
   scenario:
-    'An email says you have been selected for a valuable reward. Unexplained, "you won, claim now", your first instinct is "why me?" and you smell a scam. Reframed as earned, "as one of our most loyal customers this year, you have qualified for this thank-you", it fits a comforting belief that good things come to those who deserve them, and you reach to claim what feels rightfully yours.',
+    'An email says you have been selected for a valuable reward. Unexplained, "you won, claim now", your first instinct is "why me?" and you smell a scam. Reframed as earned, "eight years with us, your activity qualified you for a tier upgrade", it fits a comforting belief that good things come to those who deserve them, and you reach to claim what feels rightfully yours.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -24,9 +24,9 @@ const content: OffsecBiasContent = {
       tag: 'Reward framed as deserved',
       sender: 'rewards@member-benefits-desk.com',
       timestamp: '1:10 PM',
-      subject: 'Your loyalty earned this, claim your reward',
+      subject: 'Eight years with us: your loyalty tier upgrade is ready',
       preview:
-        'As one of our most loyal members this year, you have qualified for a special thank-you. You have more than earned it. Confirm your details to claim what is rightfully yours.',
+        'You have been a member since 2018, and this year your activity qualified you for a complimentary tier upgrade. You have more than earned it. Confirm your account details to activate what is rightfully yours.',
       flagged: true,
     },
   },

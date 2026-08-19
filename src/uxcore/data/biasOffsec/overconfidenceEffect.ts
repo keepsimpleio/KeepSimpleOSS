@@ -18,8 +18,8 @@ const content: OffsecBiasContent = {
       tag: 'Confidence matched to reality',
       prompt: 'Is this reauthentication email safe to act on?',
       options: [
-        { label: 'Verify first' },
-        { label: 'Looks safe', chosen: true },
+        { label: 'Verify first', chosen: true },
+        { label: 'Looks safe' },
       ],
       confidence: 55,
       confidenceLabel: 'How sure you are',

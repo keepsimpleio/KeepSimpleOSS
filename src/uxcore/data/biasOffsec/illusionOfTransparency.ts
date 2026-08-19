@@ -1,53 +1,45 @@
-// Surface is a "verification session" stepper: the same sequence of steps,
-// shown as a progress card, walking you toward handing over a credential.
-// The lever is the illusion of transparency: you overestimate how visible
-// your inner state is, so you feel your hesitation and nerves are obvious to
-// the agent and push through to avoid looking guilty. The steps are
-// identical; only your felt exposure separates the two cards.
+// Surface is a pair of gauges around the same moment: mid-call, you hesitate
+// before reading back a one-time code. The lever is the illusion of
+// transparency: you overestimate how much of your inner state leaks out. The
+// before card measures what the caller can actually read from a pause on a
+// phone line. The after card measures how exposed that same pause feels, and
+// the gap between the two meters is the whole attack surface.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   tell: "Your nervousness is far less visible than it feels. When you push through a check just so you will not look suspicious, the fear of being read is doing the attacker's work.",
   scenario:
-    'A caller from "account security" walks you through a live verification session to clear a flagged login. Every step feels routine until you hesitate. On a calm day you would pause here, hang up, and call the number on your card, no worry about how the stall looks. Convinced the agent can hear you stalling and will read it as guilt, you keep going to seem cooperative, and the final step is reading back a one-time code.',
+    'A caller from "account security" is walking you through a verification and asks you to read back the code just texted to you. You hesitate, which is the healthy signal firing. What the caller actually perceives is a quiet phone line for two seconds. What you feel is that your doubt is broadcast in high definition and that stalling makes you sound guilty. People act on the felt version: to stop seeming suspicious, they read the code out, and the pause that should have saved the account becomes the reason it is lost.',
   visualLabel: 'Scenario',
   visual: {
     before: {
-      kind: 'progress',
-      tag: 'A session you can pause',
-      title: 'Account verification',
-      steps: [
-        { label: 'Confirm the account is yours', state: 'done' },
-        { label: 'Review the flagged login', state: 'done' },
-        { label: 'Answer the security question', state: 'active' },
-        { label: 'Read back the code we texted you', state: 'pending' },
-      ],
-      percent: 50,
-      caption:
-        'A session that can pause at any step for a callback on your own number. How the wait looks to the agent is not part of the picture.',
+      kind: 'quiz',
+      tag: 'What the caller can actually read',
+      prompt:
+        'Mid-call, you go quiet for two seconds before reading back the one-time code.',
+      confidence: 8,
+      confidenceLabel: 'How much of your doubt crosses the line',
+      verdict:
+        'A pause on a phone line reads as a pause. Nothing else crosses.',
     },
     after: {
-      kind: 'progress',
-      tag: 'A session you feel exposed in',
-      title: 'Account verification',
+      kind: 'quiz',
+      tag: 'What the same pause feels like',
+      prompt:
+        'Mid-call, you go quiet for two seconds before reading back the one-time code.',
       priorContext:
-        'Same session, same steps. This time you hesitate, and you are sure the agent can hear it and is already reading you as the guilty one.',
-      steps: [
-        { label: 'Confirm the account is yours', state: 'done' },
-        { label: 'Review the flagged login', state: 'done' },
-        { label: 'Answer the security question', state: 'active' },
-        { label: 'Read back the code we texted you', state: 'pending' },
-      ],
-      percent: 50,
-      caption:
-        'The same session, now carrying a felt sense that every second of hesitation is on show. The code step is the next one waiting.',
+        'The caller is waiting. Every half-second of silence feels louder than the last.',
+      confidence: 92,
+      confidenceLabel: 'How exposed the hesitation feels',
+      verdict:
+        'The doubt feels broadcast, and reading the code out feels like the only way to stop looking guilty.',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is the illusion of transparency. We overestimate how much of our inner state leaks out, so a private flicker of doubt feels like a neon sign the other person is reading in real time. On a security call that misfires badly. Your hesitation, which is the healthy signal telling you to stop, gets reframed as something you must hide, and the fastest way to hide it feels like pushing through the step you should refuse. The steps are identical in both cards. What changes is the belief that the agent can see your reluctance and will score it as guilt. The attacker does not need to overcome your caution. They need you to feel your caution showing, because a person trying not to look suspicious complies faster than a person who is calm.',
+    'This is the illusion of transparency. We overestimate how much of our inner state other people can perceive, so a private flicker of doubt feels like a neon sign the caller is reading in real time. The moment is identical in both cards: the same two-second pause. Down the wire it is almost nothing, a beat of silence. From the inside it feels like a confession in progress, and the instinct is to smother it by acting cooperative, which on this call means handing over the code. The attacker does not need to overcome your caution. They need you to feel your caution showing, because a person trying not to look suspicious complies faster than a calm one.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your bank and IT set the real verification channels. Not performing calm for a stranger is your part.',

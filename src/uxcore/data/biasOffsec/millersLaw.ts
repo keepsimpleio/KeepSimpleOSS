@@ -42,7 +42,7 @@ const content: OffsecBiasContent = {
         { label: 'Read your contact names' },
         { label: 'View your time zone' },
         { label: 'Access your out-of-office status' },
-        { label: 'Send payments on your behalf', risky: true },
+        { label: 'Send payments on your behalf' },
         { label: 'Read event locations' },
         { label: 'View your working hours' },
       ],

@@ -1,39 +1,39 @@
-// Surface is a printed security-awareness poster with a QR code. The lever
-// is the third-person effect: you assume scams and persuasion work on other,
-// more gullible people but never on you, so the warning bounces off and you
-// stay the one who clicks. The poster is identical both ways. Only the read
-// changes: "this could be me" versus "this is for the folks who fall for
-// stuff", and the second read exempts you from the very habit it teaches.
+// Surface pair: the security-awareness poster itself, then a chat where a
+// colleague forwards a photo of it with a joke. The lever is the third-person
+// effect: warnings are assumed to be aimed at other, more gullible people.
+// The poster never changes. The flagged card renders the dismissive read as
+// its own artifact: the message that files the warning under "for the folks
+// who click everything" and exempts the sender from the habit it teaches.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   tell: 'The awareness poster is not aimed at the naive people down the hall. It is aimed at you, and the moment you decide it is about someone else is the moment it stops protecting you.',
   scenario:
-    'The same poster is taped by the coffee machine: a warning that credential-harvesting QR codes look exactly like normal sign-in prompts, and a line telling you to verify the link before you scan. Read as "this could be me", it lands and you build the habit of checking. Read as "this is a reminder for the sales team, who fall for anything", you nod, feel briefly superior, and scan the next lookalike code without the pause the poster just tried to give you. The self-exemption, not the code, is what gets you.',
+    'A poster by the coffee machine warns that credential-harvesting QR codes look exactly like real sign-in prompts and tells you to verify before you scan. Read as "this could be me", it installs a habit. Read as material for a joke about the sales team, it installs nothing: the person laughing files themselves as the exception, feels briefly superior, and scans the next lookalike code without the pause the poster tried to give them. The self-exemption, not the code, is what gets them.',
   visualLabel: 'Scenario',
   visual: {
     before: {
       kind: 'poster',
-      tag: 'Read as "this could be me"',
+      tag: 'The warning, as printed',
       heading: 'That sign-in QR could be harvesting your password.',
       body: 'Fake login codes look identical to real ones. Before you scan, confirm where it goes. It only takes one rushed morning, and it happens to careful people too.',
       qrCaption: 'Verify the destination before you scan. Yes, you.',
     },
     after: {
-      kind: 'poster',
-      tag: 'Read as "this is for the gullible ones"',
-      priorContext:
-        'Same poster, same words. You just read it on behalf of other people, the ones you assume actually fall for this, and quietly filed yourself as the exception.',
-      heading: 'That sign-in QR could be harvesting your password.',
-      body: 'Fake login codes look identical to real ones. Before you scan, confirm where it goes. It only takes one rushed morning, and it happens to careful people too.',
-      qrCaption: 'Verify the destination before you scan. Yes, you.',
+      kind: 'chat',
+      tag: 'The warning, as read',
+      senderName: 'Teammate',
+      senderHandle: '#general',
+      timestamp: '9:12 AM',
+      attachment: '📷 kitchen-poster.jpg',
+      body: 'lol they papered the whole floor with these. good, finally something for the people who click everything 😅',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is the third-person effect. People consistently believe persuasion, propaganda, and scams hit others harder than themselves, so a warning aimed at everyone gets silently rerouted to "everyone but me". The poster is word-for-word identical in both cards. The only thing that moves is who you picture it addressing, and picturing someone else is enough to switch off the habit it was trying to install. That is the trap, because the belief "I would never fall for this" is exactly the state that stops you checking, and not checking is the whole vulnerability. Attackers do not need you to be foolish. They need you to be sure the message is for the foolish, so the one instruction that would have saved you slides straight past. The person most certain the warning is not about them is the easiest one to catch.',
+    'This is the third-person effect. People consistently believe persuasion, propaganda, and scams hit others harder than themselves, so a warning aimed at everyone gets silently rerouted to "everyone but me". The poster in both cards is the same. What the chat shows is the rerouting happening in public: the warning arrives, gets assigned to an imagined gullible audience, and bounces off the one person it just reached. That is the trap, because "I would never fall for this" is exactly the state that stops you checking, and not checking is the whole vulnerability. Attackers do not need you to be foolish. They need you to be sure the message is for the foolish, so the one instruction that would have saved you slides straight past.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your company can paper the walls with warnings. Reading them as if they are addressed to you is the part only you can do.',

@@ -5,6 +5,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Your name, your manager and your project are public and cheap to buy. The more a message seems to know about you, the more carefully you should check who actually sent it.',
   scenario:
     'Two emails ask you to log in and confirm your payroll details. One is addressed to nobody in particular. The other knows your name, knows your manager Priya, and knows you are on the Helios project. The link under both goes to the same fake login page.',
   visualLabel: 'Scenario',

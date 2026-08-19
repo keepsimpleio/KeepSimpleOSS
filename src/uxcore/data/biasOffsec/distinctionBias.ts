@@ -5,6 +5,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A comparison someone else built is a funnel. Once you catch yourself picking between their two options, ask whether you would take the winning one if it stood there alone.',
   scenario:
     'A page claims your access is suspended and you must verify your identity. On its own, the "verify instantly" button reads as a trap. But present it as a choice, Option A: wait three to five business days locked out, or Option B: verify instantly and keep working, and Option B stops looking like a risk and starts looking like the obvious move. Same button, same harvested password.',
   visualLabel: 'Scenario',

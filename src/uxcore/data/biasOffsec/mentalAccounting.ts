@@ -14,22 +14,8 @@ const content: OffsecBiasContent = {
   visual: {
     before: {
       kind: 'diff',
-      tag: 'A fresh, unbudgeted spend',
+      tag: 'A fresh spend, and the swap is caught',
       label: 'Payment release',
-      rows: [
-        { field: 'Payee', value: 'Aldwin Studio' },
-        { field: 'Account', value: 'GB29 •••• 4471' },
-        { field: 'Amount', value: '$12,000' },
-        { field: 'Reference', value: 'New engagement, ad-hoc' },
-      ],
-      note: 'Unplanned money leaving. Every field on the release is fresh and unbudgeted.',
-    },
-    after: {
-      kind: 'diff',
-      tag: 'Money you already wrote off',
-      label: 'Payment release',
-      priorContext:
-        'You approved this retainer weeks ago. In your head the cash is already spent, just waiting to clear.',
       rows: [
         { field: 'Payee', value: 'Aldwin Studio' },
         {
@@ -39,9 +25,23 @@ const content: OffsecBiasContent = {
           changed: true,
         },
         { field: 'Amount', value: '$12,000' },
+        { field: 'Reference', value: 'Ad-hoc licence purchase, unplanned' },
+      ],
+      note: 'Unbudgeted money leaving, every field read against the record. The account mismatch surfaces on the first pass.',
+    },
+    after: {
+      kind: 'diff',
+      tag: 'Money you already wrote off',
+      label: 'Payment release',
+      priorContext:
+        'You approved this retainer weeks ago. In your head the cash is already spent, just waiting to clear.',
+      rows: [
+        { field: 'Payee', value: 'Aldwin Studio' },
+        { field: 'Account', value: 'LT12 •••• 9930' },
+        { field: 'Amount', value: '$12,000' },
         { field: 'Reference', value: 'Q3 retainer, as approved' },
       ],
-      note: 'The amount matches the loss booked weeks ago. Only the account number differs from the one on file.',
+      note: 'The same release, the same swapped account, shown the way the screen actually shows it: one quiet row among four, on a payment that stopped feeling like a decision weeks ago.',
       flagged: true,
     },
   },

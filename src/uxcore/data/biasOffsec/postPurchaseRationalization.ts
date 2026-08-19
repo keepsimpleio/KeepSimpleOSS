@@ -26,9 +26,9 @@ const content: OffsecBiasContent = {
       tag: 'A receipt that flatters the decision',
       sender: 'billing@brightwater-supplies.com',
       timestamp: '4:47 PM',
-      subject: 'Great call! Your payment is confirmed 🎉',
+      subject: 'Payment confirmed. Great decision',
       preview:
-        'Smart move, you are all set. Your $18,400 payment is confirmed, reference 4821. You have joined hundreds of teams who trust Brightwater. Here is your VIP receipt, a priority support line, and a head-start guide. You made the right decision today.',
+        'Smart move, you are all set. Your $18,400 payment is confirmed, reference 4821. It has been a pleasure supporting your team this quarter. Your priority support line and dedicated account manager are now active. You made the right decision today.',
       flagged: true,
     },
   },

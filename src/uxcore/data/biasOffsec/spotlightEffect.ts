@@ -1,61 +1,48 @@
-// Surface is a screen-share "support session" stepper: the same remote-help
-// steps, shown as a progress card, walking you toward granting remote
-// control. The lever is the spotlight effect: you overestimate how much the
-// agent is watching and judging you, so the fear of looking incompetent
-// keeps you going rather than declining. The steps are identical; only the
-// imagined scrutiny separates the two cards.
+// Surface is a support chat during a screen-share. The lever is the
+// spotlight effect: you overestimate how much of an audience is watching and
+// judging you, so the attacker installs one. The ask is identical in both
+// cards: run the "diagnostic" they sent. The flagged card adds an invoked
+// audience, a bridge call full of people supposedly waiting on your screen,
+// and the fear of fumbling in front of them replaces the pause that would
+// have caught the ask.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: "The agent is not studying how slow or confused you look. When fear of seeming incompetent keeps you clicking, the imagined spotlight is doing the attacker's work.",
+  tell: 'A stranger who tells you an audience is watching your screen is installing a spotlight. Nobody on that bridge is grading your pace, and the bridge itself is probably empty.',
   scenario:
-    'A "support engineer" opens a screen-share to fix an issue you reported, then asks to take remote control to "speed things up". On a normal day you would decline partway through, say you will handle the rest yourself, and end the call. Feeling like every fumble is being watched and judged, you keep going and grant control rather than look slow or foolish in front of someone who does this all day.',
+    'A "support engineer" is on a screen-share for an issue you reported and asks you to run a diagnostic tool they sent. Asked one on one, you take your time, look at what the file actually is, and decline to run unknown software. Told that the incident bridge is watching your screen and fourteen people are waiting on this one step, the same ask lands differently: every second you spend inspecting the file feels like public fumbling, and running it fast feels like the way to stop being the spectacle.',
   visualLabel: 'Scenario',
   visual: {
     before: {
-      kind: 'progress',
-      tag: 'A session you can decline',
-      title: 'Remote support session',
-      steps: [
-        { label: 'Describe the issue', state: 'done' },
-        { label: 'Share your screen', state: 'done' },
-        { label: 'Follow the fix together', state: 'active' },
-        { label: 'Grant remote control', state: 'pending' },
-      ],
-      percent: 55,
-      caption:
-        'A support session that can end with "I will take it from here". The agent\'s opinion of your pace is not in view.',
+      kind: 'chat',
+      tag: 'One on one, no audience',
+      senderName: 'Desk 12, Support',
+      senderHandle: 'support chat · screen-share active',
+      timestamp: '2:14 PM',
+      body: 'Whenever you are ready, run the diagnostic I sent over and tell me what it reports. No rush on this.',
     },
     after: {
-      kind: 'progress',
-      tag: 'A session under a spotlight',
-      title: 'Remote support session',
-      priorContext:
-        'Same session, same steps. This time every hesitation feels like it is under a spotlight the agent is judging you by.',
-      steps: [
-        { label: 'Describe the issue', state: 'done' },
-        { label: 'Share your screen', state: 'done' },
-        { label: 'Follow the fix together', state: 'active' },
-        { label: 'Grant remote control', state: 'pending' },
-      ],
-      percent: 55,
-      caption:
-        'The same session, now under a felt spotlight where every pause seems to mark you as slow. The next step is granting remote control.',
+      kind: 'chat',
+      tag: 'An audience you can feel',
+      senderName: 'Desk 12, Support',
+      senderHandle: 'support chat · screen-share active',
+      timestamp: '2:14 PM',
+      body: 'Quick heads-up, the incident bridge is viewing your screen with me, fourteen people waiting on this step. Run the diagnostic I sent over and read out what it reports, everyone is ready when you are.',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is the spotlight effect. We badly overestimate how much other people notice and judge our stumbles, and act as if a spotlight is trained on us when the other person is barely tracking it. On a support call that misjudgement is expensive. Declining, which is the safe move, starts to feel like a public admission that you are the slow one who cannot manage a simple fix. The steps are identical in both cards. What changes is the sense that the agent is watching every hesitation and scoring your competence. The attacker does not need to argue you into granting control. They need you to feel watched, because a person managing how they look grants access a calm person would refuse.',
+    'This is the spotlight effect. We badly overestimate how much other people watch and judge us, and the feeling of being observed changes behaviour even when the observation is fictional. The ask is the same in both messages: run unknown software. One on one, there is room to inspect it, and inspection kills it. With fourteen imagined pairs of eyes on your cursor, hesitation starts to feel like a public confession of incompetence, and the fastest way out of the spotlight is to comply. The attacker never has to argue that the file is safe. They just have to make careful feel embarrassing, and the audience they typed into existence does that for them.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'IT sets who is allowed to take remote control. Not trading access for how you look is your part.',
+    lede: 'IT decides who may run tools on your machine. Refusing to trade that for how you look on a call is your part.',
     moves: [
-      'Granting remote control hands over your machine. That decision is worth looking slow over, every time, no matter who is on the call.',
-      'The agent is not grading your speed. Real support does not think less of you for saying you will finish it yourself.',
-      'Verify unsolicited support through your own IT channel before sharing a screen, and never grant control on a call you did not initiate.',
-      'Notice the urge to keep up so you do not look foolish. That imagined spotlight is the lever, so let it stop you rather than push you on.',
+      'Running software someone sent you is worth looking slow over, every time, whoever is claimed to be watching.',
+      'An invoked audience is a pressure tool. The more people supposedly waiting on your click, the more suspicious the click deserves to be.',
+      'Verify unsolicited support through your own IT channel before sharing a screen, and never run files from a session you did not initiate.',
+      'Notice the urge to hurry so you do not look foolish. That imagined spotlight is the lever, so let it stop you rather than push you on.',
     ],
   },
 };

@@ -8,6 +8,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A sign-in page that appears exactly where you expected one borrows its credibility from your own click. Expecting a login is no evidence that this login is real.',
   scenario:
     'The same sign-in page, twice. On a random Tuesday tab it looks fake immediately. Ten seconds after you clicked "Join meeting" in a calendar invite, the very same page reads as routine, because now it sits exactly where a sign-in was supposed to be.',
   visualLabel: 'Scenario',

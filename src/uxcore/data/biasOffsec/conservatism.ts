@@ -6,6 +6,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Familiar context is not a signature. A red flag inside a thread you already trust deserves more checking than the same flag in a cold email, because the thread is the disguise.',
   scenario:
     'Your supplier Halden Studios wants their invoices paid to a new bank account. Version one is a fresh email from Halden saying so. Version two is a reply, three messages deep, inside the invoice thread you have been running with them since spring. Same request, same new account number. You interrogate the first one. You barely blink at the second.',
   visualLabel: 'Scenario',

@@ -5,6 +5,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'When a message supplies the number you are measuring against, it has already chosen your answer. Check the original transaction in your own records before a cent moves.',
   scenario:
     'A vendor you use, Meridian, emails to say money needs to move back to them. In the first version they just ask for it. In the second, they say they accidentally paid you far too much and ask you to return the overpayment. It is the same amount leaving your account. One version feels like a scam, the other feels like doing the right thing.',
   visualLabel: 'Scenario',

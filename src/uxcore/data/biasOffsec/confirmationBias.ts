@@ -5,6 +5,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A message that fits exactly what you are already waiting for has earned your sharpest look. Attackers play the odds that on any given day you are expecting a parcel, an invoice, or a reply.',
   scenario:
     'A text from "ParcelLine" says your delivery is held and a small fee is needed to release it. If you are not expecting anything, it is obvious junk and you delete it. If you happen to be waiting on a package this week, the identical text lands as confirmation of something you already believe, and you tap the link before the doubt arrives.',
   visualLabel: 'Scenario',

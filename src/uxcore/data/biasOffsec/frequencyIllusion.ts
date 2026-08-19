@@ -8,6 +8,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Seeing a name everywhere is cheap to manufacture: a few planted mentions read as market presence. Before you trust the name, count how many independent sources those sightings actually come from.',
   scenario:
     'Monday, a tool called Relayo gets mentioned once and you shrug. By the next week you have "seen it everywhere", so when an invite asks you to set a password, it feels like joining something established. Nobody checked that every sighting traces back to the same hand.',
   visualLabel: 'Scenario',

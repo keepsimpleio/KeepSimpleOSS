@@ -18,15 +18,10 @@ const content: OffsecBiasContent = {
       tag: 'The full cohort, survivors and failures',
       title: 'Strategy cohort, 3-year return',
       bars: [
-        { label: 'Fund A (closed)', value: -22, display: '-22%', ghost: true },
-        { label: 'Fund B (closed)', value: -14, display: '-14%', ghost: true },
+        { label: 'Fund A', value: 5, display: 'closed', ghost: true },
+        { label: 'Fund B', value: 5, display: 'closed', ghost: true },
         { label: 'Fund C', value: 18, display: '+18%' },
-        {
-          label: 'Fund D (wound down)',
-          value: -9,
-          display: '-9%',
-          ghost: true,
-        },
+        { label: 'Fund D', value: 5, display: 'closed', ghost: true },
         { label: 'Fund E', value: 24, display: '+24%' },
         { label: 'Meridian Alpha', value: 31, display: '+31%' },
       ],

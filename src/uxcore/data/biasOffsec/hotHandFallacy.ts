@@ -7,7 +7,7 @@ import type { OffsecBiasContent } from './types';
 const content: OffsecBiasContent = {
   tell: 'A run of safe ones does not make the next one safe. Attackers build a streak precisely so you stop checking.',
   scenario:
-    'Invoices arrive from a supplier, Larkhill, that you pay every month. A single cold invoice from them, you check carefully. But after a run of five genuine invoices you paid without a hitch, the sixth feels like just another in the streak, and it is the fraudulent one, with a quietly changed account number, waved through on the momentum of the five before it.',
+    'Invoices arrive from a supplier, Larkhill, that you pay every month. A single cold invoice announcing changed banking details gets checked with a callback, and the fraud is caught. The same announcement arriving as the sixth in a run of five clean, paid invoices feels like just another in the streak, and it is waved through on the momentum of the five before it.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       timestamp: 'Mon, 9:00 AM',
       subject: 'Invoice for payment',
       preview:
-        'Please find this month’s invoice attached. Payment is due within 14 days to the account listed on the invoice.',
+        'Please find this month’s invoice attached. Note: our banking details have changed, please use the updated account on this invoice for payment.',
     },
     after: {
       kind: 'email',

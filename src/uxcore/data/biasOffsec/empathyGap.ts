@@ -7,6 +7,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'The rule you wrote calmly gets tested on the worst evening of your quarter, by a version of you who did not write it. Make the check mechanical so it survives a state you cannot imagine while calm.',
   scenario:
     'On a calm Tuesday you sign the rule: every payment change gets a callback, no exceptions, including management. On Friday at 6:52 PM a voice that sounds exactly like your CEO is boarding a plane, the deal "dies tonight", and the person deciding whether the rule still applies is not the person who signed it.',
   visualLabel: 'Scenario',

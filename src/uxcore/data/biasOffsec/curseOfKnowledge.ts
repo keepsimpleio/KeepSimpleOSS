@@ -38,10 +38,7 @@ const content: OffsecBiasContent = {
       scopes: [
         { label: 'Repository metadata read scope' },
         { label: 'Offline refresh grant with token rotation' },
-        {
-          label: 'Act-as impersonation via delegated token exchange',
-          risky: true,
-        },
+        { label: 'Act-as impersonation via delegated token exchange' },
       ],
       cta: 'Authorize',
     },

@@ -36,7 +36,7 @@ const content: OffsecBiasContent = {
     'This is subjective validation, the same engine behind horoscopes and cold reading. A statement broad enough to fit almost anyone gets read as a precise hit about you, because you supply the specifics from your own life. "You reuse a password somewhere" is true of nearly every person alive, yet it lands as if the scanner truly knows you. That felt accuracy is not evidence the tool works, it is evidence it was written to feel personal. Once it seems to understand you, its instructions inherit the trust, and the "fix" is the payload.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'Your team runs the real scans. Noticing a fake one flatter you is on you.',
+    lede: 'Your team runs the real scans. Noticing a fake one flattering you is on you.',
     moves: [
       'Ask whether a "finding" could be said to anyone. If it fits everyone, it is a script, not a scan.',
       'A tool feeling like it "gets" you is a persuasion result, not a security result. Trust the method, not the vibe.',

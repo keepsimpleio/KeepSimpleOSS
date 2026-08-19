@@ -13,6 +13,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'When a page feels legitimate because it echoes the story you read this morning, that recall is the lure working. How easily something comes to mind says nothing about whether it is real.',
   scenario:
     'A bank called NorthBank just got breached and the news is everywhere. You work somewhere else entirely, but two phishing pages still ask you for the exact same thing: your work login. The only difference between them is that one name-drops the NorthBank breach you just read about.',
   visualLabel: 'Scenario',

@@ -5,8 +5,9 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Convert every "per day" price back to its real total before you react. A price shrunk to pocket change is sized to slip past the moment you would have questioned the page.',
   scenario:
-    'A page says your mailbox storage is expiring and asks for your card to renew. Priced as a yearly total it makes you stop and question the whole thing. Priced as a few cents a day it feels like nothing, and your card details are typed before you have really decided. It is the same amount of money, on the same fake page.',
+    'A page says your mailbox storage is expiring and asks for your card to renew. Priced as a yearly total it makes you stop and question the whole thing. Priced as a small monthly fee it feels like nothing, and your card details are typed before you have really decided. It is the same amount of money, on the same fake page.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -24,16 +25,16 @@ const content: OffsecBiasContent = {
       tag: 'Priced by the day',
       host: 'mailvault-renew-center.com',
       path: '/storage',
-      pageHeading: 'Keep your mailbox for less than a coffee',
+      pageHeading: 'Keep your mailbox for less than a coffee a month',
       pageBody:
-        'Your storage plan is expiring. Keep it for just $0.95 a day, cancel anytime, no commitment. Enter your card to keep your mailbox active.',
-      cta: 'Keep my mailbox, $0.95/day',
+        'Your storage plan is expiring. Keep it for just $29 a month, cancel anytime, no commitment. Enter your card to keep your mailbox active.',
+      cta: 'Keep my mailbox, $29/mo',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is money illusion. We react to the face value of a number, not the real magnitude behind it. "$0.95 a day" reads as pocket change even though it is the exact same $348 that made you flinch a moment earlier. The small nominal figure slips under the threshold where you would normally stop and check the page. And the price was never the real cost anyway. The real cost is your card details on a lookalike domain, which the tiny, friendly number is there to rush you past.',
+    'This is money illusion. We react to the face value of a number, not the real magnitude behind it. "$29 a month" reads as pocket change even though it is the exact same $348 a year that made you flinch a moment earlier. The small nominal figure slips under the threshold where you would normally stop and check the page. And the price was never the real cost anyway. The real cost is your card details on a lookalike domain, which the tiny, friendly number is there to rush you past.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your team watches the money leaving. Reading the price for what it is stays yours.',

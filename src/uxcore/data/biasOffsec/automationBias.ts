@@ -17,7 +17,8 @@ const content: OffsecBiasContent = {
       path: '/download',
       pageHeading: 'Download ready',
       pageBody:
-        'The uploader says this file is safe to run. Click below to download and run it.',
+        'The uploader says this file is safe to run. Download it below.',
+      cta: 'Download file',
     },
     after: {
       kind: 'browser',

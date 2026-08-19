@@ -29,7 +29,7 @@ const content: OffsecBiasContent = {
       name: 'Marcus Feld',
       handle: '@marcus.recruits',
       initial: 'MF',
-      title: 'Just a junior recruiter chasing a placement, obviously',
+      title: 'Junior Talent Partner, Northgate Recruiting',
       note: 'The same profile, now read as an open book: an obvious junior, harmless, easily seen through. The felt asymmetry (clear to you, blind on their side) is the whole opening.',
       flagged: true,
     },

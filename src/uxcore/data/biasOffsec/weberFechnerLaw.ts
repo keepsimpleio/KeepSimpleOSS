@@ -5,6 +5,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A charge small enough to ignore was sized that way on purpose. Query the odd $40 the way you would query an odd $40,000, because the small one is usually a test of whether the card still works.',
   scenario:
     'A single unfamiliar charge, "Northwind API, $40", sits on your company card statement. On a nearly empty statement it jumps out and you query it in seconds. On a busy month stacked with five-figure lines, the very same $40 disappears into the scroll. Same charge, same test of whether someone else is already spending your money.',
   visualLabel: 'Scenario',
@@ -15,7 +16,7 @@ const content: OffsecBiasContent = {
       docLabel: 'Card statement',
       title: 'Corporate card, March',
       meta: '2 transactions this period',
-      body: 'Coffee subscription: $18.00. Northwind API: $40.00. The forty-dollar line has nothing to hide behind, and it does not match anything you signed up for. You notice it instantly.',
+      body: 'Coffee subscription: $18.00. Northwind API: $40.00.',
       footer: 'Statement total: $58.00',
     },
     after: {
@@ -26,7 +27,7 @@ const content: OffsecBiasContent = {
       meta: '94 transactions this period',
       priorContext:
         'The same $40 Northwind line is now one row among cloud bills, ad spend, travel, and vendor invoices in the tens of thousands.',
-      body: 'Cloud hosting: $22,400.00. Ad platform: $17,850.00. Travel: $9,120.00. Northwind API: $40.00. Vendor retainer: $14,000.00. Against those figures, forty dollars reads as a rounding error, and no one queries it.',
+      body: 'Cloud hosting: $22,400.00. Ad platform: $17,850.00. Travel: $9,120.00. Northwind API: $40.00. Vendor retainer: $14,000.00.',
       footer: 'Statement total: $71,240.00',
       flagged: true,
     },

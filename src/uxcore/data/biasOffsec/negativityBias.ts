@@ -6,8 +6,9 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A countdown attached to a threatened loss is the attack itself, and the fear is the payload. The harder a message makes your stomach drop, the slower your next move should be.',
   scenario:
-    'Your bank, Harborline, seems to want the same thing twice: you, signing in to "verify". The first message offers it as good housekeeping. The second warns your account is hours from deletion and the matter is being escalated. Same link, same fake login. Only one of them makes your stomach drop.',
+    'Your bank, Harborline, seems to want the same thing twice: you, signing in to "verify". The first message offers it as good housekeeping. The second warns your account is hours from suspension and the matter is being escalated. Same link, same fake login. Only one of them makes your stomach drop.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -23,14 +24,14 @@ const content: OffsecBiasContent = {
       tag: 'Loss and threat',
       appName: 'Harborline',
       timestamp: 'now',
-      title: 'Final notice: account deletion in 24 hours',
-      body: 'Your account is scheduled for permanent closure and the case has been referred for review. Sign in within 24 hours to stop the process and avoid losing access to your funds.',
+      title: 'Final notice: account access suspended in 24 hours',
+      body: 'Your account is scheduled for suspension and the case has been referred for review. Sign in within 24 hours to stop the process and avoid losing access to your funds.',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is negativity bias. A threatened loss weighs far more than an equivalent gain, and the brain treats it as a threat to survive, not a claim to evaluate. The word "deletion", the countdown, the hint of consequences: they pull blood away from the part of you that checks URLs. Fear compresses the gap between reading and clicking until there is no room left to think. The neutral version asked for the exact same thing and got a shrug, because nothing was at stake. The threat manufactures the stake.',
+    'This is negativity bias. A threatened loss weighs far more than an equivalent gain, and the brain treats it as a threat to survive, not a claim to evaluate. The word "suspended", the countdown, the hint of consequences: they pull blood away from the part of you that checks URLs. Fear compresses the gap between reading and clicking until there is no room left to think. The neutral version asked for the exact same thing and got a shrug, because nothing was at stake. The threat manufactures the stake.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'The network is defended for you. Your own panic is defended by you.',

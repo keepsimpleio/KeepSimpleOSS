@@ -16,7 +16,7 @@ const content: OffsecBiasContent = {
       senderName: 'Support',
       senderHandle: 'live chat',
       timestamp: '3:22 PM',
-      body: 'Account issue noted. Provide your login and the one-time code to proceed.',
+      body: 'Account issue noted. Approve the verification prompt we just sent to your device to proceed.',
     },
     after: {
       kind: 'chat',
@@ -24,7 +24,7 @@ const content: OffsecBiasContent = {
       senderName: 'Support',
       senderHandle: 'live chat',
       timestamp: '3:22 PM',
-      body: 'Oh no, that sounds stressful, I am so sorry you are dealing with this on a Friday! Do not worry, I will stay with you until it is sorted. Whenever you are ready, just pop in your login and the code and I will take it from here 💛',
+      body: 'Oh no, that sounds stressful, I am so sorry you are dealing with this on a Friday! Do not worry, I will stay with you until it is sorted. Whenever you are ready, just approve the little verification prompt I sent over and I will take it from here 💛',
       flagged: true,
     },
   },

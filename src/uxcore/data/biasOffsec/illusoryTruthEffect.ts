@@ -9,6 +9,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A claim you have read three times starts to feel settled even though nobody ever checked it. Repetition only makes a sentence easier to read, and ease is a poor stand-in for proof.',
   scenario:
     'Klaus from the finance team of your supplier Nordvik Components writes the same sentence, third week in a row: "our bank account has changed." No document, no confirmation, no proof. Yet somewhere between the first message and the third, the claim quietly stopped feeling like it needed any.',
   visualLabel: 'Scenario',
@@ -18,7 +19,7 @@ const content: OffsecBiasContent = {
       tag: 'First time you read it',
       senderName: 'Klaus Lange',
       senderHandle: 'Nordvik Components · finance',
-      timestamp: 'Thu, 9:30 AM',
+      timestamp: 'Thu, May 8',
       body: 'Hello, I’m Klaus from Nordvik Components finance. We’ve changed our account details, please update before the next payment run.',
     },
     after: {
@@ -26,7 +27,7 @@ const content: OffsecBiasContent = {
       tag: 'Third time you read it',
       senderName: 'Klaus Lange',
       senderHandle: 'Nordvik Components · finance',
-      timestamp: 'Thu, 9:30 AM',
+      timestamp: 'Thu, May 22',
       priorContext:
         'Two earlier notes this month mentioned the account move in passing. No documents, no details, no ask. Just the claim, twice.',
       body: 'Hi again, as mentioned in my last two notes, our account moved. Sending the final details now so payment lands on the new IBAN. Appreciate the quick turnaround 🙌',

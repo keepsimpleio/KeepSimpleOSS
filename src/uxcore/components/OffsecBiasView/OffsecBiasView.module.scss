@@ -1099,16 +1099,10 @@ $ks-crimson-deep: #7a2618;
   }
 }
 
-.card_profile.cardFlagged {
-  .profileVerified {
-    background: $ks-crimson;
-  }
-
-  .profileBadge {
-    border-color: $ks-crimson;
-    color: $ks-crimson;
-  }
-}
+// The flagged profile card keeps its trust regalia intact on purpose: the
+// blue tick and neutral badges ARE the lure, so painting them crimson would
+// turn the halo into an alarm and defeat the case. The card frame alone
+// marks the attack side.
 
 // === Stats surface =========================================================
 
@@ -1149,18 +1143,15 @@ $ks-crimson-deep: #7a2618;
     line-height: 1.1;
   }
 
+  // Trend glyphs are direction only, never judgement: on a security board
+  // "up" is often bad (failed logins) and "down" often good, so colouring
+  // by direction paints meanings backwards. All arrows stay neutral.
   .statTrend {
     font-size: 10px;
   }
 
-  .trend_up {
-    color: #2a8a4a;
-  }
-
-  .trend_down {
-    color: $ks-crimson;
-  }
-
+  .trend_up,
+  .trend_down,
   .trend_flat {
     color: $ks-ink-soft;
   }
@@ -1497,10 +1488,13 @@ $ks-crimson-deep: #7a2618;
     border-radius: 999px;
   }
 
+  // The chosen chip is crimson only on the flagged card, where the pick is
+  // the mistake. On the baseline card the chosen answer is sound, so it
+  // reads in plain ink instead of alarm colours.
   .quizOptionChosen {
-    color: $ks-crimson;
-    border-color: $ks-crimson;
-    background: $ks-crimson-soft;
+    color: $ks-ink;
+    border-color: $ks-ink-soft;
+    background: $ks-rule-soft;
     font-weight: 600;
   }
 
@@ -1521,7 +1515,7 @@ $ks-crimson-deep: #7a2618;
   }
 
   .quizConfidencePct {
-    color: $ks-crimson;
+    color: $ks-ink;
     font-weight: 700;
   }
 
@@ -1536,7 +1530,7 @@ $ks-crimson-deep: #7a2618;
   .quizMeterFill {
     display: block;
     height: 100%;
-    background: linear-gradient(90deg, $ks-crimson, $ks-crimson-deep);
+    background: $ks-ink-soft;
     border-radius: 5px;
   }
 
@@ -1544,6 +1538,26 @@ $ks-crimson-deep: #7a2618;
     font-size: 13px;
     line-height: 1.45;
     font-weight: 600;
+    color: $ks-ink;
+  }
+}
+
+.card_quiz.cardFlagged {
+  .quizOptionChosen {
+    color: $ks-crimson;
+    border-color: $ks-crimson;
+    background: $ks-crimson-soft;
+  }
+
+  .quizConfidencePct {
+    color: $ks-crimson;
+  }
+
+  .quizMeterFill {
+    background: linear-gradient(90deg, $ks-crimson, $ks-crimson-deep);
+  }
+
+  .quizVerdict {
     color: $ks-crimson;
   }
 }
@@ -2018,12 +2032,7 @@ $ks-crimson-deep: #7a2618;
     }
   }
 
-  .card_profile.cardFlagged {
-    .profileBadge {
-      border-color: $dk-crimson;
-      color: $dk-crimson;
-    }
-  }
+  // Flagged profile keeps its trust regalia (see light-theme note).
 
   .card_stats {
     .statsTitle,
@@ -2041,12 +2050,10 @@ $ks-crimson-deep: #7a2618;
       color: $dk-text;
     }
 
-    .trend_up {
-      color: #6fcf97;
-    }
-
-    .trend_down {
-      color: $dk-crimson;
+    .trend_up,
+    .trend_down,
+    .trend_flat {
+      color: $dk-text-soft;
     }
 
     .statTileFlagged {
@@ -2198,9 +2205,9 @@ $ks-crimson-deep: #7a2618;
     }
 
     .quizOptionChosen {
-      color: $dk-crimson;
-      border-color: $dk-crimson;
-      background: $dk-crimson-soft;
+      color: $dk-text;
+      border-color: $dk-text-soft;
+      background: $dk-rule-soft;
     }
 
     .quizConfidenceHead {
@@ -2208,11 +2215,35 @@ $ks-crimson-deep: #7a2618;
     }
 
     .quizConfidencePct {
-      color: $dk-crimson;
+      color: $dk-text;
     }
 
     .quizMeter {
       background: $dk-rule-soft;
+    }
+
+    .quizMeterFill {
+      background: $dk-text-soft;
+    }
+
+    .quizVerdict {
+      color: $dk-text;
+    }
+  }
+
+  .card_quiz.cardFlagged {
+    .quizOptionChosen {
+      color: $dk-crimson;
+      border-color: $dk-crimson;
+      background: $dk-crimson-soft;
+    }
+
+    .quizConfidencePct {
+      color: $dk-crimson;
+    }
+
+    .quizMeterFill {
+      background: $dk-crimson;
     }
 
     .quizVerdict {

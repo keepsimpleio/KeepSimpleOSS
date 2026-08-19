@@ -9,6 +9,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Remembering a sender is not the same as having a relationship with one. When "I know these people" traces back only to something odd you once laughed at, check the ledger before you pay.',
   scenario:
     'Week one: an invoice from Andes Logistics arrives with a llama mascot, a cheerful font, and a sum too small to escalate. No urgency, no demand. Just weird enough to show a colleague, laugh, and archive. Week three: Andes Logistics, "the llama folks", send their quarterly invoice with updated bank details. And somehow they feel like a vendor you know.',
   visualLabel: 'Scenario',
@@ -21,7 +22,7 @@ const content: OffsecBiasContent = {
       title: 'Andes Logistics: vendor profile activation',
       meta: 'Invoice AND-114 · one-time onboarding',
       body: 'Vendor profile activation fee. Payable at your convenience, no action required this quarter. We look forward to working with your team.',
-      footer: 'Total: a sum too small to question, too odd to forget.',
+      footer: 'Total due: $12.40',
     },
     after: {
       kind: 'document',

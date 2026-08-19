@@ -8,6 +8,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A laugh buys the same drop in scrutiny that panic does, and it also gets you to forward the link yourself. Inspect a URL the same cold way whichever feeling delivered it.',
   scenario:
     'A half-remembered conference contact DMs you a tool link. You side-eye it and move on. The same contact sends a genuinely funny industry meme first, and the same link right after. You have already forwarded the meme to two teammates before it occurs to you to wonder where the link goes.',
   visualLabel: 'Scenario',
@@ -33,7 +34,7 @@ const content: OffsecBiasContent = {
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'Humor does two jobs at once, and both serve the attacker. First, it disarms: amusement and scrutiny compete for the same attention, and a brain mid-laugh audits nothing. The link arrives inside the goodwill the meme just bought. Second, it spreads: funny content is the only payload people forward voluntarily, fast, to the exact colleagues who trust them. The suspicious version of this message dies in one chat. The funny version tours the whole team carrying your endorsement. Note that nothing about the destination changed. Only the feeling you had while not looking at it.',
+    'Humor does two jobs at once, and both serve the attacker. First, it disarms: amusement and scrutiny compete for the same attention, and a brain mid-laugh audits nothing. The link arrives inside the goodwill the meme just bought. Second, it spreads: funny content is the only payload people forward voluntarily, fast, to the exact colleagues who trust them. The suspicious version of this message dies in one chat. The funny version tours the whole team carrying your endorsement. The destination did not get any safer between the two messages. Only the feeling you had while not looking at it changed.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'While your security team handles the perimeter, here is your homework.',

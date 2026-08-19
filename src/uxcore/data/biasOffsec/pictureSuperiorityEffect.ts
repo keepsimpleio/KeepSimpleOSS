@@ -9,6 +9,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A QR code is a link with the URL torn off, and a wall authenticates nobody. Anything printed that asks you to scan deserves the same scrutiny you would give those words in a message.',
   scenario:
     'As a message with a link, "new canteen menu, click here" gets side-eyed and reported. As a clean printed poster by the coffee machine, logo in the corner, QR code in the middle, it gets scanned all morning. Nobody has ever been trained to distrust paper.',
   visualLabel: 'Scenario',

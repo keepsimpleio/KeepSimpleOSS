@@ -8,6 +8,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A city, a timestamp and your browser name cost the attacker nothing, so vivid detail proves nothing. What you know about alerts like this one applies hardest at the moment one feels like the exception.',
   scenario:
     'The handbook says it plainly: nearly every "unusual sign-in, verify now" alert that reaches you is fake. Then one arrives with a city, a timestamp, and your browser’s name, and the statistic quietly steps aside for the story. Details feel like evidence. They are not.',
   visualLabel: 'Scenario',

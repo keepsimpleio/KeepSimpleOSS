@@ -5,6 +5,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Strip the adjectives and name the raw action out loud: "I am installing software from a pop-up". Judge that sentence, because the wording around it is free and changes nothing about what the file does.',
   scenario:
     'A prompt wants you to install a "critical security update", which is really a piece of attacker software. Framed one way it sounds like a chore that will interrupt your day, and you defer it. Framed the other way it sounds like one tap that protects everything, and you do it. The download is identical. Only the sentence around it changed.',
   visualLabel: 'Scenario',

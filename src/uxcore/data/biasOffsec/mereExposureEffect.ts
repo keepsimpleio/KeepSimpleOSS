@@ -10,6 +10,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Weeks of pleasant, costless contact can be the runway for one expensive ask. If the request would fail coming from a stranger, familiarity is the only thing carrying it.',
   scenario:
     'Dana, someone you have been chatting with for weeks, finally asks for a small favour. Nothing about the ask changed, but your read on it did, because by now the name feels like a colleague, not a stranger. That warmth is the whole operation.',
   visualLabel: 'Scenario',

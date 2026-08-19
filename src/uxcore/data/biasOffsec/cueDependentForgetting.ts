@@ -10,6 +10,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Your caution is wired to cues you can see, so the same message on a phone meets an untrained version of you. If the screen hides the sender address, your training is not in the room.',
   scenario:
     'Your training worked: on the desktop you spot the fake address instantly. The same email opened on your phone shows only "IT Support", and the knowledge that saved you an hour ago simply does not wake up. It was not forgotten. It lost its trigger.',
   visualLabel: 'Scenario',

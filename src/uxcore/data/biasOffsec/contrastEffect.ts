@@ -5,6 +5,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'When someone frightens you and then offers the relief, both came from the same mouth. Judge the offer as if the threat had never been mentioned.',
   scenario:
     'Someone claiming to be from IT, "ServiceDesk", messages you to install a remote-support tool so they can get into your machine. Cold, you would say no. But if they open by telling you your laptop is flagged for a full wipe and reimage today, and then offer the tool as the gentler alternative, "just the quick agent instead", the agent suddenly sounds like the reasonable choice. Same tool, same access.',
   visualLabel: 'Scenario',

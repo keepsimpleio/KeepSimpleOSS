@@ -1,54 +1,50 @@
-// Surface is a vendor risk review: the same integration, scored once as a
-// single combined line versus scored as several separate line items. The
-// lever is the subadditivity effect: a whole judged as less than the sum of
-// its parts. Split one "Critical" risk into four rows each rated "Low" and the
-// reviewer adds them up as "all low, fine" and approves. The underlying risk
-// never moved. Only the granularity changed.
+// Surface is a vendor risk review, rendered as a checklist: the same
+// integration scored once as a single combined line versus scored as four
+// separate line items. The lever is the subadditivity effect: judgments made
+// piece by piece never re-add to the rating the whole deserves. One Critical
+// row becomes four Low rows with green ticks, and the compounding access
+// disappears from view. The underlying risk never moved.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   tell: 'One "Critical" line gets escalated. The same risk chopped into four "Low" lines gets waved through. Watch for a rating that drops the moment someone splits it.',
   scenario:
-    'You are signing off a new analytics vendor before it goes live. Assessed as one combined line, the integration reads "Critical" and lands on the security team\'s desk for a hard block. Assessed as four separate line items, each rated "Low", the same integration reads like a routine approval. Nothing about what the vendor can actually do has changed. You scan four green-ish rows, add them up in your head, and click approve.',
+    'You are signing off a new analytics vendor before it goes live. Assessed as one combined line, the integration reads "Critical" and lands on the security team\'s desk for a hard block. Assessed as four separate line items, each rated "Low", the same integration reads like a routine approval. Nothing about what the vendor can actually do has changed. You scan four green rows, none of them worth stopping for, and click approve.',
   visualLabel: 'Scenario',
   visual: {
     before: {
-      kind: 'diff',
+      kind: 'checklist',
       tag: 'The risk scored as one line',
-      label: 'Vendor risk review: Northwind Analytics',
-      rows: [
+      title: 'Vendor risk review: Northwind Analytics',
+      items: [
         {
-          field: 'Overall integration risk',
-          value: 'Critical',
-        },
-        {
-          field: 'Decision',
-          value: 'Escalate to security, block until reviewed',
+          label:
+            'Combined integration risk (data access, onward sharing, key storage, retention): Critical',
+          state: 'warn',
         },
       ],
-      note: 'One combined rating, and it reads Critical.',
+      footer: 'Decision: escalate to security, block until reviewed.',
     },
     after: {
-      kind: 'diff',
+      kind: 'checklist',
       tag: 'The identical risk scored line by line',
-      label: 'Vendor risk review: Northwind Analytics',
+      title: 'Vendor risk review: Northwind Analytics',
       priorContext:
         'Same vendor, same access, same integration as the combined review. The only change is that the single risk line was broken into its parts before it reached you.',
-      rows: [
-        { field: 'Customer data access', value: 'Low' },
-        { field: 'Third-party data sharing', value: 'Low' },
-        { field: 'API key storage', value: 'Low' },
-        { field: 'Data retention after offboarding', value: 'Low' },
-        { field: 'Decision', value: 'All items Low, approve' },
+      items: [
+        { label: 'Customer data access: Low', state: 'ok' },
+        { label: 'Third-party data sharing: Low', state: 'ok' },
+        { label: 'API key storage: Low', state: 'ok' },
+        { label: 'Data retention after offboarding: Low', state: 'ok' },
       ],
-      note: 'The same risk split into four separate line items, each rated Low. The whole that was Critical now shows as a row of green.',
+      footer: 'Decision: all items Low, approved for go-live.',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is the subadditivity effect. We judge a whole as less than the sum of its parts, so a risk broken into pieces is rated lower than the same risk stated once. Each line item here is real, and each one alone is genuinely minor. Read together they are the same Critical exposure the combined review flagged, because a vendor that touches customer data, shares it onward, holds your keys, and keeps data after offboarding is exactly the compounding access that earns the top rating. Split across four rows, that compounding disappears from view. You are no longer weighing one serious decision, you are ticking four small ones, and four small yeses feel safer than one big maybe. The attacker, or just the eager vendor, does not need to lower the risk. They need to slice it thin enough that no single row ever looks worth stopping for.',
+    'This is the subadditivity effect: judgments do not add up the way arithmetic does. Rated piece by piece, the parts never re-combine into the rating the whole deserves, so the same exposure lands lower when it arrives pre-sliced. Each line item here is real, and each one alone is genuinely minor. Read together they are the Critical the combined review flagged, because a vendor that touches customer data, shares it onward, holds your keys, and keeps data after offboarding is exactly the compounding access that earns the top rating. Split across four rows, that compounding disappears from view. You are no longer weighing one serious decision, you are ticking four small ones, and four small yeses feel safer than one big maybe. The eager vendor, or the attacker behind it, does not need to lower the risk. They need to slice it thin enough that no single row ever looks worth stopping for.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your process sets how vendors get scored. Reassembling the pieces before you sign is your part.',
