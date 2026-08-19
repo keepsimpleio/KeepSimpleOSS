@@ -14,7 +14,7 @@ import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
   scenario:
-    'A major company just got breached and the news is everywhere. Two phishing pages ask you for the exact same thing: your work login. The only difference between them is that one name-drops the breach you just read about.',
+    'A bank called NorthBank just got breached and the news is everywhere. You work somewhere else entirely, but two phishing pages still ask you for the exact same thing: your work login. The only difference between them is that one name-drops the NorthBank breach you just read about.',
   visualLabel: 'Scenario',
   visual: {
     before: {
