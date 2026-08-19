@@ -116,6 +116,16 @@ export type OffsecBiasCard =
   | OffsecBiasTimelineCard;
 
 export interface OffsecBiasContent {
+  // Optional identity chip shown above the scenario. Names the real-world
+  // attack technique this bias powers, plus a one-line "tell". Purely
+  // additive: cases without it render exactly as before. It gives each
+  // page a distinct fingerprint so a long library of cases doesn't read
+  // as one template stamped over and over, and it teaches the named
+  // attack alongside the bias.
+  technique?: {
+    label: string;
+    tell: string;
+  };
   scenario: string;
   visualLabel: string;
   visual: {

@@ -75,6 +75,45 @@ $ks-crimson-deep: #7a2618;
     line-height: 150%;
     color: $ks-ink-soft;
   }
+
+  // Per-case identity chip: attack-technique name + one-line tell. Gives
+  // each bias page a distinct fingerprint above the shared layout.
+  .technique {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 10px;
+    margin-bottom: 2px;
+  }
+
+  .techniqueLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $ks-crimson-deep;
+    background: $ks-crimson-soft;
+    border: 1px solid rgba(200, 65, 42, 0.28);
+    border-radius: 4px;
+    padding: 3px 8px;
+  }
+
+  .techniqueTell {
+    font-size: 13px;
+    line-height: 150%;
+    color: $ks-ink-soft;
+  }
+
+  .techniqueTellKey {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $ks-crimson;
+    margin-right: 6px;
+  }
 }
 
 .cards {
@@ -877,6 +916,18 @@ $ks-crimson-deep: #7a2618;
     color: $dk-crimson !important;
   }
 
+  // Same stacked-class + !important trick as the eyebrow, so the modal's
+  // dark-theme span neutralizer can't grey out the technique chip text.
+  .root span.techniqueLabel.techniqueLabel.techniqueLabel {
+    color: #f2cabc !important;
+    background: $dk-crimson-soft;
+    border-color: $dk-crimson-glow;
+  }
+
+  .root span.techniqueTellKey.techniqueTellKey.techniqueTellKey {
+    color: $dk-crimson !important;
+  }
+
   .visualBlock {
     background: $dk-card-soft;
     border-color: $dk-rule;
@@ -887,6 +938,10 @@ $ks-crimson-deep: #7a2618;
     }
 
     .scenario {
+      color: $dk-text-soft;
+    }
+
+    .techniqueTell {
       color: $dk-text-soft;
     }
   }

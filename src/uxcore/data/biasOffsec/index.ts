@@ -20,7 +20,10 @@ import moneyIllusion from './moneyIllusion';
 import moodCongruentMemoryBias from './moodCongruentMemoryBias';
 import negativityBias from './negativityBias';
 import omissionBias from './omissionBias';
+import ostrichEffect from './ostrichEffect';
 import pictureSuperiorityEffect from './pictureSuperiorityEffect';
+import postPurchaseRationalization from './postPurchaseRationalization';
+import selectivePerception from './selectivePerception';
 import selfReferenceEffect from './selfReferenceEffect';
 import type { OffsecBiasCard, OffsecBiasContent } from './types';
 import vonRestorffEffect from './vonRestorffEffect';
@@ -52,6 +55,9 @@ const offsecBySlug: Record<string, OffsecBiasContent> = {
   'money-illusion': moneyIllusion,
   'weber-fechner-law': weberFechnerLaw,
   'confirmation-bias': confirmationBias,
+  'post-purchase-rationalization': postPurchaseRationalization,
+  'selective-perception': selectivePerception,
+  'ostrich-effect': ostrichEffect,
 };
 
 export const getOffsecBiasContent = (
