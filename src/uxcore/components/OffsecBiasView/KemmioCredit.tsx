@@ -149,10 +149,6 @@ const KemmioCredit = () => {
                   .
                 </li>
                 <li>
-                  Leads the only company in the Web3 space with zero post-audit
-                  hacks across 300+ engagements.
-                </li>
-                <li>
                   Author of{' '}
                   <a
                     href="https://hexens.io/solutions/glider-monitor"
