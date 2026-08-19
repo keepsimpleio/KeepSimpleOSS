@@ -54,8 +54,10 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      # write, not read: Claude replies by posting comments, so the run's own
+      # GITHUB_TOKEN needs to be able to write them.
+      pull-requests: write
+      issues: write
       actions: read # Required for Claude to read CI results on PRs
     steps:
       - name: Checkout repository
@@ -68,6 +70,11 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # Use the run's own token, matching claude-code-review.yml. Without
+          # this the action falls back to minting one over OIDC, which needs
+          # `id-token: write` and the Claude GitHub App installed on the org.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
