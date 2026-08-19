@@ -16,7 +16,7 @@ const content: OffsecBiasContent = {
       senderName: 'RecoverySupport',
       senderHandle: 'forum DM',
       timestamp: '5:03 PM',
-      body: 'We offer fund recovery services for lost or stolen crypto. Success rates vary. Contact us to begin. (Flat and unconvincing, you scroll past.)',
+      body: 'We offer fund recovery services for lost or stolen crypto. Success rates vary. Contact us to begin.',
     },
     after: {
       kind: 'chat',

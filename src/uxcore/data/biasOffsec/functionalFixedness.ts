@@ -16,7 +16,7 @@ const content: OffsecBiasContent = {
       senderName: 'unknown',
       senderHandle: 'DM from a stranger',
       timestamp: '10:30 AM',
-      body: 'Join the payroll review here: payroll-review-portal.com/join. (A cold link from a stranger. You recognize the shape and report it.)',
+      body: 'Join the payroll review here: payroll-review-portal.com/join',
     },
     after: {
       kind: 'notification',
@@ -26,7 +26,7 @@ const content: OffsecBiasContent = {
       priorContext:
         'It auto-appeared on your calendar as a real-looking event. You think of Calendar as scheduling, not as something that can deliver a payload.',
       title: 'Payroll review, 11:00 AM',
-      body: 'Reminder: your meeting starts soon. Join here: payroll-review-portal.com/join. It reads as a normal appointment, so the link goes unquestioned.',
+      body: 'Reminder: your meeting starts soon. Join here: payroll-review-portal.com/join',
       flagged: true,
     },
   },

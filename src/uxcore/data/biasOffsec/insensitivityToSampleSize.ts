@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       path: '/vaultguard',
       pageHeading: 'VaultGuard',
       pageBody:
-        'Rated 4.2 out of 5 across 18,000 reviews. Mixed feedback, some complaints, a long history. Ordinary, and hard to fake at that scale.',
+        'Rated 4.2 out of 5 across 18,000 reviews since 2019. "Does the job." "Support was slow but they fixed my issue." "Solid, not perfect."',
     },
     after: {
       kind: 'browser',
@@ -26,7 +26,7 @@ const content: OffsecBiasContent = {
       path: '/vaultguard-pro',
       pageHeading: 'VaultGuard Pro',
       pageBody:
-        '★★★★★ 100% recommend. "Flawless. Life-changing. Instant trust." Every one of its 7 reviews is five stars, all posted in the last few days. Install now, trusted by everyone who has tried it.',
+        '★★★★★ 5.0 · 7 reviews, all five stars, all posted this week. "Flawless." "Life-changing." "Instant trust." 100% recommend. Install now, trusted by everyone who has tried it.',
       cta: 'Install VaultGuard Pro',
       flagged: true,
     },

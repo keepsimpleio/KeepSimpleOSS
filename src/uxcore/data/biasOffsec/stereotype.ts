@@ -15,7 +15,7 @@ const content: OffsecBiasContent = {
       tag: 'Plain, so you question it',
       docLabel: 'Message',
       title: 'You owe a payment',
-      body: 'You have an outstanding amount. Pay soon to avoid problems. With no official trappings, the bare demand reads as suspicious and you pause.',
+      body: 'You have an outstanding amount. Pay soon to avoid problems. Use the payment link below.',
     },
     after: {
       kind: 'document',

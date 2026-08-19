@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       timestamp: '5:40 PM',
       subject: 'quick favour',
       preview:
-        'Hey, can you grab some gift cards and send me the codes? From someone at your level, the strangeness lands and you refuse.',
+        'Hey, can you grab some gift cards and send me the codes? Keep it between us, I will explain later.',
     },
     after: {
       kind: 'email',
@@ -26,7 +26,7 @@ const content: OffsecBiasContent = {
       timestamp: '5:40 PM',
       subject: 'Discreet task, handle now',
       preview:
-        'I need you to purchase gift cards for a client and send me the codes. Keep this between us, I am in meetings. The rank makes you want to comply before you think.',
+        'I need you to purchase gift cards for a client and send me the codes. Keep this between us, I am in meetings.',
       flagged: true,
     },
   },

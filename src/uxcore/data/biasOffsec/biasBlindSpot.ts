@@ -15,9 +15,11 @@ const content: OffsecBiasContent = {
       tag: 'Aimed at someone else',
       sender: 'it-helpdesk@corp-account-security.com',
       timestamp: '2:40 PM',
-      subject: 'Your mailbox will be deactivated, reverify now',
+      priorContext:
+        'A colleague forwarded it to you with one line: "is this legit?"',
+      subject: 'FW: Your mailbox will be deactivated, reverify now',
       preview:
-        'Forwarded to you: "is this legit?" You look once. Wrong domain, canned threat, link mismatch. You reply: obviously fake, do not click.',
+        'Action needed: reverify your account within 24 hours to avoid deactivation. Sign in through the secure link below to keep your mailbox active.',
     },
     after: {
       kind: 'email',
@@ -28,7 +30,7 @@ const content: OffsecBiasContent = {
         'Same email, now in your own inbox, on a day you are sure you have seen every trick. You are the expert here, so you skim.',
       subject: 'Your mailbox will be deactivated, reverify now',
       preview:
-        'Action needed: reverify your account to avoid deactivation. The details you would have caught in a colleague’s copy, you glide past in your own.',
+        'Action needed: reverify your account within 24 hours to avoid deactivation. Sign in through the secure link below to keep your mailbox active.',
       flagged: true,
     },
   },

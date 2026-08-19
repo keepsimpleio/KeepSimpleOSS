@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       timestamp: '1:10 PM',
       subject: 'You have been selected for a reward',
       preview:
-        'You have won a reward. Claim it now by confirming your details. With no reason given, "why me?" fires and you distrust it.',
+        'You have won a reward. Claim it now by confirming your details.',
     },
     after: {
       kind: 'email',

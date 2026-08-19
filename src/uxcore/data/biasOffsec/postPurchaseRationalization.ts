@@ -1,14 +1,15 @@
-// Surface is a confirmation email that lands right after money moves. The
-// lever is post-decision reassurance: the same receipt goes from a bare
-// line to a warm chorus of praise, and the praise is there to stop you
-// second-guessing a payment that already left.
+// Surface is the fake "payment confirmation" an invoice-fraud crew sends
+// right after the victim pays. The lever is post-decision reassurance: the
+// wire went to swapped bank details and is still recallable for a short
+// window, so the attacker floods that window with praise to stop the
+// second-guessing that would trigger a re-check and a recall.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'A vendor gushing about how smart your payment was, seconds after the money leaves, is buying your silence, not thanking you.',
+  tell: 'A payment confirmation that praises your decision is closing the window in which the wire can still be recalled. Real receipts do not flatter.',
   scenario:
-    'You just paid an invoice to Brightwater Supplies. Moments later a confirmation lands. One version is a flat receipt. The other congratulates you, calls it the smart move, and hands you perks and next steps. Same payment, already gone. Only one of them makes you feel too good about it to go back and check.',
+    'An attacker hijacked your supplier’s email thread and sent you their usual invoice with one change: the bank account. You paid it. Moments later the attacker’s "confirmation" lands. The flat version leaves your doubt alive, you re-check the details with the supplier and the bank recalls the wire in time. The flattering version congratulates you, hands you perks and next steps, and keeps you feeling too good about the payment to re-check it until the recall window is gone.',
   visualLabel: 'Scenario',
   visual: {
     before: {
@@ -18,7 +19,7 @@ const content: OffsecBiasContent = {
       timestamp: '4:47 PM',
       subject: 'Payment received',
       preview:
-        'We have received your payment. Reference 4821. This confirms the transaction. Thank you.',
+        'We have received your payment of $18,400. Reference 4821. This confirms the transaction. Thank you.',
     },
     after: {
       kind: 'email',
@@ -27,13 +28,13 @@ const content: OffsecBiasContent = {
       timestamp: '4:47 PM',
       subject: 'Great call! Your payment is confirmed 🎉',
       preview:
-        'Smart move, you are all set. You have joined hundreds of teams who trust Brightwater. Here is your VIP receipt, a priority support line, and a head-start guide. You made the right decision today.',
+        'Smart move, you are all set. Your $18,400 payment is confirmed, reference 4821. You have joined hundreds of teams who trust Brightwater. Here is your VIP receipt, a priority support line, and a head-start guide. You made the right decision today.',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is post-purchase rationalization. The moment right after a decision is when doubt is loudest, and the mind reaches for anything that says the choice was right. An attacker who has already taken the money does not want you revisiting it, so they flood that exact window with praise, social proof, and exclusive perks. Each one hands you a reason to feel good instead of a reason to check. The plain receipt leaves room for the uneasy second thought that gets fraud reported in time. The flattering one closes that window while the transfer is still reversible.',
+    'This is post-purchase rationalization, weaponized for invoice fraud. The moment right after a payment is when doubt is loudest, and the mind reaches for anything that says the choice was right. An attacker who has just been paid into swapped bank details does not want you revisiting the transfer, so they flood that exact window with praise, social proof, and exclusive perks. Each one hands you a reason to feel good instead of a reason to check. The plain receipt leaves room for the uneasy second thought that gets a fraudulent wire recalled in time. The flattering one closes that window while the transfer is still reversible.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your team can claw back a fast report. Noticing the flattery is what buys them the time.',

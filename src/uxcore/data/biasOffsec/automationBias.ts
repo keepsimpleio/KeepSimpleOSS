@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       path: '/download',
       pageHeading: 'Download ready',
       pageBody:
-        'The uploader says this file is safe to run. A person’s word alone leaves you uneasy, and you think twice.',
+        'The uploader says this file is safe to run. Click below to download and run it.',
     },
     after: {
       kind: 'browser',

@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       timestamp: 'Mon, 9:00 AM',
       subject: 'Invoice for payment',
       preview:
-        'Please find this month’s invoice attached. With no streak behind it, you check the amount, the account, and the sender before paying.',
+        'Please find this month’s invoice attached. Payment is due within 14 days to the account listed on the invoice.',
     },
     after: {
       kind: 'email',
@@ -28,7 +28,7 @@ const content: OffsecBiasContent = {
         'The last five Larkhill invoices were all genuine and paid without issue. This one feels like number six in a safe streak.',
       subject: 'Invoice for payment',
       preview:
-        'This month’s invoice, same as ever. The account number is different this time, but riding the run of five clean ones, nobody looks that far down.',
+        'Please find this month’s invoice attached. Note: our banking details have changed, please use the updated account on this invoice for payment.',
       flagged: true,
     },
   },

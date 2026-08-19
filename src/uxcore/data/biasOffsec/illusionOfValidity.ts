@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       callerLabel: 'Unknown number',
       timestamp: 'now',
       transcript:
-        'Um, hello, this is, uh, the bank. There is a problem with, your account. I need you to, confirm some things. What is your card number? (Vague and clumsy. You hang up.)',
+        'Um, hello, this is, uh, the bank. There is a problem with, your account. I need you to, confirm some things. What is your card number?',
     },
     after: {
       kind: 'call',

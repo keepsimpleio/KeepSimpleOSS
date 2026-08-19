@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       timestamp: '4:05 PM',
       subject: 'Please process this payment',
       preview:
-        'Hi, could you push through the payment below today? Just me asking, out of the blue, so you pause and want to verify.',
+        'Hi, could you push through the payment below today? Details attached, it needs to go out before end of day.',
     },
     after: {
       kind: 'email',
@@ -26,7 +26,7 @@ const content: OffsecBiasContent = {
       timestamp: '4:05 PM',
       subject: 'Payment approved by the finance team, please process',
       preview:
-        'On behalf of the whole finance team, and as we all agreed in today’s review, please process the payment below. The invocation of the group makes it feel pre-vetted, so you action it.',
+        'On behalf of the whole finance team, and as we all agreed in today’s review, please process the payment below. Details attached, it needs to go out before end of day.',
       flagged: true,
     },
   },

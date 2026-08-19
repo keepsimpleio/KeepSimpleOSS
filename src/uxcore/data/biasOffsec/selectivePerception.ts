@@ -18,7 +18,7 @@ const content: OffsecBiasContent = {
       timestamp: 'Thu, 3:20 PM',
       subject: 'A document has been shared with you',
       preview:
-        'Someone shared "Weekly Metrics" with you. Sign in to view. On an ordinary Thursday, the unfamiliar sender and the sign-in ask make you pause and squint at the address.',
+        'Someone shared "Weekly Metrics" with you. Sign in to view the document.',
     },
     after: {
       kind: 'email',
@@ -28,8 +28,7 @@ const content: OffsecBiasContent = {
       priorContext:
         'It is Monday morning. The weekly metrics deck always lands about now, from a tool that looks just like this. You are already reaching for it.',
       subject: 'Weekly Metrics is ready to view',
-      preview:
-        'Your weekly deck has been shared. Sign in to open it. You register "the Monday deck", not the address it came from, and click before a single detail registers.',
+      preview: 'Your weekly deck has been shared. Sign in to open it.',
       flagged: true,
     },
   },

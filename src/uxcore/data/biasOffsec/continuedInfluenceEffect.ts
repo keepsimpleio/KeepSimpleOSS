@@ -16,7 +16,7 @@ const content: OffsecBiasContent = {
       senderName: 'unknown',
       senderHandle: '#general · guest account',
       timestamp: 'Mon, 11:02 AM',
-      body: 'fyi payroll portal moved, new link is newpay-portal.co. (You barely register it. When IT says it is fake, it is gone from your head.)',
+      body: 'fyi payroll portal moved, new link is newpay-portal.co',
     },
     after: {
       kind: 'chat',
@@ -26,7 +26,7 @@ const content: OffsecBiasContent = {
       timestamp: 'Mon, 11:02 AM',
       priorContext:
         'It arrived styled as an official IT notice, with a ticket number, and two more people "confirmed" it in replies before the correction landed.',
-      body: 'OFFICIAL: Payroll portal has migrated to newpay-portal.co, effective today (ref IT-4471). Please update your bookmarks. Even after IT retracts it, the address is now what "payroll portal" means to you.',
+      body: 'OFFICIAL: Payroll portal has migrated to newpay-portal.co, effective today (ref IT-4471). Please update your bookmarks before your next sign-in.',
       flagged: true,
     },
   },

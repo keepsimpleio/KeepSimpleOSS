@@ -16,7 +16,7 @@ const content: OffsecBiasContent = {
       senderName: 'Support',
       senderHandle: 'live chat',
       timestamp: '3:22 PM',
-      body: 'Account issue noted. Provide your login and the one-time code to proceed. (No warmth, so you weigh the ask on its merits and refuse.)',
+      body: 'Account issue noted. Provide your login and the one-time code to proceed.',
     },
     after: {
       kind: 'chat',

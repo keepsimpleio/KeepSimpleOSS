@@ -17,17 +17,17 @@ const content: OffsecBiasContent = {
         {
           label: 'Tue',
           source: 'Login',
-          text: 'A sign-in from a nearby city. Probably you on mobile data.',
+          text: 'Sign-in from a nearby city.',
         },
         {
           label: 'Wed',
           source: 'Form',
-          text: 'A password field submitted blank once, then retried. Ordinary fumble.',
+          text: 'A password field submitted blank once, then retried.',
         },
         {
           label: 'Fri',
           source: 'Device',
-          text: 'An unrecognized browser string. New phone, new update, who knows.',
+          text: 'Sign-in from an unrecognized browser.',
         },
       ],
     },
@@ -38,12 +38,12 @@ const content: OffsecBiasContent = {
         {
           label: 'Phase 1',
           source: 'Recon',
-          text: 'Attacker probes your account from a foreign location. (It was your commute.)',
+          text: 'Attacker probes your account from a remote location.',
         },
         {
           label: 'Phase 2',
           source: 'Credential test',
-          text: 'Automated login attempt detected. (It was one blank field.)',
+          text: 'Automated login attempt detected against your password.',
         },
         {
           label: 'Phase 3',

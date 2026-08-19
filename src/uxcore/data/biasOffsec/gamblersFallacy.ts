@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       appName: 'IT Security',
       timestamp: 'now',
       title: 'Reset your credentials',
-      body: 'A password reset is required for your account. In an ordinary period, you stop and verify this properly.',
+      body: 'A password reset is required for your account. Follow the link to set a new password.',
     },
     after: {
       kind: 'notification',
@@ -27,7 +27,7 @@ const content: OffsecBiasContent = {
       priorContext:
         'The company got breached last week. It was all-hands, exhausting, and it is "behind us". Surely another attack is not due so soon.',
       title: 'Reset your credentials',
-      body: 'A password reset is required for your account. Riding the sense that lightning will not strike twice, you comply without the usual checks.',
+      body: 'A password reset is required for your account. Follow the link to set a new password.',
       flagged: true,
     },
   },

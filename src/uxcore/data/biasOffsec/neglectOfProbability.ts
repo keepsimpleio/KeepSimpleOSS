@@ -17,7 +17,7 @@ const content: OffsecBiasContent = {
       timestamp: '9:15 AM',
       subject: 'A small refund is available',
       preview:
-        'You are eligible for a $12 credit. Confirm your details to receive it. The tiny sum leaves your judgment fully switched on, and you shrug it off.',
+        'You are eligible for a $12 credit. Confirm your details to receive it.',
     },
     after: {
       kind: 'email',
@@ -26,7 +26,7 @@ const content: OffsecBiasContent = {
       timestamp: '9:15 AM',
       subject: 'You have won $2,400,000 in the annual draw',
       preview:
-        'Congratulations, your reference was selected for a $2.4 million prize. Confirm your identity and banking details to release the funds. The size of it drowns out the question of whether any of it is plausible.',
+        'Congratulations, your reference was selected for a $2.4 million prize. Confirm your identity and banking details to release the funds.',
       flagged: true,
     },
   },
