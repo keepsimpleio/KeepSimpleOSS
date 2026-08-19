@@ -5,7 +5,13 @@ export const rateRequest = async (
 ) => {
   // Geo enrichment is best-effort: a failed /api/user lookup must not
   // abort the vote itself.
-  let userData: any = {};
+  type TUserGeo = {
+    country?: string;
+    region?: string;
+    city?: string;
+    ip?: string;
+  };
+  let userData: TUserGeo = {};
   try {
     userData = await fetch('/api/user').then(data => data.json());
   } catch {
