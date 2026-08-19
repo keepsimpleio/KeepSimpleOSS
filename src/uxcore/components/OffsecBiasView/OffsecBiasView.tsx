@@ -1,4 +1,5 @@
 import { OffsecBiasCard, OffsecBiasContent } from '@uxcore/data/biasOffsec';
+import cn from 'classnames';
 
 import KemmioCredit from './KemmioCredit';
 
@@ -231,9 +232,9 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
           {card.items.map((item, i) => (
             <div
               key={i}
-              className={`${styles.timelineItem} ${
-                item.flagged ? styles.timelineItemFlagged : ''
-              }`}
+              className={cn(styles.timelineItem, {
+                [styles.timelineItemFlagged]: item.flagged,
+              })}
             >
               <span className={styles.timelineLabel}>
                 {item.flagged && <span className={styles.cardUrgencyDot} />}
@@ -296,7 +297,7 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
         <div className={styles.cards}>
           <div className={styles.cardWrap}>
             <span className={styles.cardCaption}>{before.tag}</span>
-            <div className={`${styles.card} ${styles[`card_${before.kind}`]}`}>
+            <div className={cn(styles.card, styles[`card_${before.kind}`])}>
               <CardBody card={before} />
             </div>
           </div>
@@ -306,13 +307,15 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
           </div>
 
           <div className={styles.cardWrap}>
-            <span
-              className={`${styles.cardCaption} ${styles.cardCaptionFlagged}`}
-            >
+            <span className={cn(styles.cardCaption, styles.cardCaptionFlagged)}>
               {after.tag}
             </span>
             <div
-              className={`${styles.card} ${styles[`card_${after.kind}`]} ${styles.cardFlagged}`}
+              className={cn(
+                styles.card,
+                styles[`card_${after.kind}`],
+                styles.cardFlagged,
+              )}
             >
               <CardBody card={after} />
             </div>
