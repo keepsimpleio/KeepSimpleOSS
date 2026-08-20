@@ -40,10 +40,10 @@ const content: OffsecBiasContent = {
       priorContext:
         'Same tool, same access scope as the request you scrutinised. Only the badges around it are new.',
       items: [
-        { label: 'Internal tool', state: 'ok', flagged: true },
-        { label: 'IT-managed', state: 'ok', flagged: true },
-        { label: '@yourco.com verified', state: 'ok', flagged: true },
-        { label: 'Used by your team', state: 'ok', flagged: true },
+        { label: 'Internal tool', state: 'ok' },
+        { label: 'IT-managed', state: 'ok' },
+        { label: '@yourco.com verified', state: 'ok' },
+        { label: 'Used by your team', state: 'ok' },
         {
           label: 'Requests: read your mail, files and contacts',
           state: 'warn',

@@ -35,7 +35,7 @@ const content: OffsecBiasContent = {
       tag: 'Effort framed as almost done',
       title: 'Quick verification (about 2 minutes)',
       priorContext:
-        'Same seven steps. This time each is revealed only as you finish the last, and the bar starts near the end so it always feels almost over.',
+        'The same process, sold as two minutes. Each step is revealed only as you finish the last, so the seven never appear at once, and the bar starts near the end so it always feels almost over.',
       steps: [
         { label: 'Confirm your email', state: 'done' },
         { label: 'Re-enter your password', state: 'done' },

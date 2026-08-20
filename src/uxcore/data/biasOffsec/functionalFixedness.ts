@@ -13,8 +13,8 @@ const content: OffsecBiasContent = {
     before: {
       kind: 'chat',
       tag: 'Through an obvious channel',
-      senderName: 'unknown',
-      senderHandle: 'DM from a stranger',
+      senderName: 'M. Solano',
+      senderHandle: '@m.solano · not in your contacts',
       timestamp: '10:30 AM',
       body: 'Join the payroll review here: payroll-review-portal.com/join',
     },

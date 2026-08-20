@@ -18,6 +18,7 @@ const content: OffsecBiasContent = {
       pageHeading: 'Scan complete',
       pageBody:
         'General recommendation: keep your software updated and use strong passwords. No account-specific findings to display.',
+      cta: 'Apply my fixes',
     },
     after: {
       kind: 'browser',
