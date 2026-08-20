@@ -308,7 +308,10 @@ const UXCoreModal: FC<UXCoreModalProps> = ({
             >
               {isOffsecView && isOffsecEnabled ? (
                 (() => {
-                  const offsecContent = getOffsecBiasContent(biasNumber);
+                  const offsecContent = getOffsecBiasContent(
+                    biasNumber,
+                    locale,
+                  );
                   return offsecContent ? (
                     <OffsecBiasView content={offsecContent} />
                   ) : (

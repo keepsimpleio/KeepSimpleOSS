@@ -1,4 +1,7 @@
-import { biases } from '../biasList/biases';
+// Russian OffSec case content. Mirrors the English map in ../index.ts
+// slug for slug. Any slug missing here falls back to English at lookup time.
+
+import type { OffsecBiasContent } from '../types';
 import anchoringEffect from './anchoringEffect';
 import anecdotalEvidence from './anecdotalEvidence';
 import attentionalBias from './attentionalBias';
@@ -34,7 +37,6 @@ import hardEasyEffect from './hardEasyEffect';
 import hindsightBias from './hindsightBias';
 import hotHandFallacy from './hotHandFallacy';
 import humorEffect from './humorEffect';
-import offsecHy from './hy';
 import illusionOfAsymmetricInsight from './illusionOfAsymmetricInsight';
 import illusionOfTransparency from './illusionOfTransparency';
 import illusionOfValidity from './illusionOfValidity';
@@ -64,7 +66,6 @@ import positivityEffect from './positivityEffect';
 import postPurchaseRationalization from './postPurchaseRationalization';
 import proInnovationBias from './proInnovationBias';
 import recencyIllusion from './recencyIllusion';
-import offsecRu from './ru';
 import selectivePerception from './selectivePerception';
 import selfReferenceEffect from './selfReferenceEffect';
 import socialDesirabilityBias from './socialDesirabilityBias';
@@ -74,11 +75,10 @@ import subadditivityEffect from './subadditivityEffect';
 import subjectiveValidation from './subjectiveValidation';
 import survivalBias from './survivalBias';
 import thirdPersonEffect from './thirdPersonEffect';
-import type { OffsecBiasCard, OffsecBiasContent } from './types';
 import vonRestorffEffect from './vonRestorffEffect';
 import weberFechnerLaw from './weberFechnerLaw';
 
-const offsecBySlug: Record<string, OffsecBiasContent> = {
+const offsecRu: Record<string, OffsecBiasContent> = {
   'availability-heuristics': availabilityHeuristics,
   'attentional-bias': attentionalBias,
   'illusory-truth-effect': illusoryTruthEffect,
@@ -156,23 +156,4 @@ const offsecBySlug: Record<string, OffsecBiasContent> = {
   'barnum-effect': barnumEffect,
 };
 
-// Localized case content. Each locale directory mirrors the English map
-// slug for slug; a missing entry falls back to English, which is also how
-// the rest of the UX Core tree treats Armenian.
-const byLocale: Record<string, Record<string, OffsecBiasContent>> = {
-  en: offsecBySlug,
-  ru: offsecRu,
-  hy: offsecHy,
-};
-
-export const getOffsecBiasContent = (
-  biasNumber: number,
-  locale?: string,
-): OffsecBiasContent | null => {
-  const entry = biases.find(b => b.id === biasNumber);
-  if (!entry) return null;
-  const localized = byLocale[locale]?.[entry.slug];
-  return localized ?? offsecBySlug[entry.slug] ?? null;
-};
-
-export type { OffsecBiasCard, OffsecBiasContent };
+export default offsecRu;

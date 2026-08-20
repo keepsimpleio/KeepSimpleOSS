@@ -1,5 +1,7 @@
 import { OffsecBiasCard, OffsecBiasContent } from '@uxcore/data/biasOffsec';
+import { getOffsecChrome } from '@uxcore/data/biasOffsec/chrome';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
 
 import KemmioCredit from './KemmioCredit';
 
@@ -9,7 +11,13 @@ interface OffsecBiasViewProps {
   content: OffsecBiasContent;
 }
 
-const CardBody = ({ card }: { card: OffsecBiasCard }) => {
+const CardBody = ({
+  card,
+  chrome,
+}: {
+  card: OffsecBiasCard;
+  chrome: ReturnType<typeof getOffsecChrome>;
+}) => {
   // Chat renders its own priorContext after the sender header; every
   // other surface shows it as a soft lead-in line at the top.
   const prior =
@@ -36,7 +44,7 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
               <path d="M1.6 2.2 L10 9 L18.4 2.2" />
             </svg>
           </span>
-          <span className={styles.emailFromLabel}>From</span>
+          <span className={styles.emailFromLabel}>{chrome.from}</span>
           <span className={styles.cardSender}>{card.sender}</span>
           {card.timestamp && (
             <span className={styles.cardTimestamp}>{card.timestamp}</span>
@@ -142,7 +150,7 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
             </svg>
           </span>
           <div className={styles.callIdentity}>
-            <span className={styles.callKicker}>Incoming call</span>
+            <span className={styles.callKicker}>{chrome.incomingCall}</span>
             <span className={styles.callName}>{card.callerName}</span>
             {card.callerLabel && (
               <span className={styles.callSub}>{card.callerLabel}</span>
@@ -303,7 +311,7 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
             )}
           </div>
         </div>
-        <div className={styles.permScopeLabel}>Wants access to</div>
+        <div className={styles.permScopeLabel}>{chrome.wantsAccessTo}</div>
         <ul className={styles.permScopes}>
           {card.scopes.map((scope, i) => (
             <li
@@ -552,7 +560,7 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
         {typeof card.confidence === 'number' && (
           <div className={styles.quizConfidence}>
             <div className={styles.quizConfidenceHead}>
-              <span>{card.confidenceLabel || 'Your confidence'}</span>
+              <span>{card.confidenceLabel || chrome.confidenceDefault}</span>
               <span className={styles.quizConfidencePct}>
                 {Math.round(card.confidence)}%
               </span>
@@ -609,6 +617,8 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
 };
 
 const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
+  const { locale } = useRouter();
+  const chrome = getOffsecChrome(locale);
   const { before, after } = content.visual;
 
   return (
@@ -619,7 +629,7 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
       <div className={styles.visualBlock}>
         {content.tell && (
           <div className={styles.tell}>
-            <span className={styles.tellKey}>The tell</span>
+            <span className={styles.tellKey}>{chrome.tellKey}</span>
             <span className={styles.tellText}>{content.tell}</span>
           </div>
         )}
@@ -630,7 +640,7 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
           <div className={styles.cardWrap}>
             <span className={styles.cardCaption}>{before.tag}</span>
             <div className={cn(styles.card, styles[`card_${before.kind}`])}>
-              <CardBody card={before} />
+              <CardBody card={before} chrome={chrome} />
             </div>
           </div>
 
@@ -649,7 +659,7 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
                 styles.cardFlagged,
               )}
             >
-              <CardBody card={after} />
+              <CardBody card={after} chrome={chrome} />
             </div>
           </div>
         </div>
