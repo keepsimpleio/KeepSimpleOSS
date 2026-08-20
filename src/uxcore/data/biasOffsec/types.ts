@@ -22,7 +22,9 @@
 // the bias itself is about what makes the same ask believable.
 
 interface OffsecBiasCardCommon {
-  tag: string;
+  // Caption above the card in the before/after pair. Optional because an
+  // interactive `surface` card stands alone and carries no before/after label.
+  tag?: string;
   flagged?: boolean;
   // Soft context note rendered above the card body: grounds the reader
   // in prior history when the lever needs it (repetition, a live
@@ -254,6 +256,59 @@ export interface OffsecBiasQuizCard extends OffsecBiasCardCommon {
   verdict?: string;
 }
 
+// ===========================================================================
+// Third-wave surfaces (biases 76-105). Three new modes, each answering a
+// weakness the static before/after pair could not carry:
+//
+//  - `playbook`: a page torn from the ATTACKER'S manual. Used as the `before`
+//    card, paired with the victim's ordinary screen as `after`, so the reader
+//    sees the plan and then the plan landing. For biases where the attacker
+//    designs a SEQUENCE or a PERSONA (order, memory, stereotype).
+//  - `live`: a card that animates on its own via CSS (a counter that ticks, a
+//    stack that cascades in). For biases whose lever is TIME or ACCUMULATION,
+//    which a frozen frame cannot show.
+//  - `interactive` (on OffsecBiasContent, see below): the reader actually
+//    CLICKS, and their own choice reveals the outcome. For decision biases
+//    where the click IS the attack.
+// ===========================================================================
+
+// A page from the attacker's own playbook: a titled step list, one step
+// marked `active` as the move being executed. Rendered with a distinct
+// "manual" look so it never reads as one of the victim's own surfaces.
+export interface OffsecBiasPlaybookCard extends OffsecBiasCardCommon {
+  kind: 'playbook';
+  docTitle: string;
+  steps: {
+    label: string;
+    note?: string;
+    active?: boolean;
+  }[];
+  footer?: string;
+}
+
+// A self-animating card. `cascade` streams `items` in one after another
+// (accumulation: the dangerous line drowning in volume). `counter` runs a
+// value while a second reading moves the opposite way (erosion over time:
+// days-since climbing while caution decays). Animation is pure CSS and honors
+// prefers-reduced-motion in the stylesheet.
+export interface OffsecBiasLiveCard extends OffsecBiasCardCommon {
+  kind: 'live';
+  variant: 'cascade' | 'counter';
+  // cascade
+  items?: {
+    title: string;
+    body?: string;
+    flaggedItem?: boolean;
+  }[];
+  // counter
+  counterLabel?: string;
+  counterValue?: string;
+  meterLabel?: string;
+  meterFrom?: number;
+  meterTo?: number;
+  caption?: string;
+}
+
 export type OffsecBiasCard =
   | OffsecBiasEmailCard
   | OffsecBiasNotificationCard
@@ -270,7 +325,30 @@ export type OffsecBiasCard =
   | OffsecBiasChartCard
   | OffsecBiasChecklistCard
   | OffsecBiasProgressCard
-  | OffsecBiasQuizCard;
+  | OffsecBiasQuizCard
+  | OffsecBiasPlaybookCard
+  | OffsecBiasLiveCard;
+
+// Interactive "play the victim" widget. Shown INSTEAD of the before/after
+// pair when present on a case. The reader sees one artifact and real option
+// buttons; clicking an option reveals that choice's outcome inline. The bias
+// is experienced, not just described: the `trap` option is the one the lever
+// pulls you toward, and its `outcome` shows the cost.
+export interface OffsecInteractive {
+  kind: 'choice';
+  // The artifact the decision is made against (reuse any card kind, unflagged).
+  surface: OffsecBiasCard;
+  question: string;
+  options: {
+    label: string;
+    // The bias-driven wrong choice. Exactly one option should set this.
+    trap?: boolean;
+    // Revealed after the reader clicks this option.
+    outcome: string;
+  }[];
+  // Small caption above the revealed outcome (e.g. "What happens next").
+  resolvedLabel?: string;
+}
 
 export interface OffsecBiasContent {
   // Optional one-line "tell": the single cue that gives this attack away.
@@ -280,10 +358,13 @@ export interface OffsecBiasContent {
   tell?: string;
   scenario: string;
   visualLabel: string;
-  visual: {
+  // A case carries EITHER a static before/after `visual` OR an `interactive`
+  // widget. Exactly one is present; the view picks the renderer accordingly.
+  visual?: {
     before: OffsecBiasCard;
     after: OffsecBiasCard;
   };
+  interactive?: OffsecInteractive;
   whyItWorksLabel: string;
   whyItWorks: string;
   defenseLabel: string;

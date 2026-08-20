@@ -1,0 +1,59 @@
+// Mode: live (counter). The meter animates the wrong way on purpose: each
+// correction that arrives pushes the victim's certainty UP, not down. The
+// lever is the backfire effect: challenging a held belief can entrench it, so
+// warnings that the "recovery agent" is a scam make the victim defend them
+// harder. before = the belief before anyone pushes back; after = the same
+// belief after several corrections, stronger each time.
+
+import type { OffsecBiasContent } from './types';
+
+const content: OffsecBiasContent = {
+  tell: 'If every warning makes you more sure you are right, the backfire effect is running, and it feels exactly like conviction from the inside. The people correcting you are not the threat. Your own certainty is.',
+  scenario:
+    'You believe the "fund recovery specialist" who contacted you is genuine and about to return the money you lost. Your bank warns you it is a scam. A colleague warns you. Fraud-alert pages warn you. Each correction, instead of loosening the belief, hardens it: they just do not understand, the specialist warned me people would try to stop this. The more you are pushed, the surer you get, which is exactly backwards, and it is the window the attacker needs to collect the "release fee".',
+  visualLabel: 'Scenario',
+  visual: {
+    before: {
+      kind: 'live',
+      variant: 'counter',
+      tag: 'Before anyone pushes back',
+      counterValue: '0',
+      counterLabel: 'warnings ignored',
+      meterLabel: 'How sure you are it is real',
+      meterFrom: 55,
+      meterTo: 55,
+      caption:
+        'A held belief that the recovery agent is genuine. Untested so far, and open to changing.',
+    },
+    after: {
+      kind: 'live',
+      variant: 'counter',
+      tag: 'After every correction',
+      priorContext:
+        'Your bank, a colleague and a fraud-alert page have all told you it is a scam.',
+      counterValue: '3',
+      counterLabel: 'warnings ignored',
+      meterLabel: 'How sure you are it is real',
+      meterFrom: 55,
+      meterTo: 96,
+      caption:
+        'Each push made the belief stronger, not weaker. The agent "predicted" people would try to stop you, so resistance now reads as proof.',
+      flagged: true,
+    },
+  },
+  whyItWorksLabel: 'Why it works',
+  whyItWorks:
+    'This is the backfire effect. When a belief is tied to how we see ourselves, a direct challenge can feel like an attack, and we answer by defending the belief harder rather than updating it. The attacker sets this trap deliberately: a good scammer tells the victim in advance that "banks and family will try to talk you out of this, because they do not understand", so every later warning arrives pre-labelled as confirmation. The bank\'s alarm, the colleague\'s concern, the fraud page all become evidence that the specialist was right about the doubters. The correction meant to save you raises your certainty instead. That is why victims mid-scam often argue with the very people trying to help, and why the attacker only needs to plant the inoculating line once.',
+  defenseLabel: 'Protect yourself',
+  defense: {
+    lede: 'Your bank and your people can raise the alarm. Letting the alarm land instead of hardening against it is the part only you can do.',
+    moves: [
+      'If someone told you in advance that "others will try to stop this", treat that sentence as the scam inoculating you against rescue. It is the tell, not a warning about the doubters.',
+      'When several independent people reach the same alarm, that convergence is data, not a conspiracy. Rising certainty in the face of it is the bias, not proof.',
+      'A genuine recovery service, refund or windfall never needs an upfront fee and never asks you to keep it from your bank. Those two asks end the question.',
+      'When you notice yourself defending a decision harder each time it is challenged, stop and hand it to one neutral person who has nothing at stake. Argue the other side out loud.',
+    ],
+  },
+};
+
+export default content;

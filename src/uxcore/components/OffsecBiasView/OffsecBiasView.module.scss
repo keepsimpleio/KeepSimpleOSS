@@ -1659,6 +1659,381 @@ $ks-crimson-deep: #7a2618;
   }
 }
 
+// === Playbook surface (attacker's manual) ==================================
+
+.card_playbook {
+  gap: 8px;
+  border: 1px dashed $ks-crimson;
+  background: repeating-linear-gradient(
+    -45deg,
+    #fffaf8,
+    #fffaf8 10px,
+    #fdf1ee 10px,
+    #fdf1ee 20px
+  );
+
+  .playbookHeader {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(200, 65, 42, 0.28);
+  }
+
+  .playbookMark {
+    color: $ks-crimson;
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .playbookTitle {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $ks-crimson-deep;
+  }
+
+  .playbookSteps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    counter-reset: none;
+  }
+
+  .playbookStep {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .playbookStepNum {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    border-radius: 3px;
+    background: rgba(200, 65, 42, 0.14);
+    color: $ks-crimson-deep;
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .playbookStepBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .playbookStepLabel {
+    font-size: 13px;
+    line-height: 1.4;
+    color: $ks-ink;
+  }
+
+  .playbookStepNote {
+    font-size: 12px;
+    line-height: 1.4;
+    color: $ks-ink-soft;
+    font-style: italic;
+  }
+
+  .playbookStepActive {
+    .playbookStepNum {
+      background: $ks-crimson;
+      color: #ffffff;
+    }
+
+    .playbookStepLabel {
+      font-weight: 700;
+      color: $ks-crimson-deep;
+    }
+  }
+
+  .playbookFooter {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(200, 65, 42, 0.28);
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: $ks-crimson-deep;
+  }
+}
+
+// === Live surface (self-animating) =========================================
+
+@keyframes ks-live-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ks-meter-decay {
+  from {
+    width: var(--ks-from, 100%);
+  }
+  to {
+    width: var(--ks-to, 0%);
+  }
+}
+
+.card_live {
+  gap: 8px;
+
+  .liveCascade {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .liveItem {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 8px 10px;
+    background: $ks-paper;
+    border: 1px solid $ks-rule;
+    border-radius: 6px;
+    opacity: 0;
+    animation: ks-live-in 0.4s ease forwards;
+  }
+
+  .liveItemDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $ks-ink-soft;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .liveItemBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .liveItemTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: $ks-ink;
+  }
+
+  .liveItemText {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: $ks-ink-soft;
+  }
+
+  .liveItemFlagged {
+    border-color: $ks-crimson;
+    background: $ks-crimson-soft;
+
+    .liveItemDot {
+      background: $ks-crimson;
+    }
+  }
+
+  .liveCounter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 0 4px;
+  }
+
+  .liveCounterValue {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    color: $ks-ink;
+    line-height: 1;
+  }
+
+  .liveCounterLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .liveMeterBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .liveMeterLabel {
+    font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $ks-ink-soft;
+  }
+
+  .liveMeterTrack {
+    display: block;
+    height: 10px;
+    background: $ks-rule-soft;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .liveMeterFill {
+    display: block;
+    height: 100%;
+    width: var(--ks-to, 0%);
+    background: linear-gradient(90deg, $ks-crimson, $ks-crimson-deep);
+    border-radius: 5px;
+    animation: ks-meter-decay 2.4s ease-in-out infinite alternate;
+  }
+
+  .liveCaption {
+    font-size: 13px;
+    line-height: 1.45;
+    color: $ks-ink-soft;
+  }
+}
+
+// === Interactive "play the victim" widget ==================================
+
+.interactive {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.choiceQuestion {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: $ks-ink;
+}
+
+.choiceOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.choiceButton {
+  text-align: left;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.35;
+  color: $ks-ink;
+  background: #ffffff;
+  border: 1px solid $ks-rule;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+
+  &:hover {
+    border-color: $ks-ink-soft;
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(200, 65, 42, 0.5);
+    outline-offset: 2px;
+  }
+}
+
+.choiceButtonMuted {
+  opacity: 0.5;
+}
+
+.choiceButtonPicked {
+  font-weight: 700;
+}
+
+.choiceButtonTrap {
+  border-color: $ks-crimson;
+  background: $ks-crimson-soft;
+  color: $ks-crimson-deep;
+  opacity: 1;
+}
+
+.choiceButtonSafe {
+  border-color: #2a8a4a;
+  background: rgba(42, 138, 74, 0.1);
+  color: #1e6636;
+  opacity: 1;
+}
+
+.choiceOutcome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border-left: 3px solid $ks-rule;
+  background: $ks-paper;
+  animation: ks-live-in 0.32s ease;
+}
+
+.choiceOutcomeTrap {
+  border-left-color: $ks-crimson;
+  background: $ks-crimson-soft;
+}
+
+.choiceOutcomeSafe {
+  border-left-color: #2a8a4a;
+  background: rgba(42, 138, 74, 0.08);
+}
+
+.choiceOutcomeLabel {
+  font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $ks-ink-soft;
+}
+
+.choiceOutcomeText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $ks-ink;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card_live .liveItem {
+    opacity: 1;
+    animation: none;
+  }
+
+  .card_live .liveMeterFill {
+    animation: none;
+    width: var(--ks-to, 0%);
+  }
+
+  .choiceOutcome {
+    animation: none;
+  }
+}
+
 // === Dark theme ============================================================
 
 :global(body.darkTheme) {
@@ -2249,6 +2624,142 @@ $ks-crimson-deep: #7a2618;
     .quizVerdict {
       color: $dk-crimson;
     }
+  }
+
+  .card_playbook {
+    border-color: $dk-crimson;
+    background: repeating-linear-gradient(
+      -45deg,
+      #201a1a,
+      #201a1a 10px,
+      #241b1a 10px,
+      #241b1a 20px
+    );
+
+    .playbookHeader {
+      border-bottom-color: rgba(229, 114, 84, 0.32);
+    }
+
+    .playbookTitle,
+    .playbookFooter {
+      color: $dk-crimson;
+    }
+
+    .playbookFooter {
+      border-top-color: rgba(229, 114, 84, 0.32);
+    }
+
+    .playbookStepNum {
+      background: rgba(229, 114, 84, 0.2);
+      color: $dk-crimson;
+    }
+
+    .playbookStepLabel {
+      color: $dk-text;
+    }
+
+    .playbookStepNote {
+      color: $dk-text-soft;
+    }
+
+    .playbookStepActive {
+      .playbookStepNum {
+        background: $dk-crimson;
+        color: #14171f;
+      }
+
+      .playbookStepLabel {
+        color: $dk-crimson;
+      }
+    }
+  }
+
+  .card_live {
+    .liveItem {
+      background: $dk-card-soft;
+      border-color: $dk-rule;
+    }
+
+    .liveItemDot {
+      background: $dk-text-soft;
+    }
+
+    .liveItemTitle {
+      color: $dk-text;
+    }
+
+    .liveItemText,
+    .liveCounterLabel,
+    .liveMeterLabel,
+    .liveCaption {
+      color: $dk-text-soft;
+    }
+
+    .liveItemFlagged {
+      border-color: $dk-crimson;
+      background: $dk-crimson-soft;
+
+      .liveItemDot {
+        background: $dk-crimson;
+      }
+    }
+
+    .liveCounterValue {
+      color: $dk-text;
+    }
+
+    .liveMeterTrack {
+      background: $dk-rule-soft;
+    }
+  }
+
+  .choiceQuestion {
+    color: $dk-text;
+  }
+
+  .choiceButton {
+    background: $dk-card;
+    border-color: $dk-rule;
+    color: $dk-text;
+
+    &:hover {
+      border-color: $dk-text-soft;
+    }
+  }
+
+  .choiceButtonTrap {
+    border-color: $dk-crimson;
+    background: $dk-crimson-soft;
+    color: $dk-crimson;
+  }
+
+  .choiceButtonSafe {
+    border-color: #6fcf97;
+    background: rgba(111, 207, 151, 0.14);
+    color: #6fcf97;
+  }
+
+  .choiceOutcome {
+    background: $dk-card-soft;
+    border-left-color: $dk-rule;
+  }
+
+  .choiceOutcomeTrap {
+    border-left-color: $dk-crimson;
+    background: $dk-crimson-soft;
+  }
+
+  .choiceOutcomeSafe {
+    border-left-color: #6fcf97;
+    background: rgba(111, 207, 151, 0.1);
+  }
+
+  .choiceOutcomeLabel {
+    color: $dk-text-soft;
+  }
+
+  .choiceOutcomeText {
+    color: $dk-text;
   }
 
   .cardDivider .cardArrow {

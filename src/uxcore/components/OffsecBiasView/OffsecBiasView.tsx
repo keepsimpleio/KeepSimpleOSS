@@ -1,7 +1,9 @@
 import { OffsecBiasCard, OffsecBiasContent } from '@uxcore/data/biasOffsec';
 import { getOffsecChrome } from '@uxcore/data/biasOffsec/chrome';
+import type { OffsecInteractive } from '@uxcore/data/biasOffsec/types';
 import cn from 'classnames';
 import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 
 import KemmioCredit from './KemmioCredit';
 
@@ -582,6 +584,109 @@ const CardBody = ({
     );
   }
 
+  if (card.kind === 'playbook') {
+    return (
+      <>
+        {prior}
+        <div className={styles.playbookHeader}>
+          <span className={styles.playbookMark} aria-hidden="true">
+            ▤
+          </span>
+          <span className={styles.playbookTitle}>{card.docTitle}</span>
+        </div>
+        <ol className={styles.playbookSteps}>
+          {card.steps.map((step, i) => (
+            <li
+              key={i}
+              className={cn(styles.playbookStep, {
+                [styles.playbookStepActive]: step.active,
+              })}
+            >
+              <span className={styles.playbookStepNum} aria-hidden="true">
+                {i + 1}
+              </span>
+              <span className={styles.playbookStepBody}>
+                <span className={styles.playbookStepLabel}>{step.label}</span>
+                {step.note && (
+                  <span className={styles.playbookStepNote}>{step.note}</span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ol>
+        {card.footer && (
+          <div className={styles.playbookFooter}>{card.footer}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'live') {
+    if (card.variant === 'counter') {
+      const from = card.meterFrom ?? 100;
+      const to = card.meterTo ?? 0;
+      return (
+        <>
+          {prior}
+          <div className={styles.liveCounter}>
+            <span className={styles.liveCounterValue}>{card.counterValue}</span>
+            {card.counterLabel && (
+              <span className={styles.liveCounterLabel}>
+                {card.counterLabel}
+              </span>
+            )}
+          </div>
+          {card.meterLabel && (
+            <div className={styles.liveMeterBlock}>
+              <span className={styles.liveMeterLabel}>{card.meterLabel}</span>
+              <span className={styles.liveMeterTrack}>
+                <span
+                  className={styles.liveMeterFill}
+                  style={
+                    {
+                      '--ks-from': `${Math.min(100, Math.max(0, from))}%`,
+                      '--ks-to': `${Math.min(100, Math.max(0, to))}%`,
+                    } as React.CSSProperties
+                  }
+                />
+              </span>
+            </div>
+          )}
+          {card.caption && (
+            <div className={styles.liveCaption}>{card.caption}</div>
+          )}
+        </>
+      );
+    }
+    return (
+      <>
+        {prior}
+        <div className={styles.liveCascade}>
+          {(card.items || []).map((item, i) => (
+            <div
+              key={i}
+              className={cn(styles.liveItem, {
+                [styles.liveItemFlagged]: item.flaggedItem,
+              })}
+              style={{ animationDelay: `${i * 0.55}s` } as React.CSSProperties}
+            >
+              <span className={styles.liveItemDot} aria-hidden="true" />
+              <span className={styles.liveItemBody}>
+                <span className={styles.liveItemTitle}>{item.title}</span>
+                {item.body && (
+                  <span className={styles.liveItemText}>{item.body}</span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+        {card.caption && (
+          <div className={styles.liveCaption}>{card.caption}</div>
+        )}
+      </>
+    );
+  }
+
   // kind === 'chat'
   return (
     <>
@@ -616,10 +721,67 @@ const CardBody = ({
   );
 };
 
+// Interactive "play the victim" widget. The reader picks an option; their
+// choice reveals its outcome inline. Local state only, no side effects, so it
+// stays contained inside the shared modal.
+const InteractiveWidget = ({
+  data,
+  chrome,
+}: {
+  data: OffsecInteractive;
+  chrome: ReturnType<typeof getOffsecChrome>;
+}) => {
+  const [picked, setPicked] = useState<number | null>(null);
+  const chosen = picked === null ? null : data.options[picked];
+
+  return (
+    <div className={styles.interactive}>
+      <div className={cn(styles.card, styles[`card_${data.surface.kind}`])}>
+        <CardBody card={data.surface} chrome={chrome} />
+      </div>
+
+      <div className={styles.choiceQuestion}>{data.question}</div>
+
+      <div className={styles.choiceOptions}>
+        {data.options.map((opt, i) => (
+          <button
+            key={i}
+            type="button"
+            className={cn(styles.choiceButton, {
+              [styles.choiceButtonPicked]: picked === i,
+              [styles.choiceButtonTrap]: picked === i && opt.trap,
+              [styles.choiceButtonSafe]: picked === i && !opt.trap,
+              [styles.choiceButtonMuted]: picked !== null && picked !== i,
+            })}
+            onClick={() => setPicked(i)}
+            aria-pressed={picked === i}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {chosen && (
+        <div
+          className={cn(styles.choiceOutcome, {
+            [styles.choiceOutcomeTrap]: chosen.trap,
+            [styles.choiceOutcomeSafe]: !chosen.trap,
+          })}
+        >
+          <span className={styles.choiceOutcomeLabel}>
+            {data.resolvedLabel || 'What happens next'}
+          </span>
+          <p className={styles.choiceOutcomeText}>{chosen.outcome}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
   const { locale } = useRouter();
   const chrome = getOffsecChrome(locale);
-  const { before, after } = content.visual;
+  const { before, after } = content.visual ?? {};
 
   return (
     // The global ks-offsec class opts this subtree out of the modal's
@@ -636,33 +798,42 @@ const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
         <span className={styles.eyebrow}>{content.visualLabel}</span>
         <p className={styles.scenario}>{content.scenario}</p>
 
-        <div className={styles.cards}>
-          <div className={styles.cardWrap}>
-            <span className={styles.cardCaption}>{before.tag}</span>
-            <div className={cn(styles.card, styles[`card_${before.kind}`])}>
-              <CardBody card={before} chrome={chrome} />
-            </div>
-          </div>
+        {content.interactive ? (
+          <InteractiveWidget data={content.interactive} chrome={chrome} />
+        ) : (
+          before &&
+          after && (
+            <div className={styles.cards}>
+              <div className={styles.cardWrap}>
+                <span className={styles.cardCaption}>{before.tag}</span>
+                <div className={cn(styles.card, styles[`card_${before.kind}`])}>
+                  <CardBody card={before} chrome={chrome} />
+                </div>
+              </div>
 
-          <div className={styles.cardDivider}>
-            <span className={styles.cardArrow}>→</span>
-          </div>
+              <div className={styles.cardDivider}>
+                <span className={styles.cardArrow}>→</span>
+              </div>
 
-          <div className={styles.cardWrap}>
-            <span className={cn(styles.cardCaption, styles.cardCaptionFlagged)}>
-              {after.tag}
-            </span>
-            <div
-              className={cn(
-                styles.card,
-                styles[`card_${after.kind}`],
-                styles.cardFlagged,
-              )}
-            >
-              <CardBody card={after} chrome={chrome} />
+              <div className={styles.cardWrap}>
+                <span
+                  className={cn(styles.cardCaption, styles.cardCaptionFlagged)}
+                >
+                  {after.tag}
+                </span>
+                <div
+                  className={cn(
+                    styles.card,
+                    styles[`card_${after.kind}`],
+                    styles.cardFlagged,
+                  )}
+                >
+                  <CardBody card={after} chrome={chrome} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )
+        )}
       </div>
 
       <div className={`${styles.proseBlock} ${styles.whyBlock}`}>
