@@ -39,6 +39,7 @@ const content: OffsecBiasContent = {
       {
         label:
           'Close this and open your account yourself from a trusted device',
+        safe: true,
         outcome:
           'Safe. You refused the menu the pop-up built for you. A page cannot detect a risk on your session, and the only options that matter are the ones you reach on your own, through a device and address you already trust. The three-way choice was a frame, and you stepped out of it.',
       },

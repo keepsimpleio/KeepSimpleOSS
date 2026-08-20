@@ -1,58 +1,61 @@
-// Mode: interactive. The surface is a notification with a countdown: act in
-// ten minutes or permanently lose access to your files or funds. The lever
-// is loss aversion, where a threatened loss weighs far more than an equal
-// gain. The fear of losing what you already have overrides the check you
-// would normally run, and the clock exists only to stop you from thinking.
+// Mode: interactive. The surface is an email from what looks like your
+// collaboration tool warning that your editing session dropped and unsaved
+// changes are about to be cleared. The lever is loss aversion, where a
+// threatened loss weighs far more than an equal gain. The fear of losing work
+// you already made overrides the check you would normally run. The threatened
+// thing is plausible, unsaved work a real service could genuinely lose, and
+// the attack rides that instinct to a fake sign-in page.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'Real services do not delete your account or your money through a countdown link. A clock attached to a threat exists to stop you thinking, not to help you.',
+  tell: 'A message warning that your unsaved work or live session is about to be lost unless you sign in through its link is aiming at the loss you dread, not at any real problem with your account.',
   scenario:
-    'A notification says you have ten minutes to confirm or you will permanently lose access to your files or funds. The threat is a loss, and losing something you already hold hurts far more than an equivalent gain would please, so your gut screams to act before the clock runs out. That scream is the product. The countdown is there to spend your caution before you can ask whether the threat is even real.',
+    'An email says your editing session dropped and the unsaved changes in a document you were working on will be cleared soon unless you sign back in. Losing work you already put in hurts far more than an equal gain would please, so your gut pushes you to sign in and save it before it is gone. That push is the product. The link goes to a page that harvests the login the moment the fear of losing your work peaks.',
   visualLabel: 'Scenario',
   interactive: {
     kind: 'choice',
     surface: {
-      kind: 'notification',
-      appName: 'Cloud Storage',
-      title: 'Action required: 10 minutes left',
-      body: 'Unusual activity means your account will be permanently deleted and your files lost in 10:00. Confirm now to keep your access.',
+      kind: 'email',
+      sender: 'Docs Workspace <notify@docs-workspace-mail.com>',
+      timestamp: 'now',
+      subject: 'Your session dropped, unsaved changes at risk',
+      preview:
+        'We detected your editing session ended unexpectedly. Unsaved changes in "Q3 Plan" have not been synced and will be cleared. Sign in to recover your work.',
     },
-    question: 'How do you react?',
+    question: 'Your unsaved work looks at risk. How do you react?',
     resolvedLabel: 'What happens next',
     options: [
       {
-        label:
-          'Click the link and confirm immediately to avoid losing your files',
+        label: 'Click the link and sign in to save my unsaved changes',
         trap: true,
         outcome:
-          'Trap. The threat of losing what you already have overpowered the pause you would normally take, and the countdown made sure you never took it. The link goes to a page that harvests your login the moment the fear peaks. Nothing was ever going to be deleted. The only real loss is the one you just handed them.',
+          "Trap. The thought of losing work you already did overpowered the pause you would normally take. The sign-in page is the attacker's, and it harvests your login the instant the fear peaks. Your real session never dropped and your document is fine. The only thing lost is the password you just entered on their page.",
       },
       {
-        label: 'Click through just to read the page and see how serious it is',
+        label: 'Click through just to check whether the draft is really gone',
         outcome:
-          'The clock is winning. "I will just look" under a ten-minute deletion threat is how the page gets you onto it, where the same countdown keeps pushing you to log in. Opening the link is the step the threat was designed to rush you into.',
+          'The fear is steering. "I will just look and make sure my work is safe" is exactly how the page gets you onto it, where the same threat keeps pushing you to sign in. Opening the link is the step the threatened loss was built to rush you into.',
       },
       {
-        label:
-          'Ignore the timer and check the account from its official app or site',
+        label: 'Ignore the email and open the document in the tool directly',
+        safe: true,
         outcome:
-          'Safe. You refused to let a countdown set the pace. Opening the service the normal way shows the account is fine, because no real provider destroys your data or funds through a timed link in a notification. The threatened loss was fiction, and the clock only had power if you looked at it instead of at the truth.',
+          'Safe. You refused to let a threatened loss set the pace. Opening the tool the normal way shows your session is live and your changes are saved, because the drop never happened. The loss was manufactured to make you authenticate somewhere you never should. Your real work was never in danger.',
       },
     ],
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is loss aversion, the finding that losses loom roughly twice as large as equivalent gains in how they feel. A message promising you something new is easy to ignore, but a message threatening to take away what you already have grabs you by the throat, because the pain of losing your files or funds is disproportionate to their neutral value. The attacker pairs that threat with a countdown so the fear cannot cool into analysis. Under a deadline, the brain narrows to preventing the loss and drops the step where you would ask whether the threat is legitimate. The shorter the timer, the less thinking survives, which is the entire point. You are not being greedy or gullible, you are protecting something that matters to you, and the attack simply hijacks that protective instinct and aims it at their link.',
+    'This is loss aversion, the finding that losses loom roughly twice as large as equivalent gains in how they feel. An email offering you something new is easy to ignore, but one threatening to erase work you already made grabs you, because the pain of losing effort you invested is out of proportion to its neutral value. The attacker picks a loss a real service could plausibly cause, an ended session and unsynced changes, so the threat passes the smell test where a fantasy about deleted accounts would not. Then the dread of losing your work crowds out the step where you would ask whether the message is even real. You are not being greedy or careless. You are protecting something you built, and the attack hijacks that instinct and aims it at their sign-in page.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'Filtering and clear internal policy on how account warnings actually arrive help your team. Refusing to be paced by a countdown is the move only you can make when one lands.',
+    lede: 'Filtering and a clear internal picture of how your tools actually behave help your team. Refusing to be paced by a threatened loss is the move only you can make when one lands.',
     moves: [
-      'A deadline attached to a threat is a manipulation tactic. Real providers do not permanently delete accounts, files, or funds through a timed link you must click now.',
-      'When you feel the urge to act before a clock runs out, that urge is the attack. Slowing down costs you nothing real, because the threatened loss is almost always fiction.',
-      'Never resolve an account threat through the notification itself. Open the service independently, through its official app or your saved address, and check.',
-      'The fear of losing what you have is stronger than it should be. Name that feeling when it spikes, then verify before you act on it.',
+      'A message that says you are about to lose work or access unless you sign in through its link is engineering dread. Go to the tool yourself and check.',
+      'When you feel the urge to act before something you own disappears, that urge is the attack. Verifying costs you nothing real, because the loss is almost always fiction.',
+      'Never recover a session or a file through the link in the warning. Open the service independently, through the app or your saved address, and look.',
+      'The fear of losing what you already made hits harder than it should. Name that feeling when it spikes, then check before you act on it.',
     ],
   },
 };

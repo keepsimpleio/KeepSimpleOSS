@@ -1,56 +1,63 @@
-// Mode: interactive. The reader clicks, and the fear of losing what is already
-// theirs does the work. Surface: a message warning that someone is trying to
-// take the account or data and demanding you "confirm ownership now to keep
-// it". The lever is the endowment effect: once what you own feels threatened,
-// you overvalue it and act to defend it, so you authenticate on the attacker's
-// page. The confirm is the attack.
+// Mode: interactive. The reader clicks, and overvaluing what is already theirs
+// does the work. Surface: a notice that a handle or account you own, one you
+// have held for years, is being recycled for inactivity, and you can keep what
+// is yours by signing in. The lever is the endowment effect: you value a thing
+// far more once it feels like yours, so the prospect of your own handle being
+// released pulls you to authenticate on the attacker's page. No countdown, no
+// second lever. The pull is ownership itself. The sign-in is the attack.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'A message saying your account is being taken and you must "confirm ownership" through their link is the theft, not a warning about one.',
+  tell: 'A notice that a handle or account you own is being recycled and you can keep it by signing in through the link is trading on how much you value what is yours, not warning you about a real policy.',
   scenario:
-    'An alert says someone is trying to claim your account and transfer your data to another person. To stop it, you must confirm you are the real owner right now by signing in on the linked page. The thought of losing what is yours lands hard, and the page is right there, so you go to prove the account is still yours.',
+    'An email says the username you have held for years is scheduled to be released because the account has been inactive, and you can keep it by signing in. The handle is worth little to anyone else, but it is yours, and that alone makes losing it feel wrong. That surge of "this is mine, I am keeping it" is what carries you to the linked sign-in page, which exists to collect the login you give up defending something that was never actually at risk.',
   visualLabel: 'Scenario',
   interactive: {
     kind: 'choice',
     surface: {
-      kind: 'notification',
-      appName: 'Account Security',
+      kind: 'email',
+      sender: 'Platform Accounts <accounts@platform-id-check.com>',
       timestamp: 'now',
-      title: 'Ownership transfer requested',
-      body: 'Someone is trying to take control of your account. Confirm ownership in the next 15 minutes to keep it, or the transfer completes.',
+      subject: 'Your username is scheduled to be released',
+      preview:
+        'Inactive handles are being recycled and made available to new users. @yourname is on the list. Sign in to keep the handle that is yours.',
     },
     question:
-      'To keep the account that is yours, do you confirm ownership on the linked page?',
+      'The handle that is yours is up for release. Do you sign in to keep it?',
     resolvedLabel: 'What happens next',
     options: [
       {
-        label:
-          'Sign in on their page to prove the account is mine and block the transfer',
+        label: 'Sign in on the linked page to keep my handle',
         trap: true,
         outcome:
-          'Trap. The "transfer" is fiction; the page is a credential harvester. By defending what felt like yours being taken, you handed your password and code to the attacker. The threat of loss made you skip the one question that mattered: is this page actually my provider? Ownership was never in danger until you tried to confirm it here.',
+          'Trap. It is yours, so keeping it felt like the obvious move, and that feeling walked you past the only question that mattered: is this page actually my platform? It is a credential harvester. Your handle was never being recycled. Ownership was in no danger until you tried to defend it here, and now the attacker has your login.',
+      },
+      {
+        label: 'Sign in just to confirm whether it is really being recycled',
+        outcome:
+          'The same page, reached by a softer excuse. "I will just check that my handle is safe" lands you on the harvester exactly as the direct pull would. Confirming through the link the notice provided is not confirming anything. It is authenticating where the attacker wants you.',
       },
       {
         label:
-          'Ignore the link and check the account through your provider directly',
+          'Ignore the link and check my account through the platform directly',
+        safe: true,
         outcome:
-          "Safe. Ownership is confirmed through your provider, never through a link that tells you it is being taken. You opened the account from your own address and found nothing wrong, because the transfer was bait to make you authenticate on the attacker's page. The feeling of loss was manufactured to rush you past that check.",
+          'Safe. Whatever happens to your own handle is managed inside your account settings, reached through your own bookmark, never through a link telling you it is slipping away. You open the platform yourself and find the account and the handle exactly as you left them. The feeling that something yours was being taken was manufactured to move you onto their page.',
       },
     ],
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is the endowment effect: we value what we already possess more highly the moment it feels at risk of being lost, and that surge of protectiveness crowds out cool judgment. An attacker does not offer you something; they threaten to take something that is already yours, which triggers a stronger, faster reaction than any lure could. The imagined loss of your account makes "confirm ownership now" feel like defense rather than surrender, so you rush to authenticate exactly where the attacker wants. The scarcer and more personal the threatened thing feels, the less you scrutinize the page demanding you protect it. Loss aversion supplies the panic; the fake page collects the credentials.',
+    'This is the endowment effect: we value a thing more highly simply because we own it, well beyond what we would pay to acquire the same thing fresh. A username, a legacy account, an old handle can be worth almost nothing on the open market and still feel irreplaceable once it is yours. An attacker does not offer you something new, which is easy to decline. He tells you something you already own is about to be taken back, and the disproportionate pull of ownership does the rest. "Keep what is yours" reads as defending property rather than surrendering a password, so you rush to authenticate exactly where the attacker wants. The more personal and long-held the thing feels, the less you scrutinize the page asking you to protect it.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'Your team can filter these takeover alerts. Refusing to authenticate through a loss-threat link is the part only you can do.',
+    lede: 'Your team can filter these recycle-and-reclaim notices. Refusing to authenticate through a link that says something yours is being taken is the part only you can do.',
     moves: [
-      'Confirm account ownership only inside your provider, reached through your own bookmark or typed address, never through a link that says you are losing it.',
-      'A message that manufactures a loss ("someone is taking your account, act now") is engineering panic to skip your checks.',
-      'The threat of losing something yours hits harder than any offer. Treat that jolt as the cue to slow down, not to click.',
-      'If you fear a real takeover, go straight to the provider and review active sessions and recovery settings there.',
+      'Anything about your own handle, account, or access is settled inside the platform, reached through your own bookmark or typed address, never through the link in the notice.',
+      'A message that tells you something you own is being reclaimed is working the pull of ownership. Treat that jolt of "but it is mine" as the cue to slow down.',
+      'Value follows ownership, not reality. The handle that feels irreplaceable the moment it is threatened is usually worth exactly what it was worth this morning.',
+      'If you genuinely wonder whether a real reclaim policy exists, go to the platform yourself and read its account and inactivity settings there.',
     ],
   },
 };

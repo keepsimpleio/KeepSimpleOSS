@@ -1,58 +1,64 @@
-// Mode: interactive. The surface is an onboarding page offering instant
-// access now with the security step postponed: "start using it now, finish
-// verification later" or "skip 2FA for now, set it up whenever". The lever
-// is hyperbolic discounting: the immediate reward looms far larger than the
-// later cost, so you take the shortcut and the "later" step never comes.
+// Mode: interactive. The surface is attacker-controlled. A page hands you
+// something you want this second the instant you approve, and pushes the
+// security step to "later". The lever is hyperbolic discounting: the reward
+// available now looms far larger than the cost sitting in the future, so you
+// approve now and skip the check. Here approving now IS the attack: the
+// sign-in you wave through is the attacker's, and the deferred verification is
+// the exact step that would have shown the login came from a device that is
+// not yours.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'Any flow that lets you have the reward now and pay the security cost "later" is betting that later never arrives. It usually does not.',
+  tell: 'A page that gives you the reward the moment you approve and promises the security check "later" is betting that acting now grants the access before you ever run the check. Later is the attacker.',
   scenario:
-    'A tool offers you the whole thing immediately if you skip the security setup for now. Use it today, add two-factor whenever. The unprotected access is right in front of you and the risk is somewhere in the future, so the future loses. You take the fast path, the reminder gets dismissed, and the account you "meant to secure later" stays open.',
+    'You followed a link for something you want right now: early access, a shared workspace, a bonus already sitting in your name. The page says approve the pending sign-in to start immediately and it will run the security verification afterward. The access is in front of you and the check is postponed, so the future loses. The catch is that the sign-in waiting on your phone is the attacker trying to get in, and approving it now is what lets them.',
   visualLabel: 'Scenario',
   interactive: {
     kind: 'choice',
     surface: {
       kind: 'browser',
-      host: 'workspace-app.io',
-      path: '/get-started',
-      pageHeading: 'Start now, secure later',
+      host: 'team-access-grant.io',
+      path: '/activate',
+      pageHeading: 'Your access is ready. Activate now.',
       pageBody:
-        'Get instant access to your workspace. You can skip two-factor setup for now and finish the security review anytime from settings.',
+        'Approve the pending sign-in to start using your workspace immediately. We will run the security verification on your next login.',
+      cta: 'Approve and start now',
     },
-    question: 'Which path do you take?',
+    question: 'A sign-in is waiting for your approval. Do you approve it now?',
     resolvedLabel: 'What happens next',
     options: [
       {
-        label: 'Skip 2FA for now and start using the workspace immediately',
+        label: 'Approve the pending sign-in now so I can start immediately',
         trap: true,
         outcome:
-          'Trap. The instant access was worth more to you right now than a risk sitting in the future, so you deferred the one step that protects the account. "Later" arrives as a breach, not a reminder. Weeks pass, 2FA never gets added, and a reused password walks straight into an account nothing was guarding.',
+          'Trap. The reward in front of you outweighed a check due later, so you approved. The sign-in you just approved was the attacker logging in as you, and they are inside your account the moment you tap it. The verification you postponed was the one thing that would have shown the login came from a device you have never used. There is no breach weeks away. It happened when you approved.',
       },
       {
-        label: 'Start now and set a reminder to add 2FA next week',
+        label: 'Approve now and run the security verification right after',
         outcome:
-          "This is the same trade wearing a calendar. The reminder competes with next week's urgent things and loses the same way today's security step lost to today's convenience. An account left open on the promise of a future you is an account left open.",
+          'The same trade with a promise attached. The approval already handed over the live session, so the "verification afterward" runs on an account the attacker is already in, if you get to it at all. Once you have approved, the later step protects nothing.',
       },
       {
-        label: 'Set up two-factor now, before you start using it',
+        label:
+          'Do not approve; check where this sign-in request came from first',
+        safe: true,
         outcome:
-          'Safe. You paid the small cost while it was cheap, in the sixty seconds before the reward pulled your attention elsewhere. The account is protected from its first minute, and there is no dangling "later" for the attacker to live inside. Present-you spent one minute so future-you never has to explain a breach.',
+          'Safe. You ran the sixty-second check before collecting the reward instead of after. The sign-in is from a device and location that are not yours, so you deny it and change your password. The access dangled in front of you was the bait, and the verification you refused to defer is what exposed the attacker before they got in.',
       },
     ],
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is hyperbolic discounting, the way people steeply undervalue costs and rewards the further off they sit. A benefit available right now feels enormously larger than a cost due later, even when the later cost is far worse. "Start now, secure later" is engineered around that curve: the access is immediate and vivid while the risk is abstract and postponed, so the math your gut runs comes out lopsided. The security step is easy, its only flaw is being due later, and "later" is where good intentions quietly die. Attackers love the deferred-security path because they know the reminder rarely wins against the next urgent thing, leaving a window that stays open for weeks. The bias does the work: choosing to be safe later feels different from choosing to be unsafe, and it lands in the same place.',
+    'This is hyperbolic discounting, the way people steeply undervalue costs and rewards the further off they sit. A benefit available right now feels enormously larger than a cost due later, even when the later cost is far worse. The attacker builds the flow around that curve: the access is immediate and vivid while the verification is abstract and postponed, so the trade your gut runs comes out lopsided. What makes this version sharp is that approving now is not a shortcut you can walk back. The approval is the attack. Granting access first and verifying second means the attacker is already through the door by the time the deferred step would have run. The bias supplies the impatience; the attacker collects the live session.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'Policy can require security setup before first use so the choice never reaches the tired individual. Refusing the "later" option when it is offered is the personal half.',
+    lede: 'Policy can require verification before any access is granted so the choice never reaches the tired individual. Refusing to approve first and check later is the personal half.',
     moves: [
-      'Treat "secure it later" as "never secure it". If a step protects an account, do it before you start using the account, not after.',
-      'Notice the shape of the offer: reward now, cost postponed. That structure is designed to exploit how you discount the future.',
-      'The security step is almost always small and quick. Its cost feels big only because it stands between you and something you want this second.',
-      'When a flow lets you skip protection to move faster, that is the moment to slow down, because the flow was built to profit from your hurry.',
+      'Never approve a sign-in or grant to unlock a reward faster. If a step verifies who is logging in, it comes before the access, never after.',
+      'Notice the shape: reward now, security check postponed. Approving now with the check deferred means the access is already granted before anything is verified.',
+      'A sign-in prompt you did not personally start is a request from someone else. Deny it and check the device and location, do not clear it to move on.',
+      'When a page makes you approve something to get to what you want this second, that hurry is the product. Slow down; the flow was built to profit from it.',
     ],
   },
 };

@@ -10,7 +10,7 @@ import type { OffsecBiasContent } from './types';
 const content: OffsecBiasContent = {
   tell: 'When one path is spelled out in confident, specific steps and the safe path feels vague, the clarity is a lure. Clear is not the same as correct.',
   scenario:
-    'You get a message about a payment that needs fixing. The attacker gives you a precise, numbered path: click here, enter this, confirm, done in two minutes. The alternative, checking it yourself through your own systems, feels fuzzy and slow, with no clear finish line. The confident steps feel safer simply because they are legible, so you follow them.',
+    'You get a message about a held payment that needs fixing. The sender lays out a precise, numbered path: click here, sign in, confirm, done in two minutes. Checking it yourself through your own systems would take longer and has no clean finish line.',
   visualLabel: 'Scenario',
   interactive: {
     kind: 'choice',
@@ -21,20 +21,20 @@ const content: OffsecBiasContent = {
       timestamp: '14:20',
       body: 'Quick fix for the held invoice: 1) open the link, 2) sign in, 3) click Release, 4) enter the code we texted. Takes two minutes and it clears. If you go through the portal yourself it can take days and may bounce again.',
     },
-    question:
-      'One path is fully spelled out; verifying it yourself feels vague. Which do you take?',
+    question: 'What do you do?',
     resolvedLabel: 'What happens next',
     options: [
       {
         label:
-          'Follow their clear numbered steps, it is faster and I know exactly what to do',
+          'Open the link and run the four steps to release the payment now',
         trap: true,
         outcome:
           'Trap. The clear steps lead to a fake portal and hand over your login and the texted code. You chose them because they were legible and the safe path felt uncertain, not because they were verified. Attackers write in confident, numbered detail precisely because a defined path feels safer than an open one, even when it walks you straight into them.',
       },
       {
         label:
-          'Take the vaguer, slower route and verify the invoice through my own systems',
+          'Log into the payments portal yourself and check the invoice there',
+        safe: true,
         outcome:
           'Safe. Clarity is not correctness; the confident steps lead to the attacker. You accepted the discomfort of the undefined path and checked the invoice through the portal you already use and a known contact. The precise instructions were a costume for a trap, and the "vague" option was just the real one, which rarely comes pre-scripted by a stranger.',
       },

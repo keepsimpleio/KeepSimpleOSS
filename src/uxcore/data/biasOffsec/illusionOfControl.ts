@@ -33,13 +33,14 @@ const content: OffsecBiasContent = {
       },
       {
         label:
-          'Set a strong new PIN and recovery question right here so the account is locked down',
+          'Open the "talk to a security agent" chat on the page and ask them to walk you through it',
         outcome:
-          "This still feeds the attacker. Configuring the recovery question and PIN feels like taking control, but you are writing your account's answers straight into their form. The sense of setting things up your way is the exact feeling the page was built to give you.",
+          "This still loses. You did not type your password, but you handed the conversation to the attacker's own staff. The chat is theirs, staffed to sound patient and official, and its whole job is to keep you on the page and guide you back to the fields you hesitated over. A real service does not run account recovery through a chat on a page that reached out to you.",
       },
       {
         label:
           'Close the page and open your bank or account from its own app or your saved bookmark',
+        safe: true,
         outcome:
           'Safe. You changed nothing on a page that reached out to you. Real account controls live inside the service you already trust, reached the way you always reach it. The feeling of being in control on their page was the product, and you did not buy it.',
       },

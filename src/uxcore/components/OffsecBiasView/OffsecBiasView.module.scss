@@ -1982,6 +1982,15 @@ $ks-crimson-deep: #7a2618;
   opacity: 1;
 }
 
+// A wrong-but-plausible pick. Amber, never green, so a losing choice is
+// never coloured like the correct one.
+.choiceButtonLoss {
+  border-color: #b8791f;
+  background: rgba(184, 121, 31, 0.1);
+  color: #8a5a12;
+  opacity: 1;
+}
+
 .choiceOutcome {
   display: flex;
   flex-direction: column;
@@ -2001,6 +2010,11 @@ $ks-crimson-deep: #7a2618;
 .choiceOutcomeSafe {
   border-left-color: #2a8a4a;
   background: rgba(42, 138, 74, 0.08);
+}
+
+.choiceOutcomeLoss {
+  border-left-color: #b8791f;
+  background: rgba(184, 121, 31, 0.09);
 }
 
 .choiceOutcomeLabel {
@@ -2739,6 +2753,12 @@ $ks-crimson-deep: #7a2618;
     color: #6fcf97;
   }
 
+  .choiceButtonLoss {
+    border-color: #d9a441;
+    background: rgba(217, 164, 65, 0.14);
+    color: #d9a441;
+  }
+
   .choiceOutcome {
     background: $dk-card-soft;
     border-left-color: $dk-rule;
@@ -2752,6 +2772,11 @@ $ks-crimson-deep: #7a2618;
   .choiceOutcomeSafe {
     border-left-color: #6fcf97;
     background: rgba(111, 207, 151, 0.1);
+  }
+
+  .choiceOutcomeLoss {
+    border-left-color: #d9a441;
+    background: rgba(217, 164, 65, 0.1);
   }
 
   .choiceOutcomeLabel {

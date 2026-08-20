@@ -341,8 +341,14 @@ export interface OffsecInteractive {
   question: string;
   options: {
     label: string;
-    // The bias-driven wrong choice. Exactly one option should set this.
+    // The bias-driven wrong choice (renders crimson once clicked). Exactly
+    // one option should set this.
     trap?: boolean;
+    // The genuinely correct choice (renders green once clicked). Exactly one
+    // option should set this. An option that is neither trap nor safe is a
+    // "loss" (a plausible but still-wrong pick) and renders neutral, never
+    // green, so a wrong choice is never certified as correct.
+    safe?: boolean;
     // Revealed after the reader clicks this option.
     outcome: string;
   }[];

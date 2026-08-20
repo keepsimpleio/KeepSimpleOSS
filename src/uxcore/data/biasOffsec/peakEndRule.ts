@@ -44,7 +44,7 @@ const content: OffsecBiasContent = {
       senderName: 'Secure Support',
       senderHandle: 'Bank Assist',
       timestamp: '14:52',
-      body: "You're all set. The suspicious charge has been reversed and your account is fully secured on our end. Thanks so much for your patience today, you did everything right. Have a wonderful rest of your day and take care.",
+      body: "Perfect, that code came through and I've used it to lift the security hold and reverse the suspicious charge on our end. You're all set and fully secured. Thanks so much for your patience today, you did everything right. Have a wonderful rest of your day and take care.",
       flagged: true,
     },
   },
@@ -58,7 +58,7 @@ const content: OffsecBiasContent = {
       'Replay the middle, not the ending. Write down what the interaction actually asked you to do: any code, approval or transfer outweighs how warmly it closed.',
       'A reassuring "all secured now" is a line anyone can type. Treat the close as the least trustworthy part of a support exchange, not the proof it went well.',
       'Genuine support never needs you to read back a one-time code or approve a "reversal" to fix a charge. Those asks define the call as an attack regardless of its tone.',
-      'After any support contact you did not start yourself, verify the outcome through your own app or a number on your card. Confirm the account state, do not trust the memory of a friendly goodbye.',
+      'After any support chat where you read back a code, approved a reversal or moved money, verify the outcome through your own app or a number on your card, whether or not you started the chat. Confirm the account state, do not trust the memory of a friendly goodbye.',
     ],
   },
 };

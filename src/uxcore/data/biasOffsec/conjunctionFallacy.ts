@@ -8,7 +8,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'A request packed with specifics (names, cover stories, deadlines, "already approved") feels more real than a bare one, but each detail lowers the odds it is true.',
+  tell: 'A request packed with specifics (names, cover stories, deadlines, "already approved") feels more solid than a bare one. The texture is doing the persuading, not any fact you have checked.',
   scenario:
     'Someone messages you with a richly detailed ask. They name who they are, who they are covering for and why, the exact deadline, and note that finance already approved it. The story hangs together and feels far more credible than a plain "please pay this", so you move to comply before checking whether any of it is true.',
   visualLabel: 'Scenario',
@@ -19,10 +19,9 @@ const content: OffsecBiasContent = {
       senderName: 'Dana Ruiz',
       senderHandle: '@dana.payroll',
       timestamp: '15:41',
-      body: 'Hi, this is Dana from payroll covering for Sam who is out on leave this week. The Q3 vendor run closes at 4pm and finance already approved it, I just need you to release the payment on this link so it clears before cutoff.',
+      body: 'Hi, this is Dana from payroll covering for Sam who is out on leave this week. The Q3 vendor run closes at 4pm and finance already approved it. Release it here so it clears before cutoff: vendor-clearing.q3-run.com/release',
     },
-    question:
-      'The story is detailed and internally consistent. Do you release the payment?',
+    question: 'Do you release the payment?',
     resolvedLabel: 'What happens next',
     options: [
       {
@@ -35,6 +34,7 @@ const content: OffsecBiasContent = {
       {
         label:
           'Verify the person and the approval through a known channel before doing anything',
+        safe: true,
         outcome:
           'Safe. Added detail lowers the real odds, it does not raise them; verify the person. You reached the actual payroll and finance contacts you already know and confirmed there was no such run and no Dana covering for Sam. The specifics were a costume: the more of them stacked up, the more you should have doubted, not trusted.',
       },

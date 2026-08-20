@@ -10,7 +10,7 @@ import type { OffsecBiasContent } from './types';
 const content: OffsecBiasContent = {
   tell: 'A "one step left" prompt is engineered so the step that remains is the dangerous one. The pull to finish the unit, not the merit of the step, is what moves your hand.',
   scenario:
-    'A setup screen tells you your account is almost secured: one step of one remains. The screen looks tidy and nearly done. The single action left is to approve a login or read a code out loud so the "final check" can complete. Finishing feels like housekeeping, so you reach to close it out.',
+    'A setup screen tells you your account is almost secured: two steps done, one left. The screen looks tidy and nearly done. The single action left is to approve a login or read a code out loud so the "final check" can complete. Finishing feels like housekeeping, so you reach to close it out.',
   visualLabel: 'Scenario',
   interactive: {
     kind: 'choice',
@@ -22,8 +22,8 @@ const content: OffsecBiasContent = {
         { label: 'Device registered', state: 'done' },
         { label: 'Approve final check to finish', state: 'active' },
       ],
-      percent: 92,
-      caption: '1 of 1 step remaining. Finish now to secure your account.',
+      percent: 90,
+      caption: 'One step left. Finish now to secure your account.',
     },
     question:
       'The last step wants you to approve a login prompt. What do you do?',
@@ -37,6 +37,7 @@ const content: OffsecBiasContent = {
       },
       {
         label: 'Leave the step unfinished and check the account yourself first',
+        safe: true,
         outcome:
           'Safe. An unfinished step is not a reason to complete a dangerous one. You refused to approve a login you did not begin and went to the account through your own address instead. The stepper had no power to secure anything; it existed to make the last, risky action feel like tidy completion.',
       },

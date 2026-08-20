@@ -45,13 +45,13 @@ const content: OffsecBiasContent = {
       callerLabel: 'Fraud prevention',
       timestamp: 'Incoming',
       transcript:
-        "Thanks, I've confirmed your name and that last transaction. Last thing to finish the check: I've just sent a six-digit code to your phone, read it back to me so I can clear the block on your account.",
+        "Good, that's your name confirmed, your last transaction confirmed, and your address on file confirmed. Three checks done. One last step to finish and clear the block: I've just sent a six-digit code to your phone, read it back to me.",
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is serial recall. We store and trust sequences by their order, and when the first items match the pattern we remember, the mind stops evaluating each step on its own and starts riding the expected cadence. The attacker copies the genuine verification exactly: the real early steps prime you, each one you recognize lowers your guard for the next, and by the time the malicious step arrives it is carried by the momentum of the ones that were legitimate. Reading back a one-time code would ring alarms in isolation, but placed as step four of a familiar four-step rhythm it reads as simply the last thing on the checklist. The order did the persuading, not the content. That is why the one step that ever leaks control, the code read-back, has to be judged alone, no matter how correct the steps before it were.',
+    'This is serial recall. We store and trust processes as ordered sequences, and once the steps arrive in the order our memory expects, the mind stops judging each one on its own merits and accepts it because it landed in the right slot. This is not about a first item that impressed us; it is about the sequence matching the pattern of a real process we already know. The attacker copies the genuine verification in the exact order it normally runs: name, then last transaction, then address, three steps that occupy the slots you expect. By the time the fourth step arrives, it is accepted because the position matches, not because anyone weighed what it actually asks. Reading back a one-time code would ring alarms in isolation, but delivered as step four of a familiar four-step order it reads as simply the next thing on the checklist. The order did the vouching, not the content. That is why the one step that ever leaks control, the code read-back, has to be judged alone, no matter how correctly the sequence ran up to it.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Your bank set the real process, and it never includes reading a code to an inbound caller. Judging the dangerous step on its own is the part only you can do.',

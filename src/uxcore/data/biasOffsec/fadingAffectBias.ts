@@ -23,22 +23,24 @@ const content: OffsecBiasContent = {
       meterLabel: 'Your caution',
       meterFrom: 92,
       meterTo: 92,
+      priorContext:
+        'Yesterday: a phishing email, "Your account was flagged, confirm your login," slipped past the filter and almost got a click.',
       caption:
-        'Right after the close call, the fear is fresh and vigilance is high. You check every sender and swear off the next bait.',
+        'Day 1. The flagged message is still pinned at the top of the inbox and the caution meter reads 92.',
     },
     after: {
       kind: 'live',
       variant: 'counter',
       tag: 'Weeks later, same trick returns',
       priorContext:
-        'The same style of phishing message just landed again, and you barely paused over it.',
+        'Inbox, this morning: "Security alert: confirm your login to avoid suspension," from a near-match of the sender that caught you last month. Already opened, not flagged.',
       counterValue: '38',
       counterLabel: 'days since the incident',
       meterLabel: 'Your caution',
       meterFrom: 92,
       meterTo: 24,
       caption:
-        'The sting faded far faster than the habit of clicking. Vigilance drained back to baseline while the threat stayed exactly the same.',
+        'Day 38. The lookalike above is already open and unmarked. The caution meter has slid from 92 to 24 as the counter kept climbing.',
       flagged: true,
     },
   },

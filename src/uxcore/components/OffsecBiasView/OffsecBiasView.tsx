@@ -494,7 +494,7 @@ const CardBody = ({
               })}
             >
               <span className={styles.checkGlyph} aria-hidden="true">
-                {item.state === 'ok' ? '✓' : item.state === 'warn' ? '!' : '—'}
+                {item.state === 'ok' ? '✓' : item.state === 'warn' ? '!' : '·'}
               </span>
               {item.label}
             </li>
@@ -750,7 +750,8 @@ const InteractiveWidget = ({
             className={cn(styles.choiceButton, {
               [styles.choiceButtonPicked]: picked === i,
               [styles.choiceButtonTrap]: picked === i && opt.trap,
-              [styles.choiceButtonSafe]: picked === i && !opt.trap,
+              [styles.choiceButtonSafe]: picked === i && opt.safe,
+              [styles.choiceButtonLoss]: picked === i && !opt.trap && !opt.safe,
               [styles.choiceButtonMuted]: picked !== null && picked !== i,
             })}
             onClick={() => setPicked(i)}
@@ -765,7 +766,8 @@ const InteractiveWidget = ({
         <div
           className={cn(styles.choiceOutcome, {
             [styles.choiceOutcomeTrap]: chosen.trap,
-            [styles.choiceOutcomeSafe]: !chosen.trap,
+            [styles.choiceOutcomeSafe]: chosen.safe,
+            [styles.choiceOutcomeLoss]: !chosen.trap && !chosen.safe,
           })}
         >
           <span className={styles.choiceOutcomeLabel}>

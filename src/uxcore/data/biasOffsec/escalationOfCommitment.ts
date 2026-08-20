@@ -17,7 +17,9 @@ const content: OffsecBiasContent = {
       kind: 'chat',
       senderName: 'Settlements Agent',
       senderHandle: 'case #48120',
-      body: 'Good news, your funds cleared verification. There is one final release fee of 40 to unlock the full amount to your account. This is the last step. Once it is paid, everything is released immediately.',
+      priorContext:
+        'Two days ago you paid a $25 processing fee to open this case and start the release. That fee has already cleared.',
+      body: 'Good news, your funds cleared verification. There is one final release fee of $40 to unlock the full amount to your account. This is the last step. Once it is paid, everything is released immediately.',
     },
     question: 'What do you do?',
     resolvedLabel: 'What happens next',
@@ -37,6 +39,7 @@ const content: OffsecBiasContent = {
       {
         label:
           'Stop paying, report the account, and accept the earlier fee as a loss',
+        safe: true,
         outcome:
           'Safe. You separated the money already gone from the decision in front of you. The first fee is lost no matter what you do next, so it cannot be a reason to send a second. You cut the chain at the only place it can be cut: refusing the next fee. Everything before this was sunk, and you stopped adding to it.',
       },

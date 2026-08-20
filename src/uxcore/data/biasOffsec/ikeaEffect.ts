@@ -15,6 +15,8 @@ const content: OffsecBiasContent = {
     kind: 'choice',
     surface: {
       kind: 'permission',
+      priorContext:
+        'You just spent twenty minutes building this workspace: picked a theme, arranged a dashboard, imported your projects. It already feels like yours.',
       appName: 'FlowBoard',
       subtitle: 'wants access to your Google account',
       scopes: [
@@ -46,6 +48,7 @@ const content: OffsecBiasContent = {
       {
         label:
           'Stop and question why a task board needs full mail and file access before granting anything',
+        safe: true,
         outcome:
           'Safe. You judged the request on what it asks for, not on how much of yourself you already put into the setup. A workspace tool does not need to read and delete all your email or manage every file in your Drive. The time you spent configuring it is a cost you paid, not evidence the tool is safe.',
       },
@@ -53,14 +56,14 @@ const content: OffsecBiasContent = {
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    "This is the IKEA effect, the documented tendency to place higher value on things you helped build. Effort creates attachment, and attachment reads as trust. By front-loading a long, hands-on setup, the attacker gets you to invest before they ask for anything, so that by the permission screen the workspace feels like your creation rather than a stranger's app. Something you built yourself does not feel like a threat, which is exactly the misread the design engineers. The labor you put in has nothing to do with whether the developer is honest or the scopes are appropriate, yet it quietly answers the trust question for you. Walking away now also means abandoning your own work, so loss aversion piles onto the attachment. The more you customise, the more it feels like yours, and the less you scrutinise the one screen that actually hands over your data.",
+    "This is the IKEA effect, the documented tendency to place higher value on things you helped build. Effort creates attachment, and attachment reads as trust. By front-loading a long, hands-on setup, the attacker gets you to invest before they ask for anything, so that by the permission screen the workspace feels like your creation rather than a stranger's app. Something you built yourself does not feel like a threat, which is exactly the misread the design engineers. The labor you put in has nothing to do with whether the developer is honest or the scopes are appropriate, yet it quietly answers the trust question for you. The more you customise, the more it feels like yours, and the less you scrutinise the one screen that actually hands over your data.",
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Admins can restrict which OAuth scopes third-party apps may request across the org. Judging a permission grant on its own terms, no matter how much setup preceded it, is the personal half.',
     moves: [
       'Effort you spent configuring a tool is not verification of the tool. Evaluate a permission request as if you had installed the app cold, one minute ago.',
       'Match the scope to the job. A task board or dashboard has no reason to read, send, or delete all your email or manage every file in your storage.',
-      'Notice when abandoning a setup feels like a loss. That reluctance is the IKEA effect and loss aversion working together, and neither one tells you the app is safe.',
+      'Notice when a tool feels trustworthy because you built inside it. That attachment is the IKEA effect, and it tells you nothing about whether the app is safe.',
       'The dangerous grant usually comes at the end of the investment, when you are most attached and least skeptical. Slow down precisely there.',
     ],
   },

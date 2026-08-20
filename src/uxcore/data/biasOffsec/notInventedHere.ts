@@ -22,7 +22,7 @@ const content: OffsecBiasContent = {
       subject: 'Auth bypass in the client portal, patch today',
       preview:
         'We confirmed an authentication bypass in the client portal login flow. Apply the attached fix and rotate the affected keys today. Reproduction steps included.',
-      attachment: '📎 fix-and-repro.md',
+      attachment: 'fix-and-repro.md',
     },
     after: {
       kind: 'email',
@@ -34,7 +34,7 @@ const content: OffsecBiasContent = {
       subject: 'Vulnerability report: auth bypass in your client portal',
       preview:
         'I am an independent security researcher. Your client portal login flow contains an authentication bypass, reproduction steps attached. Please confirm receipt so I can coordinate disclosure.',
-      attachment: '📎 repro-steps.md',
+      attachment: 'repro-steps.md',
       flagged: true,
     },
   },

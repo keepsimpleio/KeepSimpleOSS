@@ -45,7 +45,7 @@ const content: OffsecBiasContent = {
       subject: 'Helios project, Q3 invoice',
       preview:
         "Hi, following up on the Helios rollout we discussed at last week's review. Great work from your side on it. Quick note: our bank details have changed, please use the updated account on the attached invoice for this payment. Thanks again, speak soon.",
-      attachment: '📎 Helios-Q3-invoice.pdf',
+      attachment: 'Helios-Q3-invoice.pdf',
       flagged: true,
     },
   },

@@ -39,18 +39,21 @@ const content: OffsecBiasContent = {
         'The crest does the persuading. Nobody checks whether it is real.',
     },
     after: {
-      kind: 'notification',
+      kind: 'document',
       tag: 'The plan, as it lands on you',
-      appName: 'Mail',
-      timestamp: 'now',
-      title: 'Tax Office: action required on your filing',
-      body: 'A discrepancy was found in your latest submission. Correct your details within 3 working days through the secure portal to avoid a penalty. Reference: TR-40928.',
+      docLabel: 'Official notice',
+      logo: '🏛️',
+      title: 'Notice of Filing Discrepancy',
+      meta: 'National Revenue Office · Ref TR-40928',
+      body: 'A discrepancy has been identified in your most recent submission. Under standard review procedure, affected filers are required to reconfirm their details through the secure filer portal. Please complete the reconfirmation within 5 working days of the date of this notice. Keep the reference number above for your records.',
+      footer:
+        'National Revenue Office · Compliance & Filings Division · Ref TR-40928',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is prejudice as a security failure. Prejudice is judging by group or affiliation before weighing evidence, and it runs in both directions: instant distrust of an out-group, instant deference to an authority-group. The attacker exploits the deference side. They wrap an ordinary phishing ask in the identity of a body you were raised to obey, and your mind checks the affiliation instead of the message, then treats the affiliation as the verification. A crest, an official register and a formal deadline are cheap to counterfeit and expensive to doubt, because doubting an authority feels like the risky move. The compliance was bought by the group name before the content was ever read. That is why the fix is to make the sender prove they are the body they claim, since the badge itself proves nothing.',
+    'This is prejudice as a security failure. Prejudice is judging by group or affiliation before weighing evidence, and it runs in both directions: instant distrust of an out-group, instant deference to an institution. The deference here is not to a person with a title, which is a different lever. It is to the institution itself, the tax office, the regulator, the body whose name and crest end questions on their own. The attacker wraps an ordinary phishing ask in the identity of a body you were raised to obey, and your mind checks the affiliation instead of the message, then treats the affiliation as the verification. A crest, an official register and a formal deadline are cheap to counterfeit and expensive to doubt, because doubting an institution feels like the risky move. The compliance was bought by the group name before the content was ever read. That is why the fix is to make the sender prove they are the body they claim, since the badge itself proves nothing.',
   defenseLabel: 'Protect yourself',
   defense: {
     lede: 'Real agencies have real channels you can reach independently. Refusing to let a badge stand in for proof is the part only you can do.',

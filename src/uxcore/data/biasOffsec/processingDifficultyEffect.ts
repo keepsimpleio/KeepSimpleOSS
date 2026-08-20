@@ -1,63 +1,68 @@
 // Mode: playbook. `before` is a page from the attacker's own manual; `after`
 // is the victim's screen where the plan lands. The lever is the processing
-// difficulty effect: fluent, easy-to-read messages feel more true, and an
-// effortful safe path gets skipped. Keep the attacker's route frictionless and
-// make verifying feel like work, and ease alone decides which route you take.
+// difficulty effect: cognitive effort creates a stronger memory trace and
+// forces deeper engagement, so work you perform by hand feels like proof. The
+// attacker hands the victim effortful manual steps to complete, and the labor
+// itself breeds commitment and belief.
 
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
-  tell: 'When the fast path is one tap and the safe path is a chore, ease is picking for you. Attackers polish their route and bury yours on purpose.',
+  tell: 'Work you do by hand feels like proof. The more steps an attacker makes you complete yourself, the more you believe the thing you just built and the more clearly you remember doing it.',
   scenario:
-    'A prompt lets you approve something with a single tap. The alternative, actually verifying it, means finding a portal, logging in, digging through menus. Both options are on the screen, but only one is easy, and easy reads as true. The smooth path feels obviously fine while the effortful one feels like overkill for a routine notice. The attacker did not remove the safe route. They just made it tedious enough that you take the frictionless one, because fluency masquerades as legitimacy.',
+    'A support page tells you to fix a flagged security issue by opening your terminal and typing a specific command yourself, then reading back the confirmation it prints. It is deliberately effortful: a long string, exact syntax, no shortcut. None of that work verifies anything, but performing it changes how you feel about it. You engaged deeply, you did every step, so the mind credits the effort as evidence: I did all that, it must be legitimate. And because it took real work, you remember doing it clearly and defend the decision afterward. The command was the attack. The effort was the persuasion.',
   visualLabel: 'Scenario',
   visual: {
     before: {
       kind: 'playbook',
       tag: "The attacker's plan",
-      docTitle: 'Playbook: make the safe path the hard path',
+      docTitle: 'Playbook: make them do the work by hand',
       steps: [
         {
-          label: 'Polish our route to one tap',
-          note: 'Clean copy, a single button, zero friction. Fluent reads as true.',
+          label: 'Hand them real work to perform',
+          note: 'A long command to type out, a manual config to run, a code to transcribe. No copy-paste shortcut, so completing it takes attention.',
           active: true,
         },
         {
-          label: 'Bury the real verify route',
-          note: 'Point to a portal, a login, three menus deep. Make checking feel like work.',
+          label: 'Make the steps exact and effortful',
+          note: 'Precise syntax, an order to follow, an output to read back. The friction is the point, not a flaw.',
         },
         {
-          label: 'Let effort decide',
-          note: 'Faced with easy versus tedious, most take easy. The choice is made on friction, not facts.',
+          label: 'Let the effort become the proof',
+          note: 'The labor they put in reads as verification. "I did all that, it must be real" does the convincing.',
         },
         {
-          label: 'Frame it as routine',
-          note: 'A minor, expected notice makes the extra effort of verifying feel like overkill.',
+          label: 'Cement it in memory',
+          note: 'Because it took effort, they remember doing it vividly and defend the choice later instead of doubting it.',
         },
       ],
-      footer: 'Ease does the persuading. The one-tap path is the whole trap.',
+      footer:
+        'The effort does the persuading. The work they do by hand is the con.',
     },
     after: {
-      kind: 'notification',
+      kind: 'browser',
       tag: 'The plan, as it lands on you',
-      appName: 'Workspace Security',
-      timestamp: 'now',
-      title: 'New sign-in needs approval',
-      body: 'A device is trying to sign in to your account. Tap Approve to continue. (To review the sign-in details instead, open the security portal, sign in, go to Devices, then Recent activity.)',
+      protocol: 'https',
+      host: 'workspace-security-fix.co',
+      path: '/resolve/manual',
+      pageHeading: 'Resolve the flagged sign-in manually',
+      pageBody:
+        'Our automated fix could not run on your device, so please complete it by hand. Open your terminal and type the following command exactly, then press Enter: setup-trust --grant device --token 8842-QK. When it prints a six-character confirmation, type that code into the box below to close the alert.',
+      cta: 'I have run the command',
       flagged: true,
     },
   },
   whyItWorksLabel: 'Why it works',
   whyItWorks:
-    'This is the processing difficulty effect, the flip side of processing fluency. Messages that are easy to read and act on feel more true and more legitimate than ones that make you work, and the mind quietly credits that ease to the content rather than to the design. An attacker exploits this twice over. First they make their own path effortless, a single clean tap, so it feels obviously fine. Then they make the safe path, the real verification, deliberately tedious: a portal, a login, menus deep. Both routes sit on the same screen, but effort decides which you take, and the easy one wins by feeling right rather than by being right. Fluency is not a fact-check. The attacker manufactured the ease you are reading as trust.',
+    'This is the processing difficulty effect. Effortful, disfluent material forces deeper engagement and lays down a stronger memory trace than something you skim, which is why a hard-won conclusion feels more owned than an easy one. That is genuinely useful when the effort is spent on real understanding. An attacker turns it against you by manufacturing effort that verifies nothing: a long command you type by hand, a manual config you run, a code you transcribe. The labor is real, so your mind treats it as proof and rewards it with commitment, and because you worked for it you remember the steps clearly and defend them if challenged. This is not fluency, where ease reads as truth. It is the opposite face of the same coin, where the sweat of doing something by hand is mistaken for having verified it. The command did the damage. The effort you spent on it is exactly why you trusted it.',
   defenseLabel: 'Protect yourself',
   defense: {
-    lede: 'The safe route being annoying is a design choice someone made, often the attacker. Do the tedious check anyway.',
+    lede: 'Effort is not verification. The fact that a fix was hard to perform tells you nothing about whether it was real.',
     moves: [
-      'When one option is one tap and the other is a chore, treat that gap as a signal to slow down, not to take the tap.',
-      'Approve nothing from the prompt itself. Open the service the way you always do and check whether the sign-in or request is really there.',
-      'A real sign-in you did not start is denied, never approved to "continue". If you did not just try to log in, the answer is no.',
-      'Notice when you chose the easy path because it was easy. Ease is a feeling the sender can manufacture; it is not evidence.',
+      'Never run a command, config or script that a message tells you to type or paste, no matter how official the page looks. The instruction to do it by hand is the attack, not the fix.',
+      'Notice when you trust something because you worked for it. The labor you put in is not evidence the task was legitimate; an attacker chose the effort precisely to make it feel that way.',
+      'A real security fix does not route through you typing commands into a terminal from an outside page. Genuine remediation happens inside the service, initiated by you.',
+      'Stop and verify the flagged issue through the service directly, from a session you opened yourself. If the alert is not there, the manual steps were the whole con.',
     ],
   },
 };

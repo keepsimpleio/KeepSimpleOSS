@@ -43,10 +43,10 @@ const content: OffsecBiasContent = {
       tag: 'The plan, as it lands on you',
       sender: 'it-compliance@company-workspace-admin.com',
       timestamp: 'Tue, 09:15',
-      subject: 'Action required: annual access recertification (Policy IT-114)',
+      subject: 'Quarterly access recertification (Policy IT-114)',
       preview:
-        'Per Policy IT-114, all staff must recertify workspace access this quarter. This is a standard compliance step. Please confirm your identity at the recertification portal linked below by end of week to keep your account in good standing. No action means temporary suspension per the same policy.',
-      attachment: '📎 Recertification-IT-114.pdf',
+        'Per Policy IT-114, all staff complete workspace access recertification each quarter. This is a standard, scheduled compliance step handled through the usual process. Please confirm your identity at the recertification portal linked below so your access record stays current. Thank you for keeping your details up to date.',
+      attachment: 'Recertification-IT-114.pdf',
       flagged: true,
     },
   },
@@ -60,7 +60,7 @@ const content: OffsecBiasContent = {
       'A cited policy number proves someone knows the format, not that they own the process. Look the policy up through the intranet yourself before acting on it.',
       'Separate the institution from the email claiming to speak for it. Confirm any access or recertification step directly with IT through a channel you already hold.',
       'Notice when you almost complied to avoid breaking process. That reflex is exactly what the attacker rented. Checking is not deviance.',
-      'Genuine internal compliance steps do not route through an outside domain or a one-week suspension threat. Both are the tell under the administrative calm.',
+      'Genuine internal compliance steps do not route through an outside domain, however calm and procedural the wording is. The lookalike domain is the tell under the bureaucratic tone.',
     ],
   },
 };

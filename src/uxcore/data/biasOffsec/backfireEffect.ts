@@ -23,7 +23,7 @@ const content: OffsecBiasContent = {
       meterFrom: 55,
       meterTo: 55,
       caption:
-        'A held belief that the recovery agent is genuine. Untested so far, and open to changing.',
+        'No warnings received yet. The counter sits at zero and the certainty meter reads 55, the starting point.',
     },
     after: {
       kind: 'live',
@@ -37,7 +37,7 @@ const content: OffsecBiasContent = {
       meterFrom: 55,
       meterTo: 96,
       caption:
-        'Each push made the belief stronger, not weaker. The agent "predicted" people would try to stop you, so resistance now reads as proof.',
+        'Three warnings logged, all dismissed. As each one arrived the certainty meter climbed from 55 to 96, moving up with every correction instead of down.',
       flagged: true,
     },
   },
