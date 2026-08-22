@@ -11,6 +11,7 @@
     "generate:llms": "cross-env LLMS_MODE=curated ts-node --compiler-options '{\"module\":\"commonjs\",\"target\":\"es2020\"}' scripts/generate-llms.ts",
     "generate:llms:full": "cross-env LLMS_MODE=full ts-node --compiler-options '{\"module\":\"commonjs\",\"target\":\"es2020\"}' scripts/generate-llms.ts",
     "generate:llms:pages": "ts-node --compiler-options '{\"module\":\"commonjs\",\"target\":\"es2020\"}' scripts/generate-llms-pages.ts",
+    "generate:llms:offsec": "ts-node --compiler-options '{\"module\":\"commonjs\",\"target\":\"es2020\"}' scripts/generate-offsec-llms.ts",
     "start": "cross-env NODE_ENV=production APP_ENV=production yarn build && next start -p 4033",
     "start:staging": "cross-env NODE_ENV=production APP_ENV=staging next start -p 3005",
     "build:staging": "cross-env NODE_OPTIONS=--require=./build-fetch-patch.js NODE_ENV=production APP_ENV=staging next build",

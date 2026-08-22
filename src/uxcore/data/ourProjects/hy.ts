@@ -1,5 +1,5 @@
 const hy = {
-  inDevTxt: 'In Development',
+  inDevTxt: 'Մշակման փուլում',
   doneTxt: 'Done',
 };
 

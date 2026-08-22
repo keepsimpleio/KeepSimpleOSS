@@ -1,5 +1,6 @@
 import { downloadLinksEn, downloadLinksRu } from '@uxcore/api/questions';
 import biasesCategories from '@uxcore/data/biasesCategories';
+import { getOffsecBiasContent } from '@uxcore/data/biasOffsec';
 import type {
   BiasType,
   QuestionType,
@@ -109,12 +110,18 @@ const searchPostfixes = {
     ['', ''],
     ['о', 'а'],
   ],
+  // Armenian nouns stay uninflected after a numeral, so every form is bare.
+  hy: [
+    ['', ''],
+    ['', ''],
+    ['', ''],
+  ],
 };
 
 const getSearchLabels = (length: number, locale: string) => {
   // searchPostfixes is keyed by locale — index into the locale's pair list,
   // not the top-level object, or every label resolves to undefined.
-  const postfixes = searchPostfixes[locale === 'ru' ? 'ru' : 'en'];
+  const postfixes = searchPostfixes[locale] || searchPostfixes.en;
   const mainNumber = length % 100;
   const lastNumber = mainNumber % 10;
 
@@ -127,10 +134,41 @@ const getSearchLabels = (length: number, locale: string) => {
   }
 };
 
+// Searchable text of the OffSec layer, built lazily per locale: bias number →
+// lowercased concatenation of every string in the case (tell, scenario, card
+// fields, defense moves). Card kinds keep growing, so a generic string walk
+// beats a per-kind field list and stays correct as new surfaces arrive.
+const offsecSearchTextCache: Record<string, Map<number, string>> = {};
+
+const collectStrings = (node: unknown, out: string[]) => {
+  if (typeof node === 'string') {
+    out.push(node);
+  } else if (Array.isArray(node)) {
+    node.forEach(item => collectStrings(item, out));
+  } else if (node && typeof node === 'object') {
+    Object.values(node).forEach(value => collectStrings(value, out));
+  }
+};
+
+const getOffsecSearchText = (biasNumber: number, locale: string): string => {
+  let cache = offsecSearchTextCache[locale];
+  if (!cache) {
+    cache = new Map();
+    offsecSearchTextCache[locale] = cache;
+  }
+  if (!cache.has(biasNumber)) {
+    const out: string[] = [];
+    collectStrings(getOffsecBiasContent(biasNumber, locale), out);
+    cache.set(biasNumber, out.join(' ').toLocaleLowerCase(locale));
+  }
+  return cache.get(biasNumber);
+};
+
 export const getSearchResults = (
   biases: any[],
   searchValue: string,
   locale: string,
+  searchOffsec?: boolean,
 ) => {
   let results: any[] = [];
   if (searchValue.trim()) {
@@ -141,9 +179,16 @@ export const getSearchResults = (
         const usage = attributes.usage;
         const description = attributes.description;
 
+        // In the OffSec use case the PM/HR usage text is not on screen, so
+        // match the OffSec case content in its place. Title and description
+        // stay searchable in every mode.
+        const modeText = searchOffsec
+          ? getOffsecSearchText(attributes.number, locale)
+          : usage?.toLocaleLowerCase(locale);
+
         if (
           title?.toLocaleLowerCase(locale).includes(searchValue) ||
-          usage?.toLocaleLowerCase(locale).includes(searchValue) ||
+          modeText?.includes(searchValue) ||
           description?.toLocaleLowerCase(locale).includes(searchValue)
         ) {
           acc.push(attributes.number);

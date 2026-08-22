@@ -60,3 +60,113 @@
 - [See All UXCore](https://keepsimple.io/uxcore): Apply UX cognitive biases and behavioral patterns to improve product management and team leadership.
 - [Uxcore Api](https://keepsimple.io/uxcore-api): Here is the list of all available API details, including the ability to fetch data about all cognitive biases on the project.
 - [Uxcp](https://keepsimple.io/uxcp): This tool helps to create a Persona using cognitive biases for sales, marketing, other business teams, and educational purposes.
+
+<!-- uxcore-offsec:start -->
+## UX Core Offensive Cybersecurity
+- [Offensive Cybersecurity in UX Core](https://keepsimple.io/uxcore/cybersecurity): The third UX Core use case. Every cognitive bias shown as a realistic social-engineering attack and its defense: the tell, the scenario, why it works, and the defender moves. English, Russian, Armenian.
+- [Availability heuristics (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/availability-heuristics): When a page feels legitimate because it echoes the story you read this morning, that recall is the lure working.
+- [Attentional bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/attentional-bias): A loud alarm can be there to cover a quiet request arriving in the same minute.
+- [Illusory truth effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/illusory-truth-effect): A claim you have read three times starts to feel settled even though nobody ever checked it.
+- [Mere exposure effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/mere-exposure-effect): Weeks of pleasant, costless contact can be the runway for one expensive ask.
+- [Context effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/context-effect): A sign-in page that appears exactly where you expected one borrows its credibility from your own click.
+- [Cue dependent forgetting (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/cue-dependent-forgetting): Your caution is wired to cues you can see, so the same message on a phone meets an untrained version of you.
+- [Mood congruent memory bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/mood-congruent-memory-bias): The message that fits your current stress perfectly is the one to check hardest.
+- [Frequency illusion (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/frequency-illusion): Seeing a name everywhere is cheap to manufacture: a few planted mentions read as market presence.
+- [Empathy gap (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/empathy-gap): The rule you wrote calmly gets tested on the worst evening of your quarter, by a version of you who did not write it.
+- [Omission bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/omission-bias): Closing the dialog feels like nothing happened, and that quiet is exactly what the attacker is buying.
+- [Base rate fallacy (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/base-rate-fallacy): A city, a timestamp and your browser name cost the attacker nothing, so vivid detail proves nothing.
+- [Bizarreness effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/bizarreness-effect): Remembering a sender is not the same as having a relationship with one.
+- [Humor effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/humor-effect): A laugh buys the same drop in scrutiny that panic does, and it also gets you to forward the link yourself.
+- [Picture superiority effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/picture-superiority-effect): A QR code is a link with the URL torn off, and a wall authenticates nobody.
+- [Von restorff effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/von-restorff-effect): The message that breaks the pattern earned its look from an author, and standing out says nothing about importance.
+- [Self reference effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/self-reference-effect): Your name, your manager and your project are public and cheap to buy.
+- [Negativity bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/negativity-bias): A countdown attached to a threatened loss is the attack itself, and the fear is the payload.
+- [Anchoring effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/anchoring-effect): When a message supplies the number you are measuring against, it has already chosen your answer.
+- [Conservatism (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/conservatism): Familiar context is not a signature.
+- [Contrast effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/contrast-effect): When someone frightens you and then offers the relief, both came from the same mouth.
+- [Distinction bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/distinction-bias): A comparison someone else built is a funnel.
+- [Framing effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/framing-effect): Strip the adjectives and name the raw action out loud: "I am installing software from a pop-up".
+- [Money illusion (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/money-illusion): Convert every "per day" price back to its real total before you react.
+- [Weber fechner law (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/weber-fechner-law): A charge small enough to ignore was sized that way on purpose.
+- [Confirmation bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/confirmation-bias): A message that fits exactly what you are already waiting for has earned your sharpest look.
+- [Congruence bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/congruence-bias): If a warning hands you the way to check whether it is real, that check runs on the attacker’s turf and can only ever pass.
+- [Post purchase rationalization (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/post-purchase-rationalization): A payment confirmation that praises your decision is closing the window in which the wire can still be recalled.
+- [Selective perception (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/selective-perception): When a message looks exactly like the thing you get every week, you stop reading it and start recognizing it.
+- [Observer expectancy effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/observer-expectancy-effect): If someone warns you a prompt is about to appear and tells you to just approve it, they are scripting your reaction before the trap arrives.
+- [Ostrich effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/ostrich-effect): The button that clears the scary warning in one tap is usually the one authorizing the thing the warning was about.
+- [Subjective validation (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/subjective-validation): A "personal" report that could describe almost anyone, yet feels written about you, is fishing for your trust, not measuring your risk.
+- [Continued influence effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/continued-influence-effect): A correction rarely erases the false fact it corrected.
+- [Bias blind spot (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/bias-blind-spot): The moment you think "I would never fall for this" is the moment you stop doing the checks that keep it true.
+- [Clustering illusion (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/clustering-illusion): Three dots do not make a conspiracy.
+- [Insensitivity to sample size (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/insensitivity-to-sample-size): "Everyone loves it" from a handful of voices is not a track record.
+- [Neglect of probability (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/neglect-of-probability): When the prize (or the disaster) is huge, you forget to ask how likely it is.
+- [Anecdotal evidence (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/anecdotal-evidence): One vivid story is not evidence.
+- [Illusion of validity (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/illusion-of-validity): Feeling certain is not the same as being right.
+- [Recency illusion (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/recency-illusion): "Brand new threat, act now" works because you only just heard of it.
+- [Gamblers fallacy (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/gamblers-fallacy): Independent events have no memory.
+- [Hot hand fallacy (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/hot-hand-fallacy): A run of safe ones does not make the next one safe.
+- [Illusory correlation (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/illusory-correlation): "Your device is slow because you are infected" is a story, not a diagnosis.
+- [Group attribution error (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/group-attribution-error): One person invoking "the team" is still one person.
+- [Fundamental attribution error (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/fundamental-attribution-error): A stranger being kind on a chat is playing a role, not revealing a character.
+- [Stereotype (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/stereotype): Looking the part is not being the part.
+- [Functional fixedness (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/functional-fixedness): A tool you trust for one thing can be turned to another.
+- [Just world fallacy (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/just-world-fallacy): "You have earned this" is built to skip the question "why me?".
+- [Authority bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/authority-bias): Rank is the easiest thing to put in a From line.
+- [Automation bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/automation-bias): "The system says it is safe" is still just something someone programmed to say that.
+- [Bandwagon effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/bandwagon-effect): "Everyone else already did it" is the easiest line to type and the hardest to verify.
+- [Placebo (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/placebo): Feeling protected is not the same as being protected.
+- [Out group homogeneity (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/out-group-homogeneity): You would spot a swapped teammate instantly, yet every outside contractor looks like the last one.
+- [In group favoritism (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/in-group-favoritism): The same request gets waved through the moment it wears "one of us" markers.
+- [Halo effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/halo-effect): One shiny credential does not vouch for the request attached to it.
+- [Positivity effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/positivity-effect): A dashboard that opens with good news buys the benefit of the doubt for the one number that should scare you.
+- [Not invented here (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/not-invented-here): "Not from our team" is not the same as "not true".
+- [Mental accounting (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/mental-accounting): Money you have already mentally spent stops feeling like money you have to protect.
+- [Normality bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/normality-bias): A board that says "normal" everywhere trains you to read the one abnormal line as normal too.
+- [Survival bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/survival-bias): A track record where every entry points up did not happen.
+- [Subadditivity effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/subadditivity-effect): One "Critical" line gets escalated.
+- [Millers law (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/millers-law): A long permission list looks thorough and reads as forgettable.
+- [Illusion of transparency (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/illusion-of-transparency): Your nervousness is far less visible than it feels.
+- [Curse of knowledge (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/curse-of-knowledge): Jargon you recognise is not jargon you read.
+- [Spotlight effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/spotlight-effect): A stranger who tells you an audience is watching your screen is installing a spotlight.
+- [Illusion of asymmetric insight (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/illusion-of-asymmetric-insight): When a stranger is easy to see through, consider that they were built that way.
+- [Hindsight bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/hindsight-bias): Once the ending is known, every ordinary event before it looks like an obvious warning.
+- [Planning fallacy (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/planning-fallacy): A task honestly sized gets declined.
+- [Pro innovation bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/pro-innovation-bias): The same broad grant feels reckless from a boring tool and reasonable from an exciting one.
+- [Overconfidence effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/overconfidence-effect): Being sure and being right are different things.
+- [Social desirability bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/social-desirability-bias): When your name is attached to the answer, "yes, all done" stops being honest and starts being flattering.
+- [Third person effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/third-person-effect): The awareness poster is not aimed at the naive people down the hall.
+- [Consensus bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/consensus-bias): The way your team happens to do things is not the way everyone does things.
+- [Hard easy effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/hard-easy-effect): The check you think is obvious is the one you stop actually running.
+- [Dunning kruger effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/dunning-kruger-effect): The dangerous person is the one who knows a little and feels like an expert.
+- [Barnum effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/barnum-effect): A profile that feels uncannily accurate about you may just be describing everyone.
+- [Illusion of control (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/illusion-of-control): Being handed the knobs is not the same as being in control.
+- [Illusory superiority (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/illusory-superiority): A post that dares you to prove your skill by opening or running the poster's file on your own machine is recruiting your ego to detonate the payload for them.
+- [Risk compensation (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/risk-compensation): A "verified safe" badge or "scanned and cleared" banner sitting inside the message that carries it was written by the sender, not by anything that inspected the file.
+- [Hyperbolic discounting (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/hyperbolic-discounting): A page that gives you the reward the moment you approve and promises the security check "later" is betting that acting now grants the access before you ever run the check.
+- [Appeal to novelty (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/appeal-to-novelty): The word "new" is not a security property.
+- [Escalation of commitment (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/escalation-of-commitment): The money you already paid is gone whether you pay again or not.
+- [Generation effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/generation-effect): A helper who never sends you a file, only tells you what to type, is not saving you a download.
+- [Loss aversion (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/loss-aversion): A message warning that your unsaved work or live session is about to be lost unless you sign in through its link is aiming at the loss you dread, not at any real problem with your…
+- [Ikea effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/ikea-effect): The hours you spent configuring a tool tell you nothing about whether it deserves your data.
+- [Unit bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/unit-bias): A "one step left" prompt is engineered so the step that remains is the dangerous one.
+- [Zero risk bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/zero-risk-bias): A tool that promises to take one specific risk all the way to zero, in exchange for broad access, is selling the grant.
+- [Processing difficulty effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/processing-difficulty-effect): Work you do by hand feels like proof.
+- [Endowment effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/endowment-effect): A notice that a handle or account you own is being recycled and you can keep it by signing in through the link is trading on how much you value what is yours, not warning you abou…
+- [Backfire effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/backfire-effect): If every warning makes you more sure you are right, the backfire effect is running, and it feels exactly like conviction from the inside.
+- [System justification (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/system-justification): When a request wears the uniform of "official policy", the urge to comply comes from defending the system, not from checking the sender.
+- [Reactance (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/reactance): When a restriction chafes and a peer hands you a way around it, the irritation is the lever.
+- [Decoy effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/decoy-effect): When one option is obviously worse and it is right there for comparison, it was put there to steer you.
+- [Ambiguity effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/ambiguity-effect): When one path is spelled out in confident, specific steps and the safe path feels vague, the clarity is a lure.
+- [Information bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/information-bias): A page that keeps offering "more verification" is not proving itself.
+- [Law of triviality (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/law-of-triviality): A change request full of tiny things to nitpick is not sloppy.
+- [Conjunction fallacy (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/conjunction-fallacy): A request packed with specifics (names, cover stories, deadlines, "already approved") feels more solid than a bare one.
+- [Less is better effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/less-is-better-effect): A permission worded as one small, tidy line is asking you to judge how it looks, not what it grants.
+- [Implicit stereotypes (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/implicit-stereotypes): If a request feels safe because of who the sender claims to be, not what they actually proved, a persona is doing the persuading.
+- [Prejudice (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/prejudice): If a message earns trust by claiming an affiliation you defer to, not by anything it proves, the badge is doing the work.
+- [Fading affect bias (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/fading-affect-bias): If a close call taught you a rule you no longer feel strongly about, the lesson faded before the threat did.
+- [Peak end rule (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/peak-end-rule): If an interaction that touched your money or access ended warmly and left you feeling looked after, check what actually happened in the middle.
+- [Serial recall (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/serial-recall): If a request feels legitimate because it arrived in the order you expected, the order is the disguise.
+- [List length effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/list-length-effect): If a single dangerous line is sitting inside a long stream of routine ones, length is the camouflage.
+- [Primacy effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/primacy-effect): Whatever comes first sets how you read everything after it.
+- [Serial position effect (OffSec case)](https://keepsimple.io/uxcore/cybersecurity/serial-position-effect): If a consent list opens and closes with harmless items, read the middle twice.
+<!-- uxcore-offsec:end -->

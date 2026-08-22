@@ -2,6 +2,7 @@ import SearchIcon from '@uxcore/assets/icons/SearchIcon';
 import biasesSearchData from '@uxcore/data/biasesSearch';
 import useBiasSearch from '@uxcore/hooks/useBiasSearch';
 import useMobile from '@uxcore/hooks/useMobile';
+import useUXCoreGlobals from '@uxcore/hooks/useUXCoreGlobals';
 import { getSearchResults } from '@uxcore/lib/helpers';
 import type { StrapiBiasType } from '@uxcore/local-types/data';
 import type { TRouter } from '@uxcore/local-types/global';
@@ -39,6 +40,25 @@ const Search: FC<SearchProps> = ({ focusOnInit, biases }) => {
   const inputRef = useRef(null);
 
   const { setSearchResults } = useBiasSearch()[0];
+  const { isOffsecView } = useUXCoreGlobals()[1];
+
+  const runSearch = useCallback(
+    (searchValue: string) => {
+      const { results, searchLabels } = getSearchResults(
+        biases,
+        searchValue,
+        locale,
+        isOffsecView,
+      );
+      setSearchResults(results, !!searchValue.trim());
+      setSearchResultsData({
+        prefix: searchLabels?.[0],
+        resultCount: results.length,
+        postfix: searchLabels?.[1],
+      });
+    },
+    [locale, biases, isOffsecView],
+  );
 
   const handleSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -48,21 +68,20 @@ const Search: FC<SearchProps> = ({ focusOnInit, biases }) => {
       clearTimeout(searchTimeout.current);
 
       searchTimeout.current = setTimeout(() => {
-        const { results, searchLabels } = getSearchResults(
-          biases,
-          searchValue,
-          locale,
-        );
-        setSearchResults(results, !!searchValue.trim());
-        setSearchResultsData({
-          prefix: searchLabels?.[0],
-          resultCount: results.length,
-          postfix: searchLabels?.[1],
-        });
+        runSearch(searchValue);
       }, 300);
     },
-    [locale, biases],
+    [runSearch],
   );
+
+  // Switching the use case changes what the active query should match
+  // (PM/HR usage vs OffSec case text): recompute in place, no debounce,
+  // so the result count never describes the previous mode.
+  useEffect(() => {
+    if (!value.trim()) return;
+    clearTimeout(searchTimeout.current);
+    runSearch(value.toLocaleLowerCase());
+  }, [isOffsecView]);
 
   const handleClear = useCallback(() => {
     // Cancel any in-flight debounce so a pending search can't repopulate

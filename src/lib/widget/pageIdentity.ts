@@ -53,6 +53,10 @@ export type PageIdentity = {
   /** True when we authoritatively recognised the path. False = treat
       as "this page", never invent a project name. */
   known: boolean;
+  /** Active UX Core use case, derived from the URL hash the layout keeps
+      in sync (#hr, #offsec; no hash on /uxcore = product). Only set on
+      UX Core pages, and only when the URL actually tells us. */
+  useCase?: 'product' | 'hr' | 'offsec';
 };
 
 type ExactEntry = Omit<PageIdentity, 'canonicalPath' | 'locale' | 'known'>;
@@ -363,12 +367,29 @@ function loadLlmsDescriptions(): Map<string, string> {
   return map;
 }
 
+/* The UX Core use-case mode travels in the URL hash, which the layout keeps
+   in sync with the active view (#hr, #offsec; product carries no hash).
+   normalisePath strips hashes, so the mode is read off the raw input here.
+   The bare /uxcore list page authoritatively means product; on deeper
+   UX Core paths a missing hash means the mode is simply unknown. */
+function resolveUxCoreUseCase(
+  input: string | null | undefined,
+  canonicalPath: string,
+): PageIdentity['useCase'] {
+  if (!canonicalPath.startsWith('/uxcore')) return undefined;
+  const hash =
+    typeof input === 'string' ? input.match(/#(offsec|hr)(?:\?.*)?$/i) : null;
+  if (hash) return hash[1].toLowerCase() as 'hr' | 'offsec';
+  return canonicalPath === '/uxcore' ? 'product' : undefined;
+}
+
 export function resolvePageIdentity(input?: string | null): PageIdentity {
   const normalised = normalisePath(input);
   const stripped = stripLocale(normalised);
   const canonicalPath = stripped.path;
   const locale = stripped.locale;
   const llmsDesc = loadLlmsDescriptions().get(canonicalPath);
+  const useCase = resolveUxCoreUseCase(input, canonicalPath);
 
   const exact = EXACT.get(canonicalPath);
   if (exact) {
@@ -377,6 +398,48 @@ export function resolvePageIdentity(input?: string | null): PageIdentity {
       blurbEn: llmsDesc ?? exact.blurbEn,
       canonicalPath,
       locale,
+      known: true,
+      useCase,
+    };
+  }
+
+  /* Offensive Cybersecurity pages: the hub /uxcore/cybersecurity and one
+     page per case, /uxcore/cybersecurity/<slug>. These are the crawlable
+     twin of the in-modal #offsec view, so the use case is implicit in the
+     path — no hash needed. */
+  if (canonicalPath === '/uxcore/cybersecurity') {
+    return {
+      canonicalPath,
+      locale,
+      useCase: 'offsec',
+      nameEn: 'Offensive Cybersecurity in UX Core',
+      nameRu: 'Наступательная кибербезопасность в UX Core',
+      project: 'uxcore-oss',
+      kind: 'project-sub',
+      blurbEn:
+        llmsDesc ??
+        'The hub of the UX Core Offensive Cybersecurity use case: every cognitive bias shown as a realistic social-engineering attack and its defense, one page per bias.',
+      blurbRu:
+        'Раздел UX Core про наступательную кибербезопасность: каждое когнитивное искажение как реалистичная атака социальной инженерии и защита от неё, по странице на искажение.',
+      known: true,
+    };
+  }
+
+  if (/^\/uxcore\/cybersecurity\/[^/]+/.test(canonicalPath)) {
+    const slug = canonicalPath.split('/').pop() ?? '';
+    const biasName = slugToTitle(slug);
+    return {
+      canonicalPath,
+      locale,
+      useCase: 'offsec',
+      nameEn: `${biasName} — Offensive Cybersecurity case`,
+      nameRu: `«${biasName}» — кейс по кибербезопасности`,
+      project: 'uxcore-oss',
+      kind: 'project-sub',
+      blurbEn:
+        llmsDesc ??
+        `The Offensive Cybersecurity case for "${biasName}": the tell, a realistic attack scenario built on that bias, why it works, and the defender moves that stop it. Refer to it by the bias name.`,
+      blurbRu: `Кейс по наступательной кибербезопасности для искажения «${biasName}»: примета, реалистичный сценарий атаки на этом искажении, почему это работает и что его останавливает. Можете обращаться к нему по названию искажения.`,
       known: true,
     };
   }
@@ -392,14 +455,20 @@ export function resolvePageIdentity(input?: string | null): PageIdentity {
     return {
       canonicalPath,
       locale,
+      useCase,
       nameEn: biasName || 'Bias detail page inside UX Core',
       nameRu: biasName || 'Страница искажения внутри UX Core',
       project: 'uxcore-oss',
       kind: 'bias-detail',
       blurbEn:
-        llmsDesc ??
-        `"${biasName}" — a specific cognitive-bias entry inside UX Core. The visitor is reading its definition, real product/HR examples, debiasing strategies, and references. Refer to it by name when relevant.`,
-      blurbRu: `«${biasName}» — конкретное когнитивное искажение в UX Core. Посетитель читает его определение, продуктовые/HR-примеры, стратегии дебайзинга и источники. Можете обращаться к нему по имени.`,
+        useCase === 'offsec'
+          ? `"${biasName}" — a specific cognitive-bias entry inside UX Core, open on its Offensive Cybersecurity examples: a realistic social-engineering attack built on this bias and the defense against it. Do NOT describe product/HR examples as what is on screen.`
+          : (llmsDesc ??
+            `"${biasName}" — a specific cognitive-bias entry inside UX Core. The visitor is reading its definition, real product/HR examples, debiasing strategies, and references. Refer to it by name when relevant.`),
+      blurbRu:
+        useCase === 'offsec'
+          ? `«${biasName}» — конкретное когнитивное искажение в UX Core, открытое на примерах по наступательной кибербезопасности: реалистичная атака социальной инженерии на этом искажении и защита от неё. НЕ описывайте продуктовые или HR-примеры как то, что на экране.`
+          : `«${biasName}» — конкретное когнитивное искажение в UX Core. Посетитель читает его определение, продуктовые/HR-примеры, стратегии дебайзинга и источники. Можете обращаться к нему по имени.`,
       known: true,
     };
   }
@@ -560,11 +629,28 @@ export function formatPageIdentity(
           ? 'неизвестно'
           : 'unknown';
   const displayedUrl = rawUrl || identity.canonicalPath;
+  const useCaseLabel = identity.useCase
+    ? {
+        product: [
+          'Product Management (the examples on screen are product/UX cases)',
+          'Разработка продуктов (на экране продуктовые примеры)',
+        ],
+        hr: [
+          'People Management / HR (the examples on screen are HR cases)',
+          'Управление персоналом (на экране HR-примеры)',
+        ],
+        offsec: [
+          'Offensive Cybersecurity (the examples on screen are social-engineering attack/defense cases)',
+          'Наступательная кибербезопасность (на экране кейсы атак и защиты)',
+        ],
+      }[identity.useCase]
+    : null;
   if (lang === 'ru') {
     return [
       `URL: ${displayedUrl}`,
       `Каноническое имя: ${name}`,
       `Проект: ${projectLabel}`,
+      ...(useCaseLabel ? [`Активный режим UX Core: ${useCaseLabel[1]}`] : []),
       `Что это: ${blurb}`,
     ].join('\n');
   }
@@ -572,6 +658,7 @@ export function formatPageIdentity(
     `URL: ${displayedUrl}`,
     `Canonical name: ${name}`,
     `Project: ${projectLabel}`,
+    ...(useCaseLabel ? [`Active UX Core use case: ${useCaseLabel[0]}`] : []),
     `What it is: ${blurb}`,
   ].join('\n');
 }

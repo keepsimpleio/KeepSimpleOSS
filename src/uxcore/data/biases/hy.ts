@@ -7,14 +7,15 @@ const hy = {
   moto: 'Be Kind. Do Good.',
   browsingAsProduct: 'Դուք դիտում եք կիրառությունները Պրոդուկտում',
   browsingAsHR: 'Դուք դիտում եք կիրառությունները ՄՌԿ-ում (HR)',
-  browsingAsOffsec: 'You are viewing offensive security use cases',
+  browsingAsOffsec:
+    'Դուք դիտում եք կիրառությունները Կիբեռանվտանգության ոլորտում',
   sectionTitles: [
     { color: 'purple', title: 'Ի՞նչ պետք է հիշել' },
     { color: 'pink', title: 'Պետք է արագ գործել' },
     { color: 'green', title: 'Անբավարար իմաստ' },
     { color: 'blue', title: 'Չափազանց շատ\nտեղեկատվություն' },
   ],
-  legends: ['Product value', 'Management value'],
+  legends: ['Պրոդուկտների համար', 'Մենեջմենթի համար'],
 
   explanationLink: {
     title: 'Նախագծի մասին',
