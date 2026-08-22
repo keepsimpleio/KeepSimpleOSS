@@ -15,9 +15,9 @@ const content: OffsecBiasContent = {
       tag: 'Generic blast',
       sender: 'payroll@hr-benefits-update.com',
       timestamp: '8:20 AM',
-      subject: 'Action required: update your payroll information',
+      subject: 'A bonus has been approved, confirm your payroll details',
       preview:
-        'Dear employee, our records need updating. Please sign in with your work account to confirm your payroll details.',
+        'Dear employee, a bonus has been approved for you this cycle. Sign in with your work account to confirm your payroll details so it lands in this cycle.',
     },
     after: {
       kind: 'email',

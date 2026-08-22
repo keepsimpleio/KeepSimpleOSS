@@ -48,7 +48,7 @@ const content: OffsecBiasContent = {
       'Judge a vulnerability report by whether it reproduces, never by who sent it. A working proof of concept from a stranger outranks a hunch from a colleague.',
       'Route external security mail to a monitored channel with an owner and a response deadline, so "unsolicited" cannot quietly become "unread".',
       'Treat "probably another consultant fishing" as a hypothesis to test with the reproduction steps, not a reason to skip them.',
-      'Every ignored report is a timestamp an attacker can beat you to. Assume the sender told you second, after telling no one, and act on that clock.',
+      'Every ignored report is a timestamp an attacker can beat you to. Assume you were not the first to find out, and act on that clock.',
     ],
   },
 };
