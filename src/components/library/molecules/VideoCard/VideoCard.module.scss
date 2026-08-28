@@ -22,20 +22,18 @@
 }
 
 .card {
-  // Without explicit border-box the padding adds to both dimensions.
   box-sizing: border-box;
   position: absolute;
   top: 0;
   right: 0;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
   width: 293px;
   height: 208px;
-  padding: 10px 10px 8px;
-  // A framed print standing on the shelf: warm mat, hairline frame, square
-  // corners — the same sheet language as the paper jackets, not an admin tile.
-  background: var(--white-200);
+  // A poster in a hairline frame: the artwork IS the card, full-bleed, with
+  // the title set on it — not a thumbnail pasted into an admin tile.
+  padding: 0;
+  overflow: hidden;
+  background: var(--paper);
   border: 1px solid var(--brown-border);
   border-radius: 2px;
   cursor: pointer;
@@ -76,20 +74,30 @@
 }
 
 .thumbWrap {
-  position: relative;
-  // Full inner width at a fixed thumbnail height, leaving the caption below
-  // room for two full lines on the mat.
-  width: 100%;
-  height: 134px;
-  flex: 0 0 auto;
+  position: absolute;
+  inset: 0;
 }
 
 .thumb {
   position: absolute;
   inset: 0;
-  background: var(--white);
+  background: var(--paper);
   overflow: hidden;
   transition: opacity 0.15s ease;
+
+  // The paper veil over the artwork — the same wash the landing lays over
+  // covers, so raw platform thumbnails sit quietly in the sheet. Lifts on
+  // hover/focus together with the filter below.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: #e8d9b8;
+    mix-blend-mode: multiply;
+    opacity: 0.3;
+    transition: opacity 0.35s ease;
+  }
 }
 
 .coverImage {
@@ -97,6 +105,28 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  // Muted toward the paper at rest; the hover below re-wets it to full
+  // colour, the same "touched with a wet brush" move as the landing cards.
+  filter: sepia(0.3) saturate(0.75) contrast(0.95);
+  transition: filter 0.35s ease;
+}
+
+.card:hover .coverImage,
+.card:focus-visible .coverImage {
+  filter: none;
+}
+
+.card:hover .thumb::after,
+.card:focus-visible .thumb::after {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb,
+  .thumb::after,
+  .coverImage {
+    transition: none;
+  }
 }
 
 .coverPlaceholder {
@@ -115,11 +145,25 @@
   pointer-events: none;
 }
 
-// Gallery-label caption on the mat, centred under the print.
+// Poster caption: a dark scrim rising from the bottom edge carries the
+// title, so any artwork keeps the text readable.
+.caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 30px 12px 10px;
+  background: linear-gradient(
+    to top,
+    rgba(30, 22, 12, 0.82),
+    rgba(30, 22, 12, 0)
+  );
+  pointer-events: none;
+}
+
 .title {
-  margin-top: 6px;
   text-align: center;
-  color: var(--brown-200);
+  color: var(--white-warm);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -151,7 +195,8 @@
     height: 100%;
   }
 
-  .title {
+  // The panel tile is a bare cover: no scrim, no caption.
+  .caption {
     display: none;
   }
 }
