@@ -8,6 +8,8 @@ const hy = {
   findSolutions: 'Գտեք ձեր խնդիրների լուծումները',
   learnAboutUXCore: 'Սովորել մարդու մտածողության օրինաչափությունները',
   podcast: 'Պոդկաստ',
+  arcOfSelf: 'Arc of Self',
+  arcOfSelfTooltip: 'Ինքնության ռեկուրսիվ տեսություն',
   done: 'Done',
   usefulLinks: [
     {

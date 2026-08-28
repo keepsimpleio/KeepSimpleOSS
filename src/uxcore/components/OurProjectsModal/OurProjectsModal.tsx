@@ -1,18 +1,15 @@
+import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
+import Button from '@uxcore/components/Button';
+import Modal from '@uxcore/components/Modal';
+import ourProjectsData from '@uxcore/data/ourProjects';
+import { sanitizeHtml } from '@uxcore/lib/sanitizeHtml';
+import { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { FC } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-
-import { TRouter } from '@uxcore/local-types/global';
-
-import { sanitizeHtml } from '@uxcore/lib/sanitizeHtml';
-
-import ourProjectsData from '@uxcore/data/ourProjects';
-
-import Button from '@uxcore/components/Button';
-import Modal from '@uxcore/components/Modal';
 
 import type { OurProjectsModalProps } from './OurProjectsModal.types';
 
@@ -24,6 +21,8 @@ const OurProjectsModal: FC<OurProjectsModalProps> = ({
   projects,
   github,
   api,
+  podcastTxt,
+  onPodcastClick,
 }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
@@ -162,6 +161,17 @@ const OurProjectsModal: FC<OurProjectsModalProps> = ({
           />
           {api[0]?.linkName}
         </Link>
+        {!!onPodcastClick && (
+          <button
+            type="button"
+            className={styles.buttonStyleLink}
+            onClick={onPodcastClick}
+            data-cy={'podcast-button'}
+          >
+            <PodcastIcon />
+            {podcastTxt}
+          </button>
+        )}
       </div>
 
       <div className={styles.doneBtn}>
