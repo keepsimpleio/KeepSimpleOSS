@@ -246,6 +246,10 @@
       justify-content: flex-start;
       align-items: flex-end;
       min-height: 240px;
+      // A swipe running past the row's edge stops here instead of chaining
+      // up toward the browser's history-back gesture (paired with the root
+      // overscroll-behavior-x in library-global.scss).
+      overscroll-behavior-x: contain;
       // Headroom above the tallest card so the hover-revealed select toggle
       // isn't clipped by the shelf's `overflow: hidden`; the cards still
       // bottom-align onto the board.

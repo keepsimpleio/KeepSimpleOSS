@@ -15,3 +15,17 @@
 // styles/globals.scss alongside the other Source Serif faces — not here.
 @use './variables.scss';
 @use './global.scss';
+
+// Library pages scroll horizontally (shelf rows, jump pills), so a touchpad
+// swipe that runs past a row's edge must NOT escalate into the browser's
+// history-back gesture — that closes the page mid-browse. Killing the
+// gesture requires overscroll-behavior on the ROOT scroller, and only
+// library pages should opt out, hence the :has() scope on the `.library`
+// wrapper. The scrollers themselves additionally `contain` (see
+// Shelf/LibraryToolbar modules) so the chain stops at the row first.
+// Safari honours this only in recent versions; there is no non-hacky
+// fallback for older Safari.
+html:has(.library),
+body:has(.library) {
+  overscroll-behavior-x: none;
+}

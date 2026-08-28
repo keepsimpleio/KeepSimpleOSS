@@ -131,6 +131,9 @@
   overflow-x: auto;
   min-width: 0;
   scroll-behavior: smooth;
+  // A swipe past the pill row's edge must not chain into the browser's
+  // history-back gesture (paired with the root rule in library-global.scss).
+  overscroll-behavior-x: contain;
   // Arrows drive navigation; hide the native scrollbar in the toolbar.
   scrollbar-width: none;
 
