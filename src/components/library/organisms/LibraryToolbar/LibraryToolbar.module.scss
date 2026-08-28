@@ -99,7 +99,8 @@
 }
 
 .text {
-  font-family: 'Lato', sans-serif;
+  // Was hardcoded to Lato — a third family leaking into the library's
+  // two-family passport. Inherit the page's Source Serif instead.
   white-space: nowrap;
 }
 
