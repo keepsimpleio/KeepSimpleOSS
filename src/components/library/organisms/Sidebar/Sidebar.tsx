@@ -32,9 +32,11 @@ import { useAuth } from '@components/Context/library/AuthContext';
 import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Avatar } from '@components/library/atoms/Avatar';
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
 import { Tooltip } from '@components/library/atoms/Tooltip';
+import { WashStroke } from '@components/library/atoms/WashStroke';
 import {
   Button,
   ButtonSize,
@@ -378,7 +380,12 @@ export function Sidebar() {
         <div className={styles.main}>
           <div className={styles.about}>
             <div className={styles.header}>
-              <Text className={styles.label}>About</Text>
+              {/* Pigment accents cycle 0/1/2 across the panel's sections, the
+                  same brush language as the landing grid's card titles. */}
+              <span className={styles.labelWrap}>
+                <WashStroke accent={0} className={styles.labelStroke} />
+                <Text className={styles.label}>About</Text>
+              </span>
               {canEditLibrary && (
                 <Button
                   label="Edit"
@@ -426,11 +433,15 @@ export function Sidebar() {
                 </div>
               </div>
             </div>
+            <InkLine seed={1} className={styles.sectionRule} />
           </div>
 
           <div className={styles.about}>
             <div className={styles.header}>
-              <Text className={styles.label}>Author</Text>
+              <span className={styles.labelWrap}>
+                <WashStroke accent={1} className={styles.labelStroke} />
+                <Text className={styles.label}>Author</Text>
+              </span>
             </div>
 
             <div className={styles.content}>
@@ -450,11 +461,15 @@ export function Sidebar() {
                 {aboutAuthorText || 'No bio yet.'}
               </Text>
             </div>
+            <InkLine seed={2} className={styles.sectionRule} />
           </div>
 
           <div className={styles.about}>
             <div className={styles.header}>
-              <Text className={styles.label}>Tags</Text>
+              <span className={styles.labelWrap}>
+                <WashStroke accent={2} className={styles.labelStroke} />
+                <Text className={styles.label}>Tags</Text>
+              </span>
               {canEdit && displayedTags.length > 0 && (
                 <Button
                   label="Edit"
@@ -497,6 +512,7 @@ export function Sidebar() {
                 )}
               </div>
             </div>
+            <InkLine seed={3} className={styles.sectionRule} />
           </div>
 
           <div className={styles.about}>

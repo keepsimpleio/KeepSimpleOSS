@@ -5,7 +5,10 @@
   // sticky 48px on desktop; offset by that and shorten the panel to the leftover
   // viewport so the pinned guest-mode footer stays on screen while scrolling.
   height: calc(100vh - 48px);
-  background: var(--white-warm);
+  // Same sheet language as the landing grid's cards: a warm white leaf lying
+  // on the paper backdrop, edged rather than boxed.
+  background: var(--white-200);
+  border-left: 1px solid var(--brown-border);
   box-shadow: var(--sidebar-shadow);
   padding: 16px;
   display: flex;
@@ -81,6 +84,23 @@
     align-items: center;
     padding-left: 12px;
 
+    // Section labels ride a small brush drag, echoing the landing card
+    // titles. Nested for specificity over the WashStroke atom's base rule.
+    .labelWrap {
+      position: relative;
+      display: inline-flex;
+
+      .labelStroke {
+        inset: -4px -14px -6px -10px;
+        width: auto;
+        height: auto;
+      }
+
+      .label {
+        position: relative;
+      }
+    }
+
     p {
       line-height: 30px;
     }
@@ -102,9 +122,9 @@
     gap: 8px;
     display: flex;
     flex-direction: column;
-    padding: 12px;
-    border-radius: 10px;
-    background: var(--off-white);
+    padding: 4px 12px 0;
+    // No boxed background: the panel is one sheet, sections are separated by
+    // the drawn ink rules instead of grey admin rectangles.
 
     .totalObjects {
       gap: 12px;
@@ -125,6 +145,29 @@
       .avatarImage {
         width: 48px;
         height: 48px;
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+
+        // The grid's uniform wash over user photos, verbatim: pigments pulled
+        // off screen saturation, warmed toward the paper, contrast eased.
+        img,
+        svg {
+          filter: sepia(0.75) saturate(0.5) contrast(0.82) brightness(1.16)
+            hue-rotate(-12deg);
+        }
+
+        // The paper's own colour laid over the photo, the way a wash tints
+        // everything under it.
+        &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: #e8d9b8;
+          mix-blend-mode: multiply;
+          opacity: 0.42;
+        }
       }
     }
 
@@ -189,6 +232,11 @@
     .divider {
       height: 1px;
       background: var(--brown-border);
+    }
+
+    // Hand-drawn rule closing a section, in place of the boxed backgrounds.
+    .sectionRule {
+      margin-top: 8px;
     }
   }
 

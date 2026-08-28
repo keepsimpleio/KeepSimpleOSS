@@ -35,6 +35,7 @@ import { reorderShelves } from '@api/library/shelf/reorderShelves';
 import { ArrowIcon, PlusIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { WashStroke } from '@components/library/atoms/WashStroke';
 import {
   Button,
   ButtonSize,
@@ -300,12 +301,15 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
       <div className={classNames(styles.toolbar, className)}>
         <div className={classNames(styles.controls, styles.controlsGuest)}>
           <div className={styles.welcome}>
-            <Text
-              variant={TypographyVariant.TitleSecondaryBold}
-              className={styles.welcomeTitle}
-            >
-              Welcome to {ownerName}&rsquo;s hive
-            </Text>
+            <span className={styles.welcomeTitleWrap}>
+              <WashStroke accent={3} className={styles.welcomeStroke} />
+              <Text
+                variant={TypographyVariant.TitleSecondaryBold}
+                className={styles.welcomeTitle}
+              >
+                Welcome to {ownerName}&rsquo;s hive
+              </Text>
+            </span>
             <Text
               variant={TypographyVariant.TextSmall}
               className={styles.welcomeText}

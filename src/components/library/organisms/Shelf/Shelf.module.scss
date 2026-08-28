@@ -31,6 +31,26 @@
         }
       }
 
+      // The shelf name sits on a brush drag; the stroke bleeds past the word
+      // so it reads as paint, not a highlight box. Nested for specificity
+      // over the WashStroke atom's own base rule.
+      .titleWrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        min-width: 0;
+
+        .titleStroke {
+          inset: -6px -18px -8px -12px;
+          width: auto;
+          height: auto;
+        }
+
+        > :not(canvas) {
+          position: relative;
+        }
+      }
+
       .nameButton {
         padding: 0;
         background: transparent;
@@ -185,37 +205,28 @@
       }
     }
 
-    .banner {
-      width: -webkit-fill-available;
+    // The board: its top edge sits exactly on the cards' seating line (100px
+    // above the content bottom — see the padding notes on .content/.items).
+    // A lit top surface falling into a darker front edge gives the thickness;
+    // the box-shadow is the board's own soft fall onto the paper. Behind the
+    // cards (z-index 0 vs .items' 1) so objects stand fully opaque on it.
+    .board {
       position: absolute;
-      bottom: 0;
-      right: -15px;
-      margin-right: -32px;
-      // Sit the shelf board behind the cards so each object rests fully opaque
-      // *on* the shelf instead of bleeding through the board's translucent top
-      // edge. Cards are z-index 1 (see .items).
+      left: -24px;
+      right: -24px;
+      bottom: 74px;
+      height: 26px;
       z-index: 0;
       pointer-events: none;
-
-      // Mobile: pull the board wider past both edges so it spans the narrow
-      // viewport. left/right set the box, so width is implied — drop the
-      // desktop fill-available width and its negative margin.
-      @media (max-width: 768px) {
-        left: -148px;
-        right: -35px;
-        width: auto;
-        margin-right: 0;
-
-        // The box is now sized by left/right (width: auto), so the inherited
-        // `auto` would shrink the board to its intrinsic width — fill instead.
-        img {
-          width: 100%;
-        }
-      }
-
-      img {
-        width: inherit;
-      }
+      background: linear-gradient(
+        to bottom,
+        var(--board-face) 0%,
+        var(--board-face) 28%,
+        var(--board-edge) 38%,
+        var(--board-edge) 100%
+      );
+      border-radius: 2px 2px 4px 4px;
+      box-shadow: 0 12px 20px -8px var(--board-shadow);
     }
 
     .items {
@@ -308,12 +319,51 @@
       // measure and translate; shrink-wraps the card with no layout change.
       .cardSlot {
         display: flex;
+        position: relative;
         will-change: transform;
         // Cards that mount (initial paint, or re-entering as a search widens)
         // fade-and-rise in rather than snapping. FLIP skips newly-entering slots
         // — they aren't in its prev-rect map — so this never fights the reorder
         // glide; only one of the two runs per card.
         animation: card-enter 0.28s ease both;
+
+        // Contact shadow where the object meets the board — what seats it on
+        // the shelf instead of floating in front of it. Behind the card's own
+        // artwork (will-change creates the stacking context the -1 needs).
+        &::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          right: 8%;
+          bottom: -4px;
+          height: 10px;
+          z-index: -1;
+          pointer-events: none;
+          background: radial-gradient(
+            ellipse at center,
+            var(--board-shadow) 0%,
+            rgba(90, 74, 44, 0) 70%
+          );
+          transition: opacity 0.22s ease;
+        }
+
+        // FLIP animates the slot itself, so the hover lift lives on the card
+        // (the slot's only child) and the two transforms never collide.
+        > * {
+          transition: transform 0.22s ease;
+        }
+
+        &:hover,
+        &:focus-within {
+          > * {
+            transform: translateY(-6px);
+          }
+
+          // A lifted object presses less onto the board.
+          &::after {
+            opacity: 0.6;
+          }
+        }
       }
     }
 
@@ -324,9 +374,22 @@
       justify-content: center;
       gap: 16px;
       margin: auto;
+      position: relative;
+
+      // A pool of pigment behind the message so the bare board reads as a
+      // deliberate blank page, not missing content. Nested for specificity
+      // over the WashStroke atom's base rule.
+      .emptyWash {
+        position: absolute;
+        inset: -30px -48px;
+        width: auto;
+        height: auto;
+      }
 
       .emptyText {
-        color: var(--gray-medium);
+        // Was gray-medium, which falls under the contrast floor on paper.
+        color: var(--gray-darkest);
+        position: relative;
       }
 
       button {
@@ -389,5 +452,15 @@
 @media (prefers-reduced-motion: reduce) {
   .cardSlot {
     animation: none;
+
+    > * {
+      transition: none;
+    }
+
+    // Without easing the lift would snap; hold the objects still instead.
+    &:hover > *,
+    &:focus-within > * {
+      transform: none;
+    }
   }
 }

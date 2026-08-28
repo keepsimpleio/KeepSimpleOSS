@@ -3,7 +3,10 @@
   position: sticky;
   top: 48px;
   z-index: 20;
-  background: var(--cream);
+  // Matches the BrushPaper base tone so the sticky bar reads as the same
+  // sheet: content scrolling under it disappears into paper, not into a
+  // differently-tinted strip.
+  background: var(--paper);
   padding: 1px 16px 12px;
 
   // The global header switches to a fixed 55px bar at this breakpoint.
@@ -54,8 +57,27 @@
   animation: toolbar-fade 0.3s ease;
 }
 
-.welcomeTitle {
-  color: var(--brown-200);
+// The owner's name carries a brush drag behind it, same language as the
+// landing grid's section title.
+.welcomeTitleWrap {
+  position: relative;
+  display: inline-block;
+  align-self: flex-start;
+
+  // Nested for specificity over the WashStroke atom's base rule.
+  .welcomeStroke {
+    // Bleed past the words so the wash reads as a dragged stroke, not a
+    // highlight box.
+    inset: -10px -26px -14px -18px;
+    width: auto;
+    height: auto;
+  }
+
+  .welcomeTitle {
+    // Darker brown step: on paper the mid brown loses the 4.5:1 floor.
+    color: var(--brown-100);
+    position: relative;
+  }
 }
 
 .welcomeText {

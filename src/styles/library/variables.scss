@@ -66,6 +66,14 @@
   --taupe: #c0b6ae;
   --beige: #e0dcd9;
   --cream: #f8f1e5;
+  /* Base tone of the watercolour paper tile (PAPER in @lib/library/brush) —
+     surfaces that must blend with the BrushPaper backdrop use this. */
+  --paper: #f2e9d6;
+  /* Shelf board wood tones, stepped off the paper so the board reads as an
+     object lying on the sheet rather than a painted stripe. */
+  --board-face: #e2d3b4;
+  --board-edge: #c8b48d;
+  --board-shadow: rgba(90, 74, 44, 0.28);
 
   --white: #ffffff;
   --white-100: #eae3df;

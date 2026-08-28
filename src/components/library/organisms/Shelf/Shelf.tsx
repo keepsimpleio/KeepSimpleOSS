@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, {
   JSX,
@@ -23,7 +22,6 @@ import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 import { deleteShelf } from '@api/library/shelf/deleteShelf';
 import { updateShelf } from '@api/library/shelf/updateShelf';
 
-import shelfBackground from '@icons/library/images/shelfBackground.png';
 import {
   ArrowIcon,
   AudioIcon,
@@ -37,6 +35,7 @@ import { useShareSelection } from '@components/Context/library/ShareSelectionCon
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { WashStroke } from '@components/library/atoms/WashStroke';
 import { AudioCard } from '@components/library/molecules/AudioCard';
 import { BookCard } from '@components/library/molecules/BookCard';
 import {
@@ -431,18 +430,23 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
-          {isOwner ? (
-            <button
-              type="button"
-              className={styles.nameButton}
-              onClick={openRename}
-              aria-label="Edit shelf name"
-            >
+          {/* Pigment accent cycles by shelf id, so sibling shelves differ and
+              the colour survives reorders. */}
+          <span className={styles.titleWrap}>
+            <WashStroke accent={shelf.id} className={styles.titleStroke} />
+            {isOwner ? (
+              <button
+                type="button"
+                className={styles.nameButton}
+                onClick={openRename}
+                aria-label="Edit shelf name"
+              >
+                <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
+              </button>
+            ) : (
               <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
-            </button>
-          ) : (
-            <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
-          )}
+            )}
+          </span>
         </div>
 
         <div className={styles.right}>
@@ -528,6 +532,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
         >
           {objects.length === 0 ? (
             <div className={styles.empty}>
+              <WashStroke accent={shelf.id + 1} className={styles.emptyWash} />
               <Text
                 variant={TypographyVariant.TextBase}
                 className={styles.emptyText}
@@ -595,9 +600,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </div>
           )}
         </div>
-        <div className={styles.banner}>
-          <Image src={shelfBackground} alt="" />
-        </div>
+        {/* The board the objects stand on: top surface, front edge and a soft
+            fall of shadow onto the paper — drawn in CSS so it spans any width
+            and any number of shelves at no asset cost. */}
+        <div className={styles.board} aria-hidden="true" />
       </div>
 
       {isOwner && isAddOpen && (
