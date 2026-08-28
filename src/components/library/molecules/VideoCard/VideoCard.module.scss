@@ -4,8 +4,10 @@
 // book/audio cards where the spine/disc is exposed on the left.
 .wrap {
   position: relative;
-  width: 292px;
-  height: 182px;
+  // ~15% up from the original 292×182 so the objects carry the shelf instead
+  // of drowning in it.
+  width: 336px;
+  height: 209px;
 }
 
 // Drop shadow behind the object, spanning the full cell. `none` on the SVG so
@@ -28,8 +30,8 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  width: 255px;
-  height: 181px;
+  width: 293px;
+  height: 208px;
   padding: 10px 10px 8px;
   // A framed print standing on the shelf: warm mat, hairline frame, square
   // corners — the same sheet language as the paper jackets, not an admin tile.
@@ -75,10 +77,10 @@
 
 .thumbWrap {
   position: relative;
-  // Full inner width at a fixed thumbnail height; slightly shorter than the
-  // old 125px so the caption below gets room for two full lines.
+  // Full inner width at a fixed thumbnail height, leaving the caption below
+  // room for two full lines on the mat.
   width: 100%;
-  height: 116px;
+  height: 134px;
   flex: 0 0 auto;
 }
 

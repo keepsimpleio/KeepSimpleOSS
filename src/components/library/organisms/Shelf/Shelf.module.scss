@@ -162,18 +162,17 @@
   }
 
   .content {
-    min-height: 342px;
+    min-height: 320px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
     overflow: hidden;
-    // Raises the bottom of the scroll row (and so the overflow scrollbar) up
-    // onto the visible shelf board, out of the board PNG's transparent lower
-    // zone. The absolute `.banner` (bottom: 0) is unaffected, and `.items`
-    // drops the same amount from its own padding-bottom so the cards stay
-    // seated. This is the knob: increase to slide the scrollbar up the board.
-    padding-bottom: 65px;
+    // The cards' seating line is this padding + `.items`' padding-bottom
+    // (10 + 34 = 44px above the content bottom); the board's top edge is
+    // pinned to that same line. Kept tight so the strip of dead paper under
+    // each board stays small.
+    padding-bottom: 10px;
 
     // Carousel arrows, same pill as the LibraryToolbar jump arrows, overlaid on
     // the shelf at each end and vertically centred on the card band. Only shown
@@ -192,7 +191,9 @@
       border-radius: 10px;
       background: #fefdf9 !important;
       box-shadow: 0px 4.84px 12.1px rgba(0, 0, 0, 0.15);
-      right: 16px;
+      // Enough clearance that the pill never reads as pinned to (or clipped
+      // by) the panel edge beside it.
+      right: 24px;
 
       &:disabled {
         opacity: 0.4;
@@ -201,7 +202,7 @@
     }
 
     .arrowLeft {
-      left: 16px;
+      left: 24px;
       right: auto;
 
       svg {
@@ -209,7 +210,7 @@
       }
     }
 
-    // The board: its top edge sits exactly on the cards' seating line (100px
+    // The board: its top edge sits exactly on the cards' seating line (44px
     // above the content bottom — see the padding notes on .content/.items).
     // A lit top surface falling into a darker front edge gives the thickness;
     // the box-shadow is the board's own soft fall onto the paper. Behind the
@@ -218,7 +219,7 @@
       position: absolute;
       left: -24px;
       right: -24px;
-      bottom: 74px;
+      bottom: 18px;
       height: 26px;
       z-index: 0;
       pointer-events: none;
@@ -244,13 +245,16 @@
       display: flex;
       justify-content: flex-start;
       align-items: flex-end;
-      min-height: 208px;
-      // Give the cards 40px of headroom so their tops aren't clipped by the
-      // shelf's `overflow: hidden`; they still bottom-align onto the shelf.
-      padding-top: 40px;
-      // Paired with `.content`'s 65px padding-bottom: the two sum to 100px so
-      // the cards' seating line is unchanged while the scrollbar rides higher.
-      padding-bottom: 35px;
+      min-height: 240px;
+      // Headroom above the tallest card so the hover-revealed select toggle
+      // isn't clipped by the shelf's `overflow: hidden`; the cards still
+      // bottom-align onto the board.
+      padding-top: 36px;
+      // Paired with `.content`'s 10px padding-bottom: the two sum to the 44px
+      // seating line the board's top edge is pinned to. Kept larger than the
+      // content side so the overflow scrollbar (which rides at this box's
+      // bottom edge) lands in the strip of paper BELOW the board.
+      padding-bottom: 34px;
       position: relative;
       z-index: 1;
       overflow-x: auto;
@@ -274,23 +278,26 @@
 
     // When the row overflows (arrows present), expose a styled horizontal
     // scrollbar so the overflow is discoverable by drag, not just the arrows.
+    // A quiet brown thread in the paper strip below the board — never a grey
+    // pipe lying on the wood.
     .scrollable {
-      // The 12px scrollbar consumes content-box height, which would lift the
-      // bottom-aligned cards by 12px the moment overflow appears. Shave the same
-      // 12px off padding-bottom (35px → 23px) so the cards' seating line is
-      // unchanged — the bar rides in the freed space and reads as an overlay.
-      padding-bottom: 23px;
+      // The 6px scrollbar consumes content-box height, which would lift the
+      // bottom-aligned cards by 6px the moment overflow appears. Shave the
+      // same 6px off padding-bottom (34px → 28px) so the cards' seating line
+      // is unchanged; the bar then rides at 10–16px from the content bottom,
+      // fully below the board's lower edge (18px).
+      padding-bottom: 28px;
       // Must be `auto`, not `thin`: when scrollbar-width is thin/none, Chrome
       // 121+ renders the standard scrollbar and IGNORES the ::-webkit-scrollbar
-      // rules below — so the custom 12px #c0b6ae bar never showed. `auto` keeps
-      // the webkit pseudo-element styling active. (Overrides `.items`' `none`.)
+      // rules below. `auto` keeps the webkit pseudo-element styling active.
+      // (Overrides `.items`' `none`.)
       scrollbar-width: auto;
-      // Firefox can't honor the 12px height, but still gets the tint.
-      scrollbar-color: #c0b6ae transparent;
+      // Firefox can't honor the 6px height, but still gets the tint.
+      scrollbar-color: rgba(175, 106, 52, 0.4) transparent;
 
       &::-webkit-scrollbar {
         display: block;
-        height: 12px;
+        height: 6px;
       }
 
       &::-webkit-scrollbar-track {
@@ -298,16 +305,25 @@
       }
 
       // Drop the platform's default increment/decrement arrow buttons at the
-      // bar's ends so only the thumb shows.
-      &::-webkit-scrollbar-button {
+      // bar's ends — on some platforms they otherwise render as stray grey
+      // triangles floating over the board.
+      &::-webkit-scrollbar-button,
+      &::-webkit-scrollbar-button:horizontal:increment,
+      &::-webkit-scrollbar-button:horizontal:decrement {
         display: none;
         width: 0;
         height: 0;
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-corner {
+        display: none;
+        background: transparent;
       }
 
       &::-webkit-scrollbar-thumb {
-        background: #c0b6ae;
-        border-radius: 6px;
+        background: rgba(175, 106, 52, 0.4);
+        border-radius: 3px;
       }
     }
 

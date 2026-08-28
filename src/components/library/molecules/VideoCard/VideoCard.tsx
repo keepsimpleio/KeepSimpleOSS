@@ -67,7 +67,7 @@ export function VideoCard({
                 src={coverUrl}
                 alt={title}
                 fill
-                sizes="231px"
+                sizes="273px"
                 className={styles.coverImage}
               />
             ) : (

@@ -65,7 +65,7 @@ export function BookCard({
               src={coverUrl}
               alt={attributes.title}
               fill
-              sizes="146px"
+              sizes="169px"
               className={styles.coverImage}
             />
           ) : (

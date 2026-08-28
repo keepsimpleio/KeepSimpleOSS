@@ -302,7 +302,14 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
         <div className={classNames(styles.controls, styles.controlsGuest)}>
           <div className={styles.welcome}>
             <span className={styles.welcomeTitleWrap}>
-              <WashStroke accent={3} className={styles.welcomeStroke} />
+              {/* Burnt sienna at raised alpha: ochre at the default wash
+                  strength vanished into the paper tone — the greeting should
+                  read as a warm, deliberate stroke. */}
+              <WashStroke
+                accent={2}
+                alpha={0.2}
+                className={styles.welcomeStroke}
+              />
               <Text
                 variant={TypographyVariant.TitleSecondaryBold}
                 className={styles.welcomeTitle}

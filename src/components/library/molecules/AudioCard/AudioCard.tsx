@@ -76,7 +76,7 @@ export function AudioCard({
               src={coverUrl}
               alt={title}
               fill
-              sizes="190px"
+              sizes="219px"
               className={classNames(styles.coverImage, {
                 [styles.coverImageLoaded]: coverLoaded,
               })}

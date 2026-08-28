@@ -4,9 +4,10 @@
   align-items: stretch;
   gap: 10px;
   // Fixed container so every audio object occupies the same cell whether or not
-  // it has tags (the tag column is always reserved below).
-  width: 256px;
-  height: 194px;
+  // it has tags (the tag column is always reserved below). ~15% up from the
+  // original 256×194 so the objects carry the shelf instead of drowning in it.
+  width: 294px;
+  height: 223px;
 }
 
 .card {
@@ -36,10 +37,10 @@
 .select {
   position: absolute;
   bottom: 100%;
-  // Span the album art (190px, flush right) — not the full card — so the toggle
+  // Span the album art (219px, flush right) — not the full card — so the toggle
   // centers over the artwork rather than the exposed disc edge on the left.
   right: 0;
-  width: 190px;
+  width: 219px;
   display: flex;
   justify-content: center;
   padding-bottom: 6px;
@@ -66,20 +67,20 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 230px;
-  height: 194px;
+  width: 265px;
+  height: 223px;
   z-index: 0;
   background: url('/assets/library/audio-cover.png') center / cover no-repeat;
 }
 
-// The uploaded album art sits on the square sleeve only — 190×190, flush to the
+// The uploaded album art sits on the square sleeve only — 219×219, flush to the
 // right edge so the placeholder's disc edge stays exposed on the left.
 .cover {
   position: absolute;
   top: 0;
   right: 0;
-  width: 190px;
-  height: 190px;
+  width: 219px;
+  height: 219px;
   overflow: hidden;
   z-index: 1;
   transition: opacity 0.15s ease;
