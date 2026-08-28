@@ -8,6 +8,8 @@ const ru = {
   findSolutions: 'Находим решения ваших проблем',
   learnAboutUXCore: 'зучаем паттерны мышления',
   podcast: 'Подкаст',
+  arcOfSelf: 'Arc of Self',
+  arcOfSelfTooltip: 'Рекурсивная теория личности',
   done: 'Готово',
   usefulLinks: [
     {

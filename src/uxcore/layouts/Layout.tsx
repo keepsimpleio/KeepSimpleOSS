@@ -59,7 +59,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ToolHeader
         blockLanguageSwitcher={isUXCoreNested || isUXCGNested}
         openPersonaModal={setOpenPersonas}
-        openPodcast={headerPodcastOpen}
         showSavedPersonas={true}
         setUpdatedUsername={setUpdatedUsername}
         userInfo={uxcatUserInfo}

@@ -23,4 +23,6 @@ export type OurProjectsModalProps = {
     linkName: string;
   };
   doneTxt?: string;
+  podcastTxt?: string;
+  onPodcastClick?: () => void;
 };

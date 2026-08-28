@@ -25,6 +25,8 @@ interface TToolHeaderData {
   awarenessTest: string;
   usefulLinks: TUsefulLinks[];
   podcast: string;
+  arcOfSelf: string;
+  arcOfSelfTooltip: string;
   done: string;
   findSolutions: string;
   learnAboutUXCore: string;

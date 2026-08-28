@@ -4,7 +4,6 @@ import { getUserInfo } from '@uxcore/api/uxcat/users-me';
 import CloseIcon from '@uxcore/assets/icons/CloseIcon';
 import DiamondIcon from '@uxcore/assets/icons/DiamondIcon';
 import MoonIcon from '@uxcore/assets/icons/MoonIcon';
-import PodcastIcon from '@uxcore/assets/icons/PodcastIcon';
 import SunIcon from '@uxcore/assets/icons/SunIcon';
 import MobileHeader from '@uxcore/components/_biases/MobileHeader';
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
@@ -47,7 +46,6 @@ const SettingsModal = dynamic(
 
 type TToolHeader = {
   homepageLinkTarget?: '_blank' | '_self';
-  openPodcast?: boolean;
   showSavedPersonas?: boolean;
   setOpenPodcast?: (updater: (prev: boolean) => boolean) => void;
   openPersonaModal?: (openPersona: boolean) => void;
@@ -75,7 +73,6 @@ const getActiveFromPath = (pathname: string) => {
 
 const ToolHeader: FC<TToolHeader> = ({
   homepageLinkTarget = '_self',
-  openPodcast,
   setOpenPodcast,
   openPersonaModal,
   showSavedPersonas = true,
@@ -122,6 +119,8 @@ const ToolHeader: FC<TToolHeader> = ({
     bobName,
     awarenessTest,
     podcast,
+    arcOfSelf,
+    arcOfSelfTooltip,
     findSolutions,
     learnAboutUXCore,
     done,
@@ -193,6 +192,12 @@ const ToolHeader: FC<TToolHeader> = ({
   const openPodcastHandler = useCallback(() => {
     setOpenPodcast(prev => !prev);
   }, []);
+
+  // The podcast now lives in the Our Projects modal, next to GitHub and API.
+  // Availability is unchanged: UX Core list view, and not the Armenian
+  // locale, where the episodes do not exist.
+  const canOpenPodcast =
+    !!setOpenPodcast && isCoreView && pathname === '/uxcore' && locale !== 'hy';
 
   const handleOpenSettings = () => {
     setOpenSettings(true);
@@ -322,36 +327,39 @@ const ToolHeader: FC<TToolHeader> = ({
               })}
             >
               <span className={styles.Pill} />
-              {navItems.map(({ label, href, page, icon }, index) => {
+              {navItems.map(({ label, href, page, icon, external }, index) => {
+                const isBob = label === 'Bob - AI Assistant';
+                const isArc = label === 'Arc of Self';
+                const itemLabel = isBob
+                  ? bobName || label
+                  : isArc
+                    ? arcOfSelf || label
+                    : label === 'Awareness Test'
+                      ? awarenessTest
+                      : label;
+
                 return (
-                  <>
+                  <React.Fragment key={index}>
                     <span
                       className={cn(styles.Indicator, {
                         [styles.IndicatorActive]: activePage,
                       })}
                     />
-                    <Link
-                      key={index}
-                      href={href}
-                      locale={locale}
-                      legacyBehavior
-                    >
+                    <Link href={href} locale={locale} legacyBehavior>
                       <a
                         className={cn(styles.MenuItem, {
                           [styles.Active]: activePage === page,
                           [styles[`${page}-MenuItem`]]: !!page,
+                          [styles.ArcMenuItem]: isArc,
                         })}
-                        target={
-                          label === 'Bob - AI Assistant' ? '_blank' : '_self'
-                        }
+                        target={external ? '_blank' : '_self'}
+                        rel={external ? 'noopener noreferrer' : undefined}
                         onClick={() => {
                           toggleUxcoreHeaderTooltip(false);
                           toggleUxcgHeaderTooltip(false);
                         }}
                       >
-                        {label != 'Bob - AI Assistant' ? (
-                          icon
-                        ) : (
+                        {isBob ? (
                           <Image
                             src={'/assets/Bob.png'}
                             alt={'Bob - AI Assistant'}
@@ -359,17 +367,27 @@ const ToolHeader: FC<TToolHeader> = ({
                             height={25}
                             className={styles.bob}
                           />
+                        ) : (
+                          icon
                         )}
+                        {/* Bob and Arc of Self carry a second, shorter label.
+                            Below the wide breakpoints the full one is hidden
+                            in CSS so the row never wraps to a second line. */}
                         <span className={styles.Description}>
-                          {label === 'Bob - AI Assistant'
-                            ? bobName
-                              ? bobName
-                              : label
-                            : label === 'Awareness Test'
-                              ? awarenessTest
-                              : label}
+                          {isBob ? (
+                            <>
+                              <span className={styles.LabelFull}>
+                                {itemLabel}
+                              </span>
+                              <span className={styles.LabelShort}>AI</span>
+                            </>
+                          ) : isArc ? (
+                            <span className={styles.ArcLabel}>{itemLabel}</span>
+                          ) : (
+                            itemLabel
+                          )}
                         </span>
-                        {label === 'Bob - AI Assistant' && (
+                        {external && (
                           <Image
                             src={'/assets/open-link.svg'}
                             alt={'New link icon'}
@@ -378,9 +396,14 @@ const ToolHeader: FC<TToolHeader> = ({
                             className={styles.openLink}
                           />
                         )}
+                        {isArc && (
+                          <span className={styles.ArcTooltip} aria-hidden>
+                            {arcOfSelfTooltip}
+                          </span>
+                        )}
                       </a>
                     </Link>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </div>
@@ -428,18 +451,6 @@ const ToolHeader: FC<TToolHeader> = ({
               [styles.authorized]: !!accountData,
             })}
           >
-            {isCoreView && pathname === '/uxcore' && locale !== 'hy' && (
-              <div
-                onClick={openPodcastHandler}
-                className={cn(styles.MenuItem, {
-                  [styles.ActivePodcast]: !!openPodcast,
-                })}
-                data-cy={'podcast-button'}
-              >
-                <PodcastIcon />
-                <span>{podcast}</span>
-              </div>
-            )}
             <span
               className={cn(styles.MenuItem, {
                 [styles.MenuItemHy]: locale === 'hy',
@@ -522,6 +533,15 @@ const ToolHeader: FC<TToolHeader> = ({
             github={!!ourProjectsModalData && ourProjectsModalData.github}
             api={!!ourProjectsModalData && ourProjectsModalData.api}
             doneTxt={done}
+            podcastTxt={canOpenPodcast ? podcast : undefined}
+            onPodcastClick={
+              canOpenPodcast
+                ? () => {
+                    setOpenOurProjects(false);
+                    openPodcastHandler();
+                  }
+                : undefined
+            }
           />
         )}
       </>

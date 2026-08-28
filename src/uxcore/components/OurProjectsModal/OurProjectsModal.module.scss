@@ -61,7 +61,15 @@
   gap: 6px;
   color: #000000d9;
   font-size: 16px;
+  font-family: inherit;
   text-decoration: none;
+
+  // The podcast entry is a button, not a link; its icon is an inline SVG
+  // rather than a dark/light PNG pair, so it follows the text colour.
+  svg path {
+    fill: currentColor;
+    fill-opacity: 1;
+  }
 
   &:hover {
     background-color: #000000;

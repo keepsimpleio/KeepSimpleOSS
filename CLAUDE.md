@@ -31,6 +31,8 @@ When writing copy that ships to users (microcopy, page headings, marketing blurb
 - No AI-isms — no "let me know if…", no "happy to help", no preamble before the answer.
 - Reference piece: **"The Rise of the Choice Architect"** (article on keepsimple.io). Match its register.
 
+Worked examples: [docs/voice-guide.md](docs/voice-guide.md).
+
 ## ⚠️ UX Core data is canonical
 
 The 100+ cognitive biases in UX Core are the product of 5+ years of curation and are referenced by Duke, Harvard, MIT, Google, Yandex, Amazon, and others.
