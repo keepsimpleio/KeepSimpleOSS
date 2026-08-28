@@ -233,18 +233,17 @@
     }
   }
 
-  // Printer's ornament at the sheet's foot: pushed to the bottom of the
-  // scrollable column so the panel ends on a mark instead of blank paper.
+  // Printer's ornament closing the content: fixed distance under the last
+  // section rather than pushed to the panel's foot, where it collided with
+  // the floating Copilot pill and read as a stain beside it.
   .colophon {
     position: relative;
-    margin-top: auto;
+    margin: 24px 0 96px;
     min-height: 26px;
-    padding-top: 24px;
 
     .colophonStroke {
       left: 50%;
-      top: auto;
-      bottom: 0;
+      top: 0;
       width: 120px;
       height: 26px;
       transform: translateX(-50%);

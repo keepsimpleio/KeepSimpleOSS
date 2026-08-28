@@ -542,9 +542,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
           })}
           ref={itemsRef}
         >
+          {/* No wash behind the empty message: at this size a pale stroke
+              reads as a stain. The tree's bare twig at this shelf already
+              carries the "nothing here yet" image. */}
           {objects.length === 0 ? (
             <div className={styles.empty}>
-              <WashStroke accent={shelf.id + 1} className={styles.emptyWash} />
               <Text
                 variant={TypographyVariant.TextBase}
                 className={styles.emptyText}

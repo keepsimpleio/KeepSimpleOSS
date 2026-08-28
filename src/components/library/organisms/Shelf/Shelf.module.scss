@@ -404,16 +404,6 @@
       // A pool of pigment behind the message so the bare board reads as a
       // deliberate blank page, not missing content. Nested for specificity
       // over the WashStroke atom's base rule.
-      // Explicit size: a canvas is a replaced element and would otherwise
-      // fall back to its intrinsic 240×64 instead of filling the offsets.
-      .emptyWash {
-        position: absolute;
-        top: -30px;
-        left: -48px;
-        width: calc(100% + 96px);
-        height: calc(100% + 60px);
-      }
-
       .emptyText {
         // Was gray-medium, which falls under the contrast floor on paper.
         color: var(--gray-darkest);

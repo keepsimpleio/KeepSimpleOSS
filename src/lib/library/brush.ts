@@ -330,37 +330,130 @@ function sampleQuad(
   return pts;
 }
 
+/** Left/right edge polylines of a tapered ribbon along a centreline. */
+function ribbonEdges(
+  pts: Array<[number, number]>,
+  w0: number,
+  w1: number,
+  rng: () => number,
+): { left: Array<[number, number]>; right: Array<[number, number]> } {
+  const n = pts.length;
+  const left: Array<[number, number]> = [];
+  const right: Array<[number, number]> = [];
+  for (let i = 0; i < n; i++) {
+    const t = i / Math.max(1, n - 1);
+    const prev = pts[Math.max(0, i - 1)];
+    const next = pts[Math.min(n - 1, i + 1)];
+    const dx = next[0] - prev[0];
+    const dy = next[1] - prev[1];
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+    const hw = (lerp(w0, w1, t) * (0.92 + rng() * 0.16)) / 2;
+    left.push([pts[i][0] + nx * hw, pts[i][1] + ny * hw]);
+    right.push([pts[i][0] - nx * hw, pts[i][1] - ny * hw]);
+  }
+  return { left, right };
+}
+
 /**
- * A branch as three painterly passes over the same wandering polyline —
- * dark underside, mid body, light ridge — with per-segment width taper and
- * jitter, which is what reads as bark rather than a plotted line.
+ * A branch as one continuous tapered ribbon — solid bark body filled between
+ * the two edges, a shaded underside, a lit ridge and longitudinal grain.
+ * The single filled body is what kills the jointed "bamboo" look segmented
+ * strokes produce.
  */
-function strokeBranch(
+function paintRibbon(
   ctx: CanvasRenderingContext2D,
   pts: Array<[number, number]>,
   w0: number,
   w1: number,
   rng: () => number,
 ): void {
-  const passes = [
-    { color: BARK_SHADOW, alpha: 0.5, widthMul: 1, dy: 1.6 },
-    { color: BARK_BODY, alpha: 0.75, widthMul: 0.8, dy: 0 },
-    { color: BARK_RIDGE, alpha: 0.45, widthMul: 0.35, dy: -1.4 },
-  ];
+  if (pts.length < 2) return;
+  const { left, right } = ribbonEdges(pts, w0, w1, rng);
+
+  ctx.beginPath();
+  ctx.moveTo(left[0][0], left[0][1]);
+  for (let i = 1; i < left.length; i++) ctx.lineTo(left[i][0], left[i][1]);
+  for (let i = right.length - 1; i >= 0; i--) {
+    ctx.lineTo(right[i][0], right[i][1]);
+  }
+  ctx.closePath();
+  ctx.fillStyle = `${BARK_BODY}0.92)`;
+  ctx.fill();
+
   ctx.lineCap = 'round';
-  for (const pass of passes) {
-    for (let i = 0; i < pts.length - 1; i++) {
-      const t = i / Math.max(1, pts.length - 2);
-      const width = Math.max(
-        0.8,
-        lerp(w0, w1, t) * pass.widthMul * (0.85 + rng() * 0.3),
+  // Shaded underside along one edge, lit ridge along the other.
+  for (let i = 0; i < right.length - 1; i++) {
+    ctx.strokeStyle = `${BARK_SHADOW}${0.26 + rng() * 0.22})`;
+    ctx.lineWidth = 1.4 + rng() * 1.6;
+    ctx.beginPath();
+    ctx.moveTo(right[i][0], right[i][1]);
+    ctx.lineTo(right[i + 1][0], right[i + 1][1]);
+    ctx.stroke();
+  }
+  for (let i = 0; i < left.length - 1; i++) {
+    ctx.strokeStyle = `${BARK_RIDGE}${0.28 + rng() * 0.24})`;
+    ctx.lineWidth = 0.9 + rng() * 1.1;
+    ctx.beginPath();
+    ctx.moveTo(left[i][0], left[i][1]);
+    ctx.lineTo(left[i + 1][0], left[i + 1][1]);
+    ctx.stroke();
+  }
+
+  // Grain: faint lines running the ribbon's length between the edges.
+  const grains = Math.max(2, Math.round(w0 / 8));
+  for (let g = 0; g < grains; g++) {
+    const f =
+      -0.32 + (0.64 * g) / Math.max(1, grains - 1) + (rng() - 0.5) * 0.1;
+    const edge = f < 0 ? right : left;
+    const pull = Math.min(1, Math.abs(f) * 2);
+    ctx.strokeStyle = `${BARK_SHADOW}${0.09 + rng() * 0.08})`;
+    ctx.lineWidth = 0.8 + rng() * 0.8;
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const gx = lerp(pts[i][0], edge[i][0], pull);
+      const gy = lerp(pts[i][1], edge[i][1], pull);
+      if (i === 0) ctx.moveTo(gx, gy);
+      else ctx.lineTo(gx, gy);
+    }
+    ctx.stroke();
+  }
+}
+
+/**
+ * A cloud of foliage: three tonal layers of overlapping washes — deep moss
+ * beneath, sage, then pale olive on top — clustered inside the radius, the
+ * way the cover's crowns bloom out of many soft blots rather than dots.
+ */
+function foliageCloud(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  r: number,
+  rng: () => number,
+): void {
+  const layers = [
+    { color: FOLIAGE[1], alpha: 0.16, mul: 1 },
+    { color: FOLIAGE[0], alpha: 0.15, mul: 0.78 },
+    { color: FOLIAGE[2], alpha: 0.13, mul: 0.58 },
+  ];
+  for (const layer of layers) {
+    const blobs = 3 + Math.round(r / 9);
+    for (let i = 0; i < blobs; i++) {
+      const a = rng() * Math.PI * 2;
+      const d = r * 0.55 * Math.sqrt(rng());
+      wash(
+        ctx,
+        cx + Math.cos(a) * d,
+        cy + Math.sin(a) * d * 0.75,
+        r * layer.mul * (0.35 + rng() * 0.3),
+        layer.color,
+        2,
+        layer.alpha,
+        rng,
+        0.85,
       );
-      ctx.strokeStyle = `${pass.color}${pass.alpha * (0.75 + rng() * 0.5)})`;
-      ctx.lineWidth = width;
-      ctx.beginPath();
-      ctx.moveTo(pts[i][0], pts[i][1] + pass.dy);
-      ctx.lineTo(pts[i + 1][0], pts[i + 1][1] + pass.dy);
-      ctx.stroke();
     }
   }
 }
@@ -403,62 +496,86 @@ export function paintLibraryTree(
     );
   }
 
-  // Trunk spine: bottom of the sheet up to just above the first shelf.
-  const top = Math.max(24, (nodes[0]?.y ?? 64) - 90);
+  // Trunk centreline: two layered sine wanders give slow gnarled S-curves,
+  // sampled densely so the ribbon stays smooth.
+  const top = Math.max(28, (nodes[0]?.y ?? 72) - 96);
+  const p1 = rng() * Math.PI * 2;
+  const p2 = rng() * Math.PI * 2;
+  const a1 = 10 + rng() * 8;
+  const a2 = 5 + rng() * 5;
+  const cx0 = 38 + rng() * 8;
   const spine: Array<[number, number]> = [];
-  let x = 26 + rng() * 16;
-  for (let y = h + 30; y > top; y -= 70 + rng() * 40) {
-    spine.push([x, y]);
-    x = Math.min(60, Math.max(12, x + (rng() - 0.5) * 34));
-  }
-  spine.push([x, top]);
-  strokeBranch(ctx, spine, 15, 6, rng);
-
-  // Crown: a foliage cluster where the trunk ends, so the tree never
-  // terminates in a bare stump.
-  for (let i = 0; i < 7; i++) {
-    wash(
-      ctx,
-      spine[spine.length - 1][0] + (rng() - 0.5) * 44,
-      top - 4 - rng() * 30,
-      9 + rng() * 9,
-      FOLIAGE[i % FOLIAGE.length],
-      2,
-      0.14,
-      rng,
+  for (let y = h + 40; y >= top; y -= 22) {
+    const x = Math.min(
+      66,
+      Math.max(
+        20,
+        cx0 + Math.sin(y / 260 + p1) * a1 + Math.sin(y / 90 + p2) * a2,
+      ),
     );
+    spine.push([x, y]);
+  }
+  paintRibbon(ctx, spine, 34, 11, rng);
+
+  // Root flare: two short ribbons diverging at the base, so the trunk stands
+  // in the ground instead of ending in a cut.
+  const basePt = spine[Math.min(3, spine.length - 1)];
+  for (const dir of [-1, 1]) {
+    const root = sampleQuad(
+      basePt,
+      [basePt[0] + dir * 14, basePt[1] + 24],
+      [basePt[0] + dir * (30 + rng() * 18), h + 30],
+      7,
+    );
+    paintRibbon(ctx, root, 15, 4, rng);
   }
 
-  // One limb per shelf, anchored to the nearest spine joint, sagging then
-  // rising to meet the board's underside.
+  // Crown where the trunk ends, so the tree never stops at a bare stump.
+  const crownAt = spine[spine.length - 1];
+  foliageCloud(ctx, crownAt[0] + 6 + rng() * 8, top - 24, 44 + rng() * 12, rng);
+
+  // One limb per shelf: anchored to the spine below its shelf, sagging then
+  // rising to meet the board's underside. Thickness and foliage grow with the
+  // shelf's object count; an empty shelf gets a bare forked twig.
   for (const node of nodes) {
     const anchor = spine.reduce((best, p) =>
-      Math.abs(p[1] - node.y - 24) < Math.abs(best[1] - node.y - 24) ? p : best,
+      Math.abs(p[1] - node.y - 36) < Math.abs(best[1] - node.y - 36) ? p : best,
     );
-    const tip: [number, number] = [w - 8 - rng() * 10, node.y + 2 + rng() * 6];
+    const tip: [number, number] = [w - 6 - rng() * 8, node.y + 2 + rng() * 6];
     const mid: [number, number] = [
-      (anchor[0] + tip[0]) / 2 + (rng() - 0.5) * 18,
-      (anchor[1] + tip[1]) / 2 + 12 + rng() * 14,
+      (anchor[0] + tip[0]) / 2 + (rng() - 0.5) * 14,
+      (anchor[1] + tip[1]) / 2 + 14 + rng() * 16,
     ];
-    const limb = sampleQuad(anchor, mid, tip, 9);
-    const thickness = 3 + Math.min(21, node.count) * 0.45;
-    strokeBranch(ctx, limb, thickness, Math.max(1.6, thickness * 0.35), rng);
+    const limb = sampleQuad(anchor, mid, tip, 12);
+    const count = Math.min(21, node.count);
+    const thickness = 6 + count * 0.55;
+    paintRibbon(ctx, limb, thickness, Math.max(2.5, thickness * 0.3), rng);
 
-    // Foliage along the limb's outer half — one leaf-wash per object, so a
-    // full shelf is visibly in leaf and an empty one is a bare twig.
-    const leaves = Math.min(21, node.count);
-    for (let i = 0; i < leaves; i++) {
-      const at = limb[Math.min(limb.length - 1, 4 + Math.floor(rng() * 5))];
-      wash(
+    if (count === 0) {
+      const forkTip: [number, number] = [
+        tip[0] - 14 - rng() * 8,
+        tip[1] - 14 - rng() * 8,
+      ];
+      paintRibbon(
         ctx,
-        at[0] + (rng() - 0.5) * 30,
-        at[1] - 8 - rng() * 22,
-        6 + rng() * 8,
-        FOLIAGE[i % FOLIAGE.length],
-        2,
-        0.15,
+        sampleQuad(tip, [tip[0] - 6, tip[1] - 8], forkTip, 4),
+        2.5,
+        1,
         rng,
       );
+    } else {
+      const lobes = count >= 12 ? 3 : count >= 5 ? 2 : 1;
+      for (let l = 0; l < lobes; l++) {
+        const at =
+          limb[Math.max(0, limb.length - 1 - l * 3 - Math.floor(rng() * 2))];
+        foliageCloud(
+          ctx,
+          at[0] - rng() * 10,
+          at[1] - 12 - rng() * 10,
+          16 + count * 1.1 - l * 4,
+          rng,
+        );
+      }
     }
   }
 }
