@@ -4,10 +4,8 @@
 // book/audio cards where the spine/disc is exposed on the left.
 .wrap {
   position: relative;
-  // ~15% up from the original 292×182 so the objects carry the shelf instead
-  // of drowning in it.
-  width: 336px;
-  height: 209px;
+  width: 292px;
+  height: 182px;
 }
 
 // Drop shadow behind the object, spanning the full cell. `none` on the SVG so
@@ -22,21 +20,21 @@
 }
 
 .card {
+  // Without explicit border-box the 12px padding adds 24px to both dimensions.
   box-sizing: border-box;
   position: absolute;
   top: 0;
   right: 0;
   z-index: 1;
-  width: 293px;
-  height: 208px;
-  // A poster in a hairline frame: the artwork IS the card, full-bleed, with
-  // the title set on it — not a thumbnail pasted into an admin tile.
-  padding: 0;
-  overflow: hidden;
-  background: var(--paper);
-  border: 1px solid var(--brown-border);
-  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  width: 255px;
+  height: 181px;
+  padding: 12px;
+  background: var(--off-white);
+  border-radius: 0 0 20px 20px;
   cursor: pointer;
+  border: none;
   outline: none;
 
   &:focus-visible {
@@ -74,30 +72,19 @@
 }
 
 .thumbWrap {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  // 231×125 cover: full inner width (255 − 24 padding) at a fixed thumbnail height.
+  width: 100%;
+  height: 125px;
+  flex: 0 0 auto;
 }
 
 .thumb {
   position: absolute;
   inset: 0;
-  background: var(--paper);
+  background: var(--white);
   overflow: hidden;
   transition: opacity 0.15s ease;
-
-  // The paper veil over the artwork — the same wash the landing lays over
-  // covers, so raw platform thumbnails sit quietly in the sheet. Lifts on
-  // hover/focus together with the filter below.
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: #e8d9b8;
-    mix-blend-mode: multiply;
-    opacity: 0.3;
-    transition: opacity 0.35s ease;
-  }
 }
 
 .coverImage {
@@ -105,36 +92,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  // Muted toward the paper at rest; the hover below re-wets it to full
-  // colour, the same "touched with a wet brush" move as the landing cards.
-  filter: sepia(0.3) saturate(0.75) contrast(0.95);
-  transition: filter 0.35s ease;
-}
-
-.card:hover .coverImage,
-.card:focus-visible .coverImage {
-  filter: none;
-}
-
-.card:hover .thumb::after,
-.card:focus-visible .thumb::after {
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .thumb,
-  .thumb::after,
-  .coverImage {
-    transition: none;
-  }
 }
 
 .coverPlaceholder {
   width: 100%;
   height: 100%;
-  // Paper tone instead of a raw white hole, so a cover-less video sits in the
-  // same sheet as everything else.
-  background: var(--paper);
+  background: var(--white);
 }
 
 .shadow {
@@ -145,25 +108,15 @@
   pointer-events: none;
 }
 
-// Poster caption: a dark scrim rising from the bottom edge carries the
-// title, so any artwork keeps the text readable.
-.caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 30px 12px 10px;
-  background: linear-gradient(
-    to top,
-    rgba(30, 22, 12, 0.82),
-    rgba(30, 22, 12, 0)
-  );
-  pointer-events: none;
+.bar {
+  width: 100%;
+  height: 6px;
+  background: var(--brown);
 }
 
 .title {
-  text-align: center;
-  color: var(--white-warm);
+  margin-top: 8px;
+  color: var(--gray-darkest);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -182,7 +135,6 @@
     width: 100%;
     height: 100%;
     padding: 0;
-    border: none;
     border-radius: 0;
     // Swap the floating drop shadow for the double frame (inner 1.5px cream,
     // outer 1px brown) so it matches the book/audio tiles in the panel.
@@ -195,8 +147,8 @@
     height: 100%;
   }
 
-  // The panel tile is a bare cover: no scrim, no caption.
-  .caption {
+  .bar,
+  .title {
     display: none;
   }
 }

@@ -7,7 +7,6 @@ import { AuthProvider } from '@components/Context/library/AuthContext';
 import { DashboardProvider } from '@components/Context/library/DashboardContext';
 import { GlobalStateProvider } from '@components/Context/library/GlobalStateContext';
 import { ShareSelectionProvider } from '@components/Context/library/ShareSelectionContext';
-import { BrushPaper } from '@components/library/atoms/BrushPaper';
 import { Sidebar } from '@components/library/organisms/Sidebar';
 import SeoGenerator from '@components/SeoGenerator';
 
@@ -54,7 +53,6 @@ const LibraryPage: NextPage<LibraryPageProps> = ({ username }) => {
               }}
             />
             <div className={`library ${styles.dashboard}`}>
-              <BrushPaper />
               <main className={styles.content}>
                 <LibraryTemplate libraryId={username} />
               </main>

@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import Image from 'next/image';
 import React, { JSX } from 'react';
 
-import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
 import type { BookCardProps } from './BookCard.types';
@@ -60,26 +59,14 @@ export function BookCard({
         )}
         <div className={styles.placeholder} aria-hidden="true" />
         <div className={styles.cover}>
-          {coverUrl ? (
+          {coverUrl && (
             <Image
               src={coverUrl}
               alt={attributes.title}
               fill
-              sizes="169px"
+              sizes="146px"
               className={styles.coverImage}
             />
-          ) : (
-            // No uploaded cover: a paper jacket carrying the title, so the
-            // book keeps its identity and the shelf row doesn't tear into
-            // blank spines.
-            <div className={styles.coverFallback} aria-hidden="true">
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.fallbackTitle}
-              >
-                {title}
-              </Text>
-            </div>
           )}
         </div>
       </div>

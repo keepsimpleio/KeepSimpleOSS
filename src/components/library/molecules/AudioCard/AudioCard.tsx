@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import Image from 'next/image';
 import React, { JSX, useCallback, useState } from 'react';
 
-import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
 import type { AudioCardProps } from './AudioCard.types';
@@ -70,29 +69,18 @@ export function AudioCard({
         )}
         <div className={styles.placeholder} aria-hidden="true" />
         <div className={styles.cover}>
-          {coverUrl ? (
+          {coverUrl && (
             <Image
               ref={coverRef}
               src={coverUrl}
               alt={title}
               fill
-              sizes="219px"
+              sizes="190px"
               className={classNames(styles.coverImage, {
                 [styles.coverImageLoaded]: coverLoaded,
               })}
               onLoad={() => setCoverLoaded(true)}
             />
-          ) : (
-            // No album art: a paper sleeve carrying the title, so the record
-            // keeps its identity instead of standing blank on the shelf.
-            <div className={styles.coverFallback} aria-hidden="true">
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.fallbackTitle}
-              >
-                {title}
-              </Text>
-            </div>
           )}
         </div>
       </div>

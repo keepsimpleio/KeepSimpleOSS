@@ -35,7 +35,6 @@ import { reorderShelves } from '@api/library/shelf/reorderShelves';
 import { ArrowIcon, PlusIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 import {
   Button,
   ButtonSize,
@@ -301,22 +300,12 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
       <div className={classNames(styles.toolbar, className)}>
         <div className={classNames(styles.controls, styles.controlsGuest)}>
           <div className={styles.welcome}>
-            <span className={styles.welcomeTitleWrap}>
-              {/* Burnt sienna at raised alpha: ochre at the default wash
-                  strength vanished into the paper tone — the greeting should
-                  read as a warm, deliberate stroke. */}
-              <WashStroke
-                accent={2}
-                alpha={0.2}
-                className={styles.welcomeStroke}
-              />
-              <Text
-                variant={TypographyVariant.TitleSecondaryBold}
-                className={styles.welcomeTitle}
-              >
-                Welcome to {ownerName}&rsquo;s hive
-              </Text>
-            </span>
+            <Text
+              variant={TypographyVariant.TitleSecondaryBold}
+              className={styles.welcomeTitle}
+            >
+              Welcome to {ownerName}&rsquo;s hive
+            </Text>
             <Text
               variant={TypographyVariant.TextSmall}
               className={styles.welcomeText}

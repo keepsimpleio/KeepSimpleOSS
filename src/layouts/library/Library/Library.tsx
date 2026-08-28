@@ -35,7 +35,6 @@ import {
   ButtonType,
 } from '@components/library/molecules/Button';
 import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
-import { LibraryTree } from '@components/library/organisms/LibraryTree';
 import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
 import { Shelf } from '@components/library/organisms/Shelf';
 
@@ -575,20 +574,9 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
             [styles.resequencing]: isResequencing,
           })}
         >
-          {/* The landing cover's tree, continued: this library's own limb
-              grows up the left edge, one branch under each shelf, foliage
-              thickening as shelves fill. Seeded by the library identity. */}
-          <LibraryTree
-            nodes={displayedShelves.map(shelf => ({
-              id: shelf.id,
-              count: shelf.attributes.objects?.data?.length ?? 0,
-            }))}
-            seedKey={(ownerUsername ?? libraryId ?? '').toLowerCase()}
-          />
           {displayedShelves.map(shelf => (
             <Shelf
               key={shelf.id}
-              className={styles.shelfItem}
               title={shelf.attributes.name}
               shelf={shelf}
               ownerUsername={libraryId}

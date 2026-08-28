@@ -67,7 +67,7 @@ export function VideoCard({
                 src={coverUrl}
                 alt={title}
                 fill
-                sizes="293px"
+                sizes="231px"
                 className={styles.coverImage}
               />
             ) : (
@@ -76,14 +76,14 @@ export function VideoCard({
           </div>
         </div>
 
-        {/* Poster caption: the title sits ON the artwork over a dark scrim,
-            so the whole card is the frame and arbitrary thumbnails can't
-            break the text's contrast. */}
-        <div className={styles.caption}>
-          <Text variant={TypographyVariant.TextSmall} className={styles.title}>
-            {title}
-          </Text>
-        </div>
+        <div className={styles.bar} aria-hidden />
+
+        <Text
+          variant={TypographyVariant.TextBaseSemibold}
+          className={styles.title}
+        >
+          {title}
+        </Text>
       </div>
     </div>
   );

@@ -3,10 +3,7 @@
   position: sticky;
   top: 48px;
   z-index: 20;
-  // Matches the BrushPaper base tone so the sticky bar reads as the same
-  // sheet: content scrolling under it disappears into paper, not into a
-  // differently-tinted strip.
-  background: var(--paper);
+  background: var(--cream);
   padding: 1px 16px 12px;
 
   // The global header switches to a fixed 55px bar at this breakpoint.
@@ -57,30 +54,8 @@
   animation: toolbar-fade 0.3s ease;
 }
 
-// The owner's name carries a brush drag behind it, same language as the
-// landing grid's section title.
-.welcomeTitleWrap {
-  position: relative;
-  display: inline-block;
-  align-self: flex-start;
-
-  // Nested for specificity over the WashStroke atom's base rule. Sized
-  // explicitly: a canvas is a replaced element, and with width:auto it keeps
-  // its intrinsic 240px instead of stretching over a long title.
-  .welcomeStroke {
-    // Bleed past the words so the wash reads as a dragged stroke, not a
-    // highlight box.
-    top: -10px;
-    left: -18px;
-    width: calc(100% + 44px);
-    height: calc(100% + 24px);
-  }
-
-  .welcomeTitle {
-    // Darker brown step: on paper the mid brown loses the 4.5:1 floor.
-    color: var(--brown-100);
-    position: relative;
-  }
+.welcomeTitle {
+  color: var(--brown-200);
 }
 
 .welcomeText {

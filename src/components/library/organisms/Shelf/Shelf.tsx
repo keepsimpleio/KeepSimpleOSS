@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, {
   JSX,
@@ -17,12 +18,12 @@ import {
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
 
-import { renderBoardTile } from '@lib/library/brush';
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
 import { deleteShelf } from '@api/library/shelf/deleteShelf';
 import { updateShelf } from '@api/library/shelf/updateShelf';
 
+import shelfBackground from '@icons/library/images/shelfBackground.png';
 import {
   ArrowIcon,
   AudioIcon,
@@ -36,7 +37,6 @@ import { useShareSelection } from '@components/Context/library/ShareSelectionCon
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 import { AudioCard } from '@components/library/molecules/AudioCard';
 import { BookCard } from '@components/library/molecules/BookCard';
 import {
@@ -180,13 +180,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const objectParam = router.query.object;
   const activeSlug = Array.isArray(objectParam) ? objectParam[0] : objectParam;
   const activeObjectId = objectIdFromSlug(activeSlug);
-
-  // Wood-grain tile for the board, painted once per page (module-cached in
-  // brush.ts) and applied client-side; SSR falls back to the CSS gradient.
-  const [boardTile, setBoardTile] = useState<string | null>(null);
-  useEffect(() => {
-    setBoardTile(renderBoardTile());
-  }, []);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   // Selection is shared across all shelves (one share link spans the whole
@@ -438,27 +431,18 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
-          {/* Pigment accent cycles by shelf id, so sibling shelves differ and
-              the colour survives reorders. */}
-          <span className={styles.titleWrap}>
-            <WashStroke
-              accent={shelf.id}
-              alpha={0.16}
-              className={styles.titleStroke}
-            />
-            {isOwner ? (
-              <button
-                type="button"
-                className={styles.nameButton}
-                onClick={openRename}
-                aria-label="Edit shelf name"
-              >
-                <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
-              </button>
-            ) : (
+          {isOwner ? (
+            <button
+              type="button"
+              className={styles.nameButton}
+              onClick={openRename}
+              aria-label="Edit shelf name"
+            >
               <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
-            )}
-          </span>
+            </button>
+          ) : (
+            <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
+          )}
         </div>
 
         <div className={styles.right}>
@@ -542,9 +526,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
           })}
           ref={itemsRef}
         >
-          {/* No wash behind the empty message: at this size a pale stroke
-              reads as a stain. The tree's bare twig at this shelf already
-              carries the "nothing here yet" image. */}
           {objects.length === 0 ? (
             <div className={styles.empty}>
               <Text
@@ -614,16 +595,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </div>
           )}
         </div>
-        {/* The board the objects stand on: a once-painted wood-grain tile
-            (top surface, front edge, seam) repeating across any width, with
-            a soft fall of shadow onto the paper. */}
-        <div
-          className={styles.board}
-          aria-hidden="true"
-          style={
-            boardTile ? { backgroundImage: `url(${boardTile})` } : undefined
-          }
-        />
+        <div className={styles.banner}>
+          <Image src={shelfBackground} alt="" />
+        </div>
       </div>
 
       {isOwner && isAddOpen && (

@@ -53,15 +53,6 @@
 .shelfList {
   display: flex;
   flex-direction: column;
-  // The LibraryTree canvas is absolutely positioned against this box.
-  position: relative;
-}
-
-// Shelves ride above the tree canvas, so the boards pass in front of the
-// trunk and the shelving reads as mounted on the tree.
-.shelfItem {
-  position: relative;
-  z-index: 1;
 }
 
 // Played once right after a reorder commits: dip the list's opacity so shelves

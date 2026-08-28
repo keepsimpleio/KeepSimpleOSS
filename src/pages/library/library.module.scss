@@ -1,14 +1,5 @@
 .dashboard {
   display: flex;
-  // The BrushPaper backdrop is absolutely positioned against this box; both
-  // columns ride above it.
-  position: relative;
-
-  // The Sidebar is a sibling module, so it's layered by element here: sticky
-  // already positions it, z-index lifts it off the paper.
-  > aside {
-    z-index: 1;
-  }
 
   .content {
     width: 100%;
@@ -18,8 +9,6 @@
     display: flex;
     flex-direction: column;
     height: auto;
-    position: relative;
-    z-index: 1;
 
     // The global header is sticky (in-flow) on desktop but switches to
     // position:fixed at ≤1140px, so content would otherwise start at the
