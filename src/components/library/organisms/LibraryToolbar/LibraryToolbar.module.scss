@@ -130,7 +130,6 @@
   height: 43px;
   border-radius: var(--radius-control);
   background: #fefdf9 !important;
-  box-shadow: 0px 4.84px 12.1px rgba(0, 0, 0, 0.15);
 }
 
 .arrowLeft svg {
@@ -156,15 +155,14 @@
   display: inline-flex;
 }
 
-// Default state: white pill, dark text, soft shadow, no border accent.
+// Default state: flat white tile, dark text, no border accent.
 .jumpButton {
   padding: 6px 16px;
   border-radius: var(--radius-control);
   white-space: nowrap;
   background: var(--white) !important;
   color: var(--gray-darkest) !important;
-  border: 1px solid transparent !important;
-  box-shadow: 0px 4px 4px 0px var(--black-transparent-200);
+  border: 1px solid var(--beige) !important;
 
   &:hover:not(:disabled) {
     background: var(--white) !important;

@@ -10,7 +10,6 @@ import { useClickOutside } from '@hooks/library/useClickOutside';
 import { ArrowIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 
 import type { RatingBoxProps } from './RatingBox.types';
 
@@ -199,9 +198,6 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
 
   return (
     <div className={classNames(styles.wrapper, className)}>
-      {/* The rating sits on a brush wash instead of a boxed 1px border —
-          the same stroke language as the shelf titles. */}
-      <WashStroke accent={3} alpha={0.16} className={styles.wash} />
       <Text variant={TypographyVariant.TextSmall} className={styles.header}>
         {username} rated this book:
       </Text>
