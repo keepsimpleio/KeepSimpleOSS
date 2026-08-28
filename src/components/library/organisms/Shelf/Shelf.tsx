@@ -17,6 +17,7 @@ import {
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
 
+import { renderBoardTile } from '@lib/library/brush';
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
 import { deleteShelf } from '@api/library/shelf/deleteShelf';
@@ -179,6 +180,13 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const objectParam = router.query.object;
   const activeSlug = Array.isArray(objectParam) ? objectParam[0] : objectParam;
   const activeObjectId = objectIdFromSlug(activeSlug);
+
+  // Wood-grain tile for the board, painted once per page (module-cached in
+  // brush.ts) and applied client-side; SSR falls back to the CSS gradient.
+  const [boardTile, setBoardTile] = useState<string | null>(null);
+  useEffect(() => {
+    setBoardTile(renderBoardTile());
+  }, []);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   // Selection is shared across all shelves (one share link spans the whole
@@ -433,7 +441,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
           {/* Pigment accent cycles by shelf id, so sibling shelves differ and
               the colour survives reorders. */}
           <span className={styles.titleWrap}>
-            <WashStroke accent={shelf.id} className={styles.titleStroke} />
+            <WashStroke
+              accent={shelf.id}
+              alpha={0.16}
+              className={styles.titleStroke}
+            />
             {isOwner ? (
               <button
                 type="button"
@@ -600,10 +612,16 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </div>
           )}
         </div>
-        {/* The board the objects stand on: top surface, front edge and a soft
-            fall of shadow onto the paper — drawn in CSS so it spans any width
-            and any number of shelves at no asset cost. */}
-        <div className={styles.board} aria-hidden="true" />
+        {/* The board the objects stand on: a once-painted wood-grain tile
+            (top surface, front edge, seam) repeating across any width, with
+            a soft fall of shadow onto the paper. */}
+        <div
+          className={styles.board}
+          aria-hidden="true"
+          style={
+            boardTile ? { backgroundImage: `url(${boardTile})` } : undefined
+          }
+        />
       </div>
 
       {isOwner && isAddOpen && (

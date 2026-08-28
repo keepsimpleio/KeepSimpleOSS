@@ -84,23 +84,6 @@
     align-items: center;
     padding-left: 12px;
 
-    // Section labels ride a small brush drag, echoing the landing card
-    // titles. Nested for specificity over the WashStroke atom's base rule.
-    .labelWrap {
-      position: relative;
-      display: inline-flex;
-
-      .labelStroke {
-        inset: -4px -14px -6px -10px;
-        width: auto;
-        height: auto;
-      }
-
-      .label {
-        position: relative;
-      }
-    }
-
     p {
       line-height: 30px;
     }

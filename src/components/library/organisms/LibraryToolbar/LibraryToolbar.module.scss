@@ -64,13 +64,16 @@
   display: inline-block;
   align-self: flex-start;
 
-  // Nested for specificity over the WashStroke atom's base rule.
+  // Nested for specificity over the WashStroke atom's base rule. Sized
+  // explicitly: a canvas is a replaced element, and with width:auto it keeps
+  // its intrinsic 240px instead of stretching over a long title.
   .welcomeStroke {
     // Bleed past the words so the wash reads as a dragged stroke, not a
     // highlight box.
-    inset: -10px -26px -14px -18px;
-    width: auto;
-    height: auto;
+    top: -10px;
+    left: -18px;
+    width: calc(100% + 44px);
+    height: calc(100% + 24px);
   }
 
   .welcomeTitle {

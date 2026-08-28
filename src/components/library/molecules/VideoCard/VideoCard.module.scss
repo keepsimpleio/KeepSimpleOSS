@@ -20,7 +20,7 @@
 }
 
 .card {
-  // Without explicit border-box the 12px padding adds 24px to both dimensions.
+  // Without explicit border-box the padding adds to both dimensions.
   box-sizing: border-box;
   position: absolute;
   top: 0;
@@ -30,11 +30,13 @@
   flex-direction: column;
   width: 255px;
   height: 181px;
-  padding: 12px;
-  background: var(--off-white);
-  border-radius: 0 0 20px 20px;
+  padding: 10px 10px 8px;
+  // A framed print standing on the shelf: warm mat, hairline frame, square
+  // corners — the same sheet language as the paper jackets, not an admin tile.
+  background: var(--white-200);
+  border: 1px solid var(--brown-border);
+  border-radius: 2px;
   cursor: pointer;
-  border: none;
   outline: none;
 
   &:focus-visible {
@@ -73,9 +75,10 @@
 
 .thumbWrap {
   position: relative;
-  // 231×125 cover: full inner width (255 − 24 padding) at a fixed thumbnail height.
+  // Full inner width at a fixed thumbnail height; slightly shorter than the
+  // old 125px so the caption below gets room for two full lines.
   width: 100%;
-  height: 125px;
+  height: 116px;
   flex: 0 0 auto;
 }
 
@@ -110,15 +113,11 @@
   pointer-events: none;
 }
 
-.bar {
-  width: 100%;
-  height: 6px;
-  background: var(--brown);
-}
-
+// Gallery-label caption on the mat, centred under the print.
 .title {
-  margin-top: 8px;
-  color: var(--gray-darkest);
+  margin-top: 6px;
+  text-align: center;
+  color: var(--brown-200);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -137,6 +136,7 @@
     width: 100%;
     height: 100%;
     padding: 0;
+    border: none;
     border-radius: 0;
     // Swap the floating drop shadow for the double frame (inner 1.5px cream,
     // outer 1px brown) so it matches the book/audio tiles in the panel.
@@ -149,7 +149,6 @@
     height: 100%;
   }
 
-  .bar,
   .title {
     display: none;
   }

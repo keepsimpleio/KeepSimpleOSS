@@ -171,6 +171,79 @@ export function renderPaperTile(size = 384, seed = 20080219): string | null {
   return c.toDataURL('image/png');
 }
 
+// One board texture serves every shelf on the page; painted on first request,
+// then reused (the tile is seeded, so a repaint would be identical anyway).
+let cachedBoardTile: string | null | undefined;
+
+/**
+ * The shelf board as a horizontally repeating tile: lit top surface, grain
+ * streaks wandering along the wood, a seam where the top edge turns down into
+ * the darker front face. Painted at 2× the board's 26px CSS height and
+ * squeezed by background-size, which tightens the grain the way sanded wood
+ * looks. Returns a data URL, or null when canvas is unavailable — the CSS
+ * fallback gradient then simply shows.
+ */
+export function renderBoardTile(size = 384, seed = 90210): string | null {
+  if (typeof document === 'undefined') return null;
+  if (cachedBoardTile !== undefined) return cachedBoardTile;
+  const h = 52;
+  const c = document.createElement('canvas');
+  c.width = size;
+  c.height = h;
+  const ctx = c.getContext('2d');
+  if (!ctx) {
+    cachedBoardTile = null;
+    return null;
+  }
+  const rng = mulberry32(seed);
+
+  // Base: light catches the top surface, the front face falls off darker.
+  const base = ctx.createLinearGradient(0, 0, 0, h);
+  base.addColorStop(0, '#ead9b8');
+  base.addColorStop(0.3, '#e2d3b4');
+  base.addColorStop(0.4, '#c3ad83');
+  base.addColorStop(1, '#b7a075');
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, size, h);
+
+  // Grain: horizontal streaks wandering along the board. Each streak's end
+  // returns to its starting height so the tile repeats without a visible seam.
+  const streaks = 18;
+  for (let i = 0; i < streaks; i++) {
+    const y0 = rng() * h;
+    const dark = rng() < 0.62;
+    ctx.strokeStyle = dark
+      ? `rgba(110,84,48,${0.045 + rng() * 0.055})`
+      : `rgba(255,244,214,${0.05 + rng() * 0.05})`;
+    ctx.lineWidth = 0.8 + rng() * 1.4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    const steps = 8;
+    let py = y0;
+    ctx.moveTo(0, y0);
+    for (let s = 1; s <= steps; s++) {
+      const x = (s / steps) * size;
+      const y =
+        s === steps
+          ? y0
+          : Math.min(h - 1, Math.max(1, py + (rng() - 0.5) * h * 0.16));
+      ctx.lineTo(x, y);
+      py = y;
+    }
+    ctx.stroke();
+  }
+
+  // The seam where the top surface turns down into the front face, and the
+  // sliver of light along the board's upper edge.
+  ctx.fillStyle = 'rgba(90,66,35,0.22)';
+  ctx.fillRect(0, h * 0.36, size, 2);
+  ctx.fillStyle = 'rgba(255,250,235,0.5)';
+  ctx.fillRect(0, 0, size, 2);
+
+  cachedBoardTile = c.toDataURL('image/png');
+  return cachedBoardTile;
+}
+
 /**
  * Ambient washes for a section backdrop: a handful of very faint pigment
  * pools drifting in from the edges. Painted once at ~half resolution — the

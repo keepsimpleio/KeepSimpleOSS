@@ -40,10 +40,14 @@
         align-items: center;
         min-width: 0;
 
+        // A canvas is a replaced element: with width:auto it keeps its
+        // intrinsic 240px and ignores the right offset, so the wash drifts
+        // off short words. Size it explicitly off the wrap instead.
         .titleStroke {
-          inset: -6px -18px -8px -12px;
-          width: auto;
-          height: auto;
+          top: -6px;
+          left: -12px;
+          width: calc(100% + 30px);
+          height: calc(100% + 14px);
         }
 
         > :not(canvas) {
@@ -218,13 +222,18 @@
       height: 26px;
       z-index: 0;
       pointer-events: none;
-      background: linear-gradient(
+      // Fallback until the wood-grain tile paints (inline style overrides
+      // this background-image once it's ready).
+      background-color: var(--board-edge);
+      background-image: linear-gradient(
         to bottom,
         var(--board-face) 0%,
         var(--board-face) 28%,
         var(--board-edge) 38%,
         var(--board-edge) 100%
       );
+      background-repeat: repeat-x;
+      background-size: 384px 26px;
       border-radius: 2px 2px 4px 4px;
       box-shadow: 0 12px 20px -8px var(--board-shadow);
     }
@@ -333,16 +342,16 @@
         &::after {
           content: '';
           position: absolute;
-          left: 8%;
-          right: 8%;
-          bottom: -4px;
-          height: 10px;
+          left: 6%;
+          right: 6%;
+          bottom: -5px;
+          height: 12px;
           z-index: -1;
           pointer-events: none;
           background: radial-gradient(
             ellipse at center,
-            var(--board-shadow) 0%,
-            rgba(90, 74, 44, 0) 70%
+            rgba(60, 45, 25, 0.4) 0%,
+            rgba(60, 45, 25, 0) 68%
           );
           transition: opacity 0.22s ease;
         }
@@ -379,11 +388,14 @@
       // A pool of pigment behind the message so the bare board reads as a
       // deliberate blank page, not missing content. Nested for specificity
       // over the WashStroke atom's base rule.
+      // Explicit size: a canvas is a replaced element and would otherwise
+      // fall back to its intrinsic 240×64 instead of filling the offsets.
       .emptyWash {
         position: absolute;
-        inset: -30px -48px;
-        width: auto;
-        height: auto;
+        top: -30px;
+        left: -48px;
+        width: calc(100% + 96px);
+        height: calc(100% + 60px);
       }
 
       .emptyText {

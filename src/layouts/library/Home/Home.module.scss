@@ -53,10 +53,13 @@
 
     .titleStroke {
       // Let the stroke bleed past the word so it reads as a brush drag, not
-      // a highlight box.
-      inset: -10px -26px -14px -18px;
-      width: auto;
-      height: auto;
+      // a highlight box. Sized explicitly: a canvas is a replaced element,
+      // and with width:auto it keeps its intrinsic 240px instead of hugging
+      // the word.
+      top: -10px;
+      left: -18px;
+      width: calc(100% + 44px);
+      height: calc(100% + 24px);
     }
   }
 

@@ -76,12 +76,7 @@ export function VideoCard({
           </div>
         </div>
 
-        <div className={styles.bar} aria-hidden />
-
-        <Text
-          variant={TypographyVariant.TextBaseSemibold}
-          className={styles.title}
-        >
+        <Text variant={TypographyVariant.TextSmall} className={styles.title}>
           {title}
         </Text>
       </div>

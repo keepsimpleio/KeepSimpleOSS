@@ -50,9 +50,13 @@
 
       .titleStroke {
         // Bleed past the name so the wash reads as a brush drag under it.
-        inset: -8px -20px -10px -14px;
-        width: auto;
-        height: auto;
+        // Sized explicitly: a canvas is a replaced element, and with
+        // width:auto it keeps its intrinsic 240px instead of hugging the
+        // name — long or short titles both drift otherwise.
+        top: -8px;
+        left: -14px;
+        width: calc(100% + 34px);
+        height: calc(100% + 18px);
         transition: filter 0.35s ease;
 
         @media (prefers-reduced-motion: reduce) {

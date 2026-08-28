@@ -36,7 +36,6 @@ import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
 import { Tooltip } from '@components/library/atoms/Tooltip';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 import {
   Button,
   ButtonSize,
@@ -380,12 +379,7 @@ export function Sidebar() {
         <div className={styles.main}>
           <div className={styles.about}>
             <div className={styles.header}>
-              {/* Pigment accents cycle 0/1/2 across the panel's sections, the
-                  same brush language as the landing grid's card titles. */}
-              <span className={styles.labelWrap}>
-                <WashStroke accent={0} className={styles.labelStroke} />
-                <Text className={styles.label}>About</Text>
-              </span>
+              <Text className={styles.label}>About</Text>
               {canEditLibrary && (
                 <Button
                   label="Edit"
@@ -438,10 +432,7 @@ export function Sidebar() {
 
           <div className={styles.about}>
             <div className={styles.header}>
-              <span className={styles.labelWrap}>
-                <WashStroke accent={1} className={styles.labelStroke} />
-                <Text className={styles.label}>Author</Text>
-              </span>
+              <Text className={styles.label}>Author</Text>
             </div>
 
             <div className={styles.content}>
@@ -466,10 +457,7 @@ export function Sidebar() {
 
           <div className={styles.about}>
             <div className={styles.header}>
-              <span className={styles.labelWrap}>
-                <WashStroke accent={2} className={styles.labelStroke} />
-                <Text className={styles.label}>Tags</Text>
-              </span>
+              <Text className={styles.label}>Tags</Text>
               {canEdit && displayedTags.length > 0 && (
                 <Button
                   label="Edit"
