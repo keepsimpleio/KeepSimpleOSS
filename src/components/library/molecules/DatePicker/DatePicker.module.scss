@@ -13,7 +13,7 @@
   gap: 8px;
   background: var(--white);
   border: 1px solid var(--brown-border);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   padding: 0 16px;
   cursor: pointer;
   color: var(--black);
@@ -49,7 +49,7 @@
   left: 0;
   z-index: 30;
   background: var(--white);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   padding: 12px;
 

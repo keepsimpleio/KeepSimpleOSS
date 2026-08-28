@@ -36,9 +36,26 @@
   cursor: pointer;
   border: none;
   outline: none;
+  // The object rises off the shelf under the cursor — one shared lift across
+  // book/video/audio cards.
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-6px);
+  }
 
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--brown);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
   }
 }
 
@@ -136,6 +153,8 @@
     height: 100%;
     padding: 0;
     border-radius: 0;
+    // No hover lift in the share panel — these tiles drag-reorder.
+    transform: none;
     // Swap the floating drop shadow for the double frame (inner 1.5px cream,
     // outer 1px brown) so it matches the book/audio tiles in the panel.
     box-shadow:

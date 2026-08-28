@@ -13,6 +13,7 @@ import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { CloseIcon } from '@icons/library/svg';
 
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { ModalProps } from './Modal.types';
@@ -120,23 +121,28 @@ export function Modal(props: ModalProps): JSX.Element {
       >
         <div className={classNames(styles.content, className)}>
           {title && (
-            <div className={styles.header}>
-              <Text
-                id={titleId}
-                className={styles.title}
-                variant={TypographyVariant.SubtitleSecondaryAlt}
-              >
-                {title}
-              </Text>
-              <button
-                type="button"
-                className={styles.close}
-                aria-label="Close"
-                onClick={requestClose}
-              >
-                <CloseIcon width={16} height={16} />
-              </button>
-            </div>
+            <>
+              <div className={styles.header}>
+                <Text
+                  id={titleId}
+                  className={styles.title}
+                  variant={TypographyVariant.SubtitleSecondaryAlt}
+                >
+                  {title}
+                </Text>
+                <button
+                  type="button"
+                  className={styles.close}
+                  aria-label="Close"
+                  onClick={requestClose}
+                >
+                  <CloseIcon width={16} height={16} />
+                </button>
+              </div>
+              {/* Same drawn rule as the sidebar sections, in place of the boxed
+                  1px header border; the wobble varies with the title. */}
+              <InkLine seed={title.length} className={styles.headerRule} />
+            </>
           )}
           {children}
         </div>

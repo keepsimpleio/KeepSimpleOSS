@@ -35,7 +35,6 @@ import { Avatar } from '@components/library/atoms/Avatar';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 import {
   Button,
   ButtonSize,
@@ -526,16 +525,6 @@ export function Sidebar() {
                 className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
               />
             </div>
-          </div>
-
-          {/* Printer's ornament closing the sheet — the panel ends on a mark,
-              not on leftover blank paper. */}
-          <div className={styles.colophon} aria-hidden="true">
-            <WashStroke
-              accent={3}
-              alpha={0.3}
-              className={styles.colophonStroke}
-            />
           </div>
         </div>
 

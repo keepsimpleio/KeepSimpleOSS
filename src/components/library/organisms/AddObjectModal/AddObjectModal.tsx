@@ -34,6 +34,7 @@ import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 import { useAuth } from '@components/Context/library/AuthContext';
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
   Button,
@@ -895,6 +896,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                 currentStep={currentStep}
               />
             </div>
+            <InkLine seed={5} className={styles.bandRule} />
 
             <div className={styles.wrapper}>
               {currentStep === 1 ? (
@@ -976,6 +978,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               )}
             </div>
 
+            <InkLine seed={6} className={styles.bandRule} />
             <div className={styles.footer}>
               {submitError && (
                 <p className={styles.footerError}>{submitError}</p>

@@ -128,7 +128,7 @@
   flex-shrink: 0;
   width: 43px;
   height: 43px;
-  border-radius: 10px;
+  border-radius: var(--radius-control);
   background: #fefdf9 !important;
   box-shadow: 0px 4.84px 12.1px rgba(0, 0, 0, 0.15);
 }
@@ -147,7 +147,7 @@
   }
 
   input {
-    border-radius: 12px !important;
+    border-radius: var(--radius-control) !important;
     background: var(--white-300) !important;
   }
 }
@@ -159,7 +159,7 @@
 // Default state: white pill, dark text, soft shadow, no border accent.
 .jumpButton {
   padding: 6px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   white-space: nowrap;
   background: var(--white) !important;
   color: var(--gray-darkest) !important;

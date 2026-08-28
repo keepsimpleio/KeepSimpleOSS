@@ -92,7 +92,7 @@
     // radius and drop the boxed-off chevron compartment so it sits in the
     // panel's catalogue language.
     > button {
-      border-radius: 6px;
+      border-radius: var(--radius-control);
       background: transparent;
 
       > div {
@@ -249,23 +249,6 @@
     }
   }
 
-  // Printer's ornament closing the content: fixed distance under the last
-  // section rather than pushed to the panel's foot, where it collided with
-  // the floating Copilot pill and read as a stain beside it.
-  .colophon {
-    position: relative;
-    margin: 24px 0 96px;
-    min-height: 26px;
-
-    .colophonStroke {
-      left: 50%;
-      top: 0;
-      width: 120px;
-      height: 26px;
-      transform: translateX(-50%);
-    }
-  }
-
   .footer {
     // Stays pinned at the bottom of the sticky full-height sidebar so the
     // guest-mode toggle is always reachable while the library scrolls.
@@ -276,7 +259,7 @@
     margin-bottom: 65px;
     background: var(--off-white);
     padding: 8px 12px;
-    border-radius: 4px;
+    border-radius: var(--radius-control);
 
     .label {
       font-weight: 600;
@@ -310,7 +293,7 @@
     height: 52px;
     padding: 0;
     border: none;
-    border-radius: 10px 0 0 10px;
+    border-radius: var(--radius-control) 0 0 var(--radius-control);
     background: var(--white-warm);
     box-shadow: var(--sidebar-shadow);
     color: var(--brown);

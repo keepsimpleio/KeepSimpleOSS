@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: var(--radius-control);
   transition: all 0.3s ease-in;
   @extend %text-base-semibold;
 

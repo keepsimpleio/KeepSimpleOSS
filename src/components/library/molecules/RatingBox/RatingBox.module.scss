@@ -1,6 +1,6 @@
 .wrapper {
   border: 1px solid var(--beige);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   padding: 12px;
   background: var(--white);
   display: flex;
@@ -41,7 +41,7 @@
   padding: 4px 12px;
   background: var(--white);
   border: 1px solid var(--beige);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   cursor: pointer;
   transition: border-color 0.2s ease;
 
@@ -89,7 +89,7 @@
   right: 0;
   background: var(--white);
   border: 1px solid var(--beige);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   z-index: 1000;
   display: flex;

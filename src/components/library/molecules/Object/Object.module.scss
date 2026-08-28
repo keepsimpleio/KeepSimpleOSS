@@ -3,7 +3,7 @@
   align-items: center;
   width: 100%;
   max-width: 120px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: transparent;
 
   .icon {
@@ -12,7 +12,7 @@
     // on light cards/sidebar, pin a dark tone so they don't inherit white.
     color: var(--gray-darkest);
     background: transparent;
-    border-radius: 8px 0 0 8px;
+    border-radius: var(--radius-control) 0 0 var(--radius-control);
     padding: 3px 4px 3px 0;
   }
 

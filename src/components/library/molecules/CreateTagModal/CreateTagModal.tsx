@@ -10,6 +10,7 @@ import { tagColors } from '@constants/library/tags';
 import { ArrowIcon, DeleteIcon, InfoIcon } from '@icons/library/svg';
 
 import { IconName } from '@components/library/atoms/Icon';
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
   Button,
@@ -300,6 +301,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
               )}
             </div>
 
+            <InkLine seed={7} className={styles.footRule} />
             <div className={styles.footer}>
               <Button
                 label="Cancel"

@@ -30,6 +30,7 @@ import {
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { IconName } from '@components/library/atoms/Icon';
+import { InkLine } from '@components/library/atoms/InkLine';
 import {
   TagType,
   Text,
@@ -372,6 +373,9 @@ export function ObjectOverviewModal(
             <CloseIcon width={16} height={16} />
           </button>
         </div>
+        {/* Same drawn rule as the sidebar sections, in place of the boxed
+            1px header border. */}
+        <InkLine seed={4} className={styles.headerRule} />
 
         <div className={styles.body}>
           <div className={styles.actions}>

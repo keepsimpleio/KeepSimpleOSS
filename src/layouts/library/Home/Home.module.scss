@@ -101,7 +101,7 @@
 
     .input {
       max-width: 348px;
-      border-radius: 6px;
+      border-radius: var(--radius-control);
       border: 1px solid var(--brown-border);
       // On paper the flat white input turns into a raw hole; keep it a sheet
       // of its own.

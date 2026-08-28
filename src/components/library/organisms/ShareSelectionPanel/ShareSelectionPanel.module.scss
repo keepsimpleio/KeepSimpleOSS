@@ -169,7 +169,7 @@
   height: 25px;
   padding: 0 16px;
   border: 1px solid var(--beige);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   cursor: pointer;
   background: var(--white);
   box-shadow: 0 2.27px 4.55px rgba(0, 0, 0, 0.06);
@@ -209,7 +209,7 @@
   gap: 12px;
   padding: 12px 16px;
   border: 1px solid var(--beige);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--off-white);
 }
 

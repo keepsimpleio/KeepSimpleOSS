@@ -20,7 +20,7 @@
   gap: 8px;
   background: var(--white);
   border: 1px solid var(--brown-border);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   padding: 0 0 0 12px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -75,7 +75,7 @@
   left: 0;
   right: 0;
   background: var(--white);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   max-height: 240px;
   overflow-y: auto;

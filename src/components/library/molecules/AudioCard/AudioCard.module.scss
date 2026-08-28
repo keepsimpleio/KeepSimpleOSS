@@ -21,10 +21,27 @@
   border: none;
   padding: 0;
   outline: none;
+  // The object rises off the shelf under the cursor — one shared lift across
+  // book/video/audio cards.
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-6px);
+  }
 
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--focus-ring);
     border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
   }
 }
 
@@ -124,6 +141,8 @@
 
   // Double frame (inner 1.5px cream, outer 1px brown) around the cover tile.
   .card {
+    // No hover lift in the share panel — these tiles drag-reorder.
+    transform: none;
     box-shadow:
       0 0 0 1.5px #f9f4eb,
       0 0 0 2.5px #af6a34;

@@ -6,7 +6,7 @@
   .page {
     width: 32px;
     height: 32px;
-    border-radius: 4px;
+    border-radius: var(--radius-control);
     color: var(--black-transparent-300) !important;
 
     &.arrow {

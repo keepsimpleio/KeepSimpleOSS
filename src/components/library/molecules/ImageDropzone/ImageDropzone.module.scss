@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   border: 1.5px dashed var(--brown-border);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--white-warm);
   padding: 24px;
   cursor: pointer;
@@ -79,7 +79,7 @@
     width: 88px;
     height: 88px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: var(--radius-control);
     flex-shrink: 0;
   }
 
