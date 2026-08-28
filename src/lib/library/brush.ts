@@ -278,6 +278,191 @@ export function paintAmbientWashes(
   }
 }
 
+/** Seed a PRNG from a string (djb2), so a username yields a stable tree. */
+export function hashSeed(s: string): number {
+  let hash = 5381;
+  for (let i = 0; i < s.length; i++) {
+    hash = ((hash << 5) + hash + s.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+// The Library cover's tree palette: gnarled olive bark under teal mist with
+// sage foliage. Deliberately NOT the page's sienna/ochre washes — matching
+// the cover artwork is what makes the side branch read as THAT tree.
+const BARK_SHADOW = 'rgba(74,68,48,';
+const BARK_BODY = 'rgba(138,129,90,';
+const BARK_RIDGE = 'rgba(199,189,146,';
+const FOLIAGE: Pigment[] = [
+  [125, 147, 119], // sage
+  [92, 122, 108], // deep moss
+  [151, 163, 133], // pale olive
+];
+const MIST: Pigment = [123, 150, 143];
+
+export interface TreeNode {
+  /** Vertical centre the limb should reach (canvas px). */
+  y: number;
+  /** Objects on the shelf — drives limb thickness and foliage density. */
+  count: number;
+}
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+/** Sample a quadratic bezier into a polyline. */
+function sampleQuad(
+  p0: [number, number],
+  p1: [number, number],
+  p2: [number, number],
+  steps: number,
+): Array<[number, number]> {
+  const pts: Array<[number, number]> = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const u = 1 - t;
+    pts.push([
+      u * u * p0[0] + 2 * u * t * p1[0] + t * t * p2[0],
+      u * u * p0[1] + 2 * u * t * p1[1] + t * t * p2[1],
+    ]);
+  }
+  return pts;
+}
+
+/**
+ * A branch as three painterly passes over the same wandering polyline —
+ * dark underside, mid body, light ridge — with per-segment width taper and
+ * jitter, which is what reads as bark rather than a plotted line.
+ */
+function strokeBranch(
+  ctx: CanvasRenderingContext2D,
+  pts: Array<[number, number]>,
+  w0: number,
+  w1: number,
+  rng: () => number,
+): void {
+  const passes = [
+    { color: BARK_SHADOW, alpha: 0.5, widthMul: 1, dy: 1.6 },
+    { color: BARK_BODY, alpha: 0.75, widthMul: 0.8, dy: 0 },
+    { color: BARK_RIDGE, alpha: 0.45, widthMul: 0.35, dy: -1.4 },
+  ];
+  ctx.lineCap = 'round';
+  for (const pass of passes) {
+    for (let i = 0; i < pts.length - 1; i++) {
+      const t = i / Math.max(1, pts.length - 2);
+      const width = Math.max(
+        0.8,
+        lerp(w0, w1, t) * pass.widthMul * (0.85 + rng() * 0.3),
+      );
+      ctx.strokeStyle = `${pass.color}${pass.alpha * (0.75 + rng() * 0.5)})`;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(pts[i][0], pts[i][1] + pass.dy);
+      ctx.lineTo(pts[i + 1][0], pts[i + 1][1] + pass.dy);
+      ctx.stroke();
+    }
+  }
+}
+
+/**
+ * The library's own limb of the landing cover's great tree, painted once down
+ * the page's left edge: a gnarled trunk wandering up through teal mist, one
+ * branch reaching under each shelf, its thickness and sage foliage growing
+ * with the shelf's object count. Deterministic per (seed, nodes), so the same
+ * library always grows the same tree.
+ */
+export function paintLibraryTree(
+  canvas: HTMLCanvasElement,
+  cssWidth: number,
+  cssHeight: number,
+  nodes: TreeNode[],
+  seed: number,
+): void {
+  const w = Math.max(1, Math.round(cssWidth));
+  const h = Math.max(1, Math.round(cssHeight));
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.clearRect(0, 0, w, h);
+  const rng = mulberry32(seed);
+
+  // Mist pools drifting along the trunk's column — the cover's fog.
+  const pools = Math.max(2, Math.round(h / 500));
+  for (let i = 0; i < pools; i++) {
+    wash(
+      ctx,
+      rng() * w * 0.55,
+      ((i + 0.2 + rng() * 0.5) / pools) * h,
+      70 + rng() * 60,
+      MIST,
+      3,
+      0.045,
+      rng,
+    );
+  }
+
+  // Trunk spine: bottom of the sheet up to just above the first shelf.
+  const top = Math.max(24, (nodes[0]?.y ?? 64) - 90);
+  const spine: Array<[number, number]> = [];
+  let x = 26 + rng() * 16;
+  for (let y = h + 30; y > top; y -= 70 + rng() * 40) {
+    spine.push([x, y]);
+    x = Math.min(60, Math.max(12, x + (rng() - 0.5) * 34));
+  }
+  spine.push([x, top]);
+  strokeBranch(ctx, spine, 15, 6, rng);
+
+  // Crown: a foliage cluster where the trunk ends, so the tree never
+  // terminates in a bare stump.
+  for (let i = 0; i < 7; i++) {
+    wash(
+      ctx,
+      spine[spine.length - 1][0] + (rng() - 0.5) * 44,
+      top - 4 - rng() * 30,
+      9 + rng() * 9,
+      FOLIAGE[i % FOLIAGE.length],
+      2,
+      0.14,
+      rng,
+    );
+  }
+
+  // One limb per shelf, anchored to the nearest spine joint, sagging then
+  // rising to meet the board's underside.
+  for (const node of nodes) {
+    const anchor = spine.reduce((best, p) =>
+      Math.abs(p[1] - node.y - 24) < Math.abs(best[1] - node.y - 24) ? p : best,
+    );
+    const tip: [number, number] = [w - 8 - rng() * 10, node.y + 2 + rng() * 6];
+    const mid: [number, number] = [
+      (anchor[0] + tip[0]) / 2 + (rng() - 0.5) * 18,
+      (anchor[1] + tip[1]) / 2 + 12 + rng() * 14,
+    ];
+    const limb = sampleQuad(anchor, mid, tip, 9);
+    const thickness = 3 + Math.min(21, node.count) * 0.45;
+    strokeBranch(ctx, limb, thickness, Math.max(1.6, thickness * 0.35), rng);
+
+    // Foliage along the limb's outer half — one leaf-wash per object, so a
+    // full shelf is visibly in leaf and an empty one is a bare twig.
+    const leaves = Math.min(21, node.count);
+    for (let i = 0; i < leaves; i++) {
+      const at = limb[Math.min(limb.length - 1, 4 + Math.floor(rng() * 5))];
+      wash(
+        ctx,
+        at[0] + (rng() - 0.5) * 30,
+        at[1] - 8 - rng() * 22,
+        6 + rng() * 8,
+        FOLIAGE[i % FOLIAGE.length],
+        2,
+        0.15,
+        rng,
+      );
+    }
+  }
+}
+
 /**
  * A hand-drawn ink divider: one quasi-horizontal line wandering across the
  * canvas with a hand wobble, variable pressure and slightly tapered ends.

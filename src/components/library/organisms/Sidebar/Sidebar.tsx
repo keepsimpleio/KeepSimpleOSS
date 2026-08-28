@@ -35,7 +35,7 @@ import { Avatar } from '@components/library/atoms/Avatar';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
-import { Tooltip } from '@components/library/atoms/Tooltip';
+import { WashStroke } from '@components/library/atoms/WashStroke';
 import {
   Button,
   ButtonSize,
@@ -47,7 +47,6 @@ import {
   CreateTagModal,
 } from '@components/library/molecules/CreateTagModal';
 import { Dropdown } from '@components/library/molecules/Dropdown';
-import { Input } from '@components/library/molecules/Input';
 import { Object, ObjectType } from '@components/library/molecules/Object';
 import { Tag } from '@components/library/molecules/Tag';
 import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal';
@@ -510,33 +509,29 @@ export function Sidebar() {
               </Text>
             </div>
             <div className={styles.content}>
-              <div className={styles.shareInputContainer}>
-                <Input
-                  type="text"
-                  value={shareUrl}
-                  placeholder=""
-                  onChange={() => {}}
-                  disabled
-                  wrapperClassName={styles.shareInputWrapper}
-                  className={styles.shareInput}
-                  ariaLabel="Share URL"
-                />
-                <Tooltip
-                  place="top"
-                  tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}
-                >
-                  <Button
-                    label=""
-                    onClick={handleCopyUrl}
-                    type={ButtonType.Secondary}
-                    size={ButtonSize.Default}
-                    ariaLabel="Copy URL"
-                    Icon={<CopyIcon />}
-                    className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
-                  />
-                </Tooltip>
-              </div>
+              {/* One explicit action instead of a disabled input clipping the
+                  URL — the address itself carried no information a visitor
+                  could read, only the affordance to copy it. */}
+              <Button
+                label={isCopied ? 'Copied!' : 'Copy link'}
+                onClick={handleCopyUrl}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Wide}
+                ariaLabel="Copy library link"
+                Icon={<CopyIcon />}
+                className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
+              />
             </div>
+          </div>
+
+          {/* Printer's ornament closing the sheet — the panel ends on a mark,
+              not on leftover blank paper. */}
+          <div className={styles.colophon} aria-hidden="true">
+            <WashStroke
+              accent={3}
+              alpha={0.3}
+              className={styles.colophonStroke}
+            />
           </div>
         </div>
 

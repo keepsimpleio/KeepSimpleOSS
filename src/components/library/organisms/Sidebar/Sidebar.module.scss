@@ -76,6 +76,18 @@
 
   .dropdown {
     width: 100%;
+
+    // On the sheet the default trigger reads as an admin field: soften the
+    // radius and drop the boxed-off chevron compartment so it sits in the
+    // panel's catalogue language.
+    > button {
+      border-radius: 6px;
+      background: transparent;
+
+      > div {
+        border-left: none;
+      }
+    }
   }
 
   .header {
@@ -83,6 +95,17 @@
     display: flex;
     align-items: center;
     padding-left: 12px;
+
+    // Catalogue-style section labels: small caps step back from the content,
+    // giving the sheet the hierarchy the removed washes used to carry.
+    // 13px is on the font passport.
+    .label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brown-100);
+    }
 
     p {
       line-height: 30px;
@@ -176,28 +199,19 @@
       }
     }
 
-    .shareInputContainer {
-      gap: 8px;
-      display: flex;
-      align-items: center;
+    .copyButton {
+      width: 100%;
+      transition: transform 0.2s ease;
 
-      .shareInputWrapper {
-        flex: 1;
+      &.copied {
+        animation: copyPulse 0.4s ease;
       }
 
-      .shareInput {
-        width: 100%;
-      }
-
-      .copyButton {
-        width: auto;
-        min-width: auto;
-        padding: 8px;
-        flex-shrink: 0;
-        transition: transform 0.2s ease;
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
 
         &.copied {
-          animation: copyPulse 0.4s ease;
+          animation: none;
         }
       }
     }
@@ -208,10 +222,6 @@
     display: flex;
     flex-direction: column;
 
-    &:last-child {
-      margin-bottom: 80px;
-    }
-
     .divider {
       height: 1px;
       background: var(--brown-border);
@@ -220,6 +230,24 @@
     // Hand-drawn rule closing a section, in place of the boxed backgrounds.
     .sectionRule {
       margin-top: 8px;
+    }
+  }
+
+  // Printer's ornament at the sheet's foot: pushed to the bottom of the
+  // scrollable column so the panel ends on a mark instead of blank paper.
+  .colophon {
+    position: relative;
+    margin-top: auto;
+    min-height: 26px;
+    padding-top: 24px;
+
+    .colophonStroke {
+      left: 50%;
+      top: auto;
+      bottom: 0;
+      width: 120px;
+      height: 26px;
+      transform: translateX(-50%);
     }
   }
 

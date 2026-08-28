@@ -1,0 +1,33 @@
+.tree {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 140px;
+  pointer-events: none;
+  // Behind the shelves (which carry z-index 1 in Library.module.scss): the
+  // boards pass in front of the trunk, so the shelves read as mounted on the
+  // tree — the same relation the landing cover draws with its tree-houses.
+
+  // The narrow layouts have no spare left gutter; the tree is a desktop gift.
+  @media (max-width: 1024px) {
+    display: none;
+  }
+
+  .canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    // The tree dries in once painted, like every wash on the sheet.
+    transition: opacity 1.2s ease;
+
+    &.painted {
+      opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+}
