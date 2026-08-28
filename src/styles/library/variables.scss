@@ -105,10 +105,10 @@
   );
 
   /* Radius — the one corner for every interactive control and floating
-     surface (buttons, inputs, dropdowns, modals). Near-square, matching the
-     keepsimple.io/tools tiles; cards, tags, toggles and avatars keep their
-     own shapes. */
-  --radius-control: 3px;
+     surface (buttons, inputs, dropdowns, modals). Fully sharp, matching the
+     keepsimple.io/tools tiles; only circles (dots, spinner, switch) keep
+     their shape. */
+  --radius-control: 0;
 
   /* Box Shadow */
   --tooltip-shadow: 0px 0px 22px 0px #00000033;

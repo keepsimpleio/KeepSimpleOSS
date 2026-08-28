@@ -1,11 +1,21 @@
+// No box: the block lies on a brush wash (see .wash), the triggers inside
+// carry their own field borders.
 .wrapper {
-  border: 1px solid var(--beige);
-  border-radius: var(--radius-control);
-  padding: 12px;
-  background: var(--white);
+  position: relative;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.wash {
+  z-index: 0;
+}
+
+.header,
+.row {
+  position: relative;
+  z-index: 1;
 }
 
 .header {
