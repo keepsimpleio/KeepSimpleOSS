@@ -403,7 +403,7 @@ export function Sidebar() {
               {aboutLibraryText && <div className={styles.divider} />}
 
               <div className={styles.totalObjects}>
-                <Text className={styles.label}>Total objects:</Text>
+                <Text className={styles.subLabel}>Total objects</Text>
                 <div className={styles.objects}>
                   <Object
                     className={styles.count}
@@ -504,11 +504,15 @@ export function Sidebar() {
 
           <div className={styles.about}>
             <div className={styles.header}>
-              <Text className={styles.label}>
-                Share (Including selected objects)
-              </Text>
+              <Text className={styles.label}>Share</Text>
             </div>
             <div className={styles.content}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.shareHint}
+              >
+                Selected objects are included in the link.
+              </Text>
               {/* One explicit action instead of a disabled input clipping the
                   URL — the address itself carried no information a visitor
                   could read, only the affordance to copy it. */}

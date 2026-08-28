@@ -1,3 +1,14 @@
+// One catalogue voice for every title on the sheet — section headers and
+// in-section sub-labels alike — so labels never compete with content.
+// 13px is on the font passport; brown-100 clears 4.5:1 on the warm white.
+@mixin caps-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brown-100);
+}
+
 .sidebar {
   width: 100%;
   max-width: 331px;
@@ -96,15 +107,8 @@
     align-items: center;
     padding-left: 12px;
 
-    // Catalogue-style section labels: small caps step back from the content,
-    // giving the sheet the hierarchy the removed washes used to carry.
-    // 13px is on the font passport.
     .label {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--brown-100);
+      @include caps-label;
     }
 
     p {
@@ -136,6 +140,18 @@
       gap: 12px;
       display: flex;
       flex-direction: column;
+    }
+
+    // Same voice as the section headers, so "Total objects" reads as a
+    // title and the content around it stays the only black text.
+    .subLabel {
+      @include caps-label;
+    }
+
+    // Quiet clarification under the Share title, in place of the shouting
+    // two-line parenthetical the title used to carry.
+    .shareHint {
+      color: var(--gray-darker);
     }
 
     .objects {
