@@ -10,7 +10,9 @@ import { getMyLibrary } from '@api/library/getMyLibrary';
 import PlusIcon from '@icons/library/svg/plus.svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { BrushPaper } from '@components/library/atoms/BrushPaper';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { WashStroke } from '@components/library/atoms/WashStroke';
 import { AboutLibraryModal } from '@components/library/molecules/AboutLibraryModal';
 import {
   Button,
@@ -71,12 +73,11 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [remoteItems, setRemoteItems] = useState<HomeLibraryCardView[]>([]);
-  const [remotePageCount, setRemotePageCount] = useState(1);
   const [isLoading, setIsLoading] = useState(!dataOverride);
 
   const isControlled = dataOverride !== undefined;
 
-  // Debounce the raw input so each keystroke doesn't fire a request.
+  // Debounce the raw input so filtering doesn't churn on each keystroke.
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(value.trim()), 300);
     return () => clearTimeout(timer);
@@ -87,6 +88,9 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     setCurrentPage(1);
   }, [debouncedQuery]);
 
+  // Invite-only product: the whole set fits one request (100 is Strapi's
+  // pageSize ceiling), so fetch once and run search, sort and pagination
+  // client-side. Revisit if libraries ever outgrow one page.
   useEffect(() => {
     if (isControlled) {
       return;
@@ -96,22 +100,14 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
     const load = async () => {
       setIsLoading(true);
-      const response = await getLibrariesPaginated(
-        currentPage,
-        perPage,
-        debouncedQuery,
-      );
+      const response = await getLibrariesPaginated(1, 100, '');
       if (cancelled) {
         return;
       }
-      if (response) {
-        const base = process.env.NEXT_PUBLIC_STRAPI;
-        setRemoteItems(mapStrapiLibrariesResponseToCards(response, base));
-        setRemotePageCount(response.meta.pagination.pageCount || 1);
-      } else {
-        setRemoteItems([]);
-        setRemotePageCount(1);
-      }
+      const base = process.env.NEXT_PUBLIC_STRAPI;
+      setRemoteItems(
+        response ? mapStrapiLibrariesResponseToCards(response, base) : [],
+      );
       setIsLoading(false);
     };
 
@@ -120,40 +116,36 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     return () => {
       cancelled = true;
     };
-  }, [isControlled, currentPage, debouncedQuery]);
+  }, [isControlled]);
 
   const { totalPages, currentLibraries } = useMemo(() => {
-    if (isControlled) {
-      const all = dataOverride ?? [];
-      const q = debouncedQuery.toLowerCase();
-      const data = q
-        ? all.filter(lib =>
-            [lib.username, lib.libraryName]
-              .filter(Boolean)
-              .some(field => field!.toLowerCase().includes(q)),
-          )
-        : all;
-      const pages = Math.max(1, Math.ceil(data.length / perPage));
-      const startIndex = (currentPage - 1) * perPage;
-
-      return {
-        totalPages: pages,
-        currentLibraries: data.slice(startIndex, startIndex + perPage),
-      };
-    }
+    const all = isControlled ? (dataOverride ?? []) : remoteItems;
+    const q = debouncedQuery.toLowerCase();
+    const data = q
+      ? all.filter(lib =>
+          [lib.username, lib.libraryName]
+            .filter(Boolean)
+            .some(field => field!.toLowerCase().includes(q)),
+        )
+      : all;
+    // Showcase order: fullest libraries first, so the first row sells the
+    // feature; empty ones sink to the tail. Id keeps ties stable.
+    const sorted = [...data].sort((a, b) => {
+      const totalA = a.bookCount + a.videoCount + a.songCount;
+      const totalB = b.bookCount + b.videoCount + b.songCount;
+      if (totalB !== totalA) {
+        return totalB - totalA;
+      }
+      return Number(a.id) - Number(b.id);
+    });
+    const pages = Math.max(1, Math.ceil(sorted.length / perPage));
+    const startIndex = (currentPage - 1) * perPage;
 
     return {
-      totalPages: Math.max(1, remotePageCount),
-      currentLibraries: remoteItems,
+      totalPages: pages,
+      currentLibraries: sorted.slice(startIndex, startIndex + perPage),
     };
-  }, [
-    isControlled,
-    dataOverride,
-    debouncedQuery,
-    currentPage,
-    remoteItems,
-    remotePageCount,
-  ]);
+  }, [isControlled, dataOverride, debouncedQuery, currentPage, remoteItems]);
 
   const modalToggler = () => {
     setIsOpen(!isOpen);
@@ -184,16 +176,20 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   };
 
   const renderLibraryCards = currentLibraries.map(
-    ({
-      id,
-      username,
-      libraryName,
-      description,
-      bookCount,
-      videoCount,
-      songCount,
-      avatar,
-    }) => (
+    (
+      {
+        id,
+        username,
+        libraryName,
+        description,
+        bookCount,
+        videoCount,
+        songCount,
+        avatar,
+        coverUrls,
+      },
+      index,
+    ) => (
       <LibraryCard
         key={id}
         id={id}
@@ -204,6 +200,10 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
         videoCount={videoCount}
         songCount={songCount}
         avatar={avatar}
+        coverUrls={coverUrls}
+        // Advance the pigment across pages, not just within one, so page 2
+        // doesn't open on the same colour page 1 opened on.
+        accent={(currentPage - 1) * perPage + index}
       />
     ),
   );
@@ -231,14 +231,18 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
       </section>
 
       <section className={styles.libraries} id={sectionId}>
+        <BrushPaper />
         <div className="container">
           <div className={styles.controls}>
-            <Text
-              className={styles.title}
-              variant={TypographyVariant.TitlePrimary}
-            >
-              Libraries
-            </Text>
+            <span className={styles.titleWrap}>
+              <WashStroke accent={3} className={styles.titleStroke} />
+              <Text
+                className={styles.title}
+                variant={TypographyVariant.TitlePrimary}
+              >
+                Libraries
+              </Text>
+            </span>
             <div className={styles.searchGroup}>
               <Input
                 type="search"

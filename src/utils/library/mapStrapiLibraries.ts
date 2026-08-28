@@ -54,6 +54,32 @@ export function countObjectsByType(shelves: StrapiSingleShelfEntry[]) {
   return { bookCount, videoCount, songCount };
 }
 
+// The card's mini-shelf holds this many covers at most; the "View Library"
+// tile takes the next slot as the row's continuation.
+const MAX_CARD_COVERS = 4;
+
+function collectCoverUrls(
+  shelves: StrapiSingleShelfEntry[],
+  strapiBase?: string,
+): string[] {
+  const urls: string[] = [];
+  for (const shelf of shelves) {
+    for (const obj of shelf.attributes?.objects?.data ?? []) {
+      const resolved = resolveMediaUrl(
+        obj.attributes?.coverImage?.data?.attributes?.url,
+        strapiBase,
+      );
+      if (resolved) {
+        urls.push(resolved);
+      }
+      if (urls.length >= MAX_CARD_COVERS) {
+        return urls;
+      }
+    }
+  }
+  return urls;
+}
+
 export function mapStrapiLibraryEntryToCard(
   entry: StrapiLibraryEntry,
   strapiBase?: string,
@@ -61,6 +87,7 @@ export function mapStrapiLibraryEntryToCard(
   const { id, attributes } = entry;
   const shelves = attributes.singleShelves?.data ?? [];
   const { bookCount, videoCount, songCount } = countObjectsByType(shelves);
+  const coverUrls = collectCoverUrls(shelves, strapiBase);
 
   const aboutLibraryPlain = stripHtml(
     attributes.libraryDetails?.aboutLibrary ?? '',
@@ -90,6 +117,7 @@ export function mapStrapiLibraryEntryToCard(
     videoCount,
     songCount,
     avatar: resolveMediaUrl(avatarUrl, strapiBase),
+    coverUrls,
   };
 }
 

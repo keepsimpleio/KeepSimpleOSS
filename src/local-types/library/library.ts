@@ -136,4 +136,7 @@ export interface HomeLibraryCardView {
   videoCount: number;
   songCount: number;
   avatar?: string;
+  /** Resolved cover URLs of the first few objects that have one; the card's
+   * mini-shelf. Empty when the library holds no covers at all. */
+  coverUrls: string[];
 }

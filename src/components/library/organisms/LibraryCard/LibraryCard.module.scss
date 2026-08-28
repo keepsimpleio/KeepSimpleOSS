@@ -1,21 +1,81 @@
 .card {
   width: 100%;
   max-width: 670px;
-  background: var(--white);
+  // A flat white card floats above the paper backdrop; the warm white keeps
+  // it a sheet lying on the same table.
+  background: var(--white-200);
   display: block;
   border: 1px solid var(--brown-border);
   border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.35s ease;
+  // The whole card opens the library; the inner controls are the explicit
+  // affordance for the same action.
+  cursor: pointer;
+
+  // Hover re-wets the sheet: the shadow deepens, the title wash darkens as
+  // if touched with a wet brush again, and the way in lights up so the
+  // whole-card click is legible.
+  &:hover {
+    box-shadow: 0px 10px 26px 0px var(--black-100);
+
+    .header .titleWrap .titleStroke {
+      filter: saturate(1.5) contrast(1.06);
+    }
+
+    // Full nesting path: anything shorter loses the specificity race against
+    // the tile's own base rules and the highlight never shows.
+    .body .shelf .shelfRow .viewTile,
+    .body .viewButton {
+      background: var(--brown);
+      border-color: var(--brown);
+      color: var(--white);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
   .header {
     padding: 20px;
-    border-bottom: 1px solid var(--brown-border);
+    // Clips the title wash: the stroke bleeds past the words but never past
+    // the card's own edge.
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+
+    .titleWrap {
+      position: relative;
+      display: inline-block;
+
+      .titleStroke {
+        // Bleed past the name so the wash reads as a brush drag under it.
+        inset: -8px -20px -10px -14px;
+        width: auto;
+        height: auto;
+        transition: filter 0.35s ease;
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
+      }
+    }
 
     .title {
+      position: relative;
       line-height: 19px;
 
       @media (max-width: 590px) {
         font-size: 16px;
       }
+    }
+
+    // The owner's name carries the identity; the repeated "'s library" tail
+    // steps back.
+    .titleSuffix {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--gray-darker);
     }
   }
 
@@ -39,6 +99,30 @@
         width: 208px;
         height: 208px;
         flex-shrink: 0;
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+
+        // One uniform pass over every avatar, so a user's photo can't fight
+        // the sheet: pigments pulled off screen saturation, warmed toward the
+        // paper, contrast eased the way paint sits compared to print.
+        img,
+        svg {
+          filter: sepia(0.75) saturate(0.5) contrast(0.82) brightness(1.16)
+            hue-rotate(-12deg);
+        }
+
+        // The paper's own colour laid over the photo, the way a wash tints
+        // everything under it.
+        &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: #e8d9b8;
+          mix-blend-mode: multiply;
+          opacity: 0.42;
+        }
 
         @media (max-width: 590px) {
           width: 100px;
@@ -48,15 +132,14 @@
 
       .info {
         width: 100%;
-        border: 1px solid var(--brown-border);
-        border-radius: 8px;
 
         .section {
           padding: 12px;
+        }
 
-          &:not(:last-child) {
-            border-bottom: 1px solid var(--brown-border);
-          }
+        .dividerInner {
+          margin: 0 12px;
+          width: calc(100% - 24px);
         }
 
         .subtitle {
@@ -99,14 +182,98 @@
       }
     }
 
-    button span {
-      @extend %text-base-bold;
-      line-height: 32px;
+    // The mini-shelf: real covers standing on a drawn ink rule. Rendered only
+    // when the library actually holds covers, so empty or cover-less
+    // libraries keep the plain card.
+    .shelf {
+      .shelfRow {
+        display: flex;
+        align-items: flex-end;
+        // Narrow phones can't fit four covers plus the tile in one row; the
+        // tile wraps under the shelf instead of overflowing the card.
+        flex-wrap: wrap;
+        gap: 8px 10px;
+        padding: 0 4px;
 
-      @media (max-width: 590px) {
-        font-size: 14px;
-        font-weight: 600px;
+        .cover {
+          width: 44px;
+          height: 64px;
+          object-fit: cover;
+          border-radius: 2px;
+          box-shadow: 0px 2px 5px 0px var(--black-transparent-100);
+          // A lighter pass of the avatar's wash so covers sit in the same
+          // paint without losing their artwork.
+          filter: sepia(0.3) saturate(0.75) contrast(0.95);
+        }
+
+        // The next slot on the shelf: same height as the covers, so the call
+        // to action reads as the row's continuation.
+        .viewTile {
+          height: 64px;
+          padding: 0 14px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          // Take the rest of the row after the covers; the floor keeps the
+          // label whole and lets narrow phones wrap it under the shelf.
+          flex: 1 1 120px;
+          background: transparent;
+          border: 1px solid rgba(51, 41, 28, 0.55);
+          border-radius: 6px;
+          color: var(--brown-100);
+          cursor: pointer;
+          transition:
+            background 0.3s ease,
+            color 0.3s ease,
+            border-color 0.3s ease;
+
+          // Typography comes from the Text variant, exactly as it does for
+          // the Button molecule; only the colour is the tile's own.
+          span {
+            color: inherit;
+          }
+
+          &:hover {
+            background: var(--brown);
+            border-color: var(--brown);
+            color: var(--white);
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            transition: none;
+          }
+        }
       }
     }
+
+    // Ghost variant of the primary button: ink outline on the sheet, the
+    // brown fill only arrives on hover. Ranks the pigment accents above the
+    // call to action instead of four brown slabs per viewport.
+    .viewButton {
+      // Same height as the shelf tile, so a library with covers and one
+      // without present the same way in.
+      height: 64px;
+      background: transparent;
+      border: 1px solid rgba(51, 41, 28, 0.55);
+      box-shadow: none;
+      color: var(--brown-100);
+
+      span {
+        color: inherit;
+      }
+
+      &:hover:not(:disabled) {
+        background: var(--brown);
+        border-color: var(--brown);
+        color: var(--white);
+      }
+    }
+  }
+
+  // The header's ink divider stops short of the card edge like a drawn rule.
+  .divider {
+    margin: 0 16px;
+    width: calc(100% - 32px);
   }
 }
