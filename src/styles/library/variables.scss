@@ -109,6 +109,9 @@
      keepsimple.io/tools tiles; only circles (dots, spinner, switch) keep
      their shape. */
   --radius-control: 0;
+  /* Tags are the one exception: a 3px corner takes the machine edge off a
+     block of solid colour without turning the chip into a pill. */
+  --radius-tag: 3px;
 
   /* Box Shadow */
   --tooltip-shadow: 0px 0px 22px 0px #00000033;
