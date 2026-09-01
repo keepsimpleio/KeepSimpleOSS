@@ -125,10 +125,10 @@
       }
     }
 
-    // The library glyph ships with a baked-in brown fill (no dark asset like the
-    // other nav icons) — paint it white so it reads on the dark header.
+    // The library glyph ships with a baked-in brown stroke (no dark asset like
+    // the other nav icons) — paint it white so it reads on the dark header.
     .libraryIcon path {
-      fill: #fff;
+      stroke: #fff;
     }
 
     .url {

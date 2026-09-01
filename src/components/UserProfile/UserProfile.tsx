@@ -8,8 +8,8 @@ import { isLibraryEnabled } from '@constants/library/common';
 
 import { logout } from '@api/auth';
 
-import LibraryIcon from '@icons/library/svg/library.svg';
 import PlusIcon from '@icons/library/svg/plus.svg';
+import LibraryIcon from '@icons/navbar/library.svg';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './UserProfile.module.scss';

@@ -13,9 +13,9 @@ import navbar from '@data/navbar';
 
 import ArticlesDarkIcon from '@icons/ArticlesDarkIcon';
 import ArticlesIcon from '@icons/ArticlesIcon';
-import LibraryIcon from '@icons/library/svg/library.svg';
 import AiAtlasIcon from '@icons/navbar/ai-atlas.svg';
 import AiAtlasDarkIcon from '@icons/navbar/ai-atlas-dark.svg';
+import LibraryIcon from '@icons/navbar/library.svg';
 import LongevityIcon from '@icons/navbar/longevity.svg';
 import LongevityDarkIcon from '@icons/navbar/longevity-dark.svg';
 import ToolsIcon from '@icons/navbar/tools.svg';
