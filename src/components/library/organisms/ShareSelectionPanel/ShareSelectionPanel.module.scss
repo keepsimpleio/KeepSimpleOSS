@@ -27,6 +27,13 @@
   max-height: 87px;
 }
 
+// Shown in place of the card grid while nothing is selected, so the opened
+// panel explains itself instead of presenting an empty tray.
+.emptyState {
+  color: var(--gray-medium);
+  padding: 8px 0 4px;
+}
+
 .header {
   display: flex;
   align-items: center;

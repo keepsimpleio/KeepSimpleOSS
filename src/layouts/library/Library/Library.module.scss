@@ -1,6 +1,12 @@
+// Height of the share panel's collapsed header bar. It's fixed to the bottom
+// of the viewport and now always present, so the library reserves the strip
+// instead of letting the last shelf sit under it.
+$share-bar-height: 87px;
+
 .wrapper {
   flex: 1;
   min-width: 0;
+  padding-bottom: $share-bar-height;
 
   @media (max-width: 1024px) {
     min-height: calc(100vh - 168px);
@@ -24,7 +30,7 @@
     align-items: center;
     justify-content: center;
     gap: 28px;
-    min-height: calc(100vh - 48px);
+    min-height: calc(100vh - 48px - #{$share-bar-height});
     padding: 24px;
 
     .text,
@@ -37,7 +43,7 @@
   // the spinner centers in the content area instead of collapsing to the top.
   .loading {
     position: relative;
-    min-height: calc(100vh - 48px);
+    min-height: calc(100vh - 48px - #{$share-bar-height});
   }
 
   .text {

@@ -138,7 +138,9 @@ export function ShareSelectionPanel({
   onObjectClick,
   className,
 }: ShareSelectionPanelProps): JSX.Element | null {
-  const [collapsed, setCollapsed] = useState(false);
+  // Starts folded down to its header bar: the panel is a permanent fixture at
+  // the bottom of the library, so it opens only when the user asks for it.
+  const [collapsed, setCollapsed] = useState(true);
   const [pendingRemoveId, setPendingRemoveId] = useState<number | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -200,7 +202,12 @@ export function ShareSelectionPanel({
 
   const pendingRemove = objects.find(o => o.id === pendingRemoveId) ?? null;
 
-  if (objects.length === 0) return null;
+  // The owner's panel is a permanent bottom bar — it stays put with nothing
+  // selected so the share affordance never appears and disappears under the
+  // content. A recipient viewing a shared link has nothing to select, so an
+  // empty panel there is just a dead bar.
+  const isEmpty = objects.length === 0;
+  if (isEmpty && readOnly) return null;
 
   return (
     <section
@@ -244,7 +251,7 @@ export function ShareSelectionPanel({
               size={ButtonSize.Default}
               Icon={<ShareIcon />}
               iconPosition={IconPosition.Right}
-              disabled={isSharing}
+              disabled={isSharing || isEmpty}
             />
             <Button
               label="Remove all"
@@ -253,6 +260,7 @@ export function ShareSelectionPanel({
               type={ButtonType.Outlined}
               size={ButtonSize.Default}
               className={styles.removeAll}
+              disabled={isEmpty}
             />
           </div>
         )}
@@ -272,31 +280,41 @@ export function ShareSelectionPanel({
             </Text>
           )}
 
-          <div className={styles.scroller}>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+          {isEmpty ? (
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.emptyState}
             >
-              <SortableContext
-                items={objects.map(o => o.id)}
-                strategy={rectSortingStrategy}
+              Nothing selected yet. Pick objects from your shelves to share them
+              as one link.
+            </Text>
+          ) : (
+            <div className={styles.scroller}>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                <div className={styles.grid}>
-                  {objects.map((object, index) => (
-                    <SortableItem
-                      key={object.id}
-                      object={object}
-                      position={index + 1}
-                      readOnly={readOnly}
-                      onRemove={setPendingRemoveId}
-                      onObjectClick={onObjectClick}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          </div>
+                <SortableContext
+                  items={objects.map(o => o.id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className={styles.grid}>
+                    {objects.map((object, index) => (
+                      <SortableItem
+                        key={object.id}
+                        object={object}
+                        position={index + 1}
+                        readOnly={readOnly}
+                        onRemove={setPendingRemoveId}
+                        onObjectClick={onObjectClick}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            </div>
+          )}
 
           {!readOnly && shareUrl && (
             <div className={styles.linkRow}>
