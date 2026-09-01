@@ -213,9 +213,21 @@
 // Motion passport: every animation above is decorative, so cut it to its end
 // state for anyone who asked the OS for reduced motion. `!important` matches
 // the shorthand declarations these classes ship with.
+// Listed class by class on purpose: this file is compiled as a CSS module, and
+// an attribute selector like [class^='animate-'] is rejected there as impure.
 @media (prefers-reduced-motion: reduce) {
-  [class^='animate-'],
-  [class*=' animate-'],
+  .animate-fadeInLeft,
+  .animate-fadeIn,
+  .animate-fadeOut,
+  .animate-slowFadeIn,
+  .animate-fadeInRightToLeft,
+  .animate-fadeInAndOut,
+  .animate-rotateFadeIn,
+  .animate-slideInFromLeft,
+  .animate-slideInFromRight,
+  .animate-slideInFromTop,
+  .animate-slideInFromBottom,
+  .animate-slideDown,
   .animate_pulsate {
     animation: none !important;
     opacity: 1;
