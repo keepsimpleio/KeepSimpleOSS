@@ -25,6 +25,7 @@ import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
 import { Loader } from '@components/library/atoms/Loader';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { WaveField } from '@components/library/atoms/WaveField';
 import {
   AddShelfModal,
   type ShelfType,
@@ -539,6 +540,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         </div>
       ) : shelves.length === 0 ? (
         <div className={styles.empty}>
+          <WaveField />
           <Text
             variant={TypographyVariant.TitleSecondaryBold}
             className={styles.text}

@@ -15,6 +15,10 @@
   // Fill the viewport below the 48px sticky header so the content centers in the
   // real available space rather than the top 60vh (which sat it too high).
   .empty {
+    // Positioned so the WaveField backdrop can fill it edge to edge; content
+    // stays above via its own position (source order wins).
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -22,6 +26,11 @@
     gap: 28px;
     min-height: calc(100vh - 48px);
     padding: 24px;
+
+    .text,
+    .button {
+      position: relative;
+    }
   }
 
   // Gives the absolute-positioned Loader a sized, positioned region to fill so

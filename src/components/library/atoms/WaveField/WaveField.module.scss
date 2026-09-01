@@ -1,0 +1,39 @@
+.field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.ready {
+  opacity: 1;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+// Soft clearing behind the headline and button so the waves stay a backdrop
+// and never compete with the copy.
+.clearing {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 44% 32% at 50% 50%,
+    var(--white-warm) 0%,
+    color-mix(in srgb, var(--white-warm) 85%, transparent) 45%,
+    color-mix(in srgb, var(--white-warm) 0%, transparent) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field {
+    transition: none;
+    opacity: 1;
+  }
+}
