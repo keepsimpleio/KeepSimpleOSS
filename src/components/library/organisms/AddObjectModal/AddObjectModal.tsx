@@ -8,7 +8,12 @@ import {
   OBJECT_FIELD_LIMITS,
 } from '@utils/library/schema/addObjectSchema';
 import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
-import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
+import {
+  Controller,
+  type FieldErrors,
+  type SubmitHandler,
+  useForm,
+} from 'react-hook-form';
 
 import { SHELF_FULL_MESSAGE } from '@constants/library/common';
 
@@ -147,6 +152,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  // Synchronous twin of `isSubmittingForm` — a ref flips before the re-render
+  // that disables the button, so it catches a second click fired in the gap.
+  const submitInFlightRef = useRef(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
   const [isFetchingVideoMeta, setIsFetchingVideoMeta] = useState(false);
@@ -346,7 +354,29 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   const handleBack = () => setCurrentStep(1);
 
+  // Validation lives on step-1 fields, which aren't on screen during step 2 —
+  // so a rejected submit used to look like the button doing nothing at all.
+  // Name the offending field and walk the user back to it.
+  const onInvalidForm = (formErrors: FieldErrors<AddObjectFormData>) => {
+    const firstKey = Object.keys(formErrors)[0] as
+      | keyof AddObjectFormData
+      | undefined;
+    const firstMessage = firstKey
+      ? (formErrors[firstKey]?.message as string | undefined)
+      : undefined;
+    setSubmitError(
+      firstMessage ??
+        `Some details are missing. Check step 1 before saving this ${objectType}.`,
+    );
+    setCurrentStep(1);
+  };
+
   const onSubmitForm: SubmitHandler<AddObjectFormData> = async data => {
+    // A click that lands while the previous save is still in flight must not
+    // start a second create — `isSubmittingForm` only disables the button after
+    // React re-renders, which is a frame too late for a fast double-click.
+    if (submitInFlightRef.current) return;
+    submitInFlightRef.current = true;
     setSubmitError(null);
 
     // Object titles must be unique within a shelf — warn before saving instead
@@ -360,6 +390,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         setSubmitError(
           `A ${objectType} with this title already exists on this shelf.`,
         );
+        // Release the guard: this exit is before the try/finally that would
+        // otherwise clear it, and a stuck flag would deaden the button.
+        submitInFlightRef.current = false;
         return;
       }
     }
@@ -608,9 +641,12 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           : e.message;
       setSubmitError(message);
     } finally {
+      submitInFlightRef.current = false;
       setIsSubmittingForm(false);
     }
   };
+
+  const submitForm = handleSubmit(onSubmitForm, onInvalidForm);
 
   const renderField = (key: FieldKey) => {
     const label = config.labels[key] ?? key;
@@ -889,7 +925,13 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           onClose={onClose}
           closeRef={closeRef}
         >
-          <form onSubmit={handleSubmit(onSubmitForm)} noValidate>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              void submitForm(e);
+            }}
+            noValidate
+          >
             <div className={styles.indicatorWrap}>
               <StepIndicator
                 steps={[STEPS[0], { label: config.step2Label }]}
@@ -1027,7 +1069,14 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     size={ButtonSize.Wide}
                     label={isSubmittingForm ? 'Saving…' : primaryLabel}
                     ariaLabel={primaryLabel}
-                    buttonType="submit"
+                    // Submits through the same handler the form's onSubmit
+                    // uses, but from the click itself: a native submit event
+                    // can be swallowed by whatever else is listening on the
+                    // way up, and the user reads that as a dead button.
+                    onClick={e => {
+                      e.preventDefault();
+                      void submitForm();
+                    }}
                     disabled={isSubmittingForm}
                   />
                 )}

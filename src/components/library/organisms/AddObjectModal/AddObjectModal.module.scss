@@ -200,3 +200,11 @@
     transform: translateY(0);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .field,
+  .error,
+  .hint {
+    animation: none;
+  }
+}

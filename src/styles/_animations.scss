@@ -209,3 +209,16 @@
   opacity: 1;
   transform: scale(1);
 }
+
+// Motion passport: every animation above is decorative, so cut it to its end
+// state for anyone who asked the OS for reduced motion. `!important` matches
+// the shorthand declarations these classes ship with.
+@media (prefers-reduced-motion: reduce) {
+  [class^='animate-'],
+  [class*=' animate-'],
+  .animate_pulsate {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
