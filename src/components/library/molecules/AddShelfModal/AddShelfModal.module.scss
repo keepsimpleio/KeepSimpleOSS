@@ -1,3 +1,42 @@
+// The whole dialog (backdrop included) yields while the create request runs,
+// so the spinner in `.creating` sits on the clean page. Kept mounted: on a
+// server-side failure the dialog fades back in with the error and the
+// user's input intact.
+.submitting {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    visibility 0s linear 0.25s;
+}
+
+.creating {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  animation: creating-fade-in 0.25s ease;
+}
+
+@keyframes creating-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submitting {
+    transition: none;
+  }
+
+  .creating {
+    animation: none;
+  }
+}
+
 .modal {
   width: 100% !important;
   max-width: 456px !important;
