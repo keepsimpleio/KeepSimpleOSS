@@ -20,14 +20,14 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        padding: 7px 10px;
+        padding: 9px 14px;
         border-radius: var(--radius-icon-chip);
         background: var(--off-white);
 
         svg {
           display: block;
-          width: 13px;
-          height: 11px;
+          width: 20px;
+          height: 17px;
         }
       }
 
@@ -69,8 +69,13 @@
 
       .settings {
         padding: 0;
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
       }
     }
 
