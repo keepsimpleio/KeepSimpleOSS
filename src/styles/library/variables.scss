@@ -112,6 +112,9 @@
   /* Tags are the one exception: a 3px corner takes the machine edge off a
      block of solid colour without turning the chip into a pill. */
   --radius-tag: 3px;
+  /* The shelf-header type icon sits in a fully rounded chip, the one pill in
+     the library. */
+  --radius-icon-chip: 100px;
 
   /* Box Shadow */
   --tooltip-shadow: 0px 0px 22px 0px #00000033;
