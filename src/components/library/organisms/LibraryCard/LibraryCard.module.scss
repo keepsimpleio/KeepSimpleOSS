@@ -13,15 +13,10 @@
   // affordance for the same action.
   cursor: pointer;
 
-  // Hover re-wets the sheet: the shadow deepens, the title wash darkens as
-  // if touched with a wet brush again, and the way in lights up so the
-  // whole-card click is legible.
+  // Hover deepens the shadow and lights up the way in, so the whole-card
+  // click is legible.
   &:hover {
     box-shadow: 0px 10px 26px 0px var(--black-100);
-
-    .header .titleWrap .titleStroke {
-      filter: saturate(1.5) contrast(1.06);
-    }
 
     // Full nesting path: anything shorter loses the specificity race against
     // the tile's own base rules and the highlight never shows.
@@ -39,34 +34,9 @@
 
   .header {
     padding: 20px;
-    // Clips the title wash: the stroke bleeds past the words but never past
-    // the card's own edge.
-    overflow: hidden;
     border-radius: 0;
 
-    .titleWrap {
-      position: relative;
-      display: inline-block;
-
-      .titleStroke {
-        // Bleed past the name so the wash reads as a brush drag under it.
-        // Sized explicitly: a canvas is a replaced element, and with
-        // width:auto it keeps its intrinsic 240px instead of hugging the
-        // name — long or short titles both drift otherwise.
-        top: -8px;
-        left: -14px;
-        width: calc(100% + 34px);
-        height: calc(100% + 18px);
-        transition: filter 0.35s ease;
-
-        @media (prefers-reduced-motion: reduce) {
-          transition: none;
-        }
-      }
-    }
-
     .title {
-      position: relative;
       line-height: 19px;
 
       @media (max-width: 590px) {

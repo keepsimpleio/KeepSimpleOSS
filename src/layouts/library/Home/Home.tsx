@@ -12,7 +12,6 @@ import PlusIcon from '@icons/library/svg/plus.svg';
 import { useAuth } from '@components/Context/library/AuthContext';
 import { BrushPaper } from '@components/library/atoms/BrushPaper';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 import { AboutLibraryModal } from '@components/library/molecules/AboutLibraryModal';
 import {
   Button,
@@ -223,7 +222,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             label="What is this place?"
             onClick={modalToggler}
             type={ButtonType.Primary}
-            size={ButtonSize.Wide}
+            size={ButtonSize.Default}
             ariaLabel="What is this place modal"
             className={styles.button}
           />
@@ -235,7 +234,6 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
         <div className="container">
           <div className={styles.controls}>
             <span className={styles.titleWrap}>
-              <WashStroke accent={3} className={styles.titleStroke} />
               <Text
                 className={styles.title}
                 variant={TypographyVariant.TitlePrimary}

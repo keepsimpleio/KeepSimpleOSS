@@ -22,12 +22,6 @@ export const PIGMENTS: Pigment[] = [
   [166, 124, 27], // ochre
 ];
 
-export function pigmentFor(index: number): Pigment {
-  return PIGMENTS[
-    ((index % PIGMENTS.length) + PIGMENTS.length) % PIGMENTS.length
-  ];
-}
-
 /** Small fast seeded PRNG — determinism is what keeps the paint stable. */
 export function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
@@ -240,42 +234,5 @@ export function paintInkLine(
     ctx.stroke();
     px = x;
     py = y;
-  }
-}
-
-/**
- * One elongated horizontal stroke filling the given canvas — the accent that
- * sits behind headings. Internal resolution is fixed by the caller through
- * the canvas element's width/height attributes.
- */
-export function paintStroke(
-  canvas: HTMLCanvasElement,
-  color: Pigment,
-  seed: number,
-  alpha = 0.1,
-): void {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  const w = canvas.width;
-  const h = canvas.height;
-  ctx.clearRect(0, 0, w, h);
-  const rng = mulberry32(seed);
-  // Three overlapping squashed washes marching left to right read as one
-  // dragged brush stroke with a wet start and a dry tail.
-  //
-  // Every wash stays inside the canvas with room to spare: a blob's edge can
-  // wander up to ~40% past its radius, so the centres and radii below are
-  // sized to keep even the widest excursion off the canvas border. A wash
-  // that touched the border would be sliced into a straight machine edge,
-  // which is the one thing watercolour never does.
-  const rx = w * 0.15;
-  const ry = h * 0.3;
-  const steps = 3;
-  for (let i = 0; i < steps; i++) {
-    const t = i / (steps - 1);
-    const cx = w * (0.26 + 0.44 * t + (rng() - 0.5) * 0.04);
-    const cy = h * (0.5 + (rng() - 0.5) * 0.1);
-    const r = rx * (1 - 0.18 * t);
-    wash(ctx, cx, cy, r, color, 2, alpha * (1 - 0.35 * t), rng, ry / rx);
   }
 }

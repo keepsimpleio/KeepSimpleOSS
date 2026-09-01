@@ -9,7 +9,6 @@ import {
   Text,
   TypographyVariant,
 } from '@components/library/atoms/Text';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 import { Button, ButtonType } from '@components/library/molecules/Button';
 import { Object, ObjectType } from '@components/library/molecules/Object';
 
@@ -53,22 +52,19 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
   return (
     <div className={styles.card} onClick={handleCardClick}>
       <div className={styles.header}>
-        <span className={styles.titleWrap}>
-          <WashStroke accent={accent} className={styles.titleStroke} />
-          <Text
-            className={styles.title}
-            variant={TypographyVariant.SubtitleSecondaryAlt}
-          >
-            {username ? (
-              <>
-                {username}
-                <span className={styles.titleSuffix}>{"'s library"}</span>
-              </>
-            ) : (
-              libraryName
-            )}
-          </Text>
-        </span>
+        <Text
+          className={styles.title}
+          variant={TypographyVariant.SubtitleSecondaryAlt}
+        >
+          {username ? (
+            <>
+              {username}
+              <span className={styles.titleSuffix}>{"'s library"}</span>
+            </>
+          ) : (
+            libraryName
+          )}
+        </Text>
       </div>
 
       <InkLine seed={accent * 3 + 1} className={styles.divider} />

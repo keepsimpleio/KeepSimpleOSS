@@ -31,24 +31,12 @@
         }
       }
 
-      // Positions the watercolour stroke under the title. The padding (with a
-      // cancelling margin) widens the painted box past the text so the wash
-      // reads as a brush pull, not a text highlight.
       .nameWrap {
-        position: relative;
         display: inline-flex;
         align-items: center;
-        padding: 4px 14px;
-        margin: -4px -14px;
-      }
-
-      .nameStroke {
-        z-index: 0;
       }
 
       .nameButton {
-        position: relative;
-        z-index: 1;
         padding: 0;
         background: transparent;
         border: none;

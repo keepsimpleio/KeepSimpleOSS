@@ -12,10 +12,17 @@
     width: 100%;
   }
 
-  .button {
+  // Nested one level deeper than the Button module's own `.button.<size>`
+  // rules so the hero's sizing wins the cascade regardless of bundle order.
+  .bannerInner .button {
     top: 40px;
     left: 38px;
-    max-width: 175px;
+    // The label sets the width: a fixed clamp wrapped "What is this place?"
+    // onto a second line, which then spilled out of the button's 44px box.
+    width: max-content;
+    max-width: calc(100% - 76px);
+    padding: 2px 20px;
+    white-space: nowrap;
     position: absolute;
     // The cover's highlight/card layers (z-index 1–3) share this stacking
     // context, so the button needs to sit above them to stay clickable.
@@ -48,19 +55,7 @@
   }
 
   .titleWrap {
-    position: relative;
     display: inline-block;
-
-    .titleStroke {
-      // Let the stroke bleed past the word so it reads as a brush drag, not
-      // a highlight box. Sized explicitly: a canvas is a replaced element,
-      // and with width:auto it keeps its intrinsic 240px instead of hugging
-      // the word.
-      top: -10px;
-      left: -18px;
-      width: calc(100% + 44px);
-      height: calc(100% + 24px);
-    }
   }
 
   .controls {

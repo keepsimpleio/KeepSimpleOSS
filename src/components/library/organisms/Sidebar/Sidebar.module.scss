@@ -111,6 +111,13 @@
       @include caps-label;
     }
 
+    // The parenthetical rides beside the Share title, quiet enough that the
+    // title still reads as the section header.
+    .shareHint {
+      color: var(--gray-darker);
+      text-transform: none;
+    }
+
     p {
       line-height: 30px;
     }
@@ -146,12 +153,6 @@
     // title and the content around it stays the only black text.
     .subLabel {
       @include caps-label;
-    }
-
-    // Quiet clarification under the Share title, in place of the shouting
-    // two-line parenthetical the title used to carry.
-    .shareHint {
-      color: var(--gray-darker);
     }
 
     .objects {
@@ -215,8 +216,28 @@
       }
     }
 
+    .shareInputContainer {
+      gap: 8px;
+      display: flex;
+      align-items: center;
+
+      .shareInputWrapper {
+        flex: 1;
+        // The link is longer than the panel is wide; it clips at the field's
+        // edge rather than pushing the copy icon out of reach.
+        min-width: 0;
+      }
+
+      .shareInput {
+        width: 100%;
+      }
+    }
+
     .copyButton {
-      width: 100%;
+      width: auto;
+      min-width: auto;
+      padding: 8px;
+      flex-shrink: 0;
       transition: transform 0.2s ease;
 
       &.copied {

@@ -37,7 +37,6 @@ import { useShareSelection } from '@components/Context/library/ShareSelectionCon
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
-import { WashStroke } from '@components/library/atoms/WashStroke';
 import { AudioCard } from '@components/library/molecules/AudioCard';
 import { BookCard } from '@components/library/molecules/BookCard';
 import {
@@ -120,14 +119,6 @@ const SHELF_TYPE_LABEL: Record<string, string> = {
   video: 'video',
   book: 'book',
   audio: 'audio',
-};
-
-// Pigment behind the shelf title, keyed by type so every book shelf shares a
-// hue and the three types stay tellable apart (indices into the shared set).
-const SHELF_TYPE_ACCENT: Record<string, number> = {
-  video: 1, // ultramarine
-  book: 2, // burnt sienna
-  audio: 0, // viridian
 };
 
 const SETTINGS_OPTIONS = [
@@ -440,14 +431,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
-          {/* The title sits on a faint watercolour stroke, pigment keyed by
-              the shelf's type. Padding (not inset) widens the painted box —
-              a canvas is a replaced element and won't stretch from offsets. */}
           <span className={styles.nameWrap}>
-            <WashStroke
-              accent={SHELF_TYPE_ACCENT[shelfType] ?? 3}
-              className={styles.nameStroke}
-            />
             {isOwner ? (
               <button
                 type="button"
