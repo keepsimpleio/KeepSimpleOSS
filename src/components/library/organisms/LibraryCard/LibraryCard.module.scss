@@ -5,19 +5,16 @@
   // it a sheet lying on the same table.
   background: var(--white-200);
   display: block;
+  // The border alone seats the sheet on the paper: no shadow, nothing
+  // floating above the table.
   border: 1px solid var(--brown-border);
   border-radius: 0;
-  box-shadow: var(--card-shadow);
-  transition: box-shadow 0.35s ease;
   // The whole card opens the library; the inner controls are the explicit
   // affordance for the same action.
   cursor: pointer;
 
-  // Hover deepens the shadow and lights up the way in, so the whole-card
-  // click is legible.
+  // Hover lights up the way in, so the whole-card click is legible.
   &:hover {
-    box-shadow: 0px 10px 26px 0px var(--black-100);
-
     // Full nesting path: anything shorter loses the specificity race against
     // the tile's own base rules and the highlight never shows.
     .body .shelf .shelfRow .viewTile,
@@ -26,10 +23,6 @@
       border-color: var(--brown);
       color: var(--white);
     }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
   }
 
   .header {
@@ -174,7 +167,6 @@
           height: 64px;
           object-fit: cover;
           border-radius: 0;
-          box-shadow: 0px 2px 5px 0px var(--black-transparent-100);
           // A lighter pass of the avatar's wash so covers sit in the same
           // paint without losing their artwork.
           filter: sepia(0.3) saturate(0.75) contrast(0.95);
