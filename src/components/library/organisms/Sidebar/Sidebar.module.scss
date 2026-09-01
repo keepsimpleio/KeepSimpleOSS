@@ -221,15 +221,32 @@
       display: flex;
       align-items: center;
 
-      .shareInputWrapper {
+      // The link is longer than the panel is wide. The head (origin + /library)
+      // takes the ellipsis, the tail (the library name) never shrinks, so the
+      // field reads as https://keepsimple…/AsteroidDestroyer.
+      .shareLink {
         flex: 1;
-        // The link is longer than the panel is wide; it clips at the field's
-        // edge rather than pushing the copy icon out of reach.
         min-width: 0;
+        display: flex;
+        align-items: center;
+        height: 44px;
+        padding: 0 12px;
+        font-size: 13px;
+        white-space: nowrap;
+        color: var(--black);
+        background: var(--white);
+        border: 1px solid var(--gray-100);
+        border-radius: var(--radius-control);
       }
 
-      .shareInput {
-        width: 100%;
+      .shareLinkHead {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .shareLinkTail {
+        flex-shrink: 0;
       }
     }
 

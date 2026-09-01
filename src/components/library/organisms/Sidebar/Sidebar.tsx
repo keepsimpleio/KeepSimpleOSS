@@ -47,7 +47,6 @@ import {
   CreateTagModal,
 } from '@components/library/molecules/CreateTagModal';
 import { Dropdown } from '@components/library/molecules/Dropdown';
-import { Input } from '@components/library/molecules/Input';
 import { Object, ObjectType } from '@components/library/molecules/Object';
 import { Tag } from '@components/library/molecules/Tag';
 import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal';
@@ -95,6 +94,12 @@ export function Sidebar() {
   const shareUrl = currentLibraryId
     ? `${baseUrl}/library/${currentLibraryId}`
     : baseUrl;
+
+  // Split at the last slash so the field can shrink the origin while the
+  // library name at the tail stays whole.
+  const lastSlash = shareUrl.lastIndexOf('/');
+  const shareUrlHead = lastSlash > 0 ? shareUrl.slice(0, lastSlash) : shareUrl;
+  const shareUrlTail = lastSlash > 0 ? shareUrl.slice(lastSlash) : '';
 
   const libraryCards = useMemo(() => {
     if (!libraries || !Array.isArray(libraries.data)) {
@@ -516,18 +521,18 @@ export function Sidebar() {
             <div className={styles.content}>
               {/* The address sits in a read-only field with the copy icon
                   beside it: seeing the start of the link is what tells the
-                  visitor what is about to be shared. */}
+                  visitor what is about to be shared. The head ellipsizes only
+                  as far as the field forces it, so the library name at the end
+                  stays readable; the copy button always writes the full URL. */}
               <div className={styles.shareInputContainer}>
-                <Input
-                  type="text"
-                  value={shareUrl}
-                  placeholder=""
-                  onChange={() => {}}
-                  disabled
-                  wrapperClassName={styles.shareInputWrapper}
-                  className={styles.shareInput}
-                  ariaLabel="Share URL"
-                />
+                <div
+                  className={styles.shareLink}
+                  title={shareUrl}
+                  aria-label="Share URL"
+                >
+                  <span className={styles.shareLinkHead}>{shareUrlHead}</span>
+                  <span className={styles.shareLinkTail}>{shareUrlTail}</span>
+                </div>
                 <Tooltip
                   place="top"
                   tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}
