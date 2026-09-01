@@ -228,9 +228,11 @@ export function ShareSelectionPanel({
           aria-expanded={!collapsed}
           aria-label={collapsed ? 'Expand selection' : 'Collapse selection'}
         >
+          {/* The icon points up by default. Collapsed, up means "opens
+              upward"; expanded, it flips down to mean "folds away". */}
           <ChevronUpIcon
             className={classNames(styles.chevron, {
-              [styles.chevronCollapsed]: collapsed,
+              [styles.chevronExpanded]: !collapsed,
             })}
           />
           <Text
