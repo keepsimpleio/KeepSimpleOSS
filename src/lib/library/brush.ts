@@ -207,7 +207,10 @@ export function paintAmbientWashes(
 export function paintInkLine(
   canvas: HTMLCanvasElement,
   seed: number,
-  alpha = 0.4,
+  // The canvas is drawn at 480x10 and squeezed to 8px tall, so a nib sized
+  // for the canvas lands on screen thinner than it was painted. Pressure and
+  // width below carry the rule past that loss.
+  alpha = 0.62,
 ): void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -227,7 +230,7 @@ export function paintInkLine(
     y = Math.min(h * 0.8, Math.max(h * 0.2, y));
     const taper = t < 0.08 || t > 0.92 ? 0.55 : 1;
     ctx.strokeStyle = `rgba(51,41,28,${alpha * (0.7 + rng() * 0.5) * taper})`;
-    ctx.lineWidth = (0.8 + rng() * 1.1) * taper;
+    ctx.lineWidth = (1.35 + rng() * 1.25) * taper;
     ctx.beginPath();
     ctx.moveTo(px, py);
     ctx.lineTo(x, y);
