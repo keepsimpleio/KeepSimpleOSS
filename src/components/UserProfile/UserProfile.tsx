@@ -191,7 +191,7 @@ const UserProfile: FC<UserProfileProps> = ({
                 <LibraryIcon
                   width={20}
                   height={11}
-                  className={cn(styles.menuIcon, {
+                  className={cn(styles.menuIcon, styles.menuIconLibrary, {
                     [styles.menuIconDark]: isDarkTheme,
                   })}
                 />
@@ -202,6 +202,7 @@ const UserProfile: FC<UserProfileProps> = ({
               <div
                 className={cn(styles.menuItem, {
                   [styles.disabled]: !canCreateLibrary,
+                  [styles.highlighted]: canCreateLibrary,
                 })}
                 onClick={handleCreateLibrary}
                 aria-disabled={!canCreateLibrary}
@@ -209,7 +210,7 @@ const UserProfile: FC<UserProfileProps> = ({
                 <PlusIcon
                   width={14}
                   height={14}
-                  className={cn(styles.menuIcon, {
+                  className={cn(styles.menuIcon, styles.menuIconPlus, {
                     [styles.menuIconDark]: isDarkTheme,
                   })}
                 />

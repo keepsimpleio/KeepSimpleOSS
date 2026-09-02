@@ -71,8 +71,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  // 44x44 touch target around a 24px glyph. The negative margins keep the
+  // glyph optically where the 16px button sat, so the header does not grow.
+  width: 44px;
+  height: 44px;
+  margin: -10px -10px -10px 0;
   padding: 0;
   border: none;
   background: transparent;
@@ -80,11 +83,11 @@
   flex-shrink: 0;
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
 
     path {
-      fill: #aaaaaa;
+      fill: var(--gray-darkest);
     }
   }
 }

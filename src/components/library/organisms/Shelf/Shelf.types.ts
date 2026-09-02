@@ -1,5 +1,15 @@
+import type { HTMLAttributes } from 'react';
+
 import type { StrapiSingleShelfEntry } from '@local-types/library';
 import type { IObject, IReorderObjectEntry } from '@local-types/library/object';
+
+/**
+ * dnd-kit's activator wiring, handed down so the grip rendered inside the
+ * shelf header is what starts a drag. Absent when the viewer can't reorder.
+ */
+export interface ShelfDragHandleProps extends HTMLAttributes<HTMLElement> {
+  ref?: (element: HTMLElement | null) => void;
+}
 
 export interface ShelfProps {
   className?: string;
@@ -37,4 +47,8 @@ export interface ShelfProps {
     shelfId: number,
     ordered: IReorderObjectEntry[],
   ) => void;
+  /** Grip wiring for reordering shelves; owner-only, absent while searching. */
+  dragHandleProps?: ShelfDragHandleProps;
+  /** True while this shelf is the one being dragged. */
+  isDragging?: boolean;
 }

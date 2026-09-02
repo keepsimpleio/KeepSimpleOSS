@@ -1,13 +1,18 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { JSX } from 'react';
+import React, { JSX, useRef, useState } from 'react';
 
+import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
 import type { BookCardProps } from './BookCard.types';
 
 import styles from './BookCard.module.scss';
+
+// motion-passport: exempt — this file carries no animation of its own. The
+// card's hover lift lives in BookCard.module.scss and the dossier's fade in
+// ObjectHoverCard.module.scss; both stylesheets hold the reduced-motion branch.
 
 export function BookCard({
   object,
@@ -17,6 +22,7 @@ export function BookCard({
   onSelectToggle,
   selectDisabled = false,
   compact = false,
+  ownerUsername,
 }: BookCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -25,7 +31,15 @@ export function BookCard({
   const tags = attributes.tags?.data ?? [];
   const title = attributes.title;
 
-  const handleActivate = () => onClick?.(object);
+  // Hovering (or tabbing to) the book opens its dossier beside the shelf.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const handleActivate = () => {
+    // Opening the overview covers the card, so the dossier steps aside first.
+    setPreviewOpen(false);
+    onClick?.(object);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -41,12 +55,17 @@ export function BookCard({
       })}
     >
       <div
+        ref={cardRef}
         className={classNames(styles.card, { [styles.selected]: selected })}
         role="button"
         tabIndex={0}
         aria-label={`Open ${title}`}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
+        onMouseEnter={() => setPreviewOpen(true)}
+        onMouseLeave={() => setPreviewOpen(false)}
+        onFocus={() => setPreviewOpen(true)}
+        onBlur={() => setPreviewOpen(false)}
       >
         {onSelectToggle && (
           <div className={styles.select}>
@@ -83,6 +102,14 @@ export function BookCard({
           />
         ))}
       </div>
+
+      <ObjectHoverCard
+        object={object}
+        anchorRef={cardRef}
+        open={previewOpen}
+        disabled={compact}
+        ownerUsername={ownerUsername}
+      />
     </div>
   );
 }

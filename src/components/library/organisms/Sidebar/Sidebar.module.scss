@@ -62,6 +62,22 @@
     justify-content: flex-end;
     display: none;
 
+    // 44x44 touch target around a 24px glyph, matching the modal close buttons.
+    button {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+
+      path {
+        fill: var(--gray-darkest);
+      }
+    }
+
     // Shown wherever the panel is a slide-in drawer (≤1024px), not just on
     // phones — otherwise the 769–1024px range could open it with no way to close.
     @media (max-width: 1024px) {
@@ -144,21 +160,38 @@
     // the drawn ink rules instead of grey admin rectangles.
 
     .totalObjects {
-      gap: 12px;
+      gap: 8px;
       display: flex;
       flex-direction: column;
     }
 
-    // Same voice as the section headers, so "Total objects" reads as a
-    // title and the content around it stays the only black text.
+    // Same voice as the section headers, so "Content" reads as a title and
+    // the content around it stays the only black text.
     .subLabel {
       @include caps-label;
     }
 
     .objects {
+      // All three counts on one line. The icons come down to 16px, which buys
+      // the width the third count needs and gives the sheet back a line of
+      // vertical space.
       gap: 12px;
       display: flex;
+      flex-wrap: nowrap;
       align-items: center;
+
+      // The counts size to their own content rather than sharing the row
+      // evenly, so a label is never squeezed and clipped mid-word.
+      > * {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none;
+      }
+
+      .count svg {
+        width: 16px;
+        height: 16px;
+      }
     }
 
     .avatar {
@@ -276,9 +309,11 @@
     display: flex;
     flex-direction: column;
 
-    .divider {
-      height: 1px;
-      background: var(--brown-border);
+    // Between the About text and the Content counts. Drawn in the same ink as
+    // the rules that close each section, so no flat 1px border is left on the
+    // sheet.
+    .innerRule {
+      margin: 4px 0;
     }
 
     // Hand-drawn rule closing a section, in place of the boxed backgrounds.
@@ -308,6 +343,28 @@
 // Edge tab that opens the drawer — mobile only. A half-pill anchored to the
 // right edge, vertically centered so it clears both the fixed header (top) and
 // the share-selection bar (bottom).
+// Copy / Copied share one grid cell: the tooltip is sized by the wider label
+// from the start, so swapping the text moves nothing.
+.copyTooltip {
+  display: inline-grid;
+  align-items: center;
+  justify-items: center;
+}
+
+.copyTooltipLabel {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+
+  &.copyTooltipLabelVisible {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 .openTab {
   display: none;
 }

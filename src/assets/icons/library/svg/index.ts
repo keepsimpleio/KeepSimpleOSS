@@ -13,6 +13,7 @@ import CompanyIcon from './company.svg';
 import CopyIcon from './copy.svg';
 import DeleteIcon from './delete.svg';
 import DotsVerticalIcon from './dots-vertical.svg';
+import DragHandleIcon from './drag-handle.svg';
 import EditIcon from './edit.svg';
 import ErrorIcon from './error.svg';
 import HamburgerIcon from './hamburger.svg';
@@ -44,6 +45,7 @@ export {
   CopyIcon,
   DeleteIcon,
   DotsVerticalIcon,
+  DragHandleIcon,
   EditIcon,
   ErrorIcon,
   HamburgerIcon,

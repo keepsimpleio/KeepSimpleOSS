@@ -1,7 +1,8 @@
 import type { Difficulty, OverallRating } from '@local-types/library/object';
 
 export interface RatingBoxProps {
-  /** Username shown in the header — "<username> rated this book:" */
+  /** Username shown in the header — "<username> rated this book:", or
+   * "<username> didn’t rate this book" while both values are empty. */
   username: string;
   /** Currently selected overall rating, 1–5. */
   overallRating?: OverallRating;

@@ -28,6 +28,7 @@ import {
   ArrowIcon,
   AudioIcon,
   BookIcon,
+  DragHandleIcon,
   PlusIcon,
   SettingsIcon,
   VideoIcon,
@@ -49,6 +50,7 @@ import { ConfirmationModal } from '@components/library/molecules/ConfirmationMod
 import { Dropdown } from '@components/library/molecules/Dropdown';
 import { Input } from '@components/library/molecules/Input';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
+import { ShelfGhostRow } from '@components/library/molecules/ShelfGhostRow';
 import { VideoCard } from '@components/library/molecules/VideoCard';
 import { AddObjectModal } from '@components/library/organisms/AddObjectModal';
 import { ObjectOverviewModal } from '@components/library/organisms/ObjectOverviewModal';
@@ -147,6 +149,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onShelfRenamed,
     onObjectMoved,
     onObjectsReordered,
+    dragHandleProps,
+    isDragging = false,
   } = props;
   const shelfType = shelf.attributes.type as ObjectType;
   // Render in persisted-order sequence. Strapi's populate doesn't sort the
@@ -231,6 +235,42 @@ export function Shelf(props: ShelfProps): JSX.Element {
       observer.disconnect();
     };
   }, [syncScrollState, objects.length]);
+
+  // Ghost props fill whatever the real objects leave free on the board. The
+  // row is measured, not guessed: card widths differ by type, and the free
+  // space shrinks with every object the owner adds until it is gone.
+  const [ghostLeft, setGhostLeft] = useState(0);
+  const [ghostWidth, setGhostWidth] = useState(0);
+
+  const measureGhostSpace = useCallback(() => {
+    const el = itemsRef.current;
+    const cards = cardsRef.current;
+    if (!el) return;
+    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0;
+    // Measure the last card's own right edge, NOT the row's scrollWidth: the
+    // cards row carries min-width: 100%, so its scrollWidth is the whole
+    // viewport even when it holds nothing, which left the props zero space.
+    const slots = cards?.children;
+    const last =
+      slots && slots.length > 0
+        ? (slots[slots.length - 1] as HTMLElement)
+        : null;
+    // offsetLeft is measured from the scroll row, so it already carries the
+    // row's own left padding. Objects push the props right by one card gap.
+    const left = last ? last.offsetLeft + last.offsetWidth + 38 : padLeft;
+    setGhostLeft(left);
+    // The trailing 24px keeps the last prop clear of the board's right edge.
+    setGhostWidth(Math.max(0, el.clientWidth - left - 24));
+  }, [cardsRef]);
+
+  useEffect(() => {
+    const el = itemsRef.current;
+    if (!el) return;
+    measureGhostSpace();
+    const observer = new ResizeObserver(measureGhostSpace);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [measureGhostSpace, objects.length]);
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
@@ -405,10 +445,23 @@ export function Shelf(props: ShelfProps): JSX.Element {
   return (
     <div
       id={`shelf-${shelf.id}`}
-      className={classNames(className, styles.wrapper)}
+      className={classNames(className, styles.wrapper, {
+        [styles.dragging]: isDragging,
+      })}
     >
       <div className={styles.header}>
         <div className={styles.left}>
+          {isOwner && dragHandleProps && (
+            <button
+              type="button"
+              className={styles.dragHandle}
+              aria-label={`Drag to reorder ${shelfName}`}
+              {...dragHandleProps}
+            >
+              <DragHandleIcon />
+            </button>
+          )}
+
           {isOwner && (
             <Dropdown
               className={styles.settingsDropdown}
@@ -528,75 +581,60 @@ export function Shelf(props: ShelfProps): JSX.Element {
           })}
           ref={itemsRef}
         >
-          {objects.length === 0 ? (
-            <div className={styles.empty}>
-              <Text
-                variant={TypographyVariant.TextBase}
-                className={styles.emptyText}
-              >
-                {isOwner
-                  ? `This shelf is empty - add the first ${typeLabel}`
-                  : 'This shelf is empty'}
-              </Text>
-              {isOwner && (
-                <Button
-                  onClick={openAdd}
-                  type={ButtonType.Secondary}
-                  Icon={<PlusIcon />}
-                  ariaLabel={`Add ${typeLabel}`}
-                  disabled={atObjectLimit}
-                />
-              )}
-            </div>
-          ) : (
-            <div className={styles.cards} ref={cardsRef}>
-              {objects.map(obj => {
-                const selected = isSelected(obj.id);
-                // Only the owner can build a share link, and only public-shelf
-                // objects are shareable — so hide the Select chip elsewhere.
-                const canSelect = isOwner && visibility === 'public';
-                const onSelectToggle = canSelect
-                  ? () => toggleSelection(obj)
-                  : undefined;
-                const card =
-                  shelfType === 'video' ? (
-                    <VideoCard
-                      object={obj}
-                      onClick={openObject}
-                      selected={selected}
-                      onSelectToggle={onSelectToggle}
-                      selectDisabled={limitReached}
-                    />
-                  ) : shelfType === 'audio' ? (
-                    <AudioCard
-                      object={obj}
-                      onClick={openObject}
-                      selected={selected}
-                      onSelectToggle={onSelectToggle}
-                      selectDisabled={limitReached}
-                    />
-                  ) : (
-                    <BookCard
-                      object={obj}
-                      onClick={openObject}
-                      selected={selected}
-                      onSelectToggle={onSelectToggle}
-                      selectDisabled={limitReached}
-                    />
-                  );
-                return (
-                  <div
-                    key={obj.id}
-                    className={styles.cardSlot}
-                    data-flip-id={String(obj.id)}
-                  >
-                    {card}
-                  </div>
+          <div className={styles.cards} ref={cardsRef}>
+            {objects.map(obj => {
+              const selected = isSelected(obj.id);
+              // Only the owner can build a share link, and only public-shelf
+              // objects are shareable — so hide the Select chip elsewhere.
+              const canSelect = isOwner && visibility === 'public';
+              const onSelectToggle = canSelect
+                ? () => toggleSelection(obj)
+                : undefined;
+              const card =
+                shelfType === 'video' ? (
+                  <VideoCard
+                    object={obj}
+                    onClick={openObject}
+                    selected={selected}
+                    onSelectToggle={onSelectToggle}
+                    selectDisabled={limitReached}
+                  />
+                ) : shelfType === 'audio' ? (
+                  <AudioCard
+                    object={obj}
+                    onClick={openObject}
+                    selected={selected}
+                    onSelectToggle={onSelectToggle}
+                    selectDisabled={limitReached}
+                  />
+                ) : (
+                  <BookCard
+                    object={obj}
+                    onClick={openObject}
+                    selected={selected}
+                    onSelectToggle={onSelectToggle}
+                    selectDisabled={limitReached}
+                    ownerUsername={ownerUsername}
+                  />
                 );
-              })}
-            </div>
-          )}
+              return (
+                <div
+                  key={obj.id}
+                  className={styles.cardSlot}
+                  data-flip-id={String(obj.id)}
+                >
+                  {card}
+                </div>
+              );
+            })}
+          </div>
         </div>
+        <ShelfGhostRow
+          seed={shelf.id}
+          availableWidth={ghostWidth}
+          className={styles.ghostRow}
+          style={{ left: ghostLeft }}
+        />
         <div className={styles.banner}>
           <Image src={shelfBackground} alt="" />
         </div>

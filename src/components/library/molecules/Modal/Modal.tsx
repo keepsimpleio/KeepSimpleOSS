@@ -136,7 +136,7 @@ export function Modal(props: ModalProps): JSX.Element {
                   aria-label="Close"
                   onClick={requestClose}
                 >
-                  <CloseIcon width={16} height={16} />
+                  <CloseIcon width={24} height={24} />
                 </button>
               </div>
               {/* Same drawn rule as the sidebar sections, in place of the boxed

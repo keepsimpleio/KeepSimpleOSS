@@ -89,8 +89,45 @@
     }
   }
 
+  // "Create library" is the one thing in this menu a visitor without a library
+  // is here to do: a warm band and an accent rule mark it, the rest of the menu
+  // stays quiet ink.
+  .menuItem.highlighted {
+    position: relative;
+    background-color: rgba(175, 106, 52, 0.08);
+    color: #7b4a24;
+    font-weight: 600;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      background-color: #af6a34;
+    }
+
+    &:hover {
+      background-color: rgba(175, 106, 52, 0.14);
+      border-radius: 0;
+    }
+  }
+
+  // The four icons came from three sources in three inks. One ink for all of
+  // them, matching the label text; the two SVG components carry their colour in
+  // markup, so they are overridden here (the library mark is a stroke, the plus
+  // a fill), while the settings and log-out marks already ship in the same ink.
   .menuIcon {
     flex-shrink: 0;
+  }
+
+  .menuIconLibrary path {
+    stroke: #252626;
+  }
+
+  .menuIconPlus path {
+    fill: #252626;
   }
 
   .menuIconDark {
@@ -119,6 +156,21 @@
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  // Same band on the dark sheet, lifted to a lighter terracotta so the label
+  // keeps its contrast.
+  .menuItem.highlighted {
+    background-color: rgba(216, 149, 96, 0.16);
+    color: #e0a76f;
+
+    &::before {
+      background-color: #d89560;
+    }
+
+    &:hover {
+      background-color: rgba(216, 149, 96, 0.24);
     }
   }
 }

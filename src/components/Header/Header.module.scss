@@ -13,7 +13,7 @@
   height: 48px;
   padding-top: unset;
   flex-direction: row;
-  gap: 74px;
+  gap: clamp(28px, 4vw, 74px);
   padding-left: 2.5rem;
 
   .logo {
@@ -71,6 +71,35 @@
       & .toggleLanguageDivider {
         margin: 0 6px;
       }
+    }
+  }
+}
+
+// Desktop. The links and the account block used to live in separate layers:
+// the nav in the flow, the actions absolutely pinned to the right edge. Once
+// the row grew past the available width the two simply drew over each other.
+// At 1141px and below the nav is already off-canvas behind the burger, so this
+// block stops above it and the mobile rules re-pin .actions there.
+@media (min-width: 1142px) {
+  .header {
+    .navGroup {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: clamp(20px, 2.5vw, 48px);
+    }
+
+    // The nav is a <aside> from another module, so it is matched by element.
+    aside {
+      min-width: 0;
+    }
+
+    .actions {
+      position: static;
+      flex: 0 0 auto;
+      bottom: auto;
     }
   }
 }

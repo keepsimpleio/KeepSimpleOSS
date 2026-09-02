@@ -15,6 +15,40 @@
       align-items: center;
       gap: 12px;
 
+      // The universal reorder grip, first thing in the row: press it and the
+      // whole shelf travels up or down the library. It is the only drag
+      // activator, so the cards below keep their own horizontal scroll and the
+      // page keeps its touch scroll.
+      .dragHandle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 6px 2px;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-control);
+        color: var(--black-transparent-300);
+        cursor: grab;
+        touch-action: none;
+        transition: color 0.2s ease;
+
+        &:hover,
+        &:focus-visible {
+          color: var(--brown);
+        }
+
+        &:active {
+          cursor: grabbing;
+        }
+
+        svg {
+          display: block;
+          width: 16px;
+          height: 16px;
+        }
+      }
+
       .icon {
         display: flex;
         align-items: center;
@@ -229,7 +263,7 @@
       display: flex;
       justify-content: flex-start;
       align-items: flex-end;
-      min-height: 208px;
+      min-height: 253px;
       // A swipe running past the row's edge stops here instead of chaining
       // up toward the browser's history-back gesture (paired with the root
       // overscroll-behavior-x in library-global.scss).
@@ -325,25 +359,20 @@
         animation: card-enter 0.28s ease both;
       }
     }
-
-    .empty {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin: auto;
-
-      .emptyText {
-        color: var(--gray-medium);
-      }
-
-      button {
-        width: 48px;
-        height: 48px;
-      }
-    }
   }
+}
+
+// The ghost props sit on the board itself: absolutely placed so they never
+// enter the cards' scroll measurements, pinned to the same seating line the
+// cards use (.content padding-bottom 65px + .items padding-bottom 35px).
+.ghostRow {
+  position: absolute;
+  bottom: 100px;
+  right: 0;
+  // Same layer as the cards, so a prop stands ON the board instead of being
+  // painted over by the board PNG the way it was at z-index 0.
+  z-index: 1;
+  overflow: hidden;
 }
 
 .renameModal {
@@ -397,4 +426,11 @@
   .cardSlot {
     animation: none;
   }
+}
+
+// While a shelf is travelling: it rides above its neighbours and reads as
+// picked up rather than pinned to the page.
+.dragging {
+  opacity: 0.92;
+  cursor: grabbing;
 }

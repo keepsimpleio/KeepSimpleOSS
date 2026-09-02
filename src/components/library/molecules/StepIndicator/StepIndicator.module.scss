@@ -1,7 +1,11 @@
 .wrapper {
   position: relative;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  // Two tracks, not three: the connector is absolutely positioned, so only the
+  // two steps are in flow. A third track left the trailing step a column-gap
+  // short of the right edge, which pulled the second circle 12px inward and
+  // made the line meet it while still clearing the first one.
+  grid-template-columns: auto 1fr;
   align-items: start;
   column-gap: 12px;
   width: 100%;
@@ -96,13 +100,14 @@
 }
 
 // Span the line circle-to-circle, not column-to-column: anchored to the
-// wrapper so the wide step labels can't squeeze it. 46px = 36px circle + a
-// 10px gap on each side; top 18px centers it on the circle (radius 18px).
+// wrapper so the wide step labels can't squeeze it. 52px = 36px circle + the
+// 2px outer ring an active circle carries + a 12px gap, so the line stops
+// clear of the circle instead of touching it; top 18px centers it (radius 18px).
 .connector {
   position: absolute;
   top: 18px;
-  left: 46px;
-  right: 46px;
+  left: 52px;
+  right: 52px;
   height: 1px;
   background: var(--gray-100);
   overflow: hidden;

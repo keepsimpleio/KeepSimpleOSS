@@ -58,6 +58,15 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       target: '_blank',
       id: 'uxcore',
     },
+    // Library sits directly after UX Core, per the design.
+    {
+      name: library,
+      path: '/library',
+      logo: <LibraryIcon className={styles.libraryIcon} />,
+      target: '',
+      id: 'library',
+      activeMatch: '/library',
+    },
     {
       name: longevity,
       path: '/tools/longevity-protocol/about-project',
@@ -74,14 +83,6 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       id: 'tools',
       activeMatch: '/tools',
       exact: true,
-    },
-    {
-      name: library,
-      path: '/library',
-      logo: <LibraryIcon className={styles.libraryIcon} />,
-      target: '',
-      id: 'library',
-      activeMatch: '/library',
     },
     {
       name: aiAtlas,

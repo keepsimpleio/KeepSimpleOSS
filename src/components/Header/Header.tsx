@@ -42,6 +42,10 @@ const Header: FC = () => {
   const [usernameIsTakenError, setUsernameIsTakenError] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const isSmallScreen = useIsWidthLessThan(1141);
+  // Laptop widths: the six nav links plus the account block outgrow the row.
+  // The username is the widest expendable part of it and the avatar already
+  // says who is signed in, so it steps aside first.
+  const isCompactDesktop = useIsWidthLessThan(1360);
   const [openLogin, setOpenLogin] = useState(false);
   const { accountData, setAccountData } = useContext(GlobalContext);
   const [{ toggleSidebar }, { isDarkTheme, isOpenedSidebar }] = useGlobals();
@@ -192,7 +196,7 @@ const Header: FC = () => {
             />
           </div>
         )}
-        <div>
+        <div className={styles.navGroup}>
           <Navbar
             handleToggleSidebar={handleToggleSidebar}
             handleClick={handleClick}
@@ -268,6 +272,7 @@ const Header: FC = () => {
                 handleOpenSettings={handleOpenSettings}
                 canCreateLibrary={canCreateLibrary}
                 hasLibrary={hasLibrary}
+                hideUsername={isCompactDesktop && !!accountData}
               />
             )}
           </div>

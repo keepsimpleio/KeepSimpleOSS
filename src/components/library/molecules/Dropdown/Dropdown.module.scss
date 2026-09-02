@@ -153,8 +153,10 @@
   flex-shrink: 0;
   margin-left: 12px;
 
+  // The tick sits inside the icon's own green disc, so it reads white; the
+  // disc is the rect and keeps its fill.
   path {
-    fill: var(--brown);
+    fill: var(--white);
   }
 }
 

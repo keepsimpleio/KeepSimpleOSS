@@ -21,10 +21,6 @@ $share-bar-height: 87px;
   // Fill the viewport below the 48px sticky header so the content centers in the
   // real available space rather than the top 60vh (which sat it too high).
   .empty {
-    // Positioned so the WaveField backdrop can fill it edge to edge; content
-    // stays above via its own position (source order wins).
-    position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,11 +28,6 @@ $share-bar-height: 87px;
     gap: 28px;
     min-height: calc(100vh - 48px - #{$share-bar-height});
     padding: 24px;
-
-    .text,
-    .button {
-      position: relative;
-    }
   }
 
   // Gives the absolute-positioned Loader a sized, positioned region to fill so
@@ -70,26 +61,25 @@ $share-bar-height: 87px;
   flex-direction: column;
 }
 
-// Played once right after a reorder commits: dip the list's opacity so shelves
-// visibly fade out and back in as they snap to their new positions.
-.resequencing {
-  animation: shelf-resequence 0.45s ease;
+// The add-shelf control lives at the foot of the list, on the same 16px gutter
+// as each shelf's own header, so it reads as the empty slot the next board
+// will occupy.
+.addShelfRow {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px 40px;
 }
 
-@keyframes shelf-resequence {
-  0% {
-    opacity: 1;
-  }
-  45% {
-    opacity: 0.25;
-  }
-  100% {
-    opacity: 1;
-  }
+.addShelfButton {
+  width: auto !important;
+  // The Text button variant defaults to white, which is meant for the dark
+  // surfaces it sits on elsewhere. On the library's cream page it has to carry
+  // the same brown the toolbar's own text buttons use.
+  color: var(--brown) !important;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .resequencing {
-    animation: none;
-  }
+// Shown only when a shelf drag was rolled back because the save failed.
+.shelfOrderError {
+  padding: 0 16px;
+  color: var(--red-500);
 }

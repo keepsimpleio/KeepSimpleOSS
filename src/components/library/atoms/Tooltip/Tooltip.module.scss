@@ -1,4 +1,8 @@
 .wrapper {
+  // react-tooltip ships --rt-opacity: 0.9, so the panel behind the tooltip
+  // reads through the label. The tooltip is an opaque surface here.
+  --rt-opacity: 1;
+
   color: var(--gray-darker) !important;
   background: var(--white) !important;
   box-shadow: var(--tooltip-shadow);

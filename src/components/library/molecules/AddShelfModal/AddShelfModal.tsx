@@ -55,10 +55,17 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
     setIsSubmitting(true);
     try {
       await onAddShelf(activeItem, trimmedName);
-    } catch {
-      // The create failed server-side (e.g. a name collision the client list
-      // didn't know about) — keep the modal open and warn instead of crashing.
-      setError('Could not create the shelf. Please try a different name.');
+    } catch (e: any) {
+      // The create failed server-side. Keep the modal open and warn instead of
+      // crashing. Strapi answers a request it does not consider logged in with
+      // 401/403, which is a stale session and not a bad name: say so, or the
+      // user renames the shelf forever and never gets past it.
+      const status = e?.response?.status;
+      setError(
+        status === 401 || status === 403
+          ? 'Your session has expired. Reload the page and sign in again.'
+          : 'Could not create the shelf. Please try a different name.',
+      );
     } finally {
       setIsSubmitting(false);
     }

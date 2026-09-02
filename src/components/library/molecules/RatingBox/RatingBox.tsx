@@ -7,6 +7,8 @@ import type { Difficulty, OverallRating } from '@local-types/library/object';
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
+import { DIFFICULTY_META, OVERALL_COLORS } from '@lib/library/objectMeta';
+
 import { ArrowIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
@@ -14,26 +16,6 @@ import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import type { RatingBoxProps } from './RatingBox.types';
 
 import styles from './RatingBox.module.scss';
-
-const OVERALL_COLORS: Record<OverallRating, string> = {
-  1: '#c45222',
-  2: '#ff9a00',
-  3: '#d9b800',
-  4: '#2db675',
-  5: '#228858',
-};
-
-interface DifficultyMeta {
-  label: string;
-  color: string;
-}
-
-const DIFFICULTY_META: Record<Difficulty, DifficultyMeta> = {
-  very_hard: { label: 'Very Hard', color: '#c45222' },
-  hard: { label: 'Hard', color: '#ff9a00' },
-  moderate: { label: 'Moderate', color: '#d9b800' },
-  easy: { label: 'Easy', color: '#2db675' },
-};
 
 const OVERALL_VALUES: OverallRating[] = [1, 2, 3, 4, 5];
 const DIFFICULTY_VALUES: Difficulty[] = [
@@ -196,10 +178,19 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
     className,
   } = props;
 
+  // The header states the fact before the values do: an unrated book says so
+  // outright instead of leaving two dashes to carry the meaning.
+  const isRated = overallRating !== undefined || difficulty !== undefined;
+  const header = username
+    ? `${username} ${isRated ? 'rated this book:' : 'didn’t rate this book'}`
+    : isRated
+      ? 'Rating:'
+      : 'Not rated yet';
+
   return (
     <div className={classNames(styles.wrapper, className)}>
       <Text variant={TypographyVariant.TextSmall} className={styles.header}>
-        {username} rated this book:
+        {header}
       </Text>
       <div className={styles.row}>
         <ColoredSelect<OverallRating>

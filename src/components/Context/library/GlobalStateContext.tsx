@@ -1,3 +1,4 @@
+// motion-passport: exempt — state container, renders no markup and ships no styles.
 import { useSession } from 'next-auth/react';
 import {
   createContext,
@@ -19,6 +20,7 @@ import type {
 import type { IUser } from '@local-types/library/user';
 
 import { getAccessToken } from '@lib/library/cookie';
+import { claimDevSession } from '@lib/library/devSession';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
 import { getUserInfo } from '@api/library/user/getUserInfo';
@@ -88,6 +90,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const didAttemptUserLoad = useRef(false);
+  const didAttemptDevSession = useRef(false);
 
   const refetchUser = useCallback(async () => {
     setIsUserLoading(true);
@@ -113,6 +116,18 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     const hasToken = Boolean(getAccessToken());
     if (!hasToken) {
       didAttemptUserLoad.current = false;
+      // DEV preview only: adopt the owner session shared for joint review, so
+      // reviewers behind the Access gate see the logged-in library without
+      // signing in. No-op everywhere else. See `@lib/library/devSession`.
+      if (!didAttemptDevSession.current) {
+        didAttemptDevSession.current = true;
+        void claimDevSession().then(claimed => {
+          if (claimed) {
+            didAttemptUserLoad.current = true;
+            void refetchUser();
+          }
+        });
+      }
       return;
     }
     if (accountData || didAttemptUserLoad.current) {

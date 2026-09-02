@@ -406,10 +406,12 @@ export function Sidebar() {
                     ''}
                 </Text>
               </div>
-              {aboutLibraryText && <div className={styles.divider} />}
+              {aboutLibraryText && (
+                <InkLine seed={7} className={styles.innerRule} />
+              )}
 
               <div className={styles.totalObjects}>
-                <Text className={styles.subLabel}>Total objects</Text>
+                <Text className={styles.subLabel}>Content</Text>
                 <div className={styles.objects}>
                   <Object
                     className={styles.count}
@@ -533,9 +535,26 @@ export function Sidebar() {
                   <span className={styles.shareLinkHead}>{shareUrlHead}</span>
                   <span className={styles.shareLinkTail}>{shareUrlTail}</span>
                 </div>
+                {/* Both labels sit in one grid cell, so the bubble is sized by
+                    the wider of the two and never resizes on click: the box and
+                    its arrow stay exactly where the hover put them, and
+                    "Copied!" cross-fades in place of "Click to copy". */}
                 <Tooltip
                   place="top"
-                  tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}
+                  tooltipContent={
+                    <span className={styles.copyTooltip}>
+                      <span
+                        className={`${styles.copyTooltipLabel} ${isCopied ? '' : styles.copyTooltipLabelVisible}`}
+                      >
+                        Click to copy
+                      </span>
+                      <span
+                        className={`${styles.copyTooltipLabel} ${isCopied ? styles.copyTooltipLabelVisible : ''}`}
+                      >
+                        Copied!
+                      </span>
+                    </span>
+                  }
                 >
                   <Button
                     onClick={handleCopyUrl}

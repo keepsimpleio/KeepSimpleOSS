@@ -12,6 +12,10 @@ import type {
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
 
+import {
+  formatObjectDate,
+  formatObjectDuration,
+} from '@lib/library/objectMeta';
 import { objectSlug } from '@lib/library/objectSlug';
 import { isShelfFullError } from '@lib/library/shelfFull';
 import { sanitizeHtml } from '@lib/sanitizeHtml';
@@ -57,25 +61,6 @@ import styles from './ObjectOverviewModal.module.scss';
 // Canonical public host for shareable links — env-driven in staging/prod,
 // falling back to the production domain (mirrors ShareSelectionPanel).
 const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
-
-function formatDate(iso?: string): string | null {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
-
-function formatDuration(seconds?: number): string {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds))
-    return '—';
-  const total = Math.max(0, Math.floor(seconds));
-  const mm = String(Math.floor(total / 60)).padStart(2, '0');
-  const ss = String(total % 60).padStart(2, '0');
-  return `${mm}:${ss}`;
-}
 
 export function ObjectOverviewModal(
   props: ObjectOverviewModalProps,
@@ -295,7 +280,7 @@ export function ObjectOverviewModal(
         ? SHELF_FULL_MESSAGE
         : e instanceof Error
           ? e.message
-          : 'Could not move object.';
+          : 'Could not move this item.';
       setMoveError(message);
       setMoveToShelfId(undefined);
     } finally {
@@ -322,10 +307,10 @@ export function ObjectOverviewModal(
   // the object's raw `order` when siblings weren't passed.
   const positionIndex = shelfObjects?.findIndex(o => o.id === id) ?? -1;
   const objectPosition = positionIndex >= 0 ? positionIndex : attributes.order;
-  const publishedFormatted = formatDate(attributes.publicationDate);
+  const publishedFormatted = formatObjectDate(attributes.publicationDate);
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
-  const durationLabel = formatDuration(attributes.duration);
+  const durationLabel = formatObjectDuration(attributes.duration);
 
   // Edit mode swaps the modal entirely; AddObjectModal manages its own success popup.
   if (editing) {
@@ -370,7 +355,7 @@ export function ObjectOverviewModal(
             aria-label="Close"
             onClick={close}
           >
-            <CloseIcon width={16} height={16} />
+            <CloseIcon width={24} height={24} />
           </button>
         </div>
         {/* Same drawn rule as the sidebar sections, in place of the boxed

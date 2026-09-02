@@ -151,10 +151,6 @@
   }
 }
 
-.addShelfWrap {
-  display: inline-flex;
-}
-
 // Default state: flat white tile, dark text, no border accent.
 .jumpButton {
   padding: 6px 16px;
@@ -173,78 +169,5 @@
 // Selected state: brown border ring + brown text on the same shape.
 .jumpSelected {
   border: 2px solid var(--brown) !important;
-  color: var(--brown) !important;
-}
-
-// While reordering: the dragged pill leaving the row flips this on, signalling
-// the drop will be rejected.
-.rejecting {
-  cursor: not-allowed;
-
-  .pillSlot,
-  .reorderPill {
-    cursor: not-allowed;
-  }
-}
-
-// Sortable wrapper carries dnd-kit's translate transform; the inner pill does
-// the wiggle, so the two transforms never collide.
-.pillSlot {
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-}
-
-.reorderPill {
-  display: inline-flex;
-  align-items: center;
-  // Hint at draggability with a gentle, continuous wiggle.
-  animation: pill-wiggle 0.45s ease-in-out infinite;
-  transform-origin: center;
-}
-
-.dragging {
-  animation: none;
-  cursor: grabbing;
-  opacity: 0.6;
-  box-shadow: 0px 8px 16px 0px var(--black-transparent-200) !important;
-}
-
-@keyframes pill-wiggle {
-  0%,
-  100% {
-    transform: rotate(-1.4deg);
-  }
-  50% {
-    transform: rotate(1.4deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reorderPill {
-    animation: none;
-  }
-}
-
-.error {
-  color: var(--warning, #d14343);
-  white-space: nowrap;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: flex-start;
-  }
-}
-
-// Button's `text` type defaults to white (built for dark surfaces); on this
-// light toolbar the label inherits that and disappears. Force brown — matches
-// the brown `plus` glyph already baked into the icon.
-.button {
   color: var(--brown) !important;
 }

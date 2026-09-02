@@ -74,6 +74,16 @@
   --off-white: #f9f4eb;
   --white-warm: #fffbf4;
 
+  /* Empty-shelf figure — the wooden mannequin that stands on a shelf holding
+     nothing yet. Its tones are the shelf board's own (see
+     --gradient-shelf-color) so it reads as turned from the same wood; no new
+     hue enters the palette. */
+  --figure-wood-light: #ece2cd;
+  --figure-wood-mid: #d2c6af;
+  --figure-wood-dark: var(--taupe);
+  --figure-wood-deep: #b0a184;
+  --figure-wood-edge: var(--brown-100);
+
   --white-transparent-400: rgba(248, 241, 229, 0.4);
   --white-overlay: rgba(255, 255, 255, 0.18);
   --surface-overlay: rgba(229, 229, 229, 0.03);
@@ -109,12 +119,12 @@
      keepsimple.io/tools tiles; only circles (dots, spinner, switch) keep
      their shape. */
   --radius-control: 0;
-  /* Tags are the one exception: a 3px corner takes the machine edge off a
-     block of solid colour without turning the chip into a pill. */
-  --radius-tag: 3px;
-  /* The shelf-header type icon sits in a fully rounded chip, the one pill in
-     the library. */
-  --radius-icon-chip: 100px;
+  /* Tags are the one exception to the sharp corner: a solid block of colour
+     reads better as a fully rounded pill. */
+  --radius-tag: 100px;
+  /* The shelf-header type icon chip sits next to the square shelf controls, so
+     it stays sharp like the rest of the surface. */
+  --radius-icon-chip: 0;
 
   /* Box Shadow */
   --tooltip-shadow: 0px 0px 22px 0px #00000033;

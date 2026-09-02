@@ -4,7 +4,7 @@ import React from 'react';
 import { Icon, IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
-import { type ObjectProps,ObjectType } from './Object.types';
+import { type ObjectProps, ObjectType } from './Object.types';
 
 import styles from './Object.module.scss';
 
@@ -29,8 +29,8 @@ export const Object: React.FC<ObjectProps> = ({
     >
       <div className={styles.icon}>
         <Icon
-          width={noBorder ? 13 : 18}
-          height={noBorder ? 13 : 18}
+          width={noBorder ? 24 : 18}
+          height={noBorder ? 24 : 18}
           name={type.toLowerCase() as IconName}
         />
       </div>

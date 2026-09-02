@@ -1,13 +1,18 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { JSX, useCallback, useState } from 'react';
+import React, { JSX, useCallback, useRef, useState } from 'react';
 
+import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
 import type { AudioCardProps } from './AudioCard.types';
 
 import styles from './AudioCard.module.scss';
+
+// motion-passport: exempt — this file carries no animation of its own. The
+// card's hover lift lives in AudioCard.module.scss and the dossier's fade in
+// ObjectHoverCard.module.scss; both stylesheets hold the reduced-motion branch.
 
 export function AudioCard({
   object,
@@ -35,7 +40,15 @@ export function AudioCard({
     }
   }, []);
 
-  const handleActivate = () => onClick?.(object);
+  // Hovering (or tabbing to) the record opens its dossier beside the shelf.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const handleActivate = () => {
+    // Opening the overview covers the card, so the dossier steps aside first.
+    setPreviewOpen(false);
+    onClick?.(object);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -51,12 +64,17 @@ export function AudioCard({
       })}
     >
       <div
+        ref={cardRef}
         className={classNames(styles.card, { [styles.selected]: selected })}
         role="button"
         tabIndex={0}
         aria-label={`Open ${title}`}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
+        onMouseEnter={() => setPreviewOpen(true)}
+        onMouseLeave={() => setPreviewOpen(false)}
+        onFocus={() => setPreviewOpen(true)}
+        onBlur={() => setPreviewOpen(false)}
       >
         {onSelectToggle && (
           <div className={styles.select}>
@@ -97,6 +115,13 @@ export function AudioCard({
           />
         ))}
       </div>
+
+      <ObjectHoverCard
+        object={object}
+        anchorRef={cardRef}
+        open={previewOpen}
+        disabled={compact}
+      />
     </div>
   );
 }

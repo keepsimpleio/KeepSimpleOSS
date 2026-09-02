@@ -22,10 +22,11 @@
     height: -webkit-fill-available;
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
+    white-space: nowrap;
 
     p {
-      @extend %text-small;
+      @extend %text-regular;
     }
   }
 
@@ -43,10 +44,6 @@
     .count {
       color: var(--color-text);
       padding: 0 8px;
-
-      p {
-        @extend %text-regular;
-      }
     }
   }
 }

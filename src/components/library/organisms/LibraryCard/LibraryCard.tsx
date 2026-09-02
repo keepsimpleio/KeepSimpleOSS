@@ -2,6 +2,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { JSX } from 'react';
 
+import LibraryMark from '@icons/navbar/library.svg';
+
 import { Avatar } from '@components/library/atoms/Avatar';
 import { InkLine } from '@components/library/atoms/InkLine';
 import {
@@ -31,12 +33,18 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
   } = props;
   const router = useRouter();
 
+  // Route by numeric id, not username: the route resolver short-circuits a
+  // numeric param to a findOne-by-id, sidestepping the username→id filter
+  // lookup that the public API currently 500s on. Falls back to username only
+  // if an id is somehow absent.
+  const libraryHref = `/library/${id ?? username}`;
+
   const handleViewLibrary = () => {
-    // Route by numeric id, not username: the route resolver short-circuits a
-    // numeric param to a findOne-by-id, sidestepping the username→id filter
-    // lookup that the public API currently 500s on. Falls back to username only
-    // if an id is somehow absent.
-    router.push(`/library/${id ?? username}`);
+    router.push(libraryHref);
+  };
+
+  const openInNewTab = () => {
+    window.open(libraryHref, '_blank', 'noopener');
   };
 
   // The whole card is a showcase tile, so any click opens the library. The
@@ -46,24 +54,49 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
+    // A modified click means "open it elsewhere", the same as on a real link.
+    if (e.metaKey || e.ctrlKey || e.shiftKey) {
+      openInNewTab();
+      return;
+    }
     handleViewLibrary();
   };
 
+  // A middle press never reaches onClick, so the tile handles the auxiliary
+  // button itself and opens the library in a new tab the way a link would.
+  const handleCardAuxClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 1) {
+      return;
+    }
+    e.preventDefault();
+    openInNewTab();
+  };
+
+  // Suppressing the middle-button mousedown keeps the browser from switching
+  // into autoscroll mode before the aux click lands.
+  const handleCardMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button === 1) {
+      e.preventDefault();
+    }
+  };
+
   return (
-    <div className={styles.card} onClick={handleCardClick}>
+    <div
+      className={styles.card}
+      onClick={handleCardClick}
+      onAuxClick={handleCardAuxClick}
+      onMouseDown={handleCardMouseDown}
+    >
       <div className={styles.header}>
+        {/* The Library's own mark stands in front of every library the way
+            Trello fronts a board with its own, so the tile reads as belonging
+            here. Same glyph the navbar carries. */}
+        <LibraryMark className={styles.titleMark} aria-hidden="true" />
         <Text
           className={styles.title}
           variant={TypographyVariant.SubtitleSecondaryAlt}
         >
-          {username ? (
-            <>
-              {username}
-              <span className={styles.titleSuffix}>{"'s library"}</span>
-            </>
-          ) : (
-            libraryName
-          )}
+          {username || libraryName}
         </Text>
       </div>
 
@@ -95,7 +128,7 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
                 className={styles.subtitle}
                 variant={TypographyVariant.TextBaseBold}
               >
-                Objects
+                Content
               </Text>
               <div className={styles.objects}>
                 <Object

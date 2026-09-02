@@ -12,9 +12,20 @@
   // The whole card opens the library; the inner controls are the explicit
   // affordance for the same action.
   cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 
   // Hover lights up the way in, so the whole-card click is legible.
   &:hover {
+    // The sheet itself answers the pointer: its rule takes the brown ink and
+    // an inset ring doubles the line weight optically. Nothing here changes
+    // the card's size, so the grid never shifts under the cursor.
+    border-color: var(--brown);
+    box-shadow: inset 0 0 0 1px var(--brown);
+    background: var(--white-300);
+
     // Full nesting path: anything shorter loses the specificity race against
     // the tile's own base rules and the highlight never shows.
     .body .shelf .shelfRow .viewTile,
@@ -28,6 +39,16 @@
   .header {
     padding: 20px;
     border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    // The Library's own mark in front of the name, at its native 18x10.
+    .titleMark {
+      flex-shrink: 0;
+      width: 18px;
+      height: 10px;
+    }
 
     .title {
       line-height: 19px;
@@ -35,14 +56,6 @@
       @media (max-width: 590px) {
         font-size: 16px;
       }
-    }
-
-    // The owner's name carries the identity; the repeated "'s library" tail
-    // steps back.
-    .titleSuffix {
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--gray-darker);
     }
   }
 
@@ -235,6 +248,10 @@
         color: var(--white);
       }
     }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 
   // The header's ink divider stops short of the card edge like a drawn rule.

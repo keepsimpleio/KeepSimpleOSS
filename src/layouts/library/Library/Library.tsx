@@ -1,31 +1,48 @@
-import classNames from 'classnames';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  type Modifier,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { LIBRARY_SHELVES_REFETCH_EVENT } from '@constants/library/common';
+import {
+  LIBRARY_SHELVES_REFETCH_EVENT,
+  MAX_SHELVES_PER_LIBRARY,
+} from '@constants/library/common';
 
 import type {
   StrapiLibraryEntry,
   StrapiSingleShelfEntry,
 } from '@local-types/library/library';
 import type { IObject, ObjectType } from '@local-types/library/object';
+import type { IReorderShelfEntry } from '@local-types/library/shelf';
 
 import { createLibrary } from '@api/library/createLibrary';
 import { getLibraryIdByUsername } from '@api/library/getLibraryIdByUsername';
 import { getSingleLibrary } from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
+import { reorderShelves } from '@api/library/shelf/reorderShelves';
+
+import { PlusIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
 import { Loader } from '@components/library/atoms/Loader';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
-import { WaveField } from '@components/library/atoms/WaveField';
 import {
   AddShelfModal,
   type ShelfType,
@@ -34,10 +51,14 @@ import {
   Button,
   ButtonSize,
   ButtonType,
+  IconPosition,
 } from '@components/library/molecules/Button';
 import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
 import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
-import { Shelf } from '@components/library/organisms/Shelf';
+import {
+  Shelf,
+  type ShelfDragHandleProps,
+} from '@components/library/organisms/Shelf';
 
 import type { LibraryTemplateProps } from './Library.types';
 
@@ -49,15 +70,56 @@ const modalTypeToApi: Record<ShelfType, ObjectType> = {
   audios: 'audio',
 };
 
+// Shelves only ever travel up and down the page, so the drag transform keeps
+// its vertical component and drops the horizontal one.
+const verticalOnly: Modifier = ({ transform }) => ({ ...transform, x: 0 });
+
+// One draggable shelf slot. The activator wiring is handed back to the caller
+// so the grip in the shelf's own header is the only thing that starts a drag:
+// the cards below keep their horizontal scroll and their clicks.
+function SortableShelf(props: {
+  id: number;
+  children: (
+    handle: ShelfDragHandleProps,
+    isDragging: boolean,
+  ) => React.ReactNode;
+}) {
+  const { id, children } = props;
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    // Ride over the neighbouring boards while travelling.
+    position: isDragging ? 'relative' : undefined,
+    zIndex: isDragging ? 2 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {children(
+        { ref: setActivatorNodeRef, ...attributes, ...listeners },
+        isDragging,
+      )}
+    </div>
+  );
+}
+
 export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [library, setLibrary] = useState<StrapiLibraryEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  // Briefly true right after a reorder so the shelf list can fade out/in as it
-  // re-sequences into the new order (see `resequencing` in Library.module.scss).
-  const [isResequencing, setIsResequencing] = useState(false);
-  const resequenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Set when a shelf drag was undone because the save failed.
+  const [shelfOrderError, setShelfOrderError] = useState<string | null>(null);
   const { accountData } = useAuth();
   const {
     isGuestMode,
@@ -169,13 +231,6 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
       window.removeEventListener(LIBRARY_SHELVES_REFETCH_EVENT, onRefetch);
     };
   }, [loadLibrary]);
-
-  useEffect(
-    () => () => {
-      if (resequenceTimer.current) clearTimeout(resequenceTimer.current);
-    },
-    [],
-  );
 
   const modalToggler = () => {
     setIsOpen(open => !open);
@@ -397,44 +452,75 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     [mutateShelfObjects],
   );
 
-  const handleShelvesReordered = useCallback(
-    (ordered: { id: number; order: number }[]) => {
-      const orderById = new Map(ordered.map(o => [o.id, o.order]));
-      // Kick the fade: clear it first so a rapid re-save restarts the animation
-      // instead of being swallowed (re-adding a still-present class won't replay).
-      setIsResequencing(false);
-      if (resequenceTimer.current) clearTimeout(resequenceTimer.current);
-      requestAnimationFrame(() => {
-        setIsResequencing(true);
-        resequenceTimer.current = setTimeout(
-          () => setIsResequencing(false),
-          450,
-        );
-      });
-      // Only stamp the new `order` onto each shelf; the `shelves` memo
-      // re-sorts by `order` at render, so no need to reorder the array here.
-      setLibrary(current => {
-        if (!current) return current;
-        const shelvesData = current.attributes.singleShelves?.data ?? [];
-        const next = shelvesData.map(s =>
-          orderById.has(s.id)
-            ? {
-                ...s,
-                attributes: { ...s.attributes, order: orderById.get(s.id)! },
-              }
-            : s,
-        );
-        return {
-          ...current,
-          attributes: {
-            ...current.attributes,
-            singleShelves: { data: next },
-          },
-        };
-      });
-    },
-    [],
+  // Stamps each shelf's new position onto the loaded library. The `shelves`
+  // memo re-sorts by `order` at render, so the list lands in the new sequence
+  // without a refetch.
+  const applyShelfOrder = useCallback((ordered: IReorderShelfEntry[]) => {
+    const orderById = new Map(ordered.map(o => [o.id, o.order]));
+    setLibrary(current => {
+      if (!current) return current;
+      const shelvesData = current.attributes.singleShelves?.data ?? [];
+      const next = shelvesData.map(s =>
+        orderById.has(s.id)
+          ? {
+              ...s,
+              attributes: { ...s.attributes, order: orderById.get(s.id)! },
+            }
+          : s,
+      );
+      return {
+        ...current,
+        attributes: {
+          ...current.attributes,
+          singleShelves: { data: next },
+        },
+      };
+    });
+  }, []);
+
+  // Reordering is direct manipulation: grab the grip on a shelf header and the
+  // whole board travels. Owner-only, and only on an unfiltered list — a search
+  // result is a subset, so a position inside it says nothing about where the
+  // shelf belongs in the library.
+  const canReorderShelves =
+    viewAsOwner && !normalizedSearch && displayedShelves.length > 1;
+
+  const shelfSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
+
+  const handleShelfDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = shelves.findIndex(s => s.id === active.id);
+    const newIndex = shelves.findIndex(s => s.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const previous: IReorderShelfEntry[] = shelves.map((shelf, index) => ({
+      id: shelf.id,
+      order: shelf.attributes.order ?? index,
+    }));
+    const ordered: IReorderShelfEntry[] = arrayMove(
+      shelves,
+      oldIndex,
+      newIndex,
+    ).map((shelf, index) => ({ id: shelf.id, order: index }));
+
+    // Land the shelf first, persist after: the drop has to feel immediate. A
+    // failed save puts every shelf back where it was and says so.
+    setShelfOrderError(null);
+    applyShelfOrder(ordered);
+    reorderShelves(ordered).catch(e => {
+      console.error('[Library] shelf reorder failed', e);
+      applyShelfOrder(previous);
+      setShelfOrderError(
+        'Could not save the new shelf order. Please try again.',
+      );
+    });
+  };
 
   const handleShelfRenamed = useCallback((shelfId: number, name: string) => {
     setLibrary(current => {
@@ -512,13 +598,38 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     [],
   );
 
+  const renderShelf = (
+    shelf: StrapiSingleShelfEntry,
+    dragHandleProps?: ShelfDragHandleProps,
+    isDragging?: boolean,
+  ) => (
+    <Shelf
+      key={shelf.id}
+      title={shelf.attributes.name}
+      shelf={shelf}
+      // The URL slug is sometimes a numeric library id, so name the owner from
+      // the loaded library first — the rating headings read it as a person.
+      ownerUsername={ownerUsername ?? libraryId}
+      isOwner={viewAsOwner}
+      onObjectCreated={handleObjectCreated}
+      onObjectUpdated={handleObjectUpdated}
+      onObjectDeleted={handleObjectDeleted}
+      onObjectMoved={handleObjectMoved}
+      onObjectsReordered={handleObjectsReordered}
+      onShelfDeleted={handleShelfDeleted}
+      onShelfRenamed={handleShelfRenamed}
+      dragHandleProps={dragHandleProps}
+      isDragging={isDragging}
+    />
+  );
+
+  const atShelfLimit = shelves.length >= MAX_SHELVES_PER_LIBRARY;
+
   return (
     <div className={styles.wrapper}>
       {shelves.length > 0 && (
         <LibraryToolbar
           shelves={shelves}
-          onAddShelf={modalToggler}
-          onShelvesReordered={handleShelvesReordered}
           isOwner={viewAsOwner}
           ownerName={ownerUsername ?? libraryId}
           search={search}
@@ -540,7 +651,6 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         </div>
       ) : shelves.length === 0 ? (
         <div className={styles.empty}>
-          <WaveField />
           <Text
             variant={TypographyVariant.TitleSecondaryBold}
             className={styles.text}
@@ -571,27 +681,63 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
           </Text>
         </div>
       ) : (
+        <div className={styles.shelfList}>
+          {canReorderShelves ? (
+            <DndContext
+              sensors={shelfSensors}
+              collisionDetection={closestCenter}
+              modifiers={[verticalOnly]}
+              onDragEnd={handleShelfDragEnd}
+            >
+              <SortableContext
+                items={displayedShelves.map(shelf => shelf.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {displayedShelves.map(shelf => (
+                  <SortableShelf key={shelf.id} id={shelf.id}>
+                    {(handleProps, isDragging) =>
+                      renderShelf(shelf, handleProps, isDragging)
+                    }
+                  </SortableShelf>
+                ))}
+              </SortableContext>
+            </DndContext>
+          ) : (
+            displayedShelves.map(shelf => renderShelf(shelf))
+          )}
+        </div>
+      )}
+
+      {shelfOrderError && (
+        <div className={styles.shelfOrderError}>
+          <Text variant={TypographyVariant.TextSmall}>{shelfOrderError}</Text>
+        </div>
+      )}
+
+      {/* The next shelf is added
+ from where it will appear: directly under the
+          last board. The toolbar at the top of the page no longer carries this
+          control. */}
+      {viewAsOwner && !isLoading && displayedShelves.length > 0 && (
         <div
-          className={classNames(styles.shelfList, {
-            [styles.resequencing]: isResequencing,
-          })}
+          className={styles.addShelfRow}
+          title={
+            atShelfLimit
+              ? `You've reached the limit of ${MAX_SHELVES_PER_LIBRARY} shelves. Delete a shelf to add a new one.`
+              : undefined
+          }
         >
-          {displayedShelves.map(shelf => (
-            <Shelf
-              key={shelf.id}
-              title={shelf.attributes.name}
-              shelf={shelf}
-              ownerUsername={libraryId}
-              isOwner={viewAsOwner}
-              onObjectCreated={handleObjectCreated}
-              onObjectUpdated={handleObjectUpdated}
-              onObjectDeleted={handleObjectDeleted}
-              onObjectMoved={handleObjectMoved}
-              onObjectsReordered={handleObjectsReordered}
-              onShelfDeleted={handleShelfDeleted}
-              onShelfRenamed={handleShelfRenamed}
-            />
-          ))}
+          <Button
+            label="Add shelf"
+            ariaLabel="Add shelf"
+            onClick={modalToggler}
+            type={ButtonType.Text}
+            size={ButtonSize.Default}
+            Icon={<PlusIcon />}
+            iconPosition={IconPosition.Right}
+            className={styles.addShelfButton}
+            disabled={atShelfLimit}
+          />
         </div>
       )}
 

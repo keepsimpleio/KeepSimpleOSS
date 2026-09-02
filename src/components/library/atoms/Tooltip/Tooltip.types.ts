@@ -7,5 +7,7 @@ export interface TooltipProps {
   place?: PlacesType;
   arrowClassName?: string;
   wrapperClassName?: string;
-  tooltipContent: string;
+  // A node, not just a string: a tooltip whose label swaps mid-hover (copy →
+  // copied) has to hold its own width, or the box and its arrow drift.
+  tooltipContent: ReactNode;
 }

@@ -12,4 +12,6 @@ export interface BookCardProps {
   selectDisabled?: boolean;
   // Shrinks the card to a cover-only tile for the share-selection panel.
   compact?: boolean;
+  // Passed through to the hover dossier, which names whoever rated the book.
+  ownerUsername?: string;
 }
