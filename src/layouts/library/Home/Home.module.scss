@@ -118,6 +118,10 @@
     .createButton {
       flex-shrink: 0;
       white-space: nowrap;
+      // Holds the width of its wider state, so the row doesn't shift when the
+      // ownership check comes back and the label becomes "Open my library".
+      min-width: 202px;
+      justify-content: center;
 
       // The shared plus icon ships a hardcoded brown fill, which disappears on
       // the brown primary button — force it (and the label) white.

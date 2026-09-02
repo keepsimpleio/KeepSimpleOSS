@@ -7,6 +7,7 @@ import type { HomeLibraryCardView } from '@local-types/library/library';
 import { getLibrariesPaginated } from '@api/library/getLibrariesPaginated';
 import { getMyLibrary } from '@api/library/getMyLibrary';
 
+import LibraryMarkIcon from '@icons/library/svg/library.svg';
 import PlusIcon from '@icons/library/svg/plus.svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
@@ -60,10 +61,15 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     };
   }, [accountData?.id]);
 
+  // One library per user, so the control has two jobs: create the first one, or
+  // open the one that exists. Both land on the owner's own page — the button
+  // only changes what it promises.
+  const ownsLibrary = hasLibrary && !!accountData?.username;
   const createDisabled = !canCreateLibrary || hasLibrary;
+  const libraryButtonDisabled = ownsLibrary ? false : createDisabled;
 
-  const handleCreateLibrary = () => {
-    if (createDisabled || !accountData?.username) return;
+  const handleLibraryButton = () => {
+    if (libraryButtonDisabled || !accountData?.username) return;
     router.push(`/library/${accountData.username}`);
   };
 
@@ -252,12 +258,18 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
                 wrapperClassName={styles.input}
               />
               <Button
-                label="Create Library"
-                ariaLabel="Create library"
+                label={ownsLibrary ? 'Open my library' : 'Create Library'}
+                ariaLabel={ownsLibrary ? 'Open my library' : 'Create library'}
                 type={ButtonType.Primary}
-                Icon={<PlusIcon width={14} height={14} />}
-                onClick={handleCreateLibrary}
-                disabled={createDisabled}
+                Icon={
+                  ownsLibrary ? (
+                    <LibraryMarkIcon width={18} height={10} />
+                  ) : (
+                    <PlusIcon width={14} height={14} />
+                  )
+                }
+                onClick={handleLibraryButton}
+                disabled={libraryButtonDisabled}
                 className={styles.createButton}
               />
             </div>

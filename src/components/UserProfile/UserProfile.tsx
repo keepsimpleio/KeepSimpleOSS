@@ -198,7 +198,9 @@ const UserProfile: FC<UserProfileProps> = ({
                 <span>{t.myLibrary}</span>
               </div>
             )}
-            {isLibraryEnabled() && (
+            {/* One library per user: once they own one, "My Library" above is
+                the only honest entry and this item would just repeat it. */}
+            {isLibraryEnabled() && !hasLibrary && (
               <div
                 className={cn(styles.menuItem, {
                   [styles.disabled]: !canCreateLibrary,
