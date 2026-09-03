@@ -25,6 +25,7 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
     onChange,
     existingPreviewUrl,
     onClearExisting,
+    loading = false,
     accept = DEFAULT_ACCEPT,
     maxSize = DEFAULT_MAX_SIZE,
     disabled,
@@ -93,6 +94,11 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
   const showExisting = !value && !!existingPreviewUrl;
   const showFile = !!value && !!fileObjectUrl;
   const showPreview = showFile || showExisting;
+  // A cover arriving from autofill takes a moment to travel through the proxy.
+  // Saying so in the empty slot is the difference between "it's working" and
+  // "it didn't pull the cover" — the slot stays droppable throughout, so a user
+  // who has their own image never has to wait for ours.
+  const showPending = loading && !showPreview;
 
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -168,16 +174,28 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
           </div>
         ) : (
           <div className={styles.empty}>
-            <div className={styles.plus}>
-              <PlusIcon width={20} height={20} />
+            <div
+              className={classNames(styles.plus, {
+                [styles.plusPending]: showPending,
+              })}
+            >
+              {showPending ? (
+                <span className={styles.spinner} aria-hidden="true" />
+              ) : (
+                <PlusIcon width={20} height={20} />
+              )}
             </div>
             <Text variant={TypographyVariant.TextBase} className={styles.title}>
-              {isDragActive
-                ? 'Drop the image here'
-                : 'Click or drag image to upload'}
+              {showPending
+                ? 'Fetching the cover…'
+                : isDragActive
+                  ? 'Drop the image here'
+                  : 'Click or drag image to upload'}
             </Text>
             <Text variant={TypographyVariant.TextSmall} className={styles.hint}>
-              PNG or JPEG, up to {formatBytes(maxSize)}
+              {showPending
+                ? 'Or drop your own image to use it instead'
+                : `PNG or JPEG, up to ${formatBytes(maxSize)}`}
             </Text>
           </div>
         )}

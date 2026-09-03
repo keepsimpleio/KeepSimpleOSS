@@ -61,6 +61,31 @@
   }
 }
 
+// While a cover is on its way the plus becomes a ring turning in the same
+// 36px circle, so the slot never changes size between the two states.
+.plusPending {
+  background: var(--cream);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--brown-border);
+  border-top-color: var(--brown);
+  border-radius: 50%;
+  animation: dropzoneSpin 0.9s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes dropzoneSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .title {
   color: var(--black-rich);
 }

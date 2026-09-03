@@ -160,6 +160,8 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [showSuccess, setShowSuccess] = useState(false);
   const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
   const [isFetchingVideoMeta, setIsFetchingVideoMeta] = useState(false);
+  const [isFetchingCover, setIsFetchingCover] = useState(false);
+  const [coverNotice, setCoverNotice] = useState<string | null>(null);
 
   const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
@@ -270,8 +272,25 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       }
     }
     if (s.coverUrl) {
-      const file = await fetchCoverFile(s.coverUrl, s.title);
-      if (file) setValue('coverImage', file, setOptions);
+      // The cover is the slow half of an autofill: a full-resolution scan
+      // travelling through our proxy. Snapshot what sits in the slot now, and
+      // only write ours if nothing else landed there meanwhile — an image the
+      // user dropped while waiting outranks the provider's.
+      const before = form.getValues('coverImage');
+      setIsFetchingCover(true);
+      setCoverNotice(null);
+      try {
+        const file = await fetchCoverFile(s.coverUrl, s.title);
+        if (!file) {
+          setCoverNotice(
+            "Couldn't fetch this book's cover. Add one from your files.",
+          );
+        } else if (form.getValues('coverImage') === before) {
+          setValue('coverImage', file, setOptions);
+        }
+      } finally {
+        setIsFetchingCover(false);
+      }
     }
   };
 
@@ -802,17 +821,23 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               render={({ field }) => (
                 <ImageDropzone
                   value={field.value ?? null}
-                  onChange={field.onChange}
+                  onChange={file => {
+                    setCoverNotice(null);
+                    field.onChange(file);
+                  }}
                   existingPreviewUrl={existingCoverUrl ?? undefined}
                   onClearExisting={() => setExistingCoverUrl(null)}
+                  loading={isFetchingCover}
                   ariaLabel={label}
                 />
               )}
             />
-            {errors.coverImage && (
+            {errors.coverImage ? (
               <p className={styles.error}>
                 {String(errors.coverImage.message)}
               </p>
+            ) : (
+              coverNotice && <p className={styles.hint}>{coverNotice}</p>
             )}
           </div>
         );
