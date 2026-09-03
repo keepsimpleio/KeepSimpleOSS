@@ -512,13 +512,11 @@ export function Sidebar() {
 
           <div className={styles.about}>
             <div className={styles.header}>
+              {/* The address below is the library's own link, the same for
+                  every visitor. Objects picked on the shelves travel by their
+                  own minted link from the selection bar, and selecting is
+                  owner-only — so no parenthetical here promising otherwise. */}
               <Text className={styles.label}>Share</Text>
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.shareHint}
-              >
-                (Including Selected Objects)
-              </Text>
             </div>
             <div className={styles.content}>
               {/* The address sits in a read-only field with the copy icon

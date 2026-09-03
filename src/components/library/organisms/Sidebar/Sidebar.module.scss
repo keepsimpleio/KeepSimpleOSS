@@ -127,13 +127,6 @@
       @include caps-label;
     }
 
-    // The parenthetical rides beside the Share title, quiet enough that the
-    // title still reads as the section header.
-    .shareHint {
-      color: var(--gray-darker);
-      text-transform: none;
-    }
-
     p {
       line-height: 30px;
     }
