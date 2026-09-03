@@ -172,6 +172,13 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
   const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
 
+  // Plain object count beside the shelf name. The cap belongs in the tooltip,
+  // not in the visible label — a visitor reads how full the shelf is, an owner
+  // hovers to learn how much room is left.
+  const countTitle = `${objects.length} ${
+    objects.length === 1 ? typeLabel : `${typeLabel}s`
+  } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
+
   const router = useRouter();
   // The opened object is addressed by the URL, not local state: the last path
   // segment is the object slug (see objectSlug). We match on the slug's trailing
@@ -498,6 +505,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
               <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
             )}
           </span>
+
+          <span className={styles.count} title={countTitle}>
+            {objects.length}
+          </span>
         </div>
 
         <div className={styles.right}>
@@ -520,12 +531,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 className={styles.button}
                 labelClassName={styles.text}
               />
-            </span>
-          )}
-
-          {isOwner && (
-            <span className={styles.count}>
-              {objects.length}/{MAX_OBJECTS_PER_SHELF}
             </span>
           )}
 

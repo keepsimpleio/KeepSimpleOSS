@@ -70,6 +70,22 @@
         align-items: center;
       }
 
+      // How many objects stand on this shelf, read right after its name. Sized
+      // by the two-digit maximum so the shelf title never shifts when an object
+      // is added or removed.
+      .count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        min-width: 24px;
+        margin-left: -4px;
+        font-size: 14px;
+        line-height: 1;
+        color: var(--gray-darkest);
+        font-variant-numeric: tabular-nums;
+      }
+
       .nameButton {
         padding: 0;
         background: transparent;
@@ -127,11 +143,6 @@
       display: inline-flex;
     }
 
-    .count {
-      color: var(--gray-medium);
-      font-variant-numeric: tabular-nums;
-    }
-
     .button {
       color: var(--brown);
     }
@@ -139,7 +150,7 @@
     // Mobile: split the cramped single row into two. Promote `.right`'s children
     // into the header's flex flow (display: contents) so a zero-height full-width
     // break can drop the two action buttons onto their own row:
-    //   Row 1: settings + type icon + name (left)  ·  count (right)
+    //   Row 1: settings + type icon + name + count (left)
     //   Row 2: Select shelf (left)  ·  Add object (right)
     @media (max-width: 768px) {
       flex-wrap: wrap;
@@ -151,10 +162,6 @@
       .left {
         order: 1;
         min-width: 0;
-      }
-
-      .count {
-        order: 2;
       }
 
       &::after {
