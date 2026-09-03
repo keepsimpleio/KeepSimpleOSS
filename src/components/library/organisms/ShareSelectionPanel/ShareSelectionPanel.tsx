@@ -131,6 +131,7 @@ export function ShareSelectionPanel({
   objects,
   ownerUsername,
   readOnly = false,
+  initiallyExpanded = false,
   limitReached = false,
   onReorder,
   onRemove,
@@ -140,7 +141,7 @@ export function ShareSelectionPanel({
 }: ShareSelectionPanelProps): JSX.Element | null {
   // Starts folded down to its header bar: the panel is a permanent fixture at
   // the bottom of the library, so it opens only when the user asks for it.
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(!initiallyExpanded);
   const [pendingRemoveId, setPendingRemoveId] = useState<number | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -177,12 +178,18 @@ export function ShareSelectionPanel({
     setShareError(null);
     try {
       const result = await createShareLink(objects.map(o => o.id));
-      if (!result) {
-        setShareError('Could not create the link. Please try again.');
+      if ('error' in result) {
+        // The backend's own reason, verbatim: a private object or an
+        // over-cap selection does not get better with a retry.
+        setShareError(
+          result.retryable
+            ? result.error
+            : `${result.error} Adjust the selection and share again.`,
+        );
         return;
       }
       setShareUrl(
-        `${SHARE_BASE_URL}/library/${ownerUsername}/share/${result.token}`,
+        `${SHARE_BASE_URL}/library/${encodeURIComponent(ownerUsername)}/share/${result.token}`,
       );
     } finally {
       setIsSharing(false);
@@ -288,7 +295,8 @@ export function ShareSelectionPanel({
               className={styles.emptyState}
             >
               Nothing selected yet. Pick objects from your shelves to share them
-              as one link.
+              as one link. Only items on public shelves can be shared, and a
+              link stays valid for 7 days.
             </Text>
           ) : (
             <div className={styles.scroller}>
@@ -328,21 +336,40 @@ export function ShareSelectionPanel({
               </Text>
               <Button
                 label={copied ? 'Copied' : 'Copy link'}
-                ariaLabel="Copy share link"
+                ariaLabel={copied ? 'Share link copied' : 'Copy share link'}
                 onClick={handleCopy}
                 type={ButtonType.Secondary}
                 size={ButtonSize.Default}
               />
             </div>
           )}
-
-          {!readOnly && shareError && (
+          {!readOnly && shareUrl && (
             <Text
               variant={TypographyVariant.TextSmall}
-              className={styles.error}
+              className={styles.emptyState}
             >
-              {shareError}
+              This link stays valid for 7 days and shows the items in this
+              order. Change the selection to mint a new one.
             </Text>
+          )}
+
+          {!readOnly && shareError && (
+            <div className={styles.linkRow}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.error}
+              >
+                {shareError}
+              </Text>
+              <Button
+                label="Try again"
+                ariaLabel="Try sharing again"
+                onClick={handleShare}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Default}
+                disabled={isSharing || isEmpty}
+              />
+            </div>
           )}
         </div>
       </div>

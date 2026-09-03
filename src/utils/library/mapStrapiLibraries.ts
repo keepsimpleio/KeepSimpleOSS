@@ -34,20 +34,33 @@ function resolveMediaUrl(
   return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
-export function countObjectsByType(shelves: StrapiSingleShelfEntry[]) {
+// Counts follow each object's own type, not the shelf it stands on, and skip
+// private shelves unless asked: a visitor's total and the owner's total must
+// describe the same set of objects the reader can actually see.
+export function countObjectsByType(
+  shelves: StrapiSingleShelfEntry[],
+  options?: { includePrivate?: boolean },
+) {
   let bookCount = 0;
   let videoCount = 0;
   let songCount = 0;
 
   for (const shelf of shelves) {
-    const type = shelf.attributes?.type;
-    const objectCount = shelf.attributes?.objects?.data?.length ?? 0;
-    if (type === 'book') {
-      bookCount += objectCount;
-    } else if (type === 'video') {
-      videoCount += objectCount;
-    } else if (type === 'audio') {
-      songCount += objectCount;
+    if (
+      !options?.includePrivate &&
+      shelf.attributes?.visibility === 'private'
+    ) {
+      continue;
+    }
+    for (const object of shelf.attributes?.objects?.data ?? []) {
+      const type = object.attributes?.type ?? shelf.attributes?.type;
+      if (type === 'book') {
+        bookCount += 1;
+      } else if (type === 'video') {
+        videoCount += 1;
+      } else if (type === 'audio') {
+        songCount += 1;
+      }
     }
   }
 

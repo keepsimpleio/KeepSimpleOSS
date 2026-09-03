@@ -138,7 +138,9 @@ function ColoredSelect<T extends string | number>(
         aria-haspopup={readOnly ? undefined : 'listbox'}
         aria-expanded={readOnly ? undefined : isOpen}
         aria-label={label}
-        disabled={readOnly && !hasValue}
+        // Read-only is a fact, not a switched-off control: it is never
+        // disabled, so a visitor's unrated book does not read as broken.
+        tabIndex={readOnly ? -1 : undefined}
       >
         <Text
           variant={TypographyVariant.TextBase}
@@ -175,14 +177,15 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
     onOverallChange,
     onDifficultyChange,
     readOnly = false,
+    itemLabel = 'book',
     className,
   } = props;
 
-  // The header states the fact before the values do: an unrated book says so
+  // The header states the fact before the values do: an unrated item says so
   // outright instead of leaving two dashes to carry the meaning.
   const isRated = overallRating !== undefined || difficulty !== undefined;
   const header = username
-    ? `${username} ${isRated ? 'rated this book:' : 'didn’t rate this book'}`
+    ? `${username} ${isRated ? `rated this ${itemLabel}:` : `didn’t rate this ${itemLabel}`}`
     : isRated
       ? 'Rating:'
       : 'Not rated yet';

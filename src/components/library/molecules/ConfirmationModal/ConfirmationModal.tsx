@@ -18,6 +18,7 @@ export function ConfirmationModal(props: ConfirmationModalProps) {
   const {
     variant = 'delete',
     text,
+    error,
     title,
     isLoading = false,
     actionButtonType = ButtonType.Primary,
@@ -45,6 +46,16 @@ export function ConfirmationModal(props: ConfirmationModalProps) {
           <Text className={styles.text} variant={TypographyVariant.TextSmall}>
             {text}
           </Text>
+          {error && (
+            <div role="alert">
+              <Text
+                className={styles.errorText}
+                variant={TypographyVariant.TextSmall}
+              >
+                {error}
+              </Text>
+            </div>
+          )}
         </div>
 
         <div className={styles.footer}>

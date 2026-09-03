@@ -38,12 +38,14 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
 
   const isSelected = (option: TagOption) => value.some(t => t.id === option.id);
 
+  const atCap = !!maxItems && value.length >= maxItems;
+
   const toggle = (option: TagOption) => {
     if (isSelected(option)) {
       onChange(value.filter(t => t.id !== option.id));
       return;
     }
-    if (maxItems && value.length >= maxItems) return;
+    if (atCap) return;
     onChange([...value, option]);
   };
 
@@ -98,6 +100,13 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
                 // pointerdown from reaching the document-level listener.
                 onPointerDown={portal ? e => e.stopPropagation() : undefined}
               >
+                {atCap && (
+                  <div className={styles.empty} role="note">
+                    <Text variant={TypographyVariant.TextSmall}>
+                      Up to {maxItems} tags per item. Remove one to add another.
+                    </Text>
+                  </div>
+                )}
                 {options.length === 0 ? (
                   <div className={styles.empty}>
                     <Text variant={TypographyVariant.TextSmall}>
@@ -107,15 +116,25 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
                 ) : (
                   options.map(option => {
                     const selected = isSelected(option);
+                    const blocked = atCap && !selected;
                     return (
                       <div
                         key={option.id}
                         role="option"
                         aria-selected={selected}
+                        aria-disabled={blocked || undefined}
+                        tabIndex={0}
                         className={classNames(styles.option, {
                           [styles.selected]: selected,
+                          [styles.blocked]: blocked,
                         })}
                         onClick={() => toggle(option)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggle(option);
+                          }
+                        }}
                       >
                         <Tag label={option.name} color={option.color} />
                         {selected && (

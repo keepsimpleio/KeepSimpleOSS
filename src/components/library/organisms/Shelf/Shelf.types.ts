@@ -2,6 +2,7 @@ import type { HTMLAttributes } from 'react';
 
 import type { StrapiSingleShelfEntry } from '@local-types/library';
 import type { IObject, IReorderObjectEntry } from '@local-types/library/object';
+import type { ShelfVisibility } from '@local-types/library/shelf';
 
 /**
  * dnd-kit's activator wiring, handed down so the grip rendered inside the
@@ -19,6 +20,22 @@ export interface ShelfProps {
   ownerUsername?: string;
   /** True when the current viewer owns this library. */
   isOwner?: boolean;
+  /**
+   * Ids of the objects a search matched on this shelf. Null means no search:
+   * every object is drawn. The shelf's own object list is never narrowed, so
+   * counts, caps and reorder payloads always describe the real shelf.
+   */
+  visibleObjectIds?: Set<number> | null;
+  /**
+   * True when the owner could reorder shelves but a search is active. The
+   * grip stays in its slot, disabled, so the header does not reflow.
+   */
+  reorderLocked?: boolean;
+  /** Fired after the privacy switch saved, so the library tree carries it. */
+  onShelfVisibilityChanged?: (
+    shelfId: number,
+    visibility: ShelfVisibility,
+  ) => void;
   /** Fired after a successful object create — used for surgical re-render. */
   onObjectCreated?: (shelfId: number, object: IObject) => void;
   /** Fired after a successful object update — used for surgical re-render. */

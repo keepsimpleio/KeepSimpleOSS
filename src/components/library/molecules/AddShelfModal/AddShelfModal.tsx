@@ -64,7 +64,11 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
       setError(
         status === 401 || status === 403
           ? 'Your session has expired. Reload the page and sign in again.'
-          : 'Could not create the shelf. Please try a different name.',
+          : status === 400
+            ? 'Could not create the shelf. Please try a different name.'
+            : e instanceof Error && !status
+              ? e.message
+              : 'Could not create the shelf. Please try again.',
       );
     } finally {
       setIsSubmitting(false);
@@ -85,7 +89,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
       <Modal
         className={styles.modal}
         wrapperClassName={classNames({ [styles.submitting]: isSubmitting })}
-        title="Select shelf type"
+        title="Add a shelf"
         onClose={guardedClose}
         closeRef={closeRef}
       >
@@ -116,12 +120,16 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
             {error && <p className={styles.error}>{error}</p>}
           </div>
 
+          <Text variant={TypographyVariant.TextSmall} className={styles.label}>
+            Shelf type
+          </Text>
           <div className={styles.content}>
             {shelfCardData.map(item => {
               return (
-                <div
+                <button
                   key={item.key}
-                  role="button"
+                  type="button"
+                  aria-pressed={activeItem === item.key}
                   className={classNames(styles.item, {
                     [styles.active]: activeItem === item.key,
                   })}
@@ -129,7 +137,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
                 >
                   <item.Icon />
                   <Text variant={TypographyVariant.TextBase}>{item.label}</Text>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -148,7 +156,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
               onClick={handleAddShelf}
               type={ButtonType.Primary}
               size={ButtonSize.Wide}
-              ariaLabel="Create shelf"
+              ariaLabel="Add shelf"
               className={styles.close}
               disabled={!canSubmit}
             />

@@ -10,7 +10,7 @@ import type { ImageDropzoneProps } from './ImageDropzone.types';
 
 import styles from './ImageDropzone.module.scss';
 
-const DEFAULT_ACCEPT = ['image/jpeg', 'image/png'];
+const DEFAULT_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024;
 
 function formatBytes(bytes: number): string {
@@ -65,7 +65,7 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
             message = `Image is too large. Maximum size is ${formatBytes(maxSize)}.`;
             break;
           case 'file-invalid-type':
-            message = 'Image must be a JPEG or PNG file.';
+            message = 'Image must be a JPEG, PNG or WebP file.';
             break;
           case 'too-many-files':
             message = 'Please drop only one image.';
@@ -195,7 +195,7 @@ export function ImageDropzone(props: ImageDropzoneProps): JSX.Element {
             <Text variant={TypographyVariant.TextSmall} className={styles.hint}>
               {showPending
                 ? 'Or drop your own image to use it instead'
-                : `PNG or JPEG, up to ${formatBytes(maxSize)}`}
+                : `JPEG, PNG or WebP, up to ${formatBytes(maxSize)}`}
             </Text>
           </div>
         )}

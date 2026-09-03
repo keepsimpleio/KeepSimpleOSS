@@ -1,12 +1,16 @@
 // Height of the share panel's collapsed header bar. It's fixed to the bottom
-// of the viewport and now always present, so the library reserves the strip
-// instead of letting the last shelf sit under it.
+// of the viewport whenever the owner's bar renders, so the library reserves
+// the strip instead of letting the last shelf sit under it. Visitors get no
+// bar and no dead strip.
 $share-bar-height: 87px;
 
 .wrapper {
   flex: 1;
   min-width: 0;
-  padding-bottom: $share-bar-height;
+
+  &.withShareBar {
+    padding-bottom: $share-bar-height;
+  }
 
   @media (max-width: 1024px) {
     min-height: calc(100vh - 168px);
@@ -70,6 +74,11 @@ $share-bar-height: 87px;
   padding: 8px 16px 40px;
 }
 
+// The explanation tooltip only exists while the control is off.
+.tooltipOff :global(.react-tooltip) {
+  display: none;
+}
+
 .addShelfButton {
   width: auto !important;
   // The Text button variant defaults to white, which is meant for the dark
@@ -78,8 +87,42 @@ $share-bar-height: 87px;
   color: var(--brown) !important;
 }
 
-// Shown only when a shelf drag was rolled back because the save failed.
-.shelfOrderError {
+// One row under the toolbar, sized for a single-line notice whether or not
+// one is showing, so the shelves below never move when a message lands.
+.noticeRow {
+  min-height: 36px;
   padding: 0 16px;
+  display: flex;
+  align-items: center;
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 12px;
+  border-radius: var(--radius-control);
+  background: var(--off-white);
   color: var(--red-500);
+
+  p {
+    color: inherit;
+  }
+}
+
+.noticeDismiss {
+  border: none;
+  background: transparent;
+  color: var(--gray-darkest);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-control);
+  transition: color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--brown);
+  }
 }

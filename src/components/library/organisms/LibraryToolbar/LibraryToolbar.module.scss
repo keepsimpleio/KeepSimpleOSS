@@ -37,20 +37,14 @@
   }
 }
 
-// Guest view of someone else's library: the divider is dropped, so restore the
-// vertical breathing room on the controls row itself.
-.controlsGuest {
-  margin-top: 0;
-  padding: 24px 10px;
-}
-
-// Visitor / guest-preview banner that replaces the owner's shelf controls.
+// Visitor / guest-preview banner, stacked above the same shelf navigation
+// the owner gets: a visitor to a 21-shelf library needs the jump pills too.
 .welcome {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
   min-width: 0;
+  padding: 20px 10px 4px;
   animation: toolbar-fade 0.3s ease;
 }
 
@@ -122,6 +116,11 @@
 }
 
 .arrow {
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -151,23 +150,48 @@
   }
 }
 
-// Default state: flat white tile, dark text, no border accent.
+// Default state: flat white tile, dark text, no border accent. The border is
+// always 2px so the selected ring changes colour, not size: pills no longer
+// nudge by a pixel as the highlight moves.
 .jumpButton {
   padding: 6px 16px;
   border-radius: var(--radius-control);
   white-space: nowrap;
   background: var(--white) !important;
   color: var(--gray-darkest) !important;
-  border: 1px solid var(--beige) !important;
+  border: 2px solid var(--beige) !important;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 
-  &:hover:not(:disabled) {
-    background: var(--white) !important;
-    color: var(--gray-darkest) !important;
+  &:hover:not(:disabled),
+  &:focus-visible {
+    border-color: var(--brown-border) !important;
+    color: var(--brown) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
 // Selected state: brown border ring + brown text on the same shape.
 .jumpSelected {
-  border: 2px solid var(--brown) !important;
+  border-color: var(--brown) !important;
   color: var(--brown) !important;
+}
+
+.searchWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+// One line, always present, under the search field.
+.searchSummary {
+  min-height: 16px;
+  line-height: 16px;
+  color: var(--gray-darker);
+  white-space: nowrap;
 }

@@ -35,14 +35,18 @@ export function formatObjectDate(iso?: string): string | null {
   return `${dd}/${mm}/${yyyy}`;
 }
 
-/** MM:SS, or an em-dash when there is no duration. */
+/** MM:SS, or H:MM:SS past the hour; a dash when there is no duration. */
 export function formatObjectDuration(seconds?: number): string {
   if (seconds === undefined || seconds === null || Number.isNaN(seconds))
     return '—';
   const total = Math.max(0, Math.floor(seconds));
-  const mm = String(Math.floor(total / 60)).padStart(2, '0');
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
   const ss = String(total % 60).padStart(2, '0');
-  return `${mm}:${ss}`;
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${ss}`;
+  }
+  return `${String(minutes).padStart(2, '0')}:${ss}`;
 }
 
 /**

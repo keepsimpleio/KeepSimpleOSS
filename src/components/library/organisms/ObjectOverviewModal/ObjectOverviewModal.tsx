@@ -1,6 +1,6 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
-import React, { JSX, useCallback, useMemo, useState } from 'react';
+import React, { JSX, useCallback, useMemo, useRef, useState } from 'react';
 
 import { KEEPSIMPLE_URL, SHELF_FULL_MESSAGE } from '@constants/library/common';
 
@@ -114,9 +114,9 @@ export function ObjectOverviewModal(
   // TODO: add dedicated route for shareable object URLs (e.g. /library/[username]/objects/[id]).
   // For now this modal is opened imperatively from a card click — no URL state.
   const guardedOnClose = useCallback(() => {
-    if (deleteLoading) return;
+    if (deleteLoading || deleting) return;
     onClose();
-  }, [deleteLoading, onClose]);
+  }, [deleteLoading, deleting, onClose]);
 
   const { closeRef, close } = useModalClose(guardedOnClose);
 
@@ -137,8 +137,10 @@ export function ObjectOverviewModal(
     try {
       await deleteObject(id);
       setDeleting(false);
+      // The parent is told when the success card closes: telling it now
+      // unmounted this modal (the object leaves the shelf) before the card
+      // could show.
       setDeleteSuccess(true);
-      onDeleted?.(id);
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Failed to delete. Please try again.';
@@ -211,6 +213,13 @@ export function ObjectOverviewModal(
     },
   });
 
+  // The last values the server accepted, so a failed save falls back to
+  // them and not to whatever the modal opened with.
+  const savedRating = useRef({
+    overall: attributes.overall,
+    difficulty: attributes.difficulty,
+  });
+
   const persistRating = async (next: {
     overall?: OverallRating;
     difficulty?: Difficulty;
@@ -218,14 +227,15 @@ export function ObjectOverviewModal(
     setRatingError(null);
     try {
       const res = await updateObject(id, next);
+      savedRating.current = { ...savedRating.current, ...next };
       onUpdated?.(preserveRelations(res.data));
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Could not save your rating.';
       setRatingError(message);
       // Revert optimistic state on failure.
-      setOverallRating(attributes.overall);
-      setDifficulty(attributes.difficulty);
+      setOverallRating(savedRating.current.overall);
+      setDifficulty(savedRating.current.difficulty);
     }
   };
 
@@ -306,7 +316,9 @@ export function ObjectOverviewModal(
   // (contiguous 1..N even when persisted `order` values have gaps). Fall back to
   // the object's raw `order` when siblings weren't passed.
   const positionIndex = shelfObjects?.findIndex(o => o.id === id) ?? -1;
-  const objectPosition = positionIndex >= 0 ? positionIndex : attributes.order;
+  // Without siblings there is no rank to show: the raw persisted `order`
+  // has gaps and would name a different position than the shelf does.
+  const objectPosition = positionIndex >= 0 ? positionIndex : undefined;
   const publishedFormatted = formatObjectDate(attributes.publicationDate);
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
@@ -325,6 +337,7 @@ export function ObjectOverviewModal(
           setEditing(false);
           onClose();
         }}
+        onCancel={() => setEditing(false)}
         onCreated={updated => {
           onUpdated?.(updated);
         }}
@@ -618,6 +631,7 @@ export function ObjectOverviewModal(
               <>
                 <RatingBox
                   username={ownerUsername}
+                  itemLabel={objectType}
                   overallRating={overallRating}
                   difficulty={difficulty}
                   onOverallChange={handleOverallChange}
@@ -635,7 +649,8 @@ export function ObjectOverviewModal(
         <ConfirmationModal
           variant="delete"
           title={`Are you sure you want to delete the object "${attributes.title}"?`}
-          text={deleteError ?? 'This action is irreversible.'}
+          text="This action is irreversible."
+          error={deleteError ?? undefined}
           actionButtonLabel={deleteLoading ? 'Deleting…' : 'Delete'}
           actionButtonType={ButtonType.Warning}
           isLoading={deleteLoading}
@@ -658,10 +673,12 @@ export function ObjectOverviewModal(
           actionButtonType={ButtonType.Secondary}
           onClose={() => {
             setDeleteSuccess(false);
+            onDeleted?.(id);
             onClose();
           }}
           onConfirm={() => {
             setDeleteSuccess(false);
+            onDeleted?.(id);
             onClose();
           }}
         />

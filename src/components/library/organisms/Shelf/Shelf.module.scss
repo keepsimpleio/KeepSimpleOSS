@@ -49,6 +49,17 @@
         }
       }
 
+      // Same footprint as the grip, so the header keeps its shape while a
+      // search has reordering switched off.
+      .dragHandleOff {
+        cursor: default;
+        opacity: 0.35;
+
+        &:hover {
+          color: var(--black-transparent-300);
+        }
+      }
+
       .icon {
         display: flex;
         align-items: center;
@@ -143,6 +154,11 @@
       display: inline-flex;
     }
 
+    // The explanation tooltip only exists while its control is off.
+    .tooltipOff :global(.react-tooltip) {
+      display: none;
+    }
+
     .button {
       color: var(--brown);
     }
@@ -181,6 +197,22 @@
         margin-top: 12px;
       }
     }
+  }
+
+  // Held at one line's height whether or not a message shows.
+  .shelfNoticeRow {
+    min-height: 22px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .shelfNotice {
+    color: var(--gray-darkest);
+  }
+
+  .shelfNoticeError {
+    color: var(--red-500);
   }
 
   .content {
@@ -290,6 +322,8 @@
       // scrollbar so it doesn't cut across the shelf artwork.
       scrollbar-width: none;
       padding-left: 80px;
+      // Room for the last card to scroll clear of the right arrow.
+      padding-right: 80px;
       // Cards scrolled off the left should disappear *into* the shelf, not float
       // past its end. Clip the scroll viewport with a straight vertical left
       // edge so a card sliding left is cut cleanly upright instead of on a

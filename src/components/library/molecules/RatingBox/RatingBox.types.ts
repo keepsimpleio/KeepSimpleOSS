@@ -17,5 +17,7 @@ export interface RatingBoxProps {
    * and no interactions. Defaults to `false` (owner mode).
    */
   readOnly?: boolean;
+  /** What is being rated, for the heading ("rated this book"). Defaults to "book". */
+  itemLabel?: string;
   className?: string;
 }

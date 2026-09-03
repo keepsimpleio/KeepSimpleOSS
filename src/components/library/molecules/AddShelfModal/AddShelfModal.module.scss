@@ -72,6 +72,16 @@
     margin-top: 4px;
 
     .item {
+      // A real button now: reset the native chrome, keep the card look below.
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+
+      &:focus-visible {
+        outline: 2px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+
       background: var(--off-white);
       flex: 1;
       padding: 12px 4px;

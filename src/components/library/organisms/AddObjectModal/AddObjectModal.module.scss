@@ -160,6 +160,13 @@
   color: var(--red-600);
   font-size: 13px;
   margin: 0;
+  // One line, always: the reason Next is off, or the save error.
+  min-height: 18px;
+  line-height: 18px;
+}
+
+.footerHint {
+  color: var(--gray-darker);
 }
 
 .footerActions {

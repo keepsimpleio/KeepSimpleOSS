@@ -32,6 +32,8 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     shelves,
     isOwner = true,
     ownerName,
+    hasAudio = false,
+    matchedCount = null,
     search = '',
     onSearchChange,
     className,
@@ -89,23 +91,20 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     return Array.from(names);
   }, [shelves]);
 
-  // Pick two distinct tags to tease in the welcome line; re-rolls only when the
-  // available tag set changes, not on every render.
-  const featuredTags = useMemo(() => {
-    const pool = [...tagNames];
-    for (let i = pool.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    return pool.slice(0, 2);
-  }, [tagNames]);
+  // Tease the two most-used tags in the welcome line. Deterministic: the
+  // sentence is server-rendered, and a random pick re-rolled on every tag
+  // change and mismatched the server markup.
+  const featuredTags = useMemo(() => tagNames.slice(0, 2), [tagNames]);
 
   const collectionsClause =
     featuredTags.length >= 2
-      ? `curated collections on ${featuredTags[0]} and ${featuredTags[1]}, `
+      ? `curated collections on ${featuredTags[0]} and ${featuredTags[1]}`
       : featuredTags.length === 1
-        ? `curated collections on ${featuredTags[0]}, `
-        : 'curated collections, ';
+        ? `curated collections on ${featuredTags[0]}`
+        : 'curated collections';
+  const welcomeText = hasAudio
+    ? `Discover and explore ${collectionsClause}, along with a playlist of favorite songs.`
+    : `Discover and explore ${collectionsClause}.`;
 
   // Default to the first shelf as soon as the list lands; let the user
   // override by clicking, but keep their choice when the list identity
@@ -121,48 +120,69 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
   }, [shelves]);
 
   const handleJumpTo = (shelfId: number) => {
-    setSelectedJumpShelfId(shelfId);
+    // The pill list is the rendered list, so the target always exists.
     const el = document.getElementById(`shelf-${shelfId}`);
-    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!el) return;
+    setSelectedJumpShelfId(shelfId);
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  if (!isOwner) {
-    return (
-      <div className={classNames(styles.toolbar, className)}>
-        <div className={classNames(styles.controls, styles.controlsGuest)}>
-          <div className={styles.welcome}>
-            <Text
-              variant={TypographyVariant.TitleSecondaryBold}
-              className={styles.welcomeTitle}
-            >
-              Welcome to {ownerName}&rsquo;s hive
-            </Text>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.welcomeText}
-            >
-              Discover and explore {collectionsClause}along with an incredible
-              playlist full of his favorite songs.
-            </Text>
-          </div>
+  // Keep the highlighted pill honest while the page scrolls: the shelf
+  // nearest the top of the viewport is the one the reader is on.
+  useEffect(() => {
+    if (shelves.length === 0 || typeof window === 'undefined') return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      let bestId: number | null = null;
+      let bestDistance = Number.POSITIVE_INFINITY;
+      for (const shelf of shelves) {
+        const el = document.getElementById(`shelf-${shelf.id}`);
+        if (!el) continue;
+        const distance = Math.abs(el.getBoundingClientRect().top - 120);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestId = shelf.id;
+        }
+      }
+      if (bestId != null) setSelectedJumpShelfId(bestId);
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [shelves]);
 
-          <Input
-            type="search"
-            value={search}
-            placeholder="Search everywhere"
-            placeholderColor="#C4C4C4"
-            onChange={e => onSearchChange?.(e.target.value)}
-            onClear={() => onSearchChange?.('')}
-            wrapperClassName={styles.search}
-            ariaLabel="Search everywhere"
-          />
-        </div>
-      </div>
-    );
-  }
+  const searchSummary =
+    matchedCount == null
+      ? ''
+      : matchedCount === 0
+        ? 'No matches'
+        : `${matchedCount} ${matchedCount === 1 ? 'match' : 'matches'} on ${shelves.length} ${shelves.length === 1 ? 'shelf' : 'shelves'}`;
 
   return (
     <div className={classNames(styles.toolbar, className)}>
+      {!isOwner && (
+        <div className={styles.welcome}>
+          <Text
+            variant={TypographyVariant.TitleSecondaryBold}
+            className={styles.welcomeTitle}
+          >
+            Welcome to {ownerName}&rsquo;s library
+          </Text>
+          <Text
+            variant={TypographyVariant.TextSmall}
+            className={styles.welcomeText}
+          >
+            {welcomeText}
+          </Text>
+        </div>
+      )}
       <div className={styles.controls}>
         <Text className={styles.text}>Jump to →</Text>
 
@@ -184,17 +204,25 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
             {shelves.map(shelf => {
               const isSelected = shelf.id === selectedJumpShelfId;
               return (
-                <Button
+                <span
                   key={shelf.id}
-                  label={truncateLabel(shelf.attributes.name)}
-                  ariaLabel={`Jump to ${shelf.attributes.name}`}
-                  onClick={() => handleJumpTo(shelf.id)}
-                  type={ButtonType.Secondary}
-                  size={ButtonSize.Default}
-                  className={classNames(styles.jumpButton, {
-                    [styles.jumpSelected]: isSelected,
-                  })}
-                />
+                  title={
+                    shelf.attributes.name.length > 20
+                      ? shelf.attributes.name
+                      : undefined
+                  }
+                >
+                  <Button
+                    label={truncateLabel(shelf.attributes.name)}
+                    ariaLabel={`Jump to ${shelf.attributes.name}`}
+                    onClick={() => handleJumpTo(shelf.id)}
+                    type={ButtonType.Secondary}
+                    size={ButtonSize.Default}
+                    className={classNames(styles.jumpButton, {
+                      [styles.jumpSelected]: isSelected,
+                    })}
+                  />
+                </span>
               );
             })}
           </div>
@@ -210,16 +238,27 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
           )}
         </div>
 
-        <Input
-          type="search"
-          value={search}
-          placeholder="Search everywhere"
-          placeholderColor="#C4C4C4"
-          onChange={e => onSearchChange?.(e.target.value)}
-          onClear={() => onSearchChange?.('')}
-          wrapperClassName={styles.search}
-          ariaLabel="Search everywhere"
-        />
+        <div className={styles.searchWrap}>
+          <Input
+            type="search"
+            value={search}
+            placeholder="Search everywhere"
+            placeholderColor="#C4C4C4"
+            onChange={e => onSearchChange?.(e.target.value)}
+            onClear={() => onSearchChange?.('')}
+            wrapperClassName={styles.search}
+            ariaLabel="Search everywhere"
+          />
+          {/* The count sits in a line held from the start, so typing never
+              pushes the toolbar around. */}
+          <Text
+            variant={TypographyVariant.TextSmall}
+            className={styles.searchSummary}
+            aria-live="polite"
+          >
+            {searchSummary}
+          </Text>
+        </div>
       </div>
     </div>
   );

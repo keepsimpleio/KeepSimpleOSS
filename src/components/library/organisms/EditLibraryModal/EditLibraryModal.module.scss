@@ -87,3 +87,13 @@
   gap: 8px;
   margin-top: 8px;
 }
+
+// The reserved message line, in its resting (non-error) voice.
+.hint {
+  color: var(--gray-darker) !important;
+}
+
+// The explanation tooltip only exists while its control is off.
+.tooltipOff :global(.react-tooltip) {
+  display: none;
+}

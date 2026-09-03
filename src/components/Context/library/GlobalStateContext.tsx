@@ -31,7 +31,18 @@ interface GlobalStateContextValue {
   isGuestMode: boolean;
   isSidebarOpen: boolean;
   toggleGuestMode: () => void;
+  /** Leave guest mode outright — used when the viewed library changes. */
+  setGuestMode: (value: boolean) => void;
   toggleSidebar: () => void;
+  /** Close the mobile drawer (a toggle would reopen it from a closed state). */
+  closeSidebar: () => void;
+  /**
+   * Whether the viewer owns the library on screen. Decided once, by
+   * `LibraryTemplate`, and published here so the Sidebar and the shelves can
+   * never disagree about who is looking.
+   */
+  isOwner: boolean;
+  setIsOwner: (value: boolean) => void;
   user: IUser | null;
   isUserLoading: boolean;
   refetchUser: () => Promise<void>;
@@ -89,6 +100,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(null);
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const didAttemptUserLoad = useRef(false);
   const didAttemptDevSession = useRef(false);
 
@@ -150,7 +162,11 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       isGuestMode,
       isSidebarOpen,
       toggleGuestMode: () => setIsGuestMode(prev => !prev),
+      setGuestMode: setIsGuestMode,
       toggleSidebar: () => setIsSidebarOpen(prev => !prev),
+      closeSidebar: () => setIsSidebarOpen(false),
+      isOwner,
+      setIsOwner,
       user: accountData,
       isUserLoading,
       refetchUser,
@@ -167,6 +183,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       setIsCreateBlocked,
     }),
     [
+      isOwner,
       isGuestMode,
       isSidebarOpen,
       accountData,

@@ -43,6 +43,8 @@ export function AudioCard({
   // Hovering (or tabbing to) the record opens its dossier beside the shelf.
   const cardRef = useRef<HTMLDivElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  // The dossier is announced as this card's description while it is open.
+  const dossierId = `object-dossier-${object.id}`;
 
   const handleActivate = () => {
     // Opening the overview covers the card, so the dossier steps aside first.
@@ -68,7 +70,10 @@ export function AudioCard({
         className={classNames(styles.card, { [styles.selected]: selected })}
         role="button"
         tabIndex={0}
-        aria-label={`Open ${title}`}
+        aria-label={
+          selected ? `Open ${title} (in share selection)` : `Open ${title}`
+        }
+        aria-describedby={dossierId}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setPreviewOpen(true)}
@@ -117,6 +122,7 @@ export function AudioCard({
       </div>
 
       <ObjectHoverCard
+        id={dossierId}
         object={object}
         anchorRef={cardRef}
         open={previewOpen}

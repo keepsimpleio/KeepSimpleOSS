@@ -12,6 +12,11 @@
     animation: modalFadeOut 180ms ease-in forwards;
 
     .content {
+      // Programmatic focus target on open; the ring belongs on the controls inside.
+      &:focus {
+        outline: none;
+      }
+
       animation: modalScaleOut 180ms ease-in forwards;
     }
   }

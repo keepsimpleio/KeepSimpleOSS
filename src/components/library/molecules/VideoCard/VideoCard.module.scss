@@ -82,13 +82,18 @@
 }
 
 .card:hover .select,
-.card:focus-within .select {
+.card:focus-within .select,
+.card.selected .select {
   opacity: 1;
   pointer-events: auto;
 }
 
+// Selected reads as chosen, not switched off: the art stays at full strength
+// under a brown ring, and the "Remove" pill above it stays on screen.
 .card.selected .thumb {
-  opacity: 0.55;
+  box-shadow:
+    0 0 0 2px var(--white),
+    0 0 0 4px var(--brown);
 }
 
 .thumbWrap {

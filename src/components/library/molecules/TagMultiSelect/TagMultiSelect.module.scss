@@ -116,3 +116,9 @@
   gap: 8px;
   margin-top: 12px;
 }
+
+// Past the cap, the remaining options read as unavailable instead of dead.
+.blocked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

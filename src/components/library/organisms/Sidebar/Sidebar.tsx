@@ -40,7 +40,6 @@ import {
   Button,
   ButtonSize,
   ButtonType,
-  IconPosition,
 } from '@components/library/molecules/Button';
 import {
   CreateTagFormData,
@@ -70,12 +69,14 @@ export function Sidebar() {
     isSidebarOpen,
     isGuestMode,
     toggleSidebar,
+    closeSidebar,
     toggleGuestMode,
     libraries,
     currentShelves,
     currentOwner,
     currentLibrary,
     isCreateBlocked,
+    isOwner,
   } = useGlobalState();
 
   // The library being viewed is always the `[username]` route segment — read it
@@ -92,14 +93,8 @@ export function Sidebar() {
   // the env var is unset, and to the bare host when there's no library slug.
   const baseUrl = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
   const shareUrl = currentLibraryId
-    ? `${baseUrl}/library/${currentLibraryId}`
+    ? `${baseUrl}/library/${encodeURIComponent(currentLibraryId)}`
     : baseUrl;
-
-  // Split at the last slash so the field can shrink the origin while the
-  // library name at the tail stays whole.
-  const lastSlash = shareUrl.lastIndexOf('/');
-  const shareUrlHead = lastSlash > 0 ? shareUrl.slice(0, lastSlash) : shareUrl;
-  const shareUrlTail = lastSlash > 0 ? shareUrl.slice(lastSlash) : '';
 
   const libraryCards = useMemo(() => {
     if (!libraries || !Array.isArray(libraries.data)) {
@@ -128,8 +123,10 @@ export function Sidebar() {
   // Object totals always come from the live shelves of the library on screen
   // (`currentShelves`, published by LibraryTemplate) — never from the viewer's
   // own library list, which would show the wrong counts on someone else's page.
+  // Those shelves are already the ones the viewer may see (private ones are
+  // filtered out for visitors and in guest mode), so count all of them.
   const { bookCount, videoCount, songCount } = useMemo(
-    () => countObjectsByType(currentShelves),
+    () => countObjectsByType(currentShelves, { includePrivate: true }),
     [currentShelves],
   );
 
@@ -138,22 +135,10 @@ export function Sidebar() {
   // library, or logged out) → read-only, showing the viewed library's public
   // data. Guest mode lets an owner preview that read-only view.
   //
-  // Ownership matches the loaded owner against my account by any reliable
-  // signal: account id (most specific, but `/api/users/me` and the library's
-  // `user` relation don't always share an id space), then username, then the
-  // URL slug for the window before the owner relation resolves. Matching on
-  // `currentOwner` is safe from cross-page bleed because LibraryTemplate nulls
-  // the previous library on navigation, so this never reflects a prior owner.
-  const viewerUsername = accountData?.username?.toLowerCase() ?? null;
-  const viewerId = accountData?.id != null ? String(accountData.id) : null;
-  const isMyLibrary =
-    (!!viewerId || !!viewerUsername) &&
-    ((!!viewerId &&
-      currentOwner?.id != null &&
-      String(currentOwner.id) === viewerId) ||
-      (!!viewerUsername &&
-        (currentOwner?.username?.toLowerCase() === viewerUsername ||
-          currentLibraryId.toLowerCase() === viewerUsername)));
+  // The answer is not computed here. LibraryTemplate decides ownership once
+  // and publishes it, so this panel and the shelves can never disagree about
+  // who is looking (they used to, on a numeric `/library/123` address).
+  const isMyLibrary = isOwner;
   const canEdit = isMyLibrary && !isGuestMode;
 
   // An owner can edit their About panel before any library row exists — the
@@ -170,12 +155,12 @@ export function Sidebar() {
   // role, so fall back to the URL slug for the name (`/library/[username]`) and
   // to my account name/photo when it's mine.
   const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
-  const authorName = isMyLibrary
+  const authorName = canEdit
     ? accountData?.username || currentOwner?.username || 'Anonymous'
     : currentOwner?.username || slugName || 'Anonymous';
   const authorAvatarUrl =
     resolveStrapiUrl(currentOwner?.avatar) ??
-    (isMyLibrary ? accountData?.picture : undefined);
+    (canEdit ? accountData?.picture : undefined);
   const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
   const aboutLibraryText = stripHtml(
     currentLibrary?.attributes.libraryDetails?.aboutLibrary,
@@ -195,10 +180,9 @@ export function Sidebar() {
     return Array.from(byName.values());
   }, [currentShelves]);
 
-  // Show the owner's palette whenever it's their own library — including guest
-  // mode (only an owner can toggle that, so we always have their tags loaded).
-  // Editing stays gated on `canEdit`, so guest preview shows them read-only.
-  const displayedTags = isMyLibrary
+  // The owner's full palette is theirs to see; guest mode is a faithful
+  // preview, so it shows exactly what a visitor gets: the tags in use.
+  const displayedTags = canEdit
     ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
     : libraryTags;
 
@@ -209,19 +193,56 @@ export function Sidebar() {
     label: lib.libraryName,
   }));
 
+  // The address may spell the username in another case, or carry the numeric
+  // id instead: resolve it to the option it means, so the trigger shows the
+  // library you are standing in rather than "Select library".
+  const dropdownValue = useMemo(() => {
+    const wanted = selectedLibraryId.toLowerCase();
+    const match = libraryCards.find(
+      lib =>
+        (lib.username ?? '').toLowerCase() === wanted ||
+        String(lib.id) === wanted,
+    );
+    return match ? (match.username ?? String(match.id)) : selectedLibraryId;
+  }, [libraryCards, selectedLibraryId]);
+
   const handleLibraryChange = (libraryId: string) => {
     setSelectedLibraryId(libraryId);
-    toggleSidebar();
-    router.push(`/library/${libraryId}`);
+    closeSidebar();
+    router.push(`/library/${encodeURIComponent(libraryId)}`);
   };
 
+  const [copyError, setCopyError] = useState<string | null>(null);
   const handleCopyUrl = async () => {
+    setCopyError(null);
     try {
       await navigator.clipboard.writeText(shareUrl);
       setIsCopied(true);
-    } catch (err) {
-      console.error('Failed to copy URL:', err);
+    } catch {
+      // Clipboard API is unavailable on insecure origins / older browsers —
+      // fall back to a throwaway textarea + execCommand, as the overview's
+      // Share button does; failing that, say so instead of a silent click.
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareUrl;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (!ok) throw new Error('execCommand failed');
+        setIsCopied(true);
+      } catch {
+        setCopyError('Could not copy. Select the link and copy it by hand.');
+      }
     }
+  };
+
+  // Tags live on shelf cards and in the search index as well as in this
+  // panel, so a rename, recolour or delete reloads the library too.
+  const refetchLibrary = () => {
+    window.dispatchEvent(new CustomEvent(LIBRARY_SHELVES_REFETCH_EVENT));
   };
 
   const handleCreateTag = async (formData: CreateTagFormData) => {
@@ -240,7 +261,7 @@ export function Sidebar() {
       };
 
       await createTag(body);
-      const { data } = await getTagsList(accountData?.id);
+      const { data } = await getTagsList(accountData.id);
 
       setTags(data);
     } catch (error) {
@@ -263,9 +284,10 @@ export function Sidebar() {
       };
 
       await updateTag(selectedTag.id, body);
-      const { data } = await getTagsList(accountData?.id);
+      const { data } = await getTagsList(accountData.id);
 
       setTags(data);
+      refetchLibrary();
       setIsOpenTagModal(null);
       setSelectedTag(null);
     } catch (error) {
@@ -275,13 +297,14 @@ export function Sidebar() {
   };
 
   const handleDeleteTag = async () => {
-    if (!selectedTag) return;
+    if (!selectedTag || !accountData?.id) return;
 
     try {
       await deleteTag(selectedTag.id);
-      const { data } = await getTagsList(accountData?.id);
+      const { data } = await getTagsList(accountData.id);
 
       setTags(data);
+      refetchLibrary();
       setIsOpenTagModal(null);
       setSelectedTag(null);
     } catch (error) {
@@ -373,7 +396,7 @@ export function Sidebar() {
         <div className={styles.dropdownWrapper}>
           <Dropdown
             options={dropdownOptions}
-            value={selectedLibraryId}
+            value={dropdownValue}
             onChange={handleLibraryChange}
             placeholder="Select library"
             ariaLabel="Select library"
@@ -401,14 +424,21 @@ export function Sidebar() {
 
             <div className={styles.content}>
               <div>
-                <Text className={styles.label}>
-                  {currentLibrary?.attributes.libraryDetails?.aboutLibrary ??
-                    ''}
+                {/* Plain text: the field is CKEditor markup server-side, and
+                    printing it raw showed the tags. Empty gets a line of its
+                    own, like Author and Tags do. */}
+                <Text
+                  className={classNames(styles.label, {
+                    [styles.emptyTags]: !aboutLibraryText,
+                  })}
+                >
+                  {aboutLibraryText ||
+                    (canEditLibrary
+                      ? 'No description yet. Add one with Edit.'
+                      : 'No description yet.')}
                 </Text>
               </div>
-              {aboutLibraryText && (
-                <InkLine seed={7} className={styles.innerRule} />
-              )}
+              <InkLine seed={7} className={styles.innerRule} />
 
               <div className={styles.totalObjects}>
                 <Text className={styles.subLabel}>Content</Text>
@@ -465,19 +495,35 @@ export function Sidebar() {
           <div className={styles.about}>
             <div className={styles.header}>
               <Text className={styles.label}>Tags</Text>
-              {canEdit && displayedTags.length > 0 && (
-                <Button
-                  label="Edit"
-                  ariaLabel="Edit"
-                  onClick={() => {
-                    setIsOpenTagModal('edit');
-                  }}
-                  type={ButtonType.Secondary}
-                  size={ButtonSize.Default}
-                  Icon={<EditIcon />}
-                  className={styles.button}
-                  labelClassName={styles.text}
-                />
+              {/* Both tag controls sit in the header: a chip inside the
+                  wrapping tag flow drifted every time a tag was added. */}
+              {canEdit && (
+                <span className={styles.headerActions}>
+                  {displayedTags.length > 0 && (
+                    <Button
+                      label="Edit"
+                      ariaLabel="Edit tags"
+                      onClick={() => {
+                        setIsOpenTagModal('edit');
+                      }}
+                      type={ButtonType.Secondary}
+                      size={ButtonSize.Default}
+                      Icon={<EditIcon />}
+                      className={styles.button}
+                      labelClassName={styles.text}
+                    />
+                  )}
+                  <Button
+                    label="Create"
+                    ariaLabel="Create tag"
+                    onClick={() => setIsOpenTagModal('create')}
+                    type={ButtonType.Secondary}
+                    size={ButtonSize.Default}
+                    Icon={<PlusIcon />}
+                    className={styles.button}
+                    labelClassName={styles.text}
+                  />
+                </span>
               )}
             </div>
             <div className={styles.content}>
@@ -492,19 +538,6 @@ export function Sidebar() {
                 {displayedTags.map(tag => (
                   <Tag key={tag.name} label={tag.name} color={tag.color} />
                 ))}
-                {canEdit && (
-                  <Button
-                    label="Create Tag"
-                    ariaLabel="Create Tag"
-                    onClick={() => setIsOpenTagModal('create')}
-                    type={ButtonType.Text}
-                    size={ButtonSize.Default}
-                    Icon={<PlusIcon />}
-                    iconPosition={IconPosition.Right}
-                    className={styles.button}
-                    labelClassName={styles.text}
-                  />
-                )}
               </div>
             </div>
             <InkLine seed={3} className={styles.sectionRule} />
@@ -525,14 +558,15 @@ export function Sidebar() {
                   as far as the field forces it, so the library name at the end
                   stays readable; the copy button always writes the full URL. */}
               <div className={styles.shareInputContainer}>
-                <div
-                  className={styles.shareLink}
+                <input
+                  className={styles.shareLinkInput}
+                  type="text"
+                  readOnly
+                  value={shareUrl}
                   title={shareUrl}
                   aria-label="Share URL"
-                >
-                  <span className={styles.shareLinkHead}>{shareUrlHead}</span>
-                  <span className={styles.shareLinkTail}>{shareUrlTail}</span>
-                </div>
+                  onFocus={e => e.currentTarget.select()}
+                />
                 {/* Both labels sit in one grid cell, so the bubble is sized by
                     the wider of the two and never resizes on click: the box and
                     its arrow stay exactly where the hover put them, and
@@ -558,19 +592,44 @@ export function Sidebar() {
                     onClick={handleCopyUrl}
                     type={ButtonType.Secondary}
                     size={ButtonSize.Default}
-                    ariaLabel="Copy URL"
+                    ariaLabel={isCopied ? 'Link copied' : 'Copy URL'}
                     Icon={<CopyIcon />}
                     className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
                   />
                 </Tooltip>
               </div>
+              {/* One held line: "Copied" for everyone, not only under a hover
+                  tooltip, and the failure when the clipboard is unavailable. */}
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={classNames(styles.copyStatus, {
+                  [styles.copyStatusError]: !!copyError,
+                })}
+                aria-live="polite"
+              >
+                {copyError ?? (isCopied ? 'Link copied.' : '')}
+              </Text>
             </div>
           </div>
         </div>
 
         {isMyLibrary && (
-          <div className={styles.footer}>
-            <Text className={styles.label}>Guest mode</Text>
+          <div
+            className={classNames(styles.footer, {
+              [styles.footerActive]: isGuestMode,
+            })}
+          >
+            <div className={styles.footerText}>
+              <Text className={styles.label}>Guest mode</Text>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.footerHint}
+              >
+                {isGuestMode
+                  ? 'You are seeing this library as a visitor. Switch off to edit.'
+                  : 'See this library exactly as a visitor does.'}
+              </Text>
+            </div>
             <Toggle
               checked={isGuestMode}
               onChange={toggleGuestMode}

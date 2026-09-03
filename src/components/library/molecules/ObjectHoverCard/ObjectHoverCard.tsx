@@ -57,6 +57,7 @@ const clamp = (value: number, min: number, max: number) =>
  * drops both the fade and the drift) live in ObjectHoverCard.module.scss.
  */
 export function ObjectHoverCard({
+  id,
   object,
   anchorRef,
   open,
@@ -202,9 +203,9 @@ export function ObjectHoverCard({
   return createPortal(
     <div className="library">
       <div
+        id={id}
         ref={panelRef}
         role="tooltip"
-        aria-hidden="true"
         className={classNames(styles.panel, {
           [styles.placed]: shown && !!position,
           [styles.fromLeft]: position?.side === 'left',

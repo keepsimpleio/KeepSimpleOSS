@@ -3,6 +3,8 @@ import type { RefObject } from 'react';
 import type { IObject } from '@local-types/library/object';
 
 export interface ObjectHoverCardProps {
+  /** DOM id, so the anchoring card can name the panel as its description. */
+  id?: string;
   /** The object the panel describes. */
   object: IObject;
   /** The card the panel is pinned beside. */

@@ -24,7 +24,7 @@ export function LibraryInfoCard({
   const objects: { name: IconName; count: number; label: string }[] = [
     { name: IconName.Book, count: bookCount, label: 'Books' },
     { name: IconName.Video, count: videoCount, label: 'Videos' },
-    { name: IconName.Audio, count: songCount, label: 'Music' },
+    { name: IconName.Audio, count: songCount, label: 'Audio' },
   ];
 
   return (
