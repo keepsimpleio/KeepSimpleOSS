@@ -491,6 +491,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
+          <span className={styles.count} title={countTitle}>
+            ({objects.length})
+          </span>
+
           <span className={styles.nameWrap}>
             {isOwner ? (
               <button
@@ -504,10 +508,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
             ) : (
               <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
             )}
-          </span>
-
-          <span className={styles.count} title={countTitle}>
-            {objects.length}
           </span>
         </div>
 

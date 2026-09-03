@@ -70,16 +70,16 @@
         align-items: center;
       }
 
-      // How many objects stand on this shelf, read right after its name. Sized
-      // by the two-digit maximum so the shelf title never shifts when an object
-      // is added or removed.
+      // How many objects stand on this shelf, read just before its name. Sized
+      // by the widest state, (21), so the shelf title never shifts when an
+      // object is added or removed.
       .count {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        min-width: 24px;
-        margin-left: -4px;
+        min-width: 34px;
+        margin-right: -4px;
         font-size: 14px;
         line-height: 1;
         color: var(--gray-darkest);
