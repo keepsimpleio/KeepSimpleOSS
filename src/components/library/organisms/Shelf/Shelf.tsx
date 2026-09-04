@@ -171,9 +171,14 @@ export function Shelf(props: ShelfProps): JSX.Element {
     ? objects.filter(o => visibleObjectIds.has(o.id))
     : objects;
 
+  // What is actually on the board right now. Every measurement below keys off
+  // this, not off `objects.length`: a search leaves the shelf's own count
+  // untouched while changing every card position on the board.
+  const drawnKey = drawnObjects.map(o => o.id).join(',');
+
   // Glide cards to their new slots when the persisted order changes (e.g. after
   // a save-time reorder) instead of snapping.
-  const cardsRef = useFlipReorder(drawnObjects.map(o => o.id).join(','));
+  const cardsRef = useFlipReorder(drawnKey);
 
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
@@ -259,13 +264,16 @@ export function Shelf(props: ShelfProps): JSX.Element {
     if (!el) return;
     syncScrollState();
     el.addEventListener('scroll', syncScrollState, { passive: true });
+    // Both boxes matter: the scroller's width (the panel folding beside it)
+    // and the row of cards inside it (a search filtering them away).
     const observer = new ResizeObserver(syncScrollState);
     observer.observe(el);
+    if (cardsRef.current) observer.observe(cardsRef.current);
     return () => {
       el.removeEventListener('scroll', syncScrollState);
       observer.disconnect();
     };
-  }, [syncScrollState, objects.length]);
+  }, [syncScrollState, cardsRef, drawnKey]);
 
   // Ghost props fill whatever the real objects leave free on the board. The
   // row is measured, not guessed: card widths differ by type, and the free
@@ -300,8 +308,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
     measureGhostSpace();
     const observer = new ResizeObserver(measureGhostSpace);
     observer.observe(el);
+    // The props start where the last card ends, so the row of cards is the
+    // box that decides it. Without this a search left the props parked at the
+    // old last card and the covers stood right through them.
+    if (cardsRef.current) observer.observe(cardsRef.current);
     return () => observer.disconnect();
-  }, [measureGhostSpace, objects.length]);
+  }, [measureGhostSpace, cardsRef, drawnKey]);
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
