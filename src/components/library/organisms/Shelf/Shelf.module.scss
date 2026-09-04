@@ -383,9 +383,11 @@
       // unchanged — the bar rides in the freed space and reads as an overlay.
       padding-bottom: 23px;
 
-      // Same 12px shave against the phone's 25px seating line.
+      // Phones: no shave. Mobile browsers draw overlay scrollbars that take no
+      // layout height, so the 12px never came back and the cards sank 12px
+      // into the plank. The seating line stays the full 25px.
       @media (max-width: 768px) {
-        padding-bottom: 13px;
+        padding-bottom: 25px;
       }
       // Must be `auto`, not `thin`: when scrollbar-width is thin/none, Chrome
       // 121+ renders the standard scrollbar and IGNORES the ::-webkit-scrollbar
