@@ -378,7 +378,8 @@
     gap: 12px;
     margin-bottom: 16px;
     background: var(--off-white);
-    padding: 8px 12px;
+    // One line high: a name and a switch, nothing else to make room for.
+    padding: 6px 12px;
     border-radius: var(--radius-control);
     border: 1px solid transparent;
     transition:
@@ -396,20 +397,8 @@
       background: var(--cream);
     }
 
-    .footerText {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
-
-    // Two lines reserved, so the hint's two wordings never resize the row.
-    .footerHint {
-      color: var(--gray-darker);
-      min-height: 32px;
-    }
-
     .label {
+      min-width: 0;
       font-weight: 600;
     }
   }

@@ -563,17 +563,10 @@ export function Sidebar() {
               [styles.footerActive]: isGuestMode,
             })}
           >
-            <div className={styles.footerText}>
-              <Text className={styles.label}>Guest mode</Text>
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.footerHint}
-              >
-                {isGuestMode
-                  ? 'You are seeing this library as a visitor. Switch off to edit.'
-                  : 'See this library exactly as a visitor does.'}
-              </Text>
-            </div>
+            {/* One line: the name and the switch. The explanation was two
+                lines of the panel's height spent on a control whose state the
+                page itself shows the moment it is flipped. */}
+            <Text className={styles.label}>Guest mode</Text>
             <Toggle
               checked={isGuestMode}
               onChange={toggleGuestMode}
