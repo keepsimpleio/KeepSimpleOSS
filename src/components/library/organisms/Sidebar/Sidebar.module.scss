@@ -30,6 +30,11 @@
   position: sticky;
   top: 48px;
   align-self: flex-start;
+  // The panel is the top layer of the library page: the selection bar (z 40)
+  // with its upward shadow, the sticky toolbar (z 20) and the fold tab that
+  // tucks into this edge all pass beneath it. Kept under the global header's
+  // own layer so header menus still open over the page.
+  z-index: 50;
 
   // 1025–1140px: the header switches to position:fixed at 55px, so match the
   // larger offset/height in that band.
