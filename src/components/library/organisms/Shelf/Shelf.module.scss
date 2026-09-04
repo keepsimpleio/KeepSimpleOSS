@@ -265,9 +265,24 @@
 
       right: 16px;
 
+      // The arrows are wayfinding, not content: they sit at the translucency
+      // of a disabled control so the covers stay the loudest thing on the
+      // shelf, and come up to full strength only under the pointer.
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        opacity: 1;
+      }
+
       &:disabled {
-        opacity: 0.4;
+        opacity: 0.2;
         cursor: default;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
       }
     }
 
@@ -371,6 +386,15 @@
       // diagonal (which read as a slanted/rotated cover). The first card rests
       // at padding-left (80px), so at rest nothing is clipped.
       clip-path: polygon(80px 0, 100% 0, 100% 100%, 80px 100%);
+
+      // Phones: no clip. The board runs past both screen edges there, so a
+      // card has no board end to float past, and the 80px blind strip was
+      // slicing every scrolled object at the arrow. The row now scrolls edge
+      // to edge under the arrows; at rest the first card still starts at the
+      // 80px padding, clear of the left arrow.
+      @media (max-width: 768px) {
+        clip-path: none;
+      }
 
       &::-webkit-scrollbar {
         display: none;
