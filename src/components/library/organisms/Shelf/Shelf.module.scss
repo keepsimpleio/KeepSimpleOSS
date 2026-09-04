@@ -20,7 +20,8 @@
     .left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      // Icon, count and name read as one label, so they sit close.
+      gap: 6px;
 
       // The universal reorder grip, first thing in the row: press it and the
       // whole shelf travels up or down the library. It is the only drag
@@ -96,7 +97,8 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        min-width: 34px;
+        min-width: 32px;
+        justify-content: flex-start;
         margin-right: -4px;
         font-size: 14px;
         line-height: 1;
