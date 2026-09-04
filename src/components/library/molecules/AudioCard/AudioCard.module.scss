@@ -81,8 +81,11 @@
   }
 }
 
+// Keyboard focus reveals the toggle; a mouse click does not pin it. Plain
+// :focus-within kept the strip lit on the card you had just clicked, so it
+// stayed up while the pointer was already on the next book.
 .card:hover .select,
-.card:focus-within .select,
+.card:has(:focus-visible) .select,
 .card.selected .select {
   opacity: 1;
   pointer-events: auto;
