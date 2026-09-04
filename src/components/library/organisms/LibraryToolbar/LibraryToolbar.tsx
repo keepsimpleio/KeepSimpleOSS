@@ -86,12 +86,26 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     );
   }, [shelves]);
 
+  // Where the page really starts: the global header and this sticky toolbar
+  // together cover the top of the viewport, so a shelf brought to the very
+  // top would sit under them with its header and half its objects hidden.
+  // Measured live, since the toolbar's height changes with the breakpoint.
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const coveredTop = () =>
+    toolbarRef.current?.getBoundingClientRect().bottom ?? 0;
+
   const handleJumpTo = (shelfId: number) => {
     // The pill list is the rendered list, so the target always exists.
     const el = document.getElementById(`shelf-${shelfId}`);
     if (!el) return;
     setSelectedJumpShelfId(shelfId);
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const reduceMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    window.scrollTo({
+      top: el.getBoundingClientRect().top + window.scrollY - coveredTop(),
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
   };
 
   // Keep the highlighted pill honest while the page scrolls: the shelf
@@ -103,10 +117,11 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
       raf = 0;
       let bestId: number | null = null;
       let bestDistance = Number.POSITIVE_INFINITY;
+      const top = coveredTop();
       for (const shelf of shelves) {
         const el = document.getElementById(`shelf-${shelf.id}`);
         if (!el) continue;
-        const distance = Math.abs(el.getBoundingClientRect().top - 120);
+        const distance = Math.abs(el.getBoundingClientRect().top - top);
         if (distance < bestDistance) {
           bestDistance = distance;
           bestId = shelf.id;
@@ -133,7 +148,7 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
         : `${matchedCount} ${matchedCount === 1 ? 'match' : 'matches'} on ${shelves.length} ${shelves.length === 1 ? 'shelf' : 'shelves'}`;
 
   return (
-    <div className={classNames(styles.toolbar, className)}>
+    <div ref={toolbarRef} className={classNames(styles.toolbar, className)}>
       {/* The heading is the library switcher itself: it names whose library
           this is and opens the list of every other one. Beside it, on phones,
           the only opener for the About panel — the panel is an off-screen
