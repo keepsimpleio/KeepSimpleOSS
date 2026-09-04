@@ -300,36 +300,6 @@
       }
     }
 
-    .shareInputContainer {
-      gap: 8px;
-      display: flex;
-      align-items: center;
-
-      // A real read-only field: focusable, selectable, and it clips at the
-      // end like any address bar would, so a long username never pushes the
-      // origin out of view.
-      .shareLinkInput {
-        flex: 1;
-        min-width: 0;
-        height: 44px;
-        padding: 0 12px;
-        font-family: inherit;
-        font-size: 13px;
-        color: var(--black);
-        background: var(--white);
-        border: 1px solid var(--gray-100);
-        border-radius: var(--radius-control);
-        text-overflow: ellipsis;
-
-        transition: border-color 0.2s ease;
-
-        &:focus-visible {
-          outline: none;
-          border-color: var(--brown);
-        }
-      }
-    }
-
     // Held at one line so the copy feedback never moves the section below.
     .copyStatus {
       min-height: 18px;
@@ -342,14 +312,24 @@
     }
 
     .copyButton {
-      width: auto;
-      min-width: auto;
-      padding: 8px;
-      flex-shrink: 0;
-      transition: transform 0.2s ease;
+      min-width: 100%;
+      letter-spacing: 0.04em;
+      transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
 
       &.copied {
         animation: copyPulse 0.4s ease;
+        color: var(--white);
+        background: var(--brown);
+        border-color: var(--brown);
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -419,28 +399,6 @@
 // Edge tab that opens the drawer — mobile only. A half-pill anchored to the
 // right edge, vertically centered so it clears both the fixed header (top) and
 // the share-selection bar (bottom).
-// Copy / Copied share one grid cell: the tooltip is sized by the wider label
-// from the start, so swapping the text moves nothing.
-.copyTooltip {
-  display: inline-grid;
-  align-items: center;
-  justify-items: center;
-}
-
-.copyTooltipLabel {
-  grid-area: 1 / 1;
-  opacity: 0;
-  transition: opacity 0.16s ease;
-
-  &.copyTooltipLabelVisible {
-    opacity: 1;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-}
-
 .openTab {
   display: none;
 }
@@ -510,7 +468,7 @@
   .sidebar,
   .openTab,
   .backdrop,
-  .shareLinkInput {
+  .copyButton {
     transition: none;
     animation: none;
   }

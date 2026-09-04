@@ -23,8 +23,8 @@ import { updateTag, UpdateTagRequest } from '@api/library/tag/updateTag';
 import avatarImage from '@icons/library/images/avatar.png';
 import {
   CloseIcon,
-  CopyIcon,
   EditIcon,
+  LinkIcon,
   PanelIcon,
   PlusIcon,
 } from '@icons/library/svg';
@@ -36,7 +36,6 @@ import { Avatar } from '@components/library/atoms/Avatar';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
-import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   Button,
   ButtonSize,
@@ -88,14 +87,11 @@ export function Sidebar() {
   const currentLibraryId =
     (Array.isArray(usernameParam) ? usernameParam[0] : usernameParam) ?? '';
 
-  // Share the link to the library being viewed (`/library/[username]`) on the
-  // current environment's host (NEXT_PUBLIC_DOMAIN — localhost in dev, the real
-  // domain in prod) rather than a hardcoded URL. Falls back to keepsimple.io if
-  // the env var is unset, and to the bare host when there's no library slug.
-  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
+  // A copied library link is always the public version, even when the owner is
+  // editing it on the private review host.
   const shareUrl = currentLibraryId
-    ? `${baseUrl}/library/${encodeURIComponent(currentLibraryId)}`
-    : baseUrl;
+    ? `${KEEPSIMPLE_URL}/library/${encodeURIComponent(currentLibraryId)}`
+    : KEEPSIMPLE_URL;
 
   const [isOpenTagModal, setIsOpenTagModal] = useState<
     null | 'create' | 'edit'
@@ -103,6 +99,12 @@ export function Sidebar() {
   const [selectedTag, setSelectedTag] = useState<ITagAttributes | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isEditLibraryOpen, setIsEditLibraryOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isCopied) return;
+    const resetCopied = window.setTimeout(() => setIsCopied(false), 2000);
+    return () => window.clearTimeout(resetCopied);
+  }, [isCopied]);
 
   // Object totals always come from the live shelves of the library on screen
   // (`currentShelves`, published by LibraryTemplate) — never from the viewer's
@@ -207,7 +209,7 @@ export function Sidebar() {
         if (!ok) throw new Error('execCommand failed');
         setIsCopied(true);
       } catch {
-        setCopyError('Could not copy. Select the link and copy it by hand.');
+        setCopyError('Could not copy the library URL.');
       }
     }
   };
@@ -508,64 +510,18 @@ export function Sidebar() {
           </div>
 
           <div className={styles.about}>
-            <div className={styles.header}>
-              {/* The address below is the library's own link, the same for
-                  every visitor. Objects picked on the shelves travel by their
-                  own minted link from the selection bar, and selecting is
-                  owner-only — so no parenthetical here promising otherwise. */}
-              <Text className={styles.label}>Share</Text>
-            </div>
             <div className={styles.content}>
-              {/* The address sits in a read-only field with the copy icon
-                  beside it: seeing the start of the link is what tells the
-                  visitor what is about to be shared. The head ellipsizes only
-                  as far as the field forces it, so the library name at the end
-                  stays readable; the copy button always writes the full URL. */}
-              <div className={styles.shareInputContainer}>
-                <input
-                  className={styles.shareLinkInput}
-                  type="text"
-                  readOnly
-                  value={shareUrl}
-                  title={shareUrl}
-                  aria-label="Share URL"
-                  onFocus={e => e.currentTarget.select()}
-                />
-                {/* Both labels sit in one grid cell, so the bubble is sized by
-                    the wider of the two and never resizes on click: the box and
-                    its arrow stay exactly where the hover put them, and
-                    "Copied!" cross-fades in place of "Click to copy". */}
-                <Tooltip
-                  place="top"
-                  tooltipContent={
-                    <span className={styles.copyTooltip}>
-                      <span
-                        className={`${styles.copyTooltipLabel} ${isCopied ? '' : styles.copyTooltipLabelVisible}`}
-                      >
-                        Click to copy
-                      </span>
-                      <span
-                        className={`${styles.copyTooltipLabel} ${isCopied ? styles.copyTooltipLabelVisible : ''}`}
-                      >
-                        Copied!
-                      </span>
-                    </span>
-                  }
-                >
-                  <Button
-                    onClick={handleCopyUrl}
-                    type={ButtonType.Secondary}
-                    size={ButtonSize.Default}
-                    ariaLabel={isCopied ? 'Link copied' : 'Copy URL'}
-                    Icon={<CopyIcon />}
-                    className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
-                  />
-                </Tooltip>
-              </div>
-              {/* The tooltip already says "Copied!"; only a failure needs a
-                  line of its own, and only when it happens. */}
-              {/* The line is always on the sheet, so a failure fills it
-                  rather than pushing the guest-mode row down. */}
+              <Button
+                onClick={handleCopyUrl}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Wide}
+                label={isCopied ? 'COPIED' : 'COPY LIBRARY URL'}
+                ariaLabel={isCopied ? 'Library URL copied' : 'Copy library URL'}
+                Icon={<LinkIcon />}
+                className={classNames(styles.copyButton, {
+                  [styles.copied]: isCopied,
+                })}
+              />
               <Text
                 variant={TypographyVariant.TextSmall}
                 className={classNames(styles.copyStatus, {

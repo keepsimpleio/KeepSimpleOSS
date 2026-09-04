@@ -20,6 +20,7 @@ import HamburgerIcon from './hamburger.svg';
 import InfoIcon from './info.svg';
 import LibrarianIcon from './librarian.svg';
 import LibraryIcon from './library.svg';
+import LinkIcon from './link.svg';
 import LogoIcon from './logo.svg';
 import PanelIcon from './panel.svg';
 import PlusIcon from './plus.svg';
@@ -54,6 +55,7 @@ export {
   InfoIcon,
   LibrarianIcon,
   LibraryIcon,
+  LinkIcon,
   LogoIcon,
   PanelIcon,
   PlusIcon,
