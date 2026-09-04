@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
-import { ArrowIcon, InfoIcon } from '@icons/library/svg';
+import { ArrowIcon, PanelIcon } from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
@@ -155,7 +155,7 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
           onClick={toggleSidebar}
           aria-label="About this library"
         >
-          <InfoIcon />
+          <PanelIcon />
         </button>
       </div>
       <div className={styles.controls}>

@@ -15,6 +15,7 @@ import {
 import { ITagAttributes } from '@local-types/library/tag';
 
 import useIsMobile from '@hooks/library/useIsMobile';
+import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
@@ -26,7 +27,7 @@ import {
   CloseIcon,
   CopyIcon,
   EditIcon,
-  InfoIcon,
+  PanelIcon,
   PlusIcon,
 } from '@icons/library/svg';
 
@@ -145,6 +146,10 @@ export function Sidebar() {
   // shelves follow through LibraryTemplate's canEditHere).
   const isMobile = useIsMobile(768);
   const canEdit = isMyLibrary && !isGuestMode && !isMobile;
+
+  // The drawer is an overlay on phones and tablets: while it is open the page
+  // under it must not move under a swipe, same as every modal.
+  useLockBodyScroll(isSidebarOpen);
 
   // An owner can edit their About panel before any library row exists — the
   // row is created lazily on first save. So the editable affordance is gated on
@@ -374,7 +379,7 @@ export function Sidebar() {
           onClick={toggleSidebar}
           aria-label="Open library info panel"
         >
-          <InfoIcon />
+          <PanelIcon />
         </button>
       )}
       {isSidebarOpen && (
