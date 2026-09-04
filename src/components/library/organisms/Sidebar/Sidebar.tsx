@@ -12,7 +12,6 @@ import {
 import { ITagAttributes } from '@local-types/library/tag';
 
 import useIsMobile from '@hooks/library/useIsMobile';
-import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
@@ -46,7 +45,6 @@ import {
   CreateTagFormData,
   CreateTagModal,
 } from '@components/library/molecules/CreateTagModal';
-import { Dropdown } from '@components/library/molecules/Dropdown';
 import { Object, ObjectType } from '@components/library/molecules/Object';
 import { Tag } from '@components/library/molecules/Tag';
 import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal';
@@ -70,7 +68,6 @@ export function Sidebar() {
     isSidebarOpen,
     isGuestMode,
     toggleSidebar,
-    closeSidebar,
     toggleGuestMode,
     currentShelves,
     currentOwner,
@@ -175,9 +172,6 @@ export function Sidebar() {
   const displayedTags = canEdit
     ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
     : libraryTags;
-
-  // Same switcher as the page heading; picking a library closes the drawer.
-  const switcher = useLibrarySwitcher(closeSidebar);
 
   const [copyError, setCopyError] = useState<string | null>(null);
   const handleCopyUrl = async () => {
@@ -345,17 +339,6 @@ export function Sidebar() {
           />
         </div>
 
-        <div className={styles.dropdownWrapper}>
-          <Dropdown
-            options={switcher.options}
-            value={switcher.value}
-            onChange={switcher.onChange}
-            placeholder="Select library"
-            ariaLabel="Select library"
-            className={styles.dropdown}
-          />
-        </div>
-
         <div className={styles.main}>
           <div className={styles.about}>
             <div className={styles.header}>
@@ -386,8 +369,8 @@ export function Sidebar() {
                 >
                   {aboutLibraryText ||
                     (canEditLibrary
-                      ? 'No description yet. Add one with Edit.'
-                      : 'No description yet.')}
+                      ? 'No description yet. Add one with Edit'
+                      : 'No description yet')}
                 </Text>
               </div>
               <InkLine seed={7} className={styles.innerRule} />
@@ -438,7 +421,7 @@ export function Sidebar() {
                 </Text>
               </div>
               <Text className={styles.text}>
-                {aboutAuthorText || 'No bio yet.'}
+                {aboutAuthorText || 'No bio yet'}
               </Text>
             </div>
             <InkLine seed={2} className={styles.sectionRule} />
@@ -485,7 +468,7 @@ export function Sidebar() {
                 })}
               >
                 {displayedTags.length === 0 && (
-                  <Text className={styles.emptyTags}>No tags yet.</Text>
+                  <Text className={styles.emptyTags}>No tags yet</Text>
                 )}
                 {displayedTags.map(tag => (
                   <Tag key={tag.name} label={tag.name} color={tag.color} />
@@ -550,17 +533,20 @@ export function Sidebar() {
                   />
                 </Tooltip>
               </div>
-              {/* One held line: "Copied" for everyone, not only under a hover
-                  tooltip, and the failure when the clipboard is unavailable. */}
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={classNames(styles.copyStatus, {
-                  [styles.copyStatusError]: !!copyError,
-                })}
-                aria-live="polite"
-              >
-                {copyError ?? (isCopied ? 'Link copied.' : '')}
-              </Text>
+              {/* The tooltip already says "Copied!"; only a failure needs a
+                  line of its own, and only when it happens. */}
+              {copyError && (
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={classNames(
+                    styles.copyStatus,
+                    styles.copyStatusError,
+                  )}
+                  role="alert"
+                >
+                  {copyError}
+                </Text>
+              )}
             </div>
           </div>
         </div>

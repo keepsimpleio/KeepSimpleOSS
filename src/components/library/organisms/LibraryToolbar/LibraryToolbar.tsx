@@ -156,80 +156,78 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
           <PanelIcon />
         </button>
       </div>
-      <div className={styles.controls}>
-        <div className={styles.jumpScrollerWrap}>
-          {jumpOverflowing && (
-            <Button
-              className={classNames(styles.arrow, styles.arrowLeft)}
-              onClick={() => scrollJump(-1)}
-              type={ButtonType.Secondary}
-              Icon={<ArrowIcon />}
-              ariaLabel="Scroll shelves left"
-              disabled={!canJumpLeft}
-            />
-          )}
-          <div
-            ref={jumpRef}
-            className={classNames(styles.jumpButtons, styles.jumpScroll)}
-          >
-            {shelves.map(shelf => {
-              const isSelected = shelf.id === selectedJumpShelfId;
-              return (
-                <span
-                  key={shelf.id}
-                  title={
-                    shelf.attributes.name.length > 20
-                      ? shelf.attributes.name
-                      : undefined
-                  }
-                >
-                  <Button
-                    label={truncateLabel(shelf.attributes.name)}
-                    ariaLabel={`Jump to ${shelf.attributes.name}`}
-                    onClick={() => handleJumpTo(shelf.id)}
-                    type={ButtonType.Secondary}
-                    size={ButtonSize.Default}
-                    className={classNames(styles.jumpButton, {
-                      [styles.jumpSelected]: isSelected,
-                    })}
-                  />
-                </span>
-              );
-            })}
-          </div>
-          {jumpOverflowing && (
-            <Button
-              className={styles.arrow}
-              onClick={() => scrollJump(1)}
-              type={ButtonType.Secondary}
-              Icon={<ArrowIcon />}
-              ariaLabel="Scroll shelves right"
-              disabled={!canJumpRight}
-            />
-          )}
-        </div>
-
-        <div className={styles.searchWrap}>
-          <Input
-            type="search"
-            value={search}
-            placeholder="Search everywhere"
-            placeholderColor="#C4C4C4"
-            onChange={e => onSearchChange?.(e.target.value)}
-            onClear={() => onSearchChange?.('')}
-            wrapperClassName={styles.search}
-            ariaLabel="Search everywhere"
+      <div className={styles.jumpScrollerWrap}>
+        {jumpOverflowing && (
+          <Button
+            className={classNames(styles.arrow, styles.arrowLeft)}
+            onClick={() => scrollJump(-1)}
+            type={ButtonType.Secondary}
+            Icon={<ArrowIcon />}
+            ariaLabel="Scroll shelves left"
+            disabled={!canJumpLeft}
           />
-          {/* The count sits in a line held from the start, so typing never
-              pushes the toolbar around. */}
-          <Text
-            variant={TypographyVariant.TextSmall}
-            className={styles.searchSummary}
-            aria-live="polite"
-          >
-            {searchSummary}
-          </Text>
+        )}
+        <div
+          ref={jumpRef}
+          className={classNames(styles.jumpButtons, styles.jumpScroll)}
+        >
+          {shelves.map(shelf => {
+            const isSelected = shelf.id === selectedJumpShelfId;
+            return (
+              <span
+                key={shelf.id}
+                title={
+                  shelf.attributes.name.length > 20
+                    ? shelf.attributes.name
+                    : undefined
+                }
+              >
+                <Button
+                  label={truncateLabel(shelf.attributes.name)}
+                  ariaLabel={`Jump to ${shelf.attributes.name}`}
+                  onClick={() => handleJumpTo(shelf.id)}
+                  type={ButtonType.Secondary}
+                  size={ButtonSize.Default}
+                  className={classNames(styles.jumpButton, {
+                    [styles.jumpSelected]: isSelected,
+                  })}
+                />
+              </span>
+            );
+          })}
         </div>
+        {jumpOverflowing && (
+          <Button
+            className={styles.arrow}
+            onClick={() => scrollJump(1)}
+            type={ButtonType.Secondary}
+            Icon={<ArrowIcon />}
+            ariaLabel="Scroll shelves right"
+            disabled={!canJumpRight}
+          />
+        )}
+      </div>
+
+      <div className={styles.searchWrap}>
+        <Input
+          type="search"
+          value={search}
+          placeholder="Search everywhere"
+          placeholderColor="#C4C4C4"
+          onChange={e => onSearchChange?.(e.target.value)}
+          onClear={() => onSearchChange?.('')}
+          wrapperClassName={styles.search}
+          ariaLabel="Search everywhere"
+        />
+        {/* The count sits in a line held from the start, so typing never
+              pushes the toolbar around. */}
+        <Text
+          variant={TypographyVariant.TextSmall}
+          className={styles.searchSummary}
+          aria-live="polite"
+        >
+          {searchSummary}
+        </Text>
       </div>
     </div>
   );

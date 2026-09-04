@@ -33,7 +33,7 @@ export const overviewConfigByType: Record<
   book: {
     modalTitle: 'Book overview',
     descriptionLabel: 'Book description',
-    descriptionEmpty: 'No description yet.',
+    descriptionEmpty: 'No description yet',
     coverShape: 'portrait',
     showSourceDurationRow: false,
     showRatingBox: true,
@@ -44,7 +44,7 @@ export const overviewConfigByType: Record<
   video: {
     modalTitle: 'Video overview',
     descriptionLabel: 'Video description',
-    descriptionEmpty: 'No description yet.',
+    descriptionEmpty: 'No description yet',
     coverShape: 'landscape',
     showSourceDurationRow: true,
     showRatingBox: false,
@@ -55,7 +55,7 @@ export const overviewConfigByType: Record<
   audio: {
     modalTitle: 'Audio overview',
     descriptionLabel: 'Audio description',
-    descriptionEmpty: 'No description yet.',
+    descriptionEmpty: 'No description yet',
     coverShape: 'square',
     showSourceDurationRow: true,
     showRatingBox: false,

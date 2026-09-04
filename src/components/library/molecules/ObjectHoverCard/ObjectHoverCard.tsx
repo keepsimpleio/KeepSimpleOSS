@@ -309,7 +309,7 @@ export function ObjectHoverCard({
         )}
 
         {!hasDetails && (
-          <p className={styles.empty}>No details added to this object yet.</p>
+          <p className={styles.empty}>No details added to this object yet</p>
         )}
       </div>
     </div>,

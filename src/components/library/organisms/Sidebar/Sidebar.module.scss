@@ -104,22 +104,6 @@
     }
   }
 
-  .dropdown {
-    width: 100%;
-
-    // On the sheet the default trigger reads as an admin field: soften the
-    // radius and drop the boxed-off chevron compartment so it sits in the
-    // panel's catalogue language.
-    > button {
-      border-radius: var(--radius-control);
-      background: transparent;
-
-      > div {
-        border-left: none;
-      }
-    }
-  }
-
   .header {
     gap: 8px;
     display: flex;

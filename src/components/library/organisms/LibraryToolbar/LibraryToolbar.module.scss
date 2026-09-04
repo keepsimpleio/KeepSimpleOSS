@@ -4,54 +4,44 @@
   top: 48px;
   z-index: 20;
   background: var(--cream);
-  padding: 1px 16px 12px;
+  padding: 16px 16px 12px;
+
+  // Two rows on desktop: the heading switcher with the search on its right,
+  // the shelf pills underneath. Phones stack all three, search last, so the
+  // pills stay next to the shelves they jump to.
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'identity search'
+    'pills pills';
+  align-items: center;
+  column-gap: 24px;
+  row-gap: 16px;
 
   // The global header switches to a fixed 55px bar at this breakpoint.
   @media (max-width: 1140px) {
     top: 55px;
   }
-}
 
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  // Replaces the removed divider's 16px top margin so the controls keep their
-  // breathing room below the global header.
-  margin-top: 16px;
-  animation: toolbar-fade 0.3s ease;
-
-  // On phones everything crammed onto one row collapsed the flex:1 pill
-  // scroller to near-zero, leaving only the overlapping arrows. Stack into a
-  // column so each control gets a full-width row: jump label, pill scroller,
-  // actions, then search.
   @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    // Collapse the top margin on mobile so the controls connect to the fixed
-    // header (paired with the layout wrapper dropping its top padding), matching
-    // the removed divider's mobile behavior.
-    margin-top: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'identity'
+      'pills'
+      'search';
+    row-gap: 12px;
   }
 }
 
 // The library switcher is the page heading, with the About opener beside it
 // on phones. Sized for a title, not a form field.
 .identity {
+  grid-area: identity;
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
-  padding: 16px 0 4px;
   animation: toolbar-fade 0.3s ease;
-
-  // Phones stack the controls with no top margin of their own, so the
-  // heading carries the same 12px the pills keep from the search field.
-  @media (max-width: 768px) {
-    padding-bottom: 12px;
-  }
 }
 
 .librarySwitcher {
@@ -69,7 +59,7 @@
     color: var(--brown-200);
 
     p {
-      font-size: 22px;
+      font-size: 20px;
       line-height: 1.2;
       font-weight: 700;
       color: var(--brown-200);
@@ -158,11 +148,13 @@
 // Horizontal scroller variant (non-reorder mode): keep pills on one row and
 // page through them with the arrows.
 .jumpScrollerWrap {
+  grid-area: pills;
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
   min-width: 0;
+  animation: toolbar-fade 0.3s ease;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -256,10 +248,12 @@
 }
 
 .searchWrap {
+  grid-area: search;
   display: flex;
   flex-direction: column;
   gap: 2px;
   flex-shrink: 0;
+  animation: toolbar-fade 0.3s ease;
 }
 
 // One line, always present, under the search field.

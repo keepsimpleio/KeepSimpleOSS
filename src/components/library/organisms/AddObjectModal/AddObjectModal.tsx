@@ -1194,7 +1194,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                       value={selectedTags}
                       onChange={setSelectedTags}
                       placeholder={config.tagsLabel}
-                      emptyState="No tags yet. Create one from the Tags panel on the right."
+                      emptyState="No tags yet. Create one from the Tags panel on the right"
                       maxItems={10}
                       portal
                     />

@@ -284,7 +284,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
               <Text variant={TypographyVariant.TextBase}>
                 {debouncedQuery
                   ? `No libraries match “${debouncedQuery}”.`
-                  : 'No libraries yet.'}
+                  : 'No libraries yet'}
               </Text>
             ) : (
               renderLibraryCards
