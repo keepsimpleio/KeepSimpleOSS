@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
-import { ArrowIcon } from '@icons/library/svg';
+import { ArrowIcon, InfoIcon } from '@icons/library/svg';
 
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
   Button,
@@ -30,6 +31,7 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     onSearchChange,
     className,
   } = props;
+  const { toggleSidebar } = useGlobalState();
   const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(
     null,
   );
@@ -130,19 +132,33 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
 
   return (
     <div className={classNames(styles.toolbar, className)}>
-      {!isOwner && (
-        <div className={styles.welcome}>
+      {/* The name of the library, plus the only opener for the About panel on
+          phones: the panel is an off-screen drawer there, and its edge tab
+          floated mid-screen with nothing to tie it to. */}
+      <div
+        className={classNames(styles.identity, {
+          [styles.identityTitled]: !isOwner,
+        })}
+      >
+        {!isOwner && (
           <Text
             variant={TypographyVariant.TitleSecondaryBold}
-            className={styles.welcomeTitle}
+            className={styles.identityTitle}
           >
-            Welcome to {ownerName}&rsquo;s library
+            {ownerName}
+            <span className={styles.identityKicker}>Library</span>
           </Text>
-        </div>
-      )}
+        )}
+        <button
+          type="button"
+          className={styles.aboutButton}
+          onClick={toggleSidebar}
+          aria-label="About this library"
+        >
+          <InfoIcon />
+        </button>
+      </div>
       <div className={styles.controls}>
-        <Text className={styles.text}>Jump to →</Text>
-
         <div className={styles.jumpScrollerWrap}>
           {jumpOverflowing && (
             <Button

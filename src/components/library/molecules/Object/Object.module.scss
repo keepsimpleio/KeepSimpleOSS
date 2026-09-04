@@ -19,7 +19,10 @@
   .count {
     color: var(--gray-darkest);
     padding: 0;
-    height: -webkit-fill-available;
+    // No `-webkit-fill-available` here: in the sidebar's scrolling flex column
+    // iOS Safari resolved it against the whole panel, so the three counts grew
+    // to a few hundred px tall and blew the About section apart. The row is
+    // centered by its parent; natural height is all it needs.
     display: flex;
     align-items: center;
     gap: 4px;

@@ -40,10 +40,13 @@
 
   @media (max-width: 1024px) {
     position: fixed;
-    // Full-height slide-in drawer overlay, above the fixed header.
+    // Full-height slide-in drawer overlay, above the fixed header. On iOS
+    // `100vh` counts the collapsed browser chrome, so the pinned footer sat
+    // below the fold; `dvh` measures what is actually on screen.
     top: 0;
     right: 0;
     height: 100vh;
+    height: 100dvh;
     // Above the fixed global header (z-index up to 113 on mobile) so the
     // drawer's own top controls aren't hidden beneath it when open.
     z-index: 130;

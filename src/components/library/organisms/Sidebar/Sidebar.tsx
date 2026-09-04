@@ -357,11 +357,12 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile-only: the panel is a fixed off-screen drawer at ≤1024px, so it
-          needs its own opener (the Header burger drives a different, global
-          nav). The edge tab pulls it in; the backdrop taps it closed. Both are
-          hidden on desktop, where the panel is a static sticky column. */}
-      {!isSidebarOpen && (
+      {/* Mobile-only fallback opener. The toolbar carries the About button
+          beside the library name, but the toolbar only exists once the library
+          has shelves — an empty library would otherwise have no way in. The
+          backdrop taps the drawer closed. Both are hidden on desktop, where the
+          panel is a static sticky column. */}
+      {!isSidebarOpen && currentShelves.length === 0 && (
         <button
           type="button"
           className={styles.openTab}
