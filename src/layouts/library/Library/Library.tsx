@@ -42,7 +42,9 @@ import type {
   ShelfVisibility,
 } from '@local-types/library/shelf';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useIsMobile from '@hooks/library/useIsMobile';
+import { usePresence } from '@hooks/library/usePresence';
 
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 import {
@@ -99,17 +101,20 @@ const modalTypeToApi: Record<ShelfType, ObjectType> = {
 // its vertical component and drops the horizontal one.
 const verticalOnly: Modifier = ({ transform }) => ({ ...transform, x: 0 });
 
+const shelfKey = (shelf: StrapiSingleShelfEntry) => String(shelf.id);
+
 // One draggable shelf slot. The activator wiring is handed back to the caller
 // so the grip in the shelf's own header is the only thing that starts a drag:
 // the cards below keep their horizontal scroll and their clicks.
 function SortableShelf(props: {
   id: number;
+  disabled?: boolean;
   children: (
     handle: ShelfDragHandleProps,
     isDragging: boolean,
   ) => React.ReactNode;
 }) {
-  const { id, children } = props;
+  const { id, disabled = false, children } = props;
   const {
     attributes,
     listeners,
@@ -118,7 +123,7 @@ function SortableShelf(props: {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id, disabled });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -644,6 +649,28 @@ export function LibraryTemplate({
   // shelf belongs in the library.
   const canReorderShelves =
     canEditHere && !hasSearch && displayedShelves.length > 1;
+
+  // A shelf that is added rises in, one that is deleted or filtered out by a
+  // search folds away where it stood and the boards below slide up with it.
+  // Reorder moves are left to the drag itself (dnd-kit already animates the
+  // drop), so the hook only handles arrivals and departures here.
+  // A failed save puts the boards back where they were after a network
+  // round-trip, long after the drag ended: that one reorder is not the drag's
+  // to animate, so the list motion glides it for the commit it lands in.
+  const [glideRollback, setGlideRollback] = useState(false);
+  useEffect(() => {
+    if (glideRollback) setGlideRollback(false);
+  }, [glideRollback]);
+  // The owner's notice fades in and out of its held row.
+  const { mounted: noticeMounted, shown: noticeShown } = usePresence(
+    Boolean(shelfOrderError || objectNotice),
+    160,
+  );
+  const { ref: shelfListRef, entries: shelfEntries } = useAnimatedList(
+    displayedShelves,
+    shelfKey,
+    { moves: glideRollback, collapse: 'height' },
+  );
   // One save at a time: a second drag while the first is still persisting
   // would capture a baseline that already holds the optimistic move, and a
   // late failure would then "restore" a mixed order.
@@ -682,6 +709,7 @@ export function LibraryTemplate({
     reorderShelves(ordered)
       .catch(e => {
         console.error('[Library] shelf reorder failed', e);
+        setGlideRollback(true);
         applyShelfOrder(previous);
         setShelfOrderError(
           'Could not save the new shelf order. The shelves are back where they were.',
@@ -839,8 +867,12 @@ export function LibraryTemplate({
           row was a band of empty page above the first shelf. */}
       {canEditHere && (
         <div className={styles.noticeRow} role="status" aria-live="polite">
-          {(shelfOrderError || objectNotice) && (
-            <div className={styles.notice}>
+          {noticeMounted && (
+            <div
+              className={classNames(styles.notice, {
+                [styles.noticeClosing]: !noticeShown,
+              })}
+            >
               <Text variant={TypographyVariant.TextSmall}>
                 {shelfOrderError ?? objectNotice}
               </Text>
@@ -929,30 +961,48 @@ export function LibraryTemplate({
           />
         </div>
       ) : (
-        <div className={styles.shelfList}>
-          {canReorderShelves ? (
-            <DndContext
-              sensors={shelfSensors}
-              collisionDetection={closestCenter}
-              modifiers={[verticalOnly]}
-              onDragEnd={handleShelfDragEnd}
+        <div className={styles.shelfList} ref={shelfListRef}>
+          {/* One tree whether or not the boards can be dragged: switching
+              between a sortable list and a plain one remounted every shelf on
+              the first keystroke of a search, so the whole library flashed. The
+              drag is simply switched off while a search narrows the list. */}
+          <DndContext
+            sensors={shelfSensors}
+            collisionDetection={closestCenter}
+            modifiers={[verticalOnly]}
+            onDragEnd={handleShelfDragEnd}
+          >
+            <SortableContext
+              items={displayedShelves.map(shelf => shelf.id)}
+              strategy={verticalListSortingStrategy}
             >
-              <SortableContext
-                items={displayedShelves.map(shelf => shelf.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {displayedShelves.map(shelf => (
-                  <SortableShelf key={shelf.id} id={shelf.id}>
-                    {(handleProps, isDragging) =>
-                      renderShelf(shelf, handleProps, isDragging)
-                    }
-                  </SortableShelf>
-                ))}
-              </SortableContext>
-            </DndContext>
-          ) : (
-            displayedShelves.map(shelf => renderShelf(shelf))
-          )}
+              {shelfEntries.map(({ item: shelf, leaving }) => (
+                <div
+                  key={shelf.id}
+                  className={classNames(styles.shelfSlot, {
+                    [styles.shelfLeaving]: leaving,
+                  })}
+                  data-flip-id={String(shelf.id)}
+                  data-flip-leaving={leaving ? 'true' : undefined}
+                  aria-hidden={leaving || undefined}
+                >
+                  {/* A departing board is no longer sortable: it only has
+                      to hold its picture while it folds away. */}
+                  {leaving ? (
+                    renderShelf(shelf)
+                  ) : (
+                    <SortableShelf id={shelf.id} disabled={!canReorderShelves}>
+                      {(handleProps, isDragging) =>
+                        canReorderShelves
+                          ? renderShelf(shelf, handleProps, isDragging)
+                          : renderShelf(shelf)
+                      }
+                    </SortableShelf>
+                  )}
+                </div>
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
       )}
 

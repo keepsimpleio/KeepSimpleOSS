@@ -284,6 +284,16 @@
         line-height: 20px;
       }
 
+      // One pill per slot: the slot is what the list motion measures and
+      // moves.
+      .tagSlot {
+        display: inline-flex;
+
+        &.tagLeaving {
+          pointer-events: none;
+        }
+      }
+
       .button {
         color: var(--brown);
         height: 26px;
@@ -310,6 +320,8 @@
         border: 1px solid var(--gray-100);
         border-radius: var(--radius-control);
         text-overflow: ellipsis;
+
+        transition: border-color 0.2s ease;
 
         &:focus-visible {
           outline: none;
@@ -457,14 +469,50 @@
     box-shadow: var(--sidebar-shadow);
     color: var(--brown);
     cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background: var(--off-white);
+      color: var(--brown-100);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: -2px;
+    }
   }
 
+  // Dims in with the drawer rather than dropping on the page a beat before it.
   .backdrop {
     position: fixed;
     inset: 0;
     z-index: 120;
     display: block;
     background: var(--black-100);
+    animation: backdrop-in 0.3s ease;
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// The drawer slide, the backdrop and every hover in the panel hold still
+// under reduced motion; the desktop fold has its own guard above.
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .openTab,
+  .backdrop,
+  .shareLinkInput {
+    transition: none;
+    animation: none;
   }
 }
 

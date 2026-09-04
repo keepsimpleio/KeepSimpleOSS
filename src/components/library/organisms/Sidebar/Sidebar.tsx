@@ -11,6 +11,7 @@ import {
 
 import { ITagAttributes } from '@local-types/library/tag';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useIsMobile from '@hooks/library/useIsMobile';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
@@ -58,6 +59,8 @@ const stripHtml = (s?: string | null) =>
     ?.replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
     .trim() ?? '';
+
+const tagKey = <T extends { name: string }>(tag: T) => tag.name;
 
 export function Sidebar() {
   const router = useRouter();
@@ -173,6 +176,14 @@ export function Sidebar() {
   const displayedTags = canEdit
     ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
     : libraryTags;
+
+  // A created tag rises into the row, a deleted one fades where it stood and
+  // the rest slide over, instead of the whole row re-wrapping in one frame.
+  const { ref: tagsRef, entries: tagEntries } = useAnimatedList(
+    displayedTags,
+    tagKey,
+    { collapse: 'width' },
+  );
 
   const [copyError, setCopyError] = useState<string | null>(null);
   const handleCopyUrl = async () => {
@@ -470,6 +481,7 @@ export function Sidebar() {
             </div>
             <div className={styles.content}>
               <div
+                ref={tagsRef}
                 className={classNames(styles.tags, {
                   [styles.tagsEmpty]: displayedTags.length === 0,
                 })}
@@ -477,8 +489,18 @@ export function Sidebar() {
                 {displayedTags.length === 0 && (
                   <Text className={styles.emptyTags}>No tags yet</Text>
                 )}
-                {displayedTags.map(tag => (
-                  <Tag key={tag.name} label={tag.name} color={tag.color} />
+                {tagEntries.map(({ item: tag, leaving }) => (
+                  <span
+                    key={tag.name}
+                    className={classNames(styles.tagSlot, {
+                      [styles.tagLeaving]: leaving,
+                    })}
+                    data-flip-id={tag.name}
+                    data-flip-leaving={leaving ? 'true' : undefined}
+                    aria-hidden={leaving || undefined}
+                  >
+                    <Tag label={tag.name} color={tag.color} />
+                  </span>
                 ))}
               </div>
             </div>
@@ -542,17 +564,17 @@ export function Sidebar() {
               </div>
               {/* The tooltip already says "Copied!"; only a failure needs a
                   line of its own, and only when it happens. */}
-              {copyError && (
-                <Text
-                  variant={TypographyVariant.TextSmall}
-                  className={classNames(
-                    styles.copyStatus,
-                    styles.copyStatusError,
-                  )}
-                >
-                  {copyError}
-                </Text>
-              )}
+              {/* The line is always on the sheet, so a failure fills it
+                  rather than pushing the guest-mode row down. */}
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={classNames(styles.copyStatus, {
+                  [styles.copyStatusError]: !!copyError,
+                })}
+                aria-live="polite"
+              >
+                {copyError ?? ''}
+              </Text>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createTagSchema } from '@utils/library/schema/createTagSchema';
 import classNames from 'classnames';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -128,11 +128,10 @@ export function CreateTagModal(props: CreateTagModalProps) {
 
     try {
       await onSubmit(data);
-      if (!isEdit) {
-        setShowCreateSuccessConfirmation(true);
-      } else {
-        setShowEditSuccessConfirmation(true);
-      }
+      // The form fades out first; the Modal's close lands in requestClose,
+      // where this flag turns it into the success card instead of leaving.
+      successPending.current = isEdit ? 'edit' : 'create';
+      close();
     } catch {
       // Keep the modal open and warn instead of bubbling the rejection up into
       // an unhandled runtime error.
@@ -163,7 +162,15 @@ export function CreateTagModal(props: CreateTagModalProps) {
 
   // Closing a form with typed changes asks first; a clean form closes at once.
   const hasUnsavedWork = isDirty && !isSelectTag;
+  const successPending = useRef<null | 'create' | 'edit'>(null);
   const requestClose = () => {
+    if (successPending.current) {
+      const kind = successPending.current;
+      successPending.current = null;
+      if (kind === 'create') setShowCreateSuccessConfirmation(true);
+      else setShowEditSuccessConfirmation(true);
+      return;
+    }
     if (showDeleteConfirmation || showCreateSuccessConfirmation) return;
     if (hasUnsavedWork) {
       setDiscardPrompt(true);

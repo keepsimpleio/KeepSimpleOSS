@@ -6,6 +6,7 @@ import type { Difficulty, OverallRating } from '@local-types/library/object';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
 import { DIFFICULTY_META, OVERALL_COLORS } from '@lib/library/objectMeta';
 
@@ -66,6 +67,9 @@ function ColoredSelect<T extends string | number>(
     openUpMaxWidth: 1920,
   });
 
+  // The menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
+
   const handleToggle = () => {
     if (readOnly) return;
     setIsOpen(prev => !prev);
@@ -81,13 +85,15 @@ function ColoredSelect<T extends string | number>(
   const displayColor = hasValue ? getColor(value as T) : undefined;
 
   const menu =
-    isOpen && !readOnly && menuPos && typeof document !== 'undefined'
+    menuMounted && !readOnly && menuPos && typeof document !== 'undefined'
       ? createPortal(
           <div className="library">
             <div
               ref={menuRef}
               role="listbox"
-              className={styles.menu}
+              className={classNames(styles.menu, {
+                [styles.menuClosing]: !menuShown,
+              })}
               style={{
                 position: 'fixed',
                 top: menuPos.top,

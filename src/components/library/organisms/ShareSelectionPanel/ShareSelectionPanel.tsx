@@ -22,6 +22,8 @@ import { KEEPSIMPLE_URL, MAX_SHARE_OBJECTS } from '@constants/library/common';
 
 import type { IObject } from '@local-types/library/object';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
+
 import { createShareLink } from '@api/library/createShareLink';
 
 import { ChevronUpIcon, CloseIcon, ShareIcon } from '@icons/library/svg';
@@ -44,6 +46,8 @@ import type { ShareSelectionPanelProps } from './ShareSelectionPanel.types';
 import styles from './ShareSelectionPanel.module.scss';
 
 const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
+
+const tileKey = (object: IObject) => String(object.id);
 
 // The tiles here are covers with nothing written on them, so the dossier is
 // how anyone — the owner building the link and the person who opens it —
@@ -103,6 +107,8 @@ function SortableItem(props: {
     transition,
     opacity: isDragging ? 0.6 : 1,
   };
+  // dnd-kit's own transition covers the transform; the lift on pick-up is
+  // eased by the slot's CSS (see .item).
 
   const sequence = (
     <Text variant={TypographyVariant.TextBaseBold} className={styles.sequence}>
@@ -270,6 +276,14 @@ export function ShareSelectionPanel({
 
   const pendingRemove = objects.find(o => o.id === pendingRemoveId) ?? null;
 
+  // A tile that is added rises in, one that is removed fades where it stood
+  // and the rest close the gap; the drag's own moves are left to dnd-kit.
+  const { ref: gridRef, entries: tileEntries } = useAnimatedList(
+    objects,
+    tileKey,
+    { moves: false, collapse: 'width' },
+  );
+
   // The owner's panel is a permanent bottom bar — it stays put with nothing
   // selected so the share affordance never appears and disappears under the
   // content. A recipient viewing a shared link has nothing to select, so an
@@ -389,17 +403,26 @@ export function ShareSelectionPanel({
                   items={objects.map(o => o.id)}
                   strategy={rectSortingStrategy}
                 >
-                  <div className={styles.grid}>
-                    {objects.map((object, index) => (
-                      <SortableItem
+                  <div className={styles.grid} ref={gridRef}>
+                    {tileEntries.map(({ item: object, leaving }, index) => (
+                      <div
                         key={object.id}
-                        object={object}
-                        position={index + 1}
-                        readOnly={readOnly}
-                        ownerUsername={ownerUsername}
-                        onRemove={setPendingRemoveId}
-                        onObjectClick={onObjectClick}
-                      />
+                        className={classNames(styles.tileSlot, {
+                          [styles.tileLeaving]: leaving,
+                        })}
+                        data-flip-id={String(object.id)}
+                        data-flip-leaving={leaving ? 'true' : undefined}
+                        aria-hidden={leaving || undefined}
+                      >
+                        <SortableItem
+                          object={object}
+                          position={index + 1}
+                          readOnly={readOnly || leaving}
+                          ownerUsername={ownerUsername}
+                          onRemove={setPendingRemoveId}
+                          onObjectClick={onObjectClick}
+                        />
+                      </div>
                     ))}
                   </div>
                 </SortableContext>

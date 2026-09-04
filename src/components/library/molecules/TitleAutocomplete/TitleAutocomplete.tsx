@@ -1,6 +1,9 @@
+import classNames from 'classnames';
 import React, { JSX, useEffect, useId, useRef, useState } from 'react';
 
 import type { IAutofillSuggestion } from '@local-types/library/autofill';
+
+import { usePresence } from '@hooks/library/usePresence';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Input } from '@components/library/molecules/Input';
@@ -39,6 +42,9 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
   // Title applied via a suggestion click — don't reopen the menu for it.
   const suppressQueryRef = useRef<string | null>(null);
   const listboxId = useId();
+
+  // The list stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const close = () => {
     setIsOpen(false);
@@ -167,8 +173,14 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
-      {isOpen && (
-        <ul className={styles.menu} role="listbox" id={listboxId}>
+      {menuMounted && (
+        <ul
+          className={classNames(styles.menu, {
+            [styles.menuClosing]: !menuShown,
+          })}
+          role="listbox"
+          id={listboxId}
+        >
           {isLoading && suggestions.length === 0 && (
             <li className={styles.status}>
               <Text variant={TypographyVariant.TextSmall}>Searching…</Text>

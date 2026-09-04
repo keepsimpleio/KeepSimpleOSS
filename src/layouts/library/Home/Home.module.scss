@@ -137,6 +137,23 @@
     gap: 20px;
     grid-template-columns: 1fr 1fr;
 
+    // One card per slot: the slot is what the list motion measures and moves.
+    // The message states (loading, nothing found) fade in the same way.
+    > * {
+      animation: grid-enter 0.25s ease both;
+    }
+
+    .cardSlot {
+      display: flex;
+      justify-content: center;
+      min-width: 0;
+      animation: none;
+
+      &.cardLeaving {
+        pointer-events: none;
+      }
+    }
+
     @media (max-width: 1024px) {
       margin: 20px 0;
       grid-template-columns: 1fr;
@@ -152,5 +169,22 @@
     @media (max-width: 1024px) {
       justify-content: center;
     }
+  }
+}
+
+@keyframes grid-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .libraries .content > * {
+    animation: none;
   }
 }

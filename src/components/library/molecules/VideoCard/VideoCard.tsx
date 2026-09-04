@@ -1,7 +1,7 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { JSX, useRef, useState } from 'react';
+import React, { JSX, useCallback, useRef, useState } from 'react';
 
 import { VideoShadowIcon } from '@icons/library/svg';
 
@@ -31,6 +31,14 @@ export function VideoCard({
     attributes.coverImage?.data?.attributes.url,
   );
   const title = attributes.title;
+
+  // The thumbnail fades in once it decodes instead of popping over the white
+  // frame. A cached image can finish before React attaches `onLoad`, so the
+  // ref's `complete` flag catches that case.
+  const [coverLoaded, setCoverLoaded] = useState(false);
+  const coverRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete) setCoverLoaded(true);
+  }, []);
 
   // Hovering (or tabbing to) the video opens its dossier beside the shelf.
   const cardRef = useRef<HTMLDivElement>(null);
@@ -90,11 +98,15 @@ export function VideoCard({
           <div className={styles.thumb}>
             {coverUrl ? (
               <Image
+                ref={coverRef}
                 src={coverUrl}
                 alt={title}
                 fill
                 sizes="231px"
-                className={styles.coverImage}
+                className={classNames(styles.coverImage, {
+                  [styles.coverImageLoaded]: coverLoaded,
+                })}
+                onLoad={() => setCoverLoaded(true)}
               />
             ) : (
               <div className={styles.coverPlaceholder} />

@@ -1,8 +1,11 @@
 import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibraries';
+import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import type { HomeLibraryCardView } from '@local-types/library/library';
+
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
 import {
   buildSearchHaystack,
@@ -37,6 +40,8 @@ import styles from './Home.module.scss';
 const sectionId = 'libraries-section';
 
 const perPage = 6;
+
+const libraryKey = (lib: HomeLibraryCardView) => String(lib.id);
 
 export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const router = useRouter();
@@ -175,7 +180,9 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
       window.scrollTo({
         top: sectionPosition - offset,
-        behavior: 'smooth',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'auto'
+          : 'smooth',
       });
     }
   };
@@ -189,38 +196,39 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     setValue(e.target.value);
   };
 
-  const renderLibraryCards = currentLibraries.map(
-    (
-      {
-        id,
-        username,
-        libraryName,
-        description,
-        bookCount,
-        videoCount,
-        songCount,
-        avatar,
-        coverUrls,
-      },
-      index,
-    ) => (
+  // Cards arrive, leave and slide as the search narrows or a page turns,
+  // instead of the grid being rebuilt in one frame.
+  const { ref: gridRef, entries: cardEntries } = useAnimatedList(
+    currentLibraries,
+    libraryKey,
+  );
+
+  const renderLibraryCards = cardEntries.map(({ item, leaving }, index) => (
+    <div
+      key={item.id}
+      className={classNames(styles.cardSlot, {
+        [styles.cardLeaving]: leaving,
+      })}
+      data-flip-id={String(item.id)}
+      data-flip-leaving={leaving ? 'true' : undefined}
+      aria-hidden={leaving || undefined}
+    >
       <LibraryCard
-        key={id}
-        id={id}
-        username={username}
-        libraryName={libraryName}
-        description={description}
-        bookCount={bookCount}
-        videoCount={videoCount}
-        songCount={songCount}
-        avatar={avatar}
-        coverUrls={coverUrls}
+        id={item.id}
+        username={item.username}
+        libraryName={item.libraryName}
+        description={item.description}
+        bookCount={item.bookCount}
+        videoCount={item.videoCount}
+        songCount={item.songCount}
+        avatar={item.avatar}
+        coverUrls={item.coverUrls}
         // Advance the pigment across pages, not just within one, so page 2
         // doesn't open on the same colour page 1 opened on.
         accent={(currentPage - 1) * perPage + index}
       />
-    ),
-  );
+    </div>
+  ));
 
   return (
     <main className="library">
@@ -284,7 +292,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             </div>
           </div>
 
-          <div className={styles.content}>
+          <div className={styles.content} ref={gridRef}>
             {isLoading && !isControlled ? (
               <Text variant={TypographyVariant.TextBase}>
                 Loading libraries…

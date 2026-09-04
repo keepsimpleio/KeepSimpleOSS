@@ -171,6 +171,24 @@
   }
 }
 
+// The pills' own row inside the scroller: the slot is what the list motion
+// measures and moves, so a pill that leaves folds shut and its neighbours
+// slide over.
+.pillRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pillSlot {
+  display: inline-flex;
+  flex: 0 0 auto;
+
+  &.pillLeaving {
+    pointer-events: none;
+  }
+}
+
 .jumpScroll {
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -413,4 +431,16 @@
   text-transform: uppercase;
   line-height: 1;
   white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identity,
+  .jumpScrollerWrap,
+  .searchWrap {
+    animation: none;
+  }
+
+  .jumpScroll {
+    scroll-behavior: auto;
+  }
 }

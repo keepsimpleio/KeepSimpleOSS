@@ -11,6 +11,7 @@ import type {
 } from '@local-types/library/object';
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
 import {
   formatObjectDate,
@@ -86,6 +87,8 @@ export function ObjectOverviewModal(
       : null;
 
   const [menuOpen, setMenuOpen] = useState(false);
+  // The owner menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(menuOpen, 120);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -113,7 +116,15 @@ export function ObjectOverviewModal(
 
   // TODO: add dedicated route for shareable object URLs (e.g. /library/[username]/objects/[id]).
   // For now this modal is opened imperatively from a card click — no URL state.
+  // Edit lets the overview fade out first: the Modal's close lands here, and
+  // this flag turns it into the swap to the editor instead of leaving.
+  const editPending = useRef(false);
   const guardedOnClose = useCallback(() => {
+    if (editPending.current) {
+      editPending.current = false;
+      setEditing(true);
+      return;
+    }
     if (deleteLoading || deleting) return;
     onClose();
   }, [deleteLoading, deleting, onClose]);
@@ -122,7 +133,8 @@ export function ObjectOverviewModal(
 
   const handleEdit = () => {
     setMenuOpen(false);
-    setEditing(true);
+    editPending.current = true;
+    close();
   };
 
   const handleDelete = () => {
@@ -494,8 +506,13 @@ export function ObjectOverviewModal(
                     >
                       <DotsVerticalIcon />
                     </button>
-                    {menuOpen && (
-                      <div role="menu" className={styles.menu}>
+                    {menuMounted && (
+                      <div
+                        role="menu"
+                        className={classNames(styles.menu, {
+                          [styles.menuClosing]: !menuShown,
+                        })}
+                      >
                         <button
                           type="button"
                           role="menuitem"

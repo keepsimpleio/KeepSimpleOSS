@@ -3,12 +3,9 @@
   max-width: 518px !important;
   background: var(--white) !important;
   overflow: hidden;
-  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: height;
 
   form {
     display: block;
-    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
   }
 }
@@ -18,7 +15,6 @@
   max-height: calc(100vh - 250px);
   overflow-y: auto;
   overflow-x: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   &::-webkit-scrollbar {
     display: none;
@@ -52,6 +48,8 @@
       font-size: 12px;
       margin-top: 4px;
       margin-bottom: 0;
+      line-height: 18px;
+      animation: message-in 0.2s ease;
     }
 
     .color {
@@ -260,4 +258,29 @@
 .taggedMeta {
   flex-shrink: 0;
   color: var(--gray-darker);
+}
+
+// A message lands in a line held from the start and fades in, so the form
+// neither jumps nor blinks when validation speaks.
+@keyframes message-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper .field,
+  .wrapper .noTagFound {
+    animation: none;
+    transition: none;
+  }
 }

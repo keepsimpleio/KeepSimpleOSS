@@ -117,7 +117,15 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const canSave = !isSaving && hasChanges;
 
   // Closing with edits pending asks first.
+  // A finished save leaves through the same fade as Cancel: the flag lets
+  // the close past the unsaved-changes guard, which is still true until the
+  // parent unmounts us with fresh data.
+  const savedPending = useRef(false);
   const requestClose = () => {
+    if (savedPending.current) {
+      onClose();
+      return;
+    }
     if (isSaving) return;
     if (hasChanges) {
       setDiscardPrompt(true);
@@ -254,7 +262,8 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
       const freshUser = await getUserInfo();
       if (freshUser) setAccountData(freshUser);
       if (libraryId != null) onSaved?.(libraryId);
-      onClose();
+      savedPending.current = true;
+      close();
     } catch (error) {
       console.error('EditLibraryModal save failed:', error);
       setTopError('Something went wrong. Please try again.');

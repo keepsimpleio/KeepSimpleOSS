@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
 import { ArrowIcon, CheckMarkIcon } from '@icons/library/svg';
 
@@ -35,6 +36,8 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
   // When portaled the menu is detached from the trigger's box, so its position
   // is tracked against the trigger and recomputed on scroll/resize.
   const menuPos = useAnchoredPosition(triggerRef, portal && isOpen);
+  // The menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const isSelected = (option: TagOption) => value.some(t => t.id === option.id);
 
@@ -77,12 +80,14 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
             />
           </div>
         </button>
-        {isOpen &&
+        {menuMounted &&
           (!portal || menuPos) &&
           (() => {
             const menuContent = (
               <div
-                className={styles.menu}
+                className={classNames(styles.menu, {
+                  [styles.menuClosing]: !menuShown,
+                })}
                 role="listbox"
                 style={
                   portal && menuPos

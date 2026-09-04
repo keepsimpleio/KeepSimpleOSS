@@ -1,7 +1,7 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { JSX, useRef, useState } from 'react';
+import React, { JSX, useCallback, useRef, useState } from 'react';
 
 import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
@@ -31,6 +31,14 @@ export function BookCard({
   );
   const tags = attributes.tags?.data ?? [];
   const title = attributes.title;
+
+  // The cover fades in over the mockup once it decodes instead of popping. A
+  // cached image can finish before React attaches `onLoad`, so the ref's
+  // `complete` flag catches that case.
+  const [coverLoaded, setCoverLoaded] = useState(false);
+  const coverRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete) setCoverLoaded(true);
+  }, []);
 
   // Hovering (or tabbing to) the book opens its dossier beside the shelf.
   const cardRef = useRef<HTMLDivElement>(null);
@@ -89,11 +97,15 @@ export function BookCard({
         <div className={styles.cover}>
           {coverUrl && (
             <Image
+              ref={coverRef}
               src={coverUrl}
               alt={attributes.title}
               fill
               sizes="146px"
-              className={styles.coverImage}
+              className={classNames(styles.coverImage, {
+                [styles.coverImageLoaded]: coverLoaded,
+              })}
+              onLoad={() => setCoverLoaded(true)}
             />
           )}
         </div>

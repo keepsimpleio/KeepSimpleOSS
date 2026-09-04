@@ -70,6 +70,17 @@ $share-bar-height: 87px;
   flex-direction: column;
 }
 
+// One board per slot, so a board on its way out (deleted, or hidden by a
+// search) can fold its slot shut while the boards below slide up.
+.shelfSlot {
+  display: flex;
+  flex-direction: column;
+
+  &.shelfLeaving {
+    pointer-events: none;
+  }
+}
+
 // The add-shelf control lives at the foot of the list, on the same 16px gutter
 // as each shelf's own header, so it reads as the empty slot the next board
 // will occupy.
@@ -105,6 +116,42 @@ $share-bar-height: 87px;
   display: flex;
   align-items: center;
   pointer-events: none;
+}
+
+.notice {
+  animation: notice-in 0.16s ease-out;
+
+  &.noticeClosing {
+    animation: notice-out 0.16s ease-in forwards;
+    pointer-events: none;
+  }
+}
+
+@keyframes notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes notice-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notice,
+  .notice.noticeClosing {
+    animation: none;
+  }
 }
 
 .notice {

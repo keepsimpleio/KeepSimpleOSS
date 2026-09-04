@@ -46,16 +46,18 @@ export function ConfirmationModal(props: ConfirmationModalProps) {
           <Text className={styles.text} variant={TypographyVariant.TextSmall}>
             {text}
           </Text>
-          {error && (
-            <div role="alert">
+          {/* The line is always on the page, so a failure fills it rather
+              than pushing the buttons down. */}
+          <div role="alert">
+            {error && (
               <Text
                 className={styles.errorText}
                 variant={TypographyVariant.TextSmall}
               >
                 {error}
               </Text>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div className={styles.footer}>

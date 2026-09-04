@@ -2,12 +2,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
+// The real checkbox stays in the tab order (it was `visibility: hidden`, which
+// took the switch away from the keyboard); it is only visually folded away.
 .input {
-  width: 0;
-  height: 0;
-  visibility: hidden;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .label {
@@ -18,8 +28,9 @@
   border-radius: 60px;
   position: relative;
   cursor: pointer;
-  transition: 0.5s;
+  transition: background-color 0.25s ease;
 
+  // The knob travels on the compositor: a transform, never `left`.
   &::after {
     content: '';
     width: 20px;
@@ -29,7 +40,7 @@
     border-radius: 70px;
     top: 2px;
     left: 2px;
-    transition: 0.3s;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   &.disabled {
@@ -42,7 +53,18 @@
   background: var(--brown);
 
   &::after {
-    left: calc(100% - 2px);
-    transform: translateX(-100%);
+    transform: translateX(20px);
+  }
+}
+
+.input:focus-visible + .label {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .label,
+  .label::after {
+    transition: none;
   }
 }

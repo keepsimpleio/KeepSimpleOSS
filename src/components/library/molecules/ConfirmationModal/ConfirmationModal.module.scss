@@ -46,4 +46,24 @@
 .errorText {
   color: var(--red-500);
   text-align: center;
+  min-height: 18px;
+  line-height: 18px;
+  animation: message-in 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .errorText {
+    animation: none;
+  }
+}
+
+// A message lands in a line held from the start and fades in, so the form
+// neither jumps nor blinks when validation speaks.
+@keyframes message-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

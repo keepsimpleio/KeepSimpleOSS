@@ -120,6 +120,17 @@
   }
 }
 
+// Under reduced motion the dialog still appears and leaves at once: no fade,
+// no scale, and the closing state holds nothing back.
+@media (prefers-reduced-motion: reduce) {
+  .modal,
+  .modal .content,
+  .modal.closing,
+  .modal.closing .content {
+    animation: none;
+  }
+}
+
 .storie {
   gap: 16px;
   display: flex;

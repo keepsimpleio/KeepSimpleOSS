@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
 import { ArrowIcon, CheckIcon } from '@icons/library/svg';
 
@@ -43,6 +44,8 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   // is tracked against the trigger and recomputed on scroll/resize. It flips
   // above the trigger when it would overflow the bottom of the viewport.
   const menuPos = useAnchoredPosition(triggerRef, portal && isOpen, menuRef);
+  // The menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const selectedOption = options.find(opt => opt.value === value);
 
@@ -73,6 +76,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
       ref={menuRef}
       className={classNames(styles.menu, menuClassName, {
         [styles.menuPortal]: portal && menuPos,
+        [styles.menuClosing]: !menuShown,
       })}
       style={
         portal && menuPos
@@ -201,7 +205,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
           </div>
         </button>
       )}
-      {isOpen &&
+      {menuMounted &&
         (portal && typeof document !== 'undefined' && menuPos
           ? createPortal(
               <div className="library">{menuContent}</div>,

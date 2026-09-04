@@ -1,14 +1,7 @@
 import classNames from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, {
-  JSX,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   MAX_OBJECTS_PER_SHELF,
@@ -19,6 +12,8 @@ import {
 
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
+
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
@@ -62,58 +57,6 @@ import type { ShelfProps } from './Shelf.types';
 
 import styles from './Shelf.module.scss';
 
-// useLayoutEffect warns during SSR; fall back to useEffect on the server.
-const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
-
-// FLIP: when `orderKey` changes, glide each card slot from its previous
-// position to its new one via the Web Animations API. Pure transient
-// transforms — no dependency, no layout thrash, and a no-op under
-// prefers-reduced-motion. Slots are matched across renders by `data-flip-id`.
-function useFlipReorder(orderKey: string) {
-  const ref = useRef<HTMLDivElement>(null);
-  const prevRects = useRef<Map<string, DOMRect>>(new Map());
-
-  useIsomorphicLayoutEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-
-    const slots = Array.from(container.children) as HTMLElement[];
-    const nextRects = new Map<string, DOMRect>();
-    slots.forEach(slot => {
-      const id = slot.dataset.flipId;
-      if (id) nextRects.set(id, slot.getBoundingClientRect());
-    });
-
-    const prev = prevRects.current;
-    prevRects.current = nextRects;
-
-    // First paint (or a hidden shelf): nothing to animate from.
-    if (prev.size === 0) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    slots.forEach(slot => {
-      const id = slot.dataset.flipId;
-      if (!id) return;
-      const before = prev.get(id);
-      const after = nextRects.get(id);
-      if (!before || !after) return;
-      const dx = before.left - after.left;
-      const dy = before.top - after.top;
-      if (dx === 0 && dy === 0) return;
-      slot.animate(
-        [
-          { transform: `translate(${dx}px, ${dy}px)` },
-          { transform: 'translate(0, 0)' },
-        ],
-        { duration: 320, easing: 'cubic-bezier(0.2, 0, 0, 1)' },
-      );
-    });
-  }, [orderKey]);
-
-  return ref;
-}
-
 const SHELF_TYPE_ICON: Record<string, JSX.Element> = {
   video: <VideoIcon />,
   book: <BookIcon />,
@@ -137,6 +80,8 @@ const SETTINGS_OPTIONS = [
   },
   { value: 'delete', label: 'Delete shelf' },
 ];
+
+const objectKey = (o: IObject) => String(o.id);
 
 export function Shelf(props: ShelfProps): JSX.Element {
   const {
@@ -176,9 +121,15 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // untouched while changing every card position on the board.
   const drawnKey = drawnObjects.map(o => o.id).join(',');
 
-  // Glide cards to their new slots when the persisted order changes (e.g. after
-  // a save-time reorder) instead of snapping.
-  const cardsRef = useFlipReorder(drawnKey);
+  // Every change of membership or order on the board is motion, never a
+  // snap: a removed or filtered-out card fades out where it stood, the rest
+  // glide into the space, and a card that arrives rises in (the slot's own
+  // CSS mount animation, so entrances are left to it here).
+  const { ref: cardsRef, entries: cardEntries } = useAnimatedList(
+    drawnObjects,
+    objectKey,
+    { enters: false, collapse: 'width' },
+  );
 
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
@@ -332,7 +283,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
           ? (slots[1] as HTMLElement).offsetLeft - first.offsetLeft
           : first.offsetWidth;
     }
-    el.scrollBy({ left: direction * step, behavior: 'smooth' });
+    el.scrollBy({
+      left: direction * step,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    });
   };
 
   const closeRename = useCallback(() => {
@@ -718,7 +674,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
           ref={itemsRef}
         >
           <div className={styles.cards} ref={cardsRef}>
-            {drawnObjects.map(obj => {
+            {cardEntries.map(({ item: obj, leaving }) => {
               const selected = isSelected(obj.id);
               // Only the owner can build a share link, and only public-shelf
               // objects are shareable — so hide the Select chip elsewhere.
@@ -756,8 +712,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
               return (
                 <div
                   key={obj.id}
-                  className={styles.cardSlot}
+                  className={classNames(styles.cardSlot, {
+                    [styles.cardLeaving]: leaving,
+                  })}
                   data-flip-id={String(obj.id)}
+                  data-flip-leaving={leaving ? 'true' : undefined}
+                  aria-hidden={leaving || undefined}
                 >
                   {card}
                 </div>

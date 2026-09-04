@@ -23,7 +23,10 @@
   border-radius: var(--radius-control);
   padding: 0 0 0 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
 
   &:disabled {
     opacity: 0.5;
@@ -121,4 +124,48 @@
 .blocked {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+// Opens with a short fade and leaves the same way (usePresence keeps the node
+// for the exit). Opacity only: the placement transform is set inline and an
+// animated transform would override it.
+@keyframes popover-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popover-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.menu {
+  animation: popover-in 0.14s ease-out;
+}
+
+.menuClosing {
+  animation: popover-out 0.12s ease-in forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .menuClosing {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .icon {
+    transition: none;
+  }
 }

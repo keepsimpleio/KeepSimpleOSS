@@ -491,6 +491,13 @@
         // — they aren't in its prev-rect map — so this never fights the reorder
         // glide; only one of the two runs per card.
         animation: card-enter 0.28s ease both;
+
+        // On its way out (deleted, moved to another shelf, or filtered away
+        // by a search): the slot fades where it stood and answers to nothing
+        // meanwhile, so a pointer cannot open a card that is already gone.
+        &.cardLeaving {
+          pointer-events: none;
+        }
       }
     }
   }
@@ -500,6 +507,11 @@
 // enter the cards' scroll measurements, pinned to the same seating line the
 // cards use (.content padding-bottom 65px + .items padding-bottom 35px).
 .ghostRow {
+  // The props follow the row as cards come and go, gliding rather than
+  // snapping sideways.
+  transition:
+    left 0.32s cubic-bezier(0.2, 0, 0, 1),
+    width 0.32s cubic-bezier(0.2, 0, 0, 1);
   position: absolute;
   bottom: 100px;
 
@@ -573,4 +585,23 @@
 .dragging {
   opacity: 0.92;
   cursor: grabbing;
+}
+
+// The lift on pick-up and the settle on drop are eased, and so is the
+// scrollbar strip appearing under an overflowing row.
+.wrapper {
+  transition: opacity 0.2s ease;
+}
+
+.items {
+  transition: padding-bottom 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper,
+  .items,
+  .ghostRow,
+  .dragHandle {
+    transition: none;
+  }
 }

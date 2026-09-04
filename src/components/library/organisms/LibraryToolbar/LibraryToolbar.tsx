@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
 
 import {
@@ -28,6 +29,8 @@ import styles from './LibraryToolbar.module.scss';
 // an ellipsis. The full name stays in the aria-label.
 const truncateLabel = (name: string) =>
   name.length > 20 ? `${name.slice(0, 20)}…` : name;
+
+const pillKey = <T extends { id: number }>(shelf: T) => String(shelf.id);
 
 export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
   const {
@@ -74,8 +77,19 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
   const scrollJump = (direction: -1 | 1) => {
     const el = jumpRef.current;
     if (!el) return;
-    el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+    el.scrollBy({
+      left: direction * el.clientWidth * 0.8,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    });
   };
+
+  const { ref: pillsRef, entries: pillEntries } = useAnimatedList(
+    shelves,
+    pillKey,
+    { collapse: 'width' },
+  );
 
   const jumpOverflowing = canJumpLeft || canJumpRight;
 
@@ -192,30 +206,40 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
           ref={jumpRef}
           className={classNames(styles.jumpButtons, styles.jumpScroll)}
         >
-          {shelves.map(shelf => {
-            const isSelected = shelf.id === selectedJumpShelfId;
-            return (
-              <span
-                key={shelf.id}
-                title={
-                  shelf.attributes.name.length > 20
-                    ? shelf.attributes.name
-                    : undefined
-                }
-              >
-                <Button
-                  label={truncateLabel(shelf.attributes.name)}
-                  ariaLabel={`Jump to ${shelf.attributes.name}`}
-                  onClick={() => handleJumpTo(shelf.id)}
-                  type={ButtonType.Secondary}
-                  size={ButtonSize.Default}
-                  className={classNames(styles.jumpButton, {
-                    [styles.jumpSelected]: isSelected,
+          {/* Pills come and go with the shelves and with the search: each
+              arrives, leaves and slides along under the shared list motion. */}
+          <div ref={pillsRef} className={styles.pillRow}>
+            {pillEntries.map(({ item: shelf, leaving }) => {
+              const isSelected = shelf.id === selectedJumpShelfId;
+              return (
+                <span
+                  key={shelf.id}
+                  className={classNames(styles.pillSlot, {
+                    [styles.pillLeaving]: leaving,
                   })}
-                />
-              </span>
-            );
-          })}
+                  data-flip-id={String(shelf.id)}
+                  data-flip-leaving={leaving ? 'true' : undefined}
+                  aria-hidden={leaving || undefined}
+                  title={
+                    shelf.attributes.name.length > 20
+                      ? shelf.attributes.name
+                      : undefined
+                  }
+                >
+                  <Button
+                    label={truncateLabel(shelf.attributes.name)}
+                    ariaLabel={`Jump to ${shelf.attributes.name}`}
+                    onClick={() => handleJumpTo(shelf.id)}
+                    type={ButtonType.Secondary}
+                    size={ButtonSize.Default}
+                    className={classNames(styles.jumpButton, {
+                      [styles.jumpSelected]: isSelected,
+                    })}
+                  />
+                </span>
+              );
+            })}
+          </div>
         </div>
         {jumpOverflowing && (
           <Button

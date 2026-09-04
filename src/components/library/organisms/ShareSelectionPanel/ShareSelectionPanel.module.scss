@@ -172,6 +172,16 @@
 
 .warning {
   color: var(--brown);
+  animation: row-in 0.2s ease;
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .error {
@@ -195,6 +205,17 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  // The lift on pick-up and the settle on drop are eased.
+  transition: opacity 0.15s ease;
+}
+
+// One tile per slot: the slot is what the list motion measures and moves.
+.tileSlot {
+  display: flex;
+
+  &.tileLeaving {
+    pointer-events: none;
+  }
 }
 
 .removePill {
@@ -238,6 +259,9 @@
 }
 
 .linkRow {
+  // The minted link and a failure both land with a short fade, inside a body
+  // that is already growing to hold them.
+  animation: row-in 0.2s ease;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -257,8 +281,14 @@
 
 @media (prefers-reduced-motion: reduce) {
   .panel,
-  .chevron {
+  .chevron,
+  .item {
     transition: none;
+  }
+
+  .linkRow,
+  .warning {
+    animation: none;
   }
 }
 

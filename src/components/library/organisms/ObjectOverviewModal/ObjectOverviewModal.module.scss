@@ -366,6 +366,14 @@
   color: var(--red-600);
   font-size: 12px;
   margin: 4px 0 0;
+  line-height: 18px;
+  animation: message-in 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error {
+    animation: none;
+  }
 }
 
 // On phones/tablets fill the viewport minus a 15px top/bottom gap (the flex
@@ -409,5 +417,53 @@
     width: 100%;
     height: auto;
     aspect-ratio: 2 / 3;
+  }
+}
+
+// Opens with a short fade and leaves the same way (usePresence keeps the node
+// for the exit). Opacity only: the placement transform is set inline and an
+// animated transform would override it.
+@keyframes popover-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popover-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.menu {
+  animation: popover-in 0.14s ease-out;
+}
+
+.menuClosing {
+  animation: popover-out 0.12s ease-in forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .menuClosing {
+    animation: none;
+  }
+}
+
+// A message lands in a line held from the start and fades in, so the form
+// neither jumps nor blinks when validation speaks.
+@keyframes message-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

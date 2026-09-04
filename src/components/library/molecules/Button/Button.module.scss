@@ -8,8 +8,19 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-control);
-  transition: all 0.3s ease-in;
+  // Named properties only: `all` also eased border and padding changes, so
+  // a disabled state or a size swap crawled instead of landing.
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
   @extend %text-base-semibold;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
   &:disabled {
     cursor: default;

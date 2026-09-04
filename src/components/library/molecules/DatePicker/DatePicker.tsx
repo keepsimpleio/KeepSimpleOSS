@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
 import { ArrowIcon } from '@icons/library/svg';
 
@@ -44,6 +45,11 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
   // position is tracked against the trigger and flips upward when the
   // viewport runs out below.
   const menuPos = useAnchoredPosition(triggerRef, isOpen, popoverRef);
+  // The popover stays mounted for its fade-out.
+  const { mounted: popoverMounted, shown: popoverShown } = usePresence(
+    isOpen,
+    120,
+  );
 
   const handleSelect = (date: Date | undefined) => {
     onChange?.(date ?? null);
@@ -70,14 +76,16 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
           className={classNames(styles.icon, { [styles.rotated]: isOpen })}
         />
       </button>
-      {isOpen &&
+      {popoverMounted &&
         menuPos &&
         typeof document !== 'undefined' &&
         createPortal(
           <div className="library">
             <div
               ref={popoverRef}
-              className={styles.popover}
+              className={classNames(styles.popover, {
+                [styles.popoverClosing]: !popoverShown,
+              })}
               style={{
                 top: menuPos.top,
                 left: menuPos.left,

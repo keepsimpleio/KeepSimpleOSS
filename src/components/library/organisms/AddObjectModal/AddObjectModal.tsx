@@ -262,7 +262,17 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   // Backing out of an edit returns to the overview; backing out of a create
   // closes the whole thing. A finished save always closes.
   const leave = onCancel ?? onClose;
+  // A finished save lets the form fade out first, then puts the success card
+  // up: the Modal's close runs its exit and lands here, where this flag turns
+  // the close into the hand-off instead of leaving.
+  const successPending = useRef(false);
   const requestClose = () => {
+    if (successPending.current) {
+      successPending.current = false;
+      successPending.current = true;
+      close();
+      return;
+    }
     if (isSubmittingForm) return;
     if (hasUnsavedWork) {
       setDiscardPrompt(true);
