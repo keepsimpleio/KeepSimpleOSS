@@ -26,6 +26,7 @@ import { createShareLink } from '@api/library/createShareLink';
 
 import { ChevronUpIcon, CloseIcon, ShareIcon } from '@icons/library/svg';
 
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AudioCard } from '@components/library/molecules/AudioCard';
 import { BookCard } from '@components/library/molecules/BookCard';
@@ -214,12 +215,16 @@ export function ShareSelectionPanel({
   // content. A recipient viewing a shared link has nothing to select, so an
   // empty panel there is just a dead bar.
   const isEmpty = objects.length === 0;
+  const { isSidebarCollapsed } = useGlobalState();
   if (isEmpty && readOnly) return null;
 
   return (
     <section
       className={classNames(styles.panel, className, {
         [styles.collapsed]: collapsed,
+        // The bar spans the working area, so it ends where the info panel
+        // begins — and runs to the window's edge once that panel is folded.
+        [styles.panelWide]: isSidebarCollapsed,
       })}
       aria-label={readOnly ? 'Shared selection' : 'Share selection'}
     >

@@ -17,6 +17,11 @@
   @media (max-width: 1024px) {
     right: 0;
   }
+
+  // Panel folded: the working area is the whole window and so is the bar.
+  &.panelWide {
+    right: 0;
+  }
 }
 
 // Collapsed: fold the panel down to just the header bar (still pinned to the

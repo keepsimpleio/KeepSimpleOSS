@@ -17,6 +17,14 @@
     align-items: center;
     padding: 0 16px;
 
+    // The owner's controls are 44px tall and a visitor has none, which left
+    // the two views reading the same shelf at different heights. The band is
+    // the owner's, always, so both land the board on the same line. Phones
+    // are read-only and already tuned, so the floor is desktop only.
+    @media (min-width: 769px) {
+      min-height: 44px;
+    }
+
     .left {
       display: flex;
       align-items: center;
@@ -208,12 +216,23 @@
     }
   }
 
-  // Held at one line's height whether or not a message shows.
+  // Laid over the air above the board rather than holding a line of it: the
+  // owner's shelf is then the same height as the visitor's, and a message
+  // still moves nothing when it lands.
   .shelfNoticeRow {
-    min-height: 22px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
     padding: 0 16px;
     display: flex;
     align-items: center;
+    pointer-events: none;
+  }
+
+  .shelfNotice {
+    pointer-events: auto;
   }
 
   .shelfNotice {

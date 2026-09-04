@@ -668,25 +668,29 @@ export function Shelf(props: ShelfProps): JSX.Element {
         </div>
       </div>
 
-      {/* A held row under the header for the shelf's own messages, so a
+      {/* The shelf's own messages, laid over the air above the board: a
           failed privacy save or a truncated bulk select never shifts the
-          board. Owner-only surface; visitors have nothing to be told here. */}
-      {isOwner && (
-        <div className={styles.shelfNoticeRow} role="status" aria-live="polite">
-          {(visibilityError || selectNotice) && (
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={classNames(styles.shelfNotice, {
-                [styles.shelfNoticeError]: !!visibilityError,
-              })}
-            >
-              {visibilityError ?? selectNotice}
-            </Text>
-          )}
-        </div>
-      )}
-
+          board, and the owner's shelf stands exactly as tall as a visitor's.
+          Owner-only surface; visitors have nothing to be told here. */}
       <div className={styles.content}>
+        {isOwner && (
+          <div
+            className={styles.shelfNoticeRow}
+            role="status"
+            aria-live="polite"
+          >
+            {(visibilityError || selectNotice) && (
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={classNames(styles.shelfNotice, {
+                  [styles.shelfNoticeError]: !!visibilityError,
+                })}
+              >
+                {visibilityError ?? selectNotice}
+              </Text>
+            )}
+          </div>
+        )}
         {isOverflowing && (
           <>
             <Button

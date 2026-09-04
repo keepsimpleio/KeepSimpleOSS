@@ -7,6 +7,9 @@ $share-bar-height: 87px;
 .wrapper {
   flex: 1;
   min-width: 0;
+  // Anchors the owner's notice, which is laid over the list rather than
+  // holding a band above it.
+  position: relative;
 
   &.withShareBar {
     padding-bottom: $share-bar-height;
@@ -87,16 +90,23 @@ $share-bar-height: 87px;
   color: var(--brown) !important;
 }
 
-// One row under the toolbar, sized for a single-line notice whether or not
-// one is showing, so the shelves below never move when a message lands.
+// Laid over the top of the shelf list rather than holding a band above it:
+// the shelves never move when a message lands, and the owner's library sits
+// exactly where a visitor's does.
 .noticeRow {
-  min-height: 36px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   padding: 0 16px;
   display: flex;
   align-items: center;
+  pointer-events: none;
 }
 
 .notice {
+  pointer-events: auto;
   display: flex;
   align-items: center;
   gap: 12px;
