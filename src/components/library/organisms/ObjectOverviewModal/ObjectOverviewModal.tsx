@@ -376,55 +376,6 @@ export function ObjectOverviewModal(
         <InkLine seed={4} className={styles.headerRule} />
 
         <div className={styles.body}>
-          <div className={styles.actions}>
-            <Button
-              type={ButtonType.Primary}
-              size={ButtonSize.Default}
-              className={styles.shareButton}
-              label={shareCopied ? 'Copied' : 'Share'}
-              ariaLabel={shareCopied ? 'Link copied' : 'Share'}
-              Icon={<ShareIcon />}
-              iconPosition={IconPosition.Right}
-              onClick={handleShare}
-            />
-            {isOwner && (
-              <div ref={menuRef} className={styles.menuWrapper}>
-                <button
-                  type="button"
-                  className={styles.iconButton}
-                  aria-label="More actions"
-                  aria-haspopup="menu"
-                  aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen(prev => !prev)}
-                >
-                  <DotsVerticalIcon />
-                </button>
-                {menuOpen && (
-                  <div role="menu" className={styles.menu}>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className={styles.menuItem}
-                      onClick={handleEdit}
-                    >
-                      <EditIcon />
-                      <Text variant={TypographyVariant.TextBase}>Edit</Text>
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className={classNames(styles.menuItem, styles.danger)}
-                      onClick={handleDelete}
-                    >
-                      <DeleteIcon />
-                      <Text variant={TypographyVariant.TextBase}>Delete</Text>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
           <div className={styles.left}>
             <div
               className={classNames(styles.cover, styles[config.coverShape])}
@@ -501,22 +452,76 @@ export function ObjectOverviewModal(
               </Text>
             )}
 
-            {attributes.author && (
-              <div className={styles.row}>
-                <Text
-                  variant={TypographyVariant.TextSmall}
-                  className={styles.rowLabel}
-                >
-                  Author
-                </Text>
-                <Text
-                  variant={TypographyVariant.TextBase}
-                  className={styles.rowValue}
-                >
-                  {attributes.author}
-                </Text>
+            {/* Author sits beside the actions so the copy button costs no
+                row of its own above the cover. */}
+            <div className={styles.identityRow}>
+              {attributes.author && (
+                <div className={styles.row}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.rowLabel}
+                  >
+                    Author
+                  </Text>
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.rowValue}
+                  >
+                    {attributes.author}
+                  </Text>
+                </div>
+              )}
+              <div className={styles.actions}>
+                <Button
+                  type={ButtonType.Primary}
+                  size={ButtonSize.Default}
+                  className={styles.shareButton}
+                  label={shareCopied ? 'Copied' : 'Copy URL'}
+                  ariaLabel={shareCopied ? 'Link copied' : 'Copy URL'}
+                  Icon={<ShareIcon />}
+                  iconPosition={IconPosition.Right}
+                  onClick={handleShare}
+                />
+                {isOwner && (
+                  <div ref={menuRef} className={styles.menuWrapper}>
+                    <button
+                      type="button"
+                      className={styles.iconButton}
+                      aria-label="More actions"
+                      aria-haspopup="menu"
+                      aria-expanded={menuOpen}
+                      onClick={() => setMenuOpen(prev => !prev)}
+                    >
+                      <DotsVerticalIcon />
+                    </button>
+                    {menuOpen && (
+                      <div role="menu" className={styles.menu}>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={styles.menuItem}
+                          onClick={handleEdit}
+                        >
+                          <EditIcon />
+                          <Text variant={TypographyVariant.TextBase}>Edit</Text>
+                        </button>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={classNames(styles.menuItem, styles.danger)}
+                          onClick={handleDelete}
+                        >
+                          <DeleteIcon />
+                          <Text variant={TypographyVariant.TextBase}>
+                            Delete
+                          </Text>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
 
             {publishedFormatted && (
               <div className={styles.row}>

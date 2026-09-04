@@ -29,12 +29,23 @@
   color: var(--gray-darkest);
 }
 
+// Copy URL + the owner menu ride alongside the Author line rather than
+// claiming a row of their own above the cover.
+.identityRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
 .actions {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 // The shared Button's `default` size is a 2px-padded inline pill — too short
@@ -43,6 +54,10 @@
 .shareButton {
   height: 36px;
   padding: 0 14px;
+  // Held at the width of the longer "Copy URL" state so switching to
+  // "Copied" does not shrink the button under the user's cursor.
+  min-width: 136px;
+  justify-content: center;
 
   svg {
     flex-shrink: 0;
@@ -365,7 +380,7 @@
     padding: 20px 16px;
     // Stacked single-column grid in a flex:1 (full-height) body: grid's default
     // align-content stretches the auto rows to fill leftover vertical space,
-    // ballooning `.actions` and `.left` far past their content. Pack rows to the
+    // ballooning `.left` far past its content. Pack rows to the
     // top so each sizes to its content; extra space stays at the bottom.
     align-content: start;
   }
