@@ -58,7 +58,8 @@
   right: 0;
   width: 190px;
   display: flex;
-  justify-content: center;
+  // The toggle fills the artwork it covers.
+  justify-content: stretch;
   padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
