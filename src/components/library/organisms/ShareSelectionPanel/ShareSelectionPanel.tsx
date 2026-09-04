@@ -16,7 +16,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
-import React, { JSX, useEffect, useMemo, useState } from 'react';
+import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 
 import { KEEPSIMPLE_URL, MAX_SHARE_OBJECTS } from '@constants/library/common';
 
@@ -143,6 +143,46 @@ export function ShareSelectionPanel({
   // Starts folded down to its header bar: the panel is a permanent fixture at
   // the bottom of the library, so it opens only when the user asks for it.
   const [collapsed, setCollapsed] = useState(!initiallyExpanded);
+
+  // The fold is driven by the body's own measured height, never by a guessed
+  // cap on the panel: the header keeps whatever height it really has (owner
+  // or recipient, one row of buttons or two, any locale), and the body slides
+  // between 0 and exactly its content. Measured live, so selecting another
+  // object while the section is open grows it instead of clipping it.
+  const headerRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [bodyHeight, setBodyHeight] = useState(0);
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const update = () => setBodyHeight(el.offsetHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // The bar is fixed over the library, so the library holds a strip of page
+  // free for it. That strip is this header's real height, published as a
+  // custom property rather than repeated as a number the two could disagree
+  // on (see Library.module.scss).
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const root = document.documentElement;
+    const update = () =>
+      root.style.setProperty(
+        '--library-share-bar-height',
+        `${el.offsetHeight}px`,
+      );
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty('--library-share-bar-height');
+    };
+  }, []);
   const [pendingRemoveId, setPendingRemoveId] = useState<number | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -233,20 +273,19 @@ export function ShareSelectionPanel({
           answers to the pointer as well. The action buttons keep their own
           clicks (see .actions). */}
       <div
+        ref={headerRef}
         className={classNames(styles.header, {
           [styles.headerReadOnly]: readOnly,
         })}
         onClick={() => setCollapsed(c => !c)}
       >
+        {/* The button carries no handler of its own: a press here, by
+            pointer or by keyboard, fires one click that the bar above
+            handles. Two handlers meant a click on the label toggled twice
+            and the section never moved. */}
         <button
           type="button"
           className={styles.heading}
-          // The bar around it toggles too; without stopping here the click
-          // ran both handlers and the section snapped straight back.
-          onClick={e => {
-            e.stopPropagation();
-            setCollapsed(c => !c);
-          }}
           aria-expanded={!collapsed}
           aria-label={collapsed ? 'Expand selection' : 'Collapse selection'}
         >
@@ -290,10 +329,16 @@ export function ShareSelectionPanel({
         )}
       </div>
 
-      {/* Always mounted so the chevron can animate the whole section open/closed
-          via the grid-rows collapse (see .bodyWrap) instead of unmounting. */}
-      <div className={styles.bodyWrap} aria-hidden={collapsed}>
-        <div className={styles.body}>
+      {/* Always mounted so the section can slide open and shut instead of
+          appearing and disappearing. The wrapper clips; the body inside keeps
+          its full height at all times, which is what makes the measurement
+          above valid whichever state we are in. */}
+      <div
+        className={styles.bodyWrap}
+        aria-hidden={collapsed}
+        style={{ maxHeight: collapsed ? 0 : bodyHeight }}
+      >
+        <div className={styles.body} ref={bodyRef}>
           {!readOnly && limitReached && (
             <Text
               variant={TypographyVariant.TextSmall}

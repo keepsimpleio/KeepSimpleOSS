@@ -1,7 +1,9 @@
 // Height of the share panel's collapsed header bar. It's fixed to the bottom
 // of the viewport whenever the owner's bar renders, so the library reserves
 // the strip instead of letting the last shelf sit under it. Visitors get no
-// bar and no dead strip.
+// bar and no dead strip. The bar measures itself and publishes the real
+// figure as --library-share-bar-height; this is only the value used before
+// that lands, and the floor for the empty/loading screens below.
 $share-bar-height: 87px;
 
 .wrapper {
@@ -12,7 +14,7 @@ $share-bar-height: 87px;
   position: relative;
 
   &.withShareBar {
-    padding-bottom: $share-bar-height;
+    padding-bottom: var(--library-share-bar-height, #{$share-bar-height});
   }
 
   @media (max-width: 1024px) {
