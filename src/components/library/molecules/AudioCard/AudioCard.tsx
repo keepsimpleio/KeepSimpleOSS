@@ -21,6 +21,7 @@ export function AudioCard({
   selected = false,
   onSelectToggle,
   selectDisabled = false,
+  selectReason,
   compact = false,
   showHoverCard = !compact,
 }: AudioCardProps): JSX.Element {
@@ -91,6 +92,7 @@ export function AudioCard({
               selected={selected}
               onToggle={onSelectToggle}
               disabled={selectDisabled && !selected}
+              reason={selectReason}
             />
           </div>
         )}

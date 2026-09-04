@@ -23,6 +23,7 @@ export function VideoCard({
   selected = false,
   onSelectToggle,
   selectDisabled = false,
+  selectReason,
   compact = false,
   showHoverCard = !compact,
 }: VideoCardProps): JSX.Element {
@@ -91,6 +92,7 @@ export function VideoCard({
               selected={selected}
               onToggle={onSelectToggle}
               disabled={selectDisabled && !selected}
+              reason={selectReason}
             />
           </div>
         )}

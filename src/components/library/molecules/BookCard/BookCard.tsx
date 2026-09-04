@@ -21,6 +21,7 @@ export function BookCard({
   selected = false,
   onSelectToggle,
   selectDisabled = false,
+  selectReason,
   compact = false,
   showHoverCard = !compact,
   ownerUsername,
@@ -90,6 +91,7 @@ export function BookCard({
               selected={selected}
               onToggle={onSelectToggle}
               disabled={selectDisabled && !selected}
+              reason={selectReason}
             />
           </div>
         )}

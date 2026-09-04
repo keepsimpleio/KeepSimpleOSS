@@ -174,6 +174,7 @@ export function LibraryTemplate({
     limitReached,
     reorder: reorderSelection,
     remove: removeSelection,
+    removeMany: removeManySelection,
     replace: replaceSelection,
     clear: clearSelection,
   } = useShareSelection();
@@ -400,6 +401,23 @@ export function LibraryTemplate({
     );
   }, [library, viewAsOwner]);
 
+  // The shelf tree as the callbacks below read it, without rebuilding every one
+  // of them each time the library changes.
+  const shelvesRef = useRef<StrapiSingleShelfEntry[]>(shelves);
+  shelvesRef.current = shelves;
+
+  // Everything standing on one shelf: the ids that leave the share selection
+  // when that shelf turns private or is deleted, since a link may only carry
+  // objects that are still public and still exist.
+  const objectIdsOnShelf = useCallback(
+    (shelfId: number) =>
+      (
+        shelvesRef.current.find(s => s.id === shelfId)?.attributes.objects
+          ?.data ?? []
+      ).map(o => o.id),
+    [],
+  );
+
   // Search filters the in-memory object tree — the whole library is already
   // client-side, so no API round-trip. Match title + author + tag names (the
   // fields people search by); description is intentionally excluded to keep
@@ -579,6 +597,12 @@ export function LibraryTemplate({
   // flipped the menu back.
   const handleShelfVisibilityChanged = useCallback(
     (shelfId: number, visibility: ShelfVisibility) => {
+      // A shelf that just turned private takes its objects out of the share
+      // selection with it: the backend refuses to mint a link holding them, so
+      // leaving them in the bar only buys a rejection at Share time.
+      if (visibility === 'private') {
+        removeManySelection(objectIdsOnShelf(shelfId));
+      }
       setLibrary(current => {
         if (!current) return current;
         const shelvesData = current.attributes.singleShelves?.data ?? [];
@@ -597,7 +621,7 @@ export function LibraryTemplate({
         };
       });
     },
-    [],
+    [removeManySelection, objectIdsOnShelf],
   );
 
   const handleObjectsReordered = useCallback(
@@ -740,19 +764,24 @@ export function LibraryTemplate({
     });
   }, []);
 
-  const handleShelfDeleted = useCallback((shelfId: number) => {
-    setLibrary(current => {
-      if (!current) return current;
-      const shelvesData = current.attributes.singleShelves?.data ?? [];
-      return {
-        ...current,
-        attributes: {
-          ...current.attributes,
-          singleShelves: { data: shelvesData.filter(s => s.id !== shelfId) },
-        },
-      };
-    });
-  }, []);
+  const handleShelfDeleted = useCallback(
+    (shelfId: number) => {
+      // The shelf's objects are gone with it, so they leave the selection too.
+      removeManySelection(objectIdsOnShelf(shelfId));
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: { data: shelvesData.filter(s => s.id !== shelfId) },
+          },
+        };
+      });
+    },
+    [removeManySelection, objectIdsOnShelf],
+  );
 
   const handleObjectMoved = useCallback(
     (fromShelfId: number, toShelfId: number, moved: IObject) => {

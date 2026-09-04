@@ -83,6 +83,11 @@ const SETTINGS_OPTIONS = [
 
 const objectKey = (o: IObject) => String(o.id);
 
+// Said on the shelf's own "Select shelf" button and on every card chip, so the
+// owner reads one rule in one wording wherever the refusal meets them.
+const SHELF_PRIVATE_SELECT_REASON =
+  'Make this shelf public to add its items to a share link.';
+
 export function Shelf(props: ShelfProps): JSX.Element {
   const {
     className,
@@ -187,6 +192,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
     setVisibility(savedVisibility);
   }, [savedVisibility]);
   const [visibilityError, setVisibilityError] = useState<string | null>(null);
+  // Only objects on a public shelf can be shared (the backend refuses the
+  // rest), so the shelf's own privacy governs both the "Select shelf" button
+  // and every Select chip on the cards below.
+  const isPublic = visibility === 'public';
+  const shareLinkFullReason = `The share link is full (${MAX_SHARE_OBJECTS} items). Remove some to select more.`;
   // How many objects a "Select shelf" could not add because the link was full.
   const [selectNotice, setSelectNotice] = useState<string | null>(null);
   const [shelfName, setShelfName] = useState(title ?? '');
@@ -358,18 +368,15 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const allSelected =
     objects.length > 0 && objects.every(o => isSelected(o.id));
   const selectShelfDisabled =
-    visibility !== 'public' ||
-    objects.length === 0 ||
-    (!allSelected && limitReached);
+    !isPublic || objects.length === 0 || (!allSelected && limitReached);
   // Every reason the control is off is spelled out where the pointer rests.
-  const selectShelfReason =
-    visibility !== 'public'
-      ? 'Make this shelf public to add its items to a share link.'
-      : objects.length === 0
-        ? 'Nothing on this shelf to select yet.'
-        : !allSelected && limitReached
-          ? `The share link is full (${MAX_SHARE_OBJECTS} items). Remove some to select more.`
-          : null;
+  const selectShelfReason = !isPublic
+    ? SHELF_PRIVATE_SELECT_REASON
+    : objects.length === 0
+      ? 'Nothing on this shelf to select yet.'
+      : !allSelected && limitReached
+        ? shareLinkFullReason
+        : null;
   const handleSelectShelf = () => {
     setSelectNotice(null);
     if (allSelected) {
@@ -676,12 +683,23 @@ export function Shelf(props: ShelfProps): JSX.Element {
           <div className={styles.cards} ref={cardsRef}>
             {cardEntries.map(({ item: obj, leaving }) => {
               const selected = isSelected(obj.id);
-              // Only the owner can build a share link, and only public-shelf
-              // objects are shareable — so hide the Select chip elsewhere.
-              const canSelect = isOwner && visibility === 'public';
-              const onSelectToggle = canSelect
+              // Only the owner can build a share link, so a visitor never sees
+              // the chip. The owner sees it on every kind of object (book,
+              // video, audio), and it carries its own reason when it cannot be
+              // used: the backend refuses objects on a private shelf, and a
+              // chip that simply vanished there read as "this kind of object
+              // cannot be shared".
+              const onSelectToggle = isOwner
                 ? () => toggleSelection(obj)
                 : undefined;
+              const selectDisabled = !isPublic || limitReached;
+              // Short enough to stand on the chip over the artwork; the shelf's
+              // own Select button carries the full sentence.
+              const selectReason = !isPublic
+                ? 'Shelf is private'
+                : limitReached
+                  ? 'Link is full'
+                  : undefined;
               const card =
                 shelfType === 'video' ? (
                   <VideoCard
@@ -689,7 +707,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
                     onClick={openObject}
                     selected={selected}
                     onSelectToggle={onSelectToggle}
-                    selectDisabled={limitReached}
+                    selectDisabled={selectDisabled}
+                    selectReason={selectReason}
                   />
                 ) : shelfType === 'audio' ? (
                   <AudioCard
@@ -697,7 +716,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
                     onClick={openObject}
                     selected={selected}
                     onSelectToggle={onSelectToggle}
-                    selectDisabled={limitReached}
+                    selectDisabled={selectDisabled}
+                    selectReason={selectReason}
                   />
                 ) : (
                   <BookCard
@@ -705,7 +725,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
                     onClick={openObject}
                     selected={selected}
                     onSelectToggle={onSelectToggle}
-                    selectDisabled={limitReached}
+                    selectDisabled={selectDisabled}
+                    selectReason={selectReason}
                     ownerUsername={ownerUsername}
                   />
                 );
