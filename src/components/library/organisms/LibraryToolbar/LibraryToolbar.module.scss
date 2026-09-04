@@ -249,6 +249,7 @@
 
 .searchWrap {
   grid-area: search;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -256,10 +257,19 @@
   animation: toolbar-fade 0.3s ease;
 }
 
-// One line, always present, under the search field.
+// One line, always present, under the search field. On desktop it hangs
+// below the field out of flow, so the field itself, not field plus caption,
+// is what centres against the heading switcher on the same row. The 16px
+// row gap under it is exactly the line it occupies.
 .searchSummary {
   min-height: 16px;
   line-height: 16px;
   color: var(--gray-darker);
   white-space: nowrap;
+
+  @media (min-width: 769px) {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+  }
 }
