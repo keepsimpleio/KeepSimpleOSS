@@ -3,7 +3,12 @@ import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
 
-import { ArrowIcon, LibrarianIcon, PanelIcon } from '@icons/library/svg';
+import {
+  ArrowIcon,
+  ChevronUpIcon,
+  LibrarianIcon,
+  PanelIcon,
+} from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
@@ -32,7 +37,8 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     onSearchChange,
     className,
   } = props;
-  const { toggleSidebar } = useGlobalState();
+  const { toggleSidebar, isSidebarCollapsed, toggleSidebarCollapsed } =
+    useGlobalState();
   const switcher = useLibrarySwitcher();
   const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(
     null,
@@ -257,6 +263,26 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
       >
         <LibrarianIcon aria-hidden="true" />
         <span className={styles.librarianLabel}>AI Librarian</span>
+      </button>
+
+      {/* Desktop: folds the info panel away so the shelves take the width,
+          and brings it back. One column at the toolbar's right edge, the
+          height of both rows, beside the panel it controls; the arrow points
+          the way the panel will go. The choice is per account and survives a
+          refresh (GlobalState). Hidden where the panel is a drawer. */}
+      <button
+        type="button"
+        className={classNames(styles.panelToggle, {
+          [styles.panelToggleCollapsed]: isSidebarCollapsed,
+        })}
+        onClick={toggleSidebarCollapsed}
+        aria-label={
+          isSidebarCollapsed ? 'Show library panel' : 'Hide library panel'
+        }
+        aria-expanded={!isSidebarCollapsed}
+        aria-controls="library-info-panel"
+      >
+        <ChevronUpIcon aria-hidden="true" />
       </button>
     </div>
   );

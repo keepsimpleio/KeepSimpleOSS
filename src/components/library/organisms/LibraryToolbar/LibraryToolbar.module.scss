@@ -18,6 +18,15 @@
   column-gap: 24px;
   row-gap: 16px;
 
+  // Desktop adds a third column at the right edge: the panel fold toggle,
+  // spanning both rows, next to the panel it controls.
+  @media (min-width: 1025px) {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'identity search panel'
+      'pills librarian panel';
+  }
+
   // The global header switches to a fixed 55px bar at this breakpoint.
   @media (max-width: 1140px) {
     top: 55px;
@@ -322,6 +331,61 @@
   @media (max-width: 768px) {
     width: 100%;
     justify-self: stretch;
+  }
+}
+
+// The fold toggle: a narrow column the full height of the toolbar's two
+// rows, in the librarian button's language. The arrow points right while the
+// panel is open (hide) and turns to point left once it is folded (show).
+.panelToggle {
+  grid-area: panel;
+  align-self: stretch;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  padding: 0;
+  border: 2px solid var(--beige);
+  border-radius: var(--radius-control);
+  background: var(--white);
+  color: var(--brown);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  @media (min-width: 1025px) {
+    display: inline-flex;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    transform: rotate(90deg);
+    transition: transform 0.3s ease;
+  }
+
+  &.panelToggleCollapsed svg {
+    transform: rotate(-90deg);
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brown-border);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    svg {
+      transition: none;
+    }
   }
 }
 
