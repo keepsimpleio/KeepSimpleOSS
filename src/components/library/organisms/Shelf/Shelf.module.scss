@@ -309,11 +309,16 @@
         right: -35px;
         width: auto;
         margin-right: 0;
+        // Height is pinned, not left to the image: with the box on left/right
+        // the banner width is auto, and an img that inherits auto falls back to
+        // the PNG intrinsic 1656x114 — a plank two and a half times too tall,
+        // with the surplus hanging below the cards. 43px is what the boxs
+        // width produces at the phone aspect, so the wood is not stretched.
+        height: 43px;
 
-        // The box is now sized by left/right (width: auto), so the inherited
-        // `auto` would shrink the board to its intrinsic width — fill instead.
         img {
           width: 100%;
+          height: 100%;
         }
       }
     }
