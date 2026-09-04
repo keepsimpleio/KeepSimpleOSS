@@ -237,15 +237,13 @@
     // seated. This is the knob: increase to slide the scrollbar up the board.
     padding-bottom: 65px;
 
-    // Phones: the board renders taller than the desktop board relative to the
-    // shelf, and its bottom ~27px are the PNG's faded-out tail — invisible, but
-    // still occupying the page. Drop 16px of it (paired with .banner's -16px
-    // bottom, which keeps every card seated exactly where it was) and let the
-    // shelf size to its cards instead of the desktop 342px floor, which was
-    // padding audio shelves out for no reason.
+    // Phones: the board is the same PNG scaled to a narrower box, so it lands
+    // ~43px tall against the desktop ~69px. The seating line moves with it
+    // (see `.items`), and the desktop 342px floor goes: it padded short shelves
+    // — audio worst of all — out for no reason.
     @media (max-width: 768px) {
       min-height: auto;
-      padding-bottom: 49px;
+      padding-bottom: 0;
     }
 
     // Carousel arrows, same pill as the LibraryToolbar jump arrows, overlaid on
@@ -294,28 +292,29 @@
       z-index: 0;
       pointer-events: none;
 
+      img {
+        width: inherit;
+      }
+
       // Mobile: pull the board wider past both edges so it spans the narrow
       // viewport. left/right set the box, so width is implied — drop the
       // desktop fill-available width and its negative margin.
+      //
+      // This block MUST stay last: `img { width: inherit }` above carries the
+      // same specificity, so when it came afterwards it won and the board
+      // rendered at the PNG's intrinsic 1656x114 — a 117px plank with ~70px of
+      // it hanging below the cards' feet as dead page.
       @media (max-width: 768px) {
         left: -148px;
         right: -35px;
         width: auto;
         margin-right: 0;
-        // Paired with .content's 49px padding-bottom: the board moves down by
-        // exactly what the shelf lost, so the cards keep resting on the same
-        // line and only the faded tail is clipped by .content's overflow.
-        bottom: -16px;
 
         // The box is now sized by left/right (width: auto), so the inherited
         // `auto` would shrink the board to its intrinsic width — fill instead.
         img {
           width: 100%;
         }
-      }
-
-      img {
-        width: inherit;
       }
     }
 
@@ -334,15 +333,19 @@
       // shelf's `overflow: hidden`; they still bottom-align onto the shelf.
       padding-top: 40px;
 
-      // On phones that headroom is a band of empty page between the shelf name
-      // and the covers. 28px still clears the owner's select pill.
-      @media (max-width: 768px) {
-        min-height: auto;
-        padding-top: 28px;
-      }
       // Paired with `.content`'s 65px padding-bottom: the two sum to 100px so
       // the cards' seating line is unchanged while the scrollbar rides higher.
       padding-bottom: 35px;
+
+      // Phones: 25px is the whole seating line (`.content` adds none), which
+      // puts the cards' feet the same fraction down the board as the desktop
+      // 100px does on the taller desktop plank. The headroom above them comes
+      // down too — 28px still clears the owner's select pill.
+      @media (max-width: 768px) {
+        min-height: auto;
+        padding-top: 28px;
+        padding-bottom: 25px;
+      }
       position: relative;
       z-index: 1;
       overflow-x: auto;
@@ -374,6 +377,11 @@
       // 12px off padding-bottom (35px → 23px) so the cards' seating line is
       // unchanged — the bar rides in the freed space and reads as an overlay.
       padding-bottom: 23px;
+
+      // Same 12px shave against the phone's 25px seating line.
+      @media (max-width: 768px) {
+        padding-bottom: 13px;
+      }
       // Must be `auto`, not `thin`: when scrollbar-width is thin/none, Chrome
       // 121+ renders the standard scrollbar and IGNORES the ::-webkit-scrollbar
       // rules below — so the custom 12px #c0b6ae bar never showed. `auto` keeps
@@ -439,6 +447,12 @@
 .ghostRow {
   position: absolute;
   bottom: 100px;
+
+  // Phones seat the cards at 25px (see `.items`), so the props follow.
+  @media (max-width: 768px) {
+    bottom: 25px;
+  }
+
   right: 0;
   // Same layer as the cards, so a prop stands ON the board instead of being
   // painted over by the board PNG the way it was at z-index 0.
