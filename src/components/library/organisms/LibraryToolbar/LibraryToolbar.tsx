@@ -3,7 +3,7 @@ import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
 
-import { ArrowIcon, PanelIcon } from '@icons/library/svg';
+import { ArrowIcon, LibrarianIcon, PanelIcon } from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
@@ -229,6 +229,20 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
           {searchSummary}
         </Text>
       </div>
+
+      {/* The Librarian: a chat with an agent that knows this library, opened
+          in a modal rather than the site-wide Copilot pill (hidden on library
+          pages). Disabled until the agent ships. */}
+      <button
+        type="button"
+        className={styles.librarian}
+        disabled
+        aria-disabled="true"
+        title="Coming soon"
+      >
+        <LibrarianIcon aria-hidden="true" />
+        <span className={styles.librarianLabel}>AI Librarian</span>
+      </button>
     </div>
   );
 }

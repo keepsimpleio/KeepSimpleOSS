@@ -18,6 +18,7 @@ import EditIcon from './edit.svg';
 import ErrorIcon from './error.svg';
 import HamburgerIcon from './hamburger.svg';
 import InfoIcon from './info.svg';
+import LibrarianIcon from './librarian.svg';
 import LibraryIcon from './library.svg';
 import LogoIcon from './logo.svg';
 import PanelIcon from './panel.svg';
@@ -51,6 +52,7 @@ export {
   ErrorIcon,
   HamburgerIcon,
   InfoIcon,
+  LibrarianIcon,
   LibraryIcon,
   LogoIcon,
   PanelIcon,

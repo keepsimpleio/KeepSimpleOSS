@@ -30,38 +30,11 @@ body:has(.library) {
   overscroll-behavior-x: none;
 }
 
-// The Copilot pill sits over the shelves on library pages, where the boards
-// and covers are the content and a black "Ask anything" bar competes with
-// them. Here it is the star alone, at half strength, and it comes back to
-// full text and full opacity the moment it is opened or pointed at.
-//
-// The widget injects its own <style> into <head> at runtime, after this
-// sheet, so these rules carry an extra selector to outweigh it rather than
-// relying on source order.
-html:has(.library) {
-  .ks-aux-pill:not(.ks-aux-pill-open) {
-    width: 44px;
-    padding: 0;
-    gap: 0;
-    justify-content: center;
-    opacity: 0.5;
-
-    .ks-aux-pill-text {
-      display: none;
-    }
-
-    &:hover,
-    &:focus-visible {
-      opacity: 1;
-    }
-  }
-}
-
-// While a library modal is open on a phone the sheet is the whole screen, and
-// the star was sitting on top of its last section. Desktop keeps it: there
-// the modal is a centred card with page around it.
-@media (max-width: 768px) {
-  html:has(.library [role='dialog']) .ks-aux-root {
-    display: none;
-  }
+// Library pages get their own agent, the Librarian, opened from the toolbar.
+// The site-wide Copilot keeps running here for its page tracking, but nothing
+// of it is shown or reachable. The widget injects its own <style> into
+// <head> after this sheet, so the selector carries an extra hop to outweigh
+// it rather than relying on source order.
+html:has(.library) .ks-aux-root {
+  display: none;
 }
