@@ -16,6 +16,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+
+  // Two label + 120px field pairs need ~400px; a phone column has ~340. Stack
+  // them, each field spanning the row with its control on the right, instead
+  // of letting the second one run out of the box.
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .field {
@@ -24,6 +32,10 @@
   align-items: center;
   gap: 8px;
   position: relative;
+
+  @media (max-width: 600px) {
+    justify-content: space-between;
+  }
 }
 
 .label {

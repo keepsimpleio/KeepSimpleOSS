@@ -2,6 +2,9 @@
   width: 100% !important;
   max-width: 920px !important;
   max-height: min(781px, calc(100vh - 32px));
+  // iOS counts the collapsed browser chrome in 100vh, which pushed the last
+  // section under the toolbar; dvh is the height actually on screen.
+  max-height: min(781px, calc(100dvh - 32px));
   background: var(--white-200) !important;
   overflow: hidden;
   display: flex !important;
@@ -159,6 +162,10 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  // Nothing in here may scroll sideways: on a phone a horizontal scroller
+  // eats the swipe that should be the browser's back gesture (which is how
+  // the modal closes). Anything wider than the column wraps or clips.
+  overflow-x: hidden;
 
   scrollbar-width: thin;
   scrollbar-color: #c0b6ae transparent;
@@ -181,6 +188,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 
 .cover {
@@ -244,6 +252,9 @@
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  // Long unbroken strings (a URL in a description, a single-word title) wrap
+  // instead of widening the column.
+  overflow-wrap: anywhere;
 }
 
 .objectTitle {
@@ -377,7 +388,8 @@
   .body {
     grid-template-columns: 1fr;
     gap: 24px;
-    padding: 20px 16px;
+    // Extra room under the last section so it never kisses the sheet's edge.
+    padding: 20px 16px 32px;
     // Stacked single-column grid in a flex:1 (full-height) body: grid's default
     // align-content stretches the auto rows to fill leftover vertical space,
     // ballooning `.left` far past its content. Pack rows to the

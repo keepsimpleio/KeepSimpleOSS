@@ -56,3 +56,12 @@ html:has(.library) {
     }
   }
 }
+
+// While a library modal is open on a phone the sheet is the whole screen, and
+// the star was sitting on top of its last section. Desktop keeps it: there
+// the modal is a centred card with page around it.
+@media (max-width: 768px) {
+  html:has(.library [role='dialog']) .ks-aux-root {
+    display: none;
+  }
+}
