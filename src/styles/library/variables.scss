@@ -130,6 +130,10 @@
   --tooltip-shadow: 0px 0px 22px 0px #00000033;
   --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   --sidebar-shadow: -18px 31px 19.2px 0px #533a3a08;
+  /* The info panel's tab in the toolbar: the same warm ink as the sheet's own
+     shadow, cast leftward onto the page so the tab reads as the panel's
+     leading edge rather than a patch of paint. */
+  --panel-tab-shadow: -10px 0 16px -8px #533a3a2e;
 
   /* Fonts — the upstream library injected these via next/font on <body>;
      here we declare them directly with web-safe fallbacks. */
