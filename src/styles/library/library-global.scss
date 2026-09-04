@@ -29,3 +29,30 @@ html:has(.library),
 body:has(.library) {
   overscroll-behavior-x: none;
 }
+
+// The Copilot pill sits over the shelves on library pages, where the boards
+// and covers are the content and a black "Ask anything" bar competes with
+// them. Here it is the star alone, at half strength, and it comes back to
+// full text and full opacity the moment it is opened or pointed at.
+//
+// The widget injects its own <style> into <head> at runtime, after this
+// sheet, so these rules carry an extra selector to outweigh it rather than
+// relying on source order.
+html:has(.library) {
+  .ks-aux-pill:not(.ks-aux-pill-open) {
+    width: 44px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+    opacity: 0.5;
+
+    .ks-aux-pill-text {
+      display: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+    }
+  }
+}
