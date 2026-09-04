@@ -46,6 +46,12 @@
   min-width: 0;
   padding: 16px 0 4px;
   animation: toolbar-fade 0.3s ease;
+
+  // Phones stack the controls with no top margin of their own, so the
+  // heading carries the same 12px the pills keep from the search field.
+  @media (max-width: 768px) {
+    padding-bottom: 12px;
+  }
 }
 
 .librarySwitcher {
@@ -71,10 +77,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
 
-    > div {
-      border-left: none;
-    }
+  // The chevron compartment: the shared field boxes it off with a rule, which
+  // reads as a form control, not a title. Doubled class to outweigh the
+  // molecule own three-class selector.
+  &.librarySwitcher > button > div {
+    border-left: none;
   }
 
   @media (max-width: 768px) {
