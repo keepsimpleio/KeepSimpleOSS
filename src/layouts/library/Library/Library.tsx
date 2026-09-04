@@ -811,7 +811,6 @@ export function LibraryTemplate({
           shelves={displayedShelves}
           isOwner={viewAsOwner}
           ownerName={ownerUsername ?? libraryId}
-          hasAudio={shelves.some(s => s.attributes.type === 'audio')}
           search={search}
           onSearchChange={setSearch}
           matchedCount={matchedCount}

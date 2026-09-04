@@ -52,10 +52,6 @@
   color: var(--brown-200);
 }
 
-.welcomeText {
-  color: var(--brown-200);
-}
-
 // Fades whichever variant is mounted, so toggling guest mode in your own
 // library swaps the content smoothly instead of a hard cut.
 @keyframes toolbar-fade {

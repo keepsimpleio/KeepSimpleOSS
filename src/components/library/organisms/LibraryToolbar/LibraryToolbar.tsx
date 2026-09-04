@@ -1,12 +1,5 @@
 import classNames from 'classnames';
-import React, {
-  JSX,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
 import { ArrowIcon } from '@icons/library/svg';
 
@@ -32,7 +25,6 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     shelves,
     isOwner = true,
     ownerName,
-    hasAudio = false,
     matchedCount = null,
     search = '',
     onSearchChange,
@@ -76,35 +68,6 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
   };
 
   const jumpOverflowing = canJumpLeft || canJumpRight;
-
-  // Visitor banner: the tags actually used on this library's objects, deduped
-  // by name (no cross-account tag fetch — mirror the Sidebar's derivation).
-  const tagNames = useMemo(() => {
-    const names = new Set<string>();
-    for (const shelf of shelves) {
-      for (const obj of shelf.attributes.objects?.data ?? []) {
-        for (const tag of obj.attributes.tags?.data ?? []) {
-          names.add(tag.attributes.name);
-        }
-      }
-    }
-    return Array.from(names);
-  }, [shelves]);
-
-  // Tease the two most-used tags in the welcome line. Deterministic: the
-  // sentence is server-rendered, and a random pick re-rolled on every tag
-  // change and mismatched the server markup.
-  const featuredTags = useMemo(() => tagNames.slice(0, 2), [tagNames]);
-
-  const collectionsClause =
-    featuredTags.length >= 2
-      ? `curated collections on ${featuredTags[0]} and ${featuredTags[1]}`
-      : featuredTags.length === 1
-        ? `curated collections on ${featuredTags[0]}`
-        : 'curated collections';
-  const welcomeText = hasAudio
-    ? `Discover and explore ${collectionsClause}, along with a playlist of favorite songs.`
-    : `Discover and explore ${collectionsClause}.`;
 
   // Default to the first shelf as soon as the list lands; let the user
   // override by clicking, but keep their choice when the list identity
@@ -174,12 +137,6 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
             className={styles.welcomeTitle}
           >
             Welcome to {ownerName}&rsquo;s library
-          </Text>
-          <Text
-            variant={TypographyVariant.TextSmall}
-            className={styles.welcomeText}
-          >
-            {welcomeText}
           </Text>
         </div>
       )}
