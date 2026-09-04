@@ -19,10 +19,27 @@
   border: none;
   padding: 0;
   outline: none;
+  // The object rises off the shelf under the cursor — one shared lift across
+  // book/video/audio cards.
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-6px);
+  }
 
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--focus-ring);
-    border-radius: 2px;
+    border-radius: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
   }
 }
 
@@ -39,7 +56,8 @@
   right: 0;
   width: 146px;
   display: flex;
-  justify-content: center;
+  // The toggle fills the artwork it covers.
+  justify-content: stretch;
   padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
@@ -47,15 +65,37 @@
   transition: opacity 0.15s ease;
 }
 
+// The strip above the artwork is the toggle's own place on the shelf, so a
+// pointer that arrives there reveals it instead of being sent to the cover
+// first. Mouse pointers only: a touch has no hover to reveal it with, and an
+// invisible target would answer a stray tap.
+@media (hover: hover) and (pointer: fine) {
+  .select {
+    pointer-events: auto;
+  }
+
+  .select:hover {
+    opacity: 1;
+  }
+}
+
+// Keyboard focus reveals the toggle; a mouse click does not pin it. Plain
+// :focus-within kept the strip lit on the card you had just clicked, so it
+// stayed up while the pointer was already on the next book.
 .card:hover .select,
-.card:focus-within .select {
+.card:has(:focus-visible) .select,
+.card.selected .select {
   opacity: 1;
   pointer-events: auto;
 }
 
 // Dim the cover while selected so the state reads at a glance.
+// Selected reads as chosen, not switched off: the art stays at full strength
+// under a brown ring, and the "Remove" pill above it stays on screen.
 .card.selected .cover {
-  opacity: 0.55;
+  box-shadow:
+    0 0 0 2px var(--white),
+    0 0 0 4px var(--brown);
 }
 
 // The book body: a complete 3D mockup (spine + binding + drop shadow baked in).
@@ -81,7 +121,8 @@
   height: 206px;
   overflow: hidden;
   z-index: 1;
-  transition: opacity 0.15s ease;
+  // The selected ring is a box-shadow, so that is what eases in.
+  transition: box-shadow 0.2s ease;
 }
 
 .coverImage {
@@ -89,6 +130,14 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  // Fades in over the book mockup once decoded; `.coverImageLoaded` lands on
+  // load.
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.coverImageLoaded {
+  opacity: 1;
 }
 
 .tags {
@@ -102,7 +151,10 @@
 .tagDot {
   width: 12px;
   height: 12px;
-  border-radius: 2px;
+  // A recoloured tag eases to its new pigment; a new dot rises in.
+  transition: background-color 0.2s ease;
+  animation: tag-dot-in 0.2s ease both;
+  border-radius: 0;
   display: block;
 }
 
@@ -117,6 +169,8 @@
   .card {
     width: 119px;
     height: 138px;
+    // No hover lift in the share panel — these tiles drag-reorder.
+    transform: none;
     box-shadow:
       0 0 0 1.5px #f9f4eb,
       0 0 0 2.5px #af6a34;
@@ -133,5 +187,23 @@
 
   .tags {
     display: none;
+  }
+}
+
+@keyframes tag-dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tagDot {
+    transition: none;
+    animation: none;
   }
 }

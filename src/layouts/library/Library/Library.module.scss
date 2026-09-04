@@ -1,6 +1,21 @@
+// Height of the share panel's collapsed header bar. It's fixed to the bottom
+// of the viewport whenever the owner's bar renders, so the library reserves
+// the strip instead of letting the last shelf sit under it. Visitors get no
+// bar and no dead strip. The bar measures itself and publishes the real
+// figure as --library-share-bar-height; this is only the value used before
+// that lands, and the floor for the empty/loading screens below.
+$share-bar-height: 87px;
+
 .wrapper {
   flex: 1;
   min-width: 0;
+  // Anchors the owner's notice, which is laid over the list rather than
+  // holding a band above it.
+  position: relative;
+
+  &.withShareBar {
+    padding-bottom: var(--library-share-bar-height, #{$share-bar-height});
+  }
 
   @media (max-width: 1024px) {
     min-height: calc(100vh - 168px);
@@ -20,7 +35,7 @@
     align-items: center;
     justify-content: center;
     gap: 28px;
-    min-height: calc(100vh - 48px);
+    min-height: calc(100vh - 48px - #{$share-bar-height});
     padding: 24px;
   }
 
@@ -28,7 +43,7 @@
   // the spinner centers in the content area instead of collapsing to the top.
   .loading {
     position: relative;
-    min-height: calc(100vh - 48px);
+    min-height: calc(100vh - 48px - #{$share-bar-height});
   }
 
   .text {
@@ -55,26 +70,118 @@
   flex-direction: column;
 }
 
-// Played once right after a reorder commits: dip the list's opacity so shelves
-// visibly fade out and back in as they snap to their new positions.
-.resequencing {
-  animation: shelf-resequence 0.45s ease;
+// One board per slot, so a board on its way out (deleted, or hidden by a
+// search) can fold its slot shut while the boards below slide up.
+.shelfSlot {
+  display: flex;
+  flex-direction: column;
+
+  &.shelfLeaving {
+    pointer-events: none;
+  }
 }
 
-@keyframes shelf-resequence {
-  0% {
+// The add-shelf control lives at the foot of the list, on the same 16px gutter
+// as each shelf's own header, so it reads as the empty slot the next board
+// will occupy.
+.addShelfRow {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px 40px;
+}
+
+// The explanation tooltip only exists while the control is off.
+.tooltipOff :global(.react-tooltip) {
+  display: none;
+}
+
+.addShelfButton {
+  width: auto !important;
+  // The Text button variant defaults to white, which is meant for the dark
+  // surfaces it sits on elsewhere. On the library's cream page it has to carry
+  // the same brown the toolbar's own text buttons use.
+  color: var(--brown) !important;
+}
+
+// Laid over the top of the shelf list rather than holding a band above it:
+// the shelves never move when a message lands, and the owner's library sits
+// exactly where a visitor's does.
+.noticeRow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.notice {
+  animation: notice-in 0.16s ease-out;
+
+  &.noticeClosing {
+    animation: notice-out 0.16s ease-in forwards;
+    pointer-events: none;
+  }
+}
+
+@keyframes notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes notice-out {
+  from {
     opacity: 1;
   }
-  45% {
-    opacity: 0.25;
-  }
-  100% {
-    opacity: 1;
+  to {
+    opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .resequencing {
+  .notice,
+  .notice.noticeClosing {
     animation: none;
+  }
+}
+
+.notice {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 12px;
+  border-radius: var(--radius-control);
+  background: var(--off-white);
+  color: var(--red-500);
+
+  p {
+    color: inherit;
+  }
+}
+
+.noticeDismiss {
+  border: none;
+  background: transparent;
+  color: var(--gray-darkest);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-control);
+  transition: color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--brown);
   }
 }

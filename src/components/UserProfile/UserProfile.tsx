@@ -8,8 +8,8 @@ import { isLibraryEnabled } from '@constants/library/common';
 
 import { logout } from '@api/auth';
 
-import LibraryIcon from '@icons/library/svg/library.svg';
 import PlusIcon from '@icons/library/svg/plus.svg';
+import LibraryIcon from '@icons/navbar/library.svg';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './UserProfile.module.scss';
@@ -191,17 +191,20 @@ const UserProfile: FC<UserProfileProps> = ({
                 <LibraryIcon
                   width={20}
                   height={11}
-                  className={cn(styles.menuIcon, {
+                  className={cn(styles.menuIcon, styles.menuIconLibrary, {
                     [styles.menuIconDark]: isDarkTheme,
                   })}
                 />
                 <span>{t.myLibrary}</span>
               </div>
             )}
-            {isLibraryEnabled() && (
+            {/* One library per user: once they own one, "My Library" above is
+                the only honest entry and this item would just repeat it. */}
+            {isLibraryEnabled() && !hasLibrary && (
               <div
                 className={cn(styles.menuItem, {
                   [styles.disabled]: !canCreateLibrary,
+                  [styles.highlighted]: canCreateLibrary,
                 })}
                 onClick={handleCreateLibrary}
                 aria-disabled={!canCreateLibrary}
@@ -209,7 +212,7 @@ const UserProfile: FC<UserProfileProps> = ({
                 <PlusIcon
                   width={14}
                   height={14}
-                  className={cn(styles.menuIcon, {
+                  className={cn(styles.menuIcon, styles.menuIconPlus, {
                     [styles.menuIconDark]: isDarkTheme,
                   })}
                 />

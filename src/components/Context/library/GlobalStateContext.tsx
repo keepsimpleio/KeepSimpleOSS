@@ -1,3 +1,4 @@
+// motion-passport: exempt — state container, renders no markup and ships no styles.
 import { useSession } from 'next-auth/react';
 import {
   createContext,
@@ -19,6 +20,11 @@ import type {
 import type { IUser } from '@local-types/library/user';
 
 import { getAccessToken } from '@lib/library/cookie';
+import { claimDevSession } from '@lib/library/devSession';
+import {
+  readSidebarCollapsed,
+  writeSidebarCollapsed,
+} from '@lib/library/sidebarPanel';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
 import { getUserInfo } from '@api/library/user/getUserInfo';
@@ -29,7 +35,25 @@ interface GlobalStateContextValue {
   isGuestMode: boolean;
   isSidebarOpen: boolean;
   toggleGuestMode: () => void;
+  /** Leave guest mode outright — used when the viewed library changes. */
+  setGuestMode: (value: boolean) => void;
   toggleSidebar: () => void;
+  /** Close the mobile drawer (a toggle would reopen it from a closed state). */
+  closeSidebar: () => void;
+  /**
+   * Desktop only: the info panel folded to its spine so the shelves take the
+   * width. Remembered per account across every library and across refreshes
+   * (see `@lib/library/sidebarPanel`); the mobile drawer ignores it.
+   */
+  isSidebarCollapsed: boolean;
+  toggleSidebarCollapsed: () => void;
+  /**
+   * Whether the viewer owns the library on screen. Decided once, by
+   * `LibraryTemplate`, and published here so the Sidebar and the shelves can
+   * never disagree about who is looking.
+   */
+  isOwner: boolean;
+  setIsOwner: (value: boolean) => void;
   user: IUser | null;
   isUserLoading: boolean;
   refetchUser: () => Promise<void>;
@@ -70,12 +94,28 @@ const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(
   undefined,
 );
 
-export function GlobalStateProvider({ children }: { children: ReactNode }) {
+interface GlobalStateProviderProps {
+  children: ReactNode;
+  /**
+   * The collapsed choice as read from the request cookie by the page's
+   * `getServerSideProps`, so the server paints the panel at its final width
+   * and a refresh never shows it open for a frame before folding.
+   */
+  initialSidebarCollapsed?: boolean;
+}
+
+export function GlobalStateProvider({
+  children,
+  initialSidebarCollapsed = false,
+}: GlobalStateProviderProps) {
   const { data: session } = useSession();
   const { accountData, setAccountData, token } = useAuth();
 
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
+    initialSidebarCollapsed,
+  );
   const [isUserLoading, setIsUserLoading] = useState(false);
   const [libraries, setLibraries] = useState<StrapiLibrariesResponse | null>(
     null,
@@ -87,7 +127,9 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(null);
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const didAttemptUserLoad = useRef(false);
+  const didAttemptDevSession = useRef(false);
 
   const refetchUser = useCallback(async () => {
     setIsUserLoading(true);
@@ -113,6 +155,18 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     const hasToken = Boolean(getAccessToken());
     if (!hasToken) {
       didAttemptUserLoad.current = false;
+      // DEV preview only: adopt the owner session shared for joint review, so
+      // reviewers behind the Access gate see the logged-in library without
+      // signing in. No-op everywhere else. See `@lib/library/devSession`.
+      if (!didAttemptDevSession.current) {
+        didAttemptDevSession.current = true;
+        void claimDevSession().then(claimed => {
+          if (claimed) {
+            didAttemptUserLoad.current = true;
+            void refetchUser();
+          }
+        });
+      }
       return;
     }
     if (accountData || didAttemptUserLoad.current) {
@@ -121,6 +175,22 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     didAttemptUserLoad.current = true;
     void refetchUser();
   }, [accountData, session, refetchUser]);
+
+  // The server read the cookie for whichever account the request carried.
+  // Once the account is actually known here (it can arrive later: a token in
+  // localStorage only, or the DEV shared session claimed after load), re-read
+  // that account's own choice so it wins over the anonymous default.
+  const accountId = accountData?.id;
+  useEffect(() => {
+    if (!accountId) return;
+    setIsSidebarCollapsed(readSidebarCollapsed(accountId));
+  }, [accountId]);
+
+  const toggleSidebarCollapsed = useCallback(() => {
+    const next = !isSidebarCollapsed;
+    writeSidebarCollapsed(accountId, next);
+    setIsSidebarCollapsed(next);
+  }, [accountId, isSidebarCollapsed]);
 
   useEffect(() => {
     // `/api/libraries` is publicly readable, so the right-panel library
@@ -135,7 +205,13 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       isGuestMode,
       isSidebarOpen,
       toggleGuestMode: () => setIsGuestMode(prev => !prev),
+      setGuestMode: setIsGuestMode,
       toggleSidebar: () => setIsSidebarOpen(prev => !prev),
+      closeSidebar: () => setIsSidebarOpen(false),
+      isSidebarCollapsed,
+      toggleSidebarCollapsed,
+      isOwner,
+      setIsOwner,
       user: accountData,
       isUserLoading,
       refetchUser,
@@ -152,8 +228,11 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       setIsCreateBlocked,
     }),
     [
+      isOwner,
       isGuestMode,
       isSidebarOpen,
+      isSidebarCollapsed,
+      toggleSidebarCollapsed,
       accountData,
       isUserLoading,
       refetchUser,

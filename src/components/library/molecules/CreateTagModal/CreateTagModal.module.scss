@@ -3,24 +3,18 @@
   max-width: 518px !important;
   background: var(--white) !important;
   overflow: hidden;
-  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: height;
 
   form {
     display: block;
-    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
   }
 }
 
 .wrapper {
   padding: 32px;
-  border-top: 1px solid var(--brown-border);
-  border-bottom: 1px solid var(--brown-border);
   max-height: calc(100vh - 250px);
   overflow-y: auto;
   overflow-x: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   &::-webkit-scrollbar {
     display: none;
@@ -54,29 +48,20 @@
       font-size: 12px;
       margin-top: 4px;
       margin-bottom: 0;
+      line-height: 18px;
+      animation: message-in 0.2s ease;
     }
 
     .color {
-      gap: 22px 12px;
+      gap: 16px 14px;
       display: flex;
       flex-wrap: wrap;
 
+      // The four shades of one hue stand shoulder to shoulder as a single bar;
+      // the gap above separates the hues, so the palette reads as seven
+      // families rather than twenty-eight loose chips.
       .blok {
         display: flex;
-
-        div {
-          width: 26px;
-          height: 26px;
-          margin-left: -1px;
-          cursor: pointer;
-          transition: all 0.2s ease-in;
-
-          &.active {
-            outline: 3px solid #616469;
-            z-index: 1;
-            position: relative;
-          }
-        }
       }
     }
 
@@ -84,7 +69,7 @@
       display: flex;
       justify-content: center;
       background: var(--white-warm);
-      border-radius: 4px;
+      border-radius: var(--radius-control);
       padding: 12px 16px;
 
       .tag {
@@ -102,7 +87,7 @@
       align-items: center;
       justify-content: space-between;
       border: 1px solid var(--gray-100);
-      border-radius: 4px;
+      border-radius: var(--radius-control);
       padding: 8px 12px;
 
       .label {
@@ -141,9 +126,6 @@
   }
 
   .tags {
-    background: var(--white-warm);
-    padding: 16px;
-    border-radius: 4px;
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
@@ -162,6 +144,12 @@
   }
 }
 
+// Drawn rule closing the scrolling body, replacing its boxed 1px border.
+.footRule {
+  width: calc(100% - 64px);
+  margin: 0 32px;
+}
+
 .footer {
   gap: 16px;
   display: flex;
@@ -171,5 +159,128 @@
 
   button {
     width: auto !important;
+  }
+}
+
+// Colour swatches are real buttons (keyboard reachable). A colour you choose
+// has to be a colour you can read: 32px square, the same module the library's
+// other controls sit on. They were sized by a `.blok div` rule that stopped
+// matching the moment they became buttons, which left them as slivers.
+.swatch {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    z-index: 1;
+    transform: translateY(-2px);
+  }
+
+  // The chosen shade is ringed rather than outlined: a white gap then the
+  // brown, so the mark reads on the pale shades and the dark ones alike.
+  &.active {
+    z-index: 2;
+    box-shadow:
+      0 0 0 2px var(--white),
+      0 0 0 4px var(--brown-100);
+  }
+
+  &:focus-visible {
+    z-index: 3;
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.infoIcon {
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+  border-radius: 50%;
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.taggedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brown-border) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--brown-border);
+    border-radius: 3px;
+  }
+}
+
+.taggedRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.taggedTitle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.taggedMeta {
+  flex-shrink: 0;
+  color: var(--gray-darker);
+}
+
+// A message lands in a line held from the start and fades in, so the form
+// neither jumps nor blinks when validation speaks.
+@keyframes message-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper .field,
+  .wrapper .noTagFound {
+    animation: none;
+    transition: none;
   }
 }

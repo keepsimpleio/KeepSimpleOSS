@@ -1,30 +1,46 @@
 .toggle {
-  display: inline-flex;
+  // Spans the artwork it stands over: the whole width of the object is the
+  // target, not a pill floating in the middle of it.
+  display: flex;
+  width: 100%;
   align-items: center;
   justify-content: center;
   padding: 4px 16px;
-  border: none;
-  border-radius: 999px;
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
   cursor: pointer;
   white-space: nowrap;
-  background: var(--brown);
-  color: var(--white);
-  box-shadow: var(--card-shadow);
+  // At rest it is paper with brown lettering; the brown fill is what the
+  // pointer earns.
+  background: var(--white-200);
+  color: var(--brown);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 
   p {
     color: inherit;
   }
 
-  &:hover {
-    background: var(--brown-100);
+  &:hover,
+  &:focus-visible {
+    background: var(--brown);
+    border-color: var(--brown);
+    color: var(--white);
   }
 
+  // Already in the link: filled, so the chosen object reads as chosen at a
+  // glance, and the hover deepens it.
   &.selected {
     background: var(--brown-100);
+    border-color: var(--brown-100);
     color: var(--white);
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background: var(--brown-200);
+      border-color: var(--brown-200);
     }
   }
 
@@ -33,7 +49,13 @@
     opacity: 0.45;
 
     &:hover {
-      background: var(--white);
+      background: var(--white-200);
+      border-color: var(--brown-border);
+      color: var(--brown);
     }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }

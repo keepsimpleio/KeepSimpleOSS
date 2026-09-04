@@ -74,6 +74,16 @@
   --off-white: #f9f4eb;
   --white-warm: #fffbf4;
 
+  /* Empty-shelf figure — the wooden mannequin that stands on a shelf holding
+     nothing yet. Its tones are the shelf board's own (see
+     --gradient-shelf-color) so it reads as turned from the same wood; no new
+     hue enters the palette. */
+  --figure-wood-light: #ece2cd;
+  --figure-wood-mid: #d2c6af;
+  --figure-wood-dark: var(--taupe);
+  --figure-wood-deep: #b0a184;
+  --figure-wood-edge: var(--brown-100);
+
   --white-transparent-400: rgba(248, 241, 229, 0.4);
   --white-overlay: rgba(255, 255, 255, 0.18);
   --surface-overlay: rgba(229, 229, 229, 0.03);
@@ -98,17 +108,49 @@
     var(--cream) 0%,
     var(--beige) 100%
   );
+  /* The info panel's tab: laid lines the width of a book's cased spine,
+     drawn in the sheet's own brown at a few percent, over a light that falls
+     from the page side toward the panel. Ruling, not decoration. */
+  --pattern-panel-tab:
+    repeating-linear-gradient(
+      to right,
+      rgba(135, 108, 66, 0.07) 0px,
+      rgba(135, 108, 66, 0.07) 1px,
+      rgba(135, 108, 66, 0) 1px,
+      rgba(135, 108, 66, 0) 5px
+    ),
+    linear-gradient(
+      to right,
+      rgba(135, 108, 66, 0.06) 0%,
+      rgba(135, 108, 66, 0) 45%
+    );
+
   --gradient-book-placeholder: linear-gradient(
     135deg,
     #d4cfb4 0%,
     #b5ad8a 100%
   );
 
+  /* Radius — the one corner for every interactive control and floating
+     surface (buttons, inputs, dropdowns, modals). Fully sharp, matching the
+     keepsimple.io/tools tiles; only circles (dots, spinner, switch) keep
+     their shape. */
+  --radius-control: 0;
+  /* Tags are the one exception to the sharp corner: a solid block of colour
+     reads better as a fully rounded pill. */
+  --radius-tag: 100px;
+  /* The shelf-header type icon chip sits next to the square shelf controls, so
+     it stays sharp like the rest of the surface. */
+  --radius-icon-chip: 0;
+
   /* Box Shadow */
   --tooltip-shadow: 0px 0px 22px 0px #00000033;
   --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   --sidebar-shadow: -18px 31px 19.2px 0px #533a3a08;
-  --card-shadow: 0px 4px 12px 0px #00000014;
+  /* The info panel's tab in the toolbar: the same warm ink as the sheet's own
+     shadow, cast leftward onto the page so the tab reads as the panel's
+     leading edge rather than a patch of paint. */
+  --panel-tab-shadow: -10px 0 16px -8px #533a3a2e;
 
   /* Fonts — the upstream library injected these via next/font on <body>;
      here we declare them directly with web-safe fallbacks. */

@@ -9,41 +9,62 @@
   z-index: 40;
   display: flex;
   flex-direction: column;
-  max-height: 440px;
   background: var(--white-warm);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
-  transition: max-height 0.3s ease;
+
+  // The bar is as tall as the bar. The library's base sheet gives every
+  // `section` inside `.library` `height: 100%`, and on a fixed element that
+  // resolves against the viewport: the bar became a full-height sheet laid
+  // over the shelves, so the owner opened their own library and found an
+  // empty room. The doubled class outweighs `.library section` without
+  // touching that base rule, which the rest of the page relies on.
+  &.panel {
+    height: auto;
+  }
 
   @media (max-width: 1024px) {
     right: 0;
   }
+
+  // Panel folded: the working area is the whole window and so is the bar.
+  &.panelWide {
+    right: 0;
+  }
 }
 
-// Collapsed: fold the panel down to just the header bar (still pinned to the
-// bottom of the viewport). The body is clipped by .bodyWrap's overflow:hidden.
-// Selecting more objects from the library while minimized still works — they're
-// added to the hidden body and show up when the panel is expanded again.
-.collapsed {
-  max-height: 87px;
+// Shown in place of the card grid while nothing is selected, so the opened
+// panel explains itself instead of presenting an empty tray.
+.emptyState {
+  color: var(--gray-medium);
+  padding: 8px 0 4px;
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 24px 32px;
+  gap: 16px;
+  // The bar is a strip over the shelves, so it spends as little of the
+  // library as the buttons inside it need.
+  padding: 10px 20px;
   background: var(--cream);
   border-bottom: 1px solid var(--beige);
+  // The bar itself folds the section, so the pointer says so anywhere on it.
+  cursor: pointer;
 }
 
 // Recipient view has no action buttons, so the tall padding leaves the bare
 // title floating; tighten the vertical padding to keep the bar compact.
 .headerReadOnly {
-  padding: 5px 32px;
+  padding: 4px 20px;
 }
 
 .heading {
+  // Reaches across the free stretch of the bar so the label, not just its
+  // text, is what a pointer lands on.
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -59,7 +80,7 @@
   color: #868686;
   transition: transform 0.2s ease;
 
-  &.chevronCollapsed {
+  &.chevronExpanded {
     transform: rotate(180deg);
   }
 }
@@ -87,8 +108,8 @@
 // one another, and pin each label to one 14px line.
 @media (max-width: 768px) {
   .header {
-    gap: 16px;
-    padding: 16px;
+    gap: 12px;
+    padding: 10px 16px;
   }
 
   .actions {
@@ -106,37 +127,61 @@
       white-space: nowrap;
     }
   }
+}
 
-  // Two stacked buttons make the header taller than the desktop 87px bar, so
-  // grow the collapsed cap to fit it — otherwise the lower button is clipped.
-  .collapsed {
-    max-height: 120px;
+// The accordion itself: clipped, and its max-height set from the body's
+// measured height (0 when folded). Nothing here is guessed, so the header is
+// never clipped and the slide always runs the full distance.
+.bodyWrap {
+  min-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
-// Fills the space under the header and clips its content as the panel collapses
-// (the panel's max-height drives the accordion). `flex: 1` + `min-height: 0`
-// let .body scroll when the panel hits its 440px cap with many objects.
-.bodyWrap {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+// Folded, the body is out of reach of the pointer as well as of screen
+// readers, and its controls leave the tab order with it; the body keeps its
+// own height so the next open animates to the right place.
+.collapsed .bodyWrap {
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    max-height 0.3s ease,
+    visibility 0s linear 0.3s;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 .body {
-  // border-box so the 24px padding collapses to zero too (otherwise it would
-  // leave a ~48px stub when the grid row reaches 0fr).
   box-sizing: border-box;
   min-height: 0;
+  // A long selection scrolls inside the section instead of pushing the
+  // section past the top of the window.
+  max-height: 380px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px 32px;
+  gap: 12px;
+  padding: 14px 20px 18px;
   overflow-y: auto;
 }
 
 .warning {
   color: var(--brown);
+  animation: row-in 0.2s ease;
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .error {
@@ -151,7 +196,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 32px;
+  gap: 12px 20px;
 }
 
 .item {
@@ -159,7 +204,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  // The lift on pick-up and the settle on drop are eased.
+  transition: opacity 0.15s ease;
+}
+
+// One tile per slot: the slot is what the list motion measures and moves.
+.tileSlot {
+  display: flex;
+
+  &.tileLeaving {
+    pointer-events: none;
+  }
 }
 
 .removePill {
@@ -169,10 +225,9 @@
   height: 25px;
   padding: 0 16px;
   border: 1px solid var(--beige);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   cursor: pointer;
   background: var(--white);
-  box-shadow: 0 2.27px 4.55px rgba(0, 0, 0, 0.06);
 
   svg {
     width: 16px;
@@ -204,12 +259,15 @@
 }
 
 .linkRow {
+  // The minted link and a failure both land with a short fade, inside a body
+  // that is already growing to hold them.
+  animation: row-in 0.2s ease;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
   border: 1px solid var(--beige);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--off-white);
 }
 
@@ -219,4 +277,37 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .chevron,
+  .item {
+    transition: none;
+  }
+
+  .linkRow,
+  .warning {
+    animation: none;
+  }
+}
+
+// Scrollbar passport: the body scrolls once the panel hits its height cap, so
+// it carries the same thin paper-toned bar the rest of the library uses.
+.body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--taupe) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--taupe);
+    border-radius: var(--radius-control);
+  }
 }

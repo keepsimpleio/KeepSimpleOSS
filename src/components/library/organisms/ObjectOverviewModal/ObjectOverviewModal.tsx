@@ -1,6 +1,6 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
-import React, { JSX, useCallback, useMemo, useState } from 'react';
+import React, { JSX, useCallback, useMemo, useRef, useState } from 'react';
 
 import { KEEPSIMPLE_URL, SHELF_FULL_MESSAGE } from '@constants/library/common';
 
@@ -11,7 +11,12 @@ import type {
 } from '@local-types/library/object';
 
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
+import {
+  formatObjectDate,
+  formatObjectDuration,
+} from '@lib/library/objectMeta';
 import { objectSlug } from '@lib/library/objectSlug';
 import { isShelfFullError } from '@lib/library/shelfFull';
 import { sanitizeHtml } from '@lib/sanitizeHtml';
@@ -30,6 +35,7 @@ import {
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { IconName } from '@components/library/atoms/Icon';
+import { InkLine } from '@components/library/atoms/InkLine';
 import {
   TagType,
   Text,
@@ -57,25 +63,6 @@ import styles from './ObjectOverviewModal.module.scss';
 // falling back to the production domain (mirrors ShareSelectionPanel).
 const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
 
-function formatDate(iso?: string): string | null {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
-
-function formatDuration(seconds?: number): string {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds))
-    return '—';
-  const total = Math.max(0, Math.floor(seconds));
-  const mm = String(Math.floor(total / 60)).padStart(2, '0');
-  const ss = String(total % 60).padStart(2, '0');
-  return `${mm}:${ss}`;
-}
-
 export function ObjectOverviewModal(
   props: ObjectOverviewModalProps,
 ): JSX.Element {
@@ -100,6 +87,8 @@ export function ObjectOverviewModal(
       : null;
 
   const [menuOpen, setMenuOpen] = useState(false);
+  // The owner menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(menuOpen, 120);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -127,16 +116,25 @@ export function ObjectOverviewModal(
 
   // TODO: add dedicated route for shareable object URLs (e.g. /library/[username]/objects/[id]).
   // For now this modal is opened imperatively from a card click — no URL state.
+  // Edit lets the overview fade out first: the Modal's close lands here, and
+  // this flag turns it into the swap to the editor instead of leaving.
+  const editPending = useRef(false);
   const guardedOnClose = useCallback(() => {
-    if (deleteLoading) return;
+    if (editPending.current) {
+      editPending.current = false;
+      setEditing(true);
+      return;
+    }
+    if (deleteLoading || deleting) return;
     onClose();
-  }, [deleteLoading, onClose]);
+  }, [deleteLoading, deleting, onClose]);
 
   const { closeRef, close } = useModalClose(guardedOnClose);
 
   const handleEdit = () => {
     setMenuOpen(false);
-    setEditing(true);
+    editPending.current = true;
+    close();
   };
 
   const handleDelete = () => {
@@ -151,8 +149,10 @@ export function ObjectOverviewModal(
     try {
       await deleteObject(id);
       setDeleting(false);
+      // The parent is told when the success card closes: telling it now
+      // unmounted this modal (the object leaves the shelf) before the card
+      // could show.
       setDeleteSuccess(true);
-      onDeleted?.(id);
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Failed to delete. Please try again.';
@@ -225,6 +225,13 @@ export function ObjectOverviewModal(
     },
   });
 
+  // The last values the server accepted, so a failed save falls back to
+  // them and not to whatever the modal opened with.
+  const savedRating = useRef({
+    overall: attributes.overall,
+    difficulty: attributes.difficulty,
+  });
+
   const persistRating = async (next: {
     overall?: OverallRating;
     difficulty?: Difficulty;
@@ -232,14 +239,15 @@ export function ObjectOverviewModal(
     setRatingError(null);
     try {
       const res = await updateObject(id, next);
+      savedRating.current = { ...savedRating.current, ...next };
       onUpdated?.(preserveRelations(res.data));
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Could not save your rating.';
       setRatingError(message);
       // Revert optimistic state on failure.
-      setOverallRating(attributes.overall);
-      setDifficulty(attributes.difficulty);
+      setOverallRating(savedRating.current.overall);
+      setDifficulty(savedRating.current.difficulty);
     }
   };
 
@@ -294,7 +302,7 @@ export function ObjectOverviewModal(
         ? SHELF_FULL_MESSAGE
         : e instanceof Error
           ? e.message
-          : 'Could not move object.';
+          : 'Could not move this item.';
       setMoveError(message);
       setMoveToShelfId(undefined);
     } finally {
@@ -320,11 +328,13 @@ export function ObjectOverviewModal(
   // (contiguous 1..N even when persisted `order` values have gaps). Fall back to
   // the object's raw `order` when siblings weren't passed.
   const positionIndex = shelfObjects?.findIndex(o => o.id === id) ?? -1;
-  const objectPosition = positionIndex >= 0 ? positionIndex : attributes.order;
-  const publishedFormatted = formatDate(attributes.publicationDate);
+  // Without siblings there is no rank to show: the raw persisted `order`
+  // has gaps and would name a different position than the shelf does.
+  const objectPosition = positionIndex >= 0 ? positionIndex : undefined;
+  const publishedFormatted = formatObjectDate(attributes.publicationDate);
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
-  const durationLabel = formatDuration(attributes.duration);
+  const durationLabel = formatObjectDuration(attributes.duration);
 
   // Edit mode swaps the modal entirely; AddObjectModal manages its own success popup.
   if (editing) {
@@ -339,6 +349,7 @@ export function ObjectOverviewModal(
           setEditing(false);
           onClose();
         }}
+        onCancel={() => setEditing(false)}
         onCreated={updated => {
           onUpdated?.(updated);
         }}
@@ -369,60 +380,14 @@ export function ObjectOverviewModal(
             aria-label="Close"
             onClick={close}
           >
-            <CloseIcon width={16} height={16} />
+            <CloseIcon width={24} height={24} />
           </button>
         </div>
+        {/* Same drawn rule as the sidebar sections, in place of the boxed
+            1px header border. */}
+        <InkLine seed={4} className={styles.headerRule} />
 
         <div className={styles.body}>
-          <div className={styles.actions}>
-            <Button
-              type={ButtonType.Primary}
-              size={ButtonSize.Default}
-              className={styles.shareButton}
-              label={shareCopied ? 'Copied' : 'Share'}
-              ariaLabel={shareCopied ? 'Link copied' : 'Share'}
-              Icon={<ShareIcon />}
-              iconPosition={IconPosition.Right}
-              onClick={handleShare}
-            />
-            {isOwner && (
-              <div ref={menuRef} className={styles.menuWrapper}>
-                <button
-                  type="button"
-                  className={styles.iconButton}
-                  aria-label="More actions"
-                  aria-haspopup="menu"
-                  aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen(prev => !prev)}
-                >
-                  <DotsVerticalIcon />
-                </button>
-                {menuOpen && (
-                  <div role="menu" className={styles.menu}>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className={styles.menuItem}
-                      onClick={handleEdit}
-                    >
-                      <EditIcon />
-                      <Text variant={TypographyVariant.TextBase}>Edit</Text>
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className={classNames(styles.menuItem, styles.danger)}
-                      onClick={handleDelete}
-                    >
-                      <DeleteIcon />
-                      <Text variant={TypographyVariant.TextBase}>Delete</Text>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
           <div className={styles.left}>
             <div
               className={classNames(styles.cover, styles[config.coverShape])}
@@ -499,22 +464,81 @@ export function ObjectOverviewModal(
               </Text>
             )}
 
-            {attributes.author && (
-              <div className={styles.row}>
-                <Text
-                  variant={TypographyVariant.TextSmall}
-                  className={styles.rowLabel}
-                >
-                  Author
-                </Text>
-                <Text
-                  variant={TypographyVariant.TextBase}
-                  className={styles.rowValue}
-                >
-                  {attributes.author}
-                </Text>
+            {/* Author sits beside the actions so the copy button costs no
+                row of its own above the cover. */}
+            <div className={styles.identityRow}>
+              {attributes.author && (
+                <div className={styles.row}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.rowLabel}
+                  >
+                    Author
+                  </Text>
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.rowValue}
+                  >
+                    {attributes.author}
+                  </Text>
+                </div>
+              )}
+              <div className={styles.actions}>
+                <Button
+                  type={ButtonType.Primary}
+                  size={ButtonSize.Default}
+                  className={styles.shareButton}
+                  label={shareCopied ? 'Copied' : 'Copy URL'}
+                  ariaLabel={shareCopied ? 'Link copied' : 'Copy URL'}
+                  Icon={<ShareIcon />}
+                  iconPosition={IconPosition.Right}
+                  onClick={handleShare}
+                />
+                {isOwner && (
+                  <div ref={menuRef} className={styles.menuWrapper}>
+                    <button
+                      type="button"
+                      className={styles.iconButton}
+                      aria-label="More actions"
+                      aria-haspopup="menu"
+                      aria-expanded={menuOpen}
+                      onClick={() => setMenuOpen(prev => !prev)}
+                    >
+                      <DotsVerticalIcon />
+                    </button>
+                    {menuMounted && (
+                      <div
+                        role="menu"
+                        className={classNames(styles.menu, {
+                          [styles.menuClosing]: !menuShown,
+                        })}
+                      >
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={styles.menuItem}
+                          onClick={handleEdit}
+                        >
+                          <EditIcon />
+                          <Text variant={TypographyVariant.TextBase}>Edit</Text>
+                        </button>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={classNames(styles.menuItem, styles.danger)}
+                          onClick={handleDelete}
+                        >
+                          <DeleteIcon />
+                          <Text variant={TypographyVariant.TextBase}>
+                            Delete
+                          </Text>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
 
             {publishedFormatted && (
               <div className={styles.row}>
@@ -629,6 +653,7 @@ export function ObjectOverviewModal(
               <>
                 <RatingBox
                   username={ownerUsername}
+                  itemLabel={objectType}
                   overallRating={overallRating}
                   difficulty={difficulty}
                   onOverallChange={handleOverallChange}
@@ -646,7 +671,8 @@ export function ObjectOverviewModal(
         <ConfirmationModal
           variant="delete"
           title={`Are you sure you want to delete the object "${attributes.title}"?`}
-          text={deleteError ?? 'This action is irreversible.'}
+          text="This action is irreversible."
+          error={deleteError ?? undefined}
           actionButtonLabel={deleteLoading ? 'Deleting…' : 'Delete'}
           actionButtonType={ButtonType.Warning}
           isLoading={deleteLoading}
@@ -669,10 +695,12 @@ export function ObjectOverviewModal(
           actionButtonType={ButtonType.Secondary}
           onClose={() => {
             setDeleteSuccess(false);
+            onDeleted?.(id);
             onClose();
           }}
           onConfirm={() => {
             setDeleteSuccess(false);
+            onDeleted?.(id);
             onClose();
           }}
         />

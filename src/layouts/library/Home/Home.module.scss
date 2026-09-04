@@ -12,10 +12,17 @@
     width: 100%;
   }
 
-  .button {
+  // Nested one level deeper than the Button module's own `.button.<size>`
+  // rules so the hero's sizing wins the cascade regardless of bundle order.
+  .bannerInner .button {
     top: 40px;
     left: 38px;
-    max-width: 175px;
+    // The label sets the width: a fixed clamp wrapped "What is this place?"
+    // onto a second line, which then spilled out of the button's 44px box.
+    width: max-content;
+    max-width: calc(100% - 76px);
+    padding: 2px 20px;
+    white-space: nowrap;
     position: absolute;
     // The cover's highlight/card layers (z-index 1–3) share this stacking
     // context, so the button needs to sit above them to stay clickable.
@@ -34,9 +41,21 @@
 
 .libraries {
   padding: 40px 0 116px;
+  // The BrushPaper backdrop is absolutely positioned against this box; the
+  // container rides above it.
+  position: relative;
+
+  > :global(.container) {
+    position: relative;
+    z-index: 1;
+  }
 
   @media (max-width: 590px) {
     padding: 16px 0 97px;
+  }
+
+  .titleWrap {
+    display: inline-block;
   }
 
   .controls {
@@ -51,8 +70,11 @@
     }
 
     .title {
-      color: var(--brown);
+      // Darker step of the same brown: on paper instead of white the base
+      // brown falls under the 4.5:1 floor at the 16px mobile size.
+      color: var(--brown-100);
       font-weight: 700;
+      position: relative;
 
       @media (max-width: 590px) {
         font-size: 16px;
@@ -74,8 +96,11 @@
 
     .input {
       max-width: 348px;
-      border-radius: 6px;
+      border-radius: var(--radius-control);
       border: 1px solid var(--brown-border);
+      // On paper the flat white input turns into a raw hole; keep it a sheet
+      // of its own.
+      background: var(--white-200);
 
       @media (max-width: 590px) {
         max-width: 100%;
@@ -93,6 +118,10 @@
     .createButton {
       flex-shrink: 0;
       white-space: nowrap;
+      // Holds the width of its wider state, so the row doesn't shift when the
+      // ownership check comes back and the label becomes "Open my library".
+      min-width: 202px;
+      justify-content: center;
 
       // The shared plus icon ships a hardcoded brown fill, which disappears on
       // the brown primary button — force it (and the label) white.
@@ -107,6 +136,23 @@
     display: grid;
     gap: 20px;
     grid-template-columns: 1fr 1fr;
+
+    // One card per slot: the slot is what the list motion measures and moves.
+    // The message states (loading, nothing found) fade in the same way.
+    > * {
+      animation: grid-enter 0.25s ease both;
+    }
+
+    .cardSlot {
+      display: flex;
+      justify-content: center;
+      min-width: 0;
+      animation: none;
+
+      &.cardLeaving {
+        pointer-events: none;
+      }
+    }
 
     @media (max-width: 1024px) {
       margin: 20px 0;
@@ -123,5 +169,22 @@
     @media (max-width: 1024px) {
       justify-content: center;
     }
+  }
+}
+
+@keyframes grid-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .libraries .content > * {
+    animation: none;
   }
 }

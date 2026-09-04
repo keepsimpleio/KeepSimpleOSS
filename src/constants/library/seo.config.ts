@@ -1,8 +1,8 @@
 export const DEFAULT_SEO = {
-  title: 'keepSimple Library',
+  title: 'KeepSimple Library',
   description:
     'This is where KeepSimple team members and friends share what they’ve read and watched - books, videos, and ideas worth spreading.',
-  siteName: 'keepSimple Library',
+  siteName: 'KeepSimple Library',
   url: 'https://keepsimple-library.com',
   image: '/library/images/og-image.png',
   favicon: '/favicon.ico',

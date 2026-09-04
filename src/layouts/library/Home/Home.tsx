@@ -1,15 +1,26 @@
 import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibraries';
+import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import type { HomeLibraryCardView } from '@local-types/library/library';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
+
+import {
+  buildSearchHaystack,
+  matchesSearchTerms,
+  tokenizeQuery,
+} from '@lib/library/searchMatch';
+
 import { getLibrariesPaginated } from '@api/library/getLibrariesPaginated';
 import { getMyLibrary } from '@api/library/getMyLibrary';
 
+import LibraryMarkIcon from '@icons/library/svg/library.svg';
 import PlusIcon from '@icons/library/svg/plus.svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { BrushPaper } from '@components/library/atoms/BrushPaper';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AboutLibraryModal } from '@components/library/molecules/AboutLibraryModal';
 import {
@@ -29,6 +40,8 @@ import styles from './Home.module.scss';
 const sectionId = 'libraries-section';
 
 const perPage = 6;
+
+const libraryKey = (lib: HomeLibraryCardView) => String(lib.id);
 
 export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const router = useRouter();
@@ -59,10 +72,15 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     };
   }, [accountData?.id]);
 
+  // One library per user, so the control has two jobs: create the first one, or
+  // open the one that exists. Both land on the owner's own page — the button
+  // only changes what it promises.
+  const ownsLibrary = hasLibrary && !!accountData?.username;
   const createDisabled = !canCreateLibrary || hasLibrary;
+  const libraryButtonDisabled = ownsLibrary ? false : createDisabled;
 
-  const handleCreateLibrary = () => {
-    if (createDisabled || !accountData?.username) return;
+  const handleLibraryButton = () => {
+    if (libraryButtonDisabled || !accountData?.username) return;
     router.push(`/library/${accountData.username}`);
   };
 
@@ -71,12 +89,11 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [remoteItems, setRemoteItems] = useState<HomeLibraryCardView[]>([]);
-  const [remotePageCount, setRemotePageCount] = useState(1);
   const [isLoading, setIsLoading] = useState(!dataOverride);
 
   const isControlled = dataOverride !== undefined;
 
-  // Debounce the raw input so each keystroke doesn't fire a request.
+  // Debounce the raw input so filtering doesn't churn on each keystroke.
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(value.trim()), 300);
     return () => clearTimeout(timer);
@@ -87,6 +104,9 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     setCurrentPage(1);
   }, [debouncedQuery]);
 
+  // Invite-only product: the whole set fits one request (100 is Strapi's
+  // pageSize ceiling), so fetch once and run search, sort and pagination
+  // client-side. Revisit if libraries ever outgrow one page.
   useEffect(() => {
     if (isControlled) {
       return;
@@ -96,22 +116,14 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
     const load = async () => {
       setIsLoading(true);
-      const response = await getLibrariesPaginated(
-        currentPage,
-        perPage,
-        debouncedQuery,
-      );
+      const response = await getLibrariesPaginated(1, 100, '');
       if (cancelled) {
         return;
       }
-      if (response) {
-        const base = process.env.NEXT_PUBLIC_STRAPI;
-        setRemoteItems(mapStrapiLibrariesResponseToCards(response, base));
-        setRemotePageCount(response.meta.pagination.pageCount || 1);
-      } else {
-        setRemoteItems([]);
-        setRemotePageCount(1);
-      }
+      const base = process.env.NEXT_PUBLIC_STRAPI;
+      setRemoteItems(
+        response ? mapStrapiLibrariesResponseToCards(response, base) : [],
+      );
       setIsLoading(false);
     };
 
@@ -120,40 +132,39 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     return () => {
       cancelled = true;
     };
-  }, [isControlled, currentPage, debouncedQuery]);
+  }, [isControlled]);
 
   const { totalPages, currentLibraries } = useMemo(() => {
-    if (isControlled) {
-      const all = dataOverride ?? [];
-      const q = debouncedQuery.toLowerCase();
-      const data = q
-        ? all.filter(lib =>
-            [lib.username, lib.libraryName]
-              .filter(Boolean)
-              .some(field => field!.toLowerCase().includes(q)),
-          )
-        : all;
-      const pages = Math.max(1, Math.ceil(data.length / perPage));
-      const startIndex = (currentPage - 1) * perPage;
-
-      return {
-        totalPages: pages,
-        currentLibraries: data.slice(startIndex, startIndex + perPage),
-      };
-    }
+    const all = isControlled ? (dataOverride ?? []) : remoteItems;
+    // Same forgiving matching the library's own search box uses: case,
+    // spacing, punctuation and a slipped key all still find the library.
+    const terms = tokenizeQuery(debouncedQuery);
+    const data = terms.length
+      ? all.filter(lib =>
+          matchesSearchTerms(
+            buildSearchHaystack([lib.username, lib.libraryName]),
+            terms,
+          ),
+        )
+      : all;
+    // Showcase order: fullest libraries first, so the first row sells the
+    // feature; empty ones sink to the tail. Id keeps ties stable.
+    const sorted = [...data].sort((a, b) => {
+      const totalA = a.bookCount + a.videoCount + a.songCount;
+      const totalB = b.bookCount + b.videoCount + b.songCount;
+      if (totalB !== totalA) {
+        return totalB - totalA;
+      }
+      return Number(a.id) - Number(b.id);
+    });
+    const pages = Math.max(1, Math.ceil(sorted.length / perPage));
+    const startIndex = (currentPage - 1) * perPage;
 
     return {
-      totalPages: Math.max(1, remotePageCount),
-      currentLibraries: remoteItems,
+      totalPages: pages,
+      currentLibraries: sorted.slice(startIndex, startIndex + perPage),
     };
-  }, [
-    isControlled,
-    dataOverride,
-    debouncedQuery,
-    currentPage,
-    remoteItems,
-    remotePageCount,
-  ]);
+  }, [isControlled, dataOverride, debouncedQuery, currentPage, remoteItems]);
 
   const modalToggler = () => {
     setIsOpen(!isOpen);
@@ -169,7 +180,9 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
       window.scrollTo({
         top: sectionPosition - offset,
-        behavior: 'smooth',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'auto'
+          : 'smooth',
       });
     }
   };
@@ -183,30 +196,39 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     setValue(e.target.value);
   };
 
-  const renderLibraryCards = currentLibraries.map(
-    ({
-      id,
-      username,
-      libraryName,
-      description,
-      bookCount,
-      videoCount,
-      songCount,
-      avatar,
-    }) => (
-      <LibraryCard
-        key={id}
-        id={id}
-        username={username}
-        libraryName={libraryName}
-        description={description}
-        bookCount={bookCount}
-        videoCount={videoCount}
-        songCount={songCount}
-        avatar={avatar}
-      />
-    ),
+  // Cards arrive, leave and slide as the search narrows or a page turns,
+  // instead of the grid being rebuilt in one frame.
+  const { ref: gridRef, entries: cardEntries } = useAnimatedList(
+    currentLibraries,
+    libraryKey,
   );
+
+  const renderLibraryCards = cardEntries.map(({ item, leaving }, index) => (
+    <div
+      key={item.id}
+      className={classNames(styles.cardSlot, {
+        [styles.cardLeaving]: leaving,
+      })}
+      data-flip-id={String(item.id)}
+      data-flip-leaving={leaving ? 'true' : undefined}
+      aria-hidden={leaving || undefined}
+    >
+      <LibraryCard
+        id={item.id}
+        username={item.username}
+        libraryName={item.libraryName}
+        description={item.description}
+        bookCount={item.bookCount}
+        videoCount={item.videoCount}
+        songCount={item.songCount}
+        avatar={item.avatar}
+        coverUrls={item.coverUrls}
+        // Advance the pigment across pages, not just within one, so page 2
+        // doesn't open on the same colour page 1 opened on.
+        accent={(currentPage - 1) * perPage + index}
+      />
+    </div>
+  ));
 
   return (
     <main className="library">
@@ -223,7 +245,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
             label="What is this place?"
             onClick={modalToggler}
             type={ButtonType.Primary}
-            size={ButtonSize.Wide}
+            size={ButtonSize.Default}
             ariaLabel="What is this place modal"
             className={styles.button}
           />
@@ -231,14 +253,17 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
       </section>
 
       <section className={styles.libraries} id={sectionId}>
+        <BrushPaper />
         <div className="container">
           <div className={styles.controls}>
-            <Text
-              className={styles.title}
-              variant={TypographyVariant.TitlePrimary}
-            >
-              Libraries
-            </Text>
+            <span className={styles.titleWrap}>
+              <Text
+                className={styles.title}
+                variant={TypographyVariant.TitlePrimary}
+              >
+                Libraries
+              </Text>
+            </span>
             <div className={styles.searchGroup}>
               <Input
                 type="search"
@@ -250,18 +275,24 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
                 wrapperClassName={styles.input}
               />
               <Button
-                label="Create Library"
-                ariaLabel="Create library"
+                label={ownsLibrary ? 'Open my library' : 'Create Library'}
+                ariaLabel={ownsLibrary ? 'Open my library' : 'Create library'}
                 type={ButtonType.Primary}
-                Icon={<PlusIcon width={14} height={14} />}
-                onClick={handleCreateLibrary}
-                disabled={createDisabled}
+                Icon={
+                  ownsLibrary ? (
+                    <LibraryMarkIcon width={18} height={10} />
+                  ) : (
+                    <PlusIcon width={14} height={14} />
+                  )
+                }
+                onClick={handleLibraryButton}
+                disabled={libraryButtonDisabled}
                 className={styles.createButton}
               />
             </div>
           </div>
 
-          <div className={styles.content}>
+          <div className={styles.content} ref={gridRef}>
             {isLoading && !isControlled ? (
               <Text variant={TypographyVariant.TextBase}>
                 Loading libraries…
@@ -270,7 +301,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
               <Text variant={TypographyVariant.TextBase}>
                 {debouncedQuery
                   ? `No libraries match “${debouncedQuery}”.`
-                  : 'No libraries yet.'}
+                  : 'No libraries yet'}
               </Text>
             ) : (
               renderLibraryCards

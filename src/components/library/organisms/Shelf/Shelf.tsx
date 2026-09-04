@@ -1,22 +1,19 @@
 import classNames from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, {
-  JSX,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   MAX_OBJECTS_PER_SHELF,
+  MAX_SHARE_OBJECTS,
+  SHELF_FULL_MESSAGE,
   SHELF_NAME_MAX_LENGTH,
 } from '@constants/library/common';
 
 import type { IObject, ObjectType } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
+
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
@@ -28,6 +25,7 @@ import {
   ArrowIcon,
   AudioIcon,
   BookIcon,
+  DragHandleIcon,
   PlusIcon,
   SettingsIcon,
   VideoIcon,
@@ -37,6 +35,7 @@ import { useShareSelection } from '@components/Context/library/ShareSelectionCon
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import { AudioCard } from '@components/library/molecules/AudioCard';
 import { BookCard } from '@components/library/molecules/BookCard';
 import {
@@ -49,6 +48,7 @@ import { ConfirmationModal } from '@components/library/molecules/ConfirmationMod
 import { Dropdown } from '@components/library/molecules/Dropdown';
 import { Input } from '@components/library/molecules/Input';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
+import { ShelfGhostRow } from '@components/library/molecules/ShelfGhostRow';
 import { VideoCard } from '@components/library/molecules/VideoCard';
 import { AddObjectModal } from '@components/library/organisms/AddObjectModal';
 import { ObjectOverviewModal } from '@components/library/organisms/ObjectOverviewModal';
@@ -56,58 +56,6 @@ import { ObjectOverviewModal } from '@components/library/organisms/ObjectOvervie
 import type { ShelfProps } from './Shelf.types';
 
 import styles from './Shelf.module.scss';
-
-// useLayoutEffect warns during SSR; fall back to useEffect on the server.
-const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
-
-// FLIP: when `orderKey` changes, glide each card slot from its previous
-// position to its new one via the Web Animations API. Pure transient
-// transforms — no dependency, no layout thrash, and a no-op under
-// prefers-reduced-motion. Slots are matched across renders by `data-flip-id`.
-function useFlipReorder(orderKey: string) {
-  const ref = useRef<HTMLDivElement>(null);
-  const prevRects = useRef<Map<string, DOMRect>>(new Map());
-
-  useIsomorphicLayoutEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-
-    const slots = Array.from(container.children) as HTMLElement[];
-    const nextRects = new Map<string, DOMRect>();
-    slots.forEach(slot => {
-      const id = slot.dataset.flipId;
-      if (id) nextRects.set(id, slot.getBoundingClientRect());
-    });
-
-    const prev = prevRects.current;
-    prevRects.current = nextRects;
-
-    // First paint (or a hidden shelf): nothing to animate from.
-    if (prev.size === 0) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    slots.forEach(slot => {
-      const id = slot.dataset.flipId;
-      if (!id) return;
-      const before = prev.get(id);
-      const after = nextRects.get(id);
-      if (!before || !after) return;
-      const dx = before.left - after.left;
-      const dy = before.top - after.top;
-      if (dx === 0 && dy === 0) return;
-      slot.animate(
-        [
-          { transform: `translate(${dx}px, ${dy}px)` },
-          { transform: 'translate(0, 0)' },
-        ],
-        { duration: 320, easing: 'cubic-bezier(0.2, 0, 0, 1)' },
-      );
-    });
-  }, [orderKey]);
-
-  return ref;
-}
 
 const SHELF_TYPE_ICON: Record<string, JSX.Element> = {
   video: <VideoIcon />,
@@ -133,6 +81,13 @@ const SETTINGS_OPTIONS = [
   { value: 'delete', label: 'Delete shelf' },
 ];
 
+const objectKey = (o: IObject) => String(o.id);
+
+// Said on the shelf's own "Select shelf" button and on every card chip, so the
+// owner reads one rule in one wording wherever the refusal meets them.
+const SHELF_PRIVATE_SELECT_REASON =
+  'Make this shelf public to add its items to a share link.';
+
 export function Shelf(props: ShelfProps): JSX.Element {
   const {
     className,
@@ -140,6 +95,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
     shelf,
     ownerUsername = '',
     isOwner = false,
+    visibleObjectIds = null,
+    reorderLocked = false,
+    onShelfVisibilityChanged,
     onObjectCreated,
     onObjectUpdated,
     onObjectDeleted,
@@ -147,6 +105,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onShelfRenamed,
     onObjectMoved,
     onObjectsReordered,
+    dragHandleProps,
+    isDragging = false,
   } = props;
   const shelfType = shelf.attributes.type as ObjectType;
   // Render in persisted-order sequence. Strapi's populate doesn't sort the
@@ -155,10 +115,26 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const objects = [...(shelf.attributes.objects?.data ?? [])].sort(
     (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
   );
+  // What a search leaves on screen. Everything else below (count, cap, the
+  // reorder grid, the open object) keeps reading `objects`, the real shelf.
+  const drawnObjects = visibleObjectIds
+    ? objects.filter(o => visibleObjectIds.has(o.id))
+    : objects;
 
-  // Glide cards to their new slots when the persisted order changes (e.g. after
-  // a save-time reorder) instead of snapping.
-  const cardsRef = useFlipReorder(objects.map(o => o.id).join(','));
+  // What is actually on the board right now. Every measurement below keys off
+  // this, not off `objects.length`: a search leaves the shelf's own count
+  // untouched while changing every card position on the board.
+  const drawnKey = drawnObjects.map(o => o.id).join(',');
+
+  // Every change of membership or order on the board is motion, never a
+  // snap: a removed or filtered-out card fades out where it stood, the rest
+  // glide into the space, and a card that arrives rises in (the slot's own
+  // CSS mount animation, so entrances are left to it here).
+  const { ref: cardsRef, entries: cardEntries } = useAnimatedList(
+    drawnObjects,
+    objectKey,
+    { enters: false, collapse: 'width' },
+  );
 
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
@@ -168,7 +144,18 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
   const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
 
+  // Plain object count beside the shelf name. The cap belongs in the tooltip,
+  // not in the visible label — a visitor reads how full the shelf is, an owner
+  // hovers to learn how much room is left.
+  const countTitle = `${objects.length} ${
+    objects.length === 1 ? typeLabel : `${typeLabel}s`
+  } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
+
   const router = useRouter();
+  // On the share-link page the object opens through a query parameter, so
+  // the token stays in the address: pushing the library's own object path
+  // from there is a full navigation that drops the shared selection.
+  const onShareRoute = router.pathname.includes('/share/');
   // The opened object is addressed by the URL, not local state: the last path
   // segment is the object slug (see objectSlug). We match on the slug's trailing
   // id so the right shelf — the one actually holding that object — renders the
@@ -177,7 +164,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const urlUsername = Array.isArray(usernameParam)
     ? usernameParam[0]
     : (usernameParam ?? '');
-  const objectParam = router.query.object;
+  const objectParam = onShareRoute ? router.query.o : router.query.object;
   const activeSlug = Array.isArray(objectParam) ? objectParam[0] : objectParam;
   const activeObjectId = objectIdFromSlug(activeSlug);
 
@@ -195,9 +182,23 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const [deleteShelfLoading, setDeleteShelfLoading] = useState(false);
   const [deleteShelfError, setDeleteShelfError] = useState<string | null>(null);
   const [deleteShelfSuccess, setDeleteShelfSuccess] = useState(false);
-  const [visibility, setVisibility] = useState<ShelfVisibility>(
-    (shelf.attributes.visibility ?? 'private') as ShelfVisibility,
-  );
+  // A shelf with no stored visibility is public: that is what the visitor
+  // filter treats it as, so the owner's menu must say the same.
+  const savedVisibility = (shelf.attributes.visibility ??
+    'public') as ShelfVisibility;
+  const [visibility, setVisibility] =
+    useState<ShelfVisibility>(savedVisibility);
+  useEffect(() => {
+    setVisibility(savedVisibility);
+  }, [savedVisibility]);
+  const [visibilityError, setVisibilityError] = useState<string | null>(null);
+  // Only objects on a public shelf can be shared (the backend refuses the
+  // rest), so the shelf's own privacy governs both the "Select shelf" button
+  // and every Select chip on the cards below.
+  const isPublic = visibility === 'public';
+  const shareLinkFullReason = `The share link is full (${MAX_SHARE_OBJECTS} items). Remove some to select more.`;
+  // How many objects a "Select shelf" could not add because the link was full.
+  const [selectNotice, setSelectNotice] = useState<string | null>(null);
   const [shelfName, setShelfName] = useState(title ?? '');
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState(title ?? '');
@@ -224,13 +225,56 @@ export function Shelf(props: ShelfProps): JSX.Element {
     if (!el) return;
     syncScrollState();
     el.addEventListener('scroll', syncScrollState, { passive: true });
+    // Both boxes matter: the scroller's width (the panel folding beside it)
+    // and the row of cards inside it (a search filtering them away).
     const observer = new ResizeObserver(syncScrollState);
     observer.observe(el);
+    if (cardsRef.current) observer.observe(cardsRef.current);
     return () => {
       el.removeEventListener('scroll', syncScrollState);
       observer.disconnect();
     };
-  }, [syncScrollState, objects.length]);
+  }, [syncScrollState, cardsRef, drawnKey]);
+
+  // Ghost props fill whatever the real objects leave free on the board. The
+  // row is measured, not guessed: card widths differ by type, and the free
+  // space shrinks with every object the owner adds until it is gone.
+  const [ghostLeft, setGhostLeft] = useState(0);
+  const [ghostWidth, setGhostWidth] = useState(0);
+
+  const measureGhostSpace = useCallback(() => {
+    const el = itemsRef.current;
+    const cards = cardsRef.current;
+    if (!el) return;
+    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0;
+    // Measure the last card's own right edge, NOT the row's scrollWidth: the
+    // cards row carries min-width: 100%, so its scrollWidth is the whole
+    // viewport even when it holds nothing, which left the props zero space.
+    const slots = cards?.children;
+    const last =
+      slots && slots.length > 0
+        ? (slots[slots.length - 1] as HTMLElement)
+        : null;
+    // offsetLeft is measured from the scroll row, so it already carries the
+    // row's own left padding. Objects push the props right by one card gap.
+    const left = last ? last.offsetLeft + last.offsetWidth + 38 : padLeft;
+    setGhostLeft(left);
+    // The trailing 24px keeps the last prop clear of the board's right edge.
+    setGhostWidth(Math.max(0, el.clientWidth - left - 24));
+  }, [cardsRef]);
+
+  useEffect(() => {
+    const el = itemsRef.current;
+    if (!el) return;
+    measureGhostSpace();
+    const observer = new ResizeObserver(measureGhostSpace);
+    observer.observe(el);
+    // The props start where the last card ends, so the row of cards is the
+    // box that decides it. Without this a search left the props parked at the
+    // old last card and the covers stood right through them.
+    if (cardsRef.current) observer.observe(cardsRef.current);
+    return () => observer.disconnect();
+  }, [measureGhostSpace, cardsRef, drawnKey]);
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
@@ -249,7 +293,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
           ? (slots[1] as HTMLElement).offsetLeft - first.offsetLeft
           : first.offsetWidth;
     }
-    el.scrollBy({ left: direction * step, behavior: 'smooth' });
+    el.scrollBy({
+      left: direction * step,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    });
   };
 
   const closeRename = useCallback(() => {
@@ -270,6 +319,17 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // never refetched or unmounted — only the overview modal appears/disappears
   // over the current page. `scroll: false` keeps the shelf scroll position.
   const openObject = (object: IObject) => {
+    if (onShareRoute) {
+      void router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, o: objectSlug(object) },
+        },
+        undefined,
+        { shallow: true, scroll: false },
+      );
+      return;
+    }
     void router.push(
       `/library/${encodeURIComponent(urlUsername)}/${objectSlug(object)}`,
       undefined,
@@ -277,6 +337,15 @@ export function Shelf(props: ShelfProps): JSX.Element {
     );
   };
   const closeObject = () => {
+    if (onShareRoute) {
+      const rest = { ...router.query };
+      delete rest.o;
+      void router.push({ pathname: router.pathname, query: rest }, undefined, {
+        shallow: true,
+        scroll: false,
+      });
+      return;
+    }
     void router.push(`/library/${encodeURIComponent(urlUsername)}`, undefined, {
       shallow: true,
       scroll: false,
@@ -299,13 +368,34 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const allSelected =
     objects.length > 0 && objects.every(o => isSelected(o.id));
   const selectShelfDisabled =
-    visibility !== 'public' ||
-    objects.length === 0 ||
-    (!allSelected && limitReached);
+    !isPublic || objects.length === 0 || (!allSelected && limitReached);
+  // Every reason the control is off is spelled out where the pointer rests.
+  const selectShelfReason = !isPublic
+    ? SHELF_PRIVATE_SELECT_REASON
+    : objects.length === 0
+      ? 'Nothing on this shelf to select yet.'
+      : !allSelected && limitReached
+        ? shareLinkFullReason
+        : null;
   const handleSelectShelf = () => {
-    if (allSelected) removeMany(objects.map(o => o.id));
-    else selectMany(objects);
+    setSelectNotice(null);
+    if (allSelected) {
+      removeMany(objects.map(o => o.id));
+      return;
+    }
+    const leftOut = selectMany(objects);
+    if (leftOut > 0) {
+      setSelectNotice(
+        `${leftOut} ${leftOut === 1 ? 'item was' : 'items were'} left out: a share link holds ${MAX_SHARE_OBJECTS} at most.`,
+      );
+    }
   };
+
+  useEffect(() => {
+    if (!selectNotice) return;
+    const timer = window.setTimeout(() => setSelectNotice(null), 6000);
+    return () => window.clearTimeout(timer);
+  }, [selectNotice]);
 
   const openRename = () => {
     setRenameError(null);
@@ -323,16 +413,24 @@ export function Shelf(props: ShelfProps): JSX.Element {
       const previous = visibility;
       if (previous === value) return;
       setVisibility(value);
-      // Only public-shelf objects are shareable. Going private strips this
-      // shelf's objects from the share selection now, so the selection never
-      // carries objects the backend would reject when the link is minted.
-      if (value === 'private') {
-        removeMany(objects.map(o => o.id));
-      }
-      updateShelf(shelf.id, { visibility: value }).catch(e => {
-        console.error('[Shelf] failed to update visibility', e);
-        setVisibility(previous);
-      });
+      setVisibilityError(null);
+      updateShelf(shelf.id, { visibility: value })
+        .then(() => {
+          // Only public-shelf objects are shareable. Going private strips
+          // this shelf's objects from the share selection once the save is
+          // real, so a failed save costs the owner nothing.
+          if (value === 'private') {
+            removeMany(objects.map(o => o.id));
+          }
+          onShelfVisibilityChanged?.(shelf.id, value);
+        })
+        .catch(e => {
+          console.error('[Shelf] failed to update visibility', e);
+          setVisibility(previous);
+          setVisibilityError(
+            `Could not make this shelf ${value}. It is still ${previous}.`,
+          );
+        });
     }
   };
 
@@ -367,6 +465,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
       await deleteShelf(shelf.id);
       setDeleteShelfOpen(false);
       setDeleteShelfSuccess(true);
+      // The shelf is gone on the server: tell the library now, not when the
+      // success card is dismissed, or the ghost still counts toward the
+      // 21-shelf cap and still blocks its own name for a new shelf.
+      onShelfDeleted?.(shelf.id);
     } catch (e) {
       const message =
         e instanceof Error
@@ -378,9 +480,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
     }
   };
 
+  // The modal stays up after a create: it shows its own confirmation (and
+  // any reorder warning) and closes itself. Closing it from here unmounted
+  // that confirmation before it could appear.
   const handleCreated = (created: IObject) => {
     onObjectCreated?.(shelf.id, created);
-    closeAdd();
   };
 
   const handleUpdated = (updated: IObject) => {
@@ -405,10 +509,36 @@ export function Shelf(props: ShelfProps): JSX.Element {
   return (
     <div
       id={`shelf-${shelf.id}`}
-      className={classNames(className, styles.wrapper)}
+      className={classNames(className, styles.wrapper, {
+        [styles.dragging]: isDragging,
+      })}
     >
       <div className={styles.header}>
         <div className={styles.left}>
+          {isOwner && dragHandleProps && (
+            <button
+              type="button"
+              className={styles.dragHandle}
+              aria-label={`Drag to reorder ${shelfName}`}
+              {...dragHandleProps}
+            >
+              <DragHandleIcon />
+            </button>
+          )}
+          {isOwner && !dragHandleProps && reorderLocked && (
+            <Tooltip
+              place="bottom"
+              tooltipContent="Clear the search to reorder shelves."
+            >
+              <span
+                className={classNames(styles.dragHandle, styles.dragHandleOff)}
+                aria-hidden="true"
+              >
+                <DragHandleIcon />
+              </span>
+            </Tooltip>
+          )}
+
           {isOwner && (
             <Dropdown
               className={styles.settingsDropdown}
@@ -431,29 +561,34 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
-          {isOwner ? (
-            <button
-              type="button"
-              className={styles.nameButton}
-              onClick={openRename}
-              aria-label="Edit shelf name"
-            >
+          <span className={styles.count} title={countTitle}>
+            ({objects.length})
+          </span>
+
+          <span className={styles.nameWrap}>
+            {isOwner ? (
+              <button
+                type="button"
+                className={styles.nameButton}
+                onClick={openRename}
+                aria-label="Edit shelf name"
+              >
+                <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
+              </button>
+            ) : (
               <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
-            </button>
-          ) : (
-            <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
-          )}
+            )}
+          </span>
         </div>
 
         <div className={styles.right}>
           {isOwner && (
-            <span
-              className={styles.selectShelfWrap}
-              title={
-                visibility !== 'public'
-                  ? 'Make this shelf public to add its items to a share link.'
-                  : undefined
-              }
+            <Tooltip
+              place="bottom"
+              tooltipContent={selectShelfReason ?? ''}
+              wrapperClassName={classNames(styles.selectShelfWrap, {
+                [styles.tooltipOff]: !selectShelfReason,
+              })}
             >
               <Button
                 label={allSelected ? 'Deselect shelf' : 'Select shelf'}
@@ -465,23 +600,20 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 className={styles.button}
                 labelClassName={styles.text}
               />
-            </span>
+            </Tooltip>
           )}
 
           {isOwner && (
-            <span className={styles.count}>
-              {objects.length}/{MAX_OBJECTS_PER_SHELF}
-            </span>
-          )}
-
-          {isOwner && (
-            <span
-              className={styles.addWrap}
-              title={
+            <Tooltip
+              place="bottom"
+              tooltipContent={
                 atObjectLimit
-                  ? `This shelf is full (max ${MAX_OBJECTS_PER_SHELF} items). Delete an item to add a new one.`
-                  : undefined
+                  ? `${SHELF_FULL_MESSAGE} Delete an item to add a new one.`
+                  : ''
               }
+              wrapperClassName={classNames(styles.addWrap, {
+                [styles.tooltipOff]: !atObjectLimit,
+              })}
             >
               <Button
                 label={`Add ${typeLabel}`}
@@ -494,12 +626,34 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 className={styles.button}
                 disabled={atObjectLimit}
               />
-            </span>
+            </Tooltip>
           )}
         </div>
       </div>
 
+      {/* The shelf's own messages, laid over the air above the board: a
+          failed privacy save or a truncated bulk select never shifts the
+          board, and the owner's shelf stands exactly as tall as a visitor's.
+          Owner-only surface; visitors have nothing to be told here. */}
       <div className={styles.content}>
+        {isOwner && (
+          <div
+            className={styles.shelfNoticeRow}
+            role="status"
+            aria-live="polite"
+          >
+            {(visibilityError || selectNotice) && (
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={classNames(styles.shelfNotice, {
+                  [styles.shelfNoticeError]: !!visibilityError,
+                })}
+              >
+                {visibilityError ?? selectNotice}
+              </Text>
+            )}
+          </div>
+        )}
         {isOverflowing && (
           <>
             <Button
@@ -526,75 +680,78 @@ export function Shelf(props: ShelfProps): JSX.Element {
           })}
           ref={itemsRef}
         >
-          {objects.length === 0 ? (
-            <div className={styles.empty}>
-              <Text
-                variant={TypographyVariant.TextBase}
-                className={styles.emptyText}
-              >
-                {isOwner
-                  ? `This shelf is empty - add the first ${typeLabel}`
-                  : 'This shelf is empty'}
-              </Text>
-              {isOwner && (
-                <Button
-                  onClick={openAdd}
-                  type={ButtonType.Secondary}
-                  Icon={<PlusIcon />}
-                  ariaLabel={`Add ${typeLabel}`}
-                  disabled={atObjectLimit}
-                />
-              )}
-            </div>
-          ) : (
-            <div className={styles.cards} ref={cardsRef}>
-              {objects.map(obj => {
-                const selected = isSelected(obj.id);
-                // Only the owner can build a share link, and only public-shelf
-                // objects are shareable — so hide the Select chip elsewhere.
-                const canSelect = isOwner && visibility === 'public';
-                const onSelectToggle = canSelect
-                  ? () => toggleSelection(obj)
+          <div className={styles.cards} ref={cardsRef}>
+            {cardEntries.map(({ item: obj, leaving }) => {
+              const selected = isSelected(obj.id);
+              // Only the owner can build a share link, so a visitor never sees
+              // the chip. The owner sees it on every kind of object (book,
+              // video, audio), and it carries its own reason when it cannot be
+              // used: the backend refuses objects on a private shelf, and a
+              // chip that simply vanished there read as "this kind of object
+              // cannot be shared".
+              const onSelectToggle = isOwner
+                ? () => toggleSelection(obj)
+                : undefined;
+              const selectDisabled = !isPublic || limitReached;
+              // Short enough to stand on the chip over the artwork; the shelf's
+              // own Select button carries the full sentence.
+              const selectReason = !isPublic
+                ? 'Shelf is private'
+                : limitReached
+                  ? 'Link is full'
                   : undefined;
-                const card =
-                  shelfType === 'video' ? (
-                    <VideoCard
-                      object={obj}
-                      onClick={openObject}
-                      selected={selected}
-                      onSelectToggle={onSelectToggle}
-                      selectDisabled={limitReached}
-                    />
-                  ) : shelfType === 'audio' ? (
-                    <AudioCard
-                      object={obj}
-                      onClick={openObject}
-                      selected={selected}
-                      onSelectToggle={onSelectToggle}
-                      selectDisabled={limitReached}
-                    />
-                  ) : (
-                    <BookCard
-                      object={obj}
-                      onClick={openObject}
-                      selected={selected}
-                      onSelectToggle={onSelectToggle}
-                      selectDisabled={limitReached}
-                    />
-                  );
-                return (
-                  <div
-                    key={obj.id}
-                    className={styles.cardSlot}
-                    data-flip-id={String(obj.id)}
-                  >
-                    {card}
-                  </div>
+              const card =
+                shelfType === 'video' ? (
+                  <VideoCard
+                    object={obj}
+                    onClick={openObject}
+                    selected={selected}
+                    onSelectToggle={onSelectToggle}
+                    selectDisabled={selectDisabled}
+                    selectReason={selectReason}
+                  />
+                ) : shelfType === 'audio' ? (
+                  <AudioCard
+                    object={obj}
+                    onClick={openObject}
+                    selected={selected}
+                    onSelectToggle={onSelectToggle}
+                    selectDisabled={selectDisabled}
+                    selectReason={selectReason}
+                  />
+                ) : (
+                  <BookCard
+                    object={obj}
+                    onClick={openObject}
+                    selected={selected}
+                    onSelectToggle={onSelectToggle}
+                    selectDisabled={selectDisabled}
+                    selectReason={selectReason}
+                    ownerUsername={ownerUsername}
+                  />
                 );
-              })}
-            </div>
-          )}
+              return (
+                <div
+                  key={obj.id}
+                  className={classNames(styles.cardSlot, {
+                    [styles.cardLeaving]: leaving,
+                  })}
+                  data-flip-id={String(obj.id)}
+                  data-flip-leaving={leaving ? 'true' : undefined}
+                  aria-hidden={leaving || undefined}
+                >
+                  {card}
+                </div>
+              );
+            })}
+          </div>
         </div>
+        <ShelfGhostRow
+          seed={shelf.id}
+          availableWidth={ghostWidth}
+          className={styles.ghostRow}
+          style={{ left: ghostLeft }}
+        />
         <div className={styles.banner}>
           <Image src={shelfBackground} alt="" />
         </div>
@@ -724,14 +881,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
           text={`"${shelfName}" has been removed from the library.`}
           actionButtonLabel="Close"
           actionButtonType={ButtonType.Secondary}
-          onClose={() => {
-            setDeleteShelfSuccess(false);
-            onShelfDeleted?.(shelf.id);
-          }}
-          onConfirm={() => {
-            setDeleteShelfSuccess(false);
-            onShelfDeleted?.(shelf.id);
-          }}
+          onClose={() => setDeleteShelfSuccess(false)}
+          onConfirm={() => setDeleteShelfSuccess(false)}
         />
       )}
     </div>

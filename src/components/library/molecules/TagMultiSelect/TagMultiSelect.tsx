@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
 import { ArrowIcon, CheckMarkIcon } from '@icons/library/svg';
 
@@ -35,15 +36,19 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
   // When portaled the menu is detached from the trigger's box, so its position
   // is tracked against the trigger and recomputed on scroll/resize.
   const menuPos = useAnchoredPosition(triggerRef, portal && isOpen);
+  // The menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const isSelected = (option: TagOption) => value.some(t => t.id === option.id);
+
+  const atCap = !!maxItems && value.length >= maxItems;
 
   const toggle = (option: TagOption) => {
     if (isSelected(option)) {
       onChange(value.filter(t => t.id !== option.id));
       return;
     }
-    if (maxItems && value.length >= maxItems) return;
+    if (atCap) return;
     onChange([...value, option]);
   };
 
@@ -75,12 +80,14 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
             />
           </div>
         </button>
-        {isOpen &&
+        {menuMounted &&
           (!portal || menuPos) &&
           (() => {
             const menuContent = (
               <div
-                className={styles.menu}
+                className={classNames(styles.menu, {
+                  [styles.menuClosing]: !menuShown,
+                })}
                 role="listbox"
                 style={
                   portal && menuPos
@@ -98,6 +105,13 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
                 // pointerdown from reaching the document-level listener.
                 onPointerDown={portal ? e => e.stopPropagation() : undefined}
               >
+                {atCap && (
+                  <div className={styles.empty} role="note">
+                    <Text variant={TypographyVariant.TextSmall}>
+                      Up to {maxItems} tags per item. Remove one to add another.
+                    </Text>
+                  </div>
+                )}
                 {options.length === 0 ? (
                   <div className={styles.empty}>
                     <Text variant={TypographyVariant.TextSmall}>
@@ -107,15 +121,25 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
                 ) : (
                   options.map(option => {
                     const selected = isSelected(option);
+                    const blocked = atCap && !selected;
                     return (
                       <div
                         key={option.id}
                         role="option"
                         aria-selected={selected}
+                        aria-disabled={blocked || undefined}
+                        tabIndex={0}
                         className={classNames(styles.option, {
                           [styles.selected]: selected,
+                          [styles.blocked]: blocked,
                         })}
                         onClick={() => toggle(option)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggle(option);
+                          }
+                        }}
                       >
                         <Tag label={option.name} color={option.color} />
                         {selected && (

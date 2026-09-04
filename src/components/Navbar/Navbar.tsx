@@ -13,9 +13,9 @@ import navbar from '@data/navbar';
 
 import ArticlesDarkIcon from '@icons/ArticlesDarkIcon';
 import ArticlesIcon from '@icons/ArticlesIcon';
-import LibraryIcon from '@icons/library/svg/library.svg';
 import AiAtlasIcon from '@icons/navbar/ai-atlas.svg';
 import AiAtlasDarkIcon from '@icons/navbar/ai-atlas-dark.svg';
+import LibraryIcon from '@icons/navbar/library.svg';
 import LongevityIcon from '@icons/navbar/longevity.svg';
 import LongevityDarkIcon from '@icons/navbar/longevity-dark.svg';
 import ToolsIcon from '@icons/navbar/tools.svg';
@@ -58,6 +58,15 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       target: '_blank',
       id: 'uxcore',
     },
+    // Library sits directly after UX Core, per the design.
+    {
+      name: library,
+      path: '/library',
+      logo: <LibraryIcon className={styles.libraryIcon} />,
+      target: '',
+      id: 'library',
+      activeMatch: '/library',
+    },
     {
       name: longevity,
       path: '/tools/longevity-protocol/about-project',
@@ -74,14 +83,6 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
       id: 'tools',
       activeMatch: '/tools',
       exact: true,
-    },
-    {
-      name: library,
-      path: '/library',
-      logo: <LibraryIcon className={styles.libraryIcon} />,
-      target: '',
-      id: 'library',
-      activeMatch: '/library',
     },
     {
       name: aiAtlas,

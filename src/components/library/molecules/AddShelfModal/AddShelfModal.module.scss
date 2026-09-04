@@ -1,10 +1,48 @@
+// The whole dialog (backdrop included) yields while the create request runs,
+// so the spinner in `.creating` sits on the clean page. Kept mounted: on a
+// server-side failure the dialog fades back in with the error and the
+// user's input intact.
+.submitting {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    visibility 0s linear 0.25s;
+}
+
+.creating {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  animation: creating-fade-in 0.25s ease;
+}
+
+@keyframes creating-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submitting {
+    transition: none;
+  }
+
+  .creating {
+    animation: none;
+  }
+}
+
 .modal {
   width: 100% !important;
   max-width: 456px !important;
 
   .wrapper {
     padding: 32px;
-    border-top: 1px solid var(--brown-border);
     position: relative;
   }
 
@@ -24,6 +62,8 @@
     font-size: 12px;
     margin-top: 4px;
     margin-bottom: 0;
+    line-height: 18px;
+    animation: message-in 0.2s ease;
   }
 
   .content {
@@ -34,6 +74,16 @@
     margin-top: 4px;
 
     .item {
+      // A real button now: reset the native chrome, keep the card look below.
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+
+      &:focus-visible {
+        outline: 2px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+
       background: var(--off-white);
       flex: 1;
       padding: 12px 4px;
@@ -43,7 +93,7 @@
       gap: 4px;
       min-height: 82px;
       flex-direction: column;
-      border-radius: 4px;
+      border-radius: var(--radius-control);
       cursor: pointer;
       border: 1px solid transparent;
       transition:
@@ -72,5 +122,22 @@
     button {
       width: auto;
     }
+  }
+}
+
+// A message lands in a line held from the start and fades in, so the form
+// neither jumps nor blinks when validation speaks.
+@keyframes message-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error {
+    animation: none;
   }
 }

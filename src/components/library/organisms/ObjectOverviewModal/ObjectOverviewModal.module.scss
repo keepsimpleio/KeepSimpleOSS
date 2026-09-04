@@ -2,6 +2,9 @@
   width: 100% !important;
   max-width: 920px !important;
   max-height: min(781px, calc(100vh - 32px));
+  // iOS counts the collapsed browser chrome in 100vh, which pushed the last
+  // section under the toolbar; dvh is the height actually on screen.
+  max-height: min(781px, calc(100dvh - 32px));
   background: var(--white-200) !important;
   overflow: hidden;
   display: flex !important;
@@ -13,21 +16,39 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 24px 32px;
-  border-bottom: 1px solid var(--brown-border);
+  padding: 24px 32px 18px;
   flex-shrink: 0;
+}
+
+// The hand-drawn rule replacing the header's boxed 1px border; inset to the
+// header's 32px text margin so it reads as drawn under the title.
+.headerRule {
+  flex-shrink: 0;
+  width: calc(100% - 64px);
+  margin: 0 32px;
 }
 
 .title {
   color: var(--gray-darkest);
 }
 
+// Copy URL + the owner menu ride alongside the Author line rather than
+// claiming a row of their own above the cover.
+.identityRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
 .actions {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 // The shared Button's `default` size is a 2px-padded inline pill — too short
@@ -36,6 +57,10 @@
 .shareButton {
   height: 36px;
   padding: 0 14px;
+  // Held at the width of the longer "Copy URL" state so switching to
+  // "Copied" does not shrink the button under the user's cursor.
+  min-width: 136px;
+  justify-content: center;
 
   svg {
     flex-shrink: 0;
@@ -49,7 +74,7 @@
   width: 36px;
   height: 36px;
   border: 1px solid var(--brown-border);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--white);
   cursor: pointer;
   color: var(--gray-darkest);
@@ -64,8 +89,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  // 44x44 touch target around a 24px glyph. The negative margins keep the
+  // glyph optically where the 16px button sat, so the header does not grow.
+  width: 44px;
+  height: 44px;
+  margin: -10px -10px -10px 0;
   padding: 0;
   border: none;
   background: transparent;
@@ -73,11 +101,11 @@
   flex-shrink: 0;
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
 
     path {
-      fill: #aaaaaa;
+      fill: var(--gray-darkest);
     }
   }
 }
@@ -93,7 +121,7 @@
   min-width: 160px;
   background: var(--white);
   border: 1px solid var(--brown-border);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   z-index: 1000;
   display: flex;
@@ -134,6 +162,10 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  // Nothing in here may scroll sideways: on a phone a horizontal scroller
+  // eats the swipe that should be the browser's back gesture (which is how
+  // the modal closes). Anything wider than the column wraps or clips.
+  overflow-x: hidden;
 
   scrollbar-width: thin;
   scrollbar-color: #c0b6ae transparent;
@@ -156,12 +188,13 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 
 .cover {
   width: 100%;
   background: var(--white-100);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -219,6 +252,9 @@
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  // Long unbroken strings (a URL in a description, a single-word title) wrap
+  // instead of widening the column.
+  overflow-wrap: anywhere;
 }
 
 .objectTitle {
@@ -306,8 +342,7 @@
   padding: 7px 12px !important;
   background: var(--white) !important;
   border: 1px solid var(--beige) !important;
-  border-radius: 8px;
-  box-shadow: 0px 4px 4px 0px var(--black-transparent-200);
+  border-radius: var(--radius-control);
   color: var(--brown);
 
   p {
@@ -331,6 +366,14 @@
   color: var(--red-600);
   font-size: 12px;
   margin: 4px 0 0;
+  line-height: 18px;
+  animation: message-in 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error {
+    animation: none;
+  }
 }
 
 // On phones/tablets fill the viewport minus a 15px top/bottom gap (the flex
@@ -353,10 +396,11 @@
   .body {
     grid-template-columns: 1fr;
     gap: 24px;
-    padding: 20px 16px;
+    // Extra room under the last section so it never kisses the sheet's edge.
+    padding: 20px 16px 32px;
     // Stacked single-column grid in a flex:1 (full-height) body: grid's default
     // align-content stretches the auto rows to fill leftover vertical space,
-    // ballooning `.actions` and `.left` far past their content. Pack rows to the
+    // ballooning `.left` far past its content. Pack rows to the
     // top so each sizes to its content; extra space stays at the bottom.
     align-content: start;
   }
@@ -373,5 +417,53 @@
     width: 100%;
     height: auto;
     aspect-ratio: 2 / 3;
+  }
+}
+
+// Opens with a short fade and leaves the same way (usePresence keeps the node
+// for the exit). Opacity only: the placement transform is set inline and an
+// animated transform would override it.
+@keyframes popover-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popover-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.menu {
+  animation: popover-in 0.14s ease-out;
+}
+
+.menuClosing {
+  animation: popover-out 0.12s ease-in forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .menuClosing {
+    animation: none;
+  }
+}
+
+// A message lands in a line held from the start and fades in, so the form
+// neither jumps nor blinks when validation speaks.
+@keyframes message-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

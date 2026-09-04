@@ -28,7 +28,7 @@
   width: 100%;
   background: var(--white);
   border: 1px solid var(--brown-border);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   cursor: grab;
   user-select: none;
   touch-action: none;
@@ -57,7 +57,7 @@
 
   .cover {
     width: 100%;
-    border-radius: 4px;
+    border-radius: var(--radius-control);
     overflow: hidden;
     background: var(--gray-100);
   }
@@ -95,7 +95,7 @@
 .empty {
   padding: 24px;
   border: 1px dashed var(--brown-border);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   text-align: center;
   color: var(--gray-darker);
   background: var(--white-warm);

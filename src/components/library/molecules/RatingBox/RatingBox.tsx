@@ -6,6 +6,9 @@ import type { Difficulty, OverallRating } from '@local-types/library/object';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
+
+import { DIFFICULTY_META, OVERALL_COLORS } from '@lib/library/objectMeta';
 
 import { ArrowIcon } from '@icons/library/svg';
 
@@ -14,26 +17,6 @@ import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import type { RatingBoxProps } from './RatingBox.types';
 
 import styles from './RatingBox.module.scss';
-
-const OVERALL_COLORS: Record<OverallRating, string> = {
-  1: '#c45222',
-  2: '#ff9a00',
-  3: '#d9b800',
-  4: '#2db675',
-  5: '#228858',
-};
-
-interface DifficultyMeta {
-  label: string;
-  color: string;
-}
-
-const DIFFICULTY_META: Record<Difficulty, DifficultyMeta> = {
-  very_hard: { label: 'Very Hard', color: '#c45222' },
-  hard: { label: 'Hard', color: '#ff9a00' },
-  moderate: { label: 'Moderate', color: '#d9b800' },
-  easy: { label: 'Easy', color: '#2db675' },
-};
 
 const OVERALL_VALUES: OverallRating[] = [1, 2, 3, 4, 5];
 const DIFFICULTY_VALUES: Difficulty[] = [
@@ -84,6 +67,9 @@ function ColoredSelect<T extends string | number>(
     openUpMaxWidth: 1920,
   });
 
+  // The menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
+
   const handleToggle = () => {
     if (readOnly) return;
     setIsOpen(prev => !prev);
@@ -99,13 +85,15 @@ function ColoredSelect<T extends string | number>(
   const displayColor = hasValue ? getColor(value as T) : undefined;
 
   const menu =
-    isOpen && !readOnly && menuPos && typeof document !== 'undefined'
+    menuMounted && !readOnly && menuPos && typeof document !== 'undefined'
       ? createPortal(
           <div className="library">
             <div
               ref={menuRef}
               role="listbox"
-              className={styles.menu}
+              className={classNames(styles.menu, {
+                [styles.menuClosing]: !menuShown,
+              })}
               style={{
                 position: 'fixed',
                 top: menuPos.top,
@@ -156,7 +144,9 @@ function ColoredSelect<T extends string | number>(
         aria-haspopup={readOnly ? undefined : 'listbox'}
         aria-expanded={readOnly ? undefined : isOpen}
         aria-label={label}
-        disabled={readOnly && !hasValue}
+        // Read-only is a fact, not a switched-off control: it is never
+        // disabled, so a visitor's unrated book does not read as broken.
+        tabIndex={readOnly ? -1 : undefined}
       >
         <Text
           variant={TypographyVariant.TextBase}
@@ -193,37 +183,52 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
     onOverallChange,
     onDifficultyChange,
     readOnly = false,
+    itemLabel = 'book',
     className,
   } = props;
+
+  // The header states the fact before the values do: an unrated item says so
+  // outright instead of leaving two dashes to carry the meaning.
+  // Strapi returns an unset rating as null, not undefined; either is unrated.
+  const isRated = overallRating != null || difficulty != null;
+  const header = username
+    ? `${username} ${isRated ? `rated this ${itemLabel}:` : `didn’t rate this ${itemLabel}`}`
+    : isRated
+      ? 'Rating:'
+      : 'Not rated yet';
 
   return (
     <div className={classNames(styles.wrapper, className)}>
       <Text variant={TypographyVariant.TextSmall} className={styles.header}>
-        {username} rated this book:
+        {header}
       </Text>
-      <div className={styles.row}>
-        <ColoredSelect<OverallRating>
-          label="Overall:"
-          value={overallRating}
-          options={OVERALL_VALUES}
-          renderLabel={v => String(v)}
-          getColor={v => OVERALL_COLORS[v]}
-          onChange={onOverallChange}
-          readOnly={readOnly}
-          placeholder="—"
-          valueSuffix="/5"
-        />
-        <ColoredSelect<Difficulty>
-          label="Difficulty:"
-          value={difficulty}
-          options={DIFFICULTY_VALUES}
-          renderLabel={v => DIFFICULTY_META[v].label}
-          getColor={v => DIFFICULTY_META[v].color}
-          onChange={onDifficultyChange}
-          readOnly={readOnly}
-          placeholder="—"
-        />
-      </div>
+      {/* A visitor to an unrated item gets the sentence and nothing else: two
+          read-only dashes under "rated" read as a rating of nothing. */}
+      {(isRated || !readOnly) && (
+        <div className={styles.row}>
+          <ColoredSelect<OverallRating>
+            label="Overall:"
+            value={overallRating}
+            options={OVERALL_VALUES}
+            renderLabel={v => String(v)}
+            getColor={v => OVERALL_COLORS[v]}
+            onChange={onOverallChange}
+            readOnly={readOnly}
+            placeholder="—"
+            valueSuffix="/5"
+          />
+          <ColoredSelect<Difficulty>
+            label="Difficulty:"
+            value={difficulty}
+            options={DIFFICULTY_VALUES}
+            renderLabel={v => DIFFICULTY_META[v].label}
+            getColor={v => DIFFICULTY_META[v].color}
+            onChange={onDifficultyChange}
+            readOnly={readOnly}
+            placeholder="—"
+          />
+        </div>
+      )}
     </div>
   );
 }

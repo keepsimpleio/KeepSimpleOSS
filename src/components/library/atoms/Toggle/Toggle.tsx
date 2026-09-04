@@ -1,5 +1,5 @@
-import React, { JSX, useId } from 'react';
 import classNames from 'classnames';
+import React, { JSX, useId } from 'react';
 
 import type { ToggleProps } from './Toggle.types';
 
@@ -25,9 +25,7 @@ export function Toggle(props: ToggleProps): JSX.Element {
       <label
         htmlFor={uniqueId}
         className={classNames(styles.label, { [styles.disabled]: disabled })}
-      >
-        <span className={classNames(styles.checkboxCustom, { [styles.checked]: checked })} />
-      </label>
+      />
     </div>
   );
 }

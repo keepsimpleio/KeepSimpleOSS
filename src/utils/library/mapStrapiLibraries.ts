@@ -34,24 +34,63 @@ function resolveMediaUrl(
   return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
-export function countObjectsByType(shelves: StrapiSingleShelfEntry[]) {
+// Counts follow each object's own type, not the shelf it stands on, and skip
+// private shelves unless asked: a visitor's total and the owner's total must
+// describe the same set of objects the reader can actually see.
+export function countObjectsByType(
+  shelves: StrapiSingleShelfEntry[],
+  options?: { includePrivate?: boolean },
+) {
   let bookCount = 0;
   let videoCount = 0;
   let songCount = 0;
 
   for (const shelf of shelves) {
-    const type = shelf.attributes?.type;
-    const objectCount = shelf.attributes?.objects?.data?.length ?? 0;
-    if (type === 'book') {
-      bookCount += objectCount;
-    } else if (type === 'video') {
-      videoCount += objectCount;
-    } else if (type === 'audio') {
-      songCount += objectCount;
+    if (
+      !options?.includePrivate &&
+      shelf.attributes?.visibility === 'private'
+    ) {
+      continue;
+    }
+    for (const object of shelf.attributes?.objects?.data ?? []) {
+      const type = object.attributes?.type ?? shelf.attributes?.type;
+      if (type === 'book') {
+        bookCount += 1;
+      } else if (type === 'video') {
+        videoCount += 1;
+      } else if (type === 'audio') {
+        songCount += 1;
+      }
     }
   }
 
   return { bookCount, videoCount, songCount };
+}
+
+// The card's mini-shelf holds this many covers at most; the "View Library"
+// tile takes the next slot as the row's continuation.
+const MAX_CARD_COVERS = 4;
+
+function collectCoverUrls(
+  shelves: StrapiSingleShelfEntry[],
+  strapiBase?: string,
+): string[] {
+  const urls: string[] = [];
+  for (const shelf of shelves) {
+    for (const obj of shelf.attributes?.objects?.data ?? []) {
+      const resolved = resolveMediaUrl(
+        obj.attributes?.coverImage?.data?.attributes?.url,
+        strapiBase,
+      );
+      if (resolved) {
+        urls.push(resolved);
+      }
+      if (urls.length >= MAX_CARD_COVERS) {
+        return urls;
+      }
+    }
+  }
+  return urls;
 }
 
 export function mapStrapiLibraryEntryToCard(
@@ -61,6 +100,7 @@ export function mapStrapiLibraryEntryToCard(
   const { id, attributes } = entry;
   const shelves = attributes.singleShelves?.data ?? [];
   const { bookCount, videoCount, songCount } = countObjectsByType(shelves);
+  const coverUrls = collectCoverUrls(shelves, strapiBase);
 
   const aboutLibraryPlain = stripHtml(
     attributes.libraryDetails?.aboutLibrary ?? '',
@@ -90,6 +130,7 @@ export function mapStrapiLibraryEntryToCard(
     videoCount,
     songCount,
     avatar: resolveMediaUrl(avatarUrl, strapiBase),
+    coverUrls,
   };
 }
 

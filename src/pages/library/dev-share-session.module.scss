@@ -1,0 +1,60 @@
+/* DEV-only utility page — see `@lib/library/devSession`. Deliberately plain:
+   it is a switch the owner flips once, not a surface anyone reviews. */
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 24px;
+  background-color: var(--cream);
+}
+
+.card {
+  max-width: 480px;
+  padding: 32px;
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
+  background-color: var(--white-200);
+  opacity: 1;
+  animation: devSessionCardIn 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--black-rich);
+}
+
+.body {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: var(--gray-darkest);
+  transition: opacity 200ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes devSessionCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+
+  .body {
+    transition: none;
+  }
+}

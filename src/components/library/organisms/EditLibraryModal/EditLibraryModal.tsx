@@ -23,11 +23,13 @@ import { updateMe } from '@api/library/user/updateMe';
 import { useAuth } from '@components/Context/library/AuthContext';
 import { Avatar } from '@components/library/atoms/Avatar';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   Button,
   ButtonSize,
   ButtonType,
 } from '@components/library/molecules/Button';
+import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Input } from '@components/library/molecules/Input';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { Textarea } from '@components/library/molecules/Textarea';
@@ -65,7 +67,6 @@ const stripHtml = (s?: string | null) =>
 export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const { className, library, onClose, onSaved } = props;
   const { accountData, setAccountData } = useAuth();
-  const { closeRef, close } = useModalClose(onClose);
 
   const currentAvatarUrl = absoluteUrl(
     library?.attributes.avatar?.data?.attributes.url,
@@ -83,6 +84,10 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [topError, setTopError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  // Synchronous twin of `isSaving`: a second click fired before the
+  // re-render that disables the button must not start a second save.
+  const saveInFlightRef = useRef(false);
+  const [discardPrompt, setDiscardPrompt] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const previewUrl = useMemo(() => {
@@ -108,7 +113,27 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const aboutMeValue = watch('aboutMe') ?? '';
   const aboutLibraryValue = watch('aboutLibrary') ?? '';
   const avatarDirty = avatarFile !== null || avatarRemoved;
-  const canSave = !isSaving && (formDirty || avatarDirty);
+  const hasChanges = formDirty || avatarDirty;
+  const canSave = !isSaving && hasChanges;
+
+  // Closing with edits pending asks first.
+  // A finished save leaves through the same fade as Cancel: the flag lets
+  // the close past the unsaved-changes guard, which is still true until the
+  // parent unmounts us with fresh data.
+  const savedPending = useRef(false);
+  const requestClose = () => {
+    if (savedPending.current) {
+      onClose();
+      return;
+    }
+    if (isSaving) return;
+    if (hasChanges) {
+      setDiscardPrompt(true);
+      return;
+    }
+    onClose();
+  };
+  const { closeRef, close } = useModalClose(requestClose);
 
   const handlePickFile = () => fileInputRef.current?.click();
 
@@ -141,6 +166,8 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   };
 
   const onSubmit = async (data: EditLibraryFormData) => {
+    if (saveInFlightRef.current) return;
+    saveInFlightRef.current = true;
     setTopError(null);
     setUsernameError(null);
     setIsSaving(true);
@@ -235,141 +262,190 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
       const freshUser = await getUserInfo();
       if (freshUser) setAccountData(freshUser);
       if (libraryId != null) onSaved?.(libraryId);
-      onClose();
+      savedPending.current = true;
+      close();
     } catch (error) {
       console.error('EditLibraryModal save failed:', error);
       setTopError('Something went wrong. Please try again.');
     } finally {
+      saveInFlightRef.current = false;
       setIsSaving(false);
     }
   };
 
   return (
-    <Modal
-      title="Edit library"
-      className={classNames(styles.modal, className)}
-      onClose={onClose}
-      closeRef={closeRef}
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <div className={styles.avatarSection}>
-          <div className={styles.avatarPreview}>
-            <Avatar url={previewUrl} className={styles.avatarImage} />
+    <>
+      <Modal
+        title="Edit library"
+        className={classNames(styles.modal, className)}
+        onClose={requestClose}
+        closeRef={closeRef}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+          <div className={styles.avatarSection}>
+            <div className={styles.avatarPreview}>
+              <Avatar url={previewUrl} className={styles.avatarImage} />
+            </div>
+            <div className={styles.avatarButtons}>
+              <Tooltip
+                place="top"
+                tooltipContent={
+                  previewUrl ? '' : 'There is no picture to remove yet.'
+                }
+                wrapperClassName={classNames({
+                  [styles.tooltipOff]: !!previewUrl,
+                })}
+              >
+                <Button
+                  label="Remove picture"
+                  ariaLabel="Remove picture"
+                  onClick={handleRemovePicture}
+                  type={ButtonType.Secondary}
+                  size={ButtonSize.Default}
+                  disabled={!previewUrl}
+                />
+              </Tooltip>
+              <Button
+                label="Upload picture"
+                ariaLabel="Upload picture"
+                onClick={handlePickFile}
+                type={ButtonType.Primary}
+                size={ButtonSize.Default}
+              />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={AVATAR_ACCEPT_MIME.join(',')}
+                onChange={handleFileChange}
+                className={styles.hiddenFile}
+                tabIndex={-1}
+                aria-label="Choose a picture"
+              />
+            </div>
+            {/* The limits are stated before they bite, not only as an error. */}
+            <p
+              className={classNames(styles.error, {
+                [styles.hint]: !avatarError,
+              })}
+            >
+              {avatarError ?? 'JPG, PNG or WebP, between 10 KB and 5 MB.'}
+            </p>
           </div>
-          <div className={styles.avatarButtons}>
+
+          <div className={styles.field}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
+              Username
+            </Text>
+            <Input
+              type="text"
+              ariaLabel="Username"
+              placeholder="Enter your username"
+              placeholderColor="#9E9E9E"
+              {...register('username')}
+            />
+            <p className={styles.error}>
+              {errors.username?.message ?? usernameError ?? ' '}
+            </p>
+          </div>
+
+          <div className={styles.field}>
+            <div className={styles.labelRow}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.label}
+              >
+                About library
+              </Text>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.counter}
+              >
+                {aboutLibraryValue.length} / 4000
+              </Text>
+            </div>
+            <Textarea
+              ariaLabel="About library"
+              placeholder="What is this library about?"
+              rows={4}
+              className={styles.textarea}
+              {...register('aboutLibrary')}
+            />
+            <p className={styles.error}>
+              {errors.aboutLibrary?.message ?? ' '}
+            </p>
+          </div>
+
+          <div className={styles.field}>
+            <div className={styles.labelRow}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.label}
+              >
+                About author
+              </Text>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.counter}
+              >
+                {aboutMeValue.length} / 2000
+              </Text>
+            </div>
+            <Textarea
+              ariaLabel="About author"
+              placeholder="Tell visitors about yourself"
+              rows={4}
+              className={styles.textarea}
+              {...register('aboutMe')}
+            />
+            <p className={styles.error}>{errors.aboutMe?.message ?? ' '}</p>
+          </div>
+
+          <p className={styles.error}>{topError ?? ' '}</p>
+
+          <div className={styles.actions}>
             <Button
-              label="Remove picture"
-              ariaLabel="Remove picture"
-              onClick={handleRemovePicture}
+              label="Cancel"
+              onClick={close}
               type={ButtonType.Secondary}
               size={ButtonSize.Default}
-              disabled={!previewUrl}
+              ariaLabel="Cancel"
+              disabled={isSaving}
             />
-            <Button
-              label="Upload picture"
-              ariaLabel="Upload picture"
-              onClick={handlePickFile}
-              type={ButtonType.Primary}
-              size={ButtonSize.Default}
-            />
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={AVATAR_ACCEPT_MIME.join(',')}
-              onChange={handleFileChange}
-              className={styles.hiddenFile}
-              aria-hidden="true"
-            />
+            <Tooltip
+              place="top"
+              tooltipContent={hasChanges ? '' : 'Nothing has changed yet.'}
+              wrapperClassName={classNames({ [styles.tooltipOff]: hasChanges })}
+            >
+              <Button
+                label={isSaving ? 'Saving…' : 'Save'}
+                buttonType="submit"
+                type={ButtonType.Primary}
+                size={ButtonSize.Default}
+                ariaLabel="Save library"
+                disabled={!canSave}
+              />
+            </Tooltip>
           </div>
-          <p className={styles.error}>{avatarError ?? ' '}</p>
-        </div>
+        </form>
+      </Modal>
 
-        <div className={styles.field}>
-          <Text variant={TypographyVariant.TextSmall} className={styles.label}>
-            Username
-          </Text>
-          <Input
-            type="text"
-            ariaLabel="Username"
-            placeholder="Enter your username"
-            placeholderColor="#9E9E9E"
-            {...register('username')}
-          />
-          <p className={styles.error}>
-            {errors.username?.message ?? usernameError ?? ' '}
-          </p>
-        </div>
-
-        <div className={styles.field}>
-          <div className={styles.labelRow}>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.label}
-            >
-              About library
-            </Text>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.counter}
-            >
-              {aboutLibraryValue.length} / 4000
-            </Text>
-          </div>
-          <Textarea
-            ariaLabel="About library"
-            placeholder="What is this library about?"
-            rows={4}
-            className={styles.textarea}
-            {...register('aboutLibrary')}
-          />
-          <p className={styles.error}>{errors.aboutLibrary?.message ?? ' '}</p>
-        </div>
-
-        <div className={styles.field}>
-          <div className={styles.labelRow}>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.label}
-            >
-              About author
-            </Text>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.counter}
-            >
-              {aboutMeValue.length} / 2000
-            </Text>
-          </div>
-          <Textarea
-            ariaLabel="About author"
-            placeholder="Tell visitors about yourself"
-            rows={4}
-            className={styles.textarea}
-            {...register('aboutMe')}
-          />
-          <p className={styles.error}>{errors.aboutMe?.message ?? ' '}</p>
-        </div>
-
-        <p className={styles.error}>{topError ?? ' '}</p>
-
-        <div className={styles.actions}>
-          <Button
-            label="Cancel"
-            onClick={close}
-            type={ButtonType.Secondary}
-            size={ButtonSize.Default}
-            ariaLabel="Cancel"
-          />
-          <Button
-            label={isSaving ? 'Saving…' : 'Save'}
-            onClick={handleSubmit(onSubmit)}
-            type={ButtonType.Primary}
-            size={ButtonSize.Default}
-            ariaLabel="Save library"
-            disabled={!canSave}
-          />
-        </div>
-      </form>
-    </Modal>
+      {discardPrompt && (
+        <ConfirmationModal
+          variant="delete"
+          title="Discard these changes?"
+          text="Your edits to the library will be lost."
+          actionButtonLabel="Discard"
+          actionButtonType={ButtonType.Warning}
+          onClose={() => setDiscardPrompt(false)}
+          onConfirm={() => {
+            setDiscardPrompt(false);
+            onClose();
+          }}
+        />
+      )}
+    </>
   );
 }

@@ -1,19 +1,31 @@
 .wrapper {
-  padding: 2px 8px;
-  border-radius: 16px;
+  // Wider side padding than the vertical: a pill needs the extra room so the
+  // label clears the rounded ends.
+  padding: 2px 12px;
+  border-radius: var(--radius-tag);
   max-width: 143.5px;
-  display: inline-block;
+  // Flex-centred rather than inline-block: the label is the only thing in the
+  // pill, so it sits on the pill's own middle instead of on a text baseline
+  // inherited from whatever surface the pill was dropped on.
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   &.withRemove {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     max-width: 180px;
-    padding-right: 4px;
+    padding-right: 6px;
   }
 
   .textWrapper {
+    min-width: 0;
     max-width: 100%;
+    // Matches the label's own line box (%text-base). Left to inherit, the
+    // wrapper is struck from whatever font the surrounding surface uses,
+    // which is taller than the label and pushes it off the pill's middle.
+    line-height: 22px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

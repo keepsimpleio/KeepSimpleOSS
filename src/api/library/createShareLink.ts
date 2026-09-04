@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import type {
   ICreateShareLinkPayload,
   IShareLinkResult,
@@ -18,21 +20,48 @@ function readToken(body: unknown): string | null {
   return typeof token === 'string' && token.length > 0 ? token : null;
 }
 
-// Mint a share link for the ordered object ids. Returns the token, or null on
-// failure (the caller surfaces a retry message — the backend 400s on an empty
-// selection, a non-public object, or more than 21 objects after expansion).
+// Read the backend's own reason out of a rejected mint. The 400s are
+// deterministic (a non-public object, an empty selection, more than 21 after
+// expansion): retrying changes nothing, so the reason must reach the owner.
+function readErrorMessage(error: unknown): string | undefined {
+  if (!axios.isAxiosError(error)) return undefined;
+  const body = error.response?.data as
+    | { error?: { message?: string } }
+    | undefined;
+  const message = body?.error?.message;
+  return typeof message === 'string' && message.trim() ? message : undefined;
+}
+
+// Mint a share link for the ordered object ids. Returns the token, or the
+// backend's reason when it refused.
 export const createShareLink = async (
   objectIds: number[],
-): Promise<IShareLinkResult | null> => {
+): Promise<IShareLinkResult | { error: string; retryable: boolean }> => {
   try {
     const payload: ICreateShareLinkPayload = { objectIds };
     const { data } = await axiosInstance.post('/api/share-links', {
       data: payload,
     });
     const token = readToken(data);
-    return token ? { token } : null;
+    return token
+      ? { token }
+      : { error: 'The link came back without a token.', retryable: true };
   } catch (error) {
     console.error('createShareLink failed:', error);
-    return null;
+    const status = axios.isAxiosError(error)
+      ? error.response?.status
+      : undefined;
+    const reason = readErrorMessage(error);
+    if (status === 400 && reason) return { error: reason, retryable: false };
+    if (status === 401 || status === 403) {
+      return {
+        error: 'Your session has expired. Reload the page and sign in again.',
+        retryable: false,
+      };
+    }
+    return {
+      error: reason ?? 'Could not create the link. Please try again.',
+      retryable: true,
+    };
   }
 };

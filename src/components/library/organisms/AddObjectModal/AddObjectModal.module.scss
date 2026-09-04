@@ -11,9 +11,12 @@
 
 .indicatorWrap {
   padding: 20px 32px;
-  background: #fffbf4;
-  border-top: 1px solid var(--brown-border);
-  border-bottom: 1px solid var(--brown-border);
+}
+
+// Drawn rule closing the step-indicator band, replacing its boxed 1px border.
+.bandRule {
+  width: calc(100% - 64px);
+  margin: 0 32px;
 }
 
 .wrapper {
@@ -57,6 +60,46 @@
 
   &:last-child {
     margin-bottom: 0;
+  }
+}
+
+// One tag at a time reads the sequence. The chips sit above the grid so the
+// switch and the result stay in one glance.
+.sequenceFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sequenceFilter {
+  // Sized by the border it always carries, so the selected state costs no
+  // space and the row never reflows under the cursor.
+  border: 1px solid var(--brown-border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--brown-100);
+  background: var(--white);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    border-color: var(--brown);
+  }
+
+  &.sequenceFilterActive {
+    background: var(--brown);
+    border-color: var(--brown);
+    color: var(--white);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
@@ -111,13 +154,19 @@
   flex-direction: column;
   gap: 8px;
   padding: 20px 32px;
-  border-top: 1px solid var(--brown-border);
 }
 
 .footerError {
   color: var(--red-600);
   font-size: 13px;
   margin: 0;
+  // One line, always: the reason Next is off, or the save error.
+  min-height: 18px;
+  line-height: 18px;
+}
+
+.footerHint {
+  color: var(--gray-darker);
 }
 
 .footerActions {
@@ -195,5 +244,13 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field,
+  .error,
+  .hint {
+    animation: none;
   }
 }

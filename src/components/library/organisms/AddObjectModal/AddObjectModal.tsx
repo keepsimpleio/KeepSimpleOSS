@@ -7,8 +7,14 @@ import {
   getSchemaForType,
   OBJECT_FIELD_LIMITS,
 } from '@utils/library/schema/addObjectSchema';
+import classNames from 'classnames';
 import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
-import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
+import {
+  Controller,
+  type FieldErrors,
+  type SubmitHandler,
+  useForm,
+} from 'react-hook-form';
 
 import { SHELF_FULL_MESSAGE } from '@constants/library/common';
 
@@ -34,6 +40,7 @@ import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 import { useAuth } from '@components/Context/library/AuthContext';
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
   Button,
@@ -88,13 +95,27 @@ function buildDefaults(
 
 const DRAFT_REORDER_ID = 'draft-new';
 
-// Google Books dates come as "2019", "2019-10" or "2019-10-15".
+// Provider dates come as "2019", "2019-10", "2019-10-15" or a full ISO stamp
+// ("2019-10-15T00:00:00Z"). Only the calendar date matters; a two-digit or
+// missing year is not a date.
 function parsePublicationDate(raw: string): Date | null {
-  const [y, m, d] = raw.split('-').map(Number);
-  if (!y || Number.isNaN(y)) return null;
+  const datePart = raw.trim().split('T')[0];
+  const [y, m, d] = datePart.split('-').map(Number);
+  if (!y || Number.isNaN(y) || y < 1000) return null;
   const date = new Date(y, (m || 1) - 1, d || 1);
   return Number.isNaN(date.getTime()) ? null : date;
 }
+
+// A calendar date, as the user picked it, with no timezone in the way:
+// toISOString() shifted a local midnight back a day for everyone east of UTC.
+function formatCalendarDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+type AutofillField = 'title' | 'author' | 'description';
 
 // Pull the status + Strapi error message out of an axios failure so a rejected
 // reorder reports *why* (e.g. 403 permission, 400 "All objects must belong to
@@ -123,6 +144,7 @@ function shelfObjectsToReorderItems(
     coverUrl:
       resolveStrapiUrl(o.attributes.coverImage?.data?.attributes.url) ??
       undefined,
+    tagIds: (o.attributes.tags?.data ?? []).map(t => t.id),
   }));
 }
 
@@ -130,6 +152,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const {
     objectType,
     onClose,
+    onCancel,
     onCreated,
     onReordered,
     isCreate = true,
@@ -137,7 +160,6 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     defaultShelfId,
     shelfObjects,
   } = props;
-  const { closeRef, close } = useModalClose(onClose);
   const config = configByType[objectType];
   const editing = !isCreate && !!object;
   const shelfLocked = defaultShelfId != null && !editing;
@@ -146,9 +168,22 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  // Synchronous twin of `isSubmittingForm` — a ref flips before the re-render
+  // that disables the button, so it catches a second click fired in the gap.
+  const submitInFlightRef = useRef(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  // A create that saved but whose step-2 order did not: said on the success
+  // card, since the form itself is done and must not be submitted twice.
+  const [successNote, setSuccessNote] = useState<string | null>(null);
+  const [discardPrompt, setDiscardPrompt] = useState(false);
+  const [reorderDirty, setReorderDirty] = useState(false);
   const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
+  // Fields whose current text was written by autofill, not typed. A later
+  // suggestion may overwrite those; anything the user typed stays.
+  const autofilledRef = useRef<Set<AutofillField>>(new Set());
   const [isFetchingVideoMeta, setIsFetchingVideoMeta] = useState(false);
+  const [isFetchingCover, setIsFetchingCover] = useState(false);
+  const [coverNotice, setCoverNotice] = useState<string | null>(null);
 
   const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
@@ -165,11 +200,23 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     // Add mode: append a draft placeholder so the user can drag it into place.
     return [...base, { id: DRAFT_REORDER_ID, title: '' }];
   });
+  // Which tag the sequence is being read through. `null` = the whole shelf.
+  // A lens only; the saved order is always the shelf's single sequence.
+  const [sequenceTagId, setSequenceTagId] = useState<number | null>(null);
   const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(
     editing
       ? resolveStrapiUrl(object?.attributes.coverImage?.data?.attributes.url)
       : null,
   );
+
+  // Untick the tag the sequence is filtered by and the lens has nothing to
+  // stand on — fall back to the whole shelf.
+  useEffect(() => {
+    if (sequenceTagId == null) return;
+    if (!selectedTags.some(tag => tag.id === sequenceTagId)) {
+      setSequenceTagId(null);
+    }
+  }, [selectedTags, sequenceTagId]);
 
   const schema = useMemo(() => getSchemaForType(objectType), [objectType]);
 
@@ -185,8 +232,59 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     control,
     watch,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
   } = form;
+
+  // Closing loses a form in progress. Ask first when there is something to
+  // lose; a pristine form (or one already saved) closes at once. "Something"
+  // is a typed field, a changed tag set, a changed shelf or a drag in step 2,
+  // compared against what the form opened with.
+  const initialTagIds = useMemo(
+    () =>
+      (editing ? (object?.attributes.tags?.data ?? []) : [])
+        .map(t => t.id)
+        .sort()
+        .join(','),
+    [editing, object],
+  );
+  const tagsDirty =
+    selectedTags
+      .map(t => t.id)
+      .sort()
+      .join(',') !== initialTagIds;
+  const shelfDirty =
+    editing &&
+    selectedShelfId != null &&
+    defaultShelfId != null &&
+    Number(selectedShelfId) !== defaultShelfId;
+  const hasUnsavedWork =
+    !showSuccess && (isDirty || tagsDirty || shelfDirty || reorderDirty);
+  // Backing out of an edit returns to the overview; backing out of a create
+  // closes the whole thing. A finished save always closes.
+  const leave = onCancel ?? onClose;
+  // A finished save lets the form fade out first, then puts the success card
+  // up: the Modal's close runs its exit and lands here, where this flag turns
+  // the close into the hand-off instead of leaving.
+  const successPending = useRef(false);
+  const requestClose = () => {
+    if (successPending.current) {
+      successPending.current = false;
+      successPending.current = true;
+      close();
+      return;
+    }
+    if (isSubmittingForm) return;
+    if (hasUnsavedWork) {
+      setDiscardPrompt(true);
+      return;
+    }
+    leave();
+  };
+  const { closeRef, close } = useModalClose(requestClose);
+
+  const markTyped = (field: AutofillField) => {
+    autofilledRef.current.delete(field);
+  };
 
   // Live lengths for the character counters. `author`/`description` are optional
   // on every schema, so coalesce to '' before measuring.
@@ -197,23 +295,38 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   // Push a provider suggestion into the form. Values are clamped to the zod
   // limits so an autofill can never leave the form invalid; the cover is
   // best-effort — fields land first, the image follows when the proxy resolves.
-  const applySuggestion = async (s: IAutofillSuggestion) => {
+  const applySuggestion = async (
+    s: IAutofillSuggestion,
+    options?: { titleChosen?: boolean },
+  ) => {
     const isBook = objectType === 'book';
     const setOptions = { shouldValidate: true, shouldDirty: true } as const;
+    const titleLimit = OBJECT_FIELD_LIMITS.title[objectType];
 
-    setValue('title', s.title.slice(0, OBJECT_FIELD_LIMITS.title), setOptions);
-    if (s.author) {
-      setValue(
-        'author',
-        s.author.slice(0, OBJECT_FIELD_LIMITS.author),
-        setOptions,
-      );
+    // Only empty fields and fields autofill itself wrote last time are
+    // overwritten. Text the user typed is theirs: a pasted YouTube link used
+    // to wipe a finished description.
+    const canWrite = (field: AutofillField) => {
+      const current = (form.getValues(field) as string | undefined)?.trim();
+      return !current || autofilledRef.current.has(field);
+    };
+    const write = (field: AutofillField, next: string) => {
+      setValue(field, next, setOptions);
+      autofilledRef.current.add(field);
+    };
+
+    // A title picked from the typeahead is the user's own choice for that
+    // field, so it always lands.
+    if (options?.titleChosen || canWrite('title')) {
+      write('title', s.title.slice(0, titleLimit));
     }
-    if (s.description) {
-      setValue(
+    if (s.author && canWrite('author')) {
+      write('author', s.author.slice(0, OBJECT_FIELD_LIMITS.author));
+    }
+    if (s.description && canWrite('description')) {
+      write(
         'description',
         s.description.slice(0, OBJECT_FIELD_LIMITS.description),
-        setOptions,
       );
     }
     if (!isBook) {
@@ -247,8 +360,25 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       }
     }
     if (s.coverUrl) {
-      const file = await fetchCoverFile(s.coverUrl, s.title);
-      if (file) setValue('coverImage', file, setOptions);
+      // The cover is the slow half of an autofill: a full-resolution scan
+      // travelling through our proxy. Snapshot what sits in the slot now, and
+      // only write ours if nothing else landed there meanwhile — an image the
+      // user dropped while waiting outranks the provider's.
+      const before = form.getValues('coverImage');
+      setIsFetchingCover(true);
+      setCoverNotice(null);
+      try {
+        const file = await fetchCoverFile(s.coverUrl, s.title);
+        if (!file) {
+          setCoverNotice(
+            "Couldn't fetch this book's cover. Add one from your files.",
+          );
+        } else if (form.getValues('coverImage') === before) {
+          setValue('coverImage', file, setOptions);
+        }
+      } finally {
+        setIsFetchingCover(false);
+      }
     }
   };
 
@@ -345,7 +475,29 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   const handleBack = () => setCurrentStep(1);
 
+  // Validation lives on step-1 fields, which aren't on screen during step 2 —
+  // so a rejected submit used to look like the button doing nothing at all.
+  // Name the offending field and walk the user back to it.
+  const onInvalidForm = (formErrors: FieldErrors<AddObjectFormData>) => {
+    const firstKey = Object.keys(formErrors)[0] as
+      | keyof AddObjectFormData
+      | undefined;
+    const firstMessage = firstKey
+      ? (formErrors[firstKey]?.message as string | undefined)
+      : undefined;
+    setSubmitError(
+      firstMessage ??
+        `Some details are missing. Check step 1 before saving this ${objectType}.`,
+    );
+    setCurrentStep(1);
+  };
+
   const onSubmitForm: SubmitHandler<AddObjectFormData> = async data => {
+    // A click that lands while the previous save is still in flight must not
+    // start a second create — `isSubmittingForm` only disables the button after
+    // React re-renders, which is a frame too late for a fast double-click.
+    if (submitInFlightRef.current) return;
+    submitInFlightRef.current = true;
     setSubmitError(null);
 
     // Object titles must be unique within a shelf — warn before saving instead
@@ -359,6 +511,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         setSubmitError(
           `A ${objectType} with this title already exists on this shelf.`,
         );
+        // Release the guard: this exit is before the try/finally that would
+        // otherwise clear it, and a stuck flag would deaden the button.
+        submitInFlightRef.current = false;
         return;
       }
     }
@@ -403,10 +558,13 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         // otherwise omit (no change)
       }
 
-      const publicationDate =
-        objectType === 'book' && (data as BookFormData).publicationDate
-          ? (data as BookFormData).publicationDate?.toISOString().slice(0, 10)
+      const pickedDate =
+        objectType === 'book'
+          ? (data as BookFormData).publicationDate
           : undefined;
+      const publicationDate = pickedDate
+        ? formatCalendarDate(pickedDate)
+        : undefined;
 
       const tags =
         selectedTags.length > 0 ? selectedTags.map(t => t.id) : undefined;
@@ -419,6 +577,14 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         config.hasShelf && selectedShelfId
           ? Number(selectedShelfId)
           : (defaultShelfId ?? undefined);
+      // Edit mode with the shelf changed: the object leaves this shelf. The
+      // step-2 grid still shows the old shelf, so its order is not this
+      // object's business any more and the reorder below is skipped.
+      const movingShelf =
+        editing &&
+        shelf != null &&
+        defaultShelfId != null &&
+        shelf !== defaultShelfId;
 
       let resultObject: IObject;
 
@@ -498,6 +664,25 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         if (shelf === undefined && !next.attributes.shelf?.data) {
           next.attributes.shelf = original.shelf;
         }
+        // Shelf changed: PUT does not populate the relation, and the shelf
+        // reads the destination off it to move the card. Fill it in from the
+        // option the user picked.
+        if (movingShelf && !next.attributes.shelf?.data) {
+          const target = shelves.find(s => s.id === shelf);
+          if (target) {
+            next.attributes.shelf = {
+              data: {
+                id: target.id,
+                attributes: {
+                  name: target.attributes.name,
+                  type: objectType,
+                  order: target.attributes.order,
+                },
+              },
+            };
+            next.attributes.shelfName = target.attributes.name;
+          }
+        }
         resultObject = next;
       }
 
@@ -545,7 +730,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       // Persist the step-2 drag order. The draft placeholder stands in for the
       // object we just created/updated, so map it to its real id.
-      if (shelf != null && reorderItems.length > 1) {
+      if (shelf != null && !movingShelf && reorderItems.length > 1) {
         const orderedObjects = reorderItems
           .map((item, index) => {
             const id =
@@ -581,10 +766,12 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           onReordered?.(
             shelfObjects?.map((o, index) => ({ id: o.id, order: index })) ?? [],
           );
-          setSubmitError(
-            `Your ${objectType} was saved, but the new order couldn't be applied: ${message}`,
+          // The object is saved; only the order did not land. Say so on the
+          // success card: keeping the form up invited a second save, which
+          // in create mode is a duplicate.
+          setSuccessNote(
+            `The new order couldn't be applied (${message}). You can reorder from the ${objectType}'s edit screen.`,
           );
-          return;
         }
       }
 
@@ -600,16 +787,25 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       // Axios failures carry a raw "Request failed with status code 500" — not
       // useful to a user. Show a friendly line (the title is the usual culprit)
       // and only fall back to a specific message when it isn't an HTTP error.
+      const status = (e as { response?: { status?: number } })?.response
+        ?.status;
       const isHttpError = !!(e as { response?: unknown })?.response;
       const message =
-        isHttpError || !(e instanceof Error)
-          ? `Could not save this ${objectType}. Please try a different title.`
-          : e.message;
+        status === 401 || status === 403
+          ? 'Your session has expired. Reload the page and sign in again.'
+          : status === 400
+            ? `Could not save this ${objectType}. Please try a different title.`
+            : isHttpError || !(e instanceof Error)
+              ? `Could not save this ${objectType}. Please try again.`
+              : e.message;
       setSubmitError(message);
     } finally {
+      submitInFlightRef.current = false;
       setIsSubmittingForm(false);
     }
   };
+
+  const submitForm = handleSubmit(onSubmitForm, onInvalidForm);
 
   const renderField = (key: FieldKey) => {
     const label = config.labels[key] ?? key;
@@ -630,7 +826,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
             </Text>
             {hasTypeahead ? (
               <TitleAutocomplete
-                registration={register('title')}
+                registration={register('title', {
+                  onChange: () => markTyped('title'),
+                })}
                 ariaLabel={label}
                 placeholder={label}
                 placeholderColor="#9E9E9E"
@@ -639,7 +837,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     ? searchBookSuggestions
                     : searchAudioSuggestions
                 }
-                onSelect={applySuggestion}
+                onSelect={suggestion =>
+                  applySuggestion(suggestion, { titleChosen: true })
+                }
               />
             ) : (
               <Input
@@ -647,10 +847,13 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                 ariaLabel={label}
                 placeholder={label}
                 placeholderColor="#9E9E9E"
-                {...register('title')}
+                {...register('title', { onChange: () => markTyped('title') })}
               />
             )}
-            <CharCount current={titleLength} max={OBJECT_FIELD_LIMITS.title} />
+            <CharCount
+              current={titleLength}
+              max={OBJECT_FIELD_LIMITS.title[objectType]}
+            />
             {errors.title && (
               <p className={styles.error}>{errors.title.message}</p>
             )}
@@ -671,7 +874,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               ariaLabel={label}
               placeholder={label}
               placeholderColor="#9E9E9E"
-              {...register('author')}
+              {...register('author', { onChange: () => markTyped('author') })}
             />
             <CharCount
               current={authorLength}
@@ -725,7 +928,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               wrapperClassName={styles.textareaWrapper}
               className={styles.textarea}
               rows={5}
-              {...register('description')}
+              {...register('description', {
+                onChange: () => markTyped('description'),
+              })}
             />
             <CharCount
               current={descriptionLength}
@@ -751,17 +956,23 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               render={({ field }) => (
                 <ImageDropzone
                   value={field.value ?? null}
-                  onChange={field.onChange}
+                  onChange={file => {
+                    setCoverNotice(null);
+                    field.onChange(file);
+                  }}
                   existingPreviewUrl={existingCoverUrl ?? undefined}
                   onClearExisting={() => setExistingCoverUrl(null)}
+                  loading={isFetchingCover}
                   ariaLabel={label}
                 />
               )}
             />
-            {errors.coverImage && (
+            {errors.coverImage ? (
               <p className={styles.error}>
                 {String(errors.coverImage.message)}
               </p>
+            ) : (
+              coverNotice && <p className={styles.hint}>{coverNotice}</p>
             )}
           </div>
         );
@@ -834,6 +1045,17 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
   const step1Fields = watch();
   const isStep1Filled = !!step1Fields.title;
+  // Why Next is off, in words, before any field has been touched: an untouched
+  // form shows no validation text, so the dead button was unexplained.
+  const nextBlockedReason = !isStep1Filled
+    ? objectType === 'book'
+      ? 'Enter a title to continue.'
+      : !(step1Fields as { sourceUrl?: string }).sourceUrl
+        ? 'Enter the URL and a title to continue.'
+        : 'Enter a title to continue.'
+    : !isValid
+      ? 'Fix the highlighted fields to continue.'
+      : null;
 
   // Live blob URL for the currently-picked cover File so the reorder card
   // mirrors what the user just dropped in step 1. Revoked on change/unmount.
@@ -861,9 +1083,42 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           title: liveCurrentTitle || item.title,
           coverUrl: liveCurrentCoverUrl ?? item.coverUrl,
           isCurrent: true,
+          // The object being edited carries whatever tags are ticked right now,
+          // not what it was saved with, so it shows up under a tag the moment
+          // that tag is added above.
+          tagIds: selectedTags.map(t => t.id),
         }
       : item,
   );
+
+  // The sequence is shown through one tag at a time. Filtering only narrows
+  // what is on screen: positions are still the shelf's, and a drag inside the
+  // narrowed view writes back into the slots those objects hold in it.
+  const visibleReorderItems =
+    sequenceTagId == null
+      ? displayedReorderItems
+      : displayedReorderItems.filter(item =>
+          item.tagIds?.includes(sequenceTagId),
+        );
+
+  const handleReorder = (next: ReorderItem[]) => {
+    setReorderDirty(true);
+    const orderedIds = next.map(item => item.id);
+    const movedIds = new Set(orderedIds);
+    setReorderItems(prev => {
+      const slots: number[] = [];
+      prev.forEach((item, index) => {
+        if (movedIds.has(item.id)) slots.push(index);
+      });
+      const byId = new Map(prev.map(item => [item.id, item]));
+      const result = [...prev];
+      orderedIds.forEach((id, index) => {
+        const item = byId.get(id);
+        if (item) result[slots[index]] = item;
+      });
+      return result;
+    });
+  };
 
   const shelfOptions = shelves.map(s => ({
     value: String(s.id),
@@ -871,6 +1126,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   }));
 
   const modalTitle = editing ? config.editTitle : config.title;
+  // The step promises exactly what it holds: books add a shelf picker.
+  const step2Label =
+    config.hasShelf && !shelfLocked
+      ? 'Shelf, position and tags'
+      : 'Position and tags';
   const primaryLabel = editing ? config.editSubmitLabel : config.submitLabel;
   const successTitle = editing
     ? `${objectType[0].toUpperCase()}${objectType.slice(1)} updated`
@@ -885,16 +1145,23 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         <Modal
           className={styles.modal}
           title={modalTitle}
-          onClose={onClose}
+          onClose={requestClose}
           closeRef={closeRef}
         >
-          <form onSubmit={handleSubmit(onSubmitForm)} noValidate>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              void submitForm(e);
+            }}
+            noValidate
+          >
             <div className={styles.indicatorWrap}>
               <StepIndicator
-                steps={[STEPS[0], { label: config.step2Label }]}
+                steps={[STEPS[0], { label: step2Label }]}
                 currentStep={currentStep}
               />
             </div>
+            <InkLine seed={5} className={styles.bandRule} />
 
             <div className={styles.wrapper}>
               {currentStep === 1 ? (
@@ -937,7 +1204,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                       value={selectedTags}
                       onChange={setSelectedTags}
                       placeholder={config.tagsLabel}
-                      emptyState="No tags yet — create one from your library settings."
+                      emptyState="No tags yet. Create one from the Tags panel on the right"
                       maxItems={10}
                       portal
                     />
@@ -948,38 +1215,75 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                       variant={TypographyVariant.TextSmall}
                       className={styles.label}
                     >
-                      Select tag to reorder objects
+                      Modify object sequence
                     </Text>
-                    <Dropdown
-                      options={selectedTags.map(t => ({
-                        value: String(t.id),
-                        label: t.name,
-                      }))}
-                      placeholder={
-                        selectedTags.length === 0
-                          ? 'Pick tags above first'
-                          : 'Select a tag to filter'
-                      }
-                      disabled={selectedTags.length === 0}
-                    />
-                  </div>
-
-                  <div className={styles.field}>
+                    {selectedTags.length > 0 && (
+                      <div
+                        className={styles.sequenceFilters}
+                        role="group"
+                        aria-label="Show the sequence through one tag"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setSequenceTagId(null)}
+                          aria-pressed={sequenceTagId === null}
+                          className={classNames(styles.sequenceFilter, {
+                            [styles.sequenceFilterActive]:
+                              sequenceTagId === null,
+                          })}
+                        >
+                          Whole shelf
+                        </button>
+                        {selectedTags.map(tag => (
+                          <button
+                            key={tag.id}
+                            type="button"
+                            onClick={() =>
+                              setSequenceTagId(
+                                sequenceTagId === tag.id ? null : tag.id,
+                              )
+                            }
+                            aria-pressed={sequenceTagId === tag.id}
+                            className={classNames(styles.sequenceFilter, {
+                              [styles.sequenceFilterActive]:
+                                sequenceTagId === tag.id,
+                            })}
+                          >
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <ReorderGrid
-                      items={displayedReorderItems}
-                      onReorder={setReorderItems}
+                      items={visibleReorderItems}
+                      onReorder={handleReorder}
                       itemShape={config.itemShape}
-                      emptyState="No objects yet on this shelf."
+                      emptyState={
+                        sequenceTagId == null
+                          ? 'No content yet on this shelf.'
+                          : 'Nothing else on this shelf carries that tag yet.'
+                      }
                     />
                   </div>
                 </div>
               )}
             </div>
 
+            <InkLine seed={6} className={styles.bandRule} />
             <div className={styles.footer}>
-              {submitError && (
-                <p className={styles.footerError}>{submitError}</p>
-              )}
+              {/* One held line above the buttons: the save error, or on step 1
+                  the reason Next is off. Never a layout jump when it lands. */}
+              <p
+                className={classNames(styles.footerError, {
+                  [styles.footerHint]: !submitError,
+                })}
+                aria-live="polite"
+              >
+                {submitError ??
+                  (currentStep === 1
+                    ? (nextBlockedReason ?? '\u00a0')
+                    : '\u00a0')}
+              </p>
               <div className={styles.footerActions}>
                 {currentStep === 2 && (
                   <Button
@@ -1002,6 +1306,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                   ariaLabel="Cancel"
                   onClick={e => {
                     e.preventDefault();
+                    if (hasUnsavedWork) {
+                      setDiscardPrompt(true);
+                      return;
+                    }
                     close();
                   }}
                   disabled={isSubmittingForm}
@@ -1024,7 +1332,14 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     size={ButtonSize.Wide}
                     label={isSubmittingForm ? 'Saving…' : primaryLabel}
                     ariaLabel={primaryLabel}
-                    buttonType="submit"
+                    // Submits through the same handler the form's onSubmit
+                    // uses, but from the click itself: a native submit event
+                    // can be swallowed by whatever else is listening on the
+                    // way up, and the user reads that as a dead button.
+                    onClick={e => {
+                      e.preventDefault();
+                      void submitForm();
+                    }}
                     disabled={isSubmittingForm}
                   />
                 )}
@@ -1039,7 +1354,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           variant="success"
           icon={IconName.Info}
           title={successTitle}
-          text={successText}
+          text={successNote ? `${successText} ${successNote}` : successText}
           actionButtonLabel="Close"
           actionButtonType={ButtonType.Secondary}
           onClose={() => {
@@ -1049,6 +1364,25 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           onConfirm={() => {
             setShowSuccess(false);
             onClose();
+          }}
+        />
+      )}
+
+      {discardPrompt && (
+        <ConfirmationModal
+          variant="delete"
+          title="Discard these changes?"
+          text={
+            editing
+              ? 'Your edits to this item will be lost.'
+              : `This ${objectType} has not been saved yet.`
+          }
+          actionButtonLabel="Discard"
+          actionButtonType={ButtonType.Warning}
+          onClose={() => setDiscardPrompt(false)}
+          onConfirm={() => {
+            setDiscardPrompt(false);
+            leave();
           }}
         />
       )}

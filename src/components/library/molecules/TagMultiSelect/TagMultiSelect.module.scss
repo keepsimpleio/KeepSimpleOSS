@@ -20,10 +20,13 @@
   gap: 8px;
   background: var(--white);
   border: 1px solid var(--brown-border);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   padding: 0 0 0 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
 
   &:disabled {
     opacity: 0.5;
@@ -75,7 +78,7 @@
   left: 0;
   right: 0;
   background: var(--white);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   max-height: 240px;
   overflow-y: auto;
@@ -115,4 +118,54 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
+}
+
+// Past the cap, the remaining options read as unavailable instead of dead.
+.blocked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+// Opens with a short fade and leaves the same way (usePresence keeps the node
+// for the exit). Opacity only: the placement transform is set inline and an
+// animated transform would override it.
+@keyframes popover-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popover-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.menu {
+  animation: popover-in 0.14s ease-out;
+}
+
+.menuClosing {
+  animation: popover-out 0.12s ease-in forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .menuClosing {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .icon {
+    transition: none;
+  }
 }

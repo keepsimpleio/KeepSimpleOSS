@@ -6,7 +6,13 @@ import type {
 
 export interface AddObjectModalProps {
   objectType: ObjectType;
+  /** Fired when the modal is done: after a save, or on cancel when `onCancel` is absent. */
   onClose: () => void;
+  /**
+   * Fired instead of `onClose` when the user backs out without saving. The
+   * overview passes this so Cancel returns to it rather than closing it too.
+   */
+  onCancel?: () => void;
   onCreated?: (created: IObject) => void;
   /**
    * Fired with the full step-2 drag order after a successful save so the

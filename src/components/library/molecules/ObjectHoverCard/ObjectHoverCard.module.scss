@@ -1,0 +1,211 @@
+// The hover dossier: a catalogue card that opens beside the object, on the
+// same warm paper as the rest of the library. Fixed-position and portaled to
+// the body, since the shelf clips its own scroll row.
+.panel {
+  position: fixed;
+  z-index: 1200;
+  box-sizing: border-box;
+  width: 300px;
+  padding: 16px;
+  background: var(--white-200);
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
+  box-shadow: var(--tooltip-shadow);
+  // Informational only: the cursor keeps reaching the object underneath.
+  pointer-events: none;
+  // Hidden until the first measuring pass has placed it, so it never flashes
+  // at the top-left corner on the way to its anchor.
+  opacity: 0;
+  transform: translateX(-6px);
+  // The panel opens on the first hover frame, so the fade is the whole of the
+  // softness: slow enough to read as an arrival, short enough to keep up with
+  // a cursor moving down a shelf.
+  transition:
+    opacity 0.2s ease-out,
+    transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+// Opening on the object's left: the panel drifts in from the other side.
+.panel.fromLeft {
+  transform: translateX(6px);
+}
+
+.panel.placed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel.fromLeft {
+    transition: none;
+    transform: none;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.kind {
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brown-100);
+}
+
+// The rating block, closing the panel the way the overview modal closes with
+// its rating box.
+.reviewHeading {
+  margin: 0 0 8px;
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brown-100);
+}
+
+// Rating values read in dark text; the colour rides in the chip beside them,
+// so the value never depends on a low-contrast hue to be legible.
+.chipValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.chip {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+}
+
+.chipSuffix {
+  color: var(--gray-darker);
+  font-weight: 400;
+}
+
+.panel .title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  // The variant's 32px leading was built for prose and leaves a two-line
+  // title floating inside the panel.
+  line-height: 22px;
+  color: var(--black-rich);
+}
+
+.byline {
+  margin: 4px 0 0;
+  font-family: var(--font-source-sans);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--gray-darkest);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rule {
+  margin: 12px 0;
+}
+
+.meta {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.metaLabel {
+  flex: 0 0 76px;
+  margin: 0;
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gray-darker);
+}
+
+.metaValue {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-source-sans);
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--gray-darkest);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--gray-darkest);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tags {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+// The shared Tag pill, sized down for the panel. Scoped under `.panel` so it
+// outranks Tag's own `.wrapper` padding and `.wrapper .text` sizing regardless
+// of which module the bundler emits first.
+.panel .tag {
+  max-width: 120px;
+  padding: 1px 10px;
+
+  p,
+  span,
+  // The text wrapper takes the same line box as the label it holds, so the
+  // shrunk label still sits on the pill's middle.
+  div {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+
+.tagOverflow {
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--gray-darker);
+}
+
+.empty {
+  margin: 12px 0 0;
+  font-family: var(--font-source-sans);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--gray-darker);
+}

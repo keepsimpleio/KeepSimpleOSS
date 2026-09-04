@@ -21,8 +21,10 @@ const URL_REGEX = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/;
 // Single source of truth for the user-entered field limits, shared between the
 // zod schemas and the CharCount indicators in AddObjectModal so the counter's
 // `max` can never drift from what validation actually enforces.
+// Title caps are per type (docs/object-api.md): 200 for books, 150 for video
+// and audio.
 export const OBJECT_FIELD_LIMITS = {
-  title: 200,
+  title: { book: 200, video: 150, audio: 150 } as Record<ObjectType, number>,
   author: 100,
   description: 5000,
 } as const;
@@ -32,7 +34,7 @@ const bookSchema = z.object({
   title: z
     .string()
     .min(1, 'Book title is required')
-    .max(OBJECT_FIELD_LIMITS.title, 'Title must be 200 chars or less.'),
+    .max(OBJECT_FIELD_LIMITS.title.book, 'Title must be 200 chars or less.'),
   author: z
     .string()
     .max(OBJECT_FIELD_LIMITS.author, 'Author must be 100 chars or less.')
@@ -57,7 +59,7 @@ const videoSchema = z.object({
   title: z
     .string()
     .min(1, 'Video title is required')
-    .max(OBJECT_FIELD_LIMITS.title, 'Title must be 200 chars or less.'),
+    .max(OBJECT_FIELD_LIMITS.title.video, 'Title must be 150 chars or less.'),
   author: z
     .string()
     .max(OBJECT_FIELD_LIMITS.author, 'Creator must be 100 chars or less.')
@@ -83,7 +85,7 @@ const audioSchema = z.object({
   title: z
     .string()
     .min(1, 'Audio title is required')
-    .max(OBJECT_FIELD_LIMITS.title, 'Title must be 200 chars or less.'),
+    .max(OBJECT_FIELD_LIMITS.title.audio, 'Title must be 150 chars or less.'),
   author: z
     .string()
     .max(OBJECT_FIELD_LIMITS.author, 'Artist must be 100 chars or less.')

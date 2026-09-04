@@ -20,7 +20,7 @@
     padding: 0 16px;
     background: var(--white);
     border: 1px solid var(--gray-100);
-    border-radius: 4px;
+    border-radius: var(--radius-control);
 
     &.search {
       height: 48px !important;
@@ -28,7 +28,7 @@
       background: var(--white-300);
       font-weight: 400;
       font-size: 16px;
-      border-radius: 10px;
+      border-radius: var(--radius-control);
       padding: 0 34px 0 16px;
 
       // Hide WebKit's native search clear button so it doesn't double up with

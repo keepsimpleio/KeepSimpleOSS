@@ -13,12 +13,16 @@ import CompanyIcon from './company.svg';
 import CopyIcon from './copy.svg';
 import DeleteIcon from './delete.svg';
 import DotsVerticalIcon from './dots-vertical.svg';
+import DragHandleIcon from './drag-handle.svg';
 import EditIcon from './edit.svg';
 import ErrorIcon from './error.svg';
 import HamburgerIcon from './hamburger.svg';
 import InfoIcon from './info.svg';
+import LibrarianIcon from './librarian.svg';
 import LibraryIcon from './library.svg';
+import LinkIcon from './link.svg';
 import LogoIcon from './logo.svg';
+import PanelIcon from './panel.svg';
 import PlusIcon from './plus.svg';
 import SearchIcon from './search.svg';
 import SettingsIcon from './settings.svg';
@@ -44,12 +48,16 @@ export {
   CopyIcon,
   DeleteIcon,
   DotsVerticalIcon,
+  DragHandleIcon,
   EditIcon,
   ErrorIcon,
   HamburgerIcon,
   InfoIcon,
+  LibrarianIcon,
   LibraryIcon,
+  LinkIcon,
   LogoIcon,
+  PanelIcon,
   PlusIcon,
   SearchIcon,
   SettingsIcon,

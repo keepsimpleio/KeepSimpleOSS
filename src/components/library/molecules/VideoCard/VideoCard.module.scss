@@ -1,11 +1,14 @@
 // The cell that frames the object plus its drop shadow. The shadow SVG fills
-// the full 292×182 box while the object (255×181) sits flush to the right
-// edge, so the soft shadow only peeks out on the left and bottom — matching the
-// book/audio cards where the spine/disc is exposed on the left.
+// the full box while the object sits flush to the right edge, so the soft
+// shadow only peeks out on the left and bottom — matching the book/audio
+// cards where the spine/disc is exposed on the left.
+// Height is the card exactly: 12px padding, the 125px thumbnail, the 6px bar
+// and 12px padding. The cards bottom-align onto the board, so a video simply
+// stands shorter than a book beside it.
 .wrap {
   position: relative;
   width: 292px;
-  height: 182px;
+  height: 156px;
 }
 
 // Drop shadow behind the object, spanning the full cell. `none` on the SVG so
@@ -29,16 +32,33 @@
   display: flex;
   flex-direction: column;
   width: 255px;
-  height: 181px;
+  height: 155px;
   padding: 12px;
   background: var(--off-white);
-  border-radius: 0 0 20px 20px;
+  border-radius: 0;
   cursor: pointer;
   border: none;
   outline: none;
+  // The object rises off the shelf under the cursor — one shared lift across
+  // book/video/audio cards.
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-6px);
+  }
 
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--brown);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
   }
 }
 
@@ -53,7 +73,8 @@
   left: 0;
   right: 0;
   display: flex;
-  justify-content: center;
+  // The toggle fills the artwork it covers.
+  justify-content: stretch;
   padding-bottom: 6px;
   z-index: 2;
   opacity: 0;
@@ -61,14 +82,36 @@
   transition: opacity 0.15s ease;
 }
 
+// The strip above the artwork is the toggle's own place on the shelf, so a
+// pointer that arrives there reveals it instead of being sent to the cover
+// first. Mouse pointers only: a touch has no hover to reveal it with, and an
+// invisible target would answer a stray tap.
+@media (hover: hover) and (pointer: fine) {
+  .select {
+    pointer-events: auto;
+  }
+
+  .select:hover {
+    opacity: 1;
+  }
+}
+
+// Keyboard focus reveals the toggle; a mouse click does not pin it. Plain
+// :focus-within kept the strip lit on the card you had just clicked, so it
+// stayed up while the pointer was already on the next book.
 .card:hover .select,
-.card:focus-within .select {
+.card:has(:focus-visible) .select,
+.card.selected .select {
   opacity: 1;
   pointer-events: auto;
 }
 
+// Selected reads as chosen, not switched off: the art stays at full strength
+// under a brown ring, and the "Remove" pill above it stays on screen.
 .card.selected .thumb {
-  opacity: 0.55;
+  box-shadow:
+    0 0 0 2px var(--white),
+    0 0 0 4px var(--brown);
 }
 
 .thumbWrap {
@@ -84,7 +127,8 @@
   inset: 0;
   background: var(--white);
   overflow: hidden;
-  transition: opacity 0.15s ease;
+  // The selected ring is a box-shadow, so that is what eases in.
+  transition: box-shadow 0.2s ease;
 }
 
 .coverImage {
@@ -92,6 +136,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  // Fades in once decoded; `.coverImageLoaded` lands on load.
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.coverImageLoaded {
+  opacity: 1;
 }
 
 .coverPlaceholder {
@@ -114,18 +165,8 @@
   background: var(--brown);
 }
 
-.title {
-  margin-top: 8px;
-  color: var(--gray-darkest);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 // Compact variant for the share-selection panel: a bare 231×138 thumbnail
-// (no shadow, no padding, no title bar, no caption).
+// (no shadow, no padding, no title bar).
 .wrap.compact {
   width: 231px;
   height: 138px;
@@ -136,6 +177,8 @@
     height: 100%;
     padding: 0;
     border-radius: 0;
+    // No hover lift in the share panel — these tiles drag-reorder.
+    transform: none;
     // Swap the floating drop shadow for the double frame (inner 1.5px cream,
     // outer 1px brown) so it matches the book/audio tiles in the panel.
     box-shadow:
@@ -147,8 +190,7 @@
     height: 100%;
   }
 
-  .bar,
-  .title {
+  .bar {
     display: none;
   }
 }

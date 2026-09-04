@@ -1,0 +1,33 @@
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.slot {
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 0;
+  animation: ghost-enter 0.45s ease both;
+}
+
+@keyframes ghost-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot {
+    animation: none;
+  }
+}

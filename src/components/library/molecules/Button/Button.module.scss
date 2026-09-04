@@ -7,9 +7,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  transition: all 0.3s ease-in;
+  border-radius: var(--radius-control);
+  // Named properties only: `all` also eased border and padding changes, so
+  // a disabled state or a size swap crawled instead of landing.
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
   @extend %text-base-semibold;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
   &:disabled {
     cursor: default;
@@ -17,19 +28,18 @@
   }
 
   &.default {
-    padding: 2px 8px;
+    padding: 2px 14px;
   }
 
   &.wide {
     width: 100%;
     text-align: center;
-    padding: 2px 16px;
+    padding: 2px 18px;
   }
 
   &.primary {
     color: var(--white);
     background: var(--brown);
-    box-shadow: 0px 4px 6px 0px var(--black-transparent-100);
 
     &:hover:not(:disabled) {
       background: var(--brown-100);
@@ -40,7 +50,6 @@
     color: var(--brown);
     background: var(--white);
     border: 1px solid var(--beige);
-    box-shadow: 0px 4px 4px 0px var(--black-transparent-200);
 
     &:hover:not(:disabled) {
       background: var(--white-100);
@@ -52,7 +61,6 @@
   &.warning {
     background: var(--red-500);
     color: var(--white);
-    box-shadow: 0px 4px 6px 0px var(--black-transparent-100);
 
     &:hover:not(:disabled) {
       background: var(--red-700);
@@ -69,7 +77,7 @@
     color: var(--white);
 
     &:hover:not(:disabled) {
-      box-shadow: 3px 4px 10px 0px var(--black-transparent-200);
+      background: var(--white-100);
     }
   }
 }

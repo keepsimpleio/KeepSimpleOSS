@@ -3,7 +3,7 @@
   align-items: center;
   width: 100%;
   max-width: 120px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: transparent;
 
   .icon {
@@ -12,20 +12,24 @@
     // on light cards/sidebar, pin a dark tone so they don't inherit white.
     color: var(--gray-darkest);
     background: transparent;
-    border-radius: 8px 0 0 8px;
+    border-radius: var(--radius-control) 0 0 var(--radius-control);
     padding: 3px 4px 3px 0;
   }
 
   .count {
     color: var(--gray-darkest);
     padding: 0;
-    height: -webkit-fill-available;
+    // No `-webkit-fill-available` here: in the sidebar's scrolling flex column
+    // iOS Safari resolved it against the whole panel, so the three counts grew
+    // to a few hundred px tall and blew the About section apart. The row is
+    // centered by its parent; natural height is all it needs.
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
+    white-space: nowrap;
 
     p {
-      @extend %text-small;
+      @extend %text-regular;
     }
   }
 
@@ -43,10 +47,6 @@
     .count {
       color: var(--color-text);
       padding: 0 8px;
-
-      p {
-        @extend %text-regular;
-      }
     }
   }
 }

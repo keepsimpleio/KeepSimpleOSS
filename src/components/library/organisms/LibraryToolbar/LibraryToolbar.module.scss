@@ -4,62 +4,136 @@
   top: 48px;
   z-index: 20;
   background: var(--cream);
-  padding: 1px 16px 12px;
+  padding: 16px 16px 12px;
+
+  // Two rows on desktop: the heading switcher with the search on its right,
+  // the shelf pills underneath. Phones stack all three, search last, so the
+  // pills stay next to the shelves they jump to.
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'identity search'
+    'pills librarian';
+  align-items: center;
+  column-gap: 24px;
+  row-gap: 16px;
+
+  // Desktop adds a third column at the right edge: the panel fold toggle,
+  // spanning both rows, next to the panel it controls.
+  @media (min-width: 1025px) {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'identity search panel'
+      'pills librarian panel';
+  }
 
   // The global header switches to a fixed 55px bar at this breakpoint.
   @media (max-width: 1140px) {
     top: 55px;
   }
-}
 
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  // Replaces the removed divider's 16px top margin so the controls keep their
-  // breathing room below the global header.
-  margin-top: 16px;
-  animation: toolbar-fade 0.3s ease;
-
-  // On phones everything crammed onto one row collapsed the flex:1 pill
-  // scroller to near-zero, leaving only the overlapping arrows. Stack into a
-  // column so each control gets a full-width row: jump label, pill scroller,
-  // actions, then search.
   @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    // Collapse the top margin on mobile so the controls connect to the fixed
-    // header (paired with the layout wrapper dropping its top padding), matching
-    // the removed divider's mobile behavior.
-    margin-top: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'identity'
+      'pills'
+      'search'
+      'librarian';
+    row-gap: 12px;
   }
 }
 
-// Guest view of someone else's library: the divider is dropped, so restore the
-// vertical breathing room on the controls row itself.
-.controlsGuest {
-  margin-top: 0;
-  padding: 24px 10px;
-}
-
-// Visitor / guest-preview banner that replaces the owner's shelf controls.
-.welcome {
+// The library switcher is the page heading, with the About opener beside it
+// on phones. Sized for a title, not a form field.
+.identity {
+  grid-area: identity;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
   animation: toolbar-fade 0.3s ease;
 }
 
-.welcomeTitle {
-  color: var(--brown-200);
+.librarySwitcher {
+  flex: 1;
+  min-width: 0;
+  max-width: 440px;
+
+  // The shared Dropdown is a 44px form field; here it carries the page title,
+  // so it gets a taller trigger, title-size text and the sheet's softer edge.
+  > button {
+    height: 52px;
+    padding-left: 16px;
+    border-radius: var(--radius-control);
+    background: var(--white);
+    color: var(--brown-200);
+
+    p {
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--brown-200);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  // The chevron compartment: the shared field boxes it off with a rule, which
+  // reads as a form control, not a title. Doubled class to outweigh the
+  // molecule own three-class selector.
+  &.librarySwitcher > button > div {
+    border-left: none;
+  }
+
+  @media (max-width: 768px) {
+    max-width: none;
+
+    > button {
+      height: 48px;
+
+      p {
+        font-size: 20px;
+      }
+    }
+  }
 }
 
-.welcomeText {
-  color: var(--brown-200);
+// Phones only: the About panel is a drawer there, and this is what pulls it
+// in. On desktop the panel is a static column, so no opener is needed.
+.aboutButton {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
+  background: var(--white);
+  color: var(--brown);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brown);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  @media (max-width: 1024px) {
+    display: inline-flex;
+  }
 }
 
 // Fades whichever variant is mounted, so toggling guest mode in your own
@@ -73,11 +147,6 @@
   }
 }
 
-.text {
-  font-family: 'Lato', sans-serif;
-  white-space: nowrap;
-}
-
 .jumpButtons {
   display: flex;
   align-items: center;
@@ -89,14 +158,34 @@
 // Horizontal scroller variant (non-reorder mode): keep pills on one row and
 // page through them with the arrows.
 .jumpScrollerWrap {
+  grid-area: pills;
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
   min-width: 0;
+  animation: toolbar-fade 0.3s ease;
 
   @media (max-width: 768px) {
     width: 100%;
+  }
+}
+
+// The pills' own row inside the scroller: the slot is what the list motion
+// measures and moves, so a pill that leaves folds shut and its neighbours
+// slide over.
+.pillRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pillSlot {
+  display: inline-flex;
+  flex: 0 0 auto;
+
+  &.pillLeaving {
+    pointer-events: none;
   }
 }
 
@@ -105,6 +194,9 @@
   overflow-x: auto;
   min-width: 0;
   scroll-behavior: smooth;
+  // A swipe past the pill row's edge must not chain into the browser's
+  // history-back gesture (paired with the root rule in library-global.scss).
+  overscroll-behavior-x: contain;
   // Arrows drive navigation; hide the native scrollbar in the toolbar.
   scrollbar-width: none;
 
@@ -118,15 +210,19 @@
 }
 
 .arrow {
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   width: 43px;
   height: 43px;
-  border-radius: 10px;
+  border-radius: var(--radius-control);
   background: #fefdf9 !important;
-  box-shadow: 0px 4.84px 12.1px rgba(0, 0, 0, 0.15);
 }
 
 .arrowLeft svg {
@@ -143,106 +239,208 @@
   }
 
   input {
-    border-radius: 12px !important;
+    border-radius: var(--radius-control) !important;
     background: var(--white-300) !important;
   }
 }
 
-.addShelfWrap {
-  display: inline-flex;
-}
-
-// Default state: white pill, dark text, soft shadow, no border accent.
+// Default state: flat white tile, dark text, no border accent. The border is
+// always 2px so the selected ring changes colour, not size: pills no longer
+// nudge by a pixel as the highlight moves.
 .jumpButton {
   padding: 6px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   white-space: nowrap;
   background: var(--white) !important;
   color: var(--gray-darkest) !important;
-  border: 1px solid transparent !important;
-  box-shadow: 0px 4px 4px 0px var(--black-transparent-200);
+  border: 2px solid var(--beige) !important;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 
-  &:hover:not(:disabled) {
-    background: var(--white) !important;
-    color: var(--gray-darkest) !important;
+  &:hover:not(:disabled),
+  &:focus-visible {
+    border-color: var(--brown-border) !important;
+    color: var(--brown) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
 // Selected state: brown border ring + brown text on the same shape.
 .jumpSelected {
-  border: 2px solid var(--brown) !important;
+  border-color: var(--brown) !important;
   color: var(--brown) !important;
 }
 
-// While reordering: the dragged pill leaving the row flips this on, signalling
-// the drop will be rejected.
-.rejecting {
-  cursor: not-allowed;
+.searchWrap {
+  grid-area: search;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+  animation: toolbar-fade 0.3s ease;
+}
 
-  .pillSlot,
-  .reorderPill {
-    cursor: not-allowed;
+// One line, always present, under the search field. On desktop it hangs
+// below the field out of flow, so the field itself, not field plus caption,
+// is what centres against the heading switcher on the same row. The 16px
+// row gap under it is exactly the line it occupies.
+.searchSummary {
+  min-height: 16px;
+  line-height: 16px;
+  color: var(--gray-darker);
+  white-space: nowrap;
+
+  @media (min-width: 769px) {
+    position: absolute;
+    top: 100%;
+    left: 0;
   }
 }
 
-// Sortable wrapper carries dnd-kit's translate transform; the inner pill does
-// the wiggle, so the two transforms never collide.
-.pillSlot {
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-}
-
-.reorderPill {
+// The Librarian opener: a rectangle the width of the search field, sitting
+// under it on the pills row. Same border language as the jump pills, in the
+// panel's caps voice. Disabled while the agent is being built.
+.librarian {
+  grid-area: librarian;
+  justify-self: end;
   display: inline-flex;
   align-items: center;
-  // Hint at draggability with a gentle, continuous wiggle.
-  animation: pill-wiggle 0.45s ease-in-out infinite;
-  transform-origin: center;
-}
-
-.dragging {
-  animation: none;
-  cursor: grabbing;
-  opacity: 0.6;
-  box-shadow: 0px 8px 16px 0px var(--black-transparent-200) !important;
-}
-
-@keyframes pill-wiggle {
-  0%,
-  100% {
-    transform: rotate(-1.4deg);
-  }
-  50% {
-    transform: rotate(1.4deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reorderPill {
-    animation: none;
-  }
-}
-
-.error {
-  color: var(--warning, #d14343);
-  white-space: nowrap;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 10px;
+  width: 300px;
+  max-width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--beige);
+  border-radius: var(--radius-control);
+  background: var(--white);
+  color: var(--brown);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    border-color: var(--brown-border);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
   @media (max-width: 768px) {
     width: 100%;
-    justify-content: flex-start;
+    justify-self: stretch;
   }
 }
 
-// Button's `text` type defaults to white (built for dark surfaces); on this
-// light toolbar the label inherits that and disappears. Force brown — matches
-// the brown `plus` glyph already baked into the icon.
-.button {
-  color: var(--brown) !important;
+// The fold toggle: a narrow column glued to the info panel, in the panel's
+// own sheet colour so it reads as the panel's tab. It runs the toolbar's full
+// height, edge to edge through the padding, and its right edge lies over the
+// panel's border so the two surfaces meet without a seam. The arrow points
+// right while the panel is open (hide) and turns to point left once it is
+// folded (show).
+.panelToggle {
+  grid-area: panel;
+  align-self: stretch;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  // Top and bottom eat the toolbar's 16px/12px padding; the right side eats
+  // the 16px padding plus the panel's 1px border.
+  margin: -16px -17px -12px 0;
+  padding: 0;
+  // Drawn on three sides in the panel's own edge ink: left, top and bottom.
+  // The right side stays open, where the tab meets the panel's border.
+  border: 1px solid var(--brown-border);
+  border-right: none;
+  border-radius: 0;
+  background: var(--pattern-panel-tab), var(--white-200);
+  color: var(--brown);
+  cursor: pointer;
+  // The panel's own shadow, cast leftward: the tab lifts off the page the way
+  // the sheet beside it does, so the two read as one surface.
+  box-shadow: var(--panel-tab-shadow);
+  // Above the page, below the panel it belongs to.
+  position: relative;
+  z-index: 1;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  @media (min-width: 1025px) {
+    display: inline-flex;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    transform: rotate(90deg);
+    transition: transform 0.3s ease;
+  }
+
+  &.panelToggleCollapsed svg {
+    transform: rotate(-90deg);
+  }
+
+  &:hover {
+    background: var(--pattern-panel-tab), var(--off-white);
+    color: var(--brown-100);
+    box-shadow: -14px 0 20px -8px #533a3a3d;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    svg {
+      transition: none;
+    }
+  }
+}
+
+.librarianLabel {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identity,
+  .jumpScrollerWrap,
+  .searchWrap {
+    animation: none;
+  }
+
+  .jumpScroll {
+    scroll-behavior: auto;
+  }
 }

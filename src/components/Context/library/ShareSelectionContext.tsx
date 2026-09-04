@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -20,8 +21,14 @@ interface ShareSelectionContextValue {
   isSelected: (id: number) => boolean;
   /** Append if absent, remove if already selected. Append is a no-op at the cap. */
   toggle: (object: IObject) => void;
-  /** Append every object not already selected, stopping at the cap. */
-  selectMany: (objects: IObject[]) => void;
+  /**
+   * Append every object not already selected, stopping at the cap. Returns
+   * how many were left out, so the caller can say so instead of stopping
+   * silently.
+   */
+  selectMany: (objects: IObject[]) => number;
+  /** Swap a selected object's snapshot for a fresh copy (after an edit). */
+  replace: (object: IObject) => void;
   remove: (id: number) => void;
   /** Drop every object whose id is in the set — used to purge a shelf at once. */
   removeMany: (ids: number[]) => void;
@@ -52,18 +59,39 @@ export function ShareSelectionProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Read synchronously against the latest committed selection so the caller
+  // learns how many objects did not fit, and the state update stays atomic.
+  const selectedRef = useRef<IObject[]>(selectedObjects);
+  selectedRef.current = selectedObjects;
+
   const selectMany = useCallback((objects: IObject[]) => {
-    setSelectedObjects(prev => {
-      const seen = new Set(prev.map(o => o.id));
-      const additions: IObject[] = [];
-      for (const object of objects) {
-        if (prev.length + additions.length >= MAX_SHARE_OBJECTS) break;
-        if (seen.has(object.id)) continue;
-        seen.add(object.id);
-        additions.push(object);
+    const prev = selectedRef.current;
+    const seen = new Set(prev.map(o => o.id));
+    const additions: IObject[] = [];
+    let leftOut = 0;
+    for (const object of objects) {
+      if (seen.has(object.id)) continue;
+      if (prev.length + additions.length >= MAX_SHARE_OBJECTS) {
+        leftOut += 1;
+        continue;
       }
-      return additions.length ? [...prev, ...additions] : prev;
-    });
+      seen.add(object.id);
+      additions.push(object);
+    }
+    if (additions.length) {
+      const next = [...prev, ...additions];
+      selectedRef.current = next;
+      setSelectedObjects(next);
+    }
+    return leftOut;
+  }, []);
+
+  const replace = useCallback((object: IObject) => {
+    setSelectedObjects(prev =>
+      prev.some(o => o.id === object.id)
+        ? prev.map(o => (o.id === object.id ? object : o))
+        : prev,
+    );
   }, []);
 
   const remove = useCallback((id: number) => {
@@ -90,6 +118,7 @@ export function ShareSelectionProvider({ children }: { children: ReactNode }) {
       isSelected,
       toggle,
       selectMany,
+      replace,
       remove,
       removeMany,
       reorder,
@@ -100,6 +129,7 @@ export function ShareSelectionProvider({ children }: { children: ReactNode }) {
       isSelected,
       toggle,
       selectMany,
+      replace,
       remove,
       removeMany,
       reorder,

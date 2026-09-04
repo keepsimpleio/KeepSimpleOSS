@@ -16,16 +16,19 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
-import React, { JSX, useEffect, useMemo, useState } from 'react';
+import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 
 import { KEEPSIMPLE_URL, MAX_SHARE_OBJECTS } from '@constants/library/common';
 
 import type { IObject } from '@local-types/library/object';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
+
 import { createShareLink } from '@api/library/createShareLink';
 
 import { ChevronUpIcon, CloseIcon, ShareIcon } from '@icons/library/svg';
 
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { AudioCard } from '@components/library/molecules/AudioCard';
 import { BookCard } from '@components/library/molecules/BookCard';
@@ -44,20 +47,39 @@ import styles from './ShareSelectionPanel.module.scss';
 
 const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
 
+const tileKey = (object: IObject) => String(object.id);
+
+// The tiles here are covers with nothing written on them, so the dossier is
+// how anyone — the owner building the link and the person who opens it —
+// reads what an object actually is. Same panel the shelves use.
 function ObjectCard({
   object,
   onClick,
+  ownerUsername,
 }: {
   object: IObject;
   onClick?: (object: IObject) => void;
+  ownerUsername?: string;
 }): JSX.Element {
   switch (object.attributes.type) {
     case 'video':
-      return <VideoCard object={object} onClick={onClick} compact />;
+      return (
+        <VideoCard object={object} onClick={onClick} compact showHoverCard />
+      );
     case 'audio':
-      return <AudioCard object={object} onClick={onClick} compact />;
+      return (
+        <AudioCard object={object} onClick={onClick} compact showHoverCard />
+      );
     default:
-      return <BookCard object={object} onClick={onClick} compact />;
+      return (
+        <BookCard
+          object={object}
+          onClick={onClick}
+          compact
+          showHoverCard
+          ownerUsername={ownerUsername}
+        />
+      );
   }
 }
 
@@ -65,10 +87,12 @@ function SortableItem(props: {
   object: IObject;
   position: number;
   readOnly: boolean;
+  ownerUsername?: string;
   onRemove?: (id: number) => void;
   onObjectClick?: (object: IObject) => void;
 }): JSX.Element {
-  const { object, position, readOnly, onRemove, onObjectClick } = props;
+  const { object, position, readOnly, ownerUsername, onRemove, onObjectClick } =
+    props;
   const {
     attributes,
     listeners,
@@ -83,6 +107,8 @@ function SortableItem(props: {
     transition,
     opacity: isDragging ? 0.6 : 1,
   };
+  // dnd-kit's own transition covers the transform; the lift on pick-up is
+  // eased by the slot's CSS (see .item).
 
   const sequence = (
     <Text variant={TypographyVariant.TextBaseBold} className={styles.sequence}>
@@ -119,6 +145,7 @@ function SortableItem(props: {
         <ObjectCard
           object={object}
           onClick={readOnly ? onObjectClick : undefined}
+          ownerUsername={ownerUsername}
         />
       </div>
 
@@ -131,6 +158,7 @@ export function ShareSelectionPanel({
   objects,
   ownerUsername,
   readOnly = false,
+  initiallyExpanded = false,
   limitReached = false,
   onReorder,
   onRemove,
@@ -138,7 +166,49 @@ export function ShareSelectionPanel({
   onObjectClick,
   className,
 }: ShareSelectionPanelProps): JSX.Element | null {
-  const [collapsed, setCollapsed] = useState(false);
+  // Starts folded down to its header bar: the panel is a permanent fixture at
+  // the bottom of the library, so it opens only when the user asks for it.
+  const [collapsed, setCollapsed] = useState(!initiallyExpanded);
+
+  // The fold is driven by the body's own measured height, never by a guessed
+  // cap on the panel: the header keeps whatever height it really has (owner
+  // or recipient, one row of buttons or two, any locale), and the body slides
+  // between 0 and exactly its content. Measured live, so selecting another
+  // object while the section is open grows it instead of clipping it.
+  const headerRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [bodyHeight, setBodyHeight] = useState(0);
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const update = () => setBodyHeight(el.offsetHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // The bar is fixed over the library, so the library holds a strip of page
+  // free for it. That strip is this header's real height, published as a
+  // custom property rather than repeated as a number the two could disagree
+  // on (see Library.module.scss).
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const root = document.documentElement;
+    const update = () =>
+      root.style.setProperty(
+        '--library-share-bar-height',
+        `${el.offsetHeight}px`,
+      );
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty('--library-share-bar-height');
+    };
+  }, []);
   const [pendingRemoveId, setPendingRemoveId] = useState<number | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -175,12 +245,18 @@ export function ShareSelectionPanel({
     setShareError(null);
     try {
       const result = await createShareLink(objects.map(o => o.id));
-      if (!result) {
-        setShareError('Could not create the link. Please try again.');
+      if ('error' in result) {
+        // The backend's own reason, verbatim: a private object or an
+        // over-cap selection does not get better with a retry.
+        setShareError(
+          result.retryable
+            ? result.error
+            : `${result.error} Adjust the selection and share again.`,
+        );
         return;
       }
       setShareUrl(
-        `${SHARE_BASE_URL}/library/${ownerUsername}/share/${result.token}`,
+        `${SHARE_BASE_URL}/library/${encodeURIComponent(ownerUsername)}/share/${result.token}`,
       );
     } finally {
       setIsSharing(false);
@@ -200,30 +276,58 @@ export function ShareSelectionPanel({
 
   const pendingRemove = objects.find(o => o.id === pendingRemoveId) ?? null;
 
-  if (objects.length === 0) return null;
+  // A tile that is added rises in, one that is removed fades where it stood
+  // and the rest close the gap; the drag's own moves are left to dnd-kit.
+  const { ref: gridRef, entries: tileEntries } = useAnimatedList(
+    objects,
+    tileKey,
+    { moves: false, collapse: 'width' },
+  );
+
+  // The owner's panel is a permanent bottom bar — it stays put with nothing
+  // selected so the share affordance never appears and disappears under the
+  // content. A recipient viewing a shared link has nothing to select, so an
+  // empty panel there is just a dead bar.
+  const isEmpty = objects.length === 0;
+  const { isSidebarCollapsed } = useGlobalState();
+  if (isEmpty && readOnly) return null;
 
   return (
     <section
       className={classNames(styles.panel, className, {
         [styles.collapsed]: collapsed,
+        // The bar spans the working area, so it ends where the info panel
+        // begins — and runs to the window's edge once that panel is folded.
+        [styles.panelWide]: isSidebarCollapsed,
       })}
       aria-label={readOnly ? 'Shared selection' : 'Share selection'}
     >
+      {/* The whole bar folds the section: the title is the labelled control
+          for keyboard and screen readers, and the empty stretch beside it
+          answers to the pointer as well. The action buttons keep their own
+          clicks (see .actions). */}
       <div
+        ref={headerRef}
         className={classNames(styles.header, {
           [styles.headerReadOnly]: readOnly,
         })}
+        onClick={() => setCollapsed(c => !c)}
       >
+        {/* The button carries no handler of its own: a press here, by
+            pointer or by keyboard, fires one click that the bar above
+            handles. Two handlers meant a click on the label toggled twice
+            and the section never moved. */}
         <button
           type="button"
           className={styles.heading}
-          onClick={() => setCollapsed(c => !c)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? 'Expand selection' : 'Collapse selection'}
         >
+          {/* The icon points up by default. Collapsed, up means "opens
+              upward"; expanded, it flips down to mean "folds away". */}
           <ChevronUpIcon
             className={classNames(styles.chevron, {
-              [styles.chevronCollapsed]: collapsed,
+              [styles.chevronExpanded]: !collapsed,
             })}
           />
           <Text
@@ -235,7 +339,7 @@ export function ShareSelectionPanel({
         </button>
 
         {!readOnly && (
-          <div className={styles.actions}>
+          <div className={styles.actions} onClick={e => e.stopPropagation()}>
             <Button
               label={isSharing ? 'Sharing…' : 'Share selection via link'}
               ariaLabel="Share selection via link"
@@ -244,7 +348,7 @@ export function ShareSelectionPanel({
               size={ButtonSize.Default}
               Icon={<ShareIcon />}
               iconPosition={IconPosition.Right}
-              disabled={isSharing}
+              disabled={isSharing || isEmpty}
             />
             <Button
               label="Remove all"
@@ -253,15 +357,22 @@ export function ShareSelectionPanel({
               type={ButtonType.Outlined}
               size={ButtonSize.Default}
               className={styles.removeAll}
+              disabled={isEmpty}
             />
           </div>
         )}
       </div>
 
-      {/* Always mounted so the chevron can animate the whole section open/closed
-          via the grid-rows collapse (see .bodyWrap) instead of unmounting. */}
-      <div className={styles.bodyWrap} aria-hidden={collapsed}>
-        <div className={styles.body}>
+      {/* Always mounted so the section can slide open and shut instead of
+          appearing and disappearing. The wrapper clips; the body inside keeps
+          its full height at all times, which is what makes the measurement
+          above valid whichever state we are in. */}
+      <div
+        className={styles.bodyWrap}
+        aria-hidden={collapsed}
+        style={{ maxHeight: collapsed ? 0 : bodyHeight }}
+      >
+        <div className={styles.body} ref={bodyRef}>
           {!readOnly && limitReached && (
             <Text
               variant={TypographyVariant.TextSmall}
@@ -272,31 +383,52 @@ export function ShareSelectionPanel({
             </Text>
           )}
 
-          <div className={styles.scroller}>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+          {isEmpty ? (
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.emptyState}
             >
-              <SortableContext
-                items={objects.map(o => o.id)}
-                strategy={rectSortingStrategy}
+              Nothing selected yet. Pick objects from your shelves to share them
+              as one link. Only items on public shelves can be shared, and a
+              link stays valid for 7 days.
+            </Text>
+          ) : (
+            <div className={styles.scroller}>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                <div className={styles.grid}>
-                  {objects.map((object, index) => (
-                    <SortableItem
-                      key={object.id}
-                      object={object}
-                      position={index + 1}
-                      readOnly={readOnly}
-                      onRemove={setPendingRemoveId}
-                      onObjectClick={onObjectClick}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          </div>
+                <SortableContext
+                  items={objects.map(o => o.id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className={styles.grid} ref={gridRef}>
+                    {tileEntries.map(({ item: object, leaving }, index) => (
+                      <div
+                        key={object.id}
+                        className={classNames(styles.tileSlot, {
+                          [styles.tileLeaving]: leaving,
+                        })}
+                        data-flip-id={String(object.id)}
+                        data-flip-leaving={leaving ? 'true' : undefined}
+                        aria-hidden={leaving || undefined}
+                      >
+                        <SortableItem
+                          object={object}
+                          position={index + 1}
+                          readOnly={readOnly || leaving}
+                          ownerUsername={ownerUsername}
+                          onRemove={setPendingRemoveId}
+                          onObjectClick={onObjectClick}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            </div>
+          )}
 
           {!readOnly && shareUrl && (
             <div className={styles.linkRow}>
@@ -308,21 +440,40 @@ export function ShareSelectionPanel({
               </Text>
               <Button
                 label={copied ? 'Copied' : 'Copy link'}
-                ariaLabel="Copy share link"
+                ariaLabel={copied ? 'Share link copied' : 'Copy share link'}
                 onClick={handleCopy}
                 type={ButtonType.Secondary}
                 size={ButtonSize.Default}
               />
             </div>
           )}
-
-          {!readOnly && shareError && (
+          {!readOnly && shareUrl && (
             <Text
               variant={TypographyVariant.TextSmall}
-              className={styles.error}
+              className={styles.emptyState}
             >
-              {shareError}
+              This link stays valid for 7 days and shows the items in this
+              order. Change the selection to mint a new one.
             </Text>
+          )}
+
+          {!readOnly && shareError && (
+            <div className={styles.linkRow}>
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={styles.error}
+              >
+                {shareError}
+              </Text>
+              <Button
+                label="Try again"
+                ariaLabel="Try sharing again"
+                onClick={handleShare}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Default}
+                disabled={isSharing || isEmpty}
+              />
+            </div>
           )}
         </div>
       </div>

@@ -1,7 +1,8 @@
 import type { Difficulty, OverallRating } from '@local-types/library/object';
 
 export interface RatingBoxProps {
-  /** Username shown in the header — "<username> rated this book:" */
+  /** Username shown in the header — "<username> rated this book:", or
+   * "<username> didn’t rate this book" while both values are empty. */
   username: string;
   /** Currently selected overall rating, 1–5. */
   overallRating?: OverallRating;
@@ -16,5 +17,7 @@ export interface RatingBoxProps {
    * and no interactions. Defaults to `false` (owner mode).
    */
   readOnly?: boolean;
+  /** What is being rated, for the heading ("rated this book"). Defaults to "book". */
+  itemLabel?: string;
   className?: string;
 }

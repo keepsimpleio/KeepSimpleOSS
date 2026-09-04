@@ -1,0 +1,41 @@
+.paper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  // Fallback while the tile renders (or when canvas is unavailable): the
+  // paper's own flat colour.
+  background-color: #f2e9d6;
+  background-repeat: repeat;
+
+  .washes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: multiply;
+    opacity: 0;
+    // The washes dry in once painted, instead of popping.
+    transition: opacity 0.9s ease;
+
+    &.painted {
+      opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    // The sheet reads as lit from the middle; a tiling texture cannot carry
+    // this, so it sits here as a gradient.
+    background: radial-gradient(
+      ellipse at 50% 40%,
+      rgba(90, 74, 44, 0) 55%,
+      rgba(90, 74, 44, 0.09) 100%
+    );
+  }
+}

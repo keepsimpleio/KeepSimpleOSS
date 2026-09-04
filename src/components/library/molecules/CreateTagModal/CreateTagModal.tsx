@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createTagSchema } from '@utils/library/schema/createTagSchema';
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -9,8 +9,11 @@ import { tagColors } from '@constants/library/tags';
 
 import { ArrowIcon, DeleteIcon, InfoIcon } from '@icons/library/svg';
 
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { IconName } from '@components/library/atoms/Icon';
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   Button,
   ButtonSize,
@@ -39,22 +42,56 @@ export function CreateTagModal(props: CreateTagModalProps) {
     onDelete,
     onTagSelect,
   } = props;
-  const { closeRef, close } = useModalClose(onClose);
   const defaultColor = tagColors[0][0];
   const isSelectTag = isEdit && !activeTag;
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showCreateSuccessConfirmation, setShowCreateSuccessConfirmation] =
     useState(false);
+  const [showEditSuccessConfirmation, setShowEditSuccessConfirmation] =
+    useState(false);
+  const [discardPrompt, setDiscardPrompt] = useState(false);
+
+  // The objects that carry this tag, in shelf order, read off the library on
+  // screen. The per-shelf sequence itself is set when editing an object
+  // (step 2 shows it through the tag as a lens); here the owner sees where
+  // the tag is used instead of a placeholder that claimed it was unused.
+  const { currentShelves } = useGlobalState();
+  const taggedObjects = useMemo(() => {
+    if (!activeTag) return [];
+    const rows: { id: number; title: string; shelf: string; order: number }[] =
+      [];
+    for (const shelf of currentShelves) {
+      const objects = [...(shelf.attributes.objects?.data ?? [])].sort(
+        (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+      );
+      objects.forEach((o, index) => {
+        const carries = (o.attributes.tags?.data ?? []).some(
+          t => t.id === activeTag.id,
+        );
+        if (carries) {
+          rows.push({
+            id: o.id,
+            title: o.attributes.title,
+            shelf: shelf.attributes.name,
+            order: index + 1,
+          });
+        }
+      });
+    }
+    return rows;
+  }, [activeTag, currentShelves]);
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    reset,
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<z.infer<typeof createTagSchema>>({
     resolver: zodResolver(createTagSchema),
     mode: 'onChange',
@@ -91,9 +128,10 @@ export function CreateTagModal(props: CreateTagModalProps) {
 
     try {
       await onSubmit(data);
-      if (!isEdit) {
-        setShowCreateSuccessConfirmation(true);
-      }
+      // The form fades out first; the Modal's close lands in requestClose,
+      // where this flag turns it into the success card instead of leaving.
+      successPending.current = isEdit ? 'edit' : 'create';
+      close();
     } catch {
       // Keep the modal open and warn instead of bubbling the rejection up into
       // an unhandled runtime error.
@@ -109,6 +147,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
     if (!onDelete) return;
 
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       await onDelete();
 
@@ -116,39 +155,65 @@ export function CreateTagModal(props: CreateTagModalProps) {
       onClose();
     } catch (error) {
       console.error('Failed to delete tag:', error);
+      setDeleteError('Could not delete the tag. Please try again.');
       setIsDeleting(false);
     }
   };
 
+  // Closing a form with typed changes asks first; a clean form closes at once.
+  const hasUnsavedWork = isDirty && !isSelectTag;
+  const successPending = useRef<null | 'create' | 'edit'>(null);
+  const requestClose = () => {
+    if (successPending.current) {
+      const kind = successPending.current;
+      successPending.current = null;
+      if (kind === 'create') setShowCreateSuccessConfirmation(true);
+      else setShowEditSuccessConfirmation(true);
+      return;
+    }
+    if (showDeleteConfirmation || showCreateSuccessConfirmation) return;
+    if (hasUnsavedWork) {
+      setDiscardPrompt(true);
+      return;
+    }
+    onClose();
+  };
+
   useEffect(() => {
     if (activeTag) {
-      setValue('name', activeTag.name || '');
-      setValue('description', activeTag.description || '');
-      setValue('color', activeTag.color || defaultColor);
+      reset({
+        name: activeTag.name || '',
+        description: activeTag.description || '',
+        color: activeTag.color || defaultColor,
+      });
     }
-  }, [activeTag, defaultColor, setValue]);
+  }, [activeTag, defaultColor, reset]);
+
+  const { closeRef, close } = useModalClose(requestClose);
 
   return (
     <>
-      {!showCreateSuccessConfirmation && (
+      {!showCreateSuccessConfirmation && !showEditSuccessConfirmation && (
         <Modal
           className={styles.modal}
           title={isEdit ? 'Edit tag' : 'Create a new tag'}
-          onClose={showDeleteConfirmation ? () => {} : onClose}
+          onClose={requestClose}
           closeRef={closeRef}
         >
           <form onSubmit={handleSubmit(onSubmitForm)}>
             <div className={styles.wrapper}>
               {isSelectTag ? (
                 <div className={styles.noTagFound}>
+                  {/* No heading over the row: the modal's own title says what
+                      this is, and a row of tags asks to be tapped without
+                      being told to. Screen readers get the label on the
+                      group instead. */}
                   {tags.length > 0 && (
-                    <div className={styles.tagsList}>
-                      <Text
-                        variant={TypographyVariant.TextSmall}
-                        className={styles.label}
-                      >
-                        Select tag :
-                      </Text>
+                    <div
+                      className={styles.tagsList}
+                      role="group"
+                      aria-label="Select a tag to edit"
+                    >
                       <div className={styles.tags}>
                         {tags.map(({ attributes, id }) => (
                           <Tag
@@ -222,16 +287,17 @@ export function CreateTagModal(props: CreateTagModalProps) {
                       {tagColors.map((colorGroup, groupIndex) => (
                         <div key={groupIndex} className={styles.blok}>
                           {colorGroup.map((color, colorIndex) => (
-                            <div
-                              role="button"
-                              aria-label={`Select color ${color}`}
+                            <button
+                              type="button"
+                              aria-label={`Colour ${groupIndex + 1}-${colorIndex + 1}`}
+                              aria-pressed={activeColor === color}
                               key={colorIndex}
                               style={{ backgroundColor: color }}
-                              className={
-                                activeColor === color ? styles.active : ''
-                              }
+                              className={classNames(styles.swatch, {
+                                [styles.active]: activeColor === color,
+                              })}
                               onClick={() => handleColorSelect(color)}
-                            ></div>
+                            />
                           ))}
                         </div>
                       ))}
@@ -241,22 +307,56 @@ export function CreateTagModal(props: CreateTagModalProps) {
                     )}
                   </div>
 
-                  <div className={styles.field}>
-                    <div className={styles.labelWrapper}>
-                      <Text
-                        variant={TypographyVariant.TextSmall}
-                        className={styles.label}
-                      >
-                        Tag object sequence
-                      </Text>
-                      <InfoIcon />
-                    </div>
+                  {isEdit && (
+                    <div className={styles.field}>
+                      <div className={styles.labelWrapper}>
+                        <Text
+                          variant={TypographyVariant.TextSmall}
+                          className={styles.label}
+                        >
+                          Where this tag is used
+                        </Text>
+                        <Tooltip
+                          place="top"
+                          tooltipContent="The order within a shelf is set when editing an object: step 2 shows the shelf's sequence through this tag."
+                        >
+                          <span
+                            className={styles.infoIcon}
+                            tabIndex={0}
+                            aria-label="About tag sequence"
+                          >
+                            <InfoIcon />
+                          </span>
+                        </Tooltip>
+                      </div>
 
-                    <Text variant={TypographyVariant.TextBase}>
-                      You don&apos;t have any objects with this tag yet. Tag
-                      more objects to modify the sequence here.
-                    </Text>
-                  </div>
+                      {taggedObjects.length === 0 ? (
+                        <Text variant={TypographyVariant.TextBase}>
+                          No objects carry this tag yet. Add it to an object to
+                          see it listed here.
+                        </Text>
+                      ) : (
+                        <ul className={styles.taggedList}>
+                          {taggedObjects.map(row => (
+                            <li key={row.id} className={styles.taggedRow}>
+                              <Text
+                                variant={TypographyVariant.TextBase}
+                                className={styles.taggedTitle}
+                              >
+                                {row.title}
+                              </Text>
+                              <Text
+                                variant={TypographyVariant.TextSmall}
+                                className={styles.taggedMeta}
+                              >
+                                {row.shelf} · #{row.order}
+                              </Text>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
 
                   <div className={styles.field}>
                     <Text
@@ -300,6 +400,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
               )}
             </div>
 
+            <InkLine seed={7} className={styles.footRule} />
             <div className={styles.footer}>
               <Button
                 label="Cancel"
@@ -310,6 +411,10 @@ export function CreateTagModal(props: CreateTagModalProps) {
                     return;
                   }
 
+                  if (hasUnsavedWork) {
+                    setDiscardPrompt(true);
+                    return;
+                  }
                   if (activeTag) {
                     onTagSelect?.(null);
                   } else {
@@ -342,15 +447,57 @@ export function CreateTagModal(props: CreateTagModalProps) {
         <ConfirmationModal
           variant="delete"
           icon={IconName.Info}
-          title={`Are you sure you want to delete ${tagName || 'this'} tag?`}
-          text="This action is irreversible."
-          actionButtonLabel="Delete"
+          title={`Are you sure you want to delete the "${tagName || 'this'}" tag?`}
+          text="It will be removed from every object that carries it. This cannot be undone."
+          error={deleteError ?? undefined}
+          actionButtonLabel={isDeleting ? 'Deleting…' : 'Delete'}
           actionButtonType={ButtonType.Warning}
           onClose={() => {
+            if (isDeleting) return;
             setShowDeleteConfirmation(false);
+            setDeleteError(null);
           }}
           onConfirm={handleDeleteConfirm}
           isLoading={isDeleting}
+        />
+      )}
+
+      {showEditSuccessConfirmation && (
+        <ConfirmationModal
+          variant="success"
+          icon={IconName.Info}
+          title="Tag updated"
+          text="Your changes were saved."
+          actionButtonLabel="Close"
+          actionButtonType={ButtonType.Secondary}
+          onClose={() => {
+            setShowEditSuccessConfirmation(false);
+            onClose();
+          }}
+          onConfirm={() => {
+            setShowEditSuccessConfirmation(false);
+            onClose();
+          }}
+        />
+      )}
+
+      {discardPrompt && (
+        <ConfirmationModal
+          variant="delete"
+          title="Discard these changes?"
+          text="What you typed in this form will be lost."
+          actionButtonLabel="Discard"
+          actionButtonType={ButtonType.Warning}
+          onClose={() => setDiscardPrompt(false)}
+          onConfirm={() => {
+            setDiscardPrompt(false);
+            if (activeTag) {
+              onTagSelect?.(null);
+              reset({ name: '', description: '', color: defaultColor });
+            } else {
+              onClose();
+            }
+          }}
         />
       )}
 
@@ -358,9 +505,9 @@ export function CreateTagModal(props: CreateTagModalProps) {
         <ConfirmationModal
           variant="success"
           icon={IconName.Info}
-          title="New tag has been created !"
-          text="New tag was successfully created"
-          actionButtonLabel="Go Back"
+          title="New tag has been created!"
+          text="Your tag was added to the library."
+          actionButtonLabel="Close"
           actionButtonType={ButtonType.Secondary}
           onClose={() => {
             setShowCreateSuccessConfirmation(false);

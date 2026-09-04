@@ -1,4 +1,23 @@
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  type Modifier,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
+import { useRouter } from 'next/router';
 import React, {
   useCallback,
   useEffect,
@@ -7,24 +26,50 @@ import React, {
   useState,
 } from 'react';
 
-import { LIBRARY_SHELVES_REFETCH_EVENT } from '@constants/library/common';
+import {
+  LIBRARY_FULL_MESSAGE,
+  LIBRARY_SHELVES_REFETCH_EVENT,
+  MAX_SHELVES_PER_LIBRARY,
+} from '@constants/library/common';
 
 import type {
   StrapiLibraryEntry,
   StrapiSingleShelfEntry,
 } from '@local-types/library/library';
 import type { IObject, ObjectType } from '@local-types/library/object';
+import type {
+  IReorderShelfEntry,
+  ShelfVisibility,
+} from '@local-types/library/shelf';
+
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
+import useIsMobile from '@hooks/library/useIsMobile';
+import { usePresence } from '@hooks/library/usePresence';
+
+import { objectIdFromSlug } from '@lib/library/objectSlug';
+import {
+  buildSearchHaystack,
+  matchesSearchTerms,
+  tokenizeQuery,
+} from '@lib/library/searchMatch';
 
 import { createLibrary } from '@api/library/createLibrary';
 import { getLibraryIdByUsername } from '@api/library/getLibraryIdByUsername';
-import { getSingleLibrary } from '@api/library/getSingleLibrary';
+import {
+  getSingleLibrary,
+  LibraryLoadError,
+} from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
+import { reorderShelves } from '@api/library/shelf/reorderShelves';
+
+import { PlusIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
 import { Loader } from '@components/library/atoms/Loader';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   AddShelfModal,
   type ShelfType,
@@ -33,10 +78,14 @@ import {
   Button,
   ButtonSize,
   ButtonType,
+  IconPosition,
 } from '@components/library/molecules/Button';
 import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
 import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
-import { Shelf } from '@components/library/organisms/Shelf';
+import {
+  Shelf,
+  type ShelfDragHandleProps,
+} from '@components/library/organisms/Shelf';
 
 import type { LibraryTemplateProps } from './Library.types';
 
@@ -48,49 +97,134 @@ const modalTypeToApi: Record<ShelfType, ObjectType> = {
   audios: 'audio',
 };
 
-export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
+// Shelves only ever travel up and down the page, so the drag transform keeps
+// its vertical component and drops the horizontal one.
+const verticalOnly: Modifier = ({ transform }) => ({ ...transform, x: 0 });
+
+const shelfKey = (shelf: StrapiSingleShelfEntry) => String(shelf.id);
+
+// One draggable shelf slot. The activator wiring is handed back to the caller
+// so the grip in the shelf's own header is the only thing that starts a drag:
+// the cards below keep their horizontal scroll and their clicks.
+function SortableShelf(props: {
+  id: number;
+  disabled?: boolean;
+  children: (
+    handle: ShelfDragHandleProps,
+    isDragging: boolean,
+  ) => React.ReactNode;
+}) {
+  const { id, disabled = false, children } = props;
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    // Ride over the neighbouring boards while travelling.
+    position: isDragging ? 'relative' : undefined,
+    zIndex: isDragging ? 2 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {children(
+        { ref: setActivatorNodeRef, ...attributes, ...listeners },
+        isDragging,
+      )}
+    </div>
+  );
+}
+
+export function LibraryTemplate({
+  libraryId,
+  hideSharePanel = false,
+}: LibraryTemplateProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [library, setLibrary] = useState<StrapiLibraryEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  // Briefly true right after a reorder so the shelf list can fade out/in as it
-  // re-sequences into the new order (see `resequencing` in Library.module.scss).
-  const [isResequencing, setIsResequencing] = useState(false);
-  const resequenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Set when the library could not be fetched at all. Distinct from "no
+  // library": that one renders the empty state, this one an error with retry.
+  const [loadError, setLoadError] = useState<string | null>(null);
+  // Set when a shelf drag was undone because the save failed.
+  const [shelfOrderError, setShelfOrderError] = useState<string | null>(null);
+  // Set when the URL named an object that is not on any visible shelf.
+  const [objectNotice, setObjectNotice] = useState<string | null>(null);
   const { accountData } = useAuth();
   const {
     isGuestMode,
+    setGuestMode,
     setCurrentShelves,
     setCurrentOwner,
     setCurrentLibrary,
     setIsCreateBlocked,
+    setIsOwner,
   } = useGlobalState();
   const {
     selectedObjects,
     limitReached,
     reorder: reorderSelection,
     remove: removeSelection,
+    removeMany: removeManySelection,
+    replace: replaceSelection,
     clear: clearSelection,
   } = useShareSelection();
 
-  // Ownership is decided by the loaded library's owner, not the URL slug — the
-  // slug is sometimes a numeric library id (Sidebar dropdown, LibraryCard
-  // fallback) which never equals a username. The slug check is kept only as a
-  // fallback so a logged-in user visiting their own `/library/[username]` can
-  // still bootstrap a library before one exists (nothing to load owner from).
-  const ownerUsername =
-    library?.attributes.user?.data?.attributes.username ?? null;
+  // Ownership is decided once, here, and published to GlobalState so the
+  // Sidebar reads the same answer. Three signals, any one suffices: the owner
+  // relation's id against my account id, its username against mine, or the URL
+  // slug against my username (the window before a library exists, so an owner
+  // can still bootstrap one). The slug is sometimes a numeric library id, which
+  // is why the id match matters: that page used to look owned in the right
+  // panel and foreign in the shelves.
+  const ownerRelation = library?.attributes.user?.data;
+  const ownerUsername = ownerRelation?.attributes.username ?? null;
   const myUsername = accountData?.username?.toLowerCase() ?? null;
+  const myId = accountData?.id != null ? String(accountData.id) : null;
   const isOwner =
-    !!myUsername &&
-    ((!!ownerUsername && ownerUsername.toLowerCase() === myUsername) ||
-      (!!libraryId && libraryId.toLowerCase() === myUsername));
+    (!!myId || !!myUsername) &&
+    ((!!myId &&
+      ownerRelation?.id != null &&
+      String(ownerRelation.id) === myId) ||
+      (!!myUsername &&
+        ((!!ownerUsername && ownerUsername.toLowerCase() === myUsername) ||
+          (!!libraryId && libraryId.toLowerCase() === myUsername))));
+
+  useEffect(() => {
+    setIsOwner(isOwner);
+  }, [isOwner, setIsOwner]);
+
+  // A new library is a clean slate: the search box, the share selection and
+  // guest mode all belonged to the previous page, so none of it carries over.
+  useEffect(() => {
+    setSearch('');
+    setObjectNotice(null);
+    clearSelection();
+    setGuestMode(false);
+  }, [libraryId, clearSelection, setGuestMode]);
 
   // Guest mode lets an owner preview their library exactly as a public visitor
   // sees it. Owner-only data logic (library bootstrap, create-permission gating)
   // still keys off the real `isOwner`; everything user-facing — edit/add UI and
   // private-shelf visibility — keys off this so the preview is faithful.
   const viewAsOwner = isOwner && !isGuestMode;
+
+  // A phone is a reading surface. Every control that changes the library —
+  // add shelf, add object, rename, reorder, settings, edit, delete — stays on
+  // desktop; here the owner sees their library exactly as they left it, private
+  // shelves included (`viewAsOwner` still governs those). False on the server
+  // and on first paint, so the markup hydrates identically everywhere.
+  const isMobile = useIsMobile(768);
+  const canEditHere = viewAsOwner && !isMobile;
 
   // Creating a library is gated by the `can-create-library` feature flag from
   // GET /api/users/me. The gate only matters before a library exists — once one
@@ -129,19 +263,34 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         setIsLoading(true);
         setLibrary(null);
       }
-      // Prefer an explicitly supplied id over re-resolving the slug. Right after
-      // bootstrapping a brand-new library, the username lookup is a filtered
-      // read-after-write that can still return null (publish/replication lag) —
-      // a direct GET by the id we just created is reliable.
-      const resolvedId = options?.libraryId ?? (await resolveLibraryId());
-      if (resolvedId == null) {
+      setLoadError(null);
+      try {
+        // Prefer an explicitly supplied id over re-resolving the slug. Right
+        // after bootstrapping a brand-new library, the username lookup is a
+        // filtered read-after-write that can still return null
+        // (publish/replication lag) — a direct GET by the id we just created
+        // is reliable.
+        const resolvedId = options?.libraryId ?? (await resolveLibraryId());
+        if (resolvedId == null) {
+          setLibrary(null);
+          return;
+        }
+        const result = await getSingleLibrary(resolvedId);
+        setLibrary(result?.data ?? null);
+      } catch (e) {
+        // A dead backend must not read as an empty library: that screen
+        // invites the owner to "add a first shelf", which would create a
+        // second library on top of the one that failed to load.
+        console.error('[Library] load failed', e);
+        setLoadError(
+          e instanceof LibraryLoadError && e.status === 401
+            ? 'Your session has expired. Reload the page and sign in again.'
+            : 'Could not load this library. Check your connection and try again.',
+        );
         setLibrary(null);
+      } finally {
         setIsLoading(false);
-        return;
       }
-      const result = await getSingleLibrary(resolvedId);
-      setLibrary(result?.data ?? null);
-      setIsLoading(false);
     },
     [libraryId, resolveLibraryId],
   );
@@ -169,18 +318,14 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     };
   }, [loadLibrary]);
 
-  useEffect(
-    () => () => {
-      if (resequenceTimer.current) clearTimeout(resequenceTimer.current);
-    },
-    [],
-  );
-
   const modalToggler = () => {
     setIsOpen(open => !open);
   };
 
   const handleCreateShelf = async (modalShelfType: ShelfType, name: string) => {
+    // resolveLibraryId throws when the lookup itself fails; the modal shows
+    // that as an error, which is right: we must not bootstrap a library on
+    // top of one we simply could not read.
     let resolvedId = await resolveLibraryId();
 
     // No library yet — bootstrap one, but only if the logged-in user owns this URL.
@@ -200,7 +345,9 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
           accountUsername: accountData?.username,
         },
       );
-      return;
+      // Surface it: a resolved promise here read as success in the modal,
+      // which stopped its spinner and sat there with no shelf and no message.
+      throw new Error('No library could be found to add this shelf to.');
     }
 
     // Append at the end: stamp the new shelf with an order past the current
@@ -254,36 +401,96 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     );
   }, [library, viewAsOwner]);
 
+  // The shelf tree as the callbacks below read it, without rebuilding every one
+  // of them each time the library changes.
+  const shelvesRef = useRef<StrapiSingleShelfEntry[]>(shelves);
+  shelvesRef.current = shelves;
+
+  // Everything standing on one shelf: the ids that leave the share selection
+  // when that shelf turns private or is deleted, since a link may only carry
+  // objects that are still public and still exist.
+  const objectIdsOnShelf = useCallback(
+    (shelfId: number) =>
+      (
+        shelvesRef.current.find(s => s.id === shelfId)?.attributes.objects
+          ?.data ?? []
+      ).map(o => o.id),
+    [],
+  );
+
   // Search filters the in-memory object tree — the whole library is already
   // client-side, so no API round-trip. Match title + author + tag names (the
   // fields people search by); description is intentionally excluded to keep
   // results predictable. Shelves with no match drop out so results stay dense.
-  const normalizedSearch = search.trim().toLowerCase();
-  const displayedShelves: StrapiSingleShelfEntry[] = useMemo(() => {
-    if (!normalizedSearch) return shelves;
-    return shelves.reduce<StrapiSingleShelfEntry[]>((acc, shelf) => {
+  //
+  // The shelves themselves are never rewritten: each keeps its full object
+  // list (so counts, the 21-object cap, reorder payloads and the open object
+  // all read the real shelf) and carries a set of matching ids that only
+  // decides which cards are drawn.
+  // The box answers to what people actually type: extra spaces, wrong case,
+  // accents, punctuation and a slipped key all still find the item. See
+  // @lib/library/searchMatch for the rules.
+  const searchTerms = useMemo(() => tokenizeQuery(search), [search]);
+  const hasSearch = searchTerms.length > 0;
+  const { displayedShelves, matchedIdsByShelf } = useMemo(() => {
+    if (!hasSearch) {
+      return {
+        displayedShelves: shelves,
+        matchedIdsByShelf: null as Map<number, Set<number>> | null,
+      };
+    }
+    const matchedIdsByShelf = new Map<number, Set<number>>();
+    const displayedShelves = shelves.filter(shelf => {
       const objects = shelf.attributes.objects?.data ?? [];
-      const matched = objects.filter(o => {
+      const matched = new Set<number>();
+      for (const o of objects) {
         const { title, author, tags } = o.attributes;
-        const haystack = [
+        const haystack = buildSearchHaystack([
           title,
           author,
           ...(tags?.data ?? []).map(t => t.attributes.name),
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        return haystack.includes(normalizedSearch);
-      });
-      if (matched.length > 0) {
-        acc.push({
-          ...shelf,
-          attributes: { ...shelf.attributes, objects: { data: matched } },
-        });
+        ]);
+        if (matchesSearchTerms(haystack, searchTerms)) matched.add(o.id);
       }
-      return acc;
-    }, []);
-  }, [shelves, normalizedSearch]);
+      if (matched.size === 0) return false;
+      matchedIdsByShelf.set(shelf.id, matched);
+      return true;
+    });
+    return { displayedShelves, matchedIdsByShelf };
+  }, [shelves, hasSearch, searchTerms]);
+
+  const matchedCount = useMemo(() => {
+    if (!matchedIdsByShelf) return null;
+    let total = 0;
+    matchedIdsByShelf.forEach(ids => {
+      total += ids.size;
+    });
+    return total;
+  }, [matchedIdsByShelf]);
+
+  // A deep link to an object that no visible shelf holds (deleted, on a
+  // private shelf, or from another library) used to open nothing and leave
+  // the URL pointing at it. Say so and fall back to the library itself.
+  const objectParam = router.query.object;
+  const activeSlug = Array.isArray(objectParam) ? objectParam[0] : objectParam;
+  const requestedObjectId = objectIdFromSlug(activeSlug);
+  useEffect(() => {
+    if (isLoading || loadError || requestedObjectId == null) return;
+    const found = shelves.some(shelf =>
+      (shelf.attributes.objects?.data ?? []).some(
+        o => o.id === requestedObjectId,
+      ),
+    );
+    if (found) return;
+    setObjectNotice(
+      "That item isn't available here. It may have been removed or made private.",
+    );
+    void router.replace(
+      `/library/${encodeURIComponent(libraryId)}`,
+      undefined,
+      { shallow: true, scroll: false },
+    );
+  }, [isLoading, loadError, requestedObjectId, shelves, router, libraryId]);
 
   // Publish the current library's shelves so the Header's Jump-to nav can
   // render the right list without owning its own fetch. NOTE: no cleanup —
@@ -361,13 +568,17 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     [mutateShelfObjects],
   );
 
+  // Every mutation also reaches the share selection: it stores whole object
+  // snapshots, so an edit must refresh the copy and a delete must drop it, or
+  // the link gets minted with a stale title, a stale cover, or a dead id.
   const handleObjectUpdated = useCallback(
     (shelfId: number, updated: IObject) => {
       mutateShelfObjects(shelfId, objects =>
         objects.map(o => (o.id === updated.id ? updated : o)),
       );
+      replaceSelection(updated);
     },
-    [mutateShelfObjects],
+    [mutateShelfObjects, replaceSelection],
   );
 
   const handleObjectDeleted = useCallback(
@@ -375,8 +586,42 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
       mutateShelfObjects(shelfId, objects =>
         objects.filter(o => o.id !== objectId),
       );
+      removeSelection(objectId);
     },
-    [mutateShelfObjects],
+    [mutateShelfObjects, removeSelection],
+  );
+
+  // The shelf's privacy switch lands on the library tree, where the visitor
+  // filter above reads it. Before this the switch lived in the shelf alone:
+  // guest mode kept showing a shelf just made private, and any refetch quietly
+  // flipped the menu back.
+  const handleShelfVisibilityChanged = useCallback(
+    (shelfId: number, visibility: ShelfVisibility) => {
+      // A shelf that just turned private takes its objects out of the share
+      // selection with it: the backend refuses to mint a link holding them, so
+      // leaving them in the bar only buys a rejection at Share time.
+      if (visibility === 'private') {
+        removeManySelection(objectIdsOnShelf(shelfId));
+      }
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: {
+              data: shelvesData.map(s =>
+                s.id === shelfId
+                  ? { ...s, attributes: { ...s.attributes, visibility } }
+                  : s,
+              ),
+            },
+          },
+        };
+      });
+    },
+    [removeManySelection, objectIdsOnShelf],
   );
 
   const handleObjectsReordered = useCallback(
@@ -396,44 +641,108 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     [mutateShelfObjects],
   );
 
-  const handleShelvesReordered = useCallback(
-    (ordered: { id: number; order: number }[]) => {
-      const orderById = new Map(ordered.map(o => [o.id, o.order]));
-      // Kick the fade: clear it first so a rapid re-save restarts the animation
-      // instead of being swallowed (re-adding a still-present class won't replay).
-      setIsResequencing(false);
-      if (resequenceTimer.current) clearTimeout(resequenceTimer.current);
-      requestAnimationFrame(() => {
-        setIsResequencing(true);
-        resequenceTimer.current = setTimeout(
-          () => setIsResequencing(false),
-          450,
-        );
-      });
-      // Only stamp the new `order` onto each shelf; the `shelves` memo
-      // re-sorts by `order` at render, so no need to reorder the array here.
-      setLibrary(current => {
-        if (!current) return current;
-        const shelvesData = current.attributes.singleShelves?.data ?? [];
-        const next = shelvesData.map(s =>
-          orderById.has(s.id)
-            ? {
-                ...s,
-                attributes: { ...s.attributes, order: orderById.get(s.id)! },
-              }
-            : s,
-        );
-        return {
-          ...current,
-          attributes: {
-            ...current.attributes,
-            singleShelves: { data: next },
-          },
-        };
-      });
-    },
-    [],
+  // Stamps each shelf's new position onto the loaded library. The `shelves`
+  // memo re-sorts by `order` at render, so the list lands in the new sequence
+  // without a refetch.
+  const applyShelfOrder = useCallback((ordered: IReorderShelfEntry[]) => {
+    const orderById = new Map(ordered.map(o => [o.id, o.order]));
+    setLibrary(current => {
+      if (!current) return current;
+      const shelvesData = current.attributes.singleShelves?.data ?? [];
+      const next = shelvesData.map(s =>
+        orderById.has(s.id)
+          ? {
+              ...s,
+              attributes: { ...s.attributes, order: orderById.get(s.id)! },
+            }
+          : s,
+      );
+      return {
+        ...current,
+        attributes: {
+          ...current.attributes,
+          singleShelves: { data: next },
+        },
+      };
+    });
+  }, []);
+
+  // Reordering is direct manipulation: grab the grip on a shelf header and the
+  // whole board travels. Owner-only, and only on an unfiltered list — a search
+  // result is a subset, so a position inside it says nothing about where the
+  // shelf belongs in the library.
+  const canReorderShelves =
+    canEditHere && !hasSearch && displayedShelves.length > 1;
+
+  // A shelf that is added rises in, one that is deleted or filtered out by a
+  // search folds away where it stood and the boards below slide up with it.
+  // Reorder moves are left to the drag itself (dnd-kit already animates the
+  // drop), so the hook only handles arrivals and departures here.
+  // A failed save puts the boards back where they were after a network
+  // round-trip, long after the drag ended: that one reorder is not the drag's
+  // to animate, so the list motion glides it for the commit it lands in.
+  const [glideRollback, setGlideRollback] = useState(false);
+  useEffect(() => {
+    if (glideRollback) setGlideRollback(false);
+  }, [glideRollback]);
+  // The owner's notice fades in and out of its held row.
+  const { mounted: noticeMounted, shown: noticeShown } = usePresence(
+    Boolean(shelfOrderError || objectNotice),
+    160,
   );
+  const { ref: shelfListRef, entries: shelfEntries } = useAnimatedList(
+    displayedShelves,
+    shelfKey,
+    { moves: glideRollback, collapse: 'height' },
+  );
+  // One save at a time: a second drag while the first is still persisting
+  // would capture a baseline that already holds the optimistic move, and a
+  // late failure would then "restore" a mixed order.
+  const reorderInFlight = useRef(false);
+
+  const shelfSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleShelfDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    if (reorderInFlight.current) return;
+    const oldIndex = shelves.findIndex(s => s.id === active.id);
+    const newIndex = shelves.findIndex(s => s.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const previous: IReorderShelfEntry[] = shelves.map((shelf, index) => ({
+      id: shelf.id,
+      order: shelf.attributes.order ?? index,
+    }));
+    const ordered: IReorderShelfEntry[] = arrayMove(
+      shelves,
+      oldIndex,
+      newIndex,
+    ).map((shelf, index) => ({ id: shelf.id, order: index }));
+
+    // Land the shelf first, persist after: the drop has to feel immediate. A
+    // failed save puts every shelf back where it was and says so.
+    setShelfOrderError(null);
+    applyShelfOrder(ordered);
+    reorderInFlight.current = true;
+    reorderShelves(ordered)
+      .catch(e => {
+        console.error('[Library] shelf reorder failed', e);
+        setGlideRollback(true);
+        applyShelfOrder(previous);
+        setShelfOrderError(
+          'Could not save the new shelf order. The shelves are back where they were.',
+        );
+      })
+      .finally(() => {
+        reorderInFlight.current = false;
+      });
+  };
 
   const handleShelfRenamed = useCallback((shelfId: number, name: string) => {
     setLibrary(current => {
@@ -455,22 +764,28 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     });
   }, []);
 
-  const handleShelfDeleted = useCallback((shelfId: number) => {
-    setLibrary(current => {
-      if (!current) return current;
-      const shelvesData = current.attributes.singleShelves?.data ?? [];
-      return {
-        ...current,
-        attributes: {
-          ...current.attributes,
-          singleShelves: { data: shelvesData.filter(s => s.id !== shelfId) },
-        },
-      };
-    });
-  }, []);
+  const handleShelfDeleted = useCallback(
+    (shelfId: number) => {
+      // The shelf's objects are gone with it, so they leave the selection too.
+      removeManySelection(objectIdsOnShelf(shelfId));
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: { data: shelvesData.filter(s => s.id !== shelfId) },
+          },
+        };
+      });
+    },
+    [removeManySelection, objectIdsOnShelf],
+  );
 
   const handleObjectMoved = useCallback(
     (fromShelfId: number, toShelfId: number, moved: IObject) => {
+      let landedOnPrivateShelf = false;
       setLibrary(current => {
         if (!current) return current;
         const shelvesData = current.attributes.singleShelves?.data ?? [];
@@ -486,14 +801,26 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
             };
           }
           if (s.id === toShelfId) {
+            landedOnPrivateShelf = s.attributes.visibility === 'private';
             const existing = s.attributes.objects?.data ?? [];
             // Avoid duplicates if the move event somehow fires twice.
             const withoutMoved = existing.filter(o => o.id !== moved.id);
+            // It joins at the end: a stale `order` from the old shelf would
+            // otherwise sort it into the middle of the new one.
+            const nextOrder =
+              withoutMoved.reduce(
+                (max, o) => Math.max(max, o.attributes.order ?? 0),
+                -1,
+              ) + 1;
+            const placed: IObject = {
+              ...moved,
+              attributes: { ...moved.attributes, order: nextOrder },
+            };
             return {
               ...s,
               attributes: {
                 ...s.attributes,
-                objects: { data: [...withoutMoved, moved] },
+                objects: { data: [...withoutMoved, placed] },
               },
             };
           }
@@ -507,26 +834,112 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
           },
         };
       });
+      // Only public-shelf objects can be shared; one that just moved onto a
+      // private shelf leaves the selection with it.
+      if (landedOnPrivateShelf) removeSelection(moved.id);
+      else replaceSelection(moved);
     },
-    [],
+    [removeSelection, replaceSelection],
   );
 
+  const renderShelf = (
+    shelf: StrapiSingleShelfEntry,
+    dragHandleProps?: ShelfDragHandleProps,
+    isDragging?: boolean,
+  ) => (
+    <Shelf
+      key={shelf.id}
+      title={shelf.attributes.name}
+      shelf={shelf}
+      // The URL slug is sometimes a numeric library id, so name the owner from
+      // the loaded library first — the rating headings read it as a person.
+      ownerUsername={ownerUsername ?? libraryId}
+      isOwner={canEditHere}
+      visibleObjectIds={matchedIdsByShelf?.get(shelf.id) ?? null}
+      reorderLocked={canEditHere && !canReorderShelves && shelves.length > 1}
+      onObjectCreated={handleObjectCreated}
+      onObjectUpdated={handleObjectUpdated}
+      onObjectDeleted={handleObjectDeleted}
+      onObjectMoved={handleObjectMoved}
+      onObjectsReordered={handleObjectsReordered}
+      onShelfDeleted={handleShelfDeleted}
+      onShelfRenamed={handleShelfRenamed}
+      onShelfVisibilityChanged={handleShelfVisibilityChanged}
+      dragHandleProps={dragHandleProps}
+      isDragging={isDragging}
+    />
+  );
+
+  const atShelfLimit = shelves.length >= MAX_SHELVES_PER_LIBRARY;
+  // Selecting objects to share is an owner control on the cards, and those
+  // go with the rest of the editing UI on a phone — a bar with nothing to
+  // select into would be dead weight at the bottom of the screen.
+  const showSharePanel = canEditHere && !hideSharePanel;
+
   return (
-    <div className={styles.wrapper}>
+    <div
+      className={classNames(styles.wrapper, {
+        [styles.withShareBar]: showSharePanel,
+      })}
+    >
       {shelves.length > 0 && (
         <LibraryToolbar
-          shelves={shelves}
-          onAddShelf={modalToggler}
-          onShelvesReordered={handleShelvesReordered}
-          isOwner={viewAsOwner}
-          ownerName={ownerUsername ?? libraryId}
+          shelves={displayedShelves}
           search={search}
           onSearchChange={setSearch}
+          matchedCount={matchedCount}
         />
+      )}
+      {/* Notices land in a slot held from the start, so the shelf list never
+          jumps when one appears. Owner-only: every message here follows an
+          owner action (a reorder, an object move), so for a visitor the held
+          row was a band of empty page above the first shelf. */}
+      {canEditHere && (
+        <div className={styles.noticeRow} role="status" aria-live="polite">
+          {noticeMounted && (
+            <div
+              className={classNames(styles.notice, {
+                [styles.noticeClosing]: !noticeShown,
+              })}
+            >
+              <Text variant={TypographyVariant.TextSmall}>
+                {shelfOrderError ?? objectNotice}
+              </Text>
+              <button
+                type="button"
+                className={styles.noticeDismiss}
+                aria-label="Dismiss"
+                onClick={() => {
+                  setShelfOrderError(null);
+                  setObjectNotice(null);
+                }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+        </div>
       )}
       {isLoading ? (
         <div className={styles.loading}>
           <Loader />
+        </div>
+      ) : loadError ? (
+        <div className={styles.empty}>
+          <Text
+            variant={TypographyVariant.TitleSecondaryBold}
+            className={styles.text}
+          >
+            {loadError}
+          </Text>
+          <Button
+            label="Try again"
+            onClick={() => void loadLibrary()}
+            type={ButtonType.Primary}
+            size={ButtonSize.Wide}
+            ariaLabel="Try loading the library again"
+            className={styles.button}
+          />
         </div>
       ) : showNoCreatePermission ? (
         <div className={styles.empty}>
@@ -548,7 +961,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
               : 'This library is empty'}
           </Text>
 
-          {viewAsOwner && (
+          {canEditHere && (
             <Button
               label="Add shelf"
               onClick={modalToggler}
@@ -559,7 +972,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
             />
           )}
         </div>
-      ) : normalizedSearch && displayedShelves.length === 0 ? (
+      ) : hasSearch && displayedShelves.length === 0 ? (
         <div className={styles.empty}>
           <Text
             variant={TypographyVariant.TitleSecondaryBold}
@@ -567,29 +980,86 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
           >
             Nothing matches “{search.trim()}”
           </Text>
+          <Button
+            label="Clear search"
+            onClick={() => setSearch('')}
+            type={ButtonType.Secondary}
+            size={ButtonSize.Wide}
+            ariaLabel="Clear search"
+            className={styles.button}
+          />
         </div>
       ) : (
-        <div
-          className={classNames(styles.shelfList, {
-            [styles.resequencing]: isResequencing,
-          })}
-        >
-          {displayedShelves.map(shelf => (
-            <Shelf
-              key={shelf.id}
-              title={shelf.attributes.name}
-              shelf={shelf}
-              ownerUsername={libraryId}
-              isOwner={viewAsOwner}
-              onObjectCreated={handleObjectCreated}
-              onObjectUpdated={handleObjectUpdated}
-              onObjectDeleted={handleObjectDeleted}
-              onObjectMoved={handleObjectMoved}
-              onObjectsReordered={handleObjectsReordered}
-              onShelfDeleted={handleShelfDeleted}
-              onShelfRenamed={handleShelfRenamed}
+        <div className={styles.shelfList} ref={shelfListRef}>
+          {/* One tree whether or not the boards can be dragged: switching
+              between a sortable list and a plain one remounted every shelf on
+              the first keystroke of a search, so the whole library flashed. The
+              drag is simply switched off while a search narrows the list. */}
+          <DndContext
+            sensors={shelfSensors}
+            collisionDetection={closestCenter}
+            modifiers={[verticalOnly]}
+            onDragEnd={handleShelfDragEnd}
+          >
+            <SortableContext
+              items={displayedShelves.map(shelf => shelf.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {shelfEntries.map(({ item: shelf, leaving }) => (
+                <div
+                  key={shelf.id}
+                  className={classNames(styles.shelfSlot, {
+                    [styles.shelfLeaving]: leaving,
+                  })}
+                  data-flip-id={String(shelf.id)}
+                  data-flip-leaving={leaving ? 'true' : undefined}
+                  aria-hidden={leaving || undefined}
+                >
+                  {/* A departing board is no longer sortable: it only has
+                      to hold its picture while it folds away. */}
+                  {leaving ? (
+                    renderShelf(shelf)
+                  ) : (
+                    <SortableShelf id={shelf.id} disabled={!canReorderShelves}>
+                      {(handleProps, isDragging) =>
+                        canReorderShelves
+                          ? renderShelf(shelf, handleProps, isDragging)
+                          : renderShelf(shelf)
+                      }
+                    </SortableShelf>
+                  )}
+                </div>
+              ))}
+            </SortableContext>
+          </DndContext>
+        </div>
+      )}
+
+      {/* The next shelf is added
+ from where it will appear: directly under the
+          last board. The toolbar at the top of the page no longer carries this
+          control. */}
+      {canEditHere && !isLoading && displayedShelves.length > 0 && (
+        <div className={styles.addShelfRow}>
+          <Tooltip
+            place="top"
+            tooltipContent={atShelfLimit ? LIBRARY_FULL_MESSAGE : ''}
+            wrapperClassName={classNames({
+              [styles.tooltipOff]: !atShelfLimit,
+            })}
+          >
+            <Button
+              label="Add shelf"
+              ariaLabel="Add shelf"
+              onClick={modalToggler}
+              type={ButtonType.Text}
+              size={ButtonSize.Default}
+              Icon={<PlusIcon />}
+              iconPosition={IconPosition.Right}
+              className={styles.addShelfButton}
+              disabled={atShelfLimit}
             />
-          ))}
+          </Tooltip>
         </div>
       )}
 
@@ -601,7 +1071,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         />
       )}
 
-      {viewAsOwner && (
+      {showSharePanel && (
         <ShareSelectionPanel
           objects={selectedObjects}
           ownerUsername={ownerUsername ?? libraryId}

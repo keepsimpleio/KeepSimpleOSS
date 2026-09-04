@@ -1,3 +1,14 @@
+// One catalogue voice for every title on the sheet — section headers and
+// in-section sub-labels alike — so labels never compete with content.
+// 13px is on the font passport; brown-100 clears 4.5:1 on the warm white.
+@mixin caps-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brown-100);
+}
+
 .sidebar {
   width: 100%;
   max-width: 331px;
@@ -5,7 +16,10 @@
   // sticky 48px on desktop; offset by that and shorten the panel to the leftover
   // viewport so the pinned guest-mode footer stays on screen while scrolling.
   height: calc(100vh - 48px);
-  background: var(--white-warm);
+  // Same sheet language as the landing grid's cards: a warm white leaf lying
+  // on the paper backdrop, edged rather than boxed.
+  background: var(--white-200);
+  border-left: 1px solid var(--brown-border);
   box-shadow: var(--sidebar-shadow);
   padding: 16px;
   display: flex;
@@ -16,6 +30,11 @@
   position: sticky;
   top: 48px;
   align-self: flex-start;
+  // The panel is the top layer of the library page: the selection bar (z 40)
+  // with its upward shadow, the sticky toolbar (z 20) and the fold tab that
+  // tucks into this edge all pass beneath it. Kept under the global header's
+  // own layer so header menus still open over the page.
+  z-index: 50;
 
   // 1025–1140px: the header switches to position:fixed at 55px, so match the
   // larger offset/height in that band.
@@ -26,10 +45,13 @@
 
   @media (max-width: 1024px) {
     position: fixed;
-    // Full-height slide-in drawer overlay, above the fixed header.
+    // Full-height slide-in drawer overlay, above the fixed header. On iOS
+    // `100vh` counts the collapsed browser chrome, so the pinned footer sat
+    // below the fold; `dvh` measures what is actually on screen.
     top: 0;
     right: 0;
     height: 100vh;
+    height: 100dvh;
     // Above the fixed global header (z-index up to 113 on mobile) so the
     // drawer's own top controls aren't hidden beneath it when open.
     z-index: 130;
@@ -44,9 +66,75 @@
     transform: translateX(0);
   }
 
+  // Desktop: the column folds away on the toolbar's panel toggle. Only the
+  // width, padding and edge move; the sheet's content is held at its full
+  // width and fades, so nothing rewraps while the column narrows and the
+  // shelves widen into the room.
+  @media (min-width: 1025px) {
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      max-width 0.3s ease,
+      padding 0.3s ease,
+      border-left-width 0.3s ease;
+
+    .main,
+    .footer {
+      // 331px column minus the 16px padding either side.
+      width: 299px;
+      flex-shrink: 0;
+      transition:
+        opacity 0.15s ease 0.15s,
+        visibility 0s linear 0s;
+    }
+
+    &.collapsed {
+      max-width: 0;
+      padding-left: 0;
+      padding-right: 0;
+      border-left-width: 0;
+
+      .main,
+      .footer {
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.15s ease,
+          visibility 0s linear 0.15s;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+
+      .main,
+      .footer,
+      &.collapsed .main,
+      &.collapsed .footer {
+        transition: none;
+      }
+    }
+  }
+
   .close {
     justify-content: flex-end;
     display: none;
+
+    // 44x44 touch target around a 24px glyph, matching the modal close buttons.
+    button {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+
+      path {
+        fill: var(--gray-darkest);
+      }
+    }
 
     // Shown wherever the panel is a slide-in drawer (≤1024px), not just on
     // phones — otherwise the 769–1024px range could open it with no way to close.
@@ -71,15 +159,15 @@
     }
   }
 
-  .dropdown {
-    width: 100%;
-  }
-
   .header {
     gap: 8px;
     display: flex;
     align-items: center;
     padding-left: 12px;
+
+    .label {
+      @include caps-label;
+    }
 
     p {
       line-height: 30px;
@@ -96,26 +184,55 @@
       line-height: 22px;
       font-weight: 600;
     }
+
+    .headerActions {
+      display: inline-flex;
+      gap: 6px;
+      margin-left: auto;
+    }
   }
 
   .content {
     gap: 8px;
     display: flex;
     flex-direction: column;
-    padding: 12px;
-    border-radius: 10px;
-    background: var(--off-white);
+    padding: 4px 12px 0;
+    // No boxed background: the panel is one sheet, sections are separated by
+    // the drawn ink rules instead of grey admin rectangles.
 
     .totalObjects {
-      gap: 12px;
+      gap: 8px;
       display: flex;
       flex-direction: column;
     }
 
+    // Same voice as the section headers, so "Content" reads as a title and
+    // the content around it stays the only black text.
+    .subLabel {
+      @include caps-label;
+    }
+
     .objects {
+      // All three counts on one line. The icons come down to 16px, which buys
+      // the width the third count needs and gives the sheet back a line of
+      // vertical space.
       gap: 12px;
       display: flex;
+      flex-wrap: nowrap;
       align-items: center;
+
+      // The counts size to their own content rather than sharing the row
+      // evenly, so a label is never squeezed and clipped mid-word.
+      > * {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none;
+      }
+
+      .count svg {
+        width: 16px;
+        height: 16px;
+      }
     }
 
     .avatar {
@@ -125,6 +242,29 @@
       .avatarImage {
         width: 48px;
         height: 48px;
+        position: relative;
+        border-radius: 0;
+        overflow: hidden;
+
+        // The grid's uniform wash over user photos, verbatim: pigments pulled
+        // off screen saturation, warmed toward the paper, contrast eased.
+        img,
+        svg {
+          filter: sepia(0.75) saturate(0.5) contrast(0.82) brightness(1.16)
+            hue-rotate(-12deg);
+        }
+
+        // The paper's own colour laid over the photo, the way a wash tints
+        // everything under it.
+        &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: #e8d9b8;
+          mix-blend-mode: multiply;
+          opacity: 0.42;
+        }
       }
     }
 
@@ -144,34 +284,59 @@
         line-height: 20px;
       }
 
+      // One pill per slot: the slot is what the list motion measures and
+      // moves.
+      .tagSlot {
+        display: inline-flex;
+
+        &.tagLeaving {
+          pointer-events: none;
+        }
+      }
+
       .button {
         color: var(--brown);
         height: 26px;
       }
     }
 
-    .shareInputContainer {
-      gap: 8px;
-      display: flex;
-      align-items: center;
+    // Held at one line so the copy feedback never moves the section below.
+    .copyStatus {
+      min-height: 18px;
+      margin-top: 4px;
+      color: var(--gray-darker);
+    }
 
-      .shareInputWrapper {
-        flex: 1;
+    .copyStatusError {
+      color: var(--red-500);
+    }
+
+    .copyButton {
+      min-width: 100%;
+      letter-spacing: 0.04em;
+      transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+
+      svg {
+        width: 20px;
+        height: 20px;
       }
 
-      .shareInput {
-        width: 100%;
+      &.copied {
+        animation: copyPulse 0.4s ease;
+        color: var(--white);
+        background: var(--brown);
+        border-color: var(--brown);
       }
 
-      .copyButton {
-        width: auto;
-        min-width: auto;
-        padding: 8px;
-        flex-shrink: 0;
-        transition: transform 0.2s ease;
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
 
         &.copied {
-          animation: copyPulse 0.4s ease;
+          animation: none;
         }
       }
     }
@@ -182,13 +347,16 @@
     display: flex;
     flex-direction: column;
 
-    &:last-child {
-      margin-bottom: 80px;
+    // Between the About text and the Content counts. Drawn in the same ink as
+    // the rules that close each section, so no flat 1px border is left on the
+    // sheet.
+    .innerRule {
+      margin: 4px 0;
     }
 
-    .divider {
-      height: 1px;
-      background: var(--brown-border);
+    // Hand-drawn rule closing a section, in place of the boxed backgrounds.
+    .sectionRule {
+      margin-top: 8px;
     }
   }
 
@@ -199,12 +367,30 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 65px;
+    gap: 12px;
+    margin-bottom: 16px;
     background: var(--off-white);
-    padding: 8px 12px;
-    border-radius: 4px;
+    // One line high: a name and a switch, nothing else to make room for.
+    padding: 6px 12px;
+    border-radius: var(--radius-control);
+    border: 1px solid transparent;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    // Switched on, the row itself says so: a brown frame the toggle alone
+    // could not carry across the page.
+    &.footerActive {
+      border-color: var(--brown);
+      background: var(--cream);
+    }
 
     .label {
+      min-width: 0;
       font-weight: 600;
     }
   }
@@ -236,19 +422,55 @@
     height: 52px;
     padding: 0;
     border: none;
-    border-radius: 10px 0 0 10px;
+    border-radius: var(--radius-control) 0 0 var(--radius-control);
     background: var(--white-warm);
     box-shadow: var(--sidebar-shadow);
     color: var(--brown);
     cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background: var(--off-white);
+      color: var(--brown-100);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: -2px;
+    }
   }
 
+  // Dims in with the drawer rather than dropping on the page a beat before it.
   .backdrop {
     position: fixed;
     inset: 0;
     z-index: 120;
     display: block;
     background: var(--black-100);
+    animation: backdrop-in 0.3s ease;
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// The drawer slide, the backdrop and every hover in the panel hold still
+// under reduced motion; the desktop fold has its own guard above.
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .openTab,
+  .backdrop,
+  .copyButton {
+    transition: none;
+    animation: none;
   }
 }
 

@@ -14,9 +14,12 @@
     background: transparent;
     color: var(--gray-200);
     border: 1px solid var(--brown-border);
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease;
 
     &.open,
     &:not(.disabled):hover {
@@ -80,7 +83,7 @@
   right: 0;
   background: var(--white);
   border: 1px solid var(--gray-100);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   z-index: 1000;
   display: flex;
@@ -101,11 +104,11 @@
   position: relative;
 
   &:first-child > .option {
-    border-radius: 8px 8px 0 0;
+    border-radius: var(--radius-control) var(--radius-control) 0 0;
   }
 
   &:last-child > .option {
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 var(--radius-control) var(--radius-control);
   }
 }
 
@@ -153,8 +156,10 @@
   flex-shrink: 0;
   margin-left: 12px;
 
+  // The tick sits inside the icon's own green disc, so it reads white; the
+  // disc is the rect and keeps its fill.
   path {
-    fill: var(--brown);
+    fill: var(--white);
   }
 }
 
@@ -164,7 +169,7 @@
   left: calc(100% + 4px);
   background: var(--white);
   border: 1px solid var(--gray-100);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   z-index: 1001;
   display: flex;
@@ -174,11 +179,59 @@
 
   .option {
     &:first-child {
-      border-radius: 8px 8px 0 0;
+      border-radius: var(--radius-control) var(--radius-control) 0 0;
     }
 
     &:last-child {
-      border-radius: 0 0 8px 8px;
+      border-radius: 0 0 var(--radius-control) var(--radius-control);
     }
+  }
+}
+
+// Opens with a short fade and leaves the same way (usePresence keeps the node
+// for the exit). Opacity only: the placement transform is set inline and an
+// animated transform would override it.
+@keyframes popover-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popover-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.menu,
+.subMenu {
+  animation: popover-in 0.14s ease-out;
+}
+
+.menuClosing {
+  animation: popover-out 0.12s ease-in forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .subMenu,
+  .menuClosing {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .icon,
+  .option,
+  .subArrow {
+    transition: none;
   }
 }
