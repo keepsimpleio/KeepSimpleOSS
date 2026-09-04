@@ -65,6 +65,20 @@
   transition: opacity 0.15s ease;
 }
 
+// The strip above the artwork is the toggle's own place on the shelf, so a
+// pointer that arrives there reveals it instead of being sent to the cover
+// first. Mouse pointers only: a touch has no hover to reveal it with, and an
+// invisible target would answer a stray tap.
+@media (hover: hover) and (pointer: fine) {
+  .select {
+    pointer-events: auto;
+  }
+
+  .select:hover {
+    opacity: 1;
+  }
+}
+
 .card:hover .select,
 .card:focus-within .select,
 .card.selected .select {
