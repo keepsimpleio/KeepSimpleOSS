@@ -5,7 +5,6 @@ import React, { JSX, useRef, useState } from 'react';
 
 import { VideoShadowIcon } from '@icons/library/svg';
 
-import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
@@ -99,14 +98,10 @@ export function VideoCard({
           </div>
         </div>
 
+        {/* The title is not printed on the card: the dossier that opens on
+            hover already names the object, and the shelf reads as a row of
+            covers, the way the book and audio cards do. */}
         <div className={styles.bar} aria-hidden />
-
-        <Text
-          variant={TypographyVariant.TextBaseSemibold}
-          className={styles.title}
-        >
-          {title}
-        </Text>
       </div>
 
       <ObjectHoverCard

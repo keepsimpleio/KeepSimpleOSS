@@ -1,14 +1,14 @@
 // The cell that frames the object plus its drop shadow. The shadow SVG fills
-// the full 292×182 box while the object (255×181) sits flush to the right
-// edge, so the soft shadow only peeks out on the left and bottom — matching the
-// book/audio cards where the spine/disc is exposed on the left.
-// Height carries the full caption: 12px padding, the 125px thumbnail, the 6px
-// bar, the 8px gap, two 22px title lines and 12px padding. Anything shorter
-// slices the second line, which is what the fixed 182px box used to do.
+// the full box while the object sits flush to the right edge, so the soft
+// shadow only peeks out on the left and bottom — matching the book/audio
+// cards where the spine/disc is exposed on the left.
+// Height is the card exactly: 12px padding, the 125px thumbnail, the 6px bar
+// and 12px padding. The cards bottom-align onto the board, so a video simply
+// stands shorter than a book beside it.
 .wrap {
   position: relative;
   width: 292px;
-  height: 208px;
+  height: 156px;
 }
 
 // Drop shadow behind the object, spanning the full cell. `none` on the SVG so
@@ -32,7 +32,7 @@
   display: flex;
   flex-direction: column;
   width: 255px;
-  height: 207px;
+  height: 155px;
   padding: 12px;
   background: var(--off-white);
   border-radius: 0;
@@ -139,22 +139,8 @@
   background: var(--brown);
 }
 
-// Nested under .card so the caption's own line-height beats the Text
-// variant's 32px, which was built for prose and left a two-line title
-// taller than the card.
-.card .title {
-  margin-top: 8px;
-  color: var(--gray-darkest);
-  line-height: 22px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 // Compact variant for the share-selection panel: a bare 231×138 thumbnail
-// (no shadow, no padding, no title bar, no caption).
+// (no shadow, no padding, no title bar).
 .wrap.compact {
   width: 231px;
   height: 138px;
@@ -178,8 +164,7 @@
     height: 100%;
   }
 
-  .bar,
-  .title {
+  .bar {
     display: none;
   }
 }
