@@ -356,7 +356,7 @@
   border: 1px solid var(--brown-border);
   border-right: none;
   border-radius: 0;
-  background: var(--white-200);
+  background: var(--pattern-panel-tab), var(--white-200);
   color: var(--brown);
   cursor: pointer;
   // The panel's own shadow, cast leftward: the tab lifts off the page the way
@@ -387,7 +387,7 @@
   }
 
   &:hover {
-    background: var(--off-white);
+    background: var(--pattern-panel-tab), var(--off-white);
     color: var(--brown-100);
     box-shadow: -14px 0 20px -8px #533a3a3d;
   }

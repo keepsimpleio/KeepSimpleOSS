@@ -108,6 +108,23 @@
     var(--cream) 0%,
     var(--beige) 100%
   );
+  /* The info panel's tab: laid lines the width of a book's cased spine,
+     drawn in the sheet's own brown at a few percent, over a light that falls
+     from the page side toward the panel. Ruling, not decoration. */
+  --pattern-panel-tab:
+    repeating-linear-gradient(
+      to right,
+      rgba(135, 108, 66, 0.07) 0px,
+      rgba(135, 108, 66, 0.07) 1px,
+      rgba(135, 108, 66, 0) 1px,
+      rgba(135, 108, 66, 0) 5px
+    ),
+    linear-gradient(
+      to right,
+      rgba(135, 108, 66, 0.06) 0%,
+      rgba(135, 108, 66, 0) 45%
+    );
+
   --gradient-book-placeholder: linear-gradient(
     135deg,
     #d4cfb4 0%,
