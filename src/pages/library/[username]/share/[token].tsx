@@ -1,7 +1,6 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import React, { JSX, useEffect, useMemo, useState } from 'react';
 
-import { isLibraryEnabled } from '@constants/library/common';
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
 import type { IObject } from '@local-types/library/object';
@@ -302,10 +301,6 @@ export default SharePage;
 export const getServerSideProps: GetServerSideProps<
   SharePageProps
 > = async context => {
-  if (!isLibraryEnabled()) {
-    return { notFound: true };
-  }
-
   const username = String(context.params?.username ?? '');
   const token = String(context.params?.token ?? '');
 

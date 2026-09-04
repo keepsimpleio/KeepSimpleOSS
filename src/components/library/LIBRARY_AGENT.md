@@ -6,7 +6,7 @@ Guidance for any AI coding agent working on the **library** feature inside **Kee
 
 ## Feature overview
 
-Browse user libraries of books / videos / music. Auth is NextAuth (Google + Discord) bridged to a Strapi backend. UI follows **atomic design** (atoms → molecules → organisms) with **SCSS Modules**. The feature is gated behind the `isLibraryEnabled` flag (`@constants/library/common`).
+Browse user libraries of books / videos / music. Auth is NextAuth (Google + Discord) bridged to a Strapi backend. UI follows **atomic design** (atoms → molecules → organisms) with **SCSS Modules**.
 
 ## Where the library lives (namespacing map)
 
@@ -62,7 +62,7 @@ There is **no Storybook** and **no `yarn new:*` generator** in this repo — tho
 - **Molecule:** `@components/library/molecules/BookCard` — `export function`, `classnames`, `next/image`, types in `BookCard.types.ts`, barrel re-exports both.
 - **Organism:** `@components/library/organisms/Shelf`, `Sidebar`, `AddObjectModal`.
 - **Page-level layout:** `@layouts/library/Home` (`HomeTemplate`), `@layouts/library/Library`.
-- **Page:** `src/pages/library/index.tsx` — `GetServerSideProps`, gated by `isLibraryEnabled`, wraps `AuthProvider` + `GlobalStateProvider` + `SeoGenerator` + a `*Template`.
+- **Page:** `src/pages/library/index.tsx` — `GetServerSideProps`, wraps `AuthProvider` + `GlobalStateProvider` + `SeoGenerator` + a `*Template`.
 - **API call:** `@api/library/strapi.ts` and `@api/library/{object,shelf,tag,upload,user}/*` — async, `axiosInstance`, returns `data`.
 - **Context provider:** `@components/Context/library/GlobalStateContext` — `useMemo`'d value, hook throws if used outside provider.
 

@@ -11,12 +11,6 @@ import {
   VideoIcon,
 } from '@icons/library/svg';
 
-// Frontend gate for the Library feature. Enabled everywhere except prod
-// (dev + staging) so it can't ship to prod until it's ready. Driven by the
-// shared NEXT_PUBLIC_ENV (dev | staging | prod) — no dedicated flag needed.
-export const isLibraryEnabled = (): boolean =>
-  process.env.NEXT_PUBLIC_ENV !== 'prod';
-
 export const title = 'Library';
 
 export const KEEPSIMPLE_URL = 'https://keepsimple.io';

@@ -1,6 +1,5 @@
 import type { GetServerSideProps, NextPage } from 'next';
 
-import { isLibraryEnabled } from '@constants/library/common';
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
 import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
@@ -77,10 +76,6 @@ export default LibraryPage;
 export const getServerSideProps: GetServerSideProps<
   LibraryPageProps
 > = async context => {
-  if (!isLibraryEnabled()) {
-    return { notFound: true };
-  }
-
   const username = String(context.params?.username ?? '');
   const initialSidebarCollapsed = readSidebarCollapsedForRequest(
     context.req.headers.cookie,
