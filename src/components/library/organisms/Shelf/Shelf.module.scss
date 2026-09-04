@@ -7,8 +7,8 @@
   // On a phone the board and the next shelf's header are the whole screen, so
   // the desktop breathing room read as a dead band between them.
   @media (max-width: 768px) {
-    gap: 8px;
-    padding: 6px 0;
+    gap: 6px;
+    padding: 4px 0;
   }
 
   .header {
@@ -224,6 +224,7 @@
 
   .content {
     min-height: 342px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -235,6 +236,17 @@
     // drops the same amount from its own padding-bottom so the cards stay
     // seated. This is the knob: increase to slide the scrollbar up the board.
     padding-bottom: 65px;
+
+    // Phones: the board renders taller than the desktop board relative to the
+    // shelf, and its bottom ~27px are the PNG's faded-out tail — invisible, but
+    // still occupying the page. Drop 16px of it (paired with .banner's -16px
+    // bottom, which keeps every card seated exactly where it was) and let the
+    // shelf size to its cards instead of the desktop 342px floor, which was
+    // padding audio shelves out for no reason.
+    @media (max-width: 768px) {
+      min-height: auto;
+      padding-bottom: 49px;
+    }
 
     // Carousel arrows, same pill as the LibraryToolbar jump arrows, overlaid on
     // the shelf at each end and vertically centred on the card band. Only shown
@@ -290,6 +302,10 @@
         right: -35px;
         width: auto;
         margin-right: 0;
+        // Paired with .content's 49px padding-bottom: the board moves down by
+        // exactly what the shelf lost, so the cards keep resting on the same
+        // line and only the faded tail is clipped by .content's overflow.
+        bottom: -16px;
 
         // The box is now sized by left/right (width: auto), so the inherited
         // `auto` would shrink the board to its intrinsic width — fill instead.
@@ -317,6 +333,13 @@
       // Give the cards 40px of headroom so their tops aren't clipped by the
       // shelf's `overflow: hidden`; they still bottom-align onto the shelf.
       padding-top: 40px;
+
+      // On phones that headroom is a band of empty page between the shelf name
+      // and the covers. 28px still clears the owner's select pill.
+      @media (max-width: 768px) {
+        min-height: auto;
+        padding-top: 28px;
+      }
       // Paired with `.content`'s 65px padding-bottom: the two sum to 100px so
       // the cards' seating line is unchanged while the scrollbar rides higher.
       padding-bottom: 35px;
