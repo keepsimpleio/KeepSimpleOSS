@@ -183,7 +183,8 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
 
   // The header states the fact before the values do: an unrated item says so
   // outright instead of leaving two dashes to carry the meaning.
-  const isRated = overallRating !== undefined || difficulty !== undefined;
+  // Strapi returns an unset rating as null, not undefined; either is unrated.
+  const isRated = overallRating != null || difficulty != null;
   const header = username
     ? `${username} ${isRated ? `rated this ${itemLabel}:` : `didn’t rate this ${itemLabel}`}`
     : isRated
@@ -195,29 +196,33 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
       <Text variant={TypographyVariant.TextSmall} className={styles.header}>
         {header}
       </Text>
-      <div className={styles.row}>
-        <ColoredSelect<OverallRating>
-          label="Overall:"
-          value={overallRating}
-          options={OVERALL_VALUES}
-          renderLabel={v => String(v)}
-          getColor={v => OVERALL_COLORS[v]}
-          onChange={onOverallChange}
-          readOnly={readOnly}
-          placeholder="—"
-          valueSuffix="/5"
-        />
-        <ColoredSelect<Difficulty>
-          label="Difficulty:"
-          value={difficulty}
-          options={DIFFICULTY_VALUES}
-          renderLabel={v => DIFFICULTY_META[v].label}
-          getColor={v => DIFFICULTY_META[v].color}
-          onChange={onDifficultyChange}
-          readOnly={readOnly}
-          placeholder="—"
-        />
-      </div>
+      {/* A visitor to an unrated item gets the sentence and nothing else: two
+          read-only dashes under "rated" read as a rating of nothing. */}
+      {(isRated || !readOnly) && (
+        <div className={styles.row}>
+          <ColoredSelect<OverallRating>
+            label="Overall:"
+            value={overallRating}
+            options={OVERALL_VALUES}
+            renderLabel={v => String(v)}
+            getColor={v => OVERALL_COLORS[v]}
+            onChange={onOverallChange}
+            readOnly={readOnly}
+            placeholder="—"
+            valueSuffix="/5"
+          />
+          <ColoredSelect<Difficulty>
+            label="Difficulty:"
+            value={difficulty}
+            options={DIFFICULTY_VALUES}
+            renderLabel={v => DIFFICULTY_META[v].label}
+            getColor={v => DIFFICULTY_META[v].color}
+            onChange={onDifficultyChange}
+            readOnly={readOnly}
+            placeholder="—"
+          />
+        </div>
+      )}
     </div>
   );
 }
