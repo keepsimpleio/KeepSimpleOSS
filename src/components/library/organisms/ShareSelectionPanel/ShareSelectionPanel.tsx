@@ -228,10 +228,15 @@ export function ShareSelectionPanel({
       })}
       aria-label={readOnly ? 'Shared selection' : 'Share selection'}
     >
+      {/* The whole bar folds the section: the title is the labelled control
+          for keyboard and screen readers, and the empty stretch beside it
+          answers to the pointer as well. The action buttons keep their own
+          clicks (see .actions). */}
       <div
         className={classNames(styles.header, {
           [styles.headerReadOnly]: readOnly,
         })}
+        onClick={() => setCollapsed(c => !c)}
       >
         <button
           type="button"
@@ -256,7 +261,7 @@ export function ShareSelectionPanel({
         </button>
 
         {!readOnly && (
-          <div className={styles.actions}>
+          <div className={styles.actions} onClick={e => e.stopPropagation()}>
             <Button
               label={isSharing ? 'Sharing…' : 'Share selection via link'}
               ariaLabel="Share selection via link"

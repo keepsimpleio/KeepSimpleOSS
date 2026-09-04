@@ -47,6 +47,8 @@
   padding: 24px 32px;
   background: var(--cream);
   border-bottom: 1px solid var(--beige);
+  // The bar itself folds the section, so the pointer says so anywhere on it.
+  cursor: pointer;
 }
 
 // Recipient view has no action buttons, so the tall padding leaves the bare
@@ -56,6 +58,11 @@
 }
 
 .heading {
+  // Reaches across the free stretch of the bar so the label, not just its
+  // text, is what a pointer lands on.
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 12px;
