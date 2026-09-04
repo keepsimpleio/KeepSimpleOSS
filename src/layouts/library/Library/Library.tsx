@@ -45,6 +45,11 @@ import type {
 import useIsMobile from '@hooks/library/useIsMobile';
 
 import { objectIdFromSlug } from '@lib/library/objectSlug';
+import {
+  buildSearchHaystack,
+  matchesSearchTerms,
+  tokenizeQuery,
+} from '@lib/library/searchMatch';
 
 import { createLibrary } from '@api/library/createLibrary';
 import { getLibraryIdByUsername } from '@api/library/getLibraryIdByUsername';
@@ -399,9 +404,13 @@ export function LibraryTemplate({
   // list (so counts, the 21-object cap, reorder payloads and the open object
   // all read the real shelf) and carries a set of matching ids that only
   // decides which cards are drawn.
-  const normalizedSearch = search.trim().toLowerCase();
+  // The box answers to what people actually type: extra spaces, wrong case,
+  // accents, punctuation and a slipped key all still find the item. See
+  // @lib/library/searchMatch for the rules.
+  const searchTerms = useMemo(() => tokenizeQuery(search), [search]);
+  const hasSearch = searchTerms.length > 0;
   const { displayedShelves, matchedIdsByShelf } = useMemo(() => {
-    if (!normalizedSearch) {
+    if (!hasSearch) {
       return {
         displayedShelves: shelves,
         matchedIdsByShelf: null as Map<number, Set<number>> | null,
@@ -413,22 +422,19 @@ export function LibraryTemplate({
       const matched = new Set<number>();
       for (const o of objects) {
         const { title, author, tags } = o.attributes;
-        const haystack = [
+        const haystack = buildSearchHaystack([
           title,
           author,
           ...(tags?.data ?? []).map(t => t.attributes.name),
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        if (haystack.includes(normalizedSearch)) matched.add(o.id);
+        ]);
+        if (matchesSearchTerms(haystack, searchTerms)) matched.add(o.id);
       }
       if (matched.size === 0) return false;
       matchedIdsByShelf.set(shelf.id, matched);
       return true;
     });
     return { displayedShelves, matchedIdsByShelf };
-  }, [shelves, normalizedSearch]);
+  }, [shelves, hasSearch, searchTerms]);
 
   const matchedCount = useMemo(() => {
     if (!matchedIdsByShelf) return null;
@@ -637,7 +643,7 @@ export function LibraryTemplate({
   // result is a subset, so a position inside it says nothing about where the
   // shelf belongs in the library.
   const canReorderShelves =
-    canEditHere && !normalizedSearch && displayedShelves.length > 1;
+    canEditHere && !hasSearch && displayedShelves.length > 1;
   // One save at a time: a second drag while the first is still persisting
   // would capture a baseline that already holds the optimistic move, and a
   // late failure would then "restore" a mixed order.
@@ -905,7 +911,7 @@ export function LibraryTemplate({
             />
           )}
         </div>
-      ) : normalizedSearch && displayedShelves.length === 0 ? (
+      ) : hasSearch && displayedShelves.length === 0 ? (
         <div className={styles.empty}>
           <Text
             variant={TypographyVariant.TitleSecondaryBold}

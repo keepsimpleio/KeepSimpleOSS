@@ -4,6 +4,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import type { HomeLibraryCardView } from '@local-types/library/library';
 
+import {
+  buildSearchHaystack,
+  matchesSearchTerms,
+  tokenizeQuery,
+} from '@lib/library/searchMatch';
+
 import { getLibrariesPaginated } from '@api/library/getLibrariesPaginated';
 import { getMyLibrary } from '@api/library/getMyLibrary';
 
@@ -125,12 +131,15 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
   const { totalPages, currentLibraries } = useMemo(() => {
     const all = isControlled ? (dataOverride ?? []) : remoteItems;
-    const q = debouncedQuery.toLowerCase();
-    const data = q
+    // Same forgiving matching the library's own search box uses: case,
+    // spacing, punctuation and a slipped key all still find the library.
+    const terms = tokenizeQuery(debouncedQuery);
+    const data = terms.length
       ? all.filter(lib =>
-          [lib.username, lib.libraryName]
-            .filter(Boolean)
-            .some(field => field!.toLowerCase().includes(q)),
+          matchesSearchTerms(
+            buildSearchHaystack([lib.username, lib.libraryName]),
+            terms,
+          ),
         )
       : all;
     // Showcase order: fullest libraries first, so the first row sells the
