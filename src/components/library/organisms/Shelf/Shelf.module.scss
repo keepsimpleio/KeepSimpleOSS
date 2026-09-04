@@ -4,6 +4,13 @@
   gap: 16px;
   padding: 16px 0 16px 0;
 
+  // On a phone the board and the next shelf's header are the whole screen, so
+  // the desktop breathing room read as a dead band between them.
+  @media (max-width: 768px) {
+    gap: 8px;
+    padding: 6px 0;
+  }
+
   .header {
     display: flex;
     justify-content: space-between;

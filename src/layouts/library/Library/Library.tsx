@@ -817,27 +817,31 @@ export function LibraryTemplate({
         />
       )}
       {/* Notices land in a slot held from the start, so the shelf list never
-          jumps when one appears. */}
-      <div className={styles.noticeRow} role="status" aria-live="polite">
-        {(shelfOrderError || objectNotice) && (
-          <div className={styles.notice}>
-            <Text variant={TypographyVariant.TextSmall}>
-              {shelfOrderError ?? objectNotice}
-            </Text>
-            <button
-              type="button"
-              className={styles.noticeDismiss}
-              aria-label="Dismiss"
-              onClick={() => {
-                setShelfOrderError(null);
-                setObjectNotice(null);
-              }}
-            >
-              ×
-            </button>
-          </div>
-        )}
-      </div>
+          jumps when one appears. Owner-only: every message here follows an
+          owner action (a reorder, an object move), so for a visitor the held
+          row was a band of empty page above the first shelf. */}
+      {viewAsOwner && (
+        <div className={styles.noticeRow} role="status" aria-live="polite">
+          {(shelfOrderError || objectNotice) && (
+            <div className={styles.notice}>
+              <Text variant={TypographyVariant.TextSmall}>
+                {shelfOrderError ?? objectNotice}
+              </Text>
+              <button
+                type="button"
+                className={styles.noticeDismiss}
+                aria-label="Dismiss"
+                onClick={() => {
+                  setShelfOrderError(null);
+                  setObjectNotice(null);
+                }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+        </div>
+      )}
       {isLoading ? (
         <div className={styles.loading}>
           <Loader />
