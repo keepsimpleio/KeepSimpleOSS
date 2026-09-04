@@ -22,6 +22,7 @@ export function BookCard({
   onSelectToggle,
   selectDisabled = false,
   compact = false,
+  showHoverCard = !compact,
   ownerUsername,
 }: BookCardProps): JSX.Element {
   const { attributes } = object;
@@ -69,6 +70,9 @@ export function BookCard({
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setPreviewOpen(true)}
         onMouseLeave={() => setPreviewOpen(false)}
+        // A drag captures the pointer, so no mouseleave arrives to close the
+        // dossier while the card travels; the press closes it instead.
+        onPointerDown={() => setPreviewOpen(false)}
         onFocus={() => setPreviewOpen(true)}
         onBlur={() => setPreviewOpen(false)}
       >
@@ -113,7 +117,7 @@ export function BookCard({
         object={object}
         anchorRef={cardRef}
         open={previewOpen}
-        disabled={compact}
+        disabled={!showHoverCard}
         ownerUsername={ownerUsername}
       />
     </div>

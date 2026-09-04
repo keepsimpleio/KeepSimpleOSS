@@ -24,6 +24,7 @@ export function VideoCard({
   onSelectToggle,
   selectDisabled = false,
   compact = false,
+  showHoverCard = !compact,
 }: VideoCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -70,6 +71,9 @@ export function VideoCard({
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setPreviewOpen(true)}
         onMouseLeave={() => setPreviewOpen(false)}
+        // A drag captures the pointer, so no mouseleave arrives to close the
+        // dossier while the card travels; the press closes it instead.
+        onPointerDown={() => setPreviewOpen(false)}
         onFocus={() => setPreviewOpen(true)}
         onBlur={() => setPreviewOpen(false)}
       >
@@ -109,7 +113,7 @@ export function VideoCard({
         object={object}
         anchorRef={cardRef}
         open={previewOpen}
-        disabled={compact}
+        disabled={!showHoverCard}
       />
     </div>
   );

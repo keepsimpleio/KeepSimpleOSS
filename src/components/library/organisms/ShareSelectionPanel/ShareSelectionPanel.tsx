@@ -45,20 +45,37 @@ import styles from './ShareSelectionPanel.module.scss';
 
 const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
 
+// The tiles here are covers with nothing written on them, so the dossier is
+// how anyone — the owner building the link and the person who opens it —
+// reads what an object actually is. Same panel the shelves use.
 function ObjectCard({
   object,
   onClick,
+  ownerUsername,
 }: {
   object: IObject;
   onClick?: (object: IObject) => void;
+  ownerUsername?: string;
 }): JSX.Element {
   switch (object.attributes.type) {
     case 'video':
-      return <VideoCard object={object} onClick={onClick} compact />;
+      return (
+        <VideoCard object={object} onClick={onClick} compact showHoverCard />
+      );
     case 'audio':
-      return <AudioCard object={object} onClick={onClick} compact />;
+      return (
+        <AudioCard object={object} onClick={onClick} compact showHoverCard />
+      );
     default:
-      return <BookCard object={object} onClick={onClick} compact />;
+      return (
+        <BookCard
+          object={object}
+          onClick={onClick}
+          compact
+          showHoverCard
+          ownerUsername={ownerUsername}
+        />
+      );
   }
 }
 
@@ -66,10 +83,12 @@ function SortableItem(props: {
   object: IObject;
   position: number;
   readOnly: boolean;
+  ownerUsername?: string;
   onRemove?: (id: number) => void;
   onObjectClick?: (object: IObject) => void;
 }): JSX.Element {
-  const { object, position, readOnly, onRemove, onObjectClick } = props;
+  const { object, position, readOnly, ownerUsername, onRemove, onObjectClick } =
+    props;
   const {
     attributes,
     listeners,
@@ -120,6 +139,7 @@ function SortableItem(props: {
         <ObjectCard
           object={object}
           onClick={readOnly ? onObjectClick : undefined}
+          ownerUsername={ownerUsername}
         />
       </div>
 
@@ -376,6 +396,7 @@ export function ShareSelectionPanel({
                         object={object}
                         position={index + 1}
                         readOnly={readOnly}
+                        ownerUsername={ownerUsername}
                         onRemove={setPendingRemoveId}
                         onObjectClick={onObjectClick}
                       />
