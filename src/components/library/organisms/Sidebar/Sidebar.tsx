@@ -542,7 +542,6 @@ export function Sidebar() {
                     styles.copyStatus,
                     styles.copyStatusError,
                   )}
-                  role="alert"
                 >
                   {copyError}
                 </Text>
