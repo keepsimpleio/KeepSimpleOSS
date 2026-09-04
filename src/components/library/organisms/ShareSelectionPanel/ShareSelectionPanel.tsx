@@ -241,7 +241,12 @@ export function ShareSelectionPanel({
         <button
           type="button"
           className={styles.heading}
-          onClick={() => setCollapsed(c => !c)}
+          // The bar around it toggles too; without stopping here the click
+          // ran both handlers and the section snapped straight back.
+          onClick={e => {
+            e.stopPropagation();
+            setCollapsed(c => !c);
+          }}
           aria-expanded={!collapsed}
           aria-label={collapsed ? 'Expand selection' : 'Collapse selection'}
         >
