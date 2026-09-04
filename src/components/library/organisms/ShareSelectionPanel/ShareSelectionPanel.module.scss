@@ -43,8 +43,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 24px 32px;
+  gap: 16px;
+  // The bar is a strip over the shelves, so it spends as little of the
+  // library as the buttons inside it need.
+  padding: 10px 20px;
   background: var(--cream);
   border-bottom: 1px solid var(--beige);
   // The bar itself folds the section, so the pointer says so anywhere on it.
@@ -54,7 +56,7 @@
 // Recipient view has no action buttons, so the tall padding leaves the bare
 // title floating; tighten the vertical padding to keep the bar compact.
 .headerReadOnly {
-  padding: 5px 32px;
+  padding: 4px 20px;
 }
 
 .heading {
@@ -106,8 +108,8 @@
 // one another, and pin each label to one 14px line.
 @media (max-width: 768px) {
   .header {
-    gap: 16px;
-    padding: 16px;
+    gap: 12px;
+    padding: 10px 16px;
   }
 
   .actions {
@@ -163,8 +165,8 @@
   max-height: 380px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px 32px;
+  gap: 12px;
+  padding: 14px 20px 18px;
   overflow-y: auto;
 }
 
@@ -184,7 +186,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 32px;
+  gap: 12px 20px;
 }
 
 .item {
@@ -192,7 +194,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .removePill {
