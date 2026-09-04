@@ -822,8 +822,6 @@ export function LibraryTemplate({
       {shelves.length > 0 && (
         <LibraryToolbar
           shelves={displayedShelves}
-          isOwner={viewAsOwner}
-          ownerName={ownerUsername ?? libraryId}
           search={search}
           onSearchChange={setSearch}
           matchedCount={matchedCount}

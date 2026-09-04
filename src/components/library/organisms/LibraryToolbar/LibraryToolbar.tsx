@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
+import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
+
 import { ArrowIcon, PanelIcon } from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
@@ -10,6 +12,7 @@ import {
   ButtonSize,
   ButtonType,
 } from '@components/library/molecules/Button';
+import { Dropdown } from '@components/library/molecules/Dropdown';
 import { Input } from '@components/library/molecules/Input';
 
 import type { LibraryToolbarProps } from './LibraryToolbar.types';
@@ -24,14 +27,13 @@ const truncateLabel = (name: string) =>
 export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
   const {
     shelves,
-    isOwner = true,
-    ownerName,
     matchedCount = null,
     search = '',
     onSearchChange,
     className,
   } = props;
   const { toggleSidebar } = useGlobalState();
+  const switcher = useLibrarySwitcher();
   const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(
     null,
   );
@@ -132,23 +134,19 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
 
   return (
     <div className={classNames(styles.toolbar, className)}>
-      {/* The name of the library, plus the only opener for the About panel on
-          phones: the panel is an off-screen drawer there, and its edge tab
-          floated mid-screen with nothing to tie it to. */}
-      <div
-        className={classNames(styles.identity, {
-          [styles.identityTitled]: !isOwner,
-        })}
-      >
-        {!isOwner && (
-          <Text
-            variant={TypographyVariant.TitleSecondaryBold}
-            className={styles.identityTitle}
-          >
-            {ownerName}
-            <span className={styles.identityKicker}>Library</span>
-          </Text>
-        )}
+      {/* The heading is the library switcher itself: it names whose library
+          this is and opens the list of every other one. Beside it, on phones,
+          the only opener for the About panel — the panel is an off-screen
+          drawer there. */}
+      <div className={styles.identity}>
+        <Dropdown
+          options={switcher.options}
+          value={switcher.value}
+          onChange={switcher.onChange}
+          placeholder="Select library"
+          ariaLabel="Switch library"
+          className={styles.librarySwitcher}
+        />
         <button
           type="button"
           className={styles.aboutButton}

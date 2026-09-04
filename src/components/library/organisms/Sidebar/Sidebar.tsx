@@ -1,7 +1,4 @@
-import {
-  countObjectsByType,
-  mapStrapiLibrariesResponseToCards,
-} from '@utils/library/mapStrapiLibraries';
+import { countObjectsByType } from '@utils/library/mapStrapiLibraries';
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
@@ -15,6 +12,7 @@ import {
 import { ITagAttributes } from '@local-types/library/tag';
 
 import useIsMobile from '@hooks/library/useIsMobile';
+import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
@@ -74,7 +72,6 @@ export function Sidebar() {
     toggleSidebar,
     closeSidebar,
     toggleGuestMode,
-    libraries,
     currentShelves,
     currentOwner,
     currentLibrary,
@@ -99,29 +96,12 @@ export function Sidebar() {
     ? `${baseUrl}/library/${encodeURIComponent(currentLibraryId)}`
     : baseUrl;
 
-  const libraryCards = useMemo(() => {
-    if (!libraries || !Array.isArray(libraries.data)) {
-      return [];
-    }
-
-    return mapStrapiLibrariesResponseToCards(
-      libraries,
-      process.env.NEXT_PUBLIC_STRAPI,
-    );
-  }, [libraries]);
-
   const [isOpenTagModal, setIsOpenTagModal] = useState<
     null | 'create' | 'edit'
   >(null);
   const [selectedTag, setSelectedTag] = useState<ITagAttributes | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isEditLibraryOpen, setIsEditLibraryOpen] = useState(false);
-  const [selectedLibraryId, setSelectedLibraryId] = useState(
-    currentLibraryId ||
-      (libraryCards[0]
-        ? (libraryCards[0].username ?? String(libraryCards[0].id))
-        : ''),
-  );
 
   // Object totals always come from the live shelves of the library on screen
   // (`currentShelves`, published by LibraryTemplate) — never from the viewer's
@@ -196,31 +176,8 @@ export function Sidebar() {
     ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
     : libraryTags;
 
-  const dropdownOptions = libraryCards.map(lib => ({
-    // Navigate by the URL slug (username) — the route is /library/[username].
-    // Fall back to the numeric id only when a library has no linked username.
-    value: lib.username ?? String(lib.id),
-    label: lib.libraryName,
-  }));
-
-  // The address may spell the username in another case, or carry the numeric
-  // id instead: resolve it to the option it means, so the trigger shows the
-  // library you are standing in rather than "Select library".
-  const dropdownValue = useMemo(() => {
-    const wanted = selectedLibraryId.toLowerCase();
-    const match = libraryCards.find(
-      lib =>
-        (lib.username ?? '').toLowerCase() === wanted ||
-        String(lib.id) === wanted,
-    );
-    return match ? (match.username ?? String(match.id)) : selectedLibraryId;
-  }, [libraryCards, selectedLibraryId]);
-
-  const handleLibraryChange = (libraryId: string) => {
-    setSelectedLibraryId(libraryId);
-    closeSidebar();
-    router.push(`/library/${encodeURIComponent(libraryId)}`);
-  };
+  // Same switcher as the page heading; picking a library closes the drawer.
+  const switcher = useLibrarySwitcher(closeSidebar);
 
   const [copyError, setCopyError] = useState<string | null>(null);
   const handleCopyUrl = async () => {
@@ -324,22 +281,6 @@ export function Sidebar() {
   };
 
   useEffect(() => {
-    if (currentLibraryId) {
-      setSelectedLibraryId(currentLibraryId);
-    }
-  }, [currentLibraryId]);
-
-  useEffect(() => {
-    if (selectedLibraryId || libraryCards.length === 0) {
-      return;
-    }
-
-    setSelectedLibraryId(
-      libraryCards[0].username ?? String(libraryCards[0].id),
-    );
-  }, [libraryCards, selectedLibraryId]);
-
-  useEffect(() => {
     if (isCopied) {
       const timer = setTimeout(() => {
         setIsCopied(false);
@@ -406,9 +347,9 @@ export function Sidebar() {
 
         <div className={styles.dropdownWrapper}>
           <Dropdown
-            options={dropdownOptions}
-            value={dropdownValue}
-            onChange={handleLibraryChange}
+            options={switcher.options}
+            value={switcher.value}
+            onChange={switcher.onChange}
             placeholder="Select library"
             ariaLabel="Select library"
             className={styles.dropdown}

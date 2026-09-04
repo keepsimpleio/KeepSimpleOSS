@@ -37,43 +37,57 @@
   }
 }
 
-// Library name (visitors) and the About opener (phones), on one line above
-// the same shelf navigation the owner gets.
+// The library switcher is the page heading, with the About opener beside it
+// on phones. Sized for a title, not a form field.
 .identity {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   min-width: 0;
+  padding: 16px 0 4px;
   animation: toolbar-fade 0.3s ease;
-
-  // Padding belongs to the title: for the owner on desktop the row holds
-  // nothing (the opener is phones-only) and must take no vertical space.
-  &.identityTitled {
-    padding: 20px 10px 4px;
-  }
-
-  @media (max-width: 1024px) {
-    padding: 12px 10px 4px;
-  }
 }
 
-.identityTitle {
-  color: var(--brown-200);
+.librarySwitcher {
+  flex: 1;
   min-width: 0;
-  overflow-wrap: anywhere;
-}
+  max-width: 440px;
 
-// "Library" trails the name in the panel's catalogue voice, so the name
-// itself stays the loudest thing on the line.
-.identityKicker {
-  margin-left: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--brown-100);
-  white-space: nowrap;
+  // The shared Dropdown is a 44px form field; here it carries the page title,
+  // so it gets a taller trigger, title-size text and the sheet's softer edge.
+  > button {
+    height: 52px;
+    padding-left: 16px;
+    border-radius: var(--radius-control);
+    background: var(--white);
+    color: var(--brown-200);
+
+    p {
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--brown-200);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    > div {
+      border-left: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    max-width: none;
+
+    > button {
+      height: 48px;
+
+      p {
+        font-size: 20px;
+      }
+    }
+  }
 }
 
 // Phones only: the About panel is a drawer there, and this is what pulls it
