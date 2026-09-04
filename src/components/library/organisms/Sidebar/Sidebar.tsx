@@ -2,7 +2,7 @@ import { countObjectsByType } from '@utils/library/mapStrapiLibraries';
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   KEEPSIMPLE_URL,
@@ -21,6 +21,7 @@ import { updateTag, UpdateTagRequest } from '@api/library/tag/updateTag';
 
 import avatarImage from '@icons/library/images/avatar.png';
 import {
+  ChevronUpIcon,
   CloseIcon,
   CopyIcon,
   EditIcon,
@@ -66,8 +67,10 @@ export function Sidebar() {
   const { tags, setTags } = useDashboard();
   const {
     isSidebarOpen,
+    isSidebarCollapsed,
     isGuestMode,
     toggleSidebar,
+    toggleSidebarCollapsed,
     toggleGuestMode,
     currentShelves,
     currentOwner,
@@ -127,6 +130,22 @@ export function Sidebar() {
   // The drawer is an overlay on phones and tablets: while it is open the page
   // under it must not move under a swipe, same as every modal.
   useLockBodyScroll(isSidebarOpen);
+
+  // Folding hides the control that was just pressed, so hand focus to its
+  // counterpart (row → spine, spine → row). Only after a press: the state also
+  // arrives from the cookie on load, and that must not steal focus.
+  const collapseButtonRef = useRef<HTMLButtonElement>(null);
+  const spineRef = useRef<HTMLButtonElement>(null);
+  const didPressCollapse = useRef(false);
+  const handleToggleCollapsed = () => {
+    didPressCollapse.current = true;
+    toggleSidebarCollapsed();
+  };
+  useEffect(() => {
+    if (!didPressCollapse.current) return;
+    didPressCollapse.current = false;
+    (isSidebarCollapsed ? spineRef : collapseButtonRef).current?.focus();
+  }, [isSidebarCollapsed]);
 
   // An owner can edit their About panel before any library row exists — the
   // row is created lazily on first save. So the editable affordance is gated on
@@ -324,9 +343,15 @@ export function Sidebar() {
           aria-hidden="true"
         />
       )}
+      {/* Desktop: the column folds to a 40px spine on the collapse row below
+          and unfolds from the spine; the choice is per account and survives a
+          refresh (GlobalState). The drawer states above are phone/tablet only,
+          and the CSS scopes each to its own breakpoint. */}
       <aside
+        id="library-info-panel"
         className={classNames(styles.sidebar, {
           [styles.open]: isSidebarOpen,
+          [styles.collapsed]: isSidebarCollapsed,
         })}
       >
         <div className={styles.close}>
@@ -574,6 +599,36 @@ export function Sidebar() {
             />
           </div>
         )}
+
+        <div className={styles.collapseRow}>
+          <button
+            type="button"
+            ref={collapseButtonRef}
+            className={styles.collapseButton}
+            onClick={handleToggleCollapsed}
+            aria-expanded={!isSidebarCollapsed}
+            aria-controls="library-info-panel"
+          >
+            <ChevronUpIcon aria-hidden="true" />
+            <span className={styles.collapseLabel}>Hide panel</span>
+          </button>
+        </div>
+
+        {/* The spine left standing once the panel folds: the whole strip is
+            the button that brings the panel back. */}
+        <button
+          type="button"
+          ref={spineRef}
+          className={styles.spine}
+          onClick={handleToggleCollapsed}
+          aria-label="Show library panel"
+          aria-expanded={!isSidebarCollapsed}
+          aria-controls="library-info-panel"
+          tabIndex={isSidebarCollapsed ? 0 : -1}
+        >
+          <ChevronUpIcon aria-hidden="true" />
+          <span className={styles.spineLabel}>About this library</span>
+        </button>
       </aside>
       {isOpenTagModal && (
         <CreateTagModal

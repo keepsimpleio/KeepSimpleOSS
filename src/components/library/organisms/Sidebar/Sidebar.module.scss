@@ -61,6 +61,69 @@
     transform: translateX(0);
   }
 
+  // Desktop: the column folds to a 40px spine. Only the width and padding
+  // move; the sheet's content is held at its full width and fades, so nothing
+  // rewraps while the column narrows and the shelves widen into the room.
+  @media (min-width: 1025px) {
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      max-width 0.3s ease,
+      padding 0.3s ease;
+
+    .main,
+    .footer,
+    .collapseRow {
+      // 331px column minus the 16px padding either side.
+      width: 299px;
+      flex-shrink: 0;
+      transition:
+        opacity 0.15s ease 0.15s,
+        visibility 0s linear 0s;
+    }
+
+    &.collapsed {
+      max-width: 40px;
+      padding: 0;
+
+      .main,
+      .footer,
+      .collapseRow {
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.15s ease,
+          visibility 0s linear 0.15s;
+      }
+
+      .spine {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition:
+          opacity 0.15s ease 0.15s,
+          visibility 0s linear 0s,
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+
+      .main,
+      .footer,
+      .collapseRow,
+      .spine,
+      &.collapsed .main,
+      &.collapsed .footer,
+      &.collapsed .collapseRow,
+      &.collapsed .spine {
+        transition: none;
+      }
+    }
+  }
+
   .close {
     justify-content: flex-end;
     display: none;
@@ -326,6 +389,11 @@
     padding: 8px 12px;
     border-radius: var(--radius-control);
     border: 1px solid transparent;
+
+    // On desktop the collapse row below carries the bottom margin.
+    @media (min-width: 1025px) {
+      margin-bottom: 0;
+    }
     transition:
       border-color 0.2s ease,
       background 0.2s ease;
@@ -357,6 +425,121 @@
     .label {
       font-weight: 600;
     }
+  }
+
+  // The affordance at the foot of the panel: one full-width row in the same
+  // language as the toolbar's About opener, arrow pointing the way the panel
+  // will go. Desktop only; the drawer has its own close.
+  .collapseRow {
+    display: none;
+    flex-shrink: 0;
+    margin-bottom: 16px;
+
+    @media (min-width: 1025px) {
+      display: block;
+    }
+  }
+
+  .collapseButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--brown-border);
+    border-radius: var(--radius-control);
+    background: var(--white);
+    color: var(--brown-100);
+    font-family: inherit;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      transform: rotate(90deg);
+    }
+
+    &:hover {
+      background: var(--off-white);
+      color: var(--brown);
+      border-color: var(--brown);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .collapseLabel {
+    @include caps-label;
+    line-height: 1;
+  }
+
+  // The spine the folded panel leaves behind: the whole 40px strip is the
+  // button that unfolds it, arrow pointing back into the page. Laid over the
+  // column so the fold and unfold need no reflow; hidden and inert while the
+  // panel is open, and absent below the desktop breakpoint.
+  .spine {
+    display: none;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 0;
+    border: none;
+    background: transparent;
+    color: var(--brown-100);
+    font-family: inherit;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.15s ease,
+      visibility 0s linear 0.15s,
+      background 0.2s ease,
+      color 0.2s ease;
+
+    @media (min-width: 1025px) {
+      display: flex;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      transform: rotate(-90deg);
+    }
+
+    &:hover {
+      background: var(--off-white);
+      color: var(--brown);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: -2px;
+    }
+  }
+
+  .spineLabel {
+    @include caps-label;
+    line-height: 1;
+    writing-mode: vertical-rl;
+    white-space: nowrap;
   }
 }
 

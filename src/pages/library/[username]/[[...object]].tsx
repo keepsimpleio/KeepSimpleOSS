@@ -3,6 +3,8 @@ import type { GetServerSideProps, NextPage } from 'next';
 import { isLibraryEnabled } from '@constants/library/common';
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
+import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
+
 import { AuthProvider } from '@components/Context/library/AuthContext';
 import { DashboardProvider } from '@components/Context/library/DashboardContext';
 import { GlobalStateProvider } from '@components/Context/library/GlobalStateContext';
@@ -16,6 +18,8 @@ import styles from '../library.module.scss';
 
 type LibraryPageProps = {
   username: string;
+  /** Desktop info panel folded to its spine — read from the viewer's cookie. */
+  initialSidebarCollapsed: boolean;
 };
 
 // Optional catch-all so the library and a single object share one page module:
@@ -26,12 +30,15 @@ type LibraryPageProps = {
 // flash. The slug is read off the router inside the shelf, so this page only
 // needs the username. `share/[token]` is a literal sibling and still wins for
 // `/library/[username]/share/...`.
-const LibraryPage: NextPage<LibraryPageProps> = ({ username }) => {
+const LibraryPage: NextPage<LibraryPageProps> = ({
+  username,
+  initialSidebarCollapsed,
+}) => {
   const pageTitle = `${username} | ${DEFAULT_SEO.siteName}`;
 
   return (
     <AuthProvider>
-      <GlobalStateProvider>
+      <GlobalStateProvider initialSidebarCollapsed={initialSidebarCollapsed}>
         <DashboardProvider>
           <ShareSelectionProvider>
             <SeoGenerator
@@ -75,8 +82,11 @@ export const getServerSideProps: GetServerSideProps<
   }
 
   const username = String(context.params?.username ?? '');
+  const initialSidebarCollapsed = readSidebarCollapsedForRequest(
+    context.req.headers.cookie,
+  );
 
   return {
-    props: { username },
+    props: { username, initialSidebarCollapsed },
   };
 };

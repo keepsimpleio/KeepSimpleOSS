@@ -10,6 +10,8 @@ import type {
   ShareLinkStatus,
 } from '@local-types/library/shareLink';
 
+import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
+
 import { getShareLink } from '@api/library/getShareLink';
 
 import { ShareIcon } from '@icons/library/svg';
@@ -42,6 +44,8 @@ import styles from './share.module.scss';
 type SharePageProps = {
   username: string;
   token: string;
+  /** Desktop info panel folded to its spine — read from the viewer's cookie. */
+  initialSidebarCollapsed?: boolean;
 };
 
 // Copy for the non-ok outcomes. `error` is the retryable transport/parse case;
@@ -249,12 +253,16 @@ function ShareRecipientView({ username, token }: SharePageProps): JSX.Element {
   );
 }
 
-const SharePage: NextPage<SharePageProps> = ({ username, token }) => {
+const SharePage: NextPage<SharePageProps> = ({
+  username,
+  token,
+  initialSidebarCollapsed,
+}) => {
   const pageTitle = `${username} | ${DEFAULT_SEO.siteName}`;
 
   return (
     <AuthProvider>
-      <GlobalStateProvider>
+      <GlobalStateProvider initialSidebarCollapsed={initialSidebarCollapsed}>
         <DashboardProvider>
           <ShareSelectionProvider>
             <SeoGenerator
@@ -305,7 +313,11 @@ export const getServerSideProps: GetServerSideProps<
     return { notFound: true };
   }
 
+  const initialSidebarCollapsed = readSidebarCollapsedForRequest(
+    context.req.headers.cookie,
+  );
+
   return {
-    props: { username, token },
+    props: { username, token, initialSidebarCollapsed },
   };
 };

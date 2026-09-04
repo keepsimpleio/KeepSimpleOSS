@@ -21,6 +21,10 @@ import type { IUser } from '@local-types/library/user';
 
 import { getAccessToken } from '@lib/library/cookie';
 import { claimDevSession } from '@lib/library/devSession';
+import {
+  readSidebarCollapsed,
+  writeSidebarCollapsed,
+} from '@lib/library/sidebarPanel';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
 import { getUserInfo } from '@api/library/user/getUserInfo';
@@ -36,6 +40,13 @@ interface GlobalStateContextValue {
   toggleSidebar: () => void;
   /** Close the mobile drawer (a toggle would reopen it from a closed state). */
   closeSidebar: () => void;
+  /**
+   * Desktop only: the info panel folded to its spine so the shelves take the
+   * width. Remembered per account across every library and across refreshes
+   * (see `@lib/library/sidebarPanel`); the mobile drawer ignores it.
+   */
+  isSidebarCollapsed: boolean;
+  toggleSidebarCollapsed: () => void;
   /**
    * Whether the viewer owns the library on screen. Decided once, by
    * `LibraryTemplate`, and published here so the Sidebar and the shelves can
@@ -83,12 +94,28 @@ const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(
   undefined,
 );
 
-export function GlobalStateProvider({ children }: { children: ReactNode }) {
+interface GlobalStateProviderProps {
+  children: ReactNode;
+  /**
+   * The collapsed choice as read from the request cookie by the page's
+   * `getServerSideProps`, so the server paints the panel at its final width
+   * and a refresh never shows it open for a frame before folding.
+   */
+  initialSidebarCollapsed?: boolean;
+}
+
+export function GlobalStateProvider({
+  children,
+  initialSidebarCollapsed = false,
+}: GlobalStateProviderProps) {
   const { data: session } = useSession();
   const { accountData, setAccountData, token } = useAuth();
 
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
+    initialSidebarCollapsed,
+  );
   const [isUserLoading, setIsUserLoading] = useState(false);
   const [libraries, setLibraries] = useState<StrapiLibrariesResponse | null>(
     null,
@@ -149,6 +176,22 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     void refetchUser();
   }, [accountData, session, refetchUser]);
 
+  // The server read the cookie for whichever account the request carried.
+  // Once the account is actually known here (it can arrive later: a token in
+  // localStorage only, or the DEV shared session claimed after load), re-read
+  // that account's own choice so it wins over the anonymous default.
+  const accountId = accountData?.id;
+  useEffect(() => {
+    if (!accountId) return;
+    setIsSidebarCollapsed(readSidebarCollapsed(accountId));
+  }, [accountId]);
+
+  const toggleSidebarCollapsed = useCallback(() => {
+    const next = !isSidebarCollapsed;
+    writeSidebarCollapsed(accountId, next);
+    setIsSidebarCollapsed(next);
+  }, [accountId, isSidebarCollapsed]);
+
   useEffect(() => {
     // `/api/libraries` is publicly readable, so the right-panel library
     // dropdown should populate for everyone — including logged-out/incognito
@@ -165,6 +208,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       setGuestMode: setIsGuestMode,
       toggleSidebar: () => setIsSidebarOpen(prev => !prev),
       closeSidebar: () => setIsSidebarOpen(false),
+      isSidebarCollapsed,
+      toggleSidebarCollapsed,
       isOwner,
       setIsOwner,
       user: accountData,
@@ -186,6 +231,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       isOwner,
       isGuestMode,
       isSidebarOpen,
+      isSidebarCollapsed,
+      toggleSidebarCollapsed,
       accountData,
       isUserLoading,
       refetchUser,
