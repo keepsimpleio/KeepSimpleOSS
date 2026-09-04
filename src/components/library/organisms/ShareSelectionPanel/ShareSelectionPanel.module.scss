@@ -12,6 +12,16 @@
   background: var(--white-warm);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
 
+  // The bar is as tall as the bar. The library's base sheet gives every
+  // `section` inside `.library` `height: 100%`, and on a fixed element that
+  // resolves against the viewport: the bar became a full-height sheet laid
+  // over the shelves, so the owner opened their own library and found an
+  // empty room. The doubled class outweighs `.library section` without
+  // touching that base rule, which the rest of the page relies on.
+  &.panel {
+    height: auto;
+  }
+
   @media (max-width: 1024px) {
     right: 0;
   }
