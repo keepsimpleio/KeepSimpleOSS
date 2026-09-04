@@ -42,6 +42,8 @@ import type {
   ShelfVisibility,
 } from '@local-types/library/shelf';
 
+import useIsMobile from '@hooks/library/useIsMobile';
+
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 
 import { createLibrary } from '@api/library/createLibrary';
@@ -204,6 +206,14 @@ export function LibraryTemplate({
   // still keys off the real `isOwner`; everything user-facing — edit/add UI and
   // private-shelf visibility — keys off this so the preview is faithful.
   const viewAsOwner = isOwner && !isGuestMode;
+
+  // A phone is a reading surface. Every control that changes the library —
+  // add shelf, add object, rename, reorder, settings, edit, delete — stays on
+  // desktop; here the owner sees their library exactly as they left it, private
+  // shelves included (`viewAsOwner` still governs those). False on the server
+  // and on first paint, so the markup hydrates identically everywhere.
+  const isMobile = useIsMobile(768);
+  const canEditHere = viewAsOwner && !isMobile;
 
   // Creating a library is gated by the `can-create-library` feature flag from
   // GET /api/users/me. The gate only matters before a library exists — once one
@@ -627,7 +637,7 @@ export function LibraryTemplate({
   // result is a subset, so a position inside it says nothing about where the
   // shelf belongs in the library.
   const canReorderShelves =
-    viewAsOwner && !normalizedSearch && displayedShelves.length > 1;
+    canEditHere && !normalizedSearch && displayedShelves.length > 1;
   // One save at a time: a second drag while the first is still persisting
   // would capture a baseline that already holds the optimistic move, and a
   // late failure would then "restore" a mixed order.
@@ -781,9 +791,9 @@ export function LibraryTemplate({
       // The URL slug is sometimes a numeric library id, so name the owner from
       // the loaded library first — the rating headings read it as a person.
       ownerUsername={ownerUsername ?? libraryId}
-      isOwner={viewAsOwner}
+      isOwner={canEditHere}
       visibleObjectIds={matchedIdsByShelf?.get(shelf.id) ?? null}
-      reorderLocked={viewAsOwner && !canReorderShelves && shelves.length > 1}
+      reorderLocked={canEditHere && !canReorderShelves && shelves.length > 1}
       onObjectCreated={handleObjectCreated}
       onObjectUpdated={handleObjectUpdated}
       onObjectDeleted={handleObjectDeleted}
@@ -798,7 +808,10 @@ export function LibraryTemplate({
   );
 
   const atShelfLimit = shelves.length >= MAX_SHELVES_PER_LIBRARY;
-  const showSharePanel = viewAsOwner && !hideSharePanel;
+  // Selecting objects to share is an owner control on the cards, and those
+  // go with the rest of the editing UI on a phone — a bar with nothing to
+  // select into would be dead weight at the bottom of the screen.
+  const showSharePanel = canEditHere && !hideSharePanel;
 
   return (
     <div
@@ -820,7 +833,7 @@ export function LibraryTemplate({
           jumps when one appears. Owner-only: every message here follows an
           owner action (a reorder, an object move), so for a visitor the held
           row was a band of empty page above the first shelf. */}
-      {viewAsOwner && (
+      {canEditHere && (
         <div className={styles.noticeRow} role="status" aria-live="polite">
           {(shelfOrderError || objectNotice) && (
             <div className={styles.notice}>
@@ -883,7 +896,7 @@ export function LibraryTemplate({
               : 'This library is empty'}
           </Text>
 
-          {viewAsOwner && (
+          {canEditHere && (
             <Button
               label="Add shelf"
               onClick={modalToggler}
@@ -943,7 +956,7 @@ export function LibraryTemplate({
  from where it will appear: directly under the
           last board. The toolbar at the top of the page no longer carries this
           control. */}
-      {viewAsOwner && !isLoading && displayedShelves.length > 0 && (
+      {canEditHere && !isLoading && displayedShelves.length > 0 && (
         <div className={styles.addShelfRow}>
           <Tooltip
             place="top"

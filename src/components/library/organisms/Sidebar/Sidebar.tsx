@@ -14,6 +14,8 @@ import {
 
 import { ITagAttributes } from '@local-types/library/tag';
 
+import useIsMobile from '@hooks/library/useIsMobile';
+
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
 import { getTagsList } from '@api/library/tag/getTagsList';
@@ -139,7 +141,10 @@ export function Sidebar() {
   // and publishes it, so this panel and the shelves can never disagree about
   // who is looking (they used to, on a numeric `/library/123` address).
   const isMyLibrary = isOwner;
-  const canEdit = isMyLibrary && !isGuestMode;
+  // Phones are read-only: no Edit library, no tag editing (the same rule the
+  // shelves follow through LibraryTemplate's canEditHere).
+  const isMobile = useIsMobile(768);
+  const canEdit = isMyLibrary && !isGuestMode && !isMobile;
 
   // An owner can edit their About panel before any library row exists — the
   // row is created lazily on first save. So the editable affordance is gated on
