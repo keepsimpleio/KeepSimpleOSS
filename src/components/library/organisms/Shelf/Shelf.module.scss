@@ -346,8 +346,11 @@
       // puts the cards' feet the same fraction down the board as the desktop
       // 100px does on the taller desktop plank. The headroom above them comes
       // down too — 28px still clears the owner's select pill.
+      // The floor is one real card (208px) plus the two paddings, so an empty
+      // shelf stands as tall as a full one and its ghost props — the tallest
+      // is 208px too — are not cut off by the shelf overflow.
       @media (max-width: 768px) {
-        min-height: auto;
+        min-height: 261px;
         padding-top: 28px;
         padding-bottom: 25px;
       }
