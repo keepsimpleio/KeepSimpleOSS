@@ -2,8 +2,6 @@ import cn from 'classnames';
 import { useRouter } from 'next/router';
 import React, { FC, useContext } from 'react';
 
-import { isLibraryEnabled } from '@constants/library/common';
-
 import type { TRouter } from '@local-types/global';
 
 import useGlobals from '@hooks/useGlobals';
@@ -112,45 +110,43 @@ const Navbar: FC<NavbarProps> = ({ handleToggleSidebar, handleClick }) => {
           [styles.authorized]: !!accountData,
         })}
       >
-        {routes
-          .filter(route => route.id !== 'library' || isLibraryEnabled())
-          .map(
-            ({ name, path, target, logo, id, activeMatch, exact }, index) => {
-              const match = activeMatch ?? path;
-              const currentPath = normalizePath(router.asPath);
-              const matchPath = normalizePath(match);
+        {routes.map(
+          ({ name, path, target, logo, id, activeMatch, exact }, index) => {
+            const match = activeMatch ?? path;
+            const currentPath = normalizePath(router.asPath);
+            const matchPath = normalizePath(match);
 
-              const isActive =
-                matchPath === '/'
-                  ? currentPath === '/'
-                  : exact
-                    ? currentPath === matchPath
-                    : currentPath.startsWith(matchPath);
+            const isActive =
+              matchPath === '/'
+                ? currentPath === '/'
+                : exact
+                  ? currentPath === matchPath
+                  : currentPath.startsWith(matchPath);
 
-              return (
-                <a
-                  key={index}
-                  href={path}
-                  target={target}
-                  onClick={e => {
-                    if (target === '_blank') return;
-                    e.preventDefault();
-                    if (isSmallScreen) handleToggleSidebar();
-                    handleClick(e, path);
-                  }}
-                  className={cn(styles.url, {
-                    [styles.active]: isActive,
-                    [styles.uxcoreIcon]: id === 'uxcore',
-                    [styles.companyManagementIcon]: id === 'companyManagement',
-                    [styles.articlesIcon]: id === 'articles',
-                    [styles.ruUrl]: locale === 'ru',
-                  })}
-                >
-                  {logo} {name}
-                </a>
-              );
-            },
-          )}
+            return (
+              <a
+                key={index}
+                href={path}
+                target={target}
+                onClick={e => {
+                  if (target === '_blank') return;
+                  e.preventDefault();
+                  if (isSmallScreen) handleToggleSidebar();
+                  handleClick(e, path);
+                }}
+                className={cn(styles.url, {
+                  [styles.active]: isActive,
+                  [styles.uxcoreIcon]: id === 'uxcore',
+                  [styles.companyManagementIcon]: id === 'companyManagement',
+                  [styles.articlesIcon]: id === 'articles',
+                  [styles.ruUrl]: locale === 'ru',
+                })}
+              >
+                {logo} {name}
+              </a>
+            );
+          },
+        )}
 
         <a
           href={'/contributors'}

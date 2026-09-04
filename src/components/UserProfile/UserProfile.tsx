@@ -4,8 +4,6 @@ import { NextRouter, useRouter } from 'next/router';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
-import { isLibraryEnabled } from '@constants/library/common';
-
 import { logout } from '@api/auth';
 
 import PlusIcon from '@icons/library/svg/plus.svg';
@@ -180,7 +178,7 @@ const UserProfile: FC<UserProfileProps> = ({
         )}
         {isDropdownOpen && isAccessTokenExist && (
           <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
-            {isLibraryEnabled() && username && (
+            {username && (
               <div
                 className={cn(styles.menuItem, {
                   [styles.disabled]: myLibraryDisabled,
@@ -200,7 +198,7 @@ const UserProfile: FC<UserProfileProps> = ({
             )}
             {/* One library per user: once they own one, "My Library" above is
                 the only honest entry and this item would just repeat it. */}
-            {isLibraryEnabled() && !hasLibrary && (
+            {!hasLibrary && (
               <div
                 className={cn(styles.menuItem, {
                   [styles.disabled]: !canCreateLibrary,

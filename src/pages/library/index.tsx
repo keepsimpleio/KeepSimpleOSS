@@ -1,6 +1,5 @@
 import type { GetServerSideProps, NextPage } from 'next';
 
-import { isLibraryEnabled } from '@constants/library/common';
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
 import { AuthProvider } from '@components/Context/library/AuthContext';
@@ -38,9 +37,5 @@ const LibraryHomePage: NextPage = () => {
 export default LibraryHomePage;
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  if (!isLibraryEnabled()) {
-    return { notFound: true };
-  }
-
   return { props: {} };
 };
