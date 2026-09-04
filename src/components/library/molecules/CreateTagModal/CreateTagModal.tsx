@@ -197,14 +197,16 @@ export function CreateTagModal(props: CreateTagModalProps) {
             <div className={styles.wrapper}>
               {isSelectTag ? (
                 <div className={styles.noTagFound}>
+                  {/* No heading over the row: the modal's own title says what
+                      this is, and a row of tags asks to be tapped without
+                      being told to. Screen readers get the label on the
+                      group instead. */}
                   {tags.length > 0 && (
-                    <div className={styles.tagsList}>
-                      <Text
-                        variant={TypographyVariant.TextSmall}
-                        className={styles.label}
-                      >
-                        Select tag :
-                      </Text>
+                    <div
+                      className={styles.tagsList}
+                      role="group"
+                      aria-label="Select a tag to edit"
+                    >
                       <div className={styles.tags}>
                         {tags.map(({ attributes, id }) => (
                           <Tag
