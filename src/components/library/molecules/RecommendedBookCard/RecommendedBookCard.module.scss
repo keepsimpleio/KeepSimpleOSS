@@ -37,80 +37,6 @@
   }
 }
 
-// The two answers to a pick, floated in the headroom above the front face
-// (146px, flush right) the way the share toggle floats above a shelved book.
-// The 6px padding-bottom is the hover bridge from the art up to the chips.
-.actions {
-  position: absolute;
-  bottom: 100%;
-  right: 0;
-  width: 146px;
-  display: flex;
-  gap: 6px;
-  padding-bottom: 6px;
-  z-index: 2;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .actions {
-    pointer-events: auto;
-  }
-
-  .actions:hover {
-    opacity: 1;
-  }
-}
-
-.card:hover .actions,
-.card:has(:focus-visible) .actions {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-// Paper with brown lettering at rest; the fill is what the pointer earns.
-// One vocabulary with the share toggle so the owner reads one kind of chip.
-.chip {
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 4px 0;
-  border: 1px solid var(--brown-border);
-  border-radius: var(--radius-control);
-  background: var(--white-200);
-  color: var(--brown);
-  font-family: var(--font-source-sans);
-  font-size: 14px;
-  line-height: 19px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
-
-  &:hover,
-  &:focus-visible {
-    background: var(--brown);
-    border-color: var(--brown);
-    color: var(--white);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--focus-ring);
-    outline-offset: 1px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-}
-
 // The book body: the same 3D mockup every shelved book stands in.
 .placeholder {
   position: absolute;
@@ -131,6 +57,7 @@
   height: 206px;
   overflow: hidden;
   z-index: 1;
+  border-left: 1px solid var(--brown-border);
 }
 
 .coverImage {
@@ -140,26 +67,52 @@
   object-fit: cover;
 }
 
-// A cover of the library's own paper when the source sent none: the title
-// set large, the author small at the foot, a hairline between.
+// A cover of paper when the source sent none: the title set in the serif,
+// the author under a "by", each pick on its own tint of the shelf's lilac.
 .front {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 6px;
   width: 100%;
   height: 100%;
-  padding: 22px 14px 18px;
+  padding: 22px 14px 40px;
   background: var(--gradient-cover-placeholder);
-  border-left: 1px solid var(--brown-border);
+}
+
+.tint0 .front {
+  background: linear-gradient(160deg, var(--purple-400) 0%, var(--cream) 100%);
+}
+.tint1 .front {
+  background: linear-gradient(
+    160deg,
+    var(--white-100) 0%,
+    var(--purple-400) 100%
+  );
+}
+.tint2 .front {
+  background: linear-gradient(160deg, var(--cream) 0%, var(--beige) 100%);
+}
+.tint3 .front {
+  background: linear-gradient(160deg, var(--green-400) 0%, var(--cream) 100%);
+}
+.tint4 .front {
+  background: linear-gradient(
+    160deg,
+    var(--white-200) 0%,
+    var(--blue-500) 100%
+  );
+}
+.tint5 .front {
+  background: linear-gradient(160deg, var(--cream) 0%, var(--purple-400) 100%);
 }
 
 .frontTitle {
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-family: var(--font-source-sans);
+  font-family: var(--font-source-serif);
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
@@ -168,16 +121,157 @@
 
 .frontAuthor {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  padding-top: 8px;
-  border-top: 1px solid var(--brown-border);
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--gray-darkest);
+}
+
+.by {
+  display: block;
+}
+
+// The engine's score, at the foot of the cover on a slip of paper.
+.match {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  padding: 3px 8px;
+  background: var(--white-200);
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
+  font-family: var(--font-source-serif);
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--gray-darkest);
+  pointer-events: none;
+}
+
+// The pick's standing on the shelf, at the head of the cover: lilac when
+// locked, ink when banned. Invisible, not absent, when the pick is open.
+.status {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-control);
   font-family: var(--font-source-sans);
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--brown-100);
+  white-space: nowrap;
+  color: var(--white);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.statusLocked {
+  opacity: 1;
+  background: var(--purple-200);
+}
+
+.statusBanned {
+  opacity: 1;
+  background: var(--black-rich);
+}
+
+// Banned reads as struck through: the art goes to ink and dims.
+.banned .front,
+.banned .coverImage {
+  filter: grayscale(1) brightness(0.6);
+  transition: filter 0.3s ease;
+}
+
+.banned .match {
+  opacity: 0.6;
+}
+
+// The two verdicts, stacked mid-cover, revealed under the pointer. Paper with
+// ink lettering; the pointer earns the lilac.
+.actions {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.card:hover .actions,
+.card:has(:focus-visible) .actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 84px;
+  padding: 5px 10px;
+  border: 1px solid var(--purple-400);
+  border-radius: var(--radius-control);
+  background: var(--white-200);
+  color: var(--black-rich);
+  font-family: var(--font-source-sans);
+  font-size: 14px;
+  line-height: 19px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--tooltip-shadow);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--purple-200);
+    border-color: var(--purple-200);
+    color: var(--white);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }

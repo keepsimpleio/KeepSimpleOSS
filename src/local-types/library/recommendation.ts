@@ -12,6 +12,8 @@ export interface IRecommendedBook {
   year?: number;
   /** One line on why this book is on the owner's shelf. */
   reason?: string;
+  /** How well the pick fits the owner, 0..100, as the engine scored it. */
+  match?: number;
   /** Where the pick was gathered from, if it was. */
   source?: {
     name: string;

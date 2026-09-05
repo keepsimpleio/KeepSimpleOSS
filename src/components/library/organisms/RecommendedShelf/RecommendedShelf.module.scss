@@ -1,7 +1,7 @@
-// The owner's recommended shelf: the same board every shelf in the library
-// stands on, with the same header rhythm, so it reads as one of them and not
-// as a banner above them. Desktop only: the owner's editing surface never
-// reaches a phone, and this shelf goes with it.
+// The owner's AI shelf: the same header rhythm every shelf in the library
+// has, on a board of its own colour. Lilac is this shelf's mark, and only
+// this shelf's; the tokens are the palette's own purples. Desktop only: the
+// owner's editing surface never reaches a phone, and this shelf goes with it.
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -25,6 +25,45 @@
       min-width: 0;
     }
 
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    // The gear: a mock of the shelf's settings, carrying who sees the shelf.
+    .settings {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid var(--purple-400);
+      border-radius: var(--radius-control);
+      background: var(--white-200);
+      color: var(--purple-200);
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      &:hover,
+      &:focus-visible {
+        background: var(--purple-400);
+        color: var(--black-rich);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
     .icon {
       display: flex;
       align-items: center;
@@ -33,41 +72,91 @@
       padding: 9px 14px;
       border-radius: var(--radius-icon-chip);
       background: var(--off-white);
-      color: var(--brown);
+      color: var(--gray-darkest);
 
       svg {
         display: block;
         width: 20px;
-        height: 20px;
+        height: 17px;
       }
-    }
-
-    .count {
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-start;
-      flex-shrink: 0;
-      min-width: 32px;
-      margin-right: -4px;
-      font-size: 14px;
-      line-height: 1;
-      color: var(--gray-darkest);
-      font-variant-numeric: tabular-nums;
     }
 
     .nameWrap {
       display: inline-flex;
       align-items: center;
       white-space: nowrap;
+      margin-left: 4px;
     }
 
-    // Who sees the shelf, said once beside its name in the quieter ink.
-    .hint {
-      margin-left: 10px;
-      padding-left: 12px;
-      border-left: 1px solid var(--brown-border);
-      color: var(--gray-darker);
-      white-space: nowrap;
+    // The name in the serif, spaced and set in capitals: this shelf is named
+    // by the library, not by the owner, and reads as a heading.
+    .name {
+      font-family: var(--font-source-serif);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 22px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-darkest);
+    }
+  }
+
+  // The two header controls and the modal's own: lilac fill for the action
+  // that changes the shelf, lilac outline for the one that only opens a list.
+  .headerButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--purple-200);
+    border-radius: var(--radius-control);
+    font-family: var(--font-source-serif);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 19px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+
+    svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 1px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .regenerate {
+    background: var(--purple-200);
+    color: var(--white);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--purple-100);
+      border-color: var(--purple-100);
+    }
+  }
+
+  .bannedButton {
+    background: var(--white-200);
+    color: var(--purple-100);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--purple-400);
+      color: var(--black-rich);
     }
   }
 
@@ -97,7 +186,15 @@
     // With `.items`' padding-bottom these sum to the 100px seating line every
     // shelf uses, and lift the scrollbar onto the visible board.
     padding-bottom: 65px;
+    // The air above the board takes the shelf's colour as it nears the wood.
+    background: linear-gradient(
+      to bottom,
+      rgba(199, 165, 255, 0) 0%,
+      rgba(199, 165, 255, 0) 30%,
+      rgba(199, 165, 255, 0.45) 100%
+    );
 
+    // Carousel arrows: paper squares with the shelf's own lilac chevron.
     .arrow {
       position: absolute;
       top: 45%;
@@ -110,9 +207,11 @@
       height: 43px;
       padding: 0;
       border-radius: var(--radius-control);
-      background: #fefdf9 !important;
+      background: var(--white-200) !important;
+      color: var(--purple-200) !important;
+      box-shadow: var(--tooltip-shadow);
       right: 16px;
-      opacity: 0.4;
+      opacity: 0.85;
       transition: opacity 0.2s ease;
 
       &:hover,
@@ -121,7 +220,7 @@
       }
 
       &:disabled {
-        opacity: 0.2;
+        opacity: 0.3;
         cursor: default;
       }
 
@@ -139,18 +238,39 @@
       }
     }
 
-    .banner {
-      width: -webkit-fill-available;
+    // The board: a lilac plank with a lit top face and a shaded front, drawn
+    // in the same place the wooden plank stands under every other shelf.
+    .board {
       position: absolute;
+      left: 0;
+      right: 0;
       bottom: 0;
-      right: -15px;
-      margin-right: -32px;
+      height: 100px;
       z-index: 0;
       pointer-events: none;
+    }
 
-      img {
-        width: inherit;
-      }
+    .boardTop {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 0;
+      height: 18px;
+      background: var(--purple-400);
+      clip-path: polygon(1% 0, 99% 0, 100% 100%, 0 100%);
+    }
+
+    .boardFront {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 18px;
+      height: 46px;
+      background: linear-gradient(
+        to bottom,
+        var(--purple-300) 0%,
+        var(--purple-200) 100%
+      );
     }
 
     .items {
@@ -161,7 +281,6 @@
       align-items: flex-end;
       min-height: 253px;
       overscroll-behavior-x: contain;
-      // Headroom for the chip strip above a hovered pick.
       padding-top: 40px;
       padding-bottom: 35px;
       position: relative;
@@ -183,11 +302,12 @@
     }
 
     // The overflow scrollbar rides in the space shaved off the padding, so
-    // the seating line never moves when it appears.
+    // the seating line never moves when it appears. Lilac thumb on the
+    // plank's own lighter track.
     .scrollable {
       padding-bottom: 23px;
       scrollbar-width: auto;
-      scrollbar-color: #c0b6ae transparent;
+      scrollbar-color: var(--purple-200) var(--purple-400);
 
       &::-webkit-scrollbar {
         display: block;
@@ -195,7 +315,8 @@
       }
 
       &::-webkit-scrollbar-track {
-        background: transparent;
+        background: var(--purple-400);
+        border-radius: 6px;
       }
 
       &::-webkit-scrollbar-button {
@@ -205,7 +326,7 @@
       }
 
       &::-webkit-scrollbar-thumb {
-        background: #c0b6ae;
+        background: var(--purple-200);
         border-radius: 6px;
       }
     }
@@ -236,15 +357,57 @@
   }
 }
 
-.ghostRow {
-  transition:
-    left 0.32s cubic-bezier(0.2, 0, 0, 1),
-    width 0.32s cubic-bezier(0.2, 0, 0, 1);
-  position: absolute;
-  bottom: 100px;
-  right: 0;
-  z-index: 1;
-  overflow: hidden;
+.bannedModal {
+  width: 100% !important;
+  max-width: 520px !important;
+}
+
+.bannedBody {
+  padding: 32px;
+}
+
+.bannedEmpty {
+  color: var(--gray-darkest);
+}
+
+.bannedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bannedRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--brown-border);
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.bannedText {
+  min-width: 0;
+}
+
+.bannedTitle {
+  line-height: 22px;
+  color: var(--black-rich);
+}
+
+.bannedAuthor {
+  color: var(--gray-darkest);
+}
+
+.bannedFooter {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
 }
 
 @keyframes card-enter {
@@ -261,8 +424,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .wrapper,
-  .items,
-  .ghostRow {
+  .items {
     transition: none;
   }
 
