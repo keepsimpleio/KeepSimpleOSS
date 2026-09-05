@@ -20,6 +20,7 @@ import {
   SparkleIcon,
 } from '@icons/library/svg';
 
+import { PixelShelfBoard } from '@components/library/atoms/PixelShelfBoard';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import { Button, ButtonType } from '@components/library/molecules/Button';
@@ -277,9 +278,8 @@ export function RecommendedShelf({
             ))}
           </div>
         </div>
-        <div className={styles.board} aria-hidden="true">
-          <div className={styles.boardTop} />
-          <div className={styles.boardFront} />
+        <div className={styles.board}>
+          <PixelShelfBoard seed={7} />
         </div>
       </div>
 

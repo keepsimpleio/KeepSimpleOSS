@@ -190,8 +190,8 @@
     background: linear-gradient(
       to bottom,
       rgba(199, 165, 255, 0) 0%,
-      rgba(199, 165, 255, 0) 30%,
-      rgba(199, 165, 255, 0.45) 100%
+      rgba(199, 165, 255, 0) 45%,
+      rgba(199, 165, 255, 0.22) 100%
     );
 
     // Carousel arrows: paper squares with the shelf's own lilac chevron.
@@ -238,39 +238,22 @@
       }
     }
 
-    // The board: a lilac plank with a lit top face and a shaded front, drawn
-    // in the same place the wooden plank stands under every other shelf.
+    // The board: the pixel plank, seated where the wooden one stands under
+    // every other shelf. It is drawn taller than the seating zone so its
+    // sparks rise around the books' feet; the overflow above is the air.
     .board {
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      height: 100px;
+      height: 124px;
       z-index: 0;
+      overflow: hidden;
       pointer-events: none;
-    }
-
-    .boardTop {
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      top: 0;
-      height: 18px;
-      background: var(--purple-400);
-      clip-path: polygon(1% 0, 99% 0, 100% 100%, 0 100%);
-    }
-
-    .boardFront {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 18px;
-      height: 46px;
-      background: linear-gradient(
-        to bottom,
-        var(--purple-300) 0%,
-        var(--purple-200) 100%
-      );
+      // The seating line is 100px up from the bottom; the canvas holds 24px
+      // of air above the plank, so it is pushed down by nothing.
+      display: flex;
+      align-items: flex-end;
     }
 
     .items {
