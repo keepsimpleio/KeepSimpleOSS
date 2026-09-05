@@ -63,6 +63,9 @@ export function ObjectHoverCard({
   open,
   disabled = false,
   ownerUsername,
+  kindLabel,
+  rows = [],
+  showReview: showReviewProp,
 }: ObjectHoverCardProps): JSX.Element | null {
   const panelRef = useRef<HTMLDivElement>(null);
   // `mounted` keeps the panel in the DOM; `shown` drives the fade. They part
@@ -169,6 +172,7 @@ export function ObjectHoverCard({
   );
 
   const metaRows = [
+    ...rows,
     published ? { label: 'Published', value: published } : null,
     duration ? { label: 'Duration', value: duration } : null,
     // Video and audio fall back to the source as their byline, so only list it
@@ -183,7 +187,7 @@ export function ObjectHoverCard({
 
   // Books carry a review; the block appears whether or not it has been filled
   // in, so an unrated book says so instead of going silent.
-  const showReview = type === 'book';
+  const showReview = showReviewProp ?? type === 'book';
   const isRated = !!attributes.overall || !!difficulty;
   const reviewHeading = ownerUsername
     ? `${ownerUsername} ${isRated ? 'rated this book' : 'didn’t rate this book'}`
@@ -213,7 +217,9 @@ export function ObjectHoverCard({
         style={{ top: position?.top ?? 0, left: position?.left ?? 0 }}
       >
         <div className={styles.head}>
-          <span className={styles.kind}>{KIND_LABEL[type] ?? type}</span>
+          <span className={styles.kind}>
+            {kindLabel ?? KIND_LABEL[type] ?? type}
+          </span>
         </div>
 
         <Text

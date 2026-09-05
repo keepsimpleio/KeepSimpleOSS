@@ -1,0 +1,272 @@
+// The owner's recommended shelf: the same board every shelf in the library
+// stands on, with the same header rhythm, so it reads as one of them and not
+// as a banner above them. Desktop only: the owner's editing surface never
+// reaches a phone, and this shelf goes with it.
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0 16px 0;
+  transition: opacity 0.2s ease;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    // The owner's shelf headers stand 44px tall; this one lands its board on
+    // the same line.
+    min-height: 44px;
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 9px 14px;
+      border-radius: var(--radius-icon-chip);
+      background: var(--off-white);
+      color: var(--brown);
+
+      svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-shrink: 0;
+      min-width: 32px;
+      margin-right: -4px;
+      font-size: 14px;
+      line-height: 1;
+      color: var(--gray-darkest);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nameWrap {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    // Who sees the shelf, said once beside its name in the quieter ink.
+    .hint {
+      margin-left: 10px;
+      padding-left: 12px;
+      border-left: 1px solid var(--brown-border);
+      color: var(--gray-darker);
+      white-space: nowrap;
+    }
+  }
+
+  .noticeRow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .notice {
+    color: var(--gray-darkest);
+  }
+
+  .content {
+    min-height: 342px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    // With `.items`' padding-bottom these sum to the 100px seating line every
+    // shelf uses, and lift the scrollbar onto the visible board.
+    padding-bottom: 65px;
+
+    .arrow {
+      position: absolute;
+      top: 45%;
+      transform: translateY(-50%);
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 43px;
+      height: 43px;
+      padding: 0;
+      border-radius: var(--radius-control);
+      background: #fefdf9 !important;
+      right: 16px;
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        opacity: 1;
+      }
+
+      &:disabled {
+        opacity: 0.2;
+        cursor: default;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    .arrowLeft {
+      left: 16px;
+      right: auto;
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    .banner {
+      width: -webkit-fill-available;
+      position: absolute;
+      bottom: 0;
+      right: -15px;
+      margin-right: -32px;
+      z-index: 0;
+      pointer-events: none;
+
+      img {
+        width: inherit;
+      }
+    }
+
+    .items {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-end;
+      min-height: 253px;
+      overscroll-behavior-x: contain;
+      // Headroom for the chip strip above a hovered pick.
+      padding-top: 40px;
+      padding-bottom: 35px;
+      position: relative;
+      z-index: 1;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      padding-left: 80px;
+      padding-right: 80px;
+      // A pick scrolled off the left disappears into the board with a
+      // straight edge (see Shelf for the full account).
+      clip-path: polygon(80px 0, 100% 0, 100% 100%, 80px 100%);
+      transition: padding-bottom 0.2s ease;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    // The overflow scrollbar rides in the space shaved off the padding, so
+    // the seating line never moves when it appears.
+    .scrollable {
+      padding-bottom: 23px;
+      scrollbar-width: auto;
+      scrollbar-color: #c0b6ae transparent;
+
+      &::-webkit-scrollbar {
+        display: block;
+        height: 12px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #c0b6ae;
+        border-radius: 6px;
+      }
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: row;
+      gap: 38px;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: max-content;
+      min-width: 100%;
+
+      > * {
+        flex: 0 0 auto;
+      }
+
+      .cardSlot {
+        display: flex;
+        will-change: transform;
+        animation: card-enter 0.28s ease both;
+
+        &.cardLeaving {
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+.ghostRow {
+  transition:
+    left 0.32s cubic-bezier(0.2, 0, 0, 1),
+    width 0.32s cubic-bezier(0.2, 0, 0, 1);
+  position: absolute;
+  bottom: 100px;
+  right: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper,
+  .items,
+  .ghostRow {
+    transition: none;
+  }
+
+  .cardSlot {
+    animation: none;
+  }
+}

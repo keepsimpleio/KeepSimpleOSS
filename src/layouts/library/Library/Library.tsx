@@ -31,6 +31,7 @@ import {
   LIBRARY_SHELVES_REFETCH_EVENT,
   MAX_SHELVES_PER_LIBRARY,
 } from '@constants/library/common';
+import { RECOMMENDED_SEED } from '@constants/library/recommendations';
 
 import type {
   StrapiLibraryEntry,
@@ -81,6 +82,7 @@ import {
   IconPosition,
 } from '@components/library/molecules/Button';
 import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
+import { RecommendedShelf } from '@components/library/organisms/RecommendedShelf';
 import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
 import {
   Shelf,
@@ -871,6 +873,19 @@ export function LibraryTemplate({
   );
 
   const atShelfLimit = shelves.length >= MAX_SHELVES_PER_LIBRARY;
+
+  // A pick taken from the recommended shelf lands on whichever shelf the
+  // owner chose in the add flow; the response names it. When it does not,
+  // the library refetches rather than showing a shelf one book short.
+  const handleRecommendedCreated = useCallback(
+    (created: IObject) => {
+      const shelfId = created.attributes.shelf?.data?.id;
+      if (shelfId != null) handleObjectCreated(shelfId, created);
+      else window.dispatchEvent(new CustomEvent(LIBRARY_SHELVES_REFETCH_EVENT));
+    },
+    [handleObjectCreated],
+  );
+
   // Selecting objects to share is an owner control on the cards, and those
   // go with the rest of the editing UI on a phone — a bar with nothing to
   // select into would be dead weight at the bottom of the screen.
@@ -990,49 +1005,64 @@ export function LibraryTemplate({
           />
         </div>
       ) : (
-        <div className={styles.shelfList} ref={shelfListRef}>
-          {/* One tree whether or not the boards can be dragged: switching
+        <>
+          {/* The owner's recommended shelf stands above the library's own
+              shelves and outside their order: it is not theirs to drag, a
+              visitor never sees it, and a search leaves it out since nothing
+              on it is in the library yet. */}
+          {canEditHere && !hasSearch && (
+            <RecommendedShelf
+              books={RECOMMENDED_SEED}
+              onObjectCreated={handleRecommendedCreated}
+            />
+          )}
+          <div className={styles.shelfList} ref={shelfListRef}>
+            {/* One tree whether or not the boards can be dragged: switching
               between a sortable list and a plain one remounted every shelf on
               the first keystroke of a search, so the whole library flashed. The
               drag is simply switched off while a search narrows the list. */}
-          <DndContext
-            sensors={shelfSensors}
-            collisionDetection={closestCenter}
-            modifiers={[verticalOnly]}
-            onDragEnd={handleShelfDragEnd}
-          >
-            <SortableContext
-              items={displayedShelves.map(shelf => shelf.id)}
-              strategy={verticalListSortingStrategy}
+            <DndContext
+              sensors={shelfSensors}
+              collisionDetection={closestCenter}
+              modifiers={[verticalOnly]}
+              onDragEnd={handleShelfDragEnd}
             >
-              {shelfEntries.map(({ item: shelf, leaving }) => (
-                <div
-                  key={shelf.id}
-                  className={classNames(styles.shelfSlot, {
-                    [styles.shelfLeaving]: leaving,
-                  })}
-                  data-flip-id={String(shelf.id)}
-                  data-flip-leaving={leaving ? 'true' : undefined}
-                  aria-hidden={leaving || undefined}
-                >
-                  {/* A departing board is no longer sortable: it only has
+              <SortableContext
+                items={displayedShelves.map(shelf => shelf.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {shelfEntries.map(({ item: shelf, leaving }) => (
+                  <div
+                    key={shelf.id}
+                    className={classNames(styles.shelfSlot, {
+                      [styles.shelfLeaving]: leaving,
+                    })}
+                    data-flip-id={String(shelf.id)}
+                    data-flip-leaving={leaving ? 'true' : undefined}
+                    aria-hidden={leaving || undefined}
+                  >
+                    {/* A departing board is no longer sortable: it only has
                       to hold its picture while it folds away. */}
-                  {leaving ? (
-                    renderShelf(shelf)
-                  ) : (
-                    <SortableShelf id={shelf.id} disabled={!canReorderShelves}>
-                      {(handleProps, isDragging) =>
-                        canReorderShelves
-                          ? renderShelf(shelf, handleProps, isDragging)
-                          : renderShelf(shelf)
-                      }
-                    </SortableShelf>
-                  )}
-                </div>
-              ))}
-            </SortableContext>
-          </DndContext>
-        </div>
+                    {leaving ? (
+                      renderShelf(shelf)
+                    ) : (
+                      <SortableShelf
+                        id={shelf.id}
+                        disabled={!canReorderShelves}
+                      >
+                        {(handleProps, isDragging) =>
+                          canReorderShelves
+                            ? renderShelf(shelf, handleProps, isDragging)
+                            : renderShelf(shelf)
+                        }
+                      </SortableShelf>
+                    )}
+                  </div>
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+        </>
       )}
 
       {/* The next shelf is added
