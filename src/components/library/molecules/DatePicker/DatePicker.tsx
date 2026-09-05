@@ -83,9 +83,13 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
   } = props;
 
   const [isOpen, setIsOpen] = useState(false);
-  const rootRef = useClickOutside(() => setIsOpen(false));
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
+  // The calendar is portaled out of `rootRef`, so the popover is named here as
+  // a second "inside" subtree. Previously the popover swallowed `pointerdown`
+  // instead, which also blocked the caption dropdowns nested inside it from
+  // ever closing themselves.
+  const rootRef = useClickOutside(() => setIsOpen(false), popoverRef);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   // The calendar is portaled: inside the modal's scroll box it was clipped at
   // the bottom edge, while every sibling menu already floats above it. Its
   // position is tracked against the trigger and flips upward when the
@@ -138,9 +142,6 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
                 transform:
                   menuPos.placement === 'top' ? 'translateY(-100%)' : undefined,
               }}
-              // Portaled, so the document-level click-outside listener would
-              // close the picker on the very click that picks a day.
-              onPointerDown={e => e.stopPropagation()}
             >
               <DayPicker
                 mode="single"
