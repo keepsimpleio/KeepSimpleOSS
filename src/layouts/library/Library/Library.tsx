@@ -882,7 +882,11 @@ export function LibraryTemplate({
         [styles.withShareBar]: showSharePanel,
       })}
     >
-      {shelves.length > 0 && (
+      {/* `shelves.length` alone let the toolbar (and its mobile About button,
+          which is position-independent of the loader's container) sit on screen
+          during a load that still had the previous library in state. Gate on
+          the load itself so the toolbar never outlives the shelves it acts on. */}
+      {!isLoading && shelves.length > 0 && (
         <LibraryToolbar
           shelves={displayedShelves}
           search={search}

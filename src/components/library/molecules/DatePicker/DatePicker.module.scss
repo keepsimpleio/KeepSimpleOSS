@@ -52,6 +52,13 @@
   box-shadow: var(--dropdown-shadow);
   padding: 12px;
 
+  // The caption's two dropdowns sit on one row where the native selects used to.
+  :global(.rdp-dropdowns) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   :global(.rdp-root) {
     --rdp-accent-color: var(--brown);
     --rdp-accent-background-color: var(--cream);
@@ -156,4 +163,18 @@
   .icon {
     transition: none;
   }
+}
+
+// Month and year pickers in the calendar caption (see `CalendarDropdown`).
+.captionDropdown {
+  min-width: 0;
+}
+
+.captionMenu {
+  // The year list runs from 1500, so it scrolls instead of growing a menu
+  // taller than the screen. `.menu` sets `overflow: visible` for submenus,
+  // which these dropdowns do not use.
+  max-height: 240px;
+  min-width: 132px;
+  overflow-y: auto;
 }
