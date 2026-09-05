@@ -22,7 +22,10 @@
     overflow-y: auto;
     border-color: var(--brown-border);
     border-style: solid;
-    border-width: 1px 0 1px 0;
+    // Bottom only: the Modal already draws the hand-drawn InkLine under the
+    // title, so a top border here stacked a second, straight full-width rule
+    // directly beneath it.
+    border-width: 0 0 1px 0;
 
     .text {
       margin-bottom: 14px;
