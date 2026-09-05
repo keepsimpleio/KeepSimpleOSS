@@ -320,8 +320,13 @@ export function Sidebar() {
           beside the library name, but the toolbar only exists once the library
           has shelves — an empty library would otherwise have no way in. The
           backdrop taps the drawer closed. Both are hidden on desktop, where the
-          panel is a static sticky column. */}
-      {!isSidebarOpen && currentShelves.length === 0 && (
+          panel is a static sticky column.
+
+          Gated on `currentLibrary` because "still loading" and "loaded and
+          empty" both read as zero shelves: LibraryTemplate nulls the library
+          for the duration of a load, so without this the tab floated over the
+          loading spinner on every mobile page load. */}
+      {!isSidebarOpen && currentLibrary && currentShelves.length === 0 && (
         <button
           type="button"
           className={styles.openTab}
