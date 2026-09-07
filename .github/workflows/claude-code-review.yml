@@ -211,6 +211,27 @@ jobs:
             --repo "${{ github.repository }}" \
             --add-label "agent:needs-human" 2>/dev/null || true
 
+      # Hand the findings over as data rather than trusting the action's own PR
+      # context to carry them. On the first run of this job that context arrived
+      # empty — the fixer reported "no inline review comments were present" and
+      # correctly refused to guess, so nothing was fixed. Reading them from a
+      # file is deterministic and needs no GitHub tools in the fixer's allowlist.
+      - name: Collect the review findings
+        if: steps.guard.outputs.proceed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh api "repos/$REPO/pulls/$PR/comments" --paginate \
+            --jq "[.[] | select(.commit_id == \"$HEAD_SHA\")
+                   | {path, line: (.line // .original_line), body}]" \
+            > .review-findings.json
+          # Local-only ignore so the fixer cannot commit this file by accident.
+          echo ".review-findings.json" >> .git/info/exclude
+          echo "collected $(jq 'length' .review-findings.json) finding(s)"
+
       - name: Claude Fix
         if: steps.guard.outputs.proceed == 'true'
         uses: anthropics/claude-code-action@v1
@@ -218,13 +239,24 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           track_progress: true
+          # Repo is public and this job writes code unattended; a silent failure
+          # here is worth more than the noise.
+          show_full_output: true
 
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            The automated review on this PR left inline comments. Address them,
-            on this branch, and push.
+            The automated review on this PR left inline comments. They are in
+            `.review-findings.json` at the repo root — read that file first; it
+            is the authoritative list. Do not rely on review comments appearing
+            anywhere else in your context, and do not commit that file (it is
+            excluded locally).
+
+            If the file is empty or missing, stop and say so — do not go looking
+            for things to fix.
+
+            Address the findings on this branch, and push.
 
             Rules:
             - Fix only what the inline comments raise. Do not refactor, tidy
