@@ -18,14 +18,12 @@ import type {
 } from '@local-types/library/library';
 import type { IUser } from '@local-types/library/user';
 
-import { getAccessToken } from '@lib/library/cookie';
 import {
   readSidebarCollapsed,
   writeSidebarCollapsed,
 } from '@lib/library/sidebarPanel';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
-import { getUserInfo } from '@api/library/user/getUserInfo';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 
@@ -53,8 +51,6 @@ interface GlobalStateContextValue {
   isOwner: boolean;
   setIsOwner: (value: boolean) => void;
   user: IUser | null;
-  isUserLoading: boolean;
-  refetchUser: () => Promise<void>;
   libraries: StrapiLibrariesResponse | null;
   isLibrariesLoading: boolean;
   refetchLibraries: () => Promise<void>;
@@ -107,14 +103,13 @@ export function GlobalStateProvider({
   initialSidebarCollapsed = false,
 }: GlobalStateProviderProps) {
   const { data: session } = useSession();
-  const { accountData, setAccountData, token } = useAuth();
+  const { accountData, token } = useAuth();
 
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
     initialSidebarCollapsed,
   );
-  const [isUserLoading, setIsUserLoading] = useState(false);
   const [libraries, setLibraries] = useState<StrapiLibrariesResponse | null>(
     null,
   );
@@ -126,18 +121,6 @@ export function GlobalStateProvider({
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-
-  const refetchUser = useCallback(async () => {
-    const requestedToken = getAccessToken();
-    if (!requestedToken) return;
-    setIsUserLoading(true);
-    try {
-      const data = await getUserInfo();
-      if (getAccessToken() === requestedToken) setAccountData(data);
-    } finally {
-      setIsUserLoading(false);
-    }
-  }, [setAccountData]);
 
   const refetchLibraries = useCallback(async () => {
     setIsLibrariesLoading(true);
@@ -186,8 +169,6 @@ export function GlobalStateProvider({
       isOwner,
       setIsOwner,
       user: accountData,
-      isUserLoading,
-      refetchUser,
       libraries,
       isLibrariesLoading,
       refetchLibraries,
@@ -207,8 +188,6 @@ export function GlobalStateProvider({
       isSidebarCollapsed,
       toggleSidebarCollapsed,
       accountData,
-      isUserLoading,
-      refetchUser,
       libraries,
       isLibrariesLoading,
       refetchLibraries,
