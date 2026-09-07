@@ -281,3 +281,24 @@ jobs:
             --model claude-opus-5
             --allowedTools "Read,Glob,Grep,Edit,Write,Bash(git add:*),Bash(git commit:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(/home/runner/work/_actions/anthropics/claude-code-action/v1/scripts/git-push.sh:*)"
             --max-turns 80
+
+      # A fix job that produces nothing exits 0 and shows the same green tick as
+      # one that fixed everything. That is the failure mode most likely to go
+      # unnoticed once people rely on this, so say it out loud.
+      - name: Did it actually change anything
+        if: steps.guard.outputs.proceed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          BEFORE: ${{ github.event.pull_request.head.sha }}
+        run: |
+          after=$(git rev-parse HEAD)
+          echo "head before: $BEFORE"
+          echo "head after:  $after"
+          if [ "$after" = "$BEFORE" ]; then
+            echo "::warning::claude-fix was woken with findings but pushed nothing."
+            gh pr edit "$PR" --repo "$REPO" --add-label "agent:needs-human" 2>/dev/null || true
+            exit 1
+          fi
+          echo "pushed $(git rev-list --count "$BEFORE..$after") commit(s)"
