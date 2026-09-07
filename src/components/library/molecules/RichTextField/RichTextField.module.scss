@@ -1,0 +1,149 @@
+.field {
+  width: 100%;
+}
+
+// The label row carries the marks on its right. Sized by the buttons from
+// the start, so the row is the same height whether or not a mark is lit.
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+  margin-bottom: 8px;
+}
+
+.label {
+  color: var(--black-transparent-300);
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
+  background: var(--white);
+  color: var(--brown);
+  font-family: var(--font-source-sans);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brown);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brown);
+    outline-offset: 2px;
+  }
+
+  &.toolOn {
+    background: var(--brown);
+    border-color: var(--brown);
+    color: var(--white);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.strikeThrough {
+  text-decoration: line-through;
+}
+
+// The box itself mirrors the plain Textarea: same border, padding, type and
+// thin scrollbar rail; the grip is the only thing that changes its height.
+.editor {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 96px;
+  max-height: 60vh;
+  overflow-y: auto;
+  resize: vertical;
+  padding: 12px 16px;
+  color: var(--black);
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-control);
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  scrollbar-width: thin;
+  scrollbar-color: #c0b6ae transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c0b6ae;
+    border-radius: 5px;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+
+  p {
+    margin: 0 0 8px;
+  }
+
+  s {
+    text-decoration: line-through;
+  }
+
+  // The placeholder is the box's own text until the first character lands.
+  &.empty::before {
+    content: attr(data-placeholder);
+    color: var(--black-transparent-300);
+    font-weight: 500;
+    text-transform: capitalize;
+    pointer-events: none;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    resize: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tool {
+    transition: none;
+  }
+}
