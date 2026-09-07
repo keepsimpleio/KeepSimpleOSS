@@ -8,7 +8,7 @@ interface AgentFixProbeProps {
   tone: 'calm' | 'warn';
 }
 
-export function AgentFixProbe(props: AgentFixProbeProps): JSX.Element {
+const AgentFixProbe = (props: AgentFixProbeProps): JSX.Element => {
   const { label, onPick, tone } = props;
 
   return (
@@ -23,4 +23,6 @@ export function AgentFixProbe(props: AgentFixProbeProps): JSX.Element {
       <span className={styles.tone}>{tone}</span>
     </div>
   );
-}
+};
+
+export default AgentFixProbe;
