@@ -84,6 +84,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const syncLogout = () => {
       if (!getAccessToken()) {
+        removeCookie('accessToken');
         setAccountData(null);
         setToken(null);
       }
@@ -100,6 +101,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const accessToken = getAccessToken();
+    if (!accessToken) removeCookie('accessToken');
     setToken(accessToken || null);
   }, [session, setToken]);
 

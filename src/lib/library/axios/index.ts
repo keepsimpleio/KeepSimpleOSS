@@ -1,6 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
-import { getAccessToken } from '../cookie';
+import { getAccessToken, removeCookie } from '@lib/library/cookie';
 
 const defaultOptions = {
   baseURL: process.env.NEXT_PUBLIC_STRAPI,
@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
       const token = getAccessToken();
       if (token && error.config?.headers?.Authorization === `Bearer ${token}`) {
         window.localStorage.removeItem('accessToken');
-        getAccessToken();
+        removeCookie('accessToken');
         window.dispatchEvent(new Event('auth:expired'));
       }
     }

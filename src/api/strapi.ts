@@ -1,6 +1,6 @@
 import { TArticle, TLocales } from '@local-types/data';
 
-import { getAccessToken } from '@lib/library/cookie';
+import { getAccessToken, removeCookie } from '@lib/library/cookie';
 
 export const getMyInfo = async () => {
   const token = getAccessToken();
@@ -15,7 +15,7 @@ export const getMyInfo = async () => {
     if (response.status === 401 || response.status === 403) {
       if (getAccessToken() === token) {
         localStorage.removeItem('accessToken');
-        getAccessToken();
+        removeCookie('accessToken');
         window.dispatchEvent(new Event('auth:expired'));
       }
       return null;

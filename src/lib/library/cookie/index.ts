@@ -16,7 +16,5 @@ export const setCookie = (name: string, value: string, expires: number = 3) => {
 // Match the host login flow. A leftover cookie cannot restore a signed-out account.
 export const getAccessToken = (): string | undefined => {
   if (typeof window === 'undefined') return undefined;
-  const token = window.localStorage.getItem('accessToken') ?? undefined;
-  if (!token) Cookies.remove('accessToken', { path: '/' });
-  return token;
+  return window.localStorage.getItem('accessToken') ?? undefined;
 };

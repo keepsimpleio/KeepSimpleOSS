@@ -172,3 +172,16 @@ docker-compose.override.yml
 /docs/
 
 .codegraph/
+# Local-only (host-injected): CF Access env + frozen Atlas snapshot.
+.cf-access-dev-agent.env
+/public/atlas-live.html
+
+# Local-only: shared GitHub API token (never commit)
+.gh-token
+
+# Local-only: shared DEV review session (JWT + its journal). Never commit.
+.dev-session.json
+.dev-session.log
+
+# Local image-generation provenance; preserve the journal without shipping it.
+/src/components/library/atoms/Loader/artwork.journal.jsonl
