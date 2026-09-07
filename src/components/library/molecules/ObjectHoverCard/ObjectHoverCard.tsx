@@ -101,11 +101,21 @@ export function ObjectHoverCard({
   // object when the viewport allows and flips to its left when it does not,
   // vertically centred on the object and kept inside the viewport either way.
   // Recomputed while the shelf or the page scrolls so it stays glued.
+  //
+  // `open` is a dependency, not just `mounted`: a pointer that leaves and comes
+  // back inside the 200ms exit window finds the panel still mounted, with
+  // `shown` already switched off by the exit below. Without a re-run nothing
+  // would switch it back on and the dossier stayed invisible until the next
+  // scroll, which is the rare "hover shows nothing" on a card hovered twice in
+  // a row.
   useEffect(() => {
     if (!mounted) {
       setPosition(null);
       return;
     }
+    // On the way out the panel holds its last position and stops tracking:
+    // re-measuring a fading panel would slide it while it disappears.
+    if (!open || disabled) return;
     let raf = 0;
     const place = () => {
       const anchor = anchorRef.current;
@@ -151,7 +161,7 @@ export function ObjectHoverCard({
       window.removeEventListener('scroll', place, true);
       window.removeEventListener('resize', place);
     };
-  }, [mounted, anchorRef]);
+  }, [mounted, open, disabled, anchorRef]);
 
   const tags = attributes.tags?.data ?? [];
   const published = formatObjectDate(attributes.publicationDate);
