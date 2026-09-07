@@ -90,7 +90,7 @@ function Hotspot({
         data-hotspot={debug ? hotspot.id : undefined}
         {...triggerProps}
         onClick={
-          library
+          library && mode === 'hover'
             ? () => router.push(`/library/${library.id}`)
             : triggerProps.onClick
         }
