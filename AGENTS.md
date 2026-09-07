@@ -490,6 +490,44 @@ The `next.config.js` loads env from `.env.{APP_ENV}` (e.g., `.env.local`, `.env.
 
 ---
 
+## Review → fix, automated
+
+Two people work this repo with separate agent setups. Neither has to relay a
+finished review to anybody: the fixing happens in CI, in the same workflow run
+as the review.
+
+`.github/workflows/claude-code-review.yml` has two jobs.
+
+1. **`claude-review`** reviews the PR and leaves inline comments, then counts
+   the comments landing on the current head commit and publishes that count.
+2. **`claude-fix`** runs only when that count is above zero. It checks out the
+   PR branch, addresses the inline comments, commits with `[agent-fix]` in the
+   subject and pushes.
+
+Nobody starts either one. Open a PR and both run.
+
+**Why this cannot run away.** The fix job pushes with `GITHUB_TOKEN`. GitHub
+parks the resulting workflow runs at `action_required`, pending maintainer
+approval, because the pushing actor is a bot — so no fix commit starts a review
+on its own. Approving one _would_ start a review on the agent's commits, which
+can hand off to another fix pass; each pass's push is gated the same way, so it
+cannot run unattended. A re-review otherwise happens when a person next pushes.
+
+That gate is the safety of this design, not an accident of it — swap in a PAT
+and the pushes stop being gated at all, so the chaining runs with nobody
+approving it. Behind the gate sits the round guard (two `[agent-fix]` commits on
+a branch); past it the PR gets `agent:needs-human` and the job does nothing.
+
+**What the fixer is told not to do:** touch anything the review did not raise,
+or apply a review comment it judges wrong. Automated review is mistaken
+sometimes; the prompt tells it to skip and explain rather than comply. Read its
+summary before merging — a fix pushed unattended still needs a human to agree
+with it.
+
+**Labels.** `agent:review-ready` marks a PR whose review found something (useful
+for humans scanning the list, and for any local agent that wants to pick work
+up). `agent:needs-human` means the round guard tripped.
+
 ## Commit Hygiene — never push noise
 
 Before every commit and before every push, audit `git status` and `git diff --cached --stat` and remove anything that doesn't belong in the change set. Specifically:
