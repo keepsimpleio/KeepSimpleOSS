@@ -1,5 +1,3 @@
-import type { LibraryInfoCardProps } from '@components/library/molecules/LibraryInfoCard';
-
 /**
  * Hotspot geometry is expressed in percentages of the cover frame, so it tracks
  * the artwork as it scales responsively without runtime measurement.
@@ -41,7 +39,7 @@ export interface CoverHotspot {
    * Derived from `wide` (see `toUltraWide`), with optional per-hotspot tweaks.
    */
   ultraWide: HotspotGeometry;
-  library: Omit<LibraryInfoCardProps, 'className'>;
+  username?: string;
 }
 
 // At the 1920px breakpoint the full-bleed cover frame is 1920px wide and the
@@ -111,17 +109,14 @@ const applyOverride = (
 const makeHotspot = (
   id: string,
   wide: HotspotGeometry,
-  library: CoverHotspot['library'],
+  username?: string,
   ultraWideOverride?: GeometryOverride,
 ): CoverHotspot => ({
   id,
   wide,
   ultraWide: applyOverride(toUltraWide(wide), ultraWideOverride),
-  library,
+  username,
 });
-
-const lorem =
-  'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cih sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus';
 
 // Hit boxes are sized to the glow silhouette each hotspot lights up, so the
 // whole building answers the pointer rather than just its roofline.
@@ -144,13 +139,7 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 53.0, top: 19.01 },
     },
-    {
-      libraryName: 'Sarah’s Library',
-      about: lorem,
-      bookCount: 88,
-      videoCount: 34,
-      songCount: 12,
-    },
+    'Wolf',
   ),
   makeHotspot(
     'house-1',
@@ -165,13 +154,7 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 53.0, top: 19.01 },
     },
-    {
-      libraryName: 'John’s Library',
-      about: lorem,
-      bookCount: 123,
-      videoCount: 52,
-      songCount: 17,
-    },
+    'alinamarg',
     {
       // The panorama art sits 0.33% lower here, matching the highlight offset.
       hit: { top: 20.35 },
@@ -191,13 +174,7 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 46.47, top: 10.5 },
     },
-    {
-      libraryName: 'Liam’s Library',
-      about: lorem,
-      bookCount: 64,
-      videoCount: 21,
-      songCount: 9,
-    },
+    undefined,
     {
       hit: { top: 49.79 },
       highlight: { left: 40.4, top: 17.5 },
@@ -216,13 +193,7 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 30.62, top: 26.4 },
     },
-    {
-      libraryName: 'Mia’s Library',
-      about: lorem,
-      bookCount: 47,
-      videoCount: 18,
-      songCount: 6,
-    },
+    'AsteroidDestroyer',
     {
       hit: { top: 60.83 },
       highlight: { left: 35.552, top: 28 },
@@ -242,12 +213,6 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { right: 36.26, top: 14 },
     },
-    {
-      libraryName: 'Noah’s Library',
-      about: lorem,
-      bookCount: 31,
-      videoCount: 14,
-      songCount: 4,
-    },
+    undefined,
   ),
 ];

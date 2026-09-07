@@ -142,17 +142,14 @@ export function Sidebar() {
     accountData?.featureNames?.includes('can-create-library') ?? false;
   const canEditLibrary = canEdit && (!!currentLibrary || canCreateLibrary);
 
-  // Identity, bio and avatar all read from the viewed library's public data
-  // (`currentOwner` + `currentLibrary.avatar`). For my own library that *is* my
-  // data; for a visitor the populated `user` relation is hidden from the public
-  // role, so fall back to the URL slug for the name (`/library/[username]`) and
-  // to my account name/photo when it's mine.
+  // The public owner profile supplies the same identity and photo to every visitor.
   const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
   const authorName = canEdit
     ? accountData?.username || currentOwner?.username || 'Anonymous'
     : currentOwner?.username || slugName || 'Anonymous';
   const authorAvatarUrl =
     resolveStrapiUrl(currentOwner?.avatar) ??
+    resolveStrapiUrl(currentOwner?.picture) ??
     (canEdit ? accountData?.picture : undefined);
   const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
   const aboutLibraryText = stripHtml(
@@ -445,9 +442,7 @@ export function Sidebar() {
                   {authorName}
                 </Text>
               </div>
-              <Text className={styles.text}>
-                {aboutAuthorText || 'No bio yet'}
-              </Text>
+              <Text className={styles.text}>{aboutAuthorText}</Text>
             </div>
             <InkLine seed={2} className={styles.sectionRule} />
           </div>

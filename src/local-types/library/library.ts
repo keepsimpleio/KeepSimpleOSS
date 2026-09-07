@@ -48,7 +48,7 @@ export interface LibraryOwner {
   id?: number;
   username?: string;
   name?: string;
-  /** Account OAuth photo from the populated `user` relation (auth role only). */
+  /** Account photo from the allowlisted public `user` relation. */
   picture?: string;
   /** The library's own uploaded avatar — readable by the public role, so this
    * is what a logged-out visitor sees. Raw Strapi URL; resolve before use. */

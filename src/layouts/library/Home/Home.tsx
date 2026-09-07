@@ -235,6 +235,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
       <section className={styles.banner}>
         <div className={styles.bannerInner}>
           <InteractiveCover
+            libraries={isControlled ? dataOverride : remoteItems}
             className={styles.image}
             src="/assets/library/library.png"
             wideSrc="/assets/library/library-wide.png"

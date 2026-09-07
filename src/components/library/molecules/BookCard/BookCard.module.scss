@@ -85,10 +85,25 @@
 // :focus-within kept the strip lit on the card you had just clicked, so it
 // stayed up while the pointer was already on the next book.
 .card:hover .select,
-.card:has(:focus-visible) .select,
 .card.selected .select {
   opacity: 1;
   pointer-events: auto;
+}
+
+@supports selector(:has(:focus-visible)) {
+  .card:has(:focus-visible) .select,
+  .card:has(:focus-visible) .favorite {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@supports not selector(:has(:focus-visible)) {
+  .card:focus-within .select,
+  .card:focus-within .favorite {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 // Dim the cover while selected so the state reads at a glance.
@@ -252,8 +267,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .card:hover .favorite,
-  .card:focus-within .favorite {
+  .card:hover .favorite {
     opacity: 1;
     pointer-events: auto;
   }

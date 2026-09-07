@@ -7,7 +7,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -19,15 +18,12 @@ import type {
 } from '@local-types/library/library';
 import type { IUser } from '@local-types/library/user';
 
-import { getAccessToken } from '@lib/library/cookie';
-import { claimDevSession } from '@lib/library/devSession';
 import {
   readSidebarCollapsed,
   writeSidebarCollapsed,
 } from '@lib/library/sidebarPanel';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
-import { getUserInfo } from '@api/library/user/getUserInfo';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 
@@ -55,8 +51,6 @@ interface GlobalStateContextValue {
   isOwner: boolean;
   setIsOwner: (value: boolean) => void;
   user: IUser | null;
-  isUserLoading: boolean;
-  refetchUser: () => Promise<void>;
   libraries: StrapiLibrariesResponse | null;
   isLibrariesLoading: boolean;
   refetchLibraries: () => Promise<void>;
@@ -109,14 +103,13 @@ export function GlobalStateProvider({
   initialSidebarCollapsed = false,
 }: GlobalStateProviderProps) {
   const { data: session } = useSession();
-  const { accountData, setAccountData, token } = useAuth();
+  const { accountData, token } = useAuth();
 
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
     initialSidebarCollapsed,
   );
-  const [isUserLoading, setIsUserLoading] = useState(false);
   const [libraries, setLibraries] = useState<StrapiLibrariesResponse | null>(
     null,
   );
@@ -128,18 +121,6 @@ export function GlobalStateProvider({
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const didAttemptUserLoad = useRef(false);
-  const didAttemptDevSession = useRef(false);
-
-  const refetchUser = useCallback(async () => {
-    setIsUserLoading(true);
-    try {
-      const data = await getUserInfo();
-      setAccountData(data);
-    } finally {
-      setIsUserLoading(false);
-    }
-  }, [setAccountData]);
 
   const refetchLibraries = useCallback(async () => {
     setIsLibrariesLoading(true);
@@ -151,34 +132,9 @@ export function GlobalStateProvider({
     }
   }, []);
 
-  useEffect(() => {
-    const hasToken = Boolean(getAccessToken());
-    if (!hasToken) {
-      didAttemptUserLoad.current = false;
-      // DEV preview only: adopt the owner session shared for joint review, so
-      // reviewers behind the Access gate see the logged-in library without
-      // signing in. No-op everywhere else. See `@lib/library/devSession`.
-      if (!didAttemptDevSession.current) {
-        didAttemptDevSession.current = true;
-        void claimDevSession().then(claimed => {
-          if (claimed) {
-            didAttemptUserLoad.current = true;
-            void refetchUser();
-          }
-        });
-      }
-      return;
-    }
-    if (accountData || didAttemptUserLoad.current) {
-      return;
-    }
-    didAttemptUserLoad.current = true;
-    void refetchUser();
-  }, [accountData, session, refetchUser]);
-
   // The server read the cookie for whichever account the request carried.
   // Once the account is actually known here (it can arrive later: a token in
-  // localStorage only, or the DEV shared session claimed after load), re-read
+  // localStorage before the host account finishes loading), re-read
   // that account's own choice so it wins over the anonymous default.
   const accountId = accountData?.id;
   useEffect(() => {
@@ -213,8 +169,6 @@ export function GlobalStateProvider({
       isOwner,
       setIsOwner,
       user: accountData,
-      isUserLoading,
-      refetchUser,
       libraries,
       isLibrariesLoading,
       refetchLibraries,
@@ -234,8 +188,6 @@ export function GlobalStateProvider({
       isSidebarCollapsed,
       toggleSidebarCollapsed,
       accountData,
-      isUserLoading,
-      refetchUser,
       libraries,
       isLibrariesLoading,
       refetchLibraries,

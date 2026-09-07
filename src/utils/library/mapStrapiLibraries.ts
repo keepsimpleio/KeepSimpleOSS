@@ -127,7 +127,9 @@ export function mapStrapiLibraryEntryToCard(
   // personal bio (`aboutMe`) — that's surfaced separately in the Author panel.
   const description = aboutLibraryPlain;
 
-  const avatarUrl = attributes.avatar?.data?.attributes?.url;
+  const avatarUrl =
+    attributes.avatar?.data?.attributes?.url ||
+    attributes.user?.data?.attributes?.picture;
 
   return {
     id,

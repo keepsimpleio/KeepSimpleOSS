@@ -275,7 +275,7 @@ export default function RecommendedShelf({
 
           <span className={styles.nameWrap}>
             <Text variant={TypographyVariant.TextBase} className={styles.name}>
-              {RECOMMENDED_SHELF_NAME}
+              {RECOMMENDED_SHELF_NAME} (VISIBLE ONLY TO YOU)
             </Text>
           </span>
         </div>

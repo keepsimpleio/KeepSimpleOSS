@@ -1,24 +1,30 @@
 import { TArticle, TLocales } from '@local-types/data';
 
+import { getAccessToken, removeCookie } from '@lib/library/cookie';
+
 export const getMyInfo = async () => {
-  const myInfoUrl: string = `${process.env.NEXT_PUBLIC_STRAPI}/api/users/me`;
-  const token: string = localStorage?.getItem('accessToken');
-  if (token) {
-    try {
-      const data = await fetch(myInfoUrl, {
+  const token = getAccessToken();
+  if (!token) return null;
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI}/api/users/me`,
+      {
         headers: { Authorization: `Bearer ${token}` },
-      }).then(resp => resp.json());
-
-      if (data.error) {
-        const { status, message } = data.error;
-        throw new Error(`Error ${status} \n ${message}`);
+      },
+    );
+    if (response.status === 401 || response.status === 403) {
+      if (getAccessToken() === token) {
+        localStorage.removeItem('accessToken');
+        removeCookie('accessToken');
+        window.dispatchEvent(new Event('auth:expired'));
       }
-
-      return data;
-    } catch (e) {
-      console.error(e);
-      window.localStorage.removeItem('accessToken');
+      return null;
     }
+    if (!response.ok) return null;
+    const data = await response.json();
+    return getAccessToken() === token && data?.id ? data : null;
+  } catch {
+    return null;
   }
 };
 

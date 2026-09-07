@@ -11,11 +11,6 @@ export type MagicLinkResult<T> =
   | { ok: false; code: string; status: number; message?: string };
 
 export const logout = async (): Promise<void> => {
-  await signOut({
-    redirect: false,
-    callbackUrl: '/',
-  });
-
   localStorage.removeItem('accessToken');
   localStorage.removeItem('googleToken');
   localStorage.removeItem('provider');
@@ -23,7 +18,12 @@ export const logout = async (): Promise<void> => {
   document.cookie =
     'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=Strict;';
 
-  window.location.reload();
+  window.dispatchEvent(new Event('auth:expired'));
+  try {
+    await signOut({ redirect: false, callbackUrl: '/' });
+  } finally {
+    window.location.reload();
+  }
 };
 
 // Shared JWT persistence used by both OAuth and magic-link flows. The two flows
