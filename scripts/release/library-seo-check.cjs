@@ -99,6 +99,15 @@ async function main() {
     "Wolf Alexanyan's personal library, collected since 2007. Includes personal notes and precise recommendations.",
   );
   assert(wolf.image.endsWith('/wolf-library-v1.png'));
+  const originalDomain = process.env.NEXT_PUBLIC_DOMAIN;
+  process.env.NEXT_PUBLIC_DOMAIN = 'https://staging.keepsimple.io';
+  assert(librarySeo(entry).image.startsWith('https://staging.keepsimple.io/'));
+  assert.equal(
+    librarySeo(entry).schema.url,
+    'https://keepsimple.io/library/reader',
+  );
+  if (originalDomain === undefined) delete process.env.NEXT_PUBLIC_DOMAIN;
+  else process.env.NEXT_PUBLIC_DOMAIN = originalDomain;
   const { renderLibraryThumbnail } = load('src/lib/library/thumbnail.ts');
   for (const name of [
     'Reader',

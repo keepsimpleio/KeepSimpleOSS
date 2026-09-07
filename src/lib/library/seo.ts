@@ -18,10 +18,14 @@ export function librarySeo(library?: StrapiLibraryEntry) {
   const description = displayName
     ? `${displayName}'s personal library${isWolf ? ', collected since 2007' : ''}. Includes personal notes and precise recommendations.`
     : DEFAULT_SEO.description;
+  const imageOrigin =
+    process.env.NEXT_PUBLIC_DOMAIN === 'https://staging.keepsimple.io'
+      ? 'https://staging.keepsimple.io'
+      : 'https://keepsimple.io';
   const image = isWolf
-    ? 'https://keepsimple.io/keepsimple_/assets/library/og/wolf-library-v1.png'
+    ? `${imageOrigin}/keepsimple_/assets/library/og/wolf-library-v1.png`
     : username
-      ? `https://keepsimple.io/api/library/thumbnail/${encodeURIComponent(username.toLowerCase())}?v=1`
+      ? `${imageOrigin}/api/library/thumbnail/${encodeURIComponent(username.toLowerCase())}?v=1`
       : DEFAULT_SEO.image;
   const imageWidth = isWolf ? 1731 : username ? 1200 : 1920;
   const imageHeight = isWolf ? 909 : username ? 630 : 1280;
