@@ -27,7 +27,9 @@ const escapeText = (text: string): string =>
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/ /g, ' ');
+    // The browser pads runs of spaces with non-breaking ones while editing;
+    // the stored value keeps plain spaces.
+    .replace(/\u00a0/g, ' ');
 
 const INLINE_TAG: Record<string, string> = {
   B: 'strong',
