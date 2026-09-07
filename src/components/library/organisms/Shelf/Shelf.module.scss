@@ -490,13 +490,30 @@
         // fade-and-rise in rather than snapping. FLIP skips newly-entering slots
         // — they aren't in its prev-rect map — so this never fights the reorder
         // glide; only one of the two runs per card.
-        animation: card-enter 0.28s ease both;
+        // No `both` fill: a forwards fill keeps the last keyframe's
+        // `transform: translateY(0)` on the slot for good, and a CSS animation
+        // outranks inline styles, so the drag's own transform would never land.
+        // The keyframes end where the slot's base state already is, so nothing
+        // is lost by letting the animation finish and step out of the way.
+        animation: card-enter 0.28s ease;
 
         // On its way out (deleted, moved to another shelf, or filtered away
         // by a search): the slot fades where it stood and answers to nothing
         // meanwhile, so a pointer cannot open a card that is already gone.
         &.cardLeaving {
           pointer-events: none;
+        }
+
+        // The owner can pick a card up and carry it to a new place on the
+        // shelf; a press that never travels is still a click that opens it.
+        &.cardDraggable {
+          cursor: grab;
+        }
+
+        // The card under the cursor rides in the drag overlay, so its own slot
+        // stays behind as the gap the row opens and closes around.
+        &.cardDragging {
+          opacity: 0;
         }
       }
     }
@@ -604,4 +621,29 @@
   .dragHandle {
     transition: none;
   }
+}
+
+// While a card is travelling along the shelf.
+//
+// The row stops answering the pointer: the dragged card passes over its
+// neighbours, and without this each one would lift and open its dossier behind
+// the drag. dnd-kit tracks the pointer on the document, so the drag itself is
+// untouched.
+.cardsReordering {
+  pointer-events: none;
+}
+
+// The row auto-scrolls when the card is carried to either end. Its own
+// `scroll-behavior: smooth` (built for the arrow buttons) turns that into a
+// lagging animation chasing the pointer, so the drag scrolls straight. Written
+// through the same nesting that sets `smooth`, or that one would outrank it.
+.wrapper .content .items.reordering {
+  scroll-behavior: auto;
+}
+
+// The travelling copy, portaled to the body: picked up off the shelf, with the
+// cursor that says it is being carried.
+.dragOverlayCard {
+  cursor: grabbing;
+  filter: drop-shadow(0 18px 24px rgba(60, 40, 24, 0.28));
 }

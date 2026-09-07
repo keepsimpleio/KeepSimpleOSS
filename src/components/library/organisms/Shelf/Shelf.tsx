@@ -1,7 +1,25 @@
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  horizontalListSortingStrategy,
+  SortableContext,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   MAX_OBJECTS_PER_SHELF,
@@ -17,6 +35,7 @@ import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
+import { reorderObjects } from '@api/library/object/reorderObjects';
 import { deleteShelf } from '@api/library/shelf/deleteShelf';
 import { updateShelf } from '@api/library/shelf/updateShelf';
 
@@ -83,6 +102,63 @@ const SETTINGS_OPTIONS = [
 
 const objectKey = (o: IObject) => String(o.id);
 
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// A shelf is a row, so a card only ever travels sideways; the vertical
+// component of the pointer is dropped rather than lifting the card off the row.
+const horizontalOnly = ({
+  transform,
+}: {
+  transform: { x: number; y: number; scaleX: number; scaleY: number };
+}) => ({ ...transform, y: 0 });
+
+/**
+ * One card's place in the row, wired to dnd-kit so the owner can drag it into
+ * a new position. The listeners sit on the slot rather than on a grip: the
+ * whole object is the handle, and a press that never travels 4px stays a click
+ * that opens the object.
+ *
+ * No `attributes` spread: the card inside is already a `role="button"` with its
+ * own tab stop, and dnd-kit's would put a second one on the wrapper. Keyboard
+ * reordering keeps its home in the object's edit screen, step 2.
+ */
+function SortableCardSlot(props: {
+  id: number;
+  disabled: boolean;
+  leaving: boolean;
+  children: React.ReactNode;
+}): JSX.Element {
+  const { id, disabled, leaving, children } = props;
+  const { listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id, disabled });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition: transition ?? undefined,
+      }}
+      className={classNames(styles.cardSlot, {
+        [styles.cardLeaving]: leaving,
+        [styles.cardDraggable]: !disabled,
+        // The card being dragged rides in the overlay; its slot stays as the
+        // gap the rest of the row opens and closes around.
+        [styles.cardDragging]: isDragging,
+      })}
+      data-flip-id={String(id)}
+      data-flip-leaving={leaving ? 'true' : undefined}
+      aria-hidden={leaving || undefined}
+      {...(disabled ? {} : listeners)}
+    >
+      {children}
+    </div>
+  );
+}
+
 // Said on the shelf's own "Select shelf" button and on every card chip, so the
 // owner reads one rule in one wording wherever the refusal meets them.
 const SHELF_PRIVATE_SELECT_REASON =
@@ -126,14 +202,60 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // untouched while changing every card position on the board.
   const drawnKey = drawnObjects.map(o => o.id).join(',');
 
+  // The order a just-finished drag put the cards in, held until the saved
+  // order comes back through the library tree. Without it the row would snap
+  // back to the server sequence for the length of the round trip.
+  const [orderOverride, setOrderOverride] = useState<number[] | null>(null);
+  // The object currently under the pointer, and the frame after the drop:
+  // while either is true the FLIP glide stands down, since dnd-kit is already
+  // moving the cards and two engines on one card fight.
+  const [draggingObjectId, setDraggingObjectId] = useState<number | null>(null);
+  const [dropSettling, setDropSettling] = useState(false);
+  // Set when a drag was undone because the save failed.
+  const [objectOrderError, setObjectOrderError] = useState<string | null>(null);
+  // A drag ends with a click on the card it started from; without this the
+  // drop would also open the object.
+  const dragJustEnded = useRef(false);
+  // The travelling card is portaled to the body, which only exists once the
+  // page is on the client.
+  const [overlayReady, setOverlayReady] = useState(false);
+  useEffect(() => setOverlayReady(true), []);
+
+  // Computed every render rather than memoized on the id list: an edit changes
+  // an object in place without changing a single id, and a cache keyed on the
+  // ids would keep serving the card as it was before the edit.
+  const orderedByDrag = (): IObject[] => {
+    if (!orderOverride) return drawnObjects;
+    const byId = new Map(drawnObjects.map(o => [o.id, o]));
+    const held = orderOverride
+      .map(id => byId.get(id))
+      .filter((o): o is IObject => !!o);
+    const heldIds = new Set(held.map(o => o.id));
+    // Anything that arrived while the save was in flight keeps its own place
+    // at the end rather than dropping off the board.
+    return [...held, ...drawnObjects.filter(o => !heldIds.has(o.id))];
+  };
+  const boardObjects = orderedByDrag();
+
+  // The library tree has caught up with the drag: let the server order lead
+  // again.
+  useEffect(() => {
+    if (!orderOverride) return;
+    if (drawnKey === orderOverride.join(',')) setOrderOverride(null);
+  }, [drawnKey, orderOverride]);
+
   // Every change of membership or order on the board is motion, never a
   // snap: a removed or filtered-out card fades out where it stood, the rest
   // glide into the space, and a card that arrives rises in (the slot's own
   // CSS mount animation, so entrances are left to it here).
   const { ref: cardsRef, entries: cardEntries } = useAnimatedList(
-    drawnObjects,
+    boardObjects,
     objectKey,
-    { enters: false, collapse: 'width' },
+    {
+      enters: false,
+      collapse: 'width',
+      moves: draggingObjectId == null && !dropSettling,
+    },
   );
 
   const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
@@ -319,6 +441,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // never refetched or unmounted — only the overview modal appears/disappears
   // over the current page. `scroll: false` keeps the shelf scroll position.
   const openObject = (object: IObject) => {
+    // The click that closes a drag belongs to the drag, not to the object.
+    if (dragJustEnded.current) {
+      dragJustEnded.current = false;
+      return;
+    }
     if (onShareRoute) {
       void router.push(
         {
@@ -357,6 +484,115 @@ export function Shelf(props: ShelfProps): JSX.Element {
     activeObjectId != null
       ? (objects.find(o => o.id === activeObjectId) ?? null)
       : null;
+
+  // Dragging a card into a new place is the owner's own shelf, on a desktop
+  // pointer (`isOwner` is already owner + desktop), with nothing filtered: a
+  // search shows part of the shelf, and an order dragged out of a part says
+  // nothing about the objects it hides.
+  const canReorderObjects =
+    isOwner && visibleObjectIds === null && objects.length > 1;
+
+  // 4px of travel separates a drag from a click, the same threshold the
+  // reorder grid in the object's edit screen uses.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+  );
+
+  const draggingObject =
+    draggingObjectId != null
+      ? (boardObjects.find(o => o.id === draggingObjectId) ?? null)
+      : null;
+
+  // One card, drawn the same whether it is standing on the shelf or riding
+  // under the cursor. The travelling copy carries no controls: its Select chip
+  // and its dossier belong to the card that stayed behind.
+  const renderCard = (obj: IObject, travelling = false) => {
+    const selected = isSelected(obj.id);
+    // Only the owner can build a share link, so a visitor never sees the chip.
+    // The owner sees it on every kind of object (book, video, audio), and it
+    // carries its own reason when it cannot be used: the backend refuses
+    // objects on a private shelf, and a chip that simply vanished there read as
+    // "this kind of object cannot be shared".
+    const onSelectToggle =
+      isOwner && !travelling ? () => toggleSelection(obj) : undefined;
+    const selectDisabled = !isPublic || limitReached;
+    // Short enough to stand on the chip over the artwork; the shelf's own
+    // Select button carries the full sentence.
+    const selectReason = !isPublic
+      ? 'Shelf is private'
+      : limitReached
+        ? 'Link is full'
+        : undefined;
+    const shared = {
+      object: obj,
+      onClick: travelling ? undefined : openObject,
+      selected,
+      onSelectToggle,
+      selectDisabled,
+      selectReason,
+      showHoverCard: !travelling,
+    };
+
+    if (shelfType === 'video') return <VideoCard {...shared} />;
+    if (shelfType === 'audio') return <AudioCard {...shared} />;
+    return <BookCard {...shared} ownerUsername={ownerUsername} />;
+  };
+
+  const handleObjectDragStart = (event: DragStartEvent) => {
+    setObjectOrderError(null);
+    setDraggingObjectId(Number(event.active.id));
+  };
+
+  const endObjectDrag = () => {
+    setDraggingObjectId(null);
+    dragJustEnded.current = true;
+    // The guard is for the click the drop itself produces. If the browser
+    // never sends one, it must not sit there and swallow the next real click.
+    window.setTimeout(() => {
+      dragJustEnded.current = false;
+    }, 300);
+    // The FLIP glide stays down for the frame in which the new order lands:
+    // dnd-kit has already slid the cards there, so a second animation would
+    // pull them back and replay the move.
+    setDropSettling(true);
+    window.requestAnimationFrame(() => setDropSettling(false));
+  };
+
+  const handleObjectDragEnd = (event: DragEndEvent) => {
+    endObjectDrag();
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const ids = boardObjects.map(o => o.id);
+    const from = ids.indexOf(Number(active.id));
+    const to = ids.indexOf(Number(over.id));
+    if (from === -1 || to === -1) return;
+
+    const nextIds = arrayMove(ids, from, to);
+    const previousIds = ids;
+    // Show the new order at once and hold it until the library tree carries
+    // the saved positions back.
+    setOrderOverride(nextIds);
+    const ordered = nextIds.map((id, index) => ({ id, order: index }));
+    onObjectsReordered?.(shelf.id, ordered);
+
+    reorderObjects({ shelfId: shelf.id, objects: ordered }).catch(error => {
+      console.error('[Shelf] object reorder failed to persist', {
+        shelfId: shelf.id,
+        objects: ordered,
+        error,
+      });
+      // Put the shelf back the way the server still has it, and say so: a
+      // silent failure would show the new order until the next reload.
+      onObjectsReordered?.(
+        shelf.id,
+        previousIds.map((id, index) => ({ id, order: index })),
+      );
+      setOrderOverride(null);
+      setObjectOrderError(
+        `Could not save the new ${typeLabel} order. The shelf is unchanged.`,
+      );
+    });
+  };
 
   // "Select shelf" bulk-toggles every object on this shelf into the share
   // selection. It's owner-only and stays visible regardless of visibility — the
@@ -642,14 +878,15 @@ export function Shelf(props: ShelfProps): JSX.Element {
             role="status"
             aria-live="polite"
           >
-            {(visibilityError || selectNotice) && (
+            {(visibilityError || objectOrderError || selectNotice) && (
               <Text
                 variant={TypographyVariant.TextSmall}
                 className={classNames(styles.shelfNotice, {
-                  [styles.shelfNoticeError]: !!visibilityError,
+                  [styles.shelfNoticeError]:
+                    !!visibilityError || !!objectOrderError,
                 })}
               >
-                {visibilityError ?? selectNotice}
+                {visibilityError ?? objectOrderError ?? selectNotice}
               </Text>
             )}
           </div>
@@ -674,78 +911,75 @@ export function Shelf(props: ShelfProps): JSX.Element {
             />
           </>
         )}
-        <div
-          className={classNames(styles.items, {
-            [styles.scrollable]: isOverflowing,
-          })}
-          ref={itemsRef}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[horizontalOnly]}
+          onDragStart={handleObjectDragStart}
+          onDragEnd={handleObjectDragEnd}
+          onDragCancel={endObjectDrag}
         >
-          <div className={styles.cards} ref={cardsRef}>
-            {cardEntries.map(({ item: obj, leaving }) => {
-              const selected = isSelected(obj.id);
-              // Only the owner can build a share link, so a visitor never sees
-              // the chip. The owner sees it on every kind of object (book,
-              // video, audio), and it carries its own reason when it cannot be
-              // used: the backend refuses objects on a private shelf, and a
-              // chip that simply vanished there read as "this kind of object
-              // cannot be shared".
-              const onSelectToggle = isOwner
-                ? () => toggleSelection(obj)
-                : undefined;
-              const selectDisabled = !isPublic || limitReached;
-              // Short enough to stand on the chip over the artwork; the shelf's
-              // own Select button carries the full sentence.
-              const selectReason = !isPublic
-                ? 'Shelf is private'
-                : limitReached
-                  ? 'Link is full'
-                  : undefined;
-              const card =
-                shelfType === 'video' ? (
-                  <VideoCard
-                    object={obj}
-                    onClick={openObject}
-                    selected={selected}
-                    onSelectToggle={onSelectToggle}
-                    selectDisabled={selectDisabled}
-                    selectReason={selectReason}
-                  />
-                ) : shelfType === 'audio' ? (
-                  <AudioCard
-                    object={obj}
-                    onClick={openObject}
-                    selected={selected}
-                    onSelectToggle={onSelectToggle}
-                    selectDisabled={selectDisabled}
-                    selectReason={selectReason}
-                  />
-                ) : (
-                  <BookCard
-                    object={obj}
-                    onClick={openObject}
-                    selected={selected}
-                    onSelectToggle={onSelectToggle}
-                    selectDisabled={selectDisabled}
-                    selectReason={selectReason}
-                    ownerUsername={ownerUsername}
-                  />
-                );
-              return (
-                <div
-                  key={obj.id}
-                  className={classNames(styles.cardSlot, {
-                    [styles.cardLeaving]: leaving,
-                  })}
-                  data-flip-id={String(obj.id)}
-                  data-flip-leaving={leaving ? 'true' : undefined}
-                  aria-hidden={leaving || undefined}
-                >
-                  {card}
-                </div>
-              );
+          <div
+            className={classNames(styles.items, {
+              [styles.scrollable]: isOverflowing,
+              [styles.reordering]: draggingObjectId != null,
             })}
+            ref={itemsRef}
+          >
+            {/* Only the cards actually standing on the shelf are sortable: one
+                on its way out is still in the row for its fade, and it must not
+                become a drop target or a place in the sequence. */}
+            <SortableContext
+              items={boardObjects.map(obj => obj.id)}
+              strategy={horizontalListSortingStrategy}
+            >
+              <div
+                className={classNames(styles.cards, {
+                  // While a card travels, the row stops answering the pointer:
+                  // otherwise every card the dragged one passes lifts and opens
+                  // its dossier behind the drag.
+                  [styles.cardsReordering]: draggingObjectId != null,
+                })}
+                ref={cardsRef}
+              >
+                {cardEntries.map(({ item: obj, leaving }) => (
+                  <SortableCardSlot
+                    key={obj.id}
+                    id={obj.id}
+                    disabled={!canReorderObjects || leaving}
+                    leaving={leaving}
+                  >
+                    {renderCard(obj)}
+                  </SortableCardSlot>
+                ))}
+              </div>
+            </SortableContext>
           </div>
-        </div>
+          {/* Mounted after hydration, so the server and the first client
+              render agree; it stays mounted from then on, since the drop
+              animation plays as the travelling card is handed back. */}
+          {overlayReady &&
+            createPortal(
+              // Portaled to the body for the same reason the hover dossier is:
+              // the scroll row clips itself, and a card dragged near the left
+              // edge would be sliced by that clip.
+              <div className="library">
+                <DragOverlay
+                  // The card settles into its new place instead of blinking
+                  // there; a reader who asked for less motion gets the plain
+                  // hand-off.
+                  dropAnimation={prefersReducedMotion() ? null : undefined}
+                >
+                  {draggingObject ? (
+                    <div className={styles.dragOverlayCard}>
+                      {renderCard(draggingObject, true)}
+                    </div>
+                  ) : null}
+                </DragOverlay>
+              </div>,
+              document.body,
+            )}
+        </DndContext>
         <ShelfGhostRow
           seed={shelf.id}
           availableWidth={ghostWidth}
