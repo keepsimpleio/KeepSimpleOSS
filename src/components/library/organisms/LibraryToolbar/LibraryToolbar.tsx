@@ -284,7 +284,6 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
         className={styles.librarian}
         disabled
         aria-disabled="true"
-        title="Coming soon"
       >
         <LibrarianIcon aria-hidden="true" />
         <span className={styles.librarianLabel}>AI Librarian</span>
