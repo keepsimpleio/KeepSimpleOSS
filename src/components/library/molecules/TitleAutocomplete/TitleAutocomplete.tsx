@@ -37,6 +37,7 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'empty' | 'error'>('idle');
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [failedCovers, setFailedCovers] = useState<Set<string>>(new Set());
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<number | null>(null);
@@ -96,6 +97,7 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
         const results = await fetchSuggestions(trimmed);
         if (requestId !== requestIdRef.current) return;
         setSuggestions(results);
+        setFailedCovers(new Set());
         setStatus(results.length === 0 ? 'empty' : 'idle');
       } catch {
         // Keep the menu open with an error line instead of silently closing,
@@ -205,6 +207,12 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
           )}
           {suggestions.map((suggestion, index) => {
             const meta = suggestionMeta(suggestion);
+            const coverSrc = suggestion.coverUrl
+              ? autofillCoverUrl(
+                  suggestion.coverUrl,
+                  suggestion.fallbackCoverUrl,
+                )
+              : undefined;
             return (
               <li
                 key={`${suggestion.title}-${suggestion.sourceUrl ?? index}`}
@@ -225,16 +233,18 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
                     select(suggestion);
                   }}
                 >
-                  {suggestion.coverUrl ? (
+                  {coverSrc && !failedCovers.has(coverSrc) ? (
                     // Provider CDNs block direct browser hotlinking, so the
                     // thumbnail loads through the same allowlisted proxy as the
                     // autofilled cover (which also warms its 24h cache).
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={autofillCoverUrl(
-                        suggestion.coverUrl,
-                        suggestion.fallbackCoverUrl,
-                      )}
+                      src={coverSrc}
+                      onError={() =>
+                        setFailedCovers(previous =>
+                          new Set(previous).add(coverSrc),
+                        )
+                      }
                       alt=""
                       className={styles.thumb}
                       loading="lazy"

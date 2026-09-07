@@ -32,6 +32,21 @@ function fallbacksFor(raw: string): string[] {
   }
 }
 
+function candidatesFor(raw: string): string[] {
+  const url = new URL(raw);
+  // The public content endpoint returns 403 from production even when search
+  // advertises a cover. The publisher endpoint serves the same volume there.
+  if (
+    url.hostname === 'books.google.com' &&
+    url.pathname === '/books/content'
+  ) {
+    url.pathname = '/books/publisher/content';
+    const publisher = url.toString();
+    return [publisher, ...fallbacksFor(publisher), raw, ...fallbacksFor(raw)];
+  }
+  return [raw, ...fallbacksFor(raw)];
+}
+
 function isAllowed(raw: string): boolean {
   try {
     const url = new URL(raw);
@@ -105,6 +120,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  res.setHeader('Cache-Control', 'no-store');
   const rawUrl = typeof req.query.url === 'string' ? req.query.url : '';
   const fallback =
     typeof req.query.fallback === 'string' ? req.query.fallback : '';
@@ -114,8 +130,7 @@ export default async function handler(
   }
 
   const candidates = [
-    rawUrl,
-    ...fallbacksFor(rawUrl),
+    ...candidatesFor(rawUrl),
     ...(fallback ? [fallback] : []),
   ];
   for (let attempt = 0; attempt < candidates.length; attempt++) {
@@ -131,6 +146,7 @@ export default async function handler(
         at: new Date().toISOString(),
         outcome: 'served',
         host: new URL(candidate).hostname,
+        path: new URL(candidate).pathname,
         attempt,
       }),
     );
