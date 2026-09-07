@@ -31,7 +31,7 @@ export function LibraryInfoCard({
     <div
       className={classNames(
         styles.card,
-        { [styles.active]: isActive },
+        { [styles.active]: isActive, [styles.empty]: bookCount === undefined },
         className,
       )}
     >
