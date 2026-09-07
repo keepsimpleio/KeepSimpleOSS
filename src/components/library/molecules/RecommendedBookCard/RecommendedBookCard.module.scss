@@ -65,6 +65,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  // Covers crop from the bottom, never from the top: the title and author sit
+  // in the top third of a printed cover, so that is the part that must survive.
+  object-position: top center;
 }
 
 // A cover of paper when the source sent none: the title set in the serif,
