@@ -21,6 +21,7 @@ import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
 import { canBeFavorite } from '@lib/library/favorites';
+import { libraryPath } from '@lib/library/libraryPath';
 import { notesLabel } from '@lib/library/notesLabel';
 import {
   formatObjectDate,
@@ -213,7 +214,7 @@ export function ObjectOverviewModal(
   };
 
   const handleShare = async () => {
-    const url = `${SHARE_BASE_URL}/library/${ownerUsername}/${objectSlug(object)}`;
+    const url = `${SHARE_BASE_URL}${libraryPath(ownerUsername)}/${objectSlug(object)}`;
     try {
       await navigator.clipboard.writeText(url);
     } catch {

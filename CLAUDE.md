@@ -79,6 +79,14 @@ through the authenticated owner API, independently reload each state, and restor
 the original preference. Confirm anonymous writes remain rejected and public reads
 omit the private preference. Never replace this with a localStorage-only fallback.
 
+## Public library URLs
+
+Public links use `/library/<lowercase-username>` through `libraryPath`.
+Database library ids belong in CMS requests, never in generated navigation or
+copied links. Legacy numeric URLs redirect to the owner username while retaining
+object paths and query strings. Do not restore numeric links to work around a
+failed username lookup; fix the public lookup instead.
+
 ## Library calendar layout
 
 The calendar reserves separate rows for the month/year selectors and navigation.

@@ -34,6 +34,7 @@ import type { ShelfVisibility } from '@local-types/library/shelf';
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
 import { isFavorite, sortFavorites } from '@lib/library/favorites';
+import { libraryPath } from '@lib/library/libraryPath';
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
 import { reorderFavorites } from '@api/library/object/reorderFavorites';
@@ -508,7 +509,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
       return;
     }
     void router.push(
-      `/library/${encodeURIComponent(urlUsername)}/${objectSlug(object)}`,
+      `${libraryPath(ownerUsername || urlUsername)}/${objectSlug(object)}`,
       undefined,
       { shallow: true, scroll: false },
     );
@@ -523,7 +524,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
       });
       return;
     }
-    void router.push(`/library/${encodeURIComponent(urlUsername)}`, undefined, {
+    void router.push(libraryPath(ownerUsername || urlUsername), undefined, {
       shallow: true,
       scroll: false,
     });

@@ -7,6 +7,7 @@ import type { HomeLibraryCardView } from '@local-types/library/library';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
+import { libraryPath } from '@lib/library/libraryPath';
 import {
   buildSearchHaystack,
   matchesSearchTerms,
@@ -81,7 +82,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
 
   const handleLibraryButton = () => {
     if (libraryButtonDisabled || !accountData?.username) return;
-    router.push(`/library/${accountData.username}`);
+    router.push(libraryPath(accountData.username));
   };
 
   const [value, setValue] = useState('');

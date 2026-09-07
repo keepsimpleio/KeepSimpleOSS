@@ -15,6 +15,8 @@ import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useIsMobile from '@hooks/library/useIsMobile';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
+import { libraryPath } from '@lib/library/libraryPath';
+
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
 import { getTagsList } from '@api/library/tag/getTagsList';
@@ -89,9 +91,10 @@ export function Sidebar() {
 
   // A copied library link is always the public version, even when the owner is
   // editing it on the private review host.
-  const shareUrl = currentLibraryId
-    ? `${KEEPSIMPLE_URL}/library/${encodeURIComponent(currentLibraryId)}`
-    : KEEPSIMPLE_URL;
+  const linkUsername = /^\d+$/.test(currentLibraryId)
+    ? currentOwner?.username
+    : currentLibraryId;
+  const shareUrl = `${KEEPSIMPLE_URL}${libraryPath(linkUsername)}`;
 
   const [isOpenTagModal, setIsOpenTagModal] = useState<
     null | 'create' | 'edit'

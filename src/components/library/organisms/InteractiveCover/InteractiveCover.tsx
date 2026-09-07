@@ -12,6 +12,8 @@ import React, {
 
 import type { HomeLibraryCardView } from '@local-types/library/library';
 
+import { libraryPath } from '@lib/library/libraryPath';
+
 import { LibraryInfoCard } from '@components/library/molecules/LibraryInfoCard';
 
 import { CoverHotspot, coverHotspots } from './coverHotspots';
@@ -91,7 +93,7 @@ function Hotspot({
         {...triggerProps}
         onClick={
           library && mode === 'hover'
-            ? () => router.push(`/library/${library.id}`)
+            ? () => router.push(libraryPath(library.username))
             : triggerProps.onClick
         }
       />
@@ -122,7 +124,7 @@ function Hotspot({
       >
         {library ? (
           <Link
-            href={`/library/${library.id}`}
+            href={libraryPath(library.username)}
             className={styles.libraryLink}
             tabIndex={isActive ? 0 : -1}
           >
