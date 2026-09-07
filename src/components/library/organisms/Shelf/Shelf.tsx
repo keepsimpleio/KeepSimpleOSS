@@ -400,6 +400,31 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
+  // The object the owner just added. A full row appends it past the right
+  // edge, out of sight, so once it stands on the board the row scrolls to it.
+  const revealObjectId = useRef<number | null>(null);
+
+  useEffect(() => {
+    const id = revealObjectId.current;
+    if (id == null || !drawnKey.split(',').includes(String(id))) return;
+    revealObjectId.current = null;
+    const el = itemsRef.current;
+    const slot = cardsRef.current?.querySelector<HTMLElement>(
+      `[data-flip-id="${id}"]`,
+    );
+    if (!el || !slot) return;
+    // offsetLeft is measured from the scroll row, the same box that scrolls.
+    const padRight = parseFloat(getComputedStyle(el).paddingRight) || 0;
+    const target =
+      slot.offsetLeft + slot.offsetWidth + padRight - el.clientWidth;
+    // Already in view: leave the row where the owner left it.
+    if (target <= el.scrollLeft) return;
+    el.scrollTo({
+      left: target,
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+    });
+  }, [drawnKey, cardsRef]);
+
   // Advance one card per click. The stride is the distance between two adjacent
   // slots (card width + gap); with a single card fall back to its own width, and
   // with none to most of a viewport.
@@ -720,6 +745,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // any reorder warning) and closes itself. Closing it from here unmounted
   // that confirmation before it could appear.
   const handleCreated = (created: IObject) => {
+    revealObjectId.current = created.id;
     onObjectCreated?.(shelf.id, created);
   };
 
