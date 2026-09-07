@@ -49,6 +49,17 @@ export function Dropdown(props: DropdownProps): JSX.Element {
 
   const selectedOption = options.find(opt => opt.value === value);
 
+  // The option rows are divs, so they get no keyboard behaviour for free.
+  // Enter and Space are what a button would answer to, and Space must not also
+  // scroll the menu underneath.
+  const activateOnKey =
+    (activate: () => void) => (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        activate();
+      }
+    };
+
   const handleSelect = (optionValue: string, hasSubOptions: boolean) => {
     if (hasSubOptions) {
       setActiveSubMenu(prev => (prev === optionValue ? null : optionValue));
@@ -108,7 +119,11 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                 [styles.selected]: isSelectedParent,
                 [styles.hasSubMenu]: hasSubOptions,
               })}
+              tabIndex={0}
               onClick={() => handleSelect(option.value, hasSubOptions)}
+              onKeyDown={activateOnKey(() =>
+                handleSelect(option.value, hasSubOptions),
+              )}
               aria-label={`Select ${option.label}`}
               aria-expanded={hasSubOptions ? isSubOpen : undefined}
             >
@@ -136,7 +151,9 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                     className={classNames(styles.option, {
                       [styles.selected]: value === sub.value,
                     })}
+                    tabIndex={0}
                     onClick={() => handleSubSelect(sub.value)}
+                    onKeyDown={activateOnKey(() => handleSubSelect(sub.value))}
                     aria-label={`Select ${sub.label}`}
                   >
                     <Text variant={TypographyVariant.TextBase}>

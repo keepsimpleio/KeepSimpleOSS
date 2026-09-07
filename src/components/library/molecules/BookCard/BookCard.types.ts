@@ -21,4 +21,12 @@ export interface BookCardProps {
   compact?: boolean;
   // Passed through to the hover dossier, which names whoever rated the book.
   ownerUsername?: string;
+  // Whether the book stands on the Favorites shelf. Shown as a star on the
+  // cover for everyone once it is one.
+  favorite?: boolean;
+  // Owner's star: when provided, the star is a button that adds the book to
+  // the Favorites shelf or takes it off. Absent for a visitor.
+  onFavoriteToggle?: () => void;
+  // True while a star press is being saved.
+  favoriteBusy?: boolean;
 }

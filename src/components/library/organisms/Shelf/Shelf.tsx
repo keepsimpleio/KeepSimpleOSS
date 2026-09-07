@@ -1,7 +1,25 @@
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  horizontalListSortingStrategy,
+  SortableContext,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   MAX_OBJECTS_PER_SHELF,
@@ -15,8 +33,12 @@ import type { ShelfVisibility } from '@local-types/library/shelf';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
+import { isFavorite, sortFavorites } from '@lib/library/favorites';
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
+import { reorderFavorites } from '@api/library/object/reorderFavorites';
+import { reorderObjects } from '@api/library/object/reorderObjects';
+import { updateObject } from '@api/library/object/updateObject';
 import { deleteShelf } from '@api/library/shelf/deleteShelf';
 import { updateShelf } from '@api/library/shelf/updateShelf';
 
@@ -28,6 +50,7 @@ import {
   DragHandleIcon,
   PlusIcon,
   SettingsIcon,
+  StarIcon,
   VideoIcon,
 } from '@icons/library/svg';
 
@@ -81,7 +104,70 @@ const SETTINGS_OPTIONS = [
   { value: 'delete', label: 'Delete shelf' },
 ];
 
+// The Favorites shelf cannot be deleted: it stands as long as a book is
+// starred. Only its privacy is the owner's to set.
+const FAVORITES_SETTINGS_OPTIONS = SETTINGS_OPTIONS.filter(
+  option => option.value === 'privacy',
+);
+
 const objectKey = (o: IObject) => String(o.id);
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// A shelf is a row, so a card only ever travels sideways; the vertical
+// component of the pointer is dropped rather than lifting the card off the row.
+const horizontalOnly = ({
+  transform,
+}: {
+  transform: { x: number; y: number; scaleX: number; scaleY: number };
+}) => ({ ...transform, y: 0 });
+
+/**
+ * One card's place in the row, wired to dnd-kit so the owner can drag it into
+ * a new position. The listeners sit on the slot rather than on a grip: the
+ * whole object is the handle, and a press that never travels 4px stays a click
+ * that opens the object.
+ *
+ * No `attributes` spread: the card inside is already a `role="button"` with its
+ * own tab stop, and dnd-kit's would put a second one on the wrapper. Keyboard
+ * reordering keeps its home in the object's edit screen, step 2.
+ */
+function SortableCardSlot(props: {
+  id: number;
+  disabled: boolean;
+  leaving: boolean;
+  children: React.ReactNode;
+}): JSX.Element {
+  const { id, disabled, leaving, children } = props;
+  const { listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id, disabled });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition: transition ?? undefined,
+      }}
+      className={classNames(styles.cardSlot, {
+        [styles.cardLeaving]: leaving,
+        [styles.cardDraggable]: !disabled,
+        // The card being dragged rides in the overlay; its slot stays as the
+        // gap the rest of the row opens and closes around.
+        [styles.cardDragging]: isDragging,
+      })}
+      data-flip-id={String(id)}
+      data-flip-leaving={leaving ? 'true' : undefined}
+      aria-hidden={leaving || undefined}
+      {...(disabled ? {} : listeners)}
+    >
+      {children}
+    </div>
+  );
+}
 
 // Said on the shelf's own "Select shelf" button and on every card chip, so the
 // owner reads one rule in one wording wherever the refusal meets them.
@@ -105,6 +191,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onShelfRenamed,
     onObjectMoved,
     onObjectsReordered,
+    favorites = false,
+    onFavoritesVisibilityChange,
     dragHandleProps,
     isDragging = false,
   } = props;
@@ -112,9 +200,13 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // Render in persisted-order sequence. Strapi's populate doesn't sort the
   // relation, so without this the drag order (saved via reorderObjects) never
   // shows. Stable: objects with no `order` keep their natural position.
-  const objects = [...(shelf.attributes.objects?.data ?? [])].sort(
-    (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
-  );
+  // The Favorites shelf keeps its own order (`favoriteOrder`, then the time
+  // of the star), since its books each hold an `order` on their real shelf.
+  const objects = favorites
+    ? sortFavorites(shelf.attributes.objects?.data ?? [])
+    : [...(shelf.attributes.objects?.data ?? [])].sort(
+        (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+      );
   // What a search leaves on screen. Everything else below (count, cap, the
   // reorder grid, the open object) keeps reading `objects`, the real shelf.
   const drawnObjects = visibleObjectIds
@@ -126,17 +218,67 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // untouched while changing every card position on the board.
   const drawnKey = drawnObjects.map(o => o.id).join(',');
 
+  // The order a just-finished drag put the cards in, held until the saved
+  // order comes back through the library tree. Without it the row would snap
+  // back to the server sequence for the length of the round trip.
+  const [orderOverride, setOrderOverride] = useState<number[] | null>(null);
+  // The object currently under the pointer, and the frame after the drop:
+  // while either is true the FLIP glide stands down, since dnd-kit is already
+  // moving the cards and two engines on one card fight.
+  const [draggingObjectId, setDraggingObjectId] = useState<number | null>(null);
+  const [dropSettling, setDropSettling] = useState(false);
+  // Set when a drag was undone because the save failed.
+  const [objectOrderError, setObjectOrderError] = useState<string | null>(null);
+  // A drag ends with a click on the card it started from; without this the
+  // drop would also open the object.
+  const dragJustEnded = useRef(false);
+  // The travelling card is portaled to the body, which only exists once the
+  // page is on the client.
+  const [overlayReady, setOverlayReady] = useState(false);
+  useEffect(() => setOverlayReady(true), []);
+
+  // Computed every render rather than memoized on the id list: an edit changes
+  // an object in place without changing a single id, and a cache keyed on the
+  // ids would keep serving the card as it was before the edit.
+  const orderedByDrag = (): IObject[] => {
+    if (!orderOverride) return drawnObjects;
+    const byId = new Map(drawnObjects.map(o => [o.id, o]));
+    const held = orderOverride
+      .map(id => byId.get(id))
+      .filter((o): o is IObject => !!o);
+    const heldIds = new Set(held.map(o => o.id));
+    // Anything that arrived while the save was in flight keeps its own place
+    // at the end rather than dropping off the board.
+    return [...held, ...drawnObjects.filter(o => !heldIds.has(o.id))];
+  };
+  const boardObjects = orderedByDrag();
+
+  // The library tree has caught up with the drag: let the server order lead
+  // again.
+  useEffect(() => {
+    if (!orderOverride) return;
+    if (drawnKey === orderOverride.join(',')) setOrderOverride(null);
+  }, [drawnKey, orderOverride]);
+
   // Every change of membership or order on the board is motion, never a
   // snap: a removed or filtered-out card fades out where it stood, the rest
   // glide into the space, and a card that arrives rises in (the slot's own
   // CSS mount animation, so entrances are left to it here).
   const { ref: cardsRef, entries: cardEntries } = useAnimatedList(
-    drawnObjects,
+    boardObjects,
     objectKey,
-    { enters: false, collapse: 'width' },
+    {
+      enters: false,
+      collapse: 'width',
+      moves: draggingObjectId == null && !dropSettling,
+    },
   );
 
-  const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
+  const typeIcon = favorites ? (
+    <StarIcon />
+  ) : (
+    (SHELF_TYPE_ICON[shelfType] ?? <BookIcon />)
+  );
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
 
   // Backend caps a shelf at 21 objects (all types combined). Pre-disable the
@@ -147,9 +289,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // Plain object count beside the shelf name. The cap belongs in the tooltip,
   // not in the visible label — a visitor reads how full the shelf is, an owner
   // hovers to learn how much room is left.
-  const countTitle = `${objects.length} ${
-    objects.length === 1 ? typeLabel : `${typeLabel}s`
-  } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
+  const countTitle = favorites
+    ? `${objects.length} favorite ${objects.length === 1 ? 'book' : 'books'}`
+    : `${objects.length} ${
+        objects.length === 1 ? typeLabel : `${typeLabel}s`
+      } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
 
   const router = useRouter();
   // On the share-link page the object opens through a query parameter, so
@@ -195,7 +339,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // Only objects on a public shelf can be shared (the backend refuses the
   // rest), so the shelf's own privacy governs both the "Select shelf" button
   // and every Select chip on the cards below.
-  const isPublic = visibility === 'public';
+  // The Favorites shelf's own privacy says nothing about sharing: each book
+  // there is shareable by the rule of the shelf it lives on, which the backend
+  // enforces at share time.
+  const isPublic = favorites || visibility === 'public';
   const shareLinkFullReason = `The share link is full (${MAX_SHARE_OBJECTS} items). Remove some to select more.`;
   // How many objects a "Select shelf" could not add because the link was full.
   const [selectNotice, setSelectNotice] = useState<string | null>(null);
@@ -278,6 +425,31 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const isOverflowing = canScrollLeft || canScrollRight;
 
+  // The object the owner just added. A full row appends it past the right
+  // edge, out of sight, so once it stands on the board the row scrolls to it.
+  const revealObjectId = useRef<number | null>(null);
+
+  useEffect(() => {
+    const id = revealObjectId.current;
+    if (id == null || !drawnKey.split(',').includes(String(id))) return;
+    revealObjectId.current = null;
+    const el = itemsRef.current;
+    const slot = cardsRef.current?.querySelector<HTMLElement>(
+      `[data-flip-id="${id}"]`,
+    );
+    if (!el || !slot) return;
+    // offsetLeft is measured from the scroll row, the same box that scrolls.
+    const padRight = parseFloat(getComputedStyle(el).paddingRight) || 0;
+    const target =
+      slot.offsetLeft + slot.offsetWidth + padRight - el.clientWidth;
+    // Already in view: leave the row where the owner left it.
+    if (target <= el.scrollLeft) return;
+    el.scrollTo({
+      left: target,
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+    });
+  }, [drawnKey, cardsRef]);
+
   // Advance one card per click. The stride is the distance between two adjacent
   // slots (card width + gap); with a single card fall back to its own width, and
   // with none to most of a viewport.
@@ -319,6 +491,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // never refetched or unmounted — only the overview modal appears/disappears
   // over the current page. `scroll: false` keeps the shelf scroll position.
   const openObject = (object: IObject) => {
+    // The click that closes a drag belongs to the drag, not to the object.
+    if (dragJustEnded.current) {
+      dragJustEnded.current = false;
+      return;
+    }
     if (onShareRoute) {
       void router.push(
         {
@@ -353,10 +530,176 @@ export function Shelf(props: ShelfProps): JSX.Element {
   };
 
   // The object this shelf currently owns *and* the URL points at, if any.
+  // The Favorites shelf never opens one: the same book stands on its real
+  // shelf, and that shelf's overview is the one that knows where it lives.
   const activeObject =
-    activeObjectId != null
+    !favorites && activeObjectId != null
       ? (objects.find(o => o.id === activeObjectId) ?? null)
       : null;
+
+  // Dragging a card into a new place is the owner's own shelf, on a desktop
+  // pointer (`isOwner` is already owner + desktop), with nothing filtered: a
+  // search shows part of the shelf, and an order dragged out of a part says
+  // nothing about the objects it hides.
+  const canReorderObjects =
+    isOwner && visibleObjectIds === null && objects.length > 1;
+
+  // 4px of travel separates a drag from a click, the same threshold the
+  // reorder grid in the object's edit screen uses.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+  );
+
+  const draggingObject =
+    draggingObjectId != null
+      ? (boardObjects.find(o => o.id === draggingObjectId) ?? null)
+      : null;
+
+  // One card, drawn the same whether it is standing on the shelf or riding
+  // under the cursor. The travelling copy carries no controls: its Select chip
+  // and its dossier belong to the card that stayed behind.
+  const renderCard = (obj: IObject, travelling = false) => {
+    const selected = isSelected(obj.id);
+    // Only the owner can build a share link, so a visitor never sees the chip.
+    // The owner sees it on every kind of object (book, video, audio), and it
+    // carries its own reason when it cannot be used: the backend refuses
+    // objects on a private shelf, and a chip that simply vanished there read as
+    // "this kind of object cannot be shared".
+    const onSelectToggle =
+      isOwner && !travelling ? () => toggleSelection(obj) : undefined;
+    const selectDisabled = !isPublic || limitReached;
+    // Short enough to stand on the chip over the artwork; the shelf's own
+    // Select button carries the full sentence.
+    const selectReason = !isPublic
+      ? 'Shelf is private'
+      : limitReached
+        ? 'Link is full'
+        : undefined;
+    const shared = {
+      object: obj,
+      onClick: travelling ? undefined : openObject,
+      selected,
+      onSelectToggle,
+      selectDisabled,
+      selectReason,
+      showHoverCard: !travelling,
+    };
+
+    if (shelfType === 'video') return <VideoCard {...shared} />;
+    if (shelfType === 'audio') return <AudioCard {...shared} />;
+    return (
+      <BookCard
+        {...shared}
+        ownerUsername={ownerUsername}
+        favorite={isFavorite(obj)}
+        onFavoriteToggle={
+          isOwner && !travelling ? () => toggleFavorite(obj) : undefined
+        }
+        favoriteBusy={favoriteBusyId === obj.id}
+      />
+    );
+  };
+
+  // The star on a card. The library tree flips first so the star and the
+  // Favorites shelf answer at once; the save follows, and a failure puts the
+  // book back and says so on the shelf.
+  const [favoriteBusyId, setFavoriteBusyId] = useState<number | null>(null);
+  const [favoriteError, setFavoriteError] = useState<string | null>(null);
+  const toggleFavorite = (obj: IObject) => {
+    if (favoriteBusyId != null) return;
+    const next = !isFavorite(obj);
+    setFavoriteError(null);
+    setFavoriteBusyId(obj.id);
+    onObjectUpdated?.(shelf.id, {
+      ...obj,
+      attributes: {
+        ...obj.attributes,
+        favorite: next,
+        favoritedAt: next ? new Date().toISOString() : null,
+        favoriteOrder: null,
+      },
+    });
+    updateObject(obj.id, { favorite: next })
+      .then(response => {
+        onObjectUpdated?.(shelf.id, {
+          ...obj,
+          attributes: {
+            ...obj.attributes,
+            ...response.data.attributes,
+            favorite: next,
+          },
+        });
+      })
+      .catch(e => {
+        console.error('[Shelf] favorite save failed', e);
+        onObjectUpdated?.(shelf.id, obj);
+        setFavoriteError(
+          next
+            ? `Could not add “${obj.attributes.title}” to favorites.`
+            : `Could not remove “${obj.attributes.title}” from favorites.`,
+        );
+      })
+      .finally(() => setFavoriteBusyId(null));
+  };
+
+  const handleObjectDragStart = (event: DragStartEvent) => {
+    setObjectOrderError(null);
+    setDraggingObjectId(Number(event.active.id));
+  };
+
+  const endObjectDrag = () => {
+    setDraggingObjectId(null);
+    dragJustEnded.current = true;
+    // The guard is for the click the drop itself produces. If the browser
+    // never sends one, it must not sit there and swallow the next real click.
+    window.setTimeout(() => {
+      dragJustEnded.current = false;
+    }, 300);
+    // The FLIP glide stays down for the frame in which the new order lands:
+    // dnd-kit has already slid the cards there, so a second animation would
+    // pull them back and replay the move.
+    setDropSettling(true);
+    window.requestAnimationFrame(() => setDropSettling(false));
+  };
+
+  const handleObjectDragEnd = (event: DragEndEvent) => {
+    endObjectDrag();
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const ids = boardObjects.map(o => o.id);
+    const from = ids.indexOf(Number(active.id));
+    const to = ids.indexOf(Number(over.id));
+    if (from === -1 || to === -1) return;
+
+    const nextIds = arrayMove(ids, from, to);
+    const previousIds = ids;
+    // Show the new order at once and hold it until the library tree carries
+    // the saved positions back.
+    setOrderOverride(nextIds);
+    const ordered = nextIds.map((id, index) => ({ id, order: index }));
+    onObjectsReordered?.(shelf.id, ordered);
+
+    const save = favorites
+      ? reorderFavorites({ objects: ordered })
+      : reorderObjects({ shelfId: shelf.id, objects: ordered });
+    save.catch(error => {
+      console.error('[Shelf] object reorder failed to persist', {
+        shelfId: shelf.id,
+        objects: ordered,
+        error,
+      });
+      // Put the shelf back the way the server still has it, and say so: a
+      // silent failure would show the new order until the next reload.
+      onObjectsReordered?.(
+        shelf.id,
+        previousIds.map((id, index) => ({ id, order: index })),
+      );
+      setOrderOverride(null);
+      setObjectOrderError(
+        `Could not save the new ${typeLabel} order. The shelf is unchanged.`,
+      );
+    });
+  };
 
   // "Select shelf" bulk-toggles every object on this shelf into the share
   // selection. It's owner-only and stays visible regardless of visibility — the
@@ -414,6 +757,19 @@ export function Shelf(props: ShelfProps): JSX.Element {
       if (previous === value) return;
       setVisibility(value);
       setVisibilityError(null);
+      // The Favorites shelf's privacy is the library's own field, saved by
+      // the library; its books stay shareable either way, since each is
+      // still on its real shelf.
+      if (favorites) {
+        (onFavoritesVisibilityChange?.(value) ?? Promise.resolve()).catch(e => {
+          console.error('[Shelf] failed to update favorites visibility', e);
+          setVisibility(previous);
+          setVisibilityError(
+            `Could not make this shelf ${value}. It is still ${previous}.`,
+          );
+        });
+        return;
+      }
       updateShelf(shelf.id, { visibility: value })
         .then(() => {
           // Only public-shelf objects are shareable. Going private strips
@@ -484,6 +840,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // any reorder warning) and closes itself. Closing it from here unmounted
   // that confirmation before it could appear.
   const handleCreated = (created: IObject) => {
+    revealObjectId.current = created.id;
     onObjectCreated?.(shelf.id, created);
   };
 
@@ -544,16 +901,21 @@ export function Shelf(props: ShelfProps): JSX.Element {
               className={styles.settingsDropdown}
               menuClassName={styles.settingsMenu}
               triggerClassName={styles.settingsTrigger}
-              options={SETTINGS_OPTIONS}
+              options={
+                favorites ? FAVORITES_SETTINGS_OPTIONS : SETTINGS_OPTIONS
+              }
               onChange={handleSettingsChange}
               value={visibility}
               customHeader={
                 <Button
-                  className={styles.settings}
+                  className={classNames(styles.settings, {
+                    [styles.settingsPrivate]: visibility === 'private',
+                    [styles.settingsPublic]: visibility === 'public',
+                  })}
                   onClick={() => {}}
                   type={ButtonType.Secondary}
                   Icon={<SettingsIcon />}
-                  ariaLabel="Shelf settings"
+                  ariaLabel={`Shelf settings (${visibility})`}
                 />
               }
             />
@@ -566,7 +928,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
           </span>
 
           <span className={styles.nameWrap}>
-            {isOwner ? (
+            {isOwner && !favorites ? (
               <button
                 type="button"
                 className={styles.nameButton}
@@ -603,7 +965,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </Tooltip>
           )}
 
-          {isOwner && (
+          {isOwner && !favorites && (
             <Tooltip
               place="bottom"
               tooltipContent={
@@ -642,14 +1004,21 @@ export function Shelf(props: ShelfProps): JSX.Element {
             role="status"
             aria-live="polite"
           >
-            {(visibilityError || selectNotice) && (
+            {(visibilityError ||
+              objectOrderError ||
+              favoriteError ||
+              selectNotice) && (
               <Text
                 variant={TypographyVariant.TextSmall}
                 className={classNames(styles.shelfNotice, {
-                  [styles.shelfNoticeError]: !!visibilityError,
+                  [styles.shelfNoticeError]:
+                    !!visibilityError || !!objectOrderError || !!favoriteError,
                 })}
               >
-                {visibilityError ?? selectNotice}
+                {visibilityError ??
+                  objectOrderError ??
+                  favoriteError ??
+                  selectNotice}
               </Text>
             )}
           </div>
@@ -674,78 +1043,75 @@ export function Shelf(props: ShelfProps): JSX.Element {
             />
           </>
         )}
-        <div
-          className={classNames(styles.items, {
-            [styles.scrollable]: isOverflowing,
-          })}
-          ref={itemsRef}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[horizontalOnly]}
+          onDragStart={handleObjectDragStart}
+          onDragEnd={handleObjectDragEnd}
+          onDragCancel={endObjectDrag}
         >
-          <div className={styles.cards} ref={cardsRef}>
-            {cardEntries.map(({ item: obj, leaving }) => {
-              const selected = isSelected(obj.id);
-              // Only the owner can build a share link, so a visitor never sees
-              // the chip. The owner sees it on every kind of object (book,
-              // video, audio), and it carries its own reason when it cannot be
-              // used: the backend refuses objects on a private shelf, and a
-              // chip that simply vanished there read as "this kind of object
-              // cannot be shared".
-              const onSelectToggle = isOwner
-                ? () => toggleSelection(obj)
-                : undefined;
-              const selectDisabled = !isPublic || limitReached;
-              // Short enough to stand on the chip over the artwork; the shelf's
-              // own Select button carries the full sentence.
-              const selectReason = !isPublic
-                ? 'Shelf is private'
-                : limitReached
-                  ? 'Link is full'
-                  : undefined;
-              const card =
-                shelfType === 'video' ? (
-                  <VideoCard
-                    object={obj}
-                    onClick={openObject}
-                    selected={selected}
-                    onSelectToggle={onSelectToggle}
-                    selectDisabled={selectDisabled}
-                    selectReason={selectReason}
-                  />
-                ) : shelfType === 'audio' ? (
-                  <AudioCard
-                    object={obj}
-                    onClick={openObject}
-                    selected={selected}
-                    onSelectToggle={onSelectToggle}
-                    selectDisabled={selectDisabled}
-                    selectReason={selectReason}
-                  />
-                ) : (
-                  <BookCard
-                    object={obj}
-                    onClick={openObject}
-                    selected={selected}
-                    onSelectToggle={onSelectToggle}
-                    selectDisabled={selectDisabled}
-                    selectReason={selectReason}
-                    ownerUsername={ownerUsername}
-                  />
-                );
-              return (
-                <div
-                  key={obj.id}
-                  className={classNames(styles.cardSlot, {
-                    [styles.cardLeaving]: leaving,
-                  })}
-                  data-flip-id={String(obj.id)}
-                  data-flip-leaving={leaving ? 'true' : undefined}
-                  aria-hidden={leaving || undefined}
-                >
-                  {card}
-                </div>
-              );
+          <div
+            className={classNames(styles.items, {
+              [styles.scrollable]: isOverflowing,
+              [styles.reordering]: draggingObjectId != null,
             })}
+            ref={itemsRef}
+          >
+            {/* Only the cards actually standing on the shelf are sortable: one
+                on its way out is still in the row for its fade, and it must not
+                become a drop target or a place in the sequence. */}
+            <SortableContext
+              items={boardObjects.map(obj => obj.id)}
+              strategy={horizontalListSortingStrategy}
+            >
+              <div
+                className={classNames(styles.cards, {
+                  // While a card travels, the row stops answering the pointer:
+                  // otherwise every card the dragged one passes lifts and opens
+                  // its dossier behind the drag.
+                  [styles.cardsReordering]: draggingObjectId != null,
+                })}
+                ref={cardsRef}
+              >
+                {cardEntries.map(({ item: obj, leaving }) => (
+                  <SortableCardSlot
+                    key={obj.id}
+                    id={obj.id}
+                    disabled={!canReorderObjects || leaving}
+                    leaving={leaving}
+                  >
+                    {renderCard(obj)}
+                  </SortableCardSlot>
+                ))}
+              </div>
+            </SortableContext>
           </div>
-        </div>
+          {/* Mounted after hydration, so the server and the first client
+              render agree; it stays mounted from then on, since the drop
+              animation plays as the travelling card is handed back. */}
+          {overlayReady &&
+            createPortal(
+              // Portaled to the body for the same reason the hover dossier is:
+              // the scroll row clips itself, and a card dragged near the left
+              // edge would be sliced by that clip.
+              <div className="library">
+                <DragOverlay
+                  // The card settles into its new place instead of blinking
+                  // there; a reader who asked for less motion gets the plain
+                  // hand-off.
+                  dropAnimation={prefersReducedMotion() ? null : undefined}
+                >
+                  {draggingObject ? (
+                    <div className={styles.dragOverlayCard}>
+                      {renderCard(draggingObject, true)}
+                    </div>
+                  ) : null}
+                </DragOverlay>
+              </div>,
+              document.body,
+            )}
+        </DndContext>
         <ShelfGhostRow
           seed={shelf.id}
           availableWidth={ghostWidth}

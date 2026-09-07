@@ -79,7 +79,9 @@
   z-index: 2;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.25s cubic-bezier(0.2, 0, 0, 1);
 }
 
 // The strip above the artwork is the toggle's own place on the shelf, so a
@@ -136,6 +138,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  // Covers crop from the bottom, never from the top: the title and author sit
+  // in the top third of a printed cover, so that is the part that must survive.
+  object-position: top center;
   // Fades in once decoded; `.coverImageLoaded` lands on load.
   opacity: 0;
   transition: opacity 0.45s ease;
@@ -192,5 +197,24 @@
 
   .bar {
     display: none;
+  }
+}
+
+// The card rises 6px under the cursor and the strip rode up the full 6px with
+// it. The shelf leaves 40px of headroom and the strip already stands 35px tall
+// with its bridge, so those last 6px pushed the pill's top border past the
+// shelf's `overflow: hidden` edge and sliced the line off. Give back half the
+// lift: the pill still follows the object, at 3px it clears the edge by 2px,
+// and the gap over the artwork narrows instead of closing. Same duration and
+// easing as the lift, so the two never drift apart mid-transition.
+.card:hover .select,
+.card:focus-visible .select {
+  transform: translateY(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover .select,
+  .card:focus-visible .select {
+    transform: none;
   }
 }

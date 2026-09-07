@@ -185,3 +185,24 @@ $share-bar-height: 87px;
     color: var(--brown);
   }
 }
+
+// The Favorites shelf's slot. The shelf appears with the first star and
+// leaves with the last one, or while a search narrows the library: both are a
+// fade, so a board never blinks in or out above the rest.
+.favoritesSlot {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transition: opacity 0.24s ease;
+
+  &.favoritesSlotClosing {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favoritesSlot {
+    transition: none;
+  }
+}

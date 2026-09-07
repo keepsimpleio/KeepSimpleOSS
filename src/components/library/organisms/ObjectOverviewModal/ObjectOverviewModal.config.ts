@@ -5,10 +5,8 @@ export type CoverShape = 'portrait' | 'landscape' | 'square';
 export interface ObjectOverviewTypeConfig {
   /** Modal header — "Book overview", etc. */
   modalTitle: string;
-  /** Section label, e.g. "Book description". */
-  descriptionLabel: string;
-  /** Description placeholder when empty. */
-  descriptionEmpty: string;
+  /** Shown in place of the notes when the owner has not written any. */
+  notesEmpty: string;
   /** Left-column cover aspect ratio. */
   coverShape: CoverShape;
   /** Whether to render the Source / Duration row beneath the cover. */
@@ -32,8 +30,7 @@ export const overviewConfigByType: Record<
 > = {
   book: {
     modalTitle: 'Book overview',
-    descriptionLabel: 'Book description',
-    descriptionEmpty: 'No description yet',
+    notesEmpty: 'No notes yet',
     coverShape: 'portrait',
     showSourceDurationRow: false,
     showRatingBox: true,
@@ -43,8 +40,7 @@ export const overviewConfigByType: Record<
   },
   video: {
     modalTitle: 'Video overview',
-    descriptionLabel: 'Video description',
-    descriptionEmpty: 'No description yet',
+    notesEmpty: 'No notes yet',
     coverShape: 'landscape',
     showSourceDurationRow: true,
     showRatingBox: false,
@@ -54,8 +50,7 @@ export const overviewConfigByType: Record<
   },
   audio: {
     modalTitle: 'Audio overview',
-    descriptionLabel: 'Audio description',
-    descriptionEmpty: 'No description yet',
+    notesEmpty: 'No notes yet',
     coverShape: 'square',
     showSourceDurationRow: true,
     showRatingBox: false,

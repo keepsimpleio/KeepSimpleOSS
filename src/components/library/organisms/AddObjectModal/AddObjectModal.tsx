@@ -22,6 +22,7 @@ import type { IAutofillSuggestion } from '@local-types/library/autofill';
 import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
 
+import { notesLabel } from '@lib/library/notesLabel';
 import { isShelfFullError } from '@lib/library/shelfFull';
 
 import { fetchCoverFile } from '@api/library/autofill/fetchCoverFile';
@@ -38,6 +39,7 @@ import { uploadFile } from '@api/library/upload/uploadFile';
 import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { InkLine } from '@components/library/atoms/InkLine';
@@ -55,10 +57,10 @@ import { Input } from '@components/library/molecules/Input';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { ReorderGrid } from '@components/library/molecules/ReorderGrid';
 import type { ReorderItem } from '@components/library/molecules/ReorderGrid/ReorderGrid.types';
+import { RichTextField } from '@components/library/molecules/RichTextField';
 import { StepIndicator } from '@components/library/molecules/StepIndicator';
 import { TagMultiSelect } from '@components/library/molecules/TagMultiSelect';
 import type { TagOption } from '@components/library/molecules/TagMultiSelect/TagMultiSelect.types';
-import { Textarea } from '@components/library/molecules/Textarea';
 import { TitleAutocomplete } from '@components/library/molecules/TitleAutocomplete';
 
 import { configByType } from './AddObjectModal.config';
@@ -164,6 +166,13 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const editing = !isCreate && !!object;
   const shelfLocked = defaultShelfId != null && !editing;
   const { accountData } = useAuth();
+  const { currentOwner } = useGlobalState();
+  // The editor only opens on the owner's own library, so the owner published by
+  // LibraryTemplate and the signed-in account are the same person; the account
+  // covers the moment before the library has published its owner.
+  const ownerNotesLabel = notesLabel(
+    currentOwner?.username ?? accountData?.username,
+  );
 
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -290,6 +299,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   // on every schema, so coalesce to '' before measuring.
   const titleLength = (watch('title') ?? '').length;
   const authorLength = (watch('author') ?? '').length;
+  // Notes are counted as stored: the backend caps the value at 5000 characters
+  // with its markup included (verified against staging Strapi, 2026-09-07), so
+  // a line break or a mark costs what it costs and the counter says so, or it
+  // would read green while the save is refused.
   const descriptionLength = (watch('description') ?? '').length;
 
   // Push a provider suggestion into the form. Values are clamped to the zod
@@ -916,21 +929,21 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       case 'description':
         return (
           <div key={key} className={styles.field}>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.label}
-            >
-              {label}
-            </Text>
-            <Textarea
-              ariaLabel={label}
-              placeholder={`Add a description for this ${objectType}`}
-              wrapperClassName={styles.textareaWrapper}
-              className={styles.textarea}
-              rows={5}
-              {...register('description', {
-                onChange: () => markTyped('description'),
-              })}
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <RichTextField
+                  label={ownerNotesLabel}
+                  ariaLabel={ownerNotesLabel}
+                  placeholder={`Add your notes on this ${objectType}`}
+                  value={field.value ?? ''}
+                  onChange={html => {
+                    markTyped('description');
+                    field.onChange(html);
+                  }}
+                />
+              )}
             />
             <CharCount
               current={descriptionLength}

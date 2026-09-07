@@ -6,9 +6,11 @@ import {
   DIFFICULTY_META,
   formatObjectDate,
   formatObjectDuration,
-  htmlToPlainText,
   OVERALL_COLORS,
 } from '@lib/library/objectMeta';
+import { toEditorHtml } from '@lib/library/richText';
+
+import { StarIcon } from '@icons/library/svg';
 
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
@@ -63,6 +65,9 @@ export function ObjectHoverCard({
   open,
   disabled = false,
   ownerUsername,
+  kindLabel,
+  rows = [],
+  showReview: showReviewProp,
 }: ObjectHoverCardProps): JSX.Element | null {
   const panelRef = useRef<HTMLDivElement>(null);
   // `mounted` keeps the panel in the DOM; `shown` drives the fade. They part
@@ -98,11 +103,21 @@ export function ObjectHoverCard({
   // object when the viewport allows and flips to its left when it does not,
   // vertically centred on the object and kept inside the viewport either way.
   // Recomputed while the shelf or the page scrolls so it stays glued.
+  //
+  // `open` is a dependency, not just `mounted`: a pointer that leaves and comes
+  // back inside the 200ms exit window finds the panel still mounted, with
+  // `shown` already switched off by the exit below. Without a re-run nothing
+  // would switch it back on and the dossier stayed invisible until the next
+  // scroll, which is the rare "hover shows nothing" on a card hovered twice in
+  // a row.
   useEffect(() => {
     if (!mounted) {
       setPosition(null);
       return;
     }
+    // On the way out the panel holds its last position and stops tracking:
+    // re-measuring a fading panel would slide it while it disappears.
+    if (!open || disabled) return;
     let raf = 0;
     const place = () => {
       const anchor = anchorRef.current;
@@ -148,7 +163,7 @@ export function ObjectHoverCard({
       window.removeEventListener('scroll', place, true);
       window.removeEventListener('resize', place);
     };
-  }, [mounted, anchorRef]);
+  }, [mounted, open, disabled, anchorRef]);
 
   const tags = attributes.tags?.data ?? [];
   const published = formatObjectDate(attributes.publicationDate);
@@ -163,12 +178,16 @@ export function ObjectHoverCard({
   const difficulty = attributes.difficulty
     ? DIFFICULTY_META[attributes.difficulty]
     : null;
+  // The notes keep their marks here as they do in the overview: the value is
+  // cut down to the notes dialect (line breaks, bold, italic, strikethrough)
+  // and nothing else reaches the panel as markup.
   const description = useMemo(
-    () => htmlToPlainText(attributes.description),
+    () => toEditorHtml(attributes.description),
     [attributes.description],
   );
 
   const metaRows = [
+    ...rows,
     published ? { label: 'Published', value: published } : null,
     duration ? { label: 'Duration', value: duration } : null,
     // Video and audio fall back to the source as their byline, so only list it
@@ -183,7 +202,7 @@ export function ObjectHoverCard({
 
   // Books carry a review; the block appears whether or not it has been filled
   // in, so an unrated book says so instead of going silent.
-  const showReview = type === 'book';
+  const showReview = showReviewProp ?? type === 'book';
   const isRated = !!attributes.overall || !!difficulty;
   const reviewHeading = ownerUsername
     ? `${ownerUsername} ${isRated ? 'rated this book' : 'didn’t rate this book'}`
@@ -213,7 +232,15 @@ export function ObjectHoverCard({
         style={{ top: position?.top ?? 0, left: position?.left ?? 0 }}
       >
         <div className={styles.head}>
-          <span className={styles.kind}>{KIND_LABEL[type] ?? type}</span>
+          <span className={styles.kind}>
+            {kindLabel ?? KIND_LABEL[type] ?? type}
+          </span>
+          {attributes.favorite && (
+            <span className={styles.favorite}>
+              <StarIcon aria-hidden="true" />
+              Favorite
+            </span>
+          )}
         </div>
 
         <Text
@@ -238,7 +265,12 @@ export function ObjectHoverCard({
           </dl>
         )}
 
-        {description && <p className={styles.description}>{description}</p>}
+        {description && (
+          <div
+            className={styles.description}
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
+        )}
 
         {tags.length > 0 && (
           <div className={styles.tags}>
@@ -267,19 +299,16 @@ export function ObjectHoverCard({
                 <div className={styles.metaRow}>
                   <dt className={styles.metaLabel}>Overall</dt>
                   <dd
-                    className={classNames(styles.metaValue, styles.chipValue)}
+                    className={classNames(styles.metaValue, styles.ratingValue)}
                   >
                     {attributes.overall ? (
-                      <>
-                        <span
-                          className={styles.chip}
-                          style={{
-                            backgroundColor: OVERALL_COLORS[attributes.overall],
-                          }}
-                        />
-                        {attributes.overall}
-                        <span className={styles.chipSuffix}>/5</span>
-                      </>
+                      <span
+                        style={{
+                          color: OVERALL_COLORS[attributes.overall],
+                        }}
+                      >
+                        {attributes.overall}/5
+                      </span>
                     ) : (
                       '—'
                     )}
@@ -288,16 +317,12 @@ export function ObjectHoverCard({
                 <div className={styles.metaRow}>
                   <dt className={styles.metaLabel}>Difficulty</dt>
                   <dd
-                    className={classNames(styles.metaValue, styles.chipValue)}
+                    className={classNames(styles.metaValue, styles.ratingValue)}
                   >
                     {difficulty ? (
-                      <>
-                        <span
-                          className={styles.chip}
-                          style={{ backgroundColor: difficulty.color }}
-                        />
+                      <span style={{ color: difficulty.color }}>
                         {difficulty.label}
-                      </>
+                      </span>
                     ) : (
                       '—'
                     )}

@@ -90,11 +90,22 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const [discardPrompt, setDiscardPrompt] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Resolve exactly the way the Sidebar's Author block does: the library's own
+  // upload wins, and the owner's account photo stands in until they upload one.
+  // Without the fallback the modal showed the empty placeholder while the panel
+  // behind it showed the account photo, so the owner was told they had no
+  // picture while looking at one.
   const previewUrl = useMemo(() => {
     if (avatarFile) return URL.createObjectURL(avatarFile);
-    if (avatarRemoved) return undefined;
-    return currentAvatarUrl;
-  }, [avatarFile, avatarRemoved, currentAvatarUrl]);
+    if (!avatarRemoved && currentAvatarUrl) return currentAvatarUrl;
+    return accountData?.picture;
+  }, [avatarFile, avatarRemoved, currentAvatarUrl, accountData?.picture]);
+
+  // The account photo is a stand-in this modal does not own, so it is not
+  // something "Remove picture" can act on — only a real library avatar (or a
+  // file picked in this session) is removable.
+  const canRemovePicture =
+    avatarFile !== null || (!avatarRemoved && Boolean(currentAvatarUrl));
 
   const {
     register,
@@ -290,10 +301,10 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
               <Tooltip
                 place="top"
                 tooltipContent={
-                  previewUrl ? '' : 'There is no picture to remove yet.'
+                  canRemovePicture ? '' : 'There is no picture to remove yet.'
                 }
                 wrapperClassName={classNames({
-                  [styles.tooltipOff]: !!previewUrl,
+                  [styles.tooltipOff]: canRemovePicture,
                 })}
               >
                 <Button
@@ -302,7 +313,7 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
                   onClick={handleRemovePicture}
                   type={ButtonType.Secondary}
                   size={ButtonSize.Default}
-                  disabled={!previewUrl}
+                  disabled={!canRemovePicture}
                 />
               </Tooltip>
               <Button

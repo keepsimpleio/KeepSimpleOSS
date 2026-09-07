@@ -51,21 +51,29 @@ export function formatObjectDuration(seconds?: number): string {
 
 /**
  * Descriptions are stored as rich text. Small surfaces (the hover dossier)
- * show them as one running line, so flatten the markup to text rather than
- * rendering it: the result is printed as a text node, never as HTML.
+ * print them as a text node rather than rendering markup, so flatten the tags
+ * to text. Line structure survives the flattening: breaks and block ends
+ * become newlines, and the surface renders them with `white-space: pre-line`,
+ * so the hover card shows the same paragraphs the description was written in.
  */
 export function htmlToPlainText(html?: string): string {
   if (!html) return '';
-  return html
-    .replace(/<br\s*\/?>/gi, ' ')
-    .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, ' ')
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#0?39;|&apos;/gi, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
+  return (
+    html
+      .replace(/\r\n?/g, '\n')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#0?39;|&apos;/gi, "'")
+      // Collapse horizontal runs only: \s+ would have eaten the newlines above.
+      .replace(/[^\S\n]+/g, ' ')
+      .replace(/[^\S\n]*\n[^\S\n]*/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+  );
 }

@@ -71,12 +71,20 @@ export function countObjectsByType(
 // tile takes the next slot as the row's continuation.
 const MAX_CARD_COVERS = 4;
 
+// Skips private shelves for the same reason `countObjectsByType` does: the card
+// is the public view of a library, and covers are contents just as much as the
+// counts are. Without this, a library whose every shelf is private reported
+// "0 books" beside four of its private covers — and the library page it links
+// to, which does filter, then looked empty.
 function collectCoverUrls(
   shelves: StrapiSingleShelfEntry[],
   strapiBase?: string,
 ): string[] {
   const urls: string[] = [];
   for (const shelf of shelves) {
+    if (shelf.attributes?.visibility === 'private') {
+      continue;
+    }
     for (const obj of shelf.attributes?.objects?.data ?? []) {
       const resolved = resolveMediaUrl(
         obj.attributes?.coverImage?.data?.attributes?.url,

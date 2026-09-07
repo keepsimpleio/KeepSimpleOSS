@@ -74,24 +74,11 @@
   color: var(--brown-100);
 }
 
-// Rating values read in dark text; the colour rides in the chip beside them,
-// so the value never depends on a low-contrast hue to be legible.
-.chipValue {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+// The value carries its rating colour inline, the same colours the rating box
+// on the object uses, so a book reads the same on the shelf as it does open.
+// "5/5" is one figure: both digits and the slash share the colour and weight.
+.ratingValue {
   font-weight: 600;
-}
-
-.chip {
-  width: 8px;
-  height: 8px;
-  flex-shrink: 0;
-}
-
-.chipSuffix {
-  color: var(--gray-darker);
-  font-weight: 400;
 }
 
 .panel .title {
@@ -164,10 +151,22 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--gray-darkest);
+  // Line breaks arrive as <br> and paragraphs as <p>, the same markup the
+  // overview shows; the clamp counts visible lines, so a long description
+  // still ends at four.
+  overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+
+  p {
+    margin: 0 0 6px;
+  }
+
+  s {
+    text-decoration: line-through;
+  }
 }
 
 .tags {
@@ -208,4 +207,25 @@
   font-size: 14px;
   line-height: 19px;
   color: var(--gray-darker);
+}
+
+// The Favorites mark in the dossier head, opposite the kind label: the same
+// small caps, with the star filled in the accent.
+.favorite {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brown);
+
+  svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+  }
 }

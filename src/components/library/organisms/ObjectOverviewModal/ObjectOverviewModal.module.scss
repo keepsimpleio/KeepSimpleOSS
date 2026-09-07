@@ -220,6 +220,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  // Covers crop from the bottom, never from the top: the title and author sit
+  // in the top third of a printed cover, so that is the part that must survive.
+  object-position: top center;
 }
 
 .coverPlaceholder {
@@ -302,9 +305,9 @@
 .description {
   color: var(--gray-darkest);
   line-height: 1.5;
-  // Preserve the line breaks the user typed — the description is plain text, so
-  // without this the browser collapses every newline into a single space.
-  white-space: pre-wrap;
+  // Typed line breaks arrive as <br> from descriptionToHtml, so this box stays
+  // on normal whitespace: pre-wrap would double the gap on typed text and turn
+  // the source indentation of provider markup into stray blank lines.
   overflow-wrap: anywhere;
 
   p {
@@ -466,4 +469,13 @@
   to {
     opacity: 1;
   }
+}
+
+// The star between Copy URL and the owner menu: the same 36px box as the
+// menu button, so the three controls read as one row.
+.favoriteButton {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-control);
+  background: var(--white);
 }
