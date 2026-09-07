@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -8,6 +8,7 @@ import { usePresence } from '@hooks/library/usePresence';
 
 import { ArrowIcon, CheckIcon } from '@icons/library/svg';
 
+import LibraryRune from '@components/library/atoms/LibraryRune';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { DropdownProps } from './Dropdown.types';
@@ -17,6 +18,8 @@ import styles from './Dropdown.module.scss';
 export function Dropdown(props: DropdownProps): JSX.Element {
   const {
     value,
+    variant = 'default',
+    ownershipLabel = 'My library',
     options,
     onChange,
     className,
@@ -99,7 +102,8 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   const menuContent = (
     <div
       ref={menuRef}
-      className={classNames(styles.menu, menuClassName, {
+      className={cn(styles.menu, menuClassName, {
+        [styles.libraryMenu]: variant === 'library',
         [styles.menuPortal]: portal && menuPos,
         [styles.menuClosing]: !menuShown,
       })}
@@ -130,8 +134,10 @@ export function Dropdown(props: DropdownProps): JSX.Element {
             <div
               role="button"
               ref={isSelectedParent ? selectedRef : undefined}
-              className={classNames(styles.option, {
+              className={cn(styles.option, {
                 [styles.selected]: isSelectedParent,
+                [styles.ownLibrary]:
+                  variant === 'library' && option.isOwnLibrary,
                 [styles.hasSubMenu]: hasSubOptions,
               })}
               tabIndex={0}
@@ -139,19 +145,40 @@ export function Dropdown(props: DropdownProps): JSX.Element {
               onKeyDown={activateOnKey(() =>
                 handleSelect(option.value, hasSubOptions),
               )}
-              aria-label={`Select ${option.label}`}
+              aria-label={`Select ${option.label}${option.isOwnLibrary ? `, ${ownershipLabel}` : ''}`}
+              aria-current={
+                variant === 'library' && isSelectedParent ? 'page' : undefined
+              }
               aria-expanded={hasSubOptions ? isSubOpen : undefined}
             >
-              <Text variant={TypographyVariant.TextBase}>{option.label}</Text>
+              {variant === 'library' ? (
+                <>
+                  <LibraryRune
+                    initial={option.ownerInitial ?? ''}
+                    isOwner={option.isOwnLibrary}
+                  />
+                  <div className={styles.libraryIdentity}>
+                    <Text variant={TypographyVariant.TextBase}>
+                      {option.label}
+                    </Text>
+                    <span className={styles.ownershipLabel}>
+                      {option.isOwnLibrary ? ownershipLabel : '\u00a0'}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <Text variant={TypographyVariant.TextBase}>{option.label}</Text>
+              )}
               {hasSubOptions ? (
                 <ArrowIcon
                   width={14}
                   height={14}
-                  className={classNames(styles.subArrow, {
+                  className={cn(styles.subArrow, {
                     [styles.rotated]: isSubOpen,
                   })}
                 />
               ) : (
+                variant !== 'library' &&
                 value === option.value && (
                   <CheckIcon width={14} height={14} className={styles.check} />
                 )
@@ -163,7 +190,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                   <div
                     key={sub.value}
                     role="button"
-                    className={classNames(styles.option, {
+                    className={cn(styles.option, {
                       [styles.selected]: value === sub.value,
                     })}
                     tabIndex={0}
@@ -192,13 +219,13 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   );
 
   return (
-    <div ref={dropdownRef} className={classNames(className, styles.dropdown)}>
+    <div ref={dropdownRef} className={cn(className, styles.dropdown)}>
       {customHeader ? (
         <div
           ref={el => {
             triggerRef.current = el;
           }}
-          className={classNames(styles.trigger, triggerClassName, {
+          className={cn(styles.trigger, triggerClassName, {
             [styles.open]: isOpen,
             [styles.disabled]: disabled,
           })}
@@ -216,7 +243,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
             triggerRef.current = el;
           }}
           type="button"
-          className={classNames(styles.trigger, triggerClassName, {
+          className={cn(styles.trigger, triggerClassName, {
             [styles.open]: isOpen,
             [styles.disabled]: disabled,
           })}
@@ -232,7 +259,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
             <ArrowIcon
               width={16}
               height={16}
-              className={classNames(styles.icon, { [styles.rotated]: isOpen })}
+              className={cn(styles.icon, { [styles.rotated]: isOpen })}
             />
           </div>
         </button>

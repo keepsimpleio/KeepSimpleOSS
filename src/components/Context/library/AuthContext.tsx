@@ -6,7 +6,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useState,
 } from 'react';
 
 import { IUser } from '@local-types/library/user';
@@ -14,6 +13,8 @@ import { IUser } from '@local-types/library/user';
 import { getAccessToken, removeCookie } from '@lib/library/cookie';
 
 import { logout } from '@api/auth';
+
+import { GlobalContext } from '@components/Context/GlobalContext';
 
 type AuthContextValue = {
   accountData: IUser | null;
@@ -43,8 +44,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const [token, setToken] = useState<string | null>(null);
-  const [accountData, setAccountData] = useState<IUser | null>(null);
+  const { accountData, setAccountData, setToken } = useContext(GlobalContext);
+  const token = accountData ? (getAccessToken() ?? null) : null;
 
   const handleProviderSignIn = async (provider: string) => {
     // Store current page as return URL before login
@@ -78,18 +79,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     removeCookie('accessToken');
     setToken(null);
     setAccountData(null);
-  }, []);
+  }, [setAccountData, setToken]);
+
+  useEffect(() => {
+    const syncLogout = () => {
+      if (!getAccessToken()) {
+        setAccountData(null);
+        setToken(null);
+      }
+    };
+    window.addEventListener('storage', syncLogout);
+    window.addEventListener('focus', syncLogout);
+    window.addEventListener('auth:expired', syncLogout);
+    return () => {
+      window.removeEventListener('storage', syncLogout);
+      window.removeEventListener('focus', syncLogout);
+      window.removeEventListener('auth:expired', syncLogout);
+    };
+  }, [setAccountData, setToken]);
 
   useEffect(() => {
     const accessToken = getAccessToken();
     setToken(accessToken || null);
-  }, [session]);
+  }, [session, setToken]);
 
   return (
     <AuthContext.Provider
       value={{
         token,
-        accountData,
+        accountData: token ? accountData : null,
         setToken,
         setAccountData,
         handleLogout,

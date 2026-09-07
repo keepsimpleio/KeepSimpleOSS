@@ -1,8 +1,11 @@
+import type { HomeLibraryCardView } from '@local-types/library/library';
+
 import type { HotspotMode } from './useHotspotTrigger';
 
 export interface InteractiveCoverProps {
   /** Cover artwork rendered behind the hotspots. */
   src: string;
+  libraries?: HomeLibraryCardView[];
   /** Wider artwork (3840x1704) served to 768–1920px viewports via <picture>. */
   wideSrc?: string;
   /** Panorama artwork (4000x852) served to 1920px+ viewports via <picture>. */

@@ -253,7 +253,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .card:hover .favorite,
-  .card:focus-within .favorite {
+  .card:has(:focus-visible) .favorite {
     opacity: 1;
     pointer-events: auto;
   }
