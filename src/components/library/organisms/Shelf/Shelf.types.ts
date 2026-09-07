@@ -64,6 +64,20 @@ export interface ShelfProps {
     shelfId: number,
     ordered: IReorderObjectEntry[],
   ) => void;
+  /**
+   * The library's Favorites shelf: every starred book, gathered from the
+   * shelves on screen, on a synthetic entry (id FAVORITES_SHELF_ID). It
+   * cannot be renamed, deleted or added to; its privacy is the library's own
+   * `favoritesVisibility`; a drag saves `favoriteOrder` instead of `order`.
+   * Opening a book from it opens the overview on the book's real shelf, which
+   * is the one that knows the shelf the book lives on.
+   */
+  favorites?: boolean;
+  /**
+   * Favorites only: saves the library's `favoritesVisibility`. Rejects when
+   * the save fails, so the menu can fall back.
+   */
+  onFavoritesVisibilityChange?: (visibility: ShelfVisibility) => Promise<void>;
   /** Grip wiring for reordering shelves; owner-only, absent while searching. */
   dragHandleProps?: ShelfDragHandleProps;
   /** True while this shelf is the one being dragged. */

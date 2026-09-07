@@ -1,6 +1,13 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
-import React, { JSX, useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  JSX,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { KEEPSIMPLE_URL, SHELF_FULL_MESSAGE } from '@constants/library/common';
 
@@ -13,13 +20,15 @@ import type {
 import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
+import { canBeFavorite } from '@lib/library/favorites';
+import { notesLabel } from '@lib/library/notesLabel';
 import {
   formatObjectDate,
   formatObjectDuration,
 } from '@lib/library/objectMeta';
 import { objectSlug } from '@lib/library/objectSlug';
+import { toEditorHtml } from '@lib/library/richText';
 import { isShelfFullError } from '@lib/library/shelfFull';
-import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 import { deleteObject } from '@api/library/object/deleteObject';
 import { updateObject } from '@api/library/object/updateObject';
@@ -49,6 +58,7 @@ import {
 } from '@components/library/molecules/Button';
 import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Dropdown } from '@components/library/molecules/Dropdown';
+import { FavoriteToggle } from '@components/library/molecules/FavoriteToggle';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { RatingBox } from '@components/library/molecules/RatingBox';
 import { Tag } from '@components/library/molecules/Tag';
@@ -102,6 +112,15 @@ export function ObjectOverviewModal(
     attributes.difficulty,
   );
   const [ratingError, setRatingError] = useState<string | null>(null);
+
+  // The star follows the object it was opened with; a press flips it at once
+  // and the save catches up, falling back with a message if it cannot.
+  const [favorite, setFavorite] = useState(attributes.favorite === true);
+  useEffect(() => {
+    setFavorite(attributes.favorite === true);
+  }, [attributes.favorite]);
+  const [favoriteBusy, setFavoriteBusy] = useState(false);
+  const [favoriteError, setFavoriteError] = useState<string | null>(null);
 
   const [moveToShelfId, setMoveToShelfId] = useState<string | undefined>();
   const [moveLoading, setMoveLoading] = useState(false);
@@ -159,6 +178,37 @@ export function ObjectOverviewModal(
       setDeleteError(message);
     } finally {
       setDeleteLoading(false);
+    }
+  };
+
+  const handleFavoriteToggle = async () => {
+    if (favoriteBusy) return;
+    const next = !favorite;
+    setFavorite(next);
+    setFavoriteError(null);
+    setFavoriteBusy(true);
+    try {
+      const response = await updateObject(id, { favorite: next });
+      // The saved object carries `favoritedAt`, which the Favorites shelf
+      // sorts by; hand the whole thing back so the shelf sees it.
+      onUpdated?.({
+        ...object,
+        attributes: {
+          ...attributes,
+          ...response.data.attributes,
+          favorite: next,
+        },
+      });
+    } catch (e) {
+      console.error('[ObjectOverviewModal] favorite save failed', e);
+      setFavorite(!next);
+      setFavoriteError(
+        next
+          ? 'Could not add this book to favorites. Please try again.'
+          : 'Could not remove this book from favorites. Please try again.',
+      );
+    } finally {
+      setFavoriteBusy(false);
     }
   };
 
@@ -335,6 +385,9 @@ export function ObjectOverviewModal(
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
   const durationLabel = formatObjectDuration(attributes.duration);
+  // The description is the owner's own writing, so it is signed with their name
+  // on every surface that shows it.
+  const ownerNotesLabel = notesLabel(ownerUsername);
 
   // Edit mode swaps the modal entirely; AddObjectModal manages its own success popup.
   if (editing) {
@@ -494,6 +547,15 @@ export function ObjectOverviewModal(
                   iconPosition={IconPosition.Right}
                   onClick={handleShare}
                 />
+                {canBeFavorite(object) && (isOwner || favorite) && (
+                  <FavoriteToggle
+                    favorite={favorite}
+                    onToggle={isOwner ? handleFavoriteToggle : undefined}
+                    busy={favoriteBusy}
+                    title={attributes.title}
+                    className={styles.favoriteButton}
+                  />
+                )}
                 {isOwner && (
                   <div ref={menuRef} className={styles.menuWrapper}>
                     <button
@@ -539,6 +601,7 @@ export function ObjectOverviewModal(
                 )}
               </div>
             </div>
+            {favoriteError && <p className={styles.error}>{favoriteError}</p>}
 
             {publishedFormatted && (
               <div className={styles.row}>
@@ -562,13 +625,13 @@ export function ObjectOverviewModal(
                 variant={TypographyVariant.TextSmall}
                 className={styles.rowLabel}
               >
-                {config.descriptionLabel}
+                {ownerNotesLabel}
               </Text>
               {attributes.description ? (
                 <div
                   className={styles.description}
                   dangerouslySetInnerHTML={{
-                    __html: sanitizeHtml(attributes.description),
+                    __html: toEditorHtml(attributes.description),
                   }}
                 />
               ) : (
@@ -576,7 +639,7 @@ export function ObjectOverviewModal(
                   variant={TypographyVariant.TextBase}
                   className={styles.rowValue}
                 >
-                  {config.descriptionEmpty}
+                  {config.notesEmpty}
                 </Text>
               )}
             </div>

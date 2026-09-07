@@ -15,4 +15,11 @@ export interface ObjectHoverCardProps {
   disabled?: boolean;
   /** Library owner — named in the rating block heading. */
   ownerUsername?: string;
+  /** Replaces the object-type label in the panel head ("Book"). */
+  kindLabel?: string;
+  /** Extra rows, laid before the object's own metadata. */
+  rows?: { label: string; value: string }[];
+  /** Whether the rating block closes the panel. Defaults to true for books.
+   * Off for anything the owner has not shelved yet. */
+  showReview?: boolean;
 }

@@ -1,0 +1,8 @@
+// Drawn at cell resolution and scaled up: the browser must not smooth it.
+// motion-passport: the frames are painted by PixelShelfBoard.tsx, which
+// holds the reduced-motion branch (one still frame, no loop).
+.canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}

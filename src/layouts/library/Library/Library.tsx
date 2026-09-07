@@ -31,6 +31,7 @@ import {
   LIBRARY_SHELVES_REFETCH_EVENT,
   MAX_SHELVES_PER_LIBRARY,
 } from '@constants/library/common';
+import { RECOMMENDED_SEED } from '@constants/library/recommendations';
 
 import type {
   StrapiLibraryEntry,
@@ -46,6 +47,13 @@ import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useIsMobile from '@hooks/library/useIsMobile';
 import { usePresence } from '@hooks/library/usePresence';
 
+import {
+  FAVORITES_SHELF_ID,
+  FAVORITES_SHELF_NAME,
+  isFavorite,
+  keepFavoriteFields,
+  sortFavorites,
+} from '@lib/library/favorites';
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 import {
   buildSearchHaystack,
@@ -61,6 +69,7 @@ import {
 } from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
 import { reorderShelves } from '@api/library/shelf/reorderShelves';
+import { updateLibrary } from '@api/library/updateLibrary';
 
 import { PlusIcon } from '@icons/library/svg';
 
@@ -81,6 +90,7 @@ import {
   IconPosition,
 } from '@components/library/molecules/Button';
 import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
+import { RecommendedShelf } from '@components/library/organisms/RecommendedShelf';
 import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
 import {
   Shelf,
@@ -96,6 +106,11 @@ const modalTypeToApi: Record<ShelfType, ObjectType> = {
   videos: 'video',
   audios: 'audio',
 };
+
+// motion-passport: exempt. This file carries no animation of its own: list
+// motion runs through useAnimatedList and usePresence, both of which honour
+// prefers-reduced-motion, and the notice keyframes in Library.module.scss
+// carry their reduced-motion branch there.
 
 // Shelves only ever travel up and down the page, so the drag transform keeps
 // its vertical component and drops the horizontal one.
@@ -406,6 +421,46 @@ export function LibraryTemplate({
   const shelvesRef = useRef<StrapiSingleShelfEntry[]>(shelves);
   shelvesRef.current = shelves;
 
+  // The Favorites shelf: every starred book on the shelves above, which for a
+  // visitor already leaves out the private ones. It is a synthetic entry the
+  // Shelf component draws like any other; it stands only while a book is
+  // starred, and for visitors only when the owner has made it public.
+  const favoritesVisibility: ShelfVisibility =
+    library?.attributes.favoritesVisibility ?? 'private';
+  const favoritesShelf = useMemo<StrapiSingleShelfEntry | null>(() => {
+    const starred = sortFavorites(
+      shelves.flatMap(s =>
+        (s.attributes.objects?.data ?? []).filter(isFavorite),
+      ),
+    );
+    if (starred.length === 0) return null;
+    return {
+      id: FAVORITES_SHELF_ID,
+      attributes: {
+        name: FAVORITES_SHELF_NAME,
+        visibility: favoritesVisibility,
+        type: 'book',
+        order: -1,
+        createdAt: '',
+        updatedAt: '',
+        publishedAt: '',
+        objects: { data: starred },
+      },
+    };
+  }, [shelves, favoritesVisibility]);
+  const showFavoritesShelf =
+    favoritesShelf != null && (viewAsOwner || favoritesVisibility === 'public');
+
+  // Which real shelf holds an object: the Favorites shelf's callbacks arrive
+  // with the synthetic id and are routed here to the shelf that owns the book.
+  const shelfIdForObject = useCallback(
+    (objectId: number) =>
+      shelvesRef.current.find(s =>
+        (s.attributes.objects?.data ?? []).some(o => o.id === objectId),
+      )?.id,
+    [],
+  );
+
   // Everything standing on one shelf: the ids that leave the share selection
   // when that shelf turns private or is deleted, since a link may only carry
   // objects that are still public and still exist.
@@ -458,6 +513,15 @@ export function LibraryTemplate({
     });
     return { displayedShelves, matchedIdsByShelf };
   }, [shelves, hasSearch, searchTerms]);
+
+  // The Favorites shelf stays for the length of its fade after the last star
+  // comes off or a search starts, drawn from the last entry it had.
+  const { mounted: favoritesMounted, shown: favoritesShown } = usePresence(
+    showFavoritesShelf && !hasSearch,
+    240,
+  );
+  const lastFavoritesShelf = useRef(favoritesShelf);
+  if (favoritesShelf) lastFavoritesShelf.current = favoritesShelf;
 
   const matchedCount = useMemo(() => {
     if (!matchedIdsByShelf) return null;
@@ -573,8 +637,12 @@ export function LibraryTemplate({
   // the link gets minted with a stale title, a stale cover, or a dead id.
   const handleObjectUpdated = useCallback(
     (shelfId: number, updated: IObject) => {
+      // A save's response may be silent about the star; the copy on the shelf
+      // keeps it (keepFavoriteFields), so an edit never unstars a book.
       mutateShelfObjects(shelfId, objects =>
-        objects.map(o => (o.id === updated.id ? updated : o)),
+        objects.map(o =>
+          o.id === updated.id ? keepFavoriteFields(o, updated) : o,
+        ),
       );
       replaceSelection(updated);
     },
@@ -639,6 +707,84 @@ export function LibraryTemplate({
       );
     },
     [mutateShelfObjects],
+  );
+
+  // The Favorites shelf's callbacks: each lands on the book's real shelf.
+  const handleFavoriteObjectUpdated = useCallback(
+    (_: number, updated: IObject) => {
+      const shelfId = shelfIdForObject(updated.id);
+      if (shelfId != null) handleObjectUpdated(shelfId, updated);
+    },
+    [shelfIdForObject, handleObjectUpdated],
+  );
+
+  const handleFavoriteObjectDeleted = useCallback(
+    (_: number, objectId: number) => {
+      const shelfId = shelfIdForObject(objectId);
+      if (shelfId != null) handleObjectDeleted(shelfId, objectId);
+    },
+    [shelfIdForObject, handleObjectDeleted],
+  );
+
+  // A drag on the Favorites shelf stamps `favoriteOrder` on the books, each
+  // on the shelf it lives on; the favorites memo re-sorts at render.
+  const handleFavoritesReordered = useCallback(
+    (_: number, ordered: { id: number; order: number }[]) => {
+      const orderById = new Map(ordered.map(o => [o.id, o.order]));
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: {
+              data: shelvesData.map(s => ({
+                ...s,
+                attributes: {
+                  ...s.attributes,
+                  objects: {
+                    data: (s.attributes.objects?.data ?? []).map(o =>
+                      orderById.has(o.id)
+                        ? {
+                            ...o,
+                            attributes: {
+                              ...o.attributes,
+                              favoriteOrder: orderById.get(o.id),
+                            },
+                          }
+                        : o,
+                    ),
+                  },
+                },
+              })),
+            },
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  // The Favorites shelf's privacy is a field on the library itself. Saved
+  // here, then stamped on the loaded library so a refetch cannot flip it back.
+  const saveFavoritesVisibility = useCallback(
+    async (visibility: ShelfVisibility) => {
+      if (!library) return;
+      await updateLibrary(library.id, { favoritesVisibility: visibility });
+      setLibrary(current =>
+        current
+          ? {
+              ...current,
+              attributes: {
+                ...current.attributes,
+                favoritesVisibility: visibility,
+              },
+            }
+          : current,
+      );
+    },
+    [library],
   );
 
   // Stamps each shelf's new position onto the loaded library. The `shelves`
@@ -789,6 +935,11 @@ export function LibraryTemplate({
       setLibrary(current => {
         if (!current) return current;
         const shelvesData = current.attributes.singleShelves?.data ?? [];
+        // The star travels with the book: the response of a move may not
+        // carry it, so it is read off the copy leaving the old shelf.
+        const previous = shelvesData
+          .flatMap(s => s.attributes.objects?.data ?? [])
+          .find(o => o.id === moved.id);
         const next = shelvesData.map(s => {
           if (s.id === fromShelfId) {
             const existing = s.attributes.objects?.data ?? [];
@@ -812,9 +963,10 @@ export function LibraryTemplate({
                 (max, o) => Math.max(max, o.attributes.order ?? 0),
                 -1,
               ) + 1;
+            const kept = keepFavoriteFields(previous, moved);
             const placed: IObject = {
-              ...moved,
-              attributes: { ...moved.attributes, order: nextOrder },
+              ...kept,
+              attributes: { ...kept.attributes, order: nextOrder },
             };
             return {
               ...s,
@@ -871,6 +1023,7 @@ export function LibraryTemplate({
   );
 
   const atShelfLimit = shelves.length >= MAX_SHELVES_PER_LIBRARY;
+
   // Selecting objects to share is an owner control on the cards, and those
   // go with the rest of the editing UI on a phone — a bar with nothing to
   // select into would be dead weight at the bottom of the screen.
@@ -994,49 +1147,85 @@ export function LibraryTemplate({
           />
         </div>
       ) : (
-        <div className={styles.shelfList} ref={shelfListRef}>
-          {/* One tree whether or not the boards can be dragged: switching
+        <>
+          {/* The owner's recommended shelf stands above the library's own
+              shelves and outside their order: it is not theirs to drag, a
+              visitor never sees it, and a search leaves it out since nothing
+              on it is in the library yet. */}
+          {/* The Favorites shelf stands above everything, outside the
+              draggable order. A search leaves it out: every starred book is
+              found on its own shelf. */}
+          {favoritesMounted && lastFavoritesShelf.current && (
+            <div
+              className={classNames(styles.favoritesSlot, {
+                [styles.favoritesSlotClosing]: !favoritesShown,
+              })}
+              aria-hidden={!favoritesShown || undefined}
+            >
+              <Shelf
+                favorites
+                title={FAVORITES_SHELF_NAME}
+                shelf={lastFavoritesShelf.current}
+                ownerUsername={ownerUsername ?? libraryId}
+                isOwner={canEditHere}
+                onFavoritesVisibilityChange={saveFavoritesVisibility}
+                onObjectUpdated={handleFavoriteObjectUpdated}
+                onObjectDeleted={handleFavoriteObjectDeleted}
+                onObjectMoved={handleObjectMoved}
+                onObjectsReordered={handleFavoritesReordered}
+              />
+            </div>
+          )}
+          {canEditHere && !hasSearch && (
+            <RecommendedShelf pool={RECOMMENDED_SEED} />
+          )}
+          <div className={styles.shelfList} ref={shelfListRef}>
+            {/* One tree whether or not the boards can be dragged: switching
               between a sortable list and a plain one remounted every shelf on
               the first keystroke of a search, so the whole library flashed. The
               drag is simply switched off while a search narrows the list. */}
-          <DndContext
-            sensors={shelfSensors}
-            collisionDetection={closestCenter}
-            modifiers={[verticalOnly]}
-            onDragEnd={handleShelfDragEnd}
-          >
-            <SortableContext
-              items={displayedShelves.map(shelf => shelf.id)}
-              strategy={verticalListSortingStrategy}
+            <DndContext
+              sensors={shelfSensors}
+              collisionDetection={closestCenter}
+              modifiers={[verticalOnly]}
+              onDragEnd={handleShelfDragEnd}
             >
-              {shelfEntries.map(({ item: shelf, leaving }) => (
-                <div
-                  key={shelf.id}
-                  className={classNames(styles.shelfSlot, {
-                    [styles.shelfLeaving]: leaving,
-                  })}
-                  data-flip-id={String(shelf.id)}
-                  data-flip-leaving={leaving ? 'true' : undefined}
-                  aria-hidden={leaving || undefined}
-                >
-                  {/* A departing board is no longer sortable: it only has
+              <SortableContext
+                items={displayedShelves.map(shelf => shelf.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {shelfEntries.map(({ item: shelf, leaving }) => (
+                  <div
+                    key={shelf.id}
+                    className={classNames(styles.shelfSlot, {
+                      [styles.shelfLeaving]: leaving,
+                    })}
+                    data-flip-id={String(shelf.id)}
+                    data-flip-leaving={leaving ? 'true' : undefined}
+                    aria-hidden={leaving || undefined}
+                  >
+                    {/* A departing board is no longer sortable: it only has
                       to hold its picture while it folds away. */}
-                  {leaving ? (
-                    renderShelf(shelf)
-                  ) : (
-                    <SortableShelf id={shelf.id} disabled={!canReorderShelves}>
-                      {(handleProps, isDragging) =>
-                        canReorderShelves
-                          ? renderShelf(shelf, handleProps, isDragging)
-                          : renderShelf(shelf)
-                      }
-                    </SortableShelf>
-                  )}
-                </div>
-              ))}
-            </SortableContext>
-          </DndContext>
-        </div>
+                    {leaving ? (
+                      renderShelf(shelf)
+                    ) : (
+                      <SortableShelf
+                        id={shelf.id}
+                        disabled={!canReorderShelves}
+                      >
+                        {(handleProps, isDragging) =>
+                          canReorderShelves
+                            ? renderShelf(shelf, handleProps, isDragging)
+                            : renderShelf(shelf)
+                        }
+                      </SortableShelf>
+                    )}
+                  </div>
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+        </>
       )}
 
       {/* The next shelf is added
