@@ -506,15 +506,17 @@ as the review.
 
 Nobody starts either one. Open a PR and both run.
 
-**Why this cannot loop.** The fix job pushes with `GITHUB_TOKEN`, and GitHub
-does not start workflows from `GITHUB_TOKEN` pushes. So the fix commit does not
-trigger a second review, which means it cannot trigger a second fix. One review,
-one fix pass, then it stops. A re-review happens when a person next pushes.
+**Why this cannot run away.** The fix job pushes with `GITHUB_TOKEN`. GitHub
+parks the resulting workflow runs at `action_required`, pending maintainer
+approval, because the pushing actor is a bot — so no fix commit starts a review
+on its own. Approving one _would_ start a review on the agent's commits, which
+can hand off to another fix pass; each pass's push is gated the same way, so it
+cannot run unattended. A re-review otherwise happens when a person next pushes.
 
-That property is the safety of this design, not an accident of it — if anyone
-swaps in a PAT to get re-review chaining, the loop becomes possible and the
-round guard (two `[agent-fix]` commits on a branch) is what stops it. Past that
-guard the PR gets `agent:needs-human` and the job does nothing.
+That gate is the safety of this design, not an accident of it — swap in a PAT
+and the pushes stop being gated at all, so the chaining runs with nobody
+approving it. Behind the gate sits the round guard (two `[agent-fix]` commits on
+a branch); past it the PR gets `agent:needs-human` and the job does nothing.
 
 **What the fixer is told not to do:** touch anything the review did not raise,
 or apply a review comment it judges wrong. Automated review is mistaken
