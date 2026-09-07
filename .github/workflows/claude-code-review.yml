@@ -124,7 +124,10 @@ jobs:
           # Agent so the model can fan out on 100+ file PRs instead of
           # hitting permission denials and giving up (see PR #185 run).
           # --max-turns caps a big review so it finishes the summary.
+          # The action defaults to claude-sonnet-5. Review quality is the whole
+          # point of this job, and a missed defect costs more than the tokens.
           claude_args: |
+            --model claude-opus-5
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Agent,Bash(git diff:*),Bash(git log:*),Bash(git show:*)"
             --max-turns 120
 
@@ -240,6 +243,9 @@ jobs:
 
             Finish by summarising, per comment: fixed, or skipped and why.
 
+          # Same reasoning as the review job, and more so: this one writes code
+          # and pushes it with nobody watching.
           claude_args: |
+            --model claude-opus-5
             --allowedTools "Read,Glob,Grep,Edit,Write,Bash(git add:*),Bash(git commit:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(/home/runner/work/_actions/anthropics/claude-code-action/v1/scripts/git-push.sh:*)"
             --max-turns 80
