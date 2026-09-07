@@ -1,0 +1,16 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill {
+  background: #e8d9b8;
+  border: 1px solid #533a3a;
+  cursor: pointer;
+}
+
+.tone {
+  color: #9a8f7a;
+  font-size: 13px;
+}
