@@ -13,6 +13,7 @@ import {
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   Button,
   ButtonSize,
@@ -213,31 +214,36 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
             {pillEntries.map(({ item: shelf, leaving }) => {
               const isSelected = shelf.id === selectedJumpShelfId;
               return (
-                <span
-                  key={shelf.id}
-                  className={classNames(styles.pillSlot, {
-                    [styles.pillLeaving]: leaving,
-                  })}
-                  data-flip-id={String(shelf.id)}
-                  data-flip-leaving={leaving ? 'true' : undefined}
-                  aria-hidden={leaving || undefined}
-                  title={
+                <Tooltip
+                  asChild
+                  tooltipContent={
                     shelf.attributes.name.length > 20
                       ? shelf.attributes.name
                       : undefined
                   }
+                  key={shelf.id}
                 >
-                  <Button
-                    label={truncateLabel(shelf.attributes.name)}
-                    ariaLabel={`Jump to ${shelf.attributes.name}`}
-                    onClick={() => handleJumpTo(shelf.id)}
-                    type={ButtonType.Secondary}
-                    size={ButtonSize.Default}
-                    className={classNames(styles.jumpButton, {
-                      [styles.jumpSelected]: isSelected,
+                  <span
+                    key={shelf.id}
+                    className={classNames(styles.pillSlot, {
+                      [styles.pillLeaving]: leaving,
                     })}
-                  />
-                </span>
+                    data-flip-id={String(shelf.id)}
+                    data-flip-leaving={leaving ? 'true' : undefined}
+                    aria-hidden={leaving || undefined}
+                  >
+                    <Button
+                      label={truncateLabel(shelf.attributes.name)}
+                      ariaLabel={`Jump to ${shelf.attributes.name}`}
+                      onClick={() => handleJumpTo(shelf.id)}
+                      type={ButtonType.Secondary}
+                      size={ButtonSize.Default}
+                      className={classNames(styles.jumpButton, {
+                        [styles.jumpSelected]: isSelected,
+                      })}
+                    />
+                  </span>
+                </Tooltip>
               );
             })}
           </div>

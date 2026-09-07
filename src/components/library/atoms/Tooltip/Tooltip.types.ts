@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { PlacesType } from 'react-tooltip';
 
 export interface TooltipProps {
+  asChild?: boolean;
   className?: string;
   children: ReactNode;
   place?: PlacesType;

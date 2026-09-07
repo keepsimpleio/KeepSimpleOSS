@@ -235,3 +235,15 @@ values, and a new subcommand for the lever (it is a `/data/bin` file). Nothing e
 - Asset fallback: if the artwork fails to load, show Loading in existing Source Serif 4 at 14px, centered in the reserved scene. Reveal waits for the image load event.
 - Scrollbar passport: none added; scene overflow is clipped.
 - Scope: Library loading and shelf creation only. Global route and other product loaders retain their current behavior.
+
+## Library tooltip design passport
+
+All Library control hints use the shared Tooltip component. Native HTML title
+hints are forbidden. Use asChild to keep existing button and tag geometry.
+Paper background --white, text --gray-darker, border --beige, brown accent from
+existing controls; Source Serif 4 at 16px, 12px by 16px padding, 300px maximum
+width, existing --radius-control and --tooltip-shadow. Tooltips portal to body
+with fixed positioning at layer 10000, above Library dialogs and hover cards.
+Opacity enters and exits over 150ms ease; reduced motion disables transitions.
+Hints wrap within the viewport and have no scrollable surface. Portals reserve
+no layout space and do not change anchor size. Empty hints render no popup.

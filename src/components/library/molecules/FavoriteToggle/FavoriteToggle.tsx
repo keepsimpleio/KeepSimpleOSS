@@ -3,6 +3,8 @@ import React, { JSX } from 'react';
 
 import { StarIcon } from '@icons/library/svg';
 
+import { Tooltip } from '@components/library/atoms/Tooltip';
+
 import type { FavoriteToggleProps } from './FavoriteToggle.types';
 
 import styles from './FavoriteToggle.module.scss';
@@ -41,25 +43,29 @@ export function FavoriteToggle({
   };
 
   return (
-    <button
-      type="button"
-      className={classNames(styles.star, className, {
-        [styles.on]: favorite,
-        [styles.busy]: busy,
-      })}
-      onClick={handleClick}
-      onPointerDown={stop}
-      onKeyDown={stop}
-      aria-pressed={favorite}
-      aria-busy={busy || undefined}
-      aria-label={
-        favorite
-          ? `Remove ${title} from favorites`
-          : `Add ${title} to favorites`
-      }
-      title={favorite ? 'Remove from favorites' : 'Add to favorites'}
+    <Tooltip
+      asChild
+      tooltipContent={favorite ? 'Remove from favorites' : 'Add to favorites'}
     >
-      <StarIcon />
-    </button>
+      <button
+        type="button"
+        className={classNames(styles.star, className, {
+          [styles.on]: favorite,
+          [styles.busy]: busy,
+        })}
+        onClick={handleClick}
+        onPointerDown={stop}
+        onKeyDown={stop}
+        aria-pressed={favorite}
+        aria-busy={busy || undefined}
+        aria-label={
+          favorite
+            ? `Remove ${title} from favorites`
+            : `Add ${title} to favorites`
+        }
+      >
+        <StarIcon />
+      </button>
+    </Tooltip>
   );
 }
