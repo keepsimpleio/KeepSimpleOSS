@@ -74,22 +74,15 @@
   color: var(--brown-100);
 }
 
-// Rating values read in dark text; the colour rides in the chip beside them,
-// so the value never depends on a low-contrast hue to be legible.
-.chipValue {
+// The value carries its rating colour inline, the same colours the rating box
+// on the object uses, so a book reads the same on the shelf as it does open.
+.ratingValue {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  align-items: baseline;
   font-weight: 600;
 }
 
-.chip {
-  width: 8px;
-  height: 8px;
-  flex-shrink: 0;
-}
-
-.chipSuffix {
+.ratingSuffix {
   color: var(--gray-darker);
   font-weight: 400;
 }

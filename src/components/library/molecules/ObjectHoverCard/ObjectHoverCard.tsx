@@ -283,18 +283,18 @@ export function ObjectHoverCard({
                 <div className={styles.metaRow}>
                   <dt className={styles.metaLabel}>Overall</dt>
                   <dd
-                    className={classNames(styles.metaValue, styles.chipValue)}
+                    className={classNames(styles.metaValue, styles.ratingValue)}
                   >
                     {attributes.overall ? (
                       <>
                         <span
-                          className={styles.chip}
                           style={{
-                            backgroundColor: OVERALL_COLORS[attributes.overall],
+                            color: OVERALL_COLORS[attributes.overall],
                           }}
-                        />
-                        {attributes.overall}
-                        <span className={styles.chipSuffix}>/5</span>
+                        >
+                          {attributes.overall}
+                        </span>
+                        <span className={styles.ratingSuffix}>/5</span>
                       </>
                     ) : (
                       '—'
@@ -304,16 +304,12 @@ export function ObjectHoverCard({
                 <div className={styles.metaRow}>
                   <dt className={styles.metaLabel}>Difficulty</dt>
                   <dd
-                    className={classNames(styles.metaValue, styles.chipValue)}
+                    className={classNames(styles.metaValue, styles.ratingValue)}
                   >
                     {difficulty ? (
-                      <>
-                        <span
-                          className={styles.chip}
-                          style={{ backgroundColor: difficulty.color }}
-                        />
+                      <span style={{ color: difficulty.color }}>
                         {difficulty.label}
-                      </>
+                      </span>
                     ) : (
                       '—'
                     )}
