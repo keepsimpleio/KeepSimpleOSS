@@ -164,6 +164,9 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--gray-darkest);
+  // htmlToPlainText keeps the paragraph breaks; the clamp counts visible lines,
+  // so a long description still ends at four.
+  white-space: pre-line;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;

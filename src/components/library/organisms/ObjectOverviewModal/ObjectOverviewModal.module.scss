@@ -302,9 +302,9 @@
 .description {
   color: var(--gray-darkest);
   line-height: 1.5;
-  // Preserve the line breaks the user typed — the description is plain text, so
-  // without this the browser collapses every newline into a single space.
-  white-space: pre-wrap;
+  // Typed line breaks arrive as <br> from descriptionToHtml, so this box stays
+  // on normal whitespace: pre-wrap would double the gap on typed text and turn
+  // the source indentation of provider markup into stray blank lines.
   overflow-wrap: anywhere;
 
   p {

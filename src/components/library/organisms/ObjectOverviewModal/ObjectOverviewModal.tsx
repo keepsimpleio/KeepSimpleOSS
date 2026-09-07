@@ -13,13 +13,13 @@ import type {
 import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
+import { descriptionToHtml } from '@lib/library/descriptionHtml';
 import {
   formatObjectDate,
   formatObjectDuration,
 } from '@lib/library/objectMeta';
 import { objectSlug } from '@lib/library/objectSlug';
 import { isShelfFullError } from '@lib/library/shelfFull';
-import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 import { deleteObject } from '@api/library/object/deleteObject';
 import { updateObject } from '@api/library/object/updateObject';
@@ -568,7 +568,7 @@ export function ObjectOverviewModal(
                 <div
                   className={styles.description}
                   dangerouslySetInnerHTML={{
-                    __html: sanitizeHtml(attributes.description),
+                    __html: descriptionToHtml(attributes.description),
                   }}
                 />
               ) : (
