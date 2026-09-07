@@ -518,7 +518,7 @@ export function Sidebar() {
                 onClick={handleCopyUrl}
                 type={ButtonType.Secondary}
                 size={ButtonSize.Wide}
-                label={isCopied ? 'COPIED' : 'COPY LIBRARY URL'}
+                label={isCopied ? 'Copied' : 'Library URL'}
                 ariaLabel={isCopied ? 'Library URL copied' : 'Copy library URL'}
                 Icon={<LinkIcon />}
                 className={classNames(styles.copyButton, {

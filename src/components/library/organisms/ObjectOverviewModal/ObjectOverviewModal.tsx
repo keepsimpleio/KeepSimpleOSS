@@ -539,7 +539,7 @@ export function ObjectOverviewModal(
               )}
               <div className={styles.actions}>
                 <Button
-                  type={ButtonType.Primary}
+                  type={ButtonType.Secondary}
                   size={ButtonSize.Default}
                   className={styles.shareButton}
                   label={shareCopied ? 'Copied' : 'Copy URL'}
