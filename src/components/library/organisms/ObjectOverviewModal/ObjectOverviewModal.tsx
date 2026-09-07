@@ -20,7 +20,6 @@ import type {
 import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
-import { descriptionToHtml } from '@lib/library/descriptionHtml';
 import { canBeFavorite } from '@lib/library/favorites';
 import { notesLabel } from '@lib/library/notesLabel';
 import {
@@ -28,6 +27,7 @@ import {
   formatObjectDuration,
 } from '@lib/library/objectMeta';
 import { objectSlug } from '@lib/library/objectSlug';
+import { toEditorHtml } from '@lib/library/richText';
 import { isShelfFullError } from '@lib/library/shelfFull';
 
 import { deleteObject } from '@api/library/object/deleteObject';
@@ -631,7 +631,7 @@ export function ObjectOverviewModal(
                 <div
                   className={styles.description}
                   dangerouslySetInnerHTML={{
-                    __html: descriptionToHtml(attributes.description),
+                    __html: toEditorHtml(attributes.description),
                   }}
                 />
               ) : (

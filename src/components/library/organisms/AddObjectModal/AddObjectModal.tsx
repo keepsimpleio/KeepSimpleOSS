@@ -23,7 +23,6 @@ import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
 
 import { notesLabel } from '@lib/library/notesLabel';
-import { richTextLength } from '@lib/library/richText';
 import { isShelfFullError } from '@lib/library/shelfFull';
 
 import { fetchCoverFile } from '@api/library/autofill/fetchCoverFile';
@@ -300,9 +299,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   // on every schema, so coalesce to '' before measuring.
   const titleLength = (watch('title') ?? '').length;
   const authorLength = (watch('author') ?? '').length;
-  // Notes are counted as text: the marks around the words are not the
-  // writer's characters. The schema still caps the stored value.
-  const descriptionLength = richTextLength(watch('description'));
+  // Notes are counted as stored: the backend caps the value at 5000 characters
+  // with its markup included (verified against staging Strapi, 2026-09-07), so
+  // a line break or a mark costs what it costs and the counter says so, or it
+  // would read green while the save is refused.
+  const descriptionLength = (watch('description') ?? '').length;
 
   // Push a provider suggestion into the form. Values are clamped to the zod
   // limits so an autofill can never leave the form invalid; the cover is
