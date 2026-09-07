@@ -76,15 +76,9 @@
 
 // The value carries its rating colour inline, the same colours the rating box
 // on the object uses, so a book reads the same on the shelf as it does open.
+// "5/5" is one figure: both digits and the slash share the colour and weight.
 .ratingValue {
-  display: inline-flex;
-  align-items: baseline;
   font-weight: 600;
-}
-
-.ratingSuffix {
-  color: var(--gray-darker);
-  font-weight: 400;
 }
 
 .panel .title {

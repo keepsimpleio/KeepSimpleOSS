@@ -286,16 +286,13 @@ export function ObjectHoverCard({
                     className={classNames(styles.metaValue, styles.ratingValue)}
                   >
                     {attributes.overall ? (
-                      <>
-                        <span
-                          style={{
-                            color: OVERALL_COLORS[attributes.overall],
-                          }}
-                        >
-                          {attributes.overall}
-                        </span>
-                        <span className={styles.ratingSuffix}>/5</span>
-                      </>
+                      <span
+                        style={{
+                          color: OVERALL_COLORS[attributes.overall],
+                        }}
+                      >
+                        {attributes.overall}/5
+                      </span>
                     ) : (
                       '—'
                     )}
