@@ -46,3 +46,26 @@ preference, failed directory request or missing fixture stops the deployment job
 This gate requires no CMS credentials. Its journal is retained as a CI artifact.
 If a frontend change adds a backend dependency, extend this contract and deploy the
 compatible CMS change first. Never bypass a failed contract to ship the frontend.
+
+## Library metadata
+
+Run `yarn check:library:seo` after changing Library metadata or its shared renderer.
+It checks server-rendered tags, anonymous fetching, private shelf exclusion and the
+public image response, including its dimensions. With `NEXT_PUBLIC_STRAPI` pointing
+to the release target, `node scripts/release/library-seo-check.cjs --live` also
+checks Wolf's public collection. This is read-only. After deployment, inspect the
+served HTML for `/library` and `/library/wolf`; a local render does not certify a
+release or refresh an external messenger's cached preview.
+
+The pending Library batch changes the account username minimum to four characters.
+The CMS companion branch is `chore/library-release-guardrails` in keepsimple-cms-new;
+its validator change must be released with the frontend. Existing usernames and
+records are not rewritten. Uniqueness, forbidden characters and rename cooldown
+remain enforced. The database schema is unchanged.
+
+`check:library` also checks the four-Favorites card threshold, ordering, private
+content exclusion, frontend username boundaries and the rune loader stylesheet.
+When the local CMS checkout exists, the batch check exercises its validator too.
+A frontend-only CI run does not prove the CMS validator has been deployed.
+
+Personal library metadata now uses the public username and a fixed personal-notes description. The thumbnail endpoint renders a 1200 by 630 PNG from local artwork and fonts after anonymous library lookup. Unknown libraries return 404; CMS failures return 503 without caching. Successful PNG responses cache for one hour. Each endpoint request emits a JSON event to container logs. Wolf retains the approved static card and collection date. The SEO check renders Latin, Cyrillic and Armenian samples and exercises endpoint method, lookup and failure responses.

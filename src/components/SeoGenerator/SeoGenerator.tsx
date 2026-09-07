@@ -8,6 +8,11 @@ import type { TRouter } from '@local-types/global';
 import { generateSchema } from '@lib/schema';
 
 interface SeoGeneratorProps {
+  schemaOverride?: Record<string, unknown>;
+  largeImage?: boolean;
+  imageWidth?: number;
+  imageHeight?: number;
+  omitDefaultAuthor?: boolean;
   questionsSeo?: any;
   strapiSEO?: any;
   userFavIcon?: string;
@@ -37,6 +42,11 @@ interface SeoGeneratorProps {
 }
 
 const SeoGenerator: FC<SeoGeneratorProps> = ({
+  schemaOverride,
+  largeImage,
+  imageWidth,
+  imageHeight,
+  omitDefaultAuthor,
   questionsSeo,
   strapiSEO = {},
   userFavIcon,
@@ -242,7 +252,11 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         <meta itemProp="description" content={stripHTML(description)} />
         <meta
           itemProp="image"
-          content="https://keepsimple.io/assets/keep-simple.jpg"
+          content={
+            largeImage
+              ? ogTags?.ogImage?.data?.attributes?.staticUrl
+              : 'https://keepsimple.io/assets/keep-simple.jpg'
+          }
         />
 
         <meta
@@ -268,6 +282,12 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
               : ogTags?.ogTitle || ogTags?.ogStaticTitle
           }
         />
+        {imageWidth && (
+          <meta property="og:image:width" content={String(imageWidth)} />
+        )}
+        {imageHeight && (
+          <meta property="og:image:height" content={String(imageHeight)} />
+        )}
         <meta property="og:url" content={originalUrl} />
         <meta property="og:site_name" content="Keep Simple" />
 
@@ -275,11 +295,18 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
 
         {/* AUTHRO */}
 
-        <meta property="article:author" content="Wolf Alexanyan" />
+        {!omitDefaultAuthor && (
+          <meta property="article:author" content="Wolf Alexanyan" />
+        )}
 
         {/* TWITTER */}
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:creator" content="@AlexanyanWolf" />
+        <meta
+          name="twitter:card"
+          content={largeImage ? 'summary_large_image' : 'summary'}
+        />
+        {!omitDefaultAuthor && (
+          <meta name="twitter:creator" content="@AlexanyanWolf" />
+        )}
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={ogTags?.ogDescription} />
         <meta
@@ -293,12 +320,16 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
           }
         />
         <meta name="twitter:url" content={originalUrl} />
-        <meta name="twitter:label1" content="Written by" />
-        <meta name="twitter:data1" content="Wolf Alexanyan" />
+        {!omitDefaultAuthor && (
+          <>
+            <meta name="twitter:label1" content="Written by" />
+            <meta name="twitter:data1" content="Wolf Alexanyan" />
+          </>
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(schema)
+            __html: JSON.stringify(schemaOverride ?? schema)
               .replace(/</g, '\\u003c')
               .replace(/>/g, '\\u003e')
               .replace(/&/g, '\\u0026'),

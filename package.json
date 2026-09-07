@@ -25,7 +25,8 @@
     "check-links:summary": "linkinator https://keepsimple.io --config linkinator.config.json",
     "render-links": "node .claude/keepsimple-qa/render-links-report.js",
     "prepare": "husky install",
-    "check:library": "node scripts/release/library-regressions.cjs"
+    "check:library": "node scripts/release/library-regressions.cjs && node scripts/release/library-batch-check.cjs",
+    "check:library:seo": "node scripts/release/library-seo-check.cjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
