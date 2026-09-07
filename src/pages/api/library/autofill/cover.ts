@@ -6,6 +6,7 @@ const ALLOWED_HOSTS = [
   /^books\.google\.com$/,
   /^books\.googleusercontent\.com$/,
   /^covers\.openlibrary\.org$/,
+  /^archive\.org$/,
   // Open Library redirects stored cover scans to Internet Archive.
   /^ia\d+\.(us|eu)\.archive\.org$/,
   /(^|\.)mzstatic\.com$/,
@@ -39,6 +40,8 @@ function isAllowed(raw: string): boolean {
       !url.username &&
       !url.password &&
       (!url.port || url.port === '443') &&
+      (url.hostname !== 'archive.org' ||
+        /^\/download\/[a-z]_covers_\d+\//.test(url.pathname)) &&
       ALLOWED_HOSTS.some(re => re.test(url.hostname))
     );
   } catch {
