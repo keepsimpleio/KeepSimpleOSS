@@ -95,6 +95,11 @@ export interface StrapiLibraryAttributes {
   user?: StrapiUserRelation;
   libraryDetails: StrapiLibraryDetailsComponent | null;
   singleShelves: StrapiSingleShelvesRelation;
+  /**
+   * Whether visitors see the Favorites shelf. Absent (older backend) reads as
+   * private. Backend spec: docs/library-favorites-backend.md.
+   */
+  favoritesVisibility?: 'public' | 'private';
 }
 
 export interface StrapiLibraryEntry {
@@ -124,6 +129,7 @@ export interface IUpdateLibraryPayload {
   aboutMe?: string;
   libraryDetails?: { aboutLibrary: string };
   avatar?: number | null;
+  favoritesVisibility?: 'public' | 'private';
 }
 
 /** Mapped row for `LibraryCard` on the home page */

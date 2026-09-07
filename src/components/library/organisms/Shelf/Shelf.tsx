@@ -33,9 +33,12 @@ import type { ShelfVisibility } from '@local-types/library/shelf';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
+import { isFavorite, sortFavorites } from '@lib/library/favorites';
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
+import { reorderFavorites } from '@api/library/object/reorderFavorites';
 import { reorderObjects } from '@api/library/object/reorderObjects';
+import { updateObject } from '@api/library/object/updateObject';
 import { deleteShelf } from '@api/library/shelf/deleteShelf';
 import { updateShelf } from '@api/library/shelf/updateShelf';
 
@@ -47,6 +50,7 @@ import {
   DragHandleIcon,
   PlusIcon,
   SettingsIcon,
+  StarIcon,
   VideoIcon,
 } from '@icons/library/svg';
 
@@ -99,6 +103,12 @@ const SETTINGS_OPTIONS = [
   },
   { value: 'delete', label: 'Delete shelf' },
 ];
+
+// The Favorites shelf cannot be deleted: it stands as long as a book is
+// starred. Only its privacy is the owner's to set.
+const FAVORITES_SETTINGS_OPTIONS = SETTINGS_OPTIONS.filter(
+  option => option.value === 'privacy',
+);
 
 const objectKey = (o: IObject) => String(o.id);
 
@@ -181,6 +191,8 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onShelfRenamed,
     onObjectMoved,
     onObjectsReordered,
+    favorites = false,
+    onFavoritesVisibilityChange,
     dragHandleProps,
     isDragging = false,
   } = props;
@@ -188,9 +200,13 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // Render in persisted-order sequence. Strapi's populate doesn't sort the
   // relation, so without this the drag order (saved via reorderObjects) never
   // shows. Stable: objects with no `order` keep their natural position.
-  const objects = [...(shelf.attributes.objects?.data ?? [])].sort(
-    (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
-  );
+  // The Favorites shelf keeps its own order (`favoriteOrder`, then the time
+  // of the star), since its books each hold an `order` on their real shelf.
+  const objects = favorites
+    ? sortFavorites(shelf.attributes.objects?.data ?? [])
+    : [...(shelf.attributes.objects?.data ?? [])].sort(
+        (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+      );
   // What a search leaves on screen. Everything else below (count, cap, the
   // reorder grid, the open object) keeps reading `objects`, the real shelf.
   const drawnObjects = visibleObjectIds
@@ -258,7 +274,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
     },
   );
 
-  const typeIcon = SHELF_TYPE_ICON[shelfType] ?? <BookIcon />;
+  const typeIcon = favorites ? (
+    <StarIcon />
+  ) : (
+    (SHELF_TYPE_ICON[shelfType] ?? <BookIcon />)
+  );
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
 
   // Backend caps a shelf at 21 objects (all types combined). Pre-disable the
@@ -269,9 +289,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // Plain object count beside the shelf name. The cap belongs in the tooltip,
   // not in the visible label — a visitor reads how full the shelf is, an owner
   // hovers to learn how much room is left.
-  const countTitle = `${objects.length} ${
-    objects.length === 1 ? typeLabel : `${typeLabel}s`
-  } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
+  const countTitle = favorites
+    ? `${objects.length} favorite ${objects.length === 1 ? 'book' : 'books'}`
+    : `${objects.length} ${
+        objects.length === 1 ? typeLabel : `${typeLabel}s`
+      } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
 
   const router = useRouter();
   // On the share-link page the object opens through a query parameter, so
@@ -317,7 +339,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // Only objects on a public shelf can be shared (the backend refuses the
   // rest), so the shelf's own privacy governs both the "Select shelf" button
   // and every Select chip on the cards below.
-  const isPublic = visibility === 'public';
+  // The Favorites shelf's own privacy says nothing about sharing: each book
+  // there is shareable by the rule of the shelf it lives on, which the backend
+  // enforces at share time.
+  const isPublic = favorites || visibility === 'public';
   const shareLinkFullReason = `The share link is full (${MAX_SHARE_OBJECTS} items). Remove some to select more.`;
   // How many objects a "Select shelf" could not add because the link was full.
   const [selectNotice, setSelectNotice] = useState<string | null>(null);
@@ -505,8 +530,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   };
 
   // The object this shelf currently owns *and* the URL points at, if any.
+  // The Favorites shelf never opens one: the same book stands on its real
+  // shelf, and that shelf's overview is the one that knows where it lives.
   const activeObject =
-    activeObjectId != null
+    !favorites && activeObjectId != null
       ? (objects.find(o => o.id === activeObjectId) ?? null)
       : null;
 
@@ -560,7 +587,59 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
     if (shelfType === 'video') return <VideoCard {...shared} />;
     if (shelfType === 'audio') return <AudioCard {...shared} />;
-    return <BookCard {...shared} ownerUsername={ownerUsername} />;
+    return (
+      <BookCard
+        {...shared}
+        ownerUsername={ownerUsername}
+        favorite={isFavorite(obj)}
+        onFavoriteToggle={
+          isOwner && !travelling ? () => toggleFavorite(obj) : undefined
+        }
+        favoriteBusy={favoriteBusyId === obj.id}
+      />
+    );
+  };
+
+  // The star on a card. The library tree flips first so the star and the
+  // Favorites shelf answer at once; the save follows, and a failure puts the
+  // book back and says so on the shelf.
+  const [favoriteBusyId, setFavoriteBusyId] = useState<number | null>(null);
+  const [favoriteError, setFavoriteError] = useState<string | null>(null);
+  const toggleFavorite = (obj: IObject) => {
+    if (favoriteBusyId != null) return;
+    const next = !isFavorite(obj);
+    setFavoriteError(null);
+    setFavoriteBusyId(obj.id);
+    onObjectUpdated?.(shelf.id, {
+      ...obj,
+      attributes: {
+        ...obj.attributes,
+        favorite: next,
+        favoritedAt: next ? new Date().toISOString() : null,
+        favoriteOrder: null,
+      },
+    });
+    updateObject(obj.id, { favorite: next })
+      .then(response => {
+        onObjectUpdated?.(shelf.id, {
+          ...obj,
+          attributes: {
+            ...obj.attributes,
+            ...response.data.attributes,
+            favorite: next,
+          },
+        });
+      })
+      .catch(e => {
+        console.error('[Shelf] favorite save failed', e);
+        onObjectUpdated?.(shelf.id, obj);
+        setFavoriteError(
+          next
+            ? `Could not add “${obj.attributes.title}” to favorites.`
+            : `Could not remove “${obj.attributes.title}” from favorites.`,
+        );
+      })
+      .finally(() => setFavoriteBusyId(null));
   };
 
   const handleObjectDragStart = (event: DragStartEvent) => {
@@ -600,7 +679,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
     const ordered = nextIds.map((id, index) => ({ id, order: index }));
     onObjectsReordered?.(shelf.id, ordered);
 
-    reorderObjects({ shelfId: shelf.id, objects: ordered }).catch(error => {
+    const save = favorites
+      ? reorderFavorites({ objects: ordered })
+      : reorderObjects({ shelfId: shelf.id, objects: ordered });
+    save.catch(error => {
       console.error('[Shelf] object reorder failed to persist', {
         shelfId: shelf.id,
         objects: ordered,
@@ -675,6 +757,19 @@ export function Shelf(props: ShelfProps): JSX.Element {
       if (previous === value) return;
       setVisibility(value);
       setVisibilityError(null);
+      // The Favorites shelf's privacy is the library's own field, saved by
+      // the library; its books stay shareable either way, since each is
+      // still on its real shelf.
+      if (favorites) {
+        (onFavoritesVisibilityChange?.(value) ?? Promise.resolve()).catch(e => {
+          console.error('[Shelf] failed to update favorites visibility', e);
+          setVisibility(previous);
+          setVisibilityError(
+            `Could not make this shelf ${value}. It is still ${previous}.`,
+          );
+        });
+        return;
+      }
       updateShelf(shelf.id, { visibility: value })
         .then(() => {
           // Only public-shelf objects are shareable. Going private strips
@@ -806,7 +901,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
               className={styles.settingsDropdown}
               menuClassName={styles.settingsMenu}
               triggerClassName={styles.settingsTrigger}
-              options={SETTINGS_OPTIONS}
+              options={
+                favorites ? FAVORITES_SETTINGS_OPTIONS : SETTINGS_OPTIONS
+              }
               onChange={handleSettingsChange}
               value={visibility}
               customHeader={
@@ -828,7 +925,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
           </span>
 
           <span className={styles.nameWrap}>
-            {isOwner ? (
+            {isOwner && !favorites ? (
               <button
                 type="button"
                 className={styles.nameButton}
@@ -865,7 +962,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </Tooltip>
           )}
 
-          {isOwner && (
+          {isOwner && !favorites && (
             <Tooltip
               place="bottom"
               tooltipContent={
@@ -904,15 +1001,21 @@ export function Shelf(props: ShelfProps): JSX.Element {
             role="status"
             aria-live="polite"
           >
-            {(visibilityError || objectOrderError || selectNotice) && (
+            {(visibilityError ||
+              objectOrderError ||
+              favoriteError ||
+              selectNotice) && (
               <Text
                 variant={TypographyVariant.TextSmall}
                 className={classNames(styles.shelfNotice, {
                   [styles.shelfNoticeError]:
-                    !!visibilityError || !!objectOrderError,
+                    !!visibilityError || !!objectOrderError || !!favoriteError,
                 })}
               >
-                {visibilityError ?? objectOrderError ?? selectNotice}
+                {visibilityError ??
+                  objectOrderError ??
+                  favoriteError ??
+                  selectNotice}
               </Text>
             )}
           </div>

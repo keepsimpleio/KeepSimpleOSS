@@ -231,3 +231,36 @@
     transform: none;
   }
 }
+
+// The star sits in the top corner of the cover. A favorite wears it for
+// everyone; the owner's star on a book that is not one yet appears with the
+// hover lift, so the cover stays clean until the pointer asks. The chip is
+// laid out from the start either way: only its opacity changes.
+.favorite {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+
+  &.favoriteOn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .favorite,
+  .card:focus-within .favorite {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favorite {
+    transition: none;
+  }
+}

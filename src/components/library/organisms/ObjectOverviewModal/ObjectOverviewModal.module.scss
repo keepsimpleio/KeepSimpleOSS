@@ -470,3 +470,12 @@
     opacity: 1;
   }
 }
+
+// The star between Copy URL and the owner menu: the same 36px box as the
+// menu button, so the three controls read as one row.
+.favoriteButton {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-control);
+  background: var(--white);
+}

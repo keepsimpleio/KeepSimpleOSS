@@ -29,6 +29,11 @@ export interface IObjectScalarFields {
   overall?: OverallRating;
   /** Book only — backend enum (underscore form). */
   difficulty?: Difficulty;
+  /**
+   * Book only. Puts the book on the library's Favorites shelf. Backend spec:
+   * docs/library-favorites-backend.md.
+   */
+  favorite?: boolean;
 }
 
 export interface IObjectAttributes extends IObjectScalarFields {
@@ -36,6 +41,13 @@ export interface IObjectAttributes extends IObjectScalarFields {
   shelfName?: string;
   /** Position within its shelf. Backend default-sorts objects by `order` ASC. */
   order?: number;
+  /** Server-managed: when `favorite` last flipped on. Null when not a favorite. */
+  favoritedAt?: string | null;
+  /**
+   * Position on the Favorites shelf once the owner has dragged it there. Null
+   * means "never placed by hand": the shelf then falls back to `favoritedAt`.
+   */
+  favoriteOrder?: number | null;
   coverImage?: IStrapiRelation<IMedia>;
   tags?: IStrapiRelationList<ITagRef>;
   shelf?: IStrapiRelation<IShelfRef>;
@@ -76,5 +88,11 @@ export interface IReorderObjectEntry {
 
 export interface IReorderObjectsPayload {
   shelfId: number;
+  objects: IReorderObjectEntry[];
+}
+
+// Favorites reorder takes the same raw body minus the shelf: favorites span
+// every shelf of the library. Writes `favoriteOrder` on each listed object.
+export interface IReorderFavoritesPayload {
   objects: IReorderObjectEntry[];
 }

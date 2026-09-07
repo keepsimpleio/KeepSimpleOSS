@@ -47,6 +47,12 @@ import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useIsMobile from '@hooks/library/useIsMobile';
 import { usePresence } from '@hooks/library/usePresence';
 
+import {
+  FAVORITES_SHELF_ID,
+  FAVORITES_SHELF_NAME,
+  isFavorite,
+  sortFavorites,
+} from '@lib/library/favorites';
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 import {
   buildSearchHaystack,
@@ -62,6 +68,7 @@ import {
 } from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
 import { reorderShelves } from '@api/library/shelf/reorderShelves';
+import { updateLibrary } from '@api/library/updateLibrary';
 
 import { PlusIcon } from '@icons/library/svg';
 
@@ -98,6 +105,11 @@ const modalTypeToApi: Record<ShelfType, ObjectType> = {
   videos: 'video',
   audios: 'audio',
 };
+
+// motion-passport: exempt. This file carries no animation of its own: list
+// motion runs through useAnimatedList and usePresence, both of which honour
+// prefers-reduced-motion, and the notice keyframes in Library.module.scss
+// carry their reduced-motion branch there.
 
 // Shelves only ever travel up and down the page, so the drag transform keeps
 // its vertical component and drops the horizontal one.
@@ -408,6 +420,46 @@ export function LibraryTemplate({
   const shelvesRef = useRef<StrapiSingleShelfEntry[]>(shelves);
   shelvesRef.current = shelves;
 
+  // The Favorites shelf: every starred book on the shelves above, which for a
+  // visitor already leaves out the private ones. It is a synthetic entry the
+  // Shelf component draws like any other; it stands only while a book is
+  // starred, and for visitors only when the owner has made it public.
+  const favoritesVisibility: ShelfVisibility =
+    library?.attributes.favoritesVisibility ?? 'private';
+  const favoritesShelf = useMemo<StrapiSingleShelfEntry | null>(() => {
+    const starred = sortFavorites(
+      shelves.flatMap(s =>
+        (s.attributes.objects?.data ?? []).filter(isFavorite),
+      ),
+    );
+    if (starred.length === 0) return null;
+    return {
+      id: FAVORITES_SHELF_ID,
+      attributes: {
+        name: FAVORITES_SHELF_NAME,
+        visibility: favoritesVisibility,
+        type: 'book',
+        order: -1,
+        createdAt: '',
+        updatedAt: '',
+        publishedAt: '',
+        objects: { data: starred },
+      },
+    };
+  }, [shelves, favoritesVisibility]);
+  const showFavoritesShelf =
+    favoritesShelf != null && (viewAsOwner || favoritesVisibility === 'public');
+
+  // Which real shelf holds an object: the Favorites shelf's callbacks arrive
+  // with the synthetic id and are routed here to the shelf that owns the book.
+  const shelfIdForObject = useCallback(
+    (objectId: number) =>
+      shelvesRef.current.find(s =>
+        (s.attributes.objects?.data ?? []).some(o => o.id === objectId),
+      )?.id,
+    [],
+  );
+
   // Everything standing on one shelf: the ids that leave the share selection
   // when that shelf turns private or is deleted, since a link may only carry
   // objects that are still public and still exist.
@@ -460,6 +512,15 @@ export function LibraryTemplate({
     });
     return { displayedShelves, matchedIdsByShelf };
   }, [shelves, hasSearch, searchTerms]);
+
+  // The Favorites shelf stays for the length of its fade after the last star
+  // comes off or a search starts, drawn from the last entry it had.
+  const { mounted: favoritesMounted, shown: favoritesShown } = usePresence(
+    showFavoritesShelf && !hasSearch,
+    240,
+  );
+  const lastFavoritesShelf = useRef(favoritesShelf);
+  if (favoritesShelf) lastFavoritesShelf.current = favoritesShelf;
 
   const matchedCount = useMemo(() => {
     if (!matchedIdsByShelf) return null;
@@ -641,6 +702,84 @@ export function LibraryTemplate({
       );
     },
     [mutateShelfObjects],
+  );
+
+  // The Favorites shelf's callbacks: each lands on the book's real shelf.
+  const handleFavoriteObjectUpdated = useCallback(
+    (_: number, updated: IObject) => {
+      const shelfId = shelfIdForObject(updated.id);
+      if (shelfId != null) handleObjectUpdated(shelfId, updated);
+    },
+    [shelfIdForObject, handleObjectUpdated],
+  );
+
+  const handleFavoriteObjectDeleted = useCallback(
+    (_: number, objectId: number) => {
+      const shelfId = shelfIdForObject(objectId);
+      if (shelfId != null) handleObjectDeleted(shelfId, objectId);
+    },
+    [shelfIdForObject, handleObjectDeleted],
+  );
+
+  // A drag on the Favorites shelf stamps `favoriteOrder` on the books, each
+  // on the shelf it lives on; the favorites memo re-sorts at render.
+  const handleFavoritesReordered = useCallback(
+    (_: number, ordered: { id: number; order: number }[]) => {
+      const orderById = new Map(ordered.map(o => [o.id, o.order]));
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: {
+              data: shelvesData.map(s => ({
+                ...s,
+                attributes: {
+                  ...s.attributes,
+                  objects: {
+                    data: (s.attributes.objects?.data ?? []).map(o =>
+                      orderById.has(o.id)
+                        ? {
+                            ...o,
+                            attributes: {
+                              ...o.attributes,
+                              favoriteOrder: orderById.get(o.id),
+                            },
+                          }
+                        : o,
+                    ),
+                  },
+                },
+              })),
+            },
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  // The Favorites shelf's privacy is a field on the library itself. Saved
+  // here, then stamped on the loaded library so a refetch cannot flip it back.
+  const saveFavoritesVisibility = useCallback(
+    async (visibility: ShelfVisibility) => {
+      if (!library) return;
+      await updateLibrary(library.id, { favoritesVisibility: visibility });
+      setLibrary(current =>
+        current
+          ? {
+              ...current,
+              attributes: {
+                ...current.attributes,
+                favoritesVisibility: visibility,
+              },
+            }
+          : current,
+      );
+    },
+    [library],
   );
 
   // Stamps each shelf's new position onto the loaded library. The `shelves`
@@ -998,6 +1137,30 @@ export function LibraryTemplate({
               shelves and outside their order: it is not theirs to drag, a
               visitor never sees it, and a search leaves it out since nothing
               on it is in the library yet. */}
+          {/* The Favorites shelf stands above everything, outside the
+              draggable order. A search leaves it out: every starred book is
+              found on its own shelf. */}
+          {favoritesMounted && lastFavoritesShelf.current && (
+            <div
+              className={classNames(styles.favoritesSlot, {
+                [styles.favoritesSlotClosing]: !favoritesShown,
+              })}
+              aria-hidden={!favoritesShown || undefined}
+            >
+              <Shelf
+                favorites
+                title={FAVORITES_SHELF_NAME}
+                shelf={lastFavoritesShelf.current}
+                ownerUsername={ownerUsername ?? libraryId}
+                isOwner={canEditHere}
+                onFavoritesVisibilityChange={saveFavoritesVisibility}
+                onObjectUpdated={handleFavoriteObjectUpdated}
+                onObjectDeleted={handleFavoriteObjectDeleted}
+                onObjectMoved={handleObjectMoved}
+                onObjectsReordered={handleFavoritesReordered}
+              />
+            </div>
+          )}
           {canEditHere && !hasSearch && (
             <RecommendedShelf pool={RECOMMENDED_SEED} />
           )}

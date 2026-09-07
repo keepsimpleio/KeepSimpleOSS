@@ -10,6 +10,8 @@ import {
   OVERALL_COLORS,
 } from '@lib/library/objectMeta';
 
+import { StarIcon } from '@icons/library/svg';
+
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tag } from '@components/library/molecules/Tag';
@@ -230,6 +232,12 @@ export function ObjectHoverCard({
           <span className={styles.kind}>
             {kindLabel ?? KIND_LABEL[type] ?? type}
           </span>
+          {attributes.favorite && (
+            <span className={styles.favorite}>
+              <StarIcon aria-hidden="true" />
+              Favorite
+            </span>
+          )}
         </div>
 
         <Text

@@ -1,8 +1,9 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import Image from 'next/image';
-import React, { JSX, useCallback, useRef, useState } from 'react';
+import React, { JSX, useCallback, useId, useRef, useState } from 'react';
 
+import { FavoriteToggle } from '@components/library/molecules/FavoriteToggle';
 import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
@@ -25,6 +26,9 @@ export function BookCard({
   compact = false,
   showHoverCard = !compact,
   ownerUsername,
+  favorite = false,
+  onFavoriteToggle,
+  favoriteBusy = false,
 }: BookCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -45,7 +49,9 @@ export function BookCard({
   const cardRef = useRef<HTMLDivElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   // The dossier is announced as this card's description while it is open.
-  const dossierId = `object-dossier-${object.id}`;
+  // Per instance, not per object: a starred book stands on its own shelf and
+  // on the Favorites shelf at once, and two elements cannot share an id.
+  const dossierId = `object-dossier-${object.id}-${useId()}`;
 
   const handleActivate = () => {
     // Opening the overview covers the card, so the dossier steps aside first.
@@ -111,6 +117,20 @@ export function BookCard({
             />
           )}
         </div>
+        {(favorite || onFavoriteToggle) && !compact && (
+          <div
+            className={classNames(styles.favorite, {
+              [styles.favoriteOn]: favorite,
+            })}
+          >
+            <FavoriteToggle
+              favorite={favorite}
+              onToggle={onFavoriteToggle}
+              busy={favoriteBusy}
+              title={title}
+            />
+          </div>
+        )}
       </div>
 
       {/* Always render the tag column (even when empty) so the card keeps a
