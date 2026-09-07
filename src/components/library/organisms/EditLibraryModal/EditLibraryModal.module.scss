@@ -24,18 +24,20 @@
   gap: 16px;
 }
 
+// Square, matching the Author photo in the right-hand panel — the same picture
+// shown in two places should not change shape between them.
 .avatarPreview {
   width: 160px;
   height: 160px;
   padding: 4px;
-  border-radius: 50%;
+  border-radius: 0;
   background-color: var(--white-100);
 }
 
 .avatarImage {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: 0;
   object-fit: cover;
 }
 

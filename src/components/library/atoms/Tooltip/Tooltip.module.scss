@@ -7,6 +7,12 @@
   background: var(--white) !important;
   box-shadow: var(--tooltip-shadow);
   max-width: 300px;
+  // The tooltip's whole job here is to spell out a label the chip truncated,
+  // and a tag name can be one unbroken run of characters with no space to wrap
+  // at. Without this, `max-width` bounds the box while the text keeps going
+  // straight through the right edge. `anywhere` also lets the box shrink to the
+  // wrapped width instead of reserving the longest word's length.
+  overflow-wrap: anywhere;
   text-align: center;
   padding: 12px 14px !important;
   font-size: 16px !important;
