@@ -4,8 +4,8 @@ import styles from './AgentFixProbe.module.scss';
 
 interface AgentFixProbeProps {
   label: string;
-  onPick: (value: any) => void;
-  tone: any;
+  onPick: (value: string) => void;
+  tone: 'calm' | 'warn';
 }
 
 export function AgentFixProbe(props: AgentFixProbeProps): JSX.Element {
