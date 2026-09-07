@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-// Browser-side fetch of provider covers is blocked by CORS/hotlinking, so the
-// client pulls them through this proxy. The host allowlist is the SSRF guard —
-// only the cover/thumbnail CDNs of the three autofill providers are reachable.
+// The client pulls provider covers through an allowlisted proxy because
+// provider CDNs restrict browser-side downloads.
 const ALLOWED_HOSTS = [
   /^books\.google\.com$/,
   /^books\.googleusercontent\.com$/,
+  /^covers\.openlibrary\.org$/,
+  // Open Library redirects stored cover scans to Internet Archive.
+  /^ia\d+\.(us|eu)\.archive\.org$/,
   /(^|\.)mzstatic\.com$/,
   /^i\.ytimg\.com$/,
   /^img\.youtube\.com$/,
@@ -34,6 +36,9 @@ function isAllowed(raw: string): boolean {
     const url = new URL(raw);
     return (
       url.protocol === 'https:' &&
+      !url.username &&
+      !url.password &&
+      (!url.port || url.port === '443') &&
       ALLOWED_HOSTS.some(re => re.test(url.hostname))
     );
   } catch {
@@ -45,15 +50,47 @@ async function pull(
   url: string,
 ): Promise<{ buffer: Buffer; contentType: string } | null> {
   try {
-    const upstream = await fetch(url);
-    // Re-check after redirects so an allowed host can't bounce us elsewhere.
-    if (!upstream.ok || !isAllowed(upstream.url)) return null;
+    const signal = AbortSignal.timeout(8000);
+    let upstream: Response;
+    for (let redirects = 0; redirects <= 3; redirects++) {
+      if (!isAllowed(url)) return null;
+      upstream = await fetch(url, { redirect: 'manual', signal });
+      if (![301, 302, 303, 307, 308].includes(upstream.status)) break;
+      const location = upstream.headers.get('location');
+      await upstream.body?.cancel();
+      if (!location || redirects === 3) return null;
+      url = new URL(location, url).toString();
+    }
+    if (!upstream.ok) {
+      await upstream.body?.cancel();
+      return null;
+    }
 
     const contentType = upstream.headers.get('content-type') ?? '';
-    if (!contentType.startsWith('image/')) return null;
+    if (
+      !contentType.startsWith('image/') ||
+      Number(upstream.headers.get('content-length')) > MAX_BYTES
+    ) {
+      await upstream.body?.cancel();
+      return null;
+    }
 
-    const buffer = Buffer.from(await upstream.arrayBuffer());
-    if (buffer.byteLength === 0 || buffer.byteLength > MAX_BYTES) return null;
+    const reader = upstream.body?.getReader();
+    if (!reader) return null;
+    const chunks: Buffer[] = [];
+    let length = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > MAX_BYTES) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(Buffer.from(value));
+    }
+    if (!length) return null;
+    const buffer = Buffer.concat(chunks, length);
 
     return { buffer, contentType };
   } catch {
@@ -66,20 +103,45 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const rawUrl = typeof req.query.url === 'string' ? req.query.url : '';
-  if (!isAllowed(rawUrl)) {
+  const fallback =
+    typeof req.query.fallback === 'string' ? req.query.fallback : '';
+  if (!isAllowed(rawUrl) || (fallback && !isAllowed(fallback))) {
     res.status(400).json({ error: 'URL is not an allowed cover source.' });
     return;
   }
 
-  for (const candidate of [rawUrl, ...fallbacksFor(rawUrl)]) {
+  const candidates = [
+    rawUrl,
+    ...fallbacksFor(rawUrl),
+    ...(fallback ? [fallback] : []),
+  ];
+  for (let attempt = 0; attempt < candidates.length; attempt++) {
+    const candidate = candidates[attempt];
     const image = await pull(candidate);
     if (!image) continue;
 
     res.setHeader('Content-Type', image.contentType);
     res.setHeader('Cache-Control', 'public, max-age=86400');
+    console.info(
+      JSON.stringify({
+        mechanism: 'library.autofill.cover',
+        at: new Date().toISOString(),
+        outcome: 'served',
+        host: new URL(candidate).hostname,
+        attempt,
+      }),
+    );
     res.status(200).send(image.buffer);
     return;
   }
 
+  console.warn(
+    JSON.stringify({
+      mechanism: 'library.autofill.cover',
+      at: new Date().toISOString(),
+      outcome: 'unavailable',
+      host: new URL(rawUrl).hostname,
+    }),
+  );
   res.status(502).json({ error: 'Could not fetch the cover image.' });
 }

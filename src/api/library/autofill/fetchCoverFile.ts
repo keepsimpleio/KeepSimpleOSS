@@ -1,3 +1,5 @@
+import { autofillCoverUrl } from '@lib/library/autofillCoverUrl';
+
 const EXT_BY_MIME: Record<string, string> = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -14,11 +16,10 @@ const MAX_BYTES = 5 * 1024 * 1024; // matches the cover upload limit
 export const fetchCoverFile = async (
   coverUrl: string,
   baseName: string,
+  fallbackCoverUrl?: string,
 ): Promise<File | null> => {
   try {
-    const res = await fetch(
-      `/api/library/autofill/cover?url=${encodeURIComponent(coverUrl)}`,
-    );
+    const res = await fetch(autofillCoverUrl(coverUrl, fallbackCoverUrl));
     if (!res.ok) return null;
     const blob = await res.blob();
     const ext = EXT_BY_MIME[blob.type];

@@ -100,6 +100,8 @@ export interface StrapiLibraryAttributes {
    * private. Backend spec: docs/library-favorites-backend.md.
    */
   favoritesVisibility?: 'public' | 'private';
+  /** Owner-only account preference. Missing legacy values mean expanded. */
+  aiShelfCollapsed?: boolean;
 }
 
 export interface StrapiLibraryEntry {
@@ -130,6 +132,7 @@ export interface IUpdateLibraryPayload {
   libraryDetails?: { aboutLibrary: string };
   avatar?: number | null;
   favoritesVisibility?: 'public' | 'private';
+  aiShelfCollapsed?: boolean;
 }
 
 /** Mapped row for `LibraryCard` on the home page */

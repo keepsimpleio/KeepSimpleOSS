@@ -69,6 +69,7 @@ import {
 } from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
 import { reorderShelves } from '@api/library/shelf/reorderShelves';
+import { updateAiShelfCollapsed } from '@api/library/updateAiShelfCollapsed';
 import { updateLibrary } from '@api/library/updateLibrary';
 
 import { PlusIcon } from '@icons/library/svg';
@@ -90,7 +91,7 @@ import {
   IconPosition,
 } from '@components/library/molecules/Button';
 import { LibraryToolbar } from '@components/library/organisms/LibraryToolbar';
-import { RecommendedShelf } from '@components/library/organisms/RecommendedShelf';
+import RecommendedShelf from '@components/library/organisms/RecommendedShelf';
 import { ShareSelectionPanel } from '@components/library/organisms/ShareSelectionPanel';
 import {
   Shelf,
@@ -1148,13 +1149,29 @@ export function LibraryTemplate({
         </div>
       ) : (
         <>
-          {/* The owner's recommended shelf stands above the library's own
-              shelves and outside their order: it is not theirs to drag, a
-              visitor never sees it, and a search leaves it out since nothing
-              on it is in the library yet. */}
-          {/* The Favorites shelf stands above everything, outside the
-              draggable order. A search leaves it out: every starred book is
-              found on its own shelf. */}
+          {canEditHere && !hasSearch && library && (
+            <RecommendedShelf
+              key={library.id}
+              pool={RECOMMENDED_SEED}
+              collapsed={library.attributes.aiShelfCollapsed === true}
+              onCollapsedChange={async collapsed => {
+                const id = library.id;
+                await updateAiShelfCollapsed(id, collapsed);
+                setLibrary(current =>
+                  current?.id === id
+                    ? {
+                        ...current,
+                        attributes: {
+                          ...current.attributes,
+                          aiShelfCollapsed: collapsed,
+                        },
+                      }
+                    : current,
+                );
+              }}
+            />
+          )}
+          {/* Favorites follows AI Shelf, outside the draggable shelf order. */}
           {favoritesMounted && lastFavoritesShelf.current && (
             <div
               className={classNames(styles.favoritesSlot, {
@@ -1175,9 +1192,6 @@ export function LibraryTemplate({
                 onObjectsReordered={handleFavoritesReordered}
               />
             </div>
-          )}
-          {canEditHere && !hasSearch && (
-            <RecommendedShelf pool={RECOMMENDED_SEED} />
           )}
           <div className={styles.shelfList} ref={shelfListRef}>
             {/* One tree whether or not the boards can be dragged: switching

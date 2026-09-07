@@ -58,6 +58,26 @@
   overflow: hidden;
   z-index: 1;
   border-left: 1px solid var(--brown-border);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 28%,
+      var(--purple-400) 44%,
+      var(--white-200) 50%,
+      var(--purple-400) 56%,
+      transparent 72%
+    );
+    opacity: 0.18;
+    transform: translateX(-100%);
+    animation: cover-light 12s ease-in-out infinite;
+    transition: opacity 0.2s ease;
+  }
 }
 
 .coverImage {
@@ -68,10 +88,11 @@
   // Covers crop from the bottom, never from the top: the title and author sit
   // in the top third of a printed cover, so that is the part that must survive.
   object-position: top center;
+  transition: filter 0.3s ease;
 }
 
 // A cover of paper when the source sent none: the title set in the serif,
-// the author under a "by", each pick on its own tint of the shelf's lilac.
+// the author under a "by", each pick on the same paper as the library's books.
 .front {
   box-sizing: border-box;
   display: flex;
@@ -81,33 +102,7 @@
   height: 100%;
   padding: 22px 14px 40px;
   background: var(--gradient-cover-placeholder);
-}
-
-.tint0 .front {
-  background: linear-gradient(160deg, var(--purple-400) 0%, var(--cream) 100%);
-}
-.tint1 .front {
-  background: linear-gradient(
-    160deg,
-    var(--white-100) 0%,
-    var(--purple-400) 100%
-  );
-}
-.tint2 .front {
-  background: linear-gradient(160deg, var(--cream) 0%, var(--beige) 100%);
-}
-.tint3 .front {
-  background: linear-gradient(160deg, var(--green-400) 0%, var(--cream) 100%);
-}
-.tint4 .front {
-  background: linear-gradient(
-    160deg,
-    var(--white-200) 0%,
-    var(--blue-500) 100%
-  );
-}
-.tint5 .front {
-  background: linear-gradient(160deg, var(--cream) 0%, var(--purple-400) 100%);
+  transition: filter 0.3s ease;
 }
 
 .frontTitle {
@@ -189,7 +184,7 @@
 
 .statusLocked {
   opacity: 1;
-  background: var(--purple-200);
+  background: var(--purple-100);
 }
 
 .statusBanned {
@@ -201,7 +196,6 @@
 .banned .front,
 .banned .coverImage {
   filter: grayscale(1) brightness(0.6);
-  transition: filter 0.3s ease;
 }
 
 .banned .match {
@@ -241,7 +235,7 @@
   gap: 6px;
   width: 84px;
   padding: 5px 10px;
-  border: 1px solid var(--purple-400);
+  border: 1px solid var(--brown-border);
   border-radius: var(--radius-control);
   background: var(--white-200);
   color: var(--black-rich);
@@ -264,8 +258,8 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--purple-200);
-    border-color: var(--purple-200);
+    background: var(--purple-100);
+    border-color: var(--purple-100);
     color: var(--white);
   }
 
@@ -275,6 +269,38 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.card:hover .cover::after,
+.card:focus-within .cover::after {
+  opacity: 0.28;
+}
+.banned .cover::after {
+  opacity: 0;
+}
+@keyframes cover-light {
+  0%,
+  15% {
+    transform: translateX(-100%);
+  }
+  65%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cover::after {
+    animation: none;
+    transition: none;
+    transform: none;
+    opacity: 0.1;
+  }
+  .front,
+  .coverImage,
+  .banned .front,
+  .banned .coverImage {
     transition: none;
   }
 }
