@@ -14,6 +14,7 @@ import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
 import { descriptionToHtml } from '@lib/library/descriptionHtml';
+import { notesLabel } from '@lib/library/notesLabel';
 import {
   formatObjectDate,
   formatObjectDuration,
@@ -335,6 +336,9 @@ export function ObjectOverviewModal(
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
   const durationLabel = formatObjectDuration(attributes.duration);
+  // The description is the owner's own writing, so it is signed with their name
+  // on every surface that shows it.
+  const ownerNotesLabel = notesLabel(ownerUsername);
 
   // Edit mode swaps the modal entirely; AddObjectModal manages its own success popup.
   if (editing) {
@@ -562,7 +566,7 @@ export function ObjectOverviewModal(
                 variant={TypographyVariant.TextSmall}
                 className={styles.rowLabel}
               >
-                {config.descriptionLabel}
+                {ownerNotesLabel}
               </Text>
               {attributes.description ? (
                 <div
@@ -576,7 +580,7 @@ export function ObjectOverviewModal(
                   variant={TypographyVariant.TextBase}
                   className={styles.rowValue}
                 >
-                  {config.descriptionEmpty}
+                  {config.notesEmpty}
                 </Text>
               )}
             </div>

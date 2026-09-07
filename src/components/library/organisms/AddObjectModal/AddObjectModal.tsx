@@ -22,6 +22,7 @@ import type { IAutofillSuggestion } from '@local-types/library/autofill';
 import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
 
+import { notesLabel } from '@lib/library/notesLabel';
 import { isShelfFullError } from '@lib/library/shelfFull';
 
 import { fetchCoverFile } from '@api/library/autofill/fetchCoverFile';
@@ -38,6 +39,7 @@ import { uploadFile } from '@api/library/upload/uploadFile';
 import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { InkLine } from '@components/library/atoms/InkLine';
@@ -164,6 +166,13 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const editing = !isCreate && !!object;
   const shelfLocked = defaultShelfId != null && !editing;
   const { accountData } = useAuth();
+  const { currentOwner } = useGlobalState();
+  // The editor only opens on the owner's own library, so the owner published by
+  // LibraryTemplate and the signed-in account are the same person; the account
+  // covers the moment before the library has published its owner.
+  const ownerNotesLabel = notesLabel(
+    currentOwner?.username ?? accountData?.username,
+  );
 
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -920,11 +929,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               variant={TypographyVariant.TextSmall}
               className={styles.label}
             >
-              {label}
+              {ownerNotesLabel}
             </Text>
             <Textarea
-              ariaLabel={label}
-              placeholder={`Add a description for this ${objectType}`}
+              ariaLabel={ownerNotesLabel}
+              placeholder={`Add your notes on this ${objectType}`}
               wrapperClassName={styles.textareaWrapper}
               className={styles.textarea}
               rows={5}
