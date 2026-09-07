@@ -153,6 +153,25 @@
         svg {
           width: 20px;
           height: 20px;
+
+          path {
+            transition: stroke 0.2s ease;
+
+            @media (prefers-reduced-motion: reduce) {
+              transition: none;
+            }
+          }
+        }
+
+        // The gear's outline tells the owner the shelf's privacy at a glance:
+        // red while private, green once public. The icon file carries its own
+        // stroke colour, so the paths are addressed directly.
+        &.settingsPrivate svg path {
+          stroke: var(--red-600);
+        }
+
+        &.settingsPublic svg path {
+          stroke: var(--green-100);
         }
       }
     }

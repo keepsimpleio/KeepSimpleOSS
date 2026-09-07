@@ -908,11 +908,14 @@ export function Shelf(props: ShelfProps): JSX.Element {
               value={visibility}
               customHeader={
                 <Button
-                  className={styles.settings}
+                  className={classNames(styles.settings, {
+                    [styles.settingsPrivate]: visibility === 'private',
+                    [styles.settingsPublic]: visibility === 'public',
+                  })}
                   onClick={() => {}}
                   type={ButtonType.Secondary}
                   Icon={<SettingsIcon />}
-                  ariaLabel="Shelf settings"
+                  ariaLabel={`Shelf settings (${visibility})`}
                 />
               }
             />
