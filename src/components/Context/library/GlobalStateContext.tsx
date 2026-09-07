@@ -7,7 +7,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -20,7 +19,6 @@ import type {
 import type { IUser } from '@local-types/library/user';
 
 import { getAccessToken } from '@lib/library/cookie';
-import { claimDevSession } from '@lib/library/devSession';
 import {
   readSidebarCollapsed,
   writeSidebarCollapsed,
@@ -128,14 +126,14 @@ export function GlobalStateProvider({
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const didAttemptUserLoad = useRef(false);
-  const didAttemptDevSession = useRef(false);
 
   const refetchUser = useCallback(async () => {
+    const requestedToken = getAccessToken();
+    if (!requestedToken) return;
     setIsUserLoading(true);
     try {
       const data = await getUserInfo();
-      setAccountData(data);
+      if (getAccessToken() === requestedToken) setAccountData(data);
     } finally {
       setIsUserLoading(false);
     }
@@ -151,34 +149,9 @@ export function GlobalStateProvider({
     }
   }, []);
 
-  useEffect(() => {
-    const hasToken = Boolean(getAccessToken());
-    if (!hasToken) {
-      didAttemptUserLoad.current = false;
-      // DEV preview only: adopt the owner session shared for joint review, so
-      // reviewers behind the Access gate see the logged-in library without
-      // signing in. No-op everywhere else. See `@lib/library/devSession`.
-      if (!didAttemptDevSession.current) {
-        didAttemptDevSession.current = true;
-        void claimDevSession().then(claimed => {
-          if (claimed) {
-            didAttemptUserLoad.current = true;
-            void refetchUser();
-          }
-        });
-      }
-      return;
-    }
-    if (accountData || didAttemptUserLoad.current) {
-      return;
-    }
-    didAttemptUserLoad.current = true;
-    void refetchUser();
-  }, [accountData, session, refetchUser]);
-
   // The server read the cookie for whichever account the request carried.
   // Once the account is actually known here (it can arrive later: a token in
-  // localStorage only, or the DEV shared session claimed after load), re-read
+  // localStorage before the host account finishes loading), re-read
   // that account's own choice so it wins over the anonymous default.
   const accountId = accountData?.id;
   useEffect(() => {

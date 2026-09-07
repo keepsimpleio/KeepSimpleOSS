@@ -25,7 +25,7 @@ export interface ICreateShelfPayload {
   name: string;
   type: ObjectType;
   library: number | string;
-  // Defaulted by `createShelf` (public / order 0 / no objects / published now)
+  // Defaulted by `createShelf` (private / order 0 / no objects / published now)
   // but overridable per call.
   visibility?: ShelfVisibility;
   order?: number;

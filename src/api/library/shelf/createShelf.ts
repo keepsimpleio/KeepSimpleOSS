@@ -12,7 +12,7 @@ export const createShelf = async (
     '/api/single-shelves',
     {
       data: {
-        visibility: 'public',
+        visibility: 'private',
         order: 0,
         objects: [],
         // single-shelf has draftAndPublish: true. Direct queries filter by

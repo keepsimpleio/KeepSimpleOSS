@@ -175,7 +175,8 @@ export function LibraryTemplate({
   const [shelfOrderError, setShelfOrderError] = useState<string | null>(null);
   // Set when the URL named an object that is not on any visible shelf.
   const [objectNotice, setObjectNotice] = useState<string | null>(null);
-  const { accountData } = useAuth();
+  const { accountData, token } = useAuth();
+  const loadSequence = useRef(0);
   const {
     isGuestMode,
     setGuestMode,
@@ -263,6 +264,7 @@ export function LibraryTemplate({
 
   const loadLibrary = useCallback(
     async (options?: { silent?: boolean; libraryId?: number }) => {
+      const sequence = ++loadSequence.current;
       if (options?.libraryId == null && !libraryId?.trim()) {
         setLibrary(null);
         setIsLoading(false);
@@ -287,13 +289,15 @@ export function LibraryTemplate({
         // (publish/replication lag) — a direct GET by the id we just created
         // is reliable.
         const resolvedId = options?.libraryId ?? (await resolveLibraryId());
+        if (sequence !== loadSequence.current) return;
         if (resolvedId == null) {
           setLibrary(null);
           return;
         }
         const result = await getSingleLibrary(resolvedId);
-        setLibrary(result?.data ?? null);
+        if (sequence === loadSequence.current) setLibrary(result?.data ?? null);
       } catch (e) {
+        if (sequence !== loadSequence.current) return;
         // A dead backend must not read as an empty library: that screen
         // invites the owner to "add a first shelf", which would create a
         // second library on top of the one that failed to load.
@@ -305,7 +309,7 @@ export function LibraryTemplate({
         );
         setLibrary(null);
       } finally {
-        setIsLoading(false);
+        if (sequence === loadSequence.current) setIsLoading(false);
       }
     },
     [libraryId, resolveLibraryId],
@@ -313,7 +317,10 @@ export function LibraryTemplate({
 
   useEffect(() => {
     void loadLibrary();
-  }, [loadLibrary]);
+    return () => {
+      loadSequence.current += 1;
+    };
+  }, [loadLibrary, token]);
 
   useEffect(() => {
     const onRefetch = (event: Event) => {
@@ -772,7 +779,12 @@ export function LibraryTemplate({
   const saveFavoritesVisibility = useCallback(
     async (visibility: ShelfVisibility) => {
       if (!library) return;
-      await updateLibrary(library.id, { favoritesVisibility: visibility });
+      const result = await updateLibrary(library.id, {
+        favoritesVisibility: visibility,
+      });
+      if (result.data?.attributes.favoritesVisibility !== visibility) {
+        throw new Error('Favorites visibility was not saved.');
+      }
       setLibrary(current =>
         current
           ? {

@@ -227,3 +227,9 @@ $cover-aspect-ultrawide: calc(4000 / 852);
     transform: none;
   }
 }
+
+.libraryLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}

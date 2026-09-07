@@ -39,35 +39,45 @@ export function LibraryInfoCard({
         {libraryName}
       </Text>
 
-      <span className={styles.divider} />
+      {bookCount !== undefined && (
+        <>
+          <span className={styles.divider} />
 
-      <div className={styles.section}>
-        <Text variant={TypographyVariant.TextBaseBold} className={styles.label}>
-          About
-        </Text>
-        <Text variant={TypographyVariant.TextBase} className={styles.about}>
-          {about}
-        </Text>
-      </div>
+          <div className={styles.section}>
+            <Text
+              variant={TypographyVariant.TextBaseBold}
+              className={styles.label}
+            >
+              About
+            </Text>
+            <Text variant={TypographyVariant.TextBase} className={styles.about}>
+              {about}
+            </Text>
+          </div>
 
-      <div className={styles.section}>
-        <Text variant={TypographyVariant.TextBaseBold} className={styles.label}>
-          Objects
-        </Text>
-        <div className={styles.objects}>
-          {objects.map(({ name, count, label }) => (
-            <span key={name} className={styles.object}>
-              <Icon name={name} width={19} height={19} color="#FFFFFF" />
-              <Text
-                variant={TypographyVariant.TextBase}
-                className={styles.count}
-              >
-                {count} {label}
-              </Text>
-            </span>
-          ))}
-        </div>
-      </div>
+          <div className={styles.section}>
+            <Text
+              variant={TypographyVariant.TextBaseBold}
+              className={styles.label}
+            >
+              Objects
+            </Text>
+            <div className={styles.objects}>
+              {objects.map(({ name, count, label }) => (
+                <span key={name} className={styles.object}>
+                  <Icon name={name} width={19} height={19} color="#FFFFFF" />
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.count}
+                  >
+                    {count} {label}
+                  </Text>
+                </span>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
