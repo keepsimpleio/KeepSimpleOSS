@@ -287,15 +287,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
   const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
 
-  // Plain object count beside the shelf name. The cap belongs in the tooltip,
-  // not in the visible label — a visitor reads how full the shelf is, an owner
-  // hovers to learn how much room is left.
-  const countTitle = favorites
-    ? `${objects.length} favorite ${objects.length === 1 ? 'book' : 'books'}`
-    : `${objects.length} ${
-        objects.length === 1 ? typeLabel : `${typeLabel}s`
-      } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
-
   const router = useRouter();
   // On the share-link page the object opens through a query parameter, so
   // the token stays in the address: pushing the library's own object path
@@ -924,9 +915,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
-          <span className={styles.count} title={countTitle}>
-            ({objects.length})
-          </span>
+          <span className={styles.count}>({objects.length})</span>
 
           <span className={styles.nameWrap}>
             {isOwner && !favorites ? (
