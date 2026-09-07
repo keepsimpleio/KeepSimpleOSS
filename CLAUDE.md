@@ -255,3 +255,15 @@ normal label and Copied over 200ms ease; reduced motion switches immediately.
 Both labels occupy the same grid cell so their largest width remains reserved.
 Keep the secondary button palette, existing typography and geometry throughout.
 No scale, pulse or success fill. This label has no scrolling surface.
+
+## Library release evidence gates
+
+Read scripts/release/README.md before Library releases. The incident inventory is
+scripts/release/INCIDENTS-2026-09-07.md. Frontend CI never certifies CMS deployment.
+Run yarn check:library and the read-only target contract check before readiness.
+Check actual owner role, feature flag and library ownership, not a substitute account.
+Capture and compare protected content around deployment. Missing schema, missing
+saved values or missing owner evidence must remain explicit failures or NOT TESTED.
+Record frontend and CMS revisions separately. No completed release claim without
+live deployment provenance and data comparison. Never silently treat deferred review
+findings as fixed. Stage and prod can diverge; inspect both before claiming parity.
