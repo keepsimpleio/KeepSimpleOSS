@@ -175,6 +175,7 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
           drawer there. */}
       <div className={styles.identity}>
         <Dropdown
+          variant="library"
           options={switcher.options}
           value={switcher.value}
           onChange={switcher.onChange}

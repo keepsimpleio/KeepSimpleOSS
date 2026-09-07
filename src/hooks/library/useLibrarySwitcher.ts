@@ -2,11 +2,14 @@ import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibra
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 
+import { useAuth } from '@components/Context/library/AuthContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 
 export interface LibrarySwitcherOption {
   value: string;
   label: string;
+  isOwnLibrary: boolean;
+  ownerInitial: string;
 }
 
 export interface LibrarySwitcher {
@@ -25,6 +28,7 @@ export interface LibrarySwitcher {
 export function useLibrarySwitcher(onSelect?: () => void): LibrarySwitcher {
   const router = useRouter();
   const { libraries } = useGlobalState();
+  const { accountData } = useAuth();
 
   // The library being viewed is always the `[username]` route segment — read it
   // from the router params, not the URL tail. On nested routes
@@ -68,13 +72,27 @@ export function useLibrarySwitcher(onSelect?: () => void): LibrarySwitcher {
 
   const options = useMemo(
     () =>
-      libraryCards.map(lib => ({
-        // Navigate by the URL slug (username) — the route is /library/[username].
-        // Fall back to the numeric id only when a library has no linked username.
-        value: lib.username ?? String(lib.id),
-        label: lib.libraryName,
-      })),
-    [libraryCards],
+      libraryCards
+        .map(lib => ({
+          // Navigate by the URL slug (username) — the route is /library/[username].
+          // Fall back to the numeric id only when a library has no linked username.
+          value: lib.username ?? String(lib.id),
+          label: lib.libraryName,
+          ownerInitial:
+            Array.from(lib.username ?? '').find(char => /\p{L}/u.test(char)) ??
+            '',
+          isOwnLibrary: Boolean(
+            accountData?.id &&
+            libraries?.data?.some(
+              entry =>
+                entry.id === lib.id &&
+                String(entry.attributes.user?.data?.id) ===
+                  String(accountData.id),
+            ),
+          ),
+        }))
+        .sort((a, b) => Number(b.isOwnLibrary) - Number(a.isOwnLibrary)),
+    [libraryCards, libraries, accountData?.id],
   );
 
   // The address may spell the username in another case, or carry the numeric

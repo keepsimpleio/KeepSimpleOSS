@@ -9,10 +9,14 @@ export interface DropdownOption {
   value: string;
   label: string;
   subOptions?: DropdownSubOption[];
+  isOwnLibrary?: boolean;
+  ownerInitial?: string;
 }
 
 export interface DropdownProps {
   value?: string;
+  variant?: 'default' | 'library';
+  ownershipLabel?: string;
   options: DropdownOption[];
   onChange?: (value: string) => void;
   className?: string;

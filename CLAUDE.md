@@ -8,6 +8,51 @@
 
 # CLAUDE.md — keepsimple (for Claude Code agents)
 
+## Release lessons (Wolf, 2026-09-07)
+
+Before any repeat build, tell Wolf why another build is needed and wait for his
+decision on the batch of changes. He may have other tasks to include. Do not
+trigger the build implicitly through a push or merge before that decision.
+Approval for an earlier release is not approval to start an additional build
+without this notice and batching opportunity. This explicit instruction was
+given after the Library cover correction caused another full build unannounced.
+The build already running at that instruction is to finish; do not restart it.
+
+Wolf requires faster production releases. The Library release repeated an AI
+review after staging approval, rebuilt both images, waited for downloads, then
+needed another build because the cover fallback's intermediate redirect had
+not been exercised through the actual handler before release.
+
+- Keep one agreed release branch per repository. Do not split fixes into extra
+  branches or independent releases without Wolf's request.
+- Before production approval, prepare the release comparison, dependency order,
+  checks and rollback reference. Preserve production-only changes when merging
+  an older staging base. Surface actual blockers before the approval step.
+- Reuse completed AI review and checks only when the release diff and relevant
+  target context are unchanged. Do not manually request another full review for
+  identical code. Required GitHub checks still apply; never bypass protection.
+  A workflow change to avoid duplicate automatic review must retain this guard.
+- Start independent frontend/backend builds together. Order deployment only
+  where the frontend depends on new backend fields. Do not leave one approved
+  build idle while waiting for an unrelated review or image download.
+- Validate provider fallbacks with the complete application handler from the
+  production network before merging. A successful direct download that follows
+  redirects does not prove our allowlisted handler accepts intermediate hosts.
+  For Open Library this includes archive.org/download/l*covers*\*/ redirects.
+- Treat SQL null in legacy boolean fields as unset when that is the application
+  contract. Distinguish persistence failures from overly strict probe assertions
+  about framework input coercion; never claim the entire probe passed if it did not.
+- Measure review, build, image transfer and rollout separately in the release
+  journal. Announce milestone changes; keep waiting messages short.
+- Engineering follow-up: cache Docker dependency/build layers and reduce runtime
+  image size. Current CI uses fresh runners and docker build without a registry
+  cache. Check these costs before redesigning deployment.
+- Do not promote the staging image to production by retagging today: the workflow
+  injects different env files and Next.js embeds NEXT_PUBLIC values at build time.
+  A single promotable image requires separating runtime configuration first.
+- Documentation-only lessons do not justify another production rebuild. Save
+  them locally and in MemPalace; include tracked rules with the next code release.
+
 ## Library release branch
 
 Wolf's instruction, 2026-09-07: all current Library work ships together through
@@ -113,14 +158,53 @@ The 100+ cognitive biases in UX Core are the product of 5+ years of curation and
 
 When you find yourself stuck > 10 minutes on a problem and figure it out, write a brief drawer in your wing — chronology + fix. Next-session-you won't waste the same 10 minutes. Same when a deployment/config decision is non-obvious — capture _why_ alongside _what_.
 
-## Ownership grant (Wolf, 2026-09-07)
+## A-Z OWNERSHIP (KEY-72580, forced by Wolf 2026-09-07, written by The Order on his order)
 
-I own keepsimple.io releases, the frontend and the Strapi CMS on both hosts through
-/data/bin/keepsimple-ctl (spec: wolfs-server/docs/keepsimple-ctl.md). Before I call a release
-live I run `keepsimple-ctl verify <sha>` myself and quote the verdict; I never ask The Order or
-Wolf to confirm a release. Staging frontend and staging CMS (restart, redeploy, shell, logs) are
-mine without asking. Backend changes go through the keepsimple-cms-new repo and its CI, never
-through SSH: dev for staging, main for prod. Prod restart/redeploy and merges to main need
-Wolf's go, quoted in --go and left in the journal; I execute them myself. Other containers,
-hosts, DNS, registry, GitHub secrets, Strapi env, database and schema migrations stay with
-The Order; I ask there only for those.
+I own keepsimple.io A to Z and I run it solo. Nothing about keepsimple.io goes to The Order
+any more: no confirmation, no permission grant, no schema review, no migration check, no
+"is this safe". The Order is reached only for what the grant names as central below, and a
+message there about anything else is a defect.
+
+What I run myself through `/data/bin/keepsimple-ctl` (spec `wolfs-server/docs/keepsimple-ctl.md`):
+
+- Releases: before I call one live I run `keepsimple-ctl verify <sha>` and quote the verdict.
+- Frontend and Strapi CMS containers on prod and staging: status, inspect, logs, ci, check,
+  restart, redeploy, staging shell.
+- The Strapi database on both hosts: `cms sql` (reads free, writes with `--write` on staging
+  or `--go` on prod), `cms perms` / `cms grant` / `cms revoke` for users-permissions roles,
+  `cms schema` for tables, `cms backup` before any schema change lands on prod, `cms env`
+  for variable names.
+- Content-type schema changes and their backfills: I merge them, Strapi syncs the columns on
+  rollout, I backfill with `cms sql` and verify with `cms schema`. A 403 from Strapi is a
+  role permission and I fix it with `cms grant`.
+- My git and repos: branches, PRs, merges to dev (staging) and main (prod).
+
+Wolf's go, quoted in `--go "<his words, dated>"` and left in the journal, is required for
+prod writes: restart prod, redeploy prod, merge to main, `cms sql prod` writes, `cms grant` /
+`cms revoke` on prod. I obtain it from Wolf directly and execute myself.
+
+Central, the only asks that may go `SEND TO @TheOrder`: other containers on the two hosts,
+host level, DNS, the registry and its credentials, GitHub secrets, compose files, Strapi `.env`
+values, and a new subcommand for the lever (it is a `/data/bin` file). Nothing else.
+
+## Library switcher design passport
+
+- Palette: existing paper and wood tokens; brown is the accent.
+- Typography: Source Serif 4 at 16px for names, Source Sans Pro at 12px for uppercase ownership labels.
+- Spacing: 4px grid; rows 56px minimum, padding 12px 16px, gap 12px. Rune seals are 40px square; SVG viewBox is 48 units, with a 1-unit frame and 2-unit glyph strokes.
+- Rune seals: original angular Latin initial alphabet, cut-corner frame and diamond terminals. Use the owner username initial, never the library title. Other scripts retain their initial in the existing serif face at 24px. Paper seals use brown-100 strokes over white-200 and panel-tab ruling; the owner seal reverses to white-warm on brown-100.
+- Radius: existing zero-radius control token.
+- Motion passport: existing menu fade; background and border transitions 200ms ease, disabled under reduced motion.
+- Scrollbar passport: menu cap 360px or 60dvh, stable gutter, 12px track in white-100, taupe thumb with 6px radius.
+- Stability passport: fixed rune seals, clipped names, reserved ownership-label line; selection changes color and inset marker without changing geometry.
+- Own library sorts first, matched by authenticated account ID to owner ID independently of the open route.
+
+## Library root loader design passport
+
+- Palette: existing white-transparent-400 overlay. Roots retain photographic walnut and umber bark tones, like book-cover artwork, at 0.9 opacity; no new UI accent or font.
+- Geometry: full parent-size scene, 1536 by 1024 SVG viewBox with centered crop. Photorealistic transparent WebP root specimen. Invisible reveal masks follow the actual crown and root axes with 100 to 240-unit brush widths and 8-unit softened edges. The mask reveals bark and fibers; no line-art roots remain.
+- Motion passport: one synchronized 10s growth cycle, crown revealed first, followed by primary roots and fibers through 76 percent, held through 86 percent, fading by 100 percent. Growth uses cubic-bezier(0.22, 0.61, 0.36, 1); scene appears over 240ms ease-out. Reduced motion shows the full static root network. No timers delay loaded content; existing parent unmount ends the scene immediately.
+- Stability passport: absolute overlay retains the existing parent geometry; SVG is decorative, status text is screen-reader-only. No layout animation or new scrollable region.
+- Asset fallback: if the artwork fails to load, show Loading in existing Source Serif 4 at 14px, centered in the reserved scene. Reveal waits for the image load event.
+- Scrollbar passport: none added; scene overflow is clipped.
+- Scope: Library loading and shelf creation only. Global route and other product loaders retain their current behavior.
