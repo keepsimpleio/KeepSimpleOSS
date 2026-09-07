@@ -91,14 +91,16 @@
 }
 
 @supports selector(:has(:focus-visible)) {
-  .card:has(:focus-visible) .select {
+  .card:has(:focus-visible) .select,
+  .card:has(:focus-visible) .favorite {
     opacity: 1;
     pointer-events: auto;
   }
 }
 
 @supports not selector(:has(:focus-visible)) {
-  .card:focus-within .select {
+  .card:focus-within .select,
+  .card:focus-within .favorite {
     opacity: 1;
     pointer-events: auto;
   }
@@ -265,8 +267,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .card:hover .favorite,
-  .card:has(:focus-visible) .favorite {
+  .card:hover .favorite {
     opacity: 1;
     pointer-events: auto;
   }
