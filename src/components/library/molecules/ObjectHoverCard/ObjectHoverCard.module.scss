@@ -151,13 +151,22 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--gray-darkest);
-  // htmlToPlainText keeps the paragraph breaks; the clamp counts visible lines,
-  // so a long description still ends at four.
-  white-space: pre-line;
+  // Line breaks arrive as <br> and paragraphs as <p>, the same markup the
+  // overview shows; the clamp counts visible lines, so a long description
+  // still ends at four.
+  overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+
+  p {
+    margin: 0 0 6px;
+  }
+
+  s {
+    text-decoration: line-through;
+  }
 }
 
 .tags {

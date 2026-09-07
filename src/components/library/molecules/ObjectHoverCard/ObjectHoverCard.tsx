@@ -6,9 +6,9 @@ import {
   DIFFICULTY_META,
   formatObjectDate,
   formatObjectDuration,
-  htmlToPlainText,
   OVERALL_COLORS,
 } from '@lib/library/objectMeta';
+import { toEditorHtml } from '@lib/library/richText';
 
 import { StarIcon } from '@icons/library/svg';
 
@@ -178,8 +178,11 @@ export function ObjectHoverCard({
   const difficulty = attributes.difficulty
     ? DIFFICULTY_META[attributes.difficulty]
     : null;
+  // The notes keep their marks here as they do in the overview: the value is
+  // cut down to the notes dialect (line breaks, bold, italic, strikethrough)
+  // and nothing else reaches the panel as markup.
   const description = useMemo(
-    () => htmlToPlainText(attributes.description),
+    () => toEditorHtml(attributes.description),
     [attributes.description],
   );
 
@@ -262,7 +265,12 @@ export function ObjectHoverCard({
           </dl>
         )}
 
-        {description && <p className={styles.description}>{description}</p>}
+        {description && (
+          <div
+            className={styles.description}
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
+        )}
 
         {tags.length > 0 && (
           <div className={styles.tags}>
