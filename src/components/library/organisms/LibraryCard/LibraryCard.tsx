@@ -2,6 +2,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { JSX } from 'react';
 
+import { libraryPath } from '@lib/library/libraryPath';
+
 import LibraryMark from '@icons/navbar/library.svg';
 
 import { Avatar } from '@components/library/atoms/Avatar';
@@ -20,7 +22,6 @@ import styles from './LibraryCard.module.scss';
 
 export function LibraryCard(props: LibraryCardProps): JSX.Element {
   const {
-    id,
     username,
     libraryName,
     description,
@@ -33,11 +34,7 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
   } = props;
   const router = useRouter();
 
-  // Route by numeric id, not username: the route resolver short-circuits a
-  // numeric param to a findOne-by-id, sidestepping the username→id filter
-  // lookup that the public API currently 500s on. Falls back to username only
-  // if an id is somehow absent.
-  const libraryHref = `/library/${id ?? username}`;
+  const libraryHref = libraryPath(username);
 
   const handleViewLibrary = () => {
     router.push(libraryHref);

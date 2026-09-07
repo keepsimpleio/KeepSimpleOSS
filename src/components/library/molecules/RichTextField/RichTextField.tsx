@@ -4,6 +4,7 @@ import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { serializeEditorHtml, toEditorHtml } from '@lib/library/richText';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 
 import type { RichTextFieldProps } from './RichTextField.types';
 
@@ -132,23 +133,28 @@ export function RichTextField({
         </Text>
         <div className={styles.tools} role="toolbar" aria-label="Text marks">
           {MARKS.map(mark => (
-            <button
+            <Tooltip
+              asChild
+              tooltipContent={`${mark.label} (${mark.keys})`}
               key={mark.command}
-              type="button"
-              className={classNames(styles.tool, styles[mark.command], {
-                [styles.toolOn]: marks[mark.command],
-              })}
-              aria-label={`${mark.label} (${mark.keys})`}
-              aria-pressed={marks[mark.command]}
-              title={`${mark.label} (${mark.keys})`}
-              disabled={disabled}
-              // Keep the caret and the selection where they are: a press on
-              // the button must not take focus out of the box.
-              onMouseDown={e => e.preventDefault()}
-              onClick={() => apply(mark.command)}
             >
-              {mark.glyph}
-            </button>
+              <button
+                key={mark.command}
+                type="button"
+                className={classNames(styles.tool, styles[mark.command], {
+                  [styles.toolOn]: marks[mark.command],
+                })}
+                aria-label={`${mark.label} (${mark.keys})`}
+                aria-pressed={marks[mark.command]}
+                disabled={disabled}
+                // Keep the caret and the selection where they are: a press on
+                // the button must not take focus out of the box.
+                onMouseDown={e => e.preventDefault()}
+                onClick={() => apply(mark.command)}
+              >
+                {mark.glyph}
+              </button>
+            </Tooltip>
           ))}
         </div>
       </div>

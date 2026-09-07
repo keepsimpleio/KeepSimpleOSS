@@ -1,0 +1,28 @@
+.label {
+  display: inline-grid;
+
+  > span {
+    grid-area: 1 / 1;
+    transition: opacity 200ms ease;
+  }
+
+  .confirmation {
+    opacity: 0;
+  }
+
+  &.copied {
+    .normal {
+      opacity: 0;
+    }
+
+    .confirmation {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    > span {
+      transition: none;
+    }
+  }
+}

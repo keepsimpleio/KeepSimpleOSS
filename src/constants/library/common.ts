@@ -83,11 +83,12 @@ export const MAX_SHARE_OBJECTS = 21;
 // SHELF_FULL_MESSAGE. Backend is the source of truth — see isShelfFullError.
 export const MAX_OBJECTS_PER_SHELF = 21;
 
-export const SHELF_FULL_MESSAGE = `This shelf is full (max ${MAX_OBJECTS_PER_SHELF} items).`;
+export const SHELF_FULL_MESSAGE = 'This shelf is full.';
 
 // The library-level twin, worded the same way so the two limits read as one
 // rule.
-export const LIBRARY_FULL_MESSAGE = `This library is full (max ${MAX_SHELVES_PER_LIBRARY} shelves). Delete a shelf to add a new one.`;
+export const LIBRARY_FULL_MESSAGE =
+  'This library is full. Delete a shelf to add a new one.';
 
 // Mirrors the single-shelf `name` constraint in the backend schema. Shared so
 // the create (AddShelfModal) and rename (Shelf) inputs stay in sync.

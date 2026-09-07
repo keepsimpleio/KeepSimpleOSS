@@ -34,6 +34,7 @@ import type { ShelfVisibility } from '@local-types/library/shelf';
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
 import { isFavorite, sortFavorites } from '@lib/library/favorites';
+import { libraryPath } from '@lib/library/libraryPath';
 import { objectIdFromSlug, objectSlug } from '@lib/library/objectSlug';
 
 import { reorderFavorites } from '@api/library/object/reorderFavorites';
@@ -286,15 +287,6 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
   const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
 
-  // Plain object count beside the shelf name. The cap belongs in the tooltip,
-  // not in the visible label — a visitor reads how full the shelf is, an owner
-  // hovers to learn how much room is left.
-  const countTitle = favorites
-    ? `${objects.length} favorite ${objects.length === 1 ? 'book' : 'books'}`
-    : `${objects.length} ${
-        objects.length === 1 ? typeLabel : `${typeLabel}s`
-      } on this shelf (max ${MAX_OBJECTS_PER_SHELF})`;
-
   const router = useRouter();
   // On the share-link page the object opens through a query parameter, so
   // the token stays in the address: pushing the library's own object path
@@ -508,7 +500,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
       return;
     }
     void router.push(
-      `/library/${encodeURIComponent(urlUsername)}/${objectSlug(object)}`,
+      `${libraryPath(ownerUsername || urlUsername)}/${objectSlug(object)}`,
       undefined,
       { shallow: true, scroll: false },
     );
@@ -523,7 +515,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
       });
       return;
     }
-    void router.push(`/library/${encodeURIComponent(urlUsername)}`, undefined, {
+    void router.push(libraryPath(ownerUsername || urlUsername), undefined, {
       shallow: true,
       scroll: false,
     });
@@ -923,9 +915,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
           <div className={styles.icon}>{typeIcon}</div>
 
-          <span className={styles.count} title={countTitle}>
-            ({objects.length})
-          </span>
+          <span className={styles.count}>({objects.length})</span>
 
           <span className={styles.nameWrap}>
             {isOwner && !favorites ? (

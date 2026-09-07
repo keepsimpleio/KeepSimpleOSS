@@ -2,6 +2,8 @@ import { mapStrapiLibrariesResponseToCards } from '@utils/library/mapStrapiLibra
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 
+import { libraryPath } from '@lib/library/libraryPath';
+
 import { useAuth } from '@components/Context/library/AuthContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 
@@ -16,7 +18,7 @@ export interface LibrarySwitcher {
   options: LibrarySwitcherOption[];
   /** The option that names the library on screen; '' until the list lands. */
   value: string;
-  /** Navigate to another library by its username (or numeric id fallback). */
+  /** Navigate to another library by its username. */
   onChange: (libraryId: string) => void;
 }
 
@@ -45,14 +47,12 @@ export function useLibrarySwitcher(onSelect?: () => void): LibrarySwitcher {
     return mapStrapiLibrariesResponseToCards(
       libraries,
       process.env.NEXT_PUBLIC_STRAPI,
-    );
+    ).filter(lib => Boolean(lib.username));
   }, [libraries]);
 
   const [selectedLibraryId, setSelectedLibraryId] = useState(
     currentLibraryId ||
-      (libraryCards[0]
-        ? (libraryCards[0].username ?? String(libraryCards[0].id))
-        : ''),
+      (libraryCards[0] ? (libraryCards[0].username ?? '') : ''),
   );
 
   useEffect(() => {
@@ -65,9 +65,7 @@ export function useLibrarySwitcher(onSelect?: () => void): LibrarySwitcher {
     if (selectedLibraryId || libraryCards.length === 0) {
       return;
     }
-    setSelectedLibraryId(
-      libraryCards[0].username ?? String(libraryCards[0].id),
-    );
+    setSelectedLibraryId(libraryCards[0].username ?? '');
   }, [libraryCards, selectedLibraryId]);
 
   const options = useMemo(
@@ -75,8 +73,8 @@ export function useLibrarySwitcher(onSelect?: () => void): LibrarySwitcher {
       libraryCards
         .map(lib => ({
           // Navigate by the URL slug (username) — the route is /library/[username].
-          // Fall back to the numeric id only when a library has no linked username.
-          value: lib.username ?? String(lib.id),
+          // Entries without an owner username are excluded from public navigation.
+          value: lib.username ?? '',
           label: lib.libraryName,
           ownerInitial:
             Array.from(lib.username ?? '').find(char => /\p{L}/u.test(char)) ??
@@ -105,13 +103,13 @@ export function useLibrarySwitcher(onSelect?: () => void): LibrarySwitcher {
         (lib.username ?? '').toLowerCase() === wanted ||
         String(lib.id) === wanted,
     );
-    return match ? (match.username ?? String(match.id)) : selectedLibraryId;
+    return match ? (match.username ?? '') : selectedLibraryId;
   }, [libraryCards, selectedLibraryId]);
 
   const onChange = (libraryId: string) => {
     setSelectedLibraryId(libraryId);
     onSelect?.();
-    router.push(`/library/${encodeURIComponent(libraryId)}`);
+    router.push(libraryPath(libraryId));
   };
 
   return { options, value, onChange };

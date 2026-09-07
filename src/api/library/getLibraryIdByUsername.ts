@@ -13,16 +13,35 @@ export const getLibraryIdByUsername = async (
   username: string,
 ): Promise<number | null> => {
   try {
-    const { data } = await axiosInstance.get<StrapiLibrariesResponse>(
-      '/api/libraries',
-      {
-        params: {
-          'filters[user][username][$eqi]': username,
-          'pagination[pageSize]': 1,
+    const normalized = username.trim().toLowerCase();
+    if (!normalized) return null;
+
+    // The CMS rejects user-relation filters for guests before its controller
+    // can resolve them. Read the public directory, whose owner usernames are
+    // already allowlisted, without requiring access to user accounts.
+    let page = 1;
+    let pageCount = 1;
+    do {
+      const { data } = await axiosInstance.get<StrapiLibrariesResponse>(
+        '/api/libraries',
+        {
+          params: {
+            'pagination[page]': page,
+            'pagination[pageSize]': 100,
+            'sort[0]': 'id:asc',
+          },
         },
-      },
-    );
-    return data.data?.[0]?.id ?? null;
+      );
+      const entry = data.data.find(
+        library =>
+          library.attributes.user?.data?.attributes.username?.toLowerCase() ===
+          normalized,
+      );
+      if (entry) return entry.id;
+      pageCount = data.meta.pagination.pageCount;
+      page += 1;
+    } while (page <= pageCount);
+    return null;
   } catch (error) {
     console.error('getLibraryIdByUsername failed:', error);
     throw new LibraryLoadError(

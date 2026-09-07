@@ -4,6 +4,8 @@ import { NextRouter, useRouter } from 'next/router';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
+import { libraryPath } from '@lib/library/libraryPath';
+
 import { logout } from '@api/auth';
 
 import PlusIcon from '@icons/library/svg/plus.svg';
@@ -91,7 +93,7 @@ const UserProfile: FC<UserProfileProps> = ({
   const handleMyLibrary = useCallback(() => {
     if (myLibraryDisabled) return;
     setIsDropdownOpen(false);
-    router.push(`/library/${username}`);
+    router.push(libraryPath(username));
   }, [router, username, myLibraryDisabled]);
 
   // A library has no standalone create step — it's bootstrapped on the owner's
@@ -101,7 +103,7 @@ const UserProfile: FC<UserProfileProps> = ({
   const handleCreateLibrary = useCallback(() => {
     if (!canCreateLibrary) return;
     setIsDropdownOpen(false);
-    router.push(`/library/${username}`);
+    router.push(libraryPath(username));
   }, [router, username, canCreateLibrary]);
 
   useEffect(() => {
