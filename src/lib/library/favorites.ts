@@ -37,3 +37,29 @@ export function sortFavorites(objects: IObject[]): IObject[] {
     })
     .map(({ object }) => object);
 }
+
+/**
+ * A saved object as the library tree should hold it. Until the backend
+ * carries the favorite fields, a save's response comes back without them,
+ * and taking it as-is would knock the book off the Favorites shelf on every
+ * edit. Whatever the response does not say about favorites is kept from the
+ * copy already on the shelf; once the fields are live the response wins.
+ */
+export function keepFavoriteFields(
+  previous: IObject | undefined,
+  updated: IObject,
+): IObject {
+  if (!previous) return updated;
+  const next = updated.attributes;
+  const prev = previous.attributes;
+  if (next.favorite !== undefined) return updated;
+  return {
+    ...updated,
+    attributes: {
+      ...next,
+      favorite: prev.favorite,
+      favoritedAt: next.favoritedAt ?? prev.favoritedAt,
+      favoriteOrder: next.favoriteOrder ?? prev.favoriteOrder,
+    },
+  };
+}

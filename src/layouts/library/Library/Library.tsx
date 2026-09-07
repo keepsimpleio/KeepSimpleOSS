@@ -51,6 +51,7 @@ import {
   FAVORITES_SHELF_ID,
   FAVORITES_SHELF_NAME,
   isFavorite,
+  keepFavoriteFields,
   sortFavorites,
 } from '@lib/library/favorites';
 import { objectIdFromSlug } from '@lib/library/objectSlug';
@@ -636,8 +637,12 @@ export function LibraryTemplate({
   // the link gets minted with a stale title, a stale cover, or a dead id.
   const handleObjectUpdated = useCallback(
     (shelfId: number, updated: IObject) => {
+      // A save's response may be silent about the star; the copy on the shelf
+      // keeps it (keepFavoriteFields), so an edit never unstars a book.
       mutateShelfObjects(shelfId, objects =>
-        objects.map(o => (o.id === updated.id ? updated : o)),
+        objects.map(o =>
+          o.id === updated.id ? keepFavoriteFields(o, updated) : o,
+        ),
       );
       replaceSelection(updated);
     },
@@ -930,6 +935,11 @@ export function LibraryTemplate({
       setLibrary(current => {
         if (!current) return current;
         const shelvesData = current.attributes.singleShelves?.data ?? [];
+        // The star travels with the book: the response of a move may not
+        // carry it, so it is read off the copy leaving the old shelf.
+        const previous = shelvesData
+          .flatMap(s => s.attributes.objects?.data ?? [])
+          .find(o => o.id === moved.id);
         const next = shelvesData.map(s => {
           if (s.id === fromShelfId) {
             const existing = s.attributes.objects?.data ?? [];
@@ -953,9 +963,10 @@ export function LibraryTemplate({
                 (max, o) => Math.max(max, o.attributes.order ?? 0),
                 -1,
               ) + 1;
+            const kept = keepFavoriteFields(previous, moved);
             const placed: IObject = {
-              ...moved,
-              attributes: { ...moved.attributes, order: nextOrder },
+              ...kept,
+              attributes: { ...kept.attributes, order: nextOrder },
             };
             return {
               ...s,
