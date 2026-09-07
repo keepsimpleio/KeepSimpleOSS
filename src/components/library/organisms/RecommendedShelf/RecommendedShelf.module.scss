@@ -1,11 +1,6 @@
-// The owner's AI shelf: the same header rhythm every shelf in the library
-// has, on a board of its own colour. Lilac is this shelf's mark, and only
-// this shelf's; the tokens are the palette's own purples. Desktop only: the
-// owner's editing surface never reaches a phone, and this shelf goes with it.
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   padding: 16px 0 16px 0;
   transition: opacity 0.2s ease;
 
@@ -17,6 +12,7 @@
     // The owner's shelf headers stand 44px tall; this one lands its board on
     // the same line.
     min-height: 44px;
+    position: relative;
 
     .left {
       display: flex;
@@ -29,9 +25,11 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
     }
 
-    // The gear: a mock of the shelf's settings, carrying who sees the shelf.
     .settings {
       display: inline-flex;
       align-items: center;
@@ -39,10 +37,10 @@
       width: 32px;
       height: 32px;
       padding: 0;
-      border: 1px solid var(--purple-400);
+      border: 1px solid var(--brown-border);
       border-radius: var(--radius-control);
       background: var(--white-200);
-      color: var(--purple-200);
+      color: var(--purple-100);
       cursor: pointer;
       transition:
         background 0.2s ease,
@@ -109,7 +107,7 @@
     gap: 8px;
     height: 32px;
     padding: 0 14px;
-    border: 1px solid var(--purple-200);
+    border: 1px solid var(--purple-100);
     border-radius: var(--radius-control);
     font-family: var(--font-source-serif);
     font-size: 14px;
@@ -139,13 +137,13 @@
   }
 
   .regenerate {
-    background: var(--purple-200);
+    background: var(--purple-100);
     color: var(--white);
 
     &:hover,
     &:focus-visible {
-      background: var(--purple-100);
-      border-color: var(--purple-100);
+      background: var(--black-rich);
+      border-color: var(--black-rich);
     }
   }
 
@@ -186,20 +184,73 @@
     // With `.items`' padding-bottom these sum to the 100px seating line every
     // shelf uses, and lift the scrollbar onto the visible board.
     padding-bottom: 65px;
-    // The air above the board takes the shelf's colour as it nears the wood.
-    background: linear-gradient(
-      to bottom,
-      rgba(199, 165, 255, 0) 0%,
-      rgba(199, 165, 255, 0) 45%,
-      rgba(199, 165, 255, 0.22) 100%
-    );
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    &::before {
+      bottom: 4px;
+      left: 12%;
+      right: 8%;
+      height: 16px;
+      background: radial-gradient(ellipse, var(--taupe), transparent 70%);
+      filter: blur(4px);
+      animation: floating-shadow 8s ease-in-out infinite;
+    }
+
+    &::after {
+      bottom: 8px;
+      left: 4%;
+      right: 4%;
+      height: 80px;
+      background:
+        radial-gradient(
+          ellipse at 18% 58%,
+          var(--white-200) 0%,
+          transparent 48%
+        ),
+        radial-gradient(ellipse at 52% 72%, var(--cream) 0%, transparent 48%),
+        radial-gradient(
+          ellipse at 82% 46%,
+          var(--white-200) 0%,
+          transparent 44%
+        ),
+        radial-gradient(
+          ellipse at 64% 64%,
+          var(--purple-400) 0%,
+          transparent 60%
+        );
+      opacity: 0.65;
+      filter: blur(8px);
+      animation: floating-mist 16s ease-in-out infinite;
+    }
+
+    .banner,
+    .items {
+      transform: translateY(-4px);
+      animation: shelf-float 8s ease-in-out infinite;
+    }
+
+    &:hover,
+    &:focus-within {
+      &::before,
+      .banner,
+      .items {
+        animation-play-state: paused;
+      }
+    }
 
     // Carousel arrows: paper squares with the shelf's own lilac chevron.
     .arrow {
       position: absolute;
       top: 45%;
       transform: translateY(-50%);
-      z-index: 2;
+      z-index: 3;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -208,7 +259,7 @@
       padding: 0;
       border-radius: var(--radius-control);
       background: var(--white-200) !important;
-      color: var(--purple-200) !important;
+      color: var(--purple-100) !important;
       box-shadow: var(--tooltip-shadow);
       right: 16px;
       opacity: 0.85;
@@ -238,22 +289,19 @@
       }
     }
 
-    // The board: the pixel plank, seated where the wooden one stands under
-    // every other shelf. It is drawn taller than the seating zone so its
-    // sparks rise around the books' feet; the overflow above is the air.
-    .board {
+    .banner {
+      width: -webkit-fill-available;
       position: absolute;
-      left: 0;
-      right: 0;
       bottom: 0;
-      height: 124px;
-      z-index: 0;
-      overflow: hidden;
+      right: -15px;
+      margin-right: -32px;
+      z-index: 1;
       pointer-events: none;
-      // The seating line is 100px up from the bottom; the canvas holds 24px
-      // of air above the plank, so it is pushed down by nothing.
-      display: flex;
-      align-items: flex-end;
+      overflow: hidden;
+
+      img {
+        width: inherit;
+      }
     }
 
     .items {
@@ -267,7 +315,7 @@
       padding-top: 40px;
       padding-bottom: 35px;
       position: relative;
-      z-index: 1;
+      z-index: 2;
       overflow-x: auto;
       overflow-y: hidden;
       scroll-behavior: smooth;
@@ -285,12 +333,11 @@
     }
 
     // The overflow scrollbar rides in the space shaved off the padding, so
-    // the seating line never moves when it appears. Lilac thumb on the
-    // plank's own lighter track.
+    // the seating line never moves when it appears. The track follows Shelf.
     .scrollable {
       padding-bottom: 23px;
       scrollbar-width: auto;
-      scrollbar-color: var(--purple-200) var(--purple-400);
+      scrollbar-color: var(--taupe) var(--white-100);
 
       &::-webkit-scrollbar {
         display: block;
@@ -298,7 +345,7 @@
       }
 
       &::-webkit-scrollbar-track {
-        background: var(--purple-400);
+        background: var(--white-100);
         border-radius: 6px;
       }
 
@@ -309,7 +356,7 @@
       }
 
       &::-webkit-scrollbar-thumb {
-        background: var(--purple-200);
+        background: var(--taupe);
         border-radius: 6px;
       }
     }
@@ -337,6 +384,103 @@
         }
       }
     }
+  }
+}
+
+.fold {
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    height 0.32s cubic-bezier(0.2, 0, 0, 1),
+    opacity 0.2s ease;
+}
+
+.body {
+  padding-top: 16px;
+}
+
+.wrapper.collapsed {
+  .fold,
+  .header .right {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .header .right {
+    visibility: hidden;
+  }
+  .content::before,
+  .content::after,
+  .content .banner,
+  .content .items,
+  .cardSlot *::after {
+    animation-play-state: paused;
+  }
+}
+
+.saveNotice {
+  position: absolute;
+  top: 100%;
+  left: 16px;
+  right: 16px;
+  z-index: 3;
+  pointer-events: none;
+  color: var(--gray-darkest);
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 20px;
+}
+.saveError {
+  display: block;
+  animation: notice-in 0.2s ease both;
+}
+.saveErrorClosing {
+  animation: notice-out 0.2s ease both;
+}
+@keyframes notice-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes notice-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes shelf-float {
+  0%,
+  100% {
+    transform: translateY(-4px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes floating-shadow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.24;
+    transform: scaleX(0.94);
+  }
+}
+
+@keyframes floating-mist {
+  0%,
+  100% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
   }
 }
 
@@ -407,11 +551,20 @@
 
 @media (prefers-reduced-motion: reduce) {
   .wrapper,
-  .items {
+  .wrapper .header .right,
+  .wrapper .content .items,
+  .fold {
     transition: none;
   }
-
-  .cardSlot {
+  .wrapper .content .cards .cardSlot,
+  .wrapper .content .banner,
+  .wrapper .content .items,
+  .wrapper .content::before,
+  .wrapper .content::after,
+  .saveError {
     animation: none;
+  }
+  .wrapper .content::before {
+    opacity: 0.3;
   }
 }

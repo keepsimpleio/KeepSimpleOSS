@@ -43,6 +43,7 @@ function CalendarDropdown({
       menuClassName={styles.captionMenu}
       ariaLabel={ariaLabel ?? 'Select option'}
       disabled={disabled}
+      scrollToSelected
       value={value != null ? String(value) : undefined}
       // Out-of-range entries are dropped rather than shown inert: the app's
       // Dropdown has no disabled-option state, and they cannot be navigated to.
@@ -154,6 +155,7 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
                 // Month + year dropdown caption — the bare prev/next chevrons make
                 // jumping decades (publication dates can be old) painful.
                 captionLayout="dropdown"
+                navLayout="after"
                 components={{ Dropdown: CalendarDropdown }}
                 startMonth={minDate ?? new Date(1500, 0)}
                 endMonth={maxDate ?? new Date(new Date().getFullYear() + 5, 11)}

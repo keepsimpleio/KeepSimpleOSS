@@ -98,6 +98,8 @@ export function RichTextField({
     const el = editorRef.current;
     if (!el || disabled) return;
     el.focus();
+    // The serializer preserves semantic marks, not inline-style spans.
+    document.execCommand('styleWithCSS', false, 'false');
     document.execCommand(command, false);
     readMarks();
     emit();
@@ -105,11 +107,12 @@ export function RichTextField({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const meta = e.metaKey || e.ctrlKey;
-    if (!meta) return;
+    if (!meta || e.altKey) return;
     const key = e.key.toLowerCase();
-    // Bold and italic are the browser's own shortcuts inside an editable box;
-    // strikethrough has none, so it gets one here.
-    if (e.shiftKey && key === 'x') {
+    if (!e.shiftKey && (key === 'b' || key === 'i')) {
+      e.preventDefault();
+      apply(key === 'b' ? 'bold' : 'italic');
+    } else if (e.shiftKey && key === 'x') {
       e.preventDefault();
       apply('strikeThrough');
     }

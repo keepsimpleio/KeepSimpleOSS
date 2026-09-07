@@ -1,2 +1,3 @@
-export * from './RecommendedShelf';
-export * from './RecommendedShelf.types';
+import RecommendedShelf from './RecommendedShelf';
+
+export default RecommendedShelf;

@@ -303,6 +303,11 @@
 }
 
 .description {
+  strong,
+  b {
+    font-weight: 600;
+  }
+
   color: var(--gray-darkest);
   line-height: 1.5;
   // Typed line breaks arrive as <br> from descriptionToHtml, so this box stays

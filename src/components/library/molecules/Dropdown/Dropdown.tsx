@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { JSX, useCallback, useRef, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
@@ -25,6 +25,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
     triggerClassName,
     placeholder = 'Select...',
     disabled = false,
+    scrollToSelected = false,
     portal = false,
     ariaLabel = 'Select option',
   } = props;
@@ -39,6 +40,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   const dropdownRef = useClickOutside(handleClose);
   const triggerRef = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const selectedRef = useRef<HTMLDivElement>(null);
 
   // When portaled the menu is detached from the trigger's box, so its position
   // is tracked against the trigger and recomputed on scroll/resize. It flips
@@ -48,6 +50,18 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const selectedOption = options.find(opt => opt.value === value);
+
+  useEffect(() => {
+    const menu = menuRef.current;
+    const selected = selectedRef.current;
+    if (!scrollToSelected || !isOpen || !menuMounted || !menu || !selected)
+      return;
+    menu.scrollTop +=
+      selected.getBoundingClientRect().top -
+      menu.getBoundingClientRect().top -
+      menu.clientTop -
+      (menu.clientHeight - selected.offsetHeight) / 2;
+  }, [isOpen, menuMounted, scrollToSelected, value]);
 
   // The option rows are divs, so they get no keyboard behaviour for free.
   // Enter and Space are what a button would answer to, and Space must not also
@@ -115,6 +129,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
           <div key={option.value} className={styles.optionWrapper}>
             <div
               role="button"
+              ref={isSelectedParent ? selectedRef : undefined}
               className={classNames(styles.option, {
                 [styles.selected]: isSelectedParent,
                 [styles.hasSubMenu]: hasSubOptions,

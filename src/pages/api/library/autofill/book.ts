@@ -25,6 +25,7 @@ interface IGoogleVolume {
     publishedDate?: string;
     description?: string;
     imageLinks?: { thumbnail?: string; smallThumbnail?: string };
+    industryIdentifiers?: Array<{ type: string; identifier: string }>;
     canonicalVolumeLink?: string;
     infoLink?: string;
   };
@@ -40,6 +41,16 @@ interface IOpenLibraryDoc {
 
 function fetchWithTimeout(url: string): Promise<Response> {
   return fetch(url, { signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) });
+}
+
+function isbnCover(volume: NonNullable<IGoogleVolume['volumeInfo']>) {
+  const identifiers = volume.industryIdentifiers ?? [];
+  const isbn =
+    identifiers.find(i => i.type === 'ISBN_13')?.identifier ??
+    identifiers.find(i => i.type === 'ISBN_10')?.identifier;
+  return isbn && /^(?:\d{13}|\d{9}[\dXx])$/.test(isbn)
+    ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`
+    : undefined;
 }
 
 /**
@@ -83,9 +94,14 @@ async function searchGoogleBooks(q: string): Promise<IAutofillSuggestion[]> {
       author: v.authors?.join(', ') || undefined,
       publicationDate: v.publishedDate || undefined,
       description: v.description || undefined,
-      coverUrl: upgradeGoogleBooksCover(
-        v.imageLinks?.thumbnail ?? v.imageLinks?.smallThumbnail,
-      ),
+      coverUrl:
+        upgradeGoogleBooksCover(
+          v.imageLinks?.thumbnail ?? v.imageLinks?.smallThumbnail,
+        ) ?? isbnCover(v),
+      fallbackCoverUrl:
+        v.imageLinks?.thumbnail || v.imageLinks?.smallThumbnail
+          ? isbnCover(v)
+          : undefined,
       sourceUrl: v.canonicalVolumeLink ?? v.infoLink ?? undefined,
     }));
 }
@@ -120,7 +136,7 @@ async function searchOpenLibrary(q: string): Promise<IAutofillSuggestion[]> {
         : undefined,
       coverUrl:
         d.cover_i != null
-          ? `${OPEN_LIBRARY_COVER}/${d.cover_i}-L.jpg`
+          ? `${OPEN_LIBRARY_COVER}/${d.cover_i}-L.jpg?default=false`
           : undefined,
       sourceUrl: d.key ? `https://openlibrary.org${d.key}` : undefined,
     }));
