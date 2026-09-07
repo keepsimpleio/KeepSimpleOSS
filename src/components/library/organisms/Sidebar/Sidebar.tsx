@@ -35,6 +35,7 @@ import { useAuth } from '@components/Context/library/AuthContext';
 import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Avatar } from '@components/library/atoms/Avatar';
+import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
@@ -518,12 +519,12 @@ export function Sidebar() {
                 onClick={handleCopyUrl}
                 type={ButtonType.Secondary}
                 size={ButtonSize.Wide}
-                label={isCopied ? 'Copied' : 'Library URL'}
+                label={
+                  <CopyButtonLabel copied={isCopied} label="Library URL" />
+                }
                 ariaLabel={isCopied ? 'Library URL copied' : 'Copy library URL'}
                 Icon={<LinkIcon />}
-                className={classNames(styles.copyButton, {
-                  [styles.copied]: isCopied,
-                })}
+                className={styles.copyButton}
               />
               <Text
                 variant={TypographyVariant.TextSmall}

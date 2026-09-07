@@ -247,3 +247,11 @@ with fixed positioning at layer 10000, above Library dialogs and hover cards.
 Opacity enters and exits over 150ms ease; reduced motion disables transitions.
 Hints wrap within the viewport and have no scrollable surface. Portals reserve
 no layout space and do not change anchor size. Empty hints render no popup.
+
+## Library copy feedback
+
+Library URL and object Copy URL controls share CopyButtonLabel. Crossfade the
+normal label and Copied over 200ms ease; reduced motion switches immediately.
+Both labels occupy the same grid cell so their largest width remains reserved.
+Keep the secondary button palette, existing typography and geometry throughout.
+No scale, pulse or success fill. This label has no scrolling surface.

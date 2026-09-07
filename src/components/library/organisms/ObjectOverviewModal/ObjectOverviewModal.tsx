@@ -44,6 +44,7 @@ import {
 } from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
 import { IconName } from '@components/library/atoms/Icon';
 import { InkLine } from '@components/library/atoms/InkLine';
 import {
@@ -542,7 +543,9 @@ export function ObjectOverviewModal(
                   type={ButtonType.Secondary}
                   size={ButtonSize.Default}
                   className={styles.shareButton}
-                  label={shareCopied ? 'Copied' : 'Copy URL'}
+                  label={
+                    <CopyButtonLabel copied={shareCopied} label="Copy URL" />
+                  }
                   ariaLabel={shareCopied ? 'Link copied' : 'Copy URL'}
                   Icon={<ShareIcon />}
                   iconPosition={IconPosition.Right}
