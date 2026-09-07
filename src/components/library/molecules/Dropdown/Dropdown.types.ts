@@ -21,6 +21,8 @@ export interface DropdownProps {
   menuClassName?: string;
   triggerClassName?: string;
   disabled?: boolean;
+  /** Center the selected option when a scrollable menu opens. */
+  scrollToSelected?: boolean;
   /**
    * Render the menu via `createPortal(document.body)` with fixed positioning
    * glued to the trigger. Use inside scrolling containers (modals) so the

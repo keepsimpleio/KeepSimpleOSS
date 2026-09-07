@@ -147,6 +147,11 @@
 }
 
 .description {
+  strong,
+  b {
+    font-weight: 600;
+  }
+
   margin: 12px 0 0;
   font-size: 14px;
   line-height: 20px;

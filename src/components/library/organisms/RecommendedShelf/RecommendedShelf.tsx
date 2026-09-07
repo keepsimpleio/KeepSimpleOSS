@@ -1,9 +1,16 @@
-import classNames from 'classnames';
-import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import cn from 'classnames';
+import Image from 'next/image';
+import React, {
+  JSX,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   RECOMMENDED_SHELF_EMPTY,
-  RECOMMENDED_SHELF_HINT,
   RECOMMENDED_SHELF_NAME,
   RECOMMENDED_SHELF_SIZE,
 } from '@constants/library/recommendations';
@@ -11,7 +18,9 @@ import {
 import type { IRecommendedBook } from '@local-types/library/recommendation';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
+import { usePresence } from '@hooks/library/usePresence';
 
+import shelfBackground from '@icons/library/images/shelfBackground.png';
 import {
   ArrowIcon,
   BanIcon,
@@ -20,16 +29,20 @@ import {
   SparkleIcon,
 } from '@icons/library/svg';
 
-import { PixelShelfBoard } from '@components/library/atoms/PixelShelfBoard';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import { Button, ButtonType } from '@components/library/molecules/Button';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { RecommendedBookCard } from '@components/library/molecules/RecommendedBookCard';
 
-import type { RecommendedShelfProps } from './RecommendedShelf.types';
-
 import styles from './RecommendedShelf.module.scss';
+
+interface RecommendedShelfProps {
+  className?: string;
+  pool: IRecommendedBook[];
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => Promise<void>;
+}
 
 const bookKey = (book: IRecommendedBook) => book.id;
 
@@ -48,10 +61,67 @@ const bookKey = (book: IRecommendedBook) => book.id;
  * Mocked: the engine is not built yet. The pool is a seed list, the scores
  * are placeholders, and verdicts live for the session only.
  */
-export function RecommendedShelf({
+export default function RecommendedShelf({
   className,
   pool,
+  collapsed,
+  onCollapsedChange,
 }: RecommendedShelfProps): JSX.Element {
+  const [isCollapsed, setIsCollapsed] = useState(collapsed);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const savingRef = useRef(false);
+  const unsavedChoiceRef = useRef(false);
+  const bodyId = useId();
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const foldRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const [bodyHeight, setBodyHeight] = useState<number | null>(null);
+  const { mounted: errorMounted, shown: errorShown } = usePresence(
+    !!saveError,
+    200,
+  );
+
+  useEffect(() => {
+    if (!savingRef.current && !unsavedChoiceRef.current) {
+      setIsCollapsed(collapsed);
+    }
+  }, [collapsed]);
+
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+    const measure = () => setBodyHeight(body.offsetHeight);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(body);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    foldRef.current?.toggleAttribute('inert', isCollapsed);
+    actionsRef.current?.toggleAttribute('inert', isCollapsed);
+  }, [isCollapsed]);
+
+  const toggleCollapsed = async () => {
+    if (savingRef.current) return;
+    const next = !isCollapsed;
+    savingRef.current = true;
+    unsavedChoiceRef.current = true;
+    setSaving(true);
+    setSaveError(null);
+    setIsCollapsed(next);
+    try {
+      await onCollapsedChange(next);
+      unsavedChoiceRef.current = false;
+    } catch {
+      setSaveError('Could not sync this setting to your account.');
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
+    }
+  };
+
   // Which of the pool stand on the board, in order. Starts at the top of it.
   const [boardIds, setBoardIds] = useState<string[]>(() =>
     pool.slice(0, RECOMMENDED_SHELF_SIZE).map(bookKey),
@@ -172,14 +242,28 @@ export function RecommendedShelf({
   const openCount = board.filter(book => !banned.has(book.id)).length;
 
   return (
-    <div className={classNames(className, styles.wrapper)}>
+    <div
+      className={cn(className, styles.wrapper, {
+        [styles.collapsed]: isCollapsed,
+      })}
+    >
       <div className={styles.header}>
         <div className={styles.left}>
-          <Tooltip place="bottom" tooltipContent={RECOMMENDED_SHELF_HINT}>
+          <Tooltip
+            place="bottom"
+            tooltipContent={
+              isCollapsed ? 'Expand AI Shelf' : 'Collapse AI Shelf'
+            }
+          >
             <button
               type="button"
               className={styles.settings}
-              aria-label={`Shelf settings. ${RECOMMENDED_SHELF_HINT}`}
+              aria-label={isCollapsed ? 'Expand AI Shelf' : 'Collapse AI Shelf'}
+              aria-expanded={!isCollapsed}
+              aria-controls={bodyId}
+              aria-busy={saving}
+              aria-disabled={saving}
+              onClick={() => void toggleCollapsed()}
             >
               <SettingsIcon />
             </button>
@@ -196,10 +280,14 @@ export function RecommendedShelf({
           </span>
         </div>
 
-        <div className={styles.right}>
+        <div
+          className={styles.right}
+          ref={actionsRef}
+          aria-hidden={isCollapsed || undefined}
+        >
           <button
             type="button"
-            className={classNames(styles.headerButton, styles.regenerate)}
+            className={cn(styles.headerButton, styles.regenerate)}
             onClick={regenerate}
             aria-label="Re-generate the open picks on this shelf"
           >
@@ -208,7 +296,7 @@ export function RecommendedShelf({
           </button>
           <button
             type="button"
-            className={classNames(styles.headerButton, styles.bannedButton)}
+            className={cn(styles.headerButton, styles.bannedButton)}
             onClick={() => setBannedOpen(true)}
             aria-label={`Banned books, ${bannedBooks.length}`}
           >
@@ -216,70 +304,90 @@ export function RecommendedShelf({
             Banned Books
           </button>
         </div>
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.noticeRow} role="status" aria-live="polite">
-          {openCount === 0 && (
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.notice}
+        <div className={styles.saveNotice} role="status" aria-live="polite">
+          {errorMounted && (
+            <span
+              className={cn(styles.saveError, {
+                [styles.saveErrorClosing]: !errorShown,
+              })}
             >
-              {RECOMMENDED_SHELF_EMPTY}
-            </Text>
+              Could not sync this setting to your account.
+            </span>
           )}
         </div>
-        {isOverflowing && (
-          <>
-            <Button
-              className={classNames(styles.arrow, styles.arrowLeft)}
-              onClick={() => scrollJump(-1)}
-              type={ButtonType.Secondary}
-              Icon={<ArrowIcon />}
-              ariaLabel="Scroll recommendations left"
-              disabled={!canScrollLeft}
-            />
-            <Button
-              className={styles.arrow}
-              onClick={() => scrollJump(1)}
-              type={ButtonType.Secondary}
-              Icon={<ArrowIcon />}
-              ariaLabel="Scroll recommendations right"
-              disabled={!canScrollRight}
-            />
-          </>
-        )}
-        <div
-          className={classNames(styles.items, {
-            [styles.scrollable]: isOverflowing,
-          })}
-          ref={itemsRef}
-        >
-          <div className={styles.cards} ref={cardsRef}>
-            {entries.map(({ item: book, leaving }, index) => (
-              <div
-                key={book.id}
-                className={classNames(styles.cardSlot, {
-                  [styles.cardLeaving]: leaving,
-                })}
-                data-flip-id={book.id}
-                data-flip-leaving={leaving ? 'true' : undefined}
-                aria-hidden={leaving || undefined}
-              >
-                <RecommendedBookCard
-                  book={book}
-                  tint={index}
-                  locked={locked.has(book.id)}
-                  banned={banned.has(book.id)}
-                  onToggleLock={toggleLock}
-                  onToggleBan={toggleBan}
+      </div>
+
+      <div
+        id={bodyId}
+        ref={foldRef}
+        className={styles.fold}
+        aria-hidden={isCollapsed || undefined}
+        style={{ height: isCollapsed ? 0 : (bodyHeight ?? undefined) }}
+      >
+        <div className={styles.body} ref={bodyRef}>
+          <div className={styles.content}>
+            <div className={styles.noticeRow} role="status" aria-live="polite">
+              {openCount === 0 && (
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.notice}
+                >
+                  {RECOMMENDED_SHELF_EMPTY}
+                </Text>
+              )}
+            </div>
+            {isOverflowing && (
+              <>
+                <Button
+                  className={cn(styles.arrow, styles.arrowLeft)}
+                  onClick={() => scrollJump(-1)}
+                  type={ButtonType.Secondary}
+                  Icon={<ArrowIcon />}
+                  ariaLabel="Scroll recommendations left"
+                  disabled={!canScrollLeft}
                 />
+                <Button
+                  className={styles.arrow}
+                  onClick={() => scrollJump(1)}
+                  type={ButtonType.Secondary}
+                  Icon={<ArrowIcon />}
+                  ariaLabel="Scroll recommendations right"
+                  disabled={!canScrollRight}
+                />
+              </>
+            )}
+            <div
+              className={cn(styles.items, {
+                [styles.scrollable]: isOverflowing,
+              })}
+              ref={itemsRef}
+            >
+              <div className={styles.cards} ref={cardsRef}>
+                {entries.map(({ item: book, leaving }) => (
+                  <div
+                    key={book.id}
+                    className={cn(styles.cardSlot, {
+                      [styles.cardLeaving]: leaving,
+                    })}
+                    data-flip-id={book.id}
+                    data-flip-leaving={leaving ? 'true' : undefined}
+                    aria-hidden={leaving || undefined}
+                  >
+                    <RecommendedBookCard
+                      book={book}
+                      locked={locked.has(book.id)}
+                      banned={banned.has(book.id)}
+                      onToggleLock={toggleLock}
+                      onToggleBan={toggleBan}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <div className={styles.banner}>
+              <Image src={shelfBackground} alt="" />
+            </div>
           </div>
-        </div>
-        <div className={styles.board}>
-          <PixelShelfBoard seed={7} />
         </div>
       </div>
 
@@ -320,10 +428,7 @@ export function RecommendedShelf({
                     </div>
                     <button
                       type="button"
-                      className={classNames(
-                        styles.headerButton,
-                        styles.bannedButton,
-                      )}
+                      className={cn(styles.headerButton, styles.bannedButton)}
                       onClick={() => toggleBan(book)}
                       aria-label={`Unban ${book.title}`}
                     >
@@ -336,7 +441,7 @@ export function RecommendedShelf({
             <div className={styles.bannedFooter}>
               <button
                 type="button"
-                className={classNames(styles.headerButton, styles.regenerate)}
+                className={cn(styles.headerButton, styles.regenerate)}
                 onClick={closeBannedAnimated}
               >
                 Done

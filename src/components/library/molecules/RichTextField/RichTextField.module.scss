@@ -80,6 +80,11 @@
 // The box itself mirrors the plain Textarea: same border, padding, type and
 // thin scrollbar rail; the grip is the only thing that changes its height.
 .editor {
+  strong,
+  b {
+    font-weight: 700;
+  }
+
   width: 100%;
   box-sizing: border-box;
   min-height: 96px;

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import React, { JSX, useMemo, useRef, useState } from 'react';
 
 import type { IObject } from '@local-types/library/object';
@@ -34,8 +34,6 @@ const asObject = (
   },
 });
 
-const TINTS = 6;
-
 let dossierSerial = 0;
 
 /**
@@ -47,7 +45,6 @@ let dossierSerial = 0;
 export function RecommendedBookCard({
   book,
   className,
-  tint = 0,
   locked = false,
   banned = false,
   onToggleLock,
@@ -74,10 +71,10 @@ export function RecommendedBookCard({
     state === 'banned' ? 'banned' : state === 'locked' ? 'locked in' : '';
 
   return (
-    <div className={classNames(styles.row, className)}>
+    <div className={cn(styles.row, className)}>
       <div
         ref={cardRef}
-        className={classNames(styles.card, styles[`tint${tint % TINTS}`], {
+        className={cn(styles.card, {
           [styles.locked]: locked,
           [styles.banned]: banned,
         })}
@@ -128,7 +125,7 @@ export function RecommendedBookCard({
           {/* The pick's standing, pinned at the head of the cover. Held in
               the DOM in every state so a verdict never resizes the card. */}
           <span
-            className={classNames(styles.status, {
+            className={cn(styles.status, {
               [styles.statusLocked]: state === 'locked',
               [styles.statusBanned]: state === 'banned',
             })}

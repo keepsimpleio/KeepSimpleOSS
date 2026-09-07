@@ -381,7 +381,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       setIsFetchingCover(true);
       setCoverNotice(null);
       try {
-        const file = await fetchCoverFile(s.coverUrl, s.title);
+        const file = await fetchCoverFile(
+          s.coverUrl,
+          s.title,
+          s.fallbackCoverUrl,
+        );
         if (!file) {
           setCoverNotice(
             "Couldn't fetch this book's cover. Add one from your files.",

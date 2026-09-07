@@ -52,11 +52,23 @@
   box-shadow: var(--dropdown-shadow);
   padding: 12px;
 
+  // Reserve a separate row for navigation so it cannot cover either dropdown.
+  :global(.rdp-month) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :global(.rdp-nav) {
+    position: static;
+    justify-content: flex-end;
+  }
+
   // The caption's two dropdowns sit on one row where the native selects used to.
   :global(.rdp-dropdowns) {
     display: flex;
     align-items: center;
     gap: 8px;
+    width: 100%;
   }
 
   :global(.rdp-root) {
@@ -168,6 +180,11 @@
 // Month and year pickers in the calendar caption (see `CalendarDropdown`).
 .captionDropdown {
   min-width: 0;
+  flex: 2;
+
+  &:first-child {
+    flex: 3;
+  }
 }
 
 .captionMenu {
@@ -177,4 +194,18 @@
   max-height: 240px;
   min-width: 132px;
   overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--taupe) var(--white-100);
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--white-100);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--taupe);
+    border-radius: 6px;
+  }
 }

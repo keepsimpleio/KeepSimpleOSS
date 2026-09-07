@@ -8,6 +8,8 @@ export interface IAutofillSuggestion {
   description?: string;
   /** Remote cover/thumbnail URL — fetch through /api/library/autofill/cover. */
   coverUrl?: string;
+  /** Same-edition cover used when the primary provider refuses the request. */
+  fallbackCoverUrl?: string;
   sourceUrl?: string;
   /** Track length in whole seconds (iTunes only — books/videos omit it). */
   durationSeconds?: number;

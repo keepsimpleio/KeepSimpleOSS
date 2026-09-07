@@ -5,6 +5,8 @@ import type { IAutofillSuggestion } from '@local-types/library/autofill';
 
 import { usePresence } from '@hooks/library/usePresence';
 
+import { autofillCoverUrl } from '@lib/library/autofillCoverUrl';
+
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Input } from '@components/library/molecules/Input';
 
@@ -229,9 +231,10 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
                     // autofilled cover (which also warms its 24h cache).
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={`/api/library/autofill/cover?url=${encodeURIComponent(
+                      src={autofillCoverUrl(
                         suggestion.coverUrl,
-                      )}`}
+                        suggestion.fallbackCoverUrl,
+                      )}
                       alt=""
                       className={styles.thumb}
                       loading="lazy"
