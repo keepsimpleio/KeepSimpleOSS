@@ -55,10 +55,37 @@ not been exercised through the actual handler before release.
 
 ## Library release branch
 
-Wolf's instruction, 2026-09-07: all current Library work ships together through
-`library-ai-shelf-v2`. Use this branch name in both frontend and CMS repositories.
-Favorites persistence belongs to this release. Do not create separate feature or
-hotfix branches or PRs for parts of this work. CMS PR #399 was closed.
+Wolf's instruction, 2026-09-07: collect the next fixes in
+`openai-astra-still-sucks-fixesv2`. Keep them on this branch while he reviews
+other issues. Do not start another release from the previous approval.
+
+## Library preference release prerequisite
+
+The AI Shelf preference needs both the CMS boolean field and the authenticated
+`api::library.library.update` route permission. A frontend build can pass while
+this permission is missing: that caused the production save failure on 2026-09-07.
+The CMS controller already enforces library ownership and rejects owner changes.
+
+Before declaring a Library release ready, run
+`node scripts/release/library-preference-permission.cjs prod --check`.
+A failing result blocks release completion. During the authorized release, apply
+`node scripts/release/library-preference-permission.cjs prod --apply --go "<owner approval>"`.
+This idempotently grants the authenticated route through keepsimple-ctl and checks
+it again. It does not change books or shelf contents, and never grants public writes.
+Staging accepts `staging --apply`. Every run appends to the private release journal.
+
+Permission checks alone do not prove account persistence. Save both collapse states
+through the authenticated owner API, independently reload each state, and restore
+the original preference. Confirm anonymous writes remain rejected and public reads
+omit the private preference. Never replace this with a localStorage-only fallback.
+
+## Public library URLs
+
+Public links use `/library/<lowercase-username>` through `libraryPath`.
+Database library ids belong in CMS requests, never in generated navigation or
+copied links. Legacy numeric URLs redirect to the owner username while retaining
+object paths and query strings. Do not restore numeric links to work around a
+failed username lookup; fix the public lookup instead.
 
 ## Library calendar layout
 
@@ -208,3 +235,23 @@ values, and a new subcommand for the lever (it is a `/data/bin` file). Nothing e
 - Asset fallback: if the artwork fails to load, show Loading in existing Source Serif 4 at 14px, centered in the reserved scene. Reveal waits for the image load event.
 - Scrollbar passport: none added; scene overflow is clipped.
 - Scope: Library loading and shelf creation only. Global route and other product loaders retain their current behavior.
+
+## Library tooltip design passport
+
+All Library control hints use the shared Tooltip component. Native HTML title
+hints are forbidden. Use asChild to keep existing button and tag geometry.
+Paper background --white, text --gray-darker, border --beige, brown accent from
+existing controls; Source Serif 4 at 16px, 12px by 16px padding, 300px maximum
+width, existing --radius-control and --tooltip-shadow. Tooltips portal to body
+with fixed positioning at layer 10000, above Library dialogs and hover cards.
+Opacity enters and exits over 150ms ease; reduced motion disables transitions.
+Hints wrap within the viewport and have no scrollable surface. Portals reserve
+no layout space and do not change anchor size. Empty hints render no popup.
+
+## Library copy feedback
+
+Library URL and object Copy URL controls share CopyButtonLabel. Crossfade the
+normal label and Copied over 200ms ease; reduced motion switches immediately.
+Both labels occupy the same grid cell so their largest width remains reserved.
+Keep the secondary button palette, existing typography and geometry throughout.
+No scale, pulse or success fill. This label has no scrolling surface.

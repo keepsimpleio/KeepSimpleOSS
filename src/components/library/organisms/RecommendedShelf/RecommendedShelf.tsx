@@ -251,14 +251,12 @@ export default function RecommendedShelf({
         <div className={styles.left}>
           <Tooltip
             place="bottom"
-            tooltipContent={
-              isCollapsed ? 'Expand AI Shelf' : 'Collapse AI Shelf'
-            }
+            tooltipContent={isCollapsed ? 'Expand' : 'Collapse'}
           >
             <button
               type="button"
               className={styles.settings}
-              aria-label={isCollapsed ? 'Expand AI Shelf' : 'Collapse AI Shelf'}
+              aria-label={isCollapsed ? 'Expand' : 'Collapse'}
               aria-expanded={!isCollapsed}
               aria-controls={bodyId}
               aria-busy={saving}

@@ -15,6 +15,8 @@ import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useIsMobile from '@hooks/library/useIsMobile';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
+import { libraryPath } from '@lib/library/libraryPath';
+
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
 import { getTagsList } from '@api/library/tag/getTagsList';
@@ -33,6 +35,7 @@ import { useAuth } from '@components/Context/library/AuthContext';
 import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Avatar } from '@components/library/atoms/Avatar';
+import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
@@ -89,9 +92,10 @@ export function Sidebar() {
 
   // A copied library link is always the public version, even when the owner is
   // editing it on the private review host.
-  const shareUrl = currentLibraryId
-    ? `${KEEPSIMPLE_URL}/library/${encodeURIComponent(currentLibraryId)}`
-    : KEEPSIMPLE_URL;
+  const linkUsername = /^\d+$/.test(currentLibraryId)
+    ? currentOwner?.username
+    : currentLibraryId;
+  const shareUrl = `${KEEPSIMPLE_URL}${libraryPath(linkUsername)}`;
 
   const [isOpenTagModal, setIsOpenTagModal] = useState<
     null | 'create' | 'edit'
@@ -515,12 +519,12 @@ export function Sidebar() {
                 onClick={handleCopyUrl}
                 type={ButtonType.Secondary}
                 size={ButtonSize.Wide}
-                label={isCopied ? 'COPIED' : 'COPY LIBRARY URL'}
+                label={
+                  <CopyButtonLabel copied={isCopied} label="Library URL" />
+                }
                 ariaLabel={isCopied ? 'Library URL copied' : 'Copy library URL'}
                 Icon={<LinkIcon />}
-                className={classNames(styles.copyButton, {
-                  [styles.copied]: isCopied,
-                })}
+                className={styles.copyButton}
               />
               <Text
                 variant={TypographyVariant.TextSmall}

@@ -4,6 +4,8 @@ import { DEFAULT_SEO } from '@constants/library/seo.config';
 
 import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
 
+import { getLibraryRedirect } from '@api/library/getLibraryRedirect';
+
 import { AuthProvider } from '@components/Context/library/AuthContext';
 import { DashboardProvider } from '@components/Context/library/DashboardContext';
 import { GlobalStateProvider } from '@components/Context/library/GlobalStateContext';
@@ -77,6 +79,10 @@ export const getServerSideProps: GetServerSideProps<
   LibraryPageProps
 > = async context => {
   const username = String(context.params?.username ?? '');
+  const destination = await getLibraryRedirect(username, context.resolvedUrl);
+  if (destination) {
+    return { redirect: { destination, permanent: true } };
+  }
   const initialSidebarCollapsed = readSidebarCollapsedForRequest(
     context.req.headers.cookie,
   );

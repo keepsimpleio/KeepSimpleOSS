@@ -295,7 +295,6 @@
       min-width: 100%;
       letter-spacing: 0.04em;
       transition:
-        transform 0.2s ease,
         background-color 0.2s ease,
         border-color 0.2s ease,
         color 0.2s ease;
@@ -305,19 +304,8 @@
         height: 20px;
       }
 
-      &.copied {
-        animation: copyPulse 0.4s ease;
-        color: var(--white);
-        background: var(--brown);
-        border-color: var(--brown);
-      }
-
       @media (prefers-reduced-motion: reduce) {
         transition: none;
-
-        &.copied {
-          animation: none;
-        }
       }
     }
   }
@@ -451,17 +439,5 @@
   .copyButton {
     transition: none;
     animation: none;
-  }
-}
-
-@keyframes copyPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
   }
 }

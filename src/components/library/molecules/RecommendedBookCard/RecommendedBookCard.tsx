@@ -5,6 +5,7 @@ import type { IObject } from '@local-types/library/object';
 
 import { BanIcon, LockIcon } from '@icons/library/svg';
 
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
 
 import type { RecommendedBookCardProps } from './RecommendedBookCard.types';
@@ -137,43 +138,51 @@ export function RecommendedBookCard({
 
           <div className={styles.actions}>
             {!banned && (
-              <button
-                type="button"
-                className={styles.action}
-                onClick={() => onToggleLock?.(book)}
-                aria-label={
-                  locked
-                    ? `Unlock ${book.title}`
-                    : `Lock ${book.title} on the shelf`
-                }
-                title={
+              <Tooltip
+                asChild
+                tooltipContent={
                   locked
                     ? 'Unlock: a re-generate may replace it'
                     : 'Lock: keeps this pick through a re-generate'
                 }
               >
-                <LockIcon />
-                {locked ? 'Unlock' : 'Lock'}
-              </button>
+                <button
+                  type="button"
+                  className={styles.action}
+                  onClick={() => onToggleLock?.(book)}
+                  aria-label={
+                    locked
+                      ? `Unlock ${book.title}`
+                      : `Lock ${book.title} on the shelf`
+                  }
+                >
+                  <LockIcon />
+                  {locked ? 'Unlock' : 'Lock'}
+                </button>
+              </Tooltip>
             )}
-            <button
-              type="button"
-              className={styles.action}
-              onClick={() => onToggleBan?.(book)}
-              aria-label={
-                banned
-                  ? `Unban ${book.title}`
-                  : `Ban ${book.title} from recommendations`
-              }
-              title={
+            <Tooltip
+              asChild
+              tooltipContent={
                 banned
                   ? 'Unban: this book may be recommended again'
                   : 'Ban: never recommend this book'
               }
             >
-              <BanIcon />
-              {banned ? 'Unban' : 'Ban'}
-            </button>
+              <button
+                type="button"
+                className={styles.action}
+                onClick={() => onToggleBan?.(book)}
+                aria-label={
+                  banned
+                    ? `Unban ${book.title}`
+                    : `Ban ${book.title} from recommendations`
+                }
+              >
+                <BanIcon />
+                {banned ? 'Unban' : 'Ban'}
+              </button>
+            </Tooltip>
           </div>
         </div>
       </div>

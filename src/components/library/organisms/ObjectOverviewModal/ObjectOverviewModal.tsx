@@ -21,6 +21,7 @@ import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
 import { canBeFavorite } from '@lib/library/favorites';
+import { libraryPath } from '@lib/library/libraryPath';
 import { notesLabel } from '@lib/library/notesLabel';
 import {
   formatObjectDate,
@@ -43,6 +44,7 @@ import {
 } from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
 import { IconName } from '@components/library/atoms/Icon';
 import { InkLine } from '@components/library/atoms/InkLine';
 import {
@@ -213,7 +215,7 @@ export function ObjectOverviewModal(
   };
 
   const handleShare = async () => {
-    const url = `${SHARE_BASE_URL}/library/${ownerUsername}/${objectSlug(object)}`;
+    const url = `${SHARE_BASE_URL}${libraryPath(ownerUsername)}/${objectSlug(object)}`;
     try {
       await navigator.clipboard.writeText(url);
     } catch {
@@ -538,10 +540,12 @@ export function ObjectOverviewModal(
               )}
               <div className={styles.actions}>
                 <Button
-                  type={ButtonType.Primary}
+                  type={ButtonType.Secondary}
                   size={ButtonSize.Default}
                   className={styles.shareButton}
-                  label={shareCopied ? 'Copied' : 'Copy URL'}
+                  label={
+                    <CopyButtonLabel copied={shareCopied} label="Copy URL" />
+                  }
                   ariaLabel={shareCopied ? 'Link copied' : 'Copy URL'}
                   Icon={<ShareIcon />}
                   iconPosition={IconPosition.Right}

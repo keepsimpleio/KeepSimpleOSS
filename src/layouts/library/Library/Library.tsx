@@ -54,6 +54,7 @@ import {
   keepFavoriteFields,
   sortFavorites,
 } from '@lib/library/favorites';
+import { libraryPath } from '@lib/library/libraryPath';
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 import {
   buildSearchHaystack,
@@ -557,12 +558,11 @@ export function LibraryTemplate({
     setObjectNotice(
       "That item isn't available here. It may have been removed or made private.",
     );
-    void router.replace(
-      `/library/${encodeURIComponent(libraryId)}`,
-      undefined,
-      { shallow: true, scroll: false },
-    );
-  }, [isLoading, loadError, requestedObjectId, shelves, router, libraryId]);
+    void router.replace(libraryPath(ownerUsername), undefined, {
+      shallow: true,
+      scroll: false,
+    });
+  }, [isLoading, loadError, requestedObjectId, shelves, router, ownerUsername]);
 
   // Publish the current library's shelves so the Header's Jump-to nav can
   // render the right list without owning its own fetch. NOTE: no cleanup —

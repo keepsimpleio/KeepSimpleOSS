@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import Image from 'next/image';
 import React, { JSX, useCallback, useRef, useState } from 'react';
 
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
 import { SelectToggle } from '@components/library/molecules/SelectToggle';
 
@@ -123,12 +124,13 @@ export function AudioCard({
           consistent width whether or not the object has tags. */}
       <div className={styles.tags} aria-label="Tags">
         {tags.map(tag => (
-          <span
-            key={tag.id}
-            className={styles.tagDot}
-            style={{ backgroundColor: tag.attributes.color }}
-            title={tag.attributes.name}
-          />
+          <Tooltip asChild tooltipContent={tag.attributes.name} key={tag.id}>
+            <span
+              key={tag.id}
+              className={styles.tagDot}
+              style={{ backgroundColor: tag.attributes.color }}
+            />
+          </Tooltip>
         ))}
       </div>
 

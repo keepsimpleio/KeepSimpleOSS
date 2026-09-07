@@ -1,3 +1,10 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
 .wrapper {
   // react-tooltip ships --rt-opacity: 0.9, so the panel behind the tooltip
   // reads through the label. The tooltip is an opaque surface here.
@@ -6,7 +13,8 @@
   color: var(--gray-darker) !important;
   background: var(--white) !important;
   box-shadow: var(--tooltip-shadow);
-  max-width: 300px;
+  max-width: min(300px, calc(100vw - 32px));
+  border: 1px solid var(--beige);
   // The tooltip's whole job here is to spell out a label the chip truncated,
   // and a tag name can be one unbroken run of characters with no space to wrap
   // at. Without this, `max-width` bounds the box while the text keeps going
@@ -14,7 +22,7 @@
   // wrapped width instead of reserving the longest word's length.
   overflow-wrap: anywhere;
   text-align: center;
-  padding: 12px 14px !important;
+  padding: 12px 16px !important;
   font-size: 16px !important;
   border-radius: var(--radius-control) !important;
   @extend %text-base;
@@ -22,4 +30,16 @@
 
 .story {
   color: var(--green-100);
+}
+
+.wrapper {
+  transition: opacity 150ms ease !important;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+}
+
+.layer:global(.library) {
+  background: transparent;
 }

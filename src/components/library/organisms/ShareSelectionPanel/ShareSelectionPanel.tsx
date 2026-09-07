@@ -24,6 +24,8 @@ import type { IObject } from '@local-types/library/object';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 
+import { libraryPath } from '@lib/library/libraryPath';
+
 import { createShareLink } from '@api/library/createShareLink';
 
 import { ChevronUpIcon, CloseIcon, ShareIcon } from '@icons/library/svg';
@@ -256,7 +258,7 @@ export function ShareSelectionPanel({
         return;
       }
       setShareUrl(
-        `${SHARE_BASE_URL}/library/${encodeURIComponent(ownerUsername)}/share/${result.token}`,
+        `${SHARE_BASE_URL}${libraryPath(ownerUsername)}/share/${result.token}`,
       );
     } finally {
       setIsSharing(false);
