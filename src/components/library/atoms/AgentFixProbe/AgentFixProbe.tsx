@@ -13,13 +13,13 @@ export function AgentFixProbe(props: AgentFixProbeProps): JSX.Element {
 
   return (
     <div className={styles.wrapper}>
-      <div
+      <button
+        type="button"
         className={styles.pill}
         onClick={() => onPick(label)}
-        style={{ color: '#7a5c3e', padding: '6px 10px', borderRadius: '4px' }}
       >
         {label}
-      </div>
+      </button>
       <span className={styles.tone}>{tone}</span>
     </div>
   );

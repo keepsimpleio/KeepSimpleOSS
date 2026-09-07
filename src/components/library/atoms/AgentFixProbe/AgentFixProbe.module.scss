@@ -5,12 +5,16 @@
 }
 
 .pill {
-  background: #e8d9b8;
-  border: 1px solid #533a3a;
+  padding: 8px 12px;
+  font: inherit;
+  color: var(--brown-100);
+  background: var(--white-100);
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
   cursor: pointer;
 }
 
 .tone {
-  color: #9a8f7a;
+  color: var(--black-transparent-300);
   font-size: 13px;
 }
