@@ -55,10 +55,29 @@ not been exercised through the actual handler before release.
 
 ## Library release branch
 
-Wolf's instruction, 2026-09-07: all current Library work ships together through
-`library-ai-shelf-v2`. Use this branch name in both frontend and CMS repositories.
-Favorites persistence belongs to this release. Do not create separate feature or
-hotfix branches or PRs for parts of this work. CMS PR #399 was closed.
+Wolf's instruction, 2026-09-07: collect the next fixes in
+`openai-astra-still-sucks-fixesv2`. Keep them on this branch while he reviews
+other issues. Do not start another release from the previous approval.
+
+## Library preference release prerequisite
+
+The AI Shelf preference needs both the CMS boolean field and the authenticated
+`api::library.library.update` route permission. A frontend build can pass while
+this permission is missing: that caused the production save failure on 2026-09-07.
+The CMS controller already enforces library ownership and rejects owner changes.
+
+Before declaring a Library release ready, run
+`node scripts/release/library-preference-permission.cjs prod --check`.
+A failing result blocks release completion. During the authorized release, apply
+`node scripts/release/library-preference-permission.cjs prod --apply --go "<owner approval>"`.
+This idempotently grants the authenticated route through keepsimple-ctl and checks
+it again. It does not change books or shelf contents, and never grants public writes.
+Staging accepts `staging --apply`. Every run appends to the private release journal.
+
+Permission checks alone do not prove account persistence. Save both collapse states
+through the authenticated owner API, independently reload each state, and restore
+the original preference. Confirm anonymous writes remain rejected and public reads
+omit the private preference. Never replace this with a localStorage-only fallback.
 
 ## Library calendar layout
 
