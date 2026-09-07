@@ -88,7 +88,12 @@ export function BookCard({
         // A drag captures the pointer, so no mouseleave arrives to close the
         // dossier while the card travels; the press closes it instead.
         onPointerDown={() => setPreviewOpen(false)}
-        onFocus={() => setPreviewOpen(true)}
+        // Only a keyboard focus opens the dossier. Focus also lands here when a
+        // modal closes and hands it back, with the pointer nowhere near, and
+        // the panel then stood open until something else was hovered.
+        onFocus={e => {
+          if (e.currentTarget.matches(':focus-visible')) setPreviewOpen(true);
+        }}
         onBlur={() => setPreviewOpen(false)}
       >
         {onSelectToggle && (

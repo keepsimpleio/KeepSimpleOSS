@@ -86,7 +86,12 @@ export function RecommendedBookCard({
         aria-describedby={dossierId}
         onMouseEnter={() => setPreviewOpen(true)}
         onMouseLeave={() => setPreviewOpen(false)}
-        onFocus={() => setPreviewOpen(true)}
+        // Only a keyboard focus opens the dossier. Focus also lands here when a
+        // modal closes and hands it back, with the pointer nowhere near, and
+        // the panel then stood open until something else was hovered.
+        onFocus={e => {
+          if (e.currentTarget.matches(':focus-visible')) setPreviewOpen(true);
+        }}
         onBlur={e => {
           // Focus moving between the card and its own buttons keeps the
           // dossier open; leaving the card altogether closes it.
