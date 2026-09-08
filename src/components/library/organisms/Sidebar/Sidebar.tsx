@@ -221,7 +221,7 @@ export function Sidebar() {
 
   const handleCreateTag = async (formData: CreateTagFormData) => {
     try {
-      if (!accountData?.id) return;
+      if (!accountData?.id || !currentLibrary?.id) return;
 
       // Strapi enforces unique slugs; a timestamp suffix keeps two tags whose
       // names normalize to the same string from colliding on write.
@@ -231,6 +231,7 @@ export function Sidebar() {
         description: formData.description,
         color: formData.color,
         user: accountData?.id,
+        library: currentLibrary.id,
         slug,
       };
 

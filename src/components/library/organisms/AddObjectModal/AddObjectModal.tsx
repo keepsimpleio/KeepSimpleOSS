@@ -147,7 +147,6 @@ function shelfObjectsToReorderItems(
     coverUrl:
       resolveStrapiUrl(o.attributes.coverImage?.data?.attributes.url) ??
       undefined,
-    tagIds: (o.attributes.tags?.data ?? []).map(t => t.id),
   }));
 }
 
@@ -210,23 +209,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     // Add mode: append a draft placeholder so the user can drag it into place.
     return [...base, { id: DRAFT_REORDER_ID, title: '' }];
   });
-  // Which tag the sequence is being read through. `null` = the whole shelf.
-  // A lens only; the saved order is always the shelf's single sequence.
-  const [sequenceTagId, setSequenceTagId] = useState<number | null>(null);
   const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(
     editing
       ? resolveStrapiUrl(object?.attributes.coverImage?.data?.attributes.url)
       : null,
   );
-
-  // Untick the tag the sequence is filtered by and the lens has nothing to
-  // stand on — fall back to the whole shelf.
-  useEffect(() => {
-    if (sequenceTagId == null) return;
-    if (!selectedTags.some(tag => tag.id === sequenceTagId)) {
-      setSequenceTagId(null);
-    }
-  }, [selectedTags, sequenceTagId]);
 
   const schema = useMemo(() => getSchemaForType(objectType), [objectType]);
 
@@ -1102,23 +1089,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           title: liveCurrentTitle || item.title,
           coverUrl: liveCurrentCoverUrl ?? item.coverUrl,
           isCurrent: true,
-          // The object being edited carries whatever tags are ticked right now,
-          // not what it was saved with, so it shows up under a tag the moment
-          // that tag is added above.
-          tagIds: selectedTags.map(t => t.id),
         }
       : item,
   );
-
-  // The sequence is shown through one tag at a time. Filtering only narrows
-  // what is on screen: positions are still the shelf's, and a drag inside the
-  // narrowed view writes back into the slots those objects hold in it.
-  const visibleReorderItems =
-    sequenceTagId == null
-      ? displayedReorderItems
-      : displayedReorderItems.filter(item =>
-          item.tagIds?.includes(sequenceTagId),
-        );
 
   const handleReorder = (next: ReorderItem[]) => {
     setReorderDirty(true);
@@ -1211,23 +1184,28 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     </div>
                   )}
 
-                  <div className={styles.field}>
-                    <Text
-                      variant={TypographyVariant.TextSmall}
-                      className={styles.label}
-                    >
-                      {config.tagsLabel}
-                    </Text>
-                    <TagMultiSelect
-                      options={tagOptions}
-                      value={selectedTags}
-                      onChange={setSelectedTags}
-                      placeholder={config.tagsLabel}
-                      emptyState="No tags yet. Create one from the Tags panel on the right"
-                      maxItems={10}
-                      portal
-                    />
-                  </div>
+                  {/* Tags label books. A tag gathers its books into one row
+                      with one sequence, and a row mixing a book, a video and
+                      an audio has no single shape to stand in. */}
+                  {objectType === 'book' && (
+                    <div className={styles.field}>
+                      <Text
+                        variant={TypographyVariant.TextSmall}
+                        className={styles.label}
+                      >
+                        {config.tagsLabel}
+                      </Text>
+                      <TagMultiSelect
+                        options={tagOptions}
+                        value={selectedTags}
+                        onChange={setSelectedTags}
+                        placeholder={config.tagsLabel}
+                        emptyState="No tags yet. Create one from the Tags panel on the right"
+                        maxItems={10}
+                        portal
+                      />
+                    </div>
+                  )}
 
                   <div className={styles.field}>
                     <Text
@@ -1236,52 +1214,15 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     >
                       Modify object sequence
                     </Text>
-                    {selectedTags.length > 0 && (
-                      <div
-                        className={styles.sequenceFilters}
-                        role="group"
-                        aria-label="Show the sequence through one tag"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSequenceTagId(null)}
-                          aria-pressed={sequenceTagId === null}
-                          className={classNames(styles.sequenceFilter, {
-                            [styles.sequenceFilterActive]:
-                              sequenceTagId === null,
-                          })}
-                        >
-                          Whole shelf
-                        </button>
-                        {selectedTags.map(tag => (
-                          <button
-                            key={tag.id}
-                            type="button"
-                            onClick={() =>
-                              setSequenceTagId(
-                                sequenceTagId === tag.id ? null : tag.id,
-                              )
-                            }
-                            aria-pressed={sequenceTagId === tag.id}
-                            className={classNames(styles.sequenceFilter, {
-                              [styles.sequenceFilterActive]:
-                                sequenceTagId === tag.id,
-                            })}
-                          >
-                            {tag.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    {/* This grid sets the shelf's own order. A tag's order is
+                        the tag's own, set by dragging in the filtered shelf on
+                        the library page: showing the shelf's sequence through a
+                        tag here only ever looked like editing the tag's. */}
                     <ReorderGrid
-                      items={visibleReorderItems}
+                      items={displayedReorderItems}
                       onReorder={handleReorder}
                       itemShape={config.itemShape}
-                      emptyState={
-                        sequenceTagId == null
-                          ? 'No content yet on this shelf.'
-                          : 'Nothing else on this shelf carries that tag yet.'
-                      }
+                      emptyState="No content yet on this shelf."
                     />
                   </div>
                 </div>

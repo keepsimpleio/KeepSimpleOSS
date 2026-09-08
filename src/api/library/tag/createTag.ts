@@ -6,6 +6,9 @@ export interface CreateTagRequest {
   name: string;
   slug: string;
   user: string;
+  // A tag belongs to a library, not to the whole platform: the CMS refuses a
+  // tag that does not name one, and checks the caller owns it.
+  library: number;
   color: string;
   description?: string;
 }

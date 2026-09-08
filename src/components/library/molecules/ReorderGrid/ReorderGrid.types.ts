@@ -5,9 +5,6 @@ export interface ReorderItem {
   title: string;
   coverUrl?: string;
   isCurrent?: boolean;
-  // Tags carried by the object, so a consumer can show the sequence through a
-  // single tag's lens. Order itself is per-shelf, never per-tag.
-  tagIds?: number[];
 }
 
 export interface ReorderGridProps {
