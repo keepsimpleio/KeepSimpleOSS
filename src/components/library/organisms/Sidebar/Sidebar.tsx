@@ -36,6 +36,7 @@ import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Avatar } from '@components/library/atoms/Avatar';
 import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
+import ExpandableText from '@components/library/atoms/ExpandableText';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
@@ -388,17 +389,21 @@ export function Sidebar() {
               <div>
                 {/* Plain text: the field is CKEditor markup server-side, and
                     printing it raw showed the tags. Empty gets a line of its
-                    own, like Author and Tags do. */}
-                <Text
-                  className={classNames(styles.label, {
-                    [styles.emptyTags]: !aboutLibraryText,
-                  })}
-                >
-                  {aboutLibraryText ||
-                    (canEditLibrary
+                    own, like Author and Tags do. A written description folds
+                    so it cannot push Content, Author and Tags off the sheet. */}
+                {aboutLibraryText ? (
+                  <ExpandableText
+                    text={aboutLibraryText}
+                    className={styles.label}
+                    subject="library description"
+                  />
+                ) : (
+                  <Text className={classNames(styles.label, styles.emptyTags)}>
+                    {canEditLibrary
                       ? 'No description yet. Add one with Edit'
-                      : 'No description yet')}
-                </Text>
+                      : 'No description yet'}
+                  </Text>
+                )}
               </div>
               <InkLine seed={7} className={styles.innerRule} />
 
@@ -447,7 +452,11 @@ export function Sidebar() {
                   {authorName}
                 </Text>
               </div>
-              <Text className={styles.text}>{aboutAuthorText}</Text>
+              <ExpandableText
+                text={aboutAuthorText}
+                className={styles.text}
+                subject="author biography"
+              />
             </div>
             <InkLine seed={2} className={styles.sectionRule} />
           </div>
