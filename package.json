@@ -24,7 +24,9 @@
     "check-links": "linkinator https://keepsimple.io --config linkinator.config.json --format json > reports/links-$(date +%Y-%m-%d).json && echo 'Done. Report saved to reports/links-YYYY-MM-DD.json'",
     "check-links:summary": "linkinator https://keepsimple.io --config linkinator.config.json",
     "render-links": "node .claude/keepsimple-qa/render-links-report.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "check:library": "node scripts/release/library-regressions.cjs && node scripts/release/library-batch-check.cjs",
+    "check:library:seo": "node scripts/release/library-seo-check.cjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

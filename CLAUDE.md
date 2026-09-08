@@ -226,15 +226,14 @@ values, and a new subcommand for the lever (it is a `/data/bin` file). Nothing e
 - Stability passport: fixed rune seals, clipped names, reserved ownership-label line; selection changes color and inset marker without changing geometry.
 - Own library sorts first, matched by authenticated account ID to owner ID independently of the open route.
 
-## Library root loader design passport
+## Library rune loader design passport
 
-- Palette: existing white-transparent-400 overlay. Roots retain photographic walnut and umber bark tones, like book-cover artwork, at 0.9 opacity; no new UI accent or font.
-- Geometry: full parent-size scene, 1536 by 1024 SVG viewBox with centered crop. Photorealistic transparent WebP root specimen. Invisible reveal masks follow the actual crown and root axes with 100 to 240-unit brush widths and 8-unit softened edges. The mask reveals bark and fibers; no line-art roots remain.
-- Motion passport: one synchronized 10s growth cycle, crown revealed first, followed by primary roots and fibers through 76 percent, held through 86 percent, fading by 100 percent. Growth uses cubic-bezier(0.22, 0.61, 0.36, 1); scene appears over 240ms ease-out. Reduced motion shows the full static root network. No timers delay loaded content; existing parent unmount ends the scene immediately.
-- Stability passport: absolute overlay retains the existing parent geometry; SVG is decorative, status text is screen-reader-only. No layout animation or new scrollable region.
-- Asset fallback: if the artwork fails to load, show Loading in existing Source Serif 4 at 14px, centered in the reserved scene. Reveal waits for the image load event.
-- Scrollbar passport: none added; scene overflow is clipped.
-- Scope: Library loading and shelf creation only. Global route and other product loaders retain their current behavior.
+- Palette: existing white-transparent-400 overlay, brown-100 ink and existing rune paper tokens. No new fonts.
+- Geometry: seven existing rune seals spell LIBRARY on a centered horizontal rule. Scene width min(480px, calc(100% - 48px)), seven equal columns with 12px gaps. Seals fit their columns, up to 48px square. Center seal uses the existing owner treatment.
+- Motion passport: 4.8s eased opacity and 8px vertical settling cycle, staggered by 160ms from the center outward. Wrapper fades in over 240ms ease-out. Reduced motion keeps a static composition. Loaded content unmounts the overlay immediately, without timers.
+- Stability passport: absolute overlay preserves parent geometry; decoration is aria-hidden with a separate Loading status. No layout animation.
+- Scrollbar passport: no scrollable region; overlay clips overflow.
+- Scope: existing Library loader consumers only. Other product loaders are unchanged.
 
 ## Library tooltip design passport
 
@@ -255,3 +254,22 @@ normal label and Copied over 200ms ease; reduced motion switches immediately.
 Both labels occupy the same grid cell so their largest width remains reserved.
 Keep the secondary button palette, existing typography and geometry throughout.
 No scale, pulse or success fill. This label has no scrolling surface.
+
+## Library release evidence gates
+
+Read scripts/release/README.md before Library releases. The incident inventory is
+scripts/release/INCIDENTS-2026-09-07.md. Frontend CI never certifies CMS deployment.
+Run yarn check:library and the read-only target contract check before readiness.
+Check actual owner role, feature flag and library ownership, not a substitute account.
+Capture and compare protected content around deployment. Missing schema, missing
+saved values or missing owner evidence must remain explicit failures or NOT TESTED.
+Record frontend and CMS revisions separately. No completed release claim without
+live deployment provenance and data comparison. Never silently treat deferred review
+findings as fixed. Stage and prod can diverge; inspect both before claiming parity.
+
+## Library share image passport
+
+- Server-rendered PNG artifact: 1200 by 630, existing library illustration in a 480px right panel. Ivory #f5f1ea, text #1c1c1a, secondary #5c5650, rule #ddd7ce. No accent added.
+- Source Serif 4 with Noto Sans Armenian fallback; sizes 24, 32, 48, 76. Left panel 720px, 48px padding, 24px spacing, square corners. Names wrap within reserved space.
+- Motion and scrollbar passports: static artifact, no animation or scroll surfaces. Fixed geometry across names. ImageResponse requires style objects for PNG rendering; these are artifact layout instructions, not page styling.
+- Personal metadata uses the public username, matching library cards. Wolf retains the approved named artwork and collection date. Anonymous CMS reads supply public shelf titles only.

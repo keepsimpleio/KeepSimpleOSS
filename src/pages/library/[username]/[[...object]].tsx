@@ -2,9 +2,11 @@ import type { GetServerSideProps, NextPage } from 'next';
 
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
+import { librarySeo } from '@lib/library/seo';
 import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
 
 import { getLibraryRedirect } from '@api/library/getLibraryRedirect';
+import { getPublicLibrarySeo } from '@api/library/getPublicLibrarySeo';
 
 import { AuthProvider } from '@components/Context/library/AuthContext';
 import { DashboardProvider } from '@components/Context/library/DashboardContext';
@@ -19,6 +21,7 @@ import styles from '../library.module.scss';
 
 type LibraryPageProps = {
   username: string;
+  seo: ReturnType<typeof librarySeo>;
   /** Desktop info panel folded to its spine — read from the viewer's cookie. */
   initialSidebarCollapsed: boolean;
 };
@@ -33,9 +36,10 @@ type LibraryPageProps = {
 // `/library/[username]/share/...`.
 const LibraryPage: NextPage<LibraryPageProps> = ({
   username,
+  seo,
   initialSidebarCollapsed,
 }) => {
-  const pageTitle = `${username} | ${DEFAULT_SEO.siteName}`;
+  const pageTitle = seo.title;
 
   return (
     <AuthProvider>
@@ -43,19 +47,25 @@ const LibraryPage: NextPage<LibraryPageProps> = ({
         <DashboardProvider>
           <ShareSelectionProvider>
             <SeoGenerator
+              schemaOverride={seo.schema}
+              largeImage
+              imageWidth={seo.imageWidth}
+              imageHeight={seo.imageHeight}
+              omitDefaultAuthor
               strapiSEO={{
                 title: pageTitle,
-                description: DEFAULT_SEO.description,
+                description: seo.description,
                 keywords: '',
                 pageTitle,
               }}
               ogTags={{
                 ogTitle: pageTitle,
-                ogDescription: DEFAULT_SEO.description,
+                ogImageAlt: seo.imageAlt,
+                ogDescription: seo.description,
                 ogType: DEFAULT_SEO.type,
                 ogImage: {
                   data: {
-                    attributes: { url: '', staticUrl: DEFAULT_SEO.image },
+                    attributes: { url: '', staticUrl: seo.image },
                   },
                 },
               }}
@@ -87,7 +97,13 @@ export const getServerSideProps: GetServerSideProps<
     context.req.headers.cookie,
   );
 
+  let seo = librarySeo();
+  try {
+    seo = await getPublicLibrarySeo(username);
+  } catch {
+    console.error('Library metadata unavailable');
+  }
   return {
-    props: { username, initialSidebarCollapsed },
+    props: { username, initialSidebarCollapsed, seo },
   };
 };

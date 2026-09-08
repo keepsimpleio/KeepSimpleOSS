@@ -5,6 +5,8 @@ import type {
   StrapiSingleShelfEntry,
 } from '@local-types/library/library';
 
+import { isFavorite, sortFavorites } from '@lib/library/favorites';
+
 function stripHtml(html: string): string {
   if (!html) {
     return '';
@@ -108,7 +110,32 @@ export function mapStrapiLibraryEntryToCard(
   const { id, attributes } = entry;
   const shelves = attributes.singleShelves?.data ?? [];
   const { bookCount, videoCount, songCount } = countObjectsByType(shelves);
-  const coverUrls = collectCoverUrls(shelves, strapiBase);
+  const publicFavorites =
+    attributes.favoritesVisibility === 'public'
+      ? sortFavorites(
+          Array.from(
+            new Map(
+              shelves
+                .filter(shelf => shelf.attributes.visibility === 'public')
+                .flatMap(shelf => shelf.attributes.objects?.data ?? [])
+                .filter(isFavorite)
+                .map(object => [object.id, object]),
+            ).values(),
+          ),
+        )
+      : [];
+  const favoriteCovers = publicFavorites
+    .map(object =>
+      resolveMediaUrl(
+        object.attributes.coverImage?.data?.attributes?.url,
+        strapiBase,
+      ),
+    )
+    .filter((url): url is string => Boolean(url));
+  const coverUrls =
+    publicFavorites.length >= MAX_CARD_COVERS
+      ? favoriteCovers.slice(0, MAX_CARD_COVERS)
+      : collectCoverUrls(shelves, strapiBase);
 
   const aboutLibraryPlain = stripHtml(
     attributes.libraryDetails?.aboutLibrary ?? '',

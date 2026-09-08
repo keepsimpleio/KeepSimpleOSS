@@ -24,3 +24,6 @@ jobs:
 
       - name: Type Check
         run: yarn tsc --noEmit
+
+      - name: Library regression guards
+        run: yarn check:library

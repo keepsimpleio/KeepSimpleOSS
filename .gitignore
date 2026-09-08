@@ -185,3 +185,6 @@ docker-compose.override.yml
 
 # Local image-generation provenance; preserve the journal without shipping it.
 /src/components/library/atoms/Loader/artwork.journal.jsonl
+
+# Local share-card approval drafts and provenance.
+/scripts/release/previews/

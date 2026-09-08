@@ -542,3 +542,11 @@ Husky pre-commit runs lint-staged: ESLint `--fix` on `.ts`/`.tsx`, then Prettier
 - Find the closest existing component and match its structure.
 - If a pattern in this file conflicts with what you see in the codebase, **this file wins** for new code. Old code stays as-is until touched.
 - If a pattern isn't covered here at all, stop and ask before inventing one.
+
+## Library release gates
+
+Before a Library release, follow `scripts/release/README.md`. Run `yarn check:library`
+and the target schema/account contract. Frontend CI is not proof of CMS readiness.
+Never declare owner persistence verified from another account or HTTP 200 alone.
+Keep frontend/CMS revisions, owner acceptance, backup and protected data comparison
+as separate evidence. A missing gate is BLOCKED or NOT TESTED, never an implicit PASS.

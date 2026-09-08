@@ -2,6 +2,8 @@ import type { GetServerSideProps, NextPage } from 'next';
 
 import { DEFAULT_SEO } from '@constants/library/seo.config';
 
+import { librarySeo } from '@lib/library/seo';
+
 import { AuthProvider } from '@components/Context/library/AuthContext';
 import { GlobalStateProvider } from '@components/Context/library/GlobalStateContext';
 import SeoGenerator from '@components/SeoGenerator';
@@ -13,6 +15,11 @@ const LibraryHomePage: NextPage = () => {
     <AuthProvider>
       <GlobalStateProvider>
         <SeoGenerator
+          schemaOverride={librarySeo().schema}
+          largeImage
+          imageWidth={1920}
+          imageHeight={1280}
+          omitDefaultAuthor
           strapiSEO={{
             title: DEFAULT_SEO.title,
             description: DEFAULT_SEO.description,
