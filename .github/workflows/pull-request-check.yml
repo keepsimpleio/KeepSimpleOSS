@@ -5,6 +5,13 @@ on:
     branches:
       - dev # staging
       - main # production
+  # Also run on pushes to dev so the yarn cache is saved on the default
+  # branch. Actions caches are only restored from the same ref or the
+  # default branch, so a cache saved by one pull request never helps the
+  # next one; the runs for #206 and #207 each spent 61s re-downloading.
+  push:
+    branches:
+      - dev
 
 jobs:
   type-check:
