@@ -118,15 +118,6 @@ const Navigation: FC = () => {
         })}
       </ul>
       <div className={styles.subNav}>
-        <Image
-          src={'/keepsimple_/assets/longevity/curtains.png'}
-          alt={'Curtains'}
-          width={1140}
-          height={83}
-          className={cn(styles.curtains, {
-            [styles.curtainsOpen]: !router.asPath.includes('about-project'),
-          })}
-        />
         <ul className={styles.subUl}>
           {subNavItems.map(item => (
             <li

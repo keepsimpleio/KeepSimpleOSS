@@ -6,6 +6,13 @@ on:
       - 'main'
       - 'dev'
 
+# One deployment per target at a time, queued in push order. Without this,
+# two merges within one CI window run in parallel and the slower build wins
+# the :prod / :staging tag, so the older commit can be rolled out last.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,8 +53,14 @@ jobs:
           path: docs/release-audits/journal.jsonl
           if-no-files-found: ignore
 
+      # No Docker layer cache on purpose. Measured on 2026-09-08 (runs
+      # 34251421040 and 34254842825): restoring the 2.25 GB node_modules
+      # layer from the Actions cache took 184s (136s download, 48s extract)
+      # against 74s for a fresh yarn install, and populating it cost 411s
+      # once. The builder and runner stages also carry .env files, so they
+      # must never be exported. The image build exports no cache.
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: 'Login to GitHub Container Registry'
         run: echo ${{secrets.REGISTRY_PASSWORD}} | docker login ${{secrets.REGISTRY_HOST}} --username ${{secrets.REGISTRY_USERNAME}} --password-stdin
@@ -66,12 +79,16 @@ jobs:
 
       - name: Production Deploy
         if: github.ref == 'refs/heads/main'
-        run: |
-          docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod .
-          docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod
 
       - name: Staging Deploy
         if: github.ref == 'refs/heads/dev'
-        run: |
-          docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging .
-          docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging

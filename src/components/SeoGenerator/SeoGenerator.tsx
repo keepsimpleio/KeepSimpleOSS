@@ -199,7 +199,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         />
         <link
           rel="preload"
-          href="/keepsimple_/fonts/Source-Serif-4/static/SourceSerif4-Regular.ttf"
+          href="/keepsimple_/fonts/Source-Serif-4/static/SourceSerif4-Regular.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"

@@ -28,6 +28,20 @@ Use an identified account and library per target. Never silently substitute a re
 
 Start an authorized staging build while optional review runs. Do not bypass protected checks. Reuse evidence only for the same diff and target context. Do not create additional releases for cleanup without scope authorization.
 
+Do not wait for the registry poll. The moment the CI job reports the image push
+complete, run `keepsimple-ctl redeploy staging`, or `redeploy prod --go "<Wolf's
+words, dated>"`, then `verify SHA`. Watchtower polls the registry on its own
+schedule and the reference release waited over six minutes for it; the redeploy
+pulls the same tag immediately. Both actors recreate the same container, so a
+Watchtower rollout shortly after the manual one is expected and harmless, but
+never start a second manual rollout while one is running.
+
+The deploy workflow queues runs per branch and uses no Docker layer cache:
+restoring the dependency layer from the Actions cache measured slower than a
+fresh install (184s against 74s on 2026-09-08). Step durations for cleanup,
+build and push are in the Actions run log; record them in the release journal
+separately, as the release lessons require.
+
 Inspect existing rollout before redeploy. Run one deployment operation at a time. A successful CI push or wrapper exit does not prove the live image. Match frontend live BUILD_ID, running image digest and successful CI SHA with `keepsimple-ctl verify SHA`. Match CMS running digest to CMS CI output and check schema/API. Never use frontend verify as proof of CMS deployment.
 
 After rollout, rerun target inspect and `node scripts/release/library-release-check.cjs compare TARGET BASELINE.json`. It fails on removed, added or changed protected rows/relations and on a different database identity. Concurrent user edits must be reviewed as differences; never restore automatically to force a pass. Additive data migrations require an explicit before/after mapping and independent preservation check.

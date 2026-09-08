@@ -16,6 +16,7 @@ import useLibraryEditing from '@hooks/library/useLibraryEditing';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { libraryPath } from '@lib/library/libraryPath';
+import { richTextLength } from '@lib/library/richText';
 
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
@@ -36,6 +37,7 @@ import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Avatar } from '@components/library/atoms/Avatar';
 import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
+import ExpandableText from '@components/library/atoms/ExpandableText';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
@@ -54,13 +56,10 @@ import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal
 
 import styles from './Sidebar.module.scss';
 
-// aboutMe / aboutLibrary come back as CKEditor rich-text HTML; strip tags for
-// the sidebar display until a styled rich-text renderer is in place.
-const stripHtml = (s?: string | null) =>
-  s
-    ?.replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .trim() ?? '';
+// aboutMe / aboutLibrary hold rich text: the owner's line breaks and marks are
+// part of what they wrote, so the panel renders the stored markup instead of
+// flattening it. Emptiness is judged on the text alone, never on the tags.
+const hasText = (value?: string | null) => richTextLength(value) > 0;
 
 const tagKey = <T extends { name: string }>(tag: T) => tag.name;
 
@@ -155,10 +154,9 @@ export function Sidebar() {
     resolveStrapiUrl(currentOwner?.avatar) ??
     resolveStrapiUrl(currentOwner?.picture) ??
     (canEdit ? accountData?.picture : undefined);
-  const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
-  const aboutLibraryText = stripHtml(
-    currentLibrary?.attributes.libraryDetails?.aboutLibrary,
-  );
+  const aboutAuthorText = currentOwner?.aboutMe ?? '';
+  const aboutLibraryText =
+    currentLibrary?.attributes.libraryDetails?.aboutLibrary ?? '';
 
   // Owner sees their full tag palette; a true visitor sees only the tags
   // actually used on this library's objects — no cross-account tag fetch.
@@ -388,17 +386,22 @@ export function Sidebar() {
               <div>
                 {/* Plain text: the field is CKEditor markup server-side, and
                     printing it raw showed the tags. Empty gets a line of its
-                    own, like Author and Tags do. */}
-                <Text
-                  className={classNames(styles.label, {
-                    [styles.emptyTags]: !aboutLibraryText,
-                  })}
-                >
-                  {aboutLibraryText ||
-                    (canEditLibrary
+                    own, like Author and Tags do. A written description folds
+                    so it cannot push Content, Author and Tags off the sheet. */}
+                {hasText(aboutLibraryText) ? (
+                  <ExpandableText
+                    value={aboutLibraryText}
+                    title="About"
+                    className={styles.label}
+                    subject="library description"
+                  />
+                ) : (
+                  <Text className={classNames(styles.label, styles.emptyTags)}>
+                    {canEditLibrary
                       ? 'No description yet. Add one with Edit'
-                      : 'No description yet')}
-                </Text>
+                      : 'No description yet'}
+                  </Text>
+                )}
               </div>
               <InkLine seed={7} className={styles.innerRule} />
 
@@ -447,7 +450,12 @@ export function Sidebar() {
                   {authorName}
                 </Text>
               </div>
-              <Text className={styles.text}>{aboutAuthorText}</Text>
+              <ExpandableText
+                value={aboutAuthorText}
+                title="Author"
+                className={styles.text}
+                subject="author biography"
+              />
             </div>
             <InkLine seed={2} className={styles.sectionRule} />
           </div>

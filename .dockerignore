@@ -1,0 +1,22 @@
+# Build context for the frontend image. Everything not listed here is sent
+# to the Docker daemon and hashed for the `COPY . .` layer. The runtime env
+# files (.env, .env.staging) are written by CI right before the build and
+# must stay in the context because the Dockerfile copies them.
+.git
+.github
+node_modules
+widget/node_modules
+.next
+docs
+tests
+qa-runs
+eval
+attachments
+.playwright-mcp
+.claude
+.codegraph
+.eslintcache
+*.log
+.dev-session.json
+.gh-token
+.cf-access-dev-agent.env

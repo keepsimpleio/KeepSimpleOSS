@@ -44,9 +44,17 @@ not been exercised through the actual handler before release.
   about framework input coercion; never claim the entire probe passed if it did not.
 - Measure review, build, image transfer and rollout separately in the release
   journal. Announce milestone changes; keep waiting messages short.
-- Engineering follow-up: cache Docker dependency/build layers and reduce runtime
-  image size. Current CI uses fresh runners and docker build without a registry
-  cache. Check these costs before redesigning deployment.
+- Deploy CI queues one run per branch and ships a .dockerignore. A Docker
+  layer cache was tried and removed on 2026-09-08: restoring the 2.25 GB
+  node_modules layer from the Actions cache took 184s against 74s for yarn
+  install, and populating it cost 411s once. Do not reintroduce it without a
+  smaller layer. The builder and runner stages carry .env files and must never
+  be exported to any cache. Reference prod run: cleanup 35s, build 5m29s of
+  which yarn install 74s, push 3m22s, registry poll about 6 min. Image export
+  and push (about 4 min) are the node_modules copy in the runner stage; only
+  standalone output or a slimmer runner removes it, separate work. The rollout
+  after an image push is triggered by keepsimple-ctl redeploy, not by waiting
+  for the poll (scripts/release/README.md).
 - Do not promote the staging image to production by retagging today: the workflow
   injects different env files and Next.js embeds NEXT_PUBLIC values at build time.
   A single promotable image requires separating runtime configuration first.
@@ -115,6 +123,28 @@ for strong/b markup in the dossier and overview. The editor uses standard Bold
 at weight 700 so formatting is visible and native editing commands recognize it.
 Do not use a separate variable-font alias or override the wght axis for notes.
 Toolbar and keyboard shortcuts share one handler and emit semantic tags.
+
+## Library info panel passages
+
+About and Author are rich text in the editor dialect from `src/lib/library/richText.ts`:
+line breaks, bold, italic, strikethrough and links. The edit modal uses RichTextField,
+the panel and its dialog render the stored markup, and nothing on this path flattens
+it to plain text. Strong renders at 600 on display and 700 in the editor, as the
+description emphasis rule already sets. Both passages are capped at 1000
+characters, counted on the writing rather than the markup; the figures live in
+`createEditLibrarySchema` so the counter and the validator cannot drift apart.
+The cap applies to what the owner writes from here on: a passage saved under the
+old 4000/2000 limits stays valid while untouched, so it cannot block an unrelated
+edit, and editing it brings it under the cap.
+
+The panel keeps the first eight lines, clamped by line count so the cut lands on a
+line boundary, and a single unbroken string wraps rather than leaving the column.
+Show all opens the whole passage in the shared Modal with its existing fade; the
+control appears only when the text is actually clipped, measured from the rendered
+paragraph and re-measured on resize. Dialog: 518px cap, height capped to the
+viewport, body scrolls behind a 12px themed scrollbar with the taupe thumb on
+white-100 and a 6px thumb radius. Links keep the surrounding face with a dotted
+underline that solidifies on hover and keyboard focus.
 
 ## Library AI Shelf design passport
 

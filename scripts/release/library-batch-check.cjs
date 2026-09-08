@@ -90,13 +90,45 @@ function check() {
     )[0],
     'cover-1.jpg',
   );
-  const { editLibrarySchema } = load(
+  const { createEditLibrarySchema, ABOUT_LIBRARY_MAX, ABOUT_AUTHOR_MAX } = load(
     'src/utils/library/schema/editLibrarySchema.ts',
   );
+  const editLibrarySchema = createEditLibrarySchema();
   for (const username of ['Wolf', 'W'.repeat(30)])
     assert(editLibrarySchema.safeParse({ username }).success);
   for (const username of ['abc', 'W'.repeat(31), 'a bc', 'ab/c', 'ab?c'])
     assert(!editLibrarySchema.safeParse({ username }).success);
+  // Passage caps: counted on the writing, and a passage left as it was saved
+  // stays valid so a long legacy About cannot block an unrelated edit.
+  assert.equal(ABOUT_LIBRARY_MAX, 1000);
+  assert.equal(ABOUT_AUTHOR_MAX, 1000);
+  const legacy = 'a'.repeat(1500);
+  const marked = `<strong>${'a'.repeat(999)}</strong>`;
+  assert(
+    editLibrarySchema.safeParse({ username: 'Wolf', aboutLibrary: marked })
+      .success,
+  );
+  assert(
+    !editLibrarySchema.safeParse({ username: 'Wolf', aboutLibrary: legacy })
+      .success,
+  );
+  const keeping = createEditLibrarySchema({ aboutLibrary: legacy });
+  assert(keeping.safeParse({ username: 'Wolf', aboutLibrary: legacy }).success);
+  assert(
+    !keeping.safeParse({ username: 'Wolf', aboutLibrary: legacy + 'b' })
+      .success,
+  );
+  // The editor rewrites legacy paragraphs into line breaks on focus alone;
+  // same writing, so the passage still counts as untouched.
+  const blocks = createEditLibrarySchema({
+    aboutLibrary: `<p>${legacy}</p><p>${legacy}</p>`,
+  });
+  assert(
+    blocks.safeParse({
+      username: 'Wolf',
+      aboutLibrary: `${legacy}<br />${legacy}`,
+    }).success,
+  );
   const cms =
     'docs/library-ai-shelf-cms/src/extensions/users-permissions/validators/userValidators.js';
   if (fs.existsSync(cms)) {

@@ -1,0 +1,135 @@
+// The writer's marks, wherever the passage is shown: the panel preview and the
+// dialog read the same. Strong sits at 600 like every other Library passage,
+// links keep the surrounding face with a dotted underline that solidifies on
+// hover and keyboard focus.
+@mixin owner-passage {
+  color: var(--gray-darkest);
+  overflow-wrap: anywhere;
+
+  strong,
+  b {
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 8px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline dotted;
+    overflow-wrap: anywhere;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration-style: solid;
+    }
+  }
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+// The visible part of the passage. Clamped by line count so the cut lands on a
+// line boundary, and `anywhere` so a single unbroken string wraps into the
+// column instead of running off its right edge.
+.passage {
+  @extend %text-base;
+  @include owner-passage;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--expandable-lines, 8);
+  overflow: hidden;
+}
+
+.showAll {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--brown-100);
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--brown);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  // Phones and tablets read the panel; the control keeps a 44px touch target.
+  @media (max-width: 1024px) {
+    min-height: 44px;
+  }
+}
+
+.modal {
+  max-width: 518px !important;
+  // One passage and a Close button: cap the dialog to the viewport and scroll
+  // the text within it, so Close stays reachable on a phone.
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+
+  .body {
+    padding: 32px;
+    flex: 1 1 auto;
+    // Lets the flex child shrink below its content so the cap scrolls the
+    // passage instead of clipping it.
+    min-height: 0;
+    overflow-y: auto;
+    border: 0 solid var(--brown-border);
+    border-bottom-width: 1px;
+
+    // Panel scrollbar language: 12px track on white-100, taupe thumb, 6px radius.
+    scrollbar-width: thin;
+    scrollbar-color: var(--taupe) var(--white-100);
+
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--white-100);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--taupe);
+      border-radius: 6px;
+    }
+  }
+
+  .fullText {
+    @extend %text-regular;
+    @include owner-passage;
+  }
+
+  .footer {
+    // Never give up height to the scrolling body.
+    flex-shrink: 0;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .close {
+      max-width: 70px;
+    }
+  }
+}
