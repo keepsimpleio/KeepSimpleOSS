@@ -53,25 +53,14 @@ jobs:
           path: docs/release-audits/journal.jsonl
           if-no-files-found: ignore
 
+      # No Docker layer cache on purpose. Measured on 2026-09-08 (runs
+      # 34251421040 and 34254842825): restoring the 2.25 GB node_modules
+      # layer from the Actions cache took 184s (136s download, 48s extract)
+      # against 74s for a fresh yarn install, and populating it cost 411s
+      # once. The builder and runner stages also carry .env files, so they
+      # must never be exported. The image build exports no cache.
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      # Warm only the dependency stage (base image + yarn install) into the
-      # GitHub Actions cache. This runs before the env files exist and the
-      # target stops at `deps`, so the exported layers never contain .env,
-      # .env.staging, the built bundle or any secret. The full image build
-      # below reads this cache and exports nothing. build-push-action is
-      # required here: a plain `docker buildx build` in a run step has no
-      # Actions cache credentials, so the first attempt (run 34249453906)
-      # silently exported nothing.
-      - name: Warm dependency layer cache
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          target: deps
-          push: false
-          cache-from: type=gha,scope=deps
-          cache-to: type=gha,scope=deps,mode=max
 
       - name: 'Login to GitHub Container Registry'
         run: echo ${{secrets.REGISTRY_PASSWORD}} | docker login ${{secrets.REGISTRY_HOST}} --username ${{secrets.REGISTRY_USERNAME}} --password-stdin
@@ -95,7 +84,6 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod
-          cache-from: type=gha,scope=deps
 
       - name: Staging Deploy
         if: github.ref == 'refs/heads/dev'
@@ -104,4 +92,3 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging
-          cache-from: type=gha,scope=deps
