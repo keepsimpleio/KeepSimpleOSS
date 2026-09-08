@@ -130,8 +130,9 @@ About and Author are rich text in the editor dialect from `src/lib/library/richT
 line breaks, bold, italic, strikethrough and links. The edit modal uses RichTextField,
 the panel and its dialog render the stored markup, and nothing on this path flattens
 it to plain text. Strong renders at 600 on display and 700 in the editor, as the
-description emphasis rule already sets. Character limits (4000 About library,
-2000 About author) count the writing, not the markup.
+description emphasis rule already sets. Both passages are capped at 1000
+characters, counted on the writing rather than the markup; the figures live in
+`editLibrarySchema` so the counter and the validator cannot drift apart.
 
 The panel keeps the first eight lines, clamped by line count so the cut lands on a
 line boundary, and a single unbroken string wraps rather than leaving the column.

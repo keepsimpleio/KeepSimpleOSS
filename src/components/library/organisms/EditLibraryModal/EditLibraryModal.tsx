@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  ABOUT_AUTHOR_MAX,
+  ABOUT_LIBRARY_MAX,
   AVATAR_ACCEPT_MIME,
   AVATAR_MAX_BYTES,
   AVATAR_MIN_BYTES,
@@ -379,7 +381,7 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
             <div className={styles.counterRow}>
               <CharCount
                 current={richTextLength(aboutLibraryValue)}
-                max={4000}
+                max={ABOUT_LIBRARY_MAX}
               />
             </div>
             <p className={styles.error}>
@@ -402,7 +404,10 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
               )}
             />
             <div className={styles.counterRow}>
-              <CharCount current={richTextLength(aboutMeValue)} max={2000} />
+              <CharCount
+                current={richTextLength(aboutMeValue)}
+                max={ABOUT_AUTHOR_MAX}
+              />
             </div>
             <p className={styles.error}>{errors.aboutMe?.message ?? ' '}</p>
           </div>

@@ -6,9 +6,13 @@ import { htmlToPlainText } from '@lib/library/objectMeta';
 // ^(?!.*[&%:;*|></\\#?"=])[^\s]{4,30}$
 const USERNAME_REGEX = /^(?!.*[&%:;*|></\\#?"=])\S{4,30}$/;
 
-// Backend limits per docs/library-api.md §"Library attributes (schema)":
-//   aboutMe        ≤ 2000 chars
-//   aboutLibrary   ≤ 4000 chars
+// The backend accepts more (aboutMe 2000, aboutLibrary 4000 per
+// docs/library-api.md), but both passages sit in a narrow panel: 1000
+// characters is what reads there, and the counter and the validator share
+// these figures so they cannot drift apart.
+export const ABOUT_LIBRARY_MAX = 1000;
+export const ABOUT_AUTHOR_MAX = 1000;
+
 // Both fields hold rich text, so the limit is measured on the writing rather
 // than on the markup around it: a bold word must not cost the owner 17 of
 // their characters.
@@ -25,11 +29,17 @@ export const editLibrarySchema = z.object({
     ),
   aboutMe: z
     .string()
-    .refine(withinLimit(2000), 'About author must be 2000 characters or less')
+    .refine(
+      withinLimit(ABOUT_AUTHOR_MAX),
+      `About author must be ${ABOUT_AUTHOR_MAX} characters or less`,
+    )
     .optional(),
   aboutLibrary: z
     .string()
-    .refine(withinLimit(4000), 'About library must be 4000 characters or less')
+    .refine(
+      withinLimit(ABOUT_LIBRARY_MAX),
+      `About library must be ${ABOUT_LIBRARY_MAX} characters or less`,
+    )
     .optional(),
 });
 
