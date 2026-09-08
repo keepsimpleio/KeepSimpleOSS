@@ -60,14 +60,18 @@ jobs:
       # GitHub Actions cache. This runs before the env files exist and the
       # target stops at `deps`, so the exported layers never contain .env,
       # .env.staging, the built bundle or any secret. The full image build
-      # below reads this cache and exports nothing.
+      # below reads this cache and exports nothing. build-push-action is
+      # required here: a plain `docker buildx build` in a run step has no
+      # Actions cache credentials, so the first attempt (run 34249453906)
+      # silently exported nothing.
       - name: Warm dependency layer cache
-        run: |
-          docker buildx build \
-            --target deps \
-            --cache-from type=gha,scope=deps \
-            --cache-to type=gha,scope=deps,mode=max \
-            .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: deps
+          push: false
+          cache-from: type=gha,scope=deps
+          cache-to: type=gha,scope=deps,mode=max
 
       - name: 'Login to GitHub Container Registry'
         run: echo ${{secrets.REGISTRY_PASSWORD}} | docker login ${{secrets.REGISTRY_HOST}} --username ${{secrets.REGISTRY_USERNAME}} --password-stdin
@@ -86,16 +90,18 @@ jobs:
 
       - name: Production Deploy
         if: github.ref == 'refs/heads/main'
-        run: |
-          docker buildx build \
-            --cache-from type=gha,scope=deps \
-            --push \
-            -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod
+          cache-from: type=gha,scope=deps
 
       - name: Staging Deploy
         if: github.ref == 'refs/heads/dev'
-        run: |
-          docker buildx build \
-            --cache-from type=gha,scope=deps \
-            --push \
-            -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging
+          cache-from: type=gha,scope=deps
