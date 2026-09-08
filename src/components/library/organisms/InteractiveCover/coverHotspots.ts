@@ -193,7 +193,7 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 30.62, top: 26.4 },
     },
-    'AsteroidDestroyer',
+    'Mary13',
     {
       hit: { top: 60.83 },
       highlight: { left: 35.552, top: 28 },

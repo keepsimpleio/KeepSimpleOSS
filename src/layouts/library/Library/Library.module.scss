@@ -97,10 +97,6 @@ $share-bar-height: 87px;
 
 .addShelfButton {
   width: auto !important;
-  // The Text button variant defaults to white, which is meant for the dark
-  // surfaces it sits on elsewhere. On the library's cream page it has to carry
-  // the same brown the toolbar's own text buttons use.
-  color: var(--brown) !important;
 }
 
 // Laid over the top of the shelf list rather than holding a band above it:
