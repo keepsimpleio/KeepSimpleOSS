@@ -571,8 +571,14 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         ? formatCalendarDate(pickedDate)
         : undefined;
 
+      // Only a book carries tags, and only a book shows the picker. Sending
+      // the field at all for anything else would hand the CMS a list the user
+      // was never offered, and it rightly refuses one: an older video that
+      // still held tags would then be unsaveable.
       const tags =
-        selectedTags.length > 0 ? selectedTags.map(t => t.id) : undefined;
+        objectType === 'book' && selectedTags.length > 0
+          ? selectedTags.map(t => t.id)
+          : undefined;
       // Prefer the user's explicit shelf choice (move-to dropdown / locked add
       // mode), then fall back to the shelf id the parent passed. The fallback
       // matters in edit mode: if the object's `shelf` relation wasn't populated,
