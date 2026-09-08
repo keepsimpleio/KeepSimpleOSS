@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import React, { JSX, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -28,11 +28,11 @@ const DIFFICULTY_VALUES: Difficulty[] = [
 
 interface ColoredSelectProps<T extends string | number> {
   label: string;
-  value?: T;
+  value?: T | null;
   options: T[];
   renderLabel: (value: T) => string;
   getColor: (value: T) => string;
-  onChange?: (value: T) => void;
+  onChange?: (value: T | null) => void;
   readOnly: boolean;
   placeholder: string;
   valueSuffix?: string;
@@ -75,7 +75,7 @@ function ColoredSelect<T extends string | number>(
     setIsOpen(prev => !prev);
   };
 
-  const handleSelect = (next: T) => {
+  const handleSelect = (next: T | null) => {
     onChange?.(next);
     setIsOpen(false);
   };
@@ -91,7 +91,7 @@ function ColoredSelect<T extends string | number>(
             <div
               ref={menuRef}
               role="listbox"
-              className={classNames(styles.menu, {
+              className={cn(styles.menu, {
                 [styles.menuClosing]: !menuShown,
               })}
               style={{
@@ -106,13 +106,22 @@ function ColoredSelect<T extends string | number>(
               // Keep clicks inside the portaled menu from triggering useClickOutside.
               onPointerDown={e => e.stopPropagation()}
             >
+              <button
+                type="button"
+                role="option"
+                aria-selected={!hasValue}
+                className={cn(styles.option, { [styles.selected]: !hasValue })}
+                onClick={() => handleSelect(null)}
+              >
+                Not rated
+              </button>
               {options.map(opt => (
                 <button
                   key={String(opt)}
                   type="button"
                   role="option"
                   aria-selected={opt === value}
-                  className={classNames(styles.option, {
+                  className={cn(styles.option, {
                     [styles.selected]: opt === value,
                   })}
                   onClick={() => handleSelect(opt)}
@@ -136,7 +145,7 @@ function ColoredSelect<T extends string | number>(
       <button
         ref={triggerRef}
         type="button"
-        className={classNames(styles.trigger, {
+        className={cn(styles.trigger, {
           [styles.open]: isOpen,
           [styles.readOnly]: readOnly,
         })}
@@ -150,7 +159,7 @@ function ColoredSelect<T extends string | number>(
       >
         <Text
           variant={TypographyVariant.TextBase}
-          className={classNames(styles.value, {
+          className={cn(styles.value, {
             [styles.placeholder]: !hasValue,
           })}
         >
@@ -165,7 +174,7 @@ function ColoredSelect<T extends string | number>(
           <ArrowIcon
             width={12}
             height={12}
-            className={classNames(styles.chevron, { [styles.rotated]: isOpen })}
+            className={cn(styles.chevron, { [styles.rotated]: isOpen })}
           />
         )}
       </button>
@@ -198,7 +207,7 @@ export function RatingBox(props: RatingBoxProps): JSX.Element {
       : 'Not rated yet';
 
   return (
-    <div className={classNames(styles.wrapper, className)}>
+    <div className={cn(styles.wrapper, className)}>
       <Text variant={TypographyVariant.TextSmall} className={styles.header}>
         {header}
       </Text>

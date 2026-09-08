@@ -26,9 +26,9 @@ export interface IObjectScalarFields {
   source?: string;
   duration?: number;
   /** Book only — 1..5. Backend 400s if sent on non-book objects. */
-  overall?: OverallRating;
+  overall?: OverallRating | null;
   /** Book only — backend enum (underscore form). */
-  difficulty?: Difficulty;
+  difficulty?: Difficulty | null;
   /**
    * Book only. Puts the book on the library's Favorites shelf. Backend spec:
    * docs/library-favorites-backend.md.

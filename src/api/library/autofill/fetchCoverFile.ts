@@ -1,3 +1,5 @@
+import { COVER_MAX_BYTES } from '@constants/library/cover';
+
 import { autofillCoverUrl } from '@lib/library/autofillCoverUrl';
 
 const EXT_BY_MIME: Record<string, string> = {
@@ -5,8 +7,6 @@ const EXT_BY_MIME: Record<string, string> = {
   'image/png': 'png',
   'image/webp': 'webp',
 };
-
-const MAX_BYTES = 5 * 1024 * 1024; // matches the cover upload limit
 
 /**
  * Pull a provider cover through the local proxy and wrap it as a File so it
@@ -23,7 +23,7 @@ export const fetchCoverFile = async (
     if (!res.ok) return null;
     const blob = await res.blob();
     const ext = EXT_BY_MIME[blob.type];
-    if (!ext || blob.size === 0 || blob.size > MAX_BYTES) return null;
+    if (!ext || blob.size === 0 || blob.size > COVER_MAX_BYTES) return null;
 
     const safeName =
       baseName

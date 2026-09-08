@@ -1,3 +1,4 @@
+import { linkDescriptionUrls } from '@lib/library/descriptionLinks';
 import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 // Descriptions arrive from two places with two different shapes: autofill hands
@@ -14,7 +15,7 @@ const BLOCK_MARKUP = /<\s*(p|br|div|ul|ol|li|h[1-6]|blockquote|table)\b/i;
  * one empty line so a paragraph gap stays a paragraph gap.
  */
 export function descriptionToHtml(value?: string | null): string {
-  const clean = sanitizeHtml(value);
+  const clean = linkDescriptionUrls(sanitizeHtml(value));
   if (!clean) return '';
   if (BLOCK_MARKUP.test(clean)) return clean;
 

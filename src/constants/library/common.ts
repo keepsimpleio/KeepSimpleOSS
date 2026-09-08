@@ -78,10 +78,10 @@ export const MAX_SHELVES_PER_LIBRARY = 21;
 // selection reaches this count.
 export const MAX_SHARE_OBJECTS = 21;
 
-// Backend caps a shelf at 21 objects (all types combined); the Add control
+// Backend caps a shelf at 30 objects (all types combined); the Add control
 // disables once a shelf reaches this count, and a rejected create/move surfaces
 // SHELF_FULL_MESSAGE. Backend is the source of truth — see isShelfFullError.
-export const MAX_OBJECTS_PER_SHELF = 21;
+export const MAX_OBJECTS_PER_SHELF = 30;
 
 export const SHELF_FULL_MESSAGE = 'This shelf is full.';
 

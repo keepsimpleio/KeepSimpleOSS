@@ -12,7 +12,7 @@ import {
 import { ITagAttributes } from '@local-types/library/tag';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
-import useIsMobile from '@hooks/library/useIsMobile';
+import useLibraryEditing from '@hooks/library/useLibraryEditing';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { libraryPath } from '@lib/library/libraryPath';
@@ -131,8 +131,8 @@ export function Sidebar() {
   const isMyLibrary = isOwner;
   // Phones are read-only: no Edit library, no tag editing (the same rule the
   // shelves follow through LibraryTemplate's canEditHere).
-  const isMobile = useIsMobile(768);
-  const canEdit = isMyLibrary && !isGuestMode && !isMobile;
+  const supportsEditing = useLibraryEditing();
+  const canEdit = isMyLibrary && !isGuestMode && supportsEditing;
 
   // The drawer is an overlay on phones and tablets: while it is open the page
   // under it must not move under a swipe, same as every modal.
@@ -350,6 +350,7 @@ export function Sidebar() {
           the CSS scopes each to its own breakpoint. */}
       <aside
         id="library-info-panel"
+        data-library-mode-surface
         className={classNames(styles.sidebar, {
           [styles.open]: isSidebarOpen,
           [styles.collapsed]: isSidebarCollapsed,
@@ -539,7 +540,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        {isMyLibrary && (
+        {isMyLibrary && supportsEditing && (
           <div
             className={classNames(styles.footer, {
               [styles.footerActive]: isGuestMode,

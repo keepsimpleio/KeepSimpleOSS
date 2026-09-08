@@ -107,10 +107,10 @@ export function ObjectOverviewModal(
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
-  const [overallRating, setOverallRating] = useState<OverallRating | undefined>(
-    attributes.overall,
-  );
-  const [difficulty, setDifficulty] = useState<Difficulty | undefined>(
+  const [overallRating, setOverallRating] = useState<
+    OverallRating | null | undefined
+  >(attributes.overall);
+  const [difficulty, setDifficulty] = useState<Difficulty | null | undefined>(
     attributes.difficulty,
   );
   const [ratingError, setRatingError] = useState<string | null>(null);
@@ -285,8 +285,8 @@ export function ObjectOverviewModal(
   });
 
   const persistRating = async (next: {
-    overall?: OverallRating;
-    difficulty?: Difficulty;
+    overall?: OverallRating | null;
+    difficulty?: Difficulty | null;
   }) => {
     setRatingError(null);
     try {
@@ -303,12 +303,12 @@ export function ObjectOverviewModal(
     }
   };
 
-  const handleOverallChange = (value: OverallRating) => {
+  const handleOverallChange = (value: OverallRating | null) => {
     setOverallRating(value);
     persistRating({ overall: value });
   };
 
-  const handleDifficultyChange = (value: Difficulty) => {
+  const handleDifficultyChange = (value: Difficulty | null) => {
     setDifficulty(value);
     persistRating({ difficulty: value });
   };
@@ -348,7 +348,7 @@ export function ObjectOverviewModal(
       };
       onUpdated?.(moved);
     } catch (e) {
-      // The target shelf may already hold 21 objects — the backend rejects the
+      // The target shelf may already hold 30 objects — the backend rejects the
       // move with a 400. Surface the dedicated full-shelf copy.
       const message = isShelfFullError(e)
         ? SHELF_FULL_MESSAGE
@@ -392,7 +392,7 @@ export function ObjectOverviewModal(
   const ownerNotesLabel = notesLabel(ownerUsername);
 
   // Edit mode swaps the modal entirely; AddObjectModal manages its own success popup.
-  if (editing) {
+  if (editing && isOwner) {
     return (
       <AddObjectModal
         objectType={objectType}
@@ -734,7 +734,7 @@ export function ObjectOverviewModal(
         </div>
       </Modal>
 
-      {deleting && (
+      {isOwner && deleting && (
         <ConfirmationModal
           variant="delete"
           title={`Are you sure you want to delete the object "${attributes.title}"?`}

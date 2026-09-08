@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 
+import { descriptionLinkHref } from '@lib/library/descriptionLinks';
 import { serializeEditorHtml, toEditorHtml } from '@lib/library/richText';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
@@ -122,7 +123,12 @@ export function RichTextField({
   const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
     e.preventDefault();
     const text = e.clipboardData.getData('text/plain');
-    document.execCommand('insertText', false, text);
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    document.execCommand('insertHTML', false, toEditorHtml(escaped));
+    emit();
   };
 
   return (
@@ -177,6 +183,16 @@ export function RichTextField({
         onMouseUp={readMarks}
         onFocus={readMarks}
         onPaste={handlePaste}
+        onClick={event => {
+          // A plain click places the caret inside the link text; the link
+          // itself opens on Ctrl/Cmd-click, the editor convention.
+          if (!event.metaKey && !event.ctrlKey) return;
+          const anchor = (event.target as HTMLElement).closest('a');
+          if (!anchor) return;
+          event.preventDefault();
+          const href = descriptionLinkHref(anchor.getAttribute('href') ?? '');
+          if (href) window.open(href, '_blank', 'noopener,noreferrer');
+        }}
       />
     </div>
   );

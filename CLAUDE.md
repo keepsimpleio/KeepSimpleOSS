@@ -273,3 +273,26 @@ findings as fixed. Stage and prod can diverge; inspect both before claiming pari
 - Source Serif 4 with Noto Sans Armenian fallback; sizes 24, 32, 48, 76. Left panel 720px, 48px padding, 24px spacing, square corners. Names wrap within reserved space.
 - Motion and scrollbar passports: static artifact, no animation or scroll surfaces. Fixed geometry across names. ImageResponse requires style objects for PNG rendering; these are artifact layout instructions, not page styling.
 - Personal metadata uses the public username, matching library cards. Wolf retains the approved named artwork and collection date. Anonymous CMS reads supply public shelf titles only.
+
+## Library guest preview motion passport
+
+Guest mode crossfades the previous and next page snapshots over 200ms ease,
+without remounting the library. Browsers without view transitions fade the
+updated library and sidebar in over 200ms ease. Reduced motion switches
+immediately. Only an explicit mode change changes shelf visibility and geometry.
+
+## Library description link passport
+
+Description links inherit the surrounding font and color, with a dotted underline.
+Hover and keyboard focus use a solid underline. No geometry or motion changes.
+URLs keep their visible text and open in a new tab with noopener and noreferrer.
+
+## Library mobile reading contract
+
+Phones and tablets are read-only, including owner accounts and landscape mode.
+Editing starts disabled until a viewport above 1024px with a fine hover pointer
+and no coarse pointer is confirmed. Touch-capable devices remain read-only.
+Owners can view private recommendations and persist their fold preference;
+recommendation verdicts and regeneration remain desktop controls.
+Mobile recommendation headings wrap within the existing 16px header inset;
+the fold control has a 44px touch target. Existing colors, fonts and fold motion apply.

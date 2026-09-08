@@ -1,13 +1,25 @@
 import DOMPurify from 'isomorphic-dompurify';
 
 import { descriptionToHtml } from '@lib/library/descriptionHtml';
+import { descriptionLinkHref } from '@lib/library/descriptionLinks';
 import { htmlToPlainText } from '@lib/library/objectMeta';
 
 // The notes field holds a small dialect of HTML: paragraph breaks and three
-// inline marks (bold, italic, strikethrough). Everything that reaches the
+// inline marks (bold, italic, strikethrough) and HTTP(S) links. Everything that reaches the
 // editor or leaves it passes through here, so a pasted page or a provider's
 // markup can never smuggle anything else into the stored value.
-const EDITOR_TAGS = ['p', 'br', 'strong', 'em', 's', 'b', 'i', 'strike', 'del'];
+const EDITOR_TAGS = [
+  'p',
+  'br',
+  'strong',
+  'em',
+  's',
+  'b',
+  'i',
+  'strike',
+  'del',
+  'a',
+];
 
 /**
  * The stored value as the editor shows it: sanitized down to the dialect,
@@ -18,7 +30,7 @@ export function toEditorHtml(value?: string | null): string {
   if (!html) return '';
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: EDITOR_TAGS,
-    ALLOWED_ATTR: [],
+    ALLOWED_ATTR: ['href', 'target', 'rel'],
   });
 }
 
@@ -71,6 +83,13 @@ function serializeNode(node: Node): string {
   if (node.nodeType !== Node.ELEMENT_NODE) return '';
   const el = node as HTMLElement;
   if (el.tagName === 'BR') return '<br />';
+  if (el.tagName === 'A') {
+    const href = descriptionLinkHref(el.getAttribute('href') ?? '');
+    const inner = serializeChildren(el);
+    return href
+      ? `<a href="${escapeText(href).replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">${inner}</a>`
+      : inner;
+  }
   const inline = INLINE_TAG[el.tagName];
   if (inline) {
     const inner = serializeChildren(el);
