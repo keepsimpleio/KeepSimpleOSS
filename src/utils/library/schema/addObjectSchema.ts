@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
+import { COVER_MAX_BYTES } from '@constants/library/cover';
+
 import type { ObjectType } from '@local-types/library/object';
 
-const COVER_MAX_BYTES = 5 * 1024 * 1024;
 const COVER_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const coverImageSchema = z
@@ -13,7 +14,7 @@ const coverImageSchema = z
   )
   .refine(
     f => f.size <= COVER_MAX_BYTES,
-    'Cover image must be 5 MB or smaller.',
+    'Cover image must be 550 KB or smaller.',
   );
 
 const URL_REGEX = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/;

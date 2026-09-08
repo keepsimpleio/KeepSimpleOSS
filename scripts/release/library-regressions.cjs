@@ -11,7 +11,7 @@ const report = {
   event: 'library-regressions',
   status: 'FAIL',
 };
-function load(file, imports = {}) {
+function load(file, imports = {}, globals = {}) {
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -20,6 +20,7 @@ function load(file, imports = {}) {
     },
   }).outputText;
   const context = {
+    ...globals,
     exports: {},
     console: { error() {} },
     require: id => {
@@ -70,6 +71,146 @@ function scan(dir) {
   }
 }
 async function main() {
+  for (const [desktop, touch, expected] of [
+    [false, true, false],
+    [true, true, false],
+    [false, false, false],
+    [true, false, true],
+  ]) {
+    let editing;
+    let effect;
+    const listeners = new Map();
+    const queries = [];
+    const hook = load(
+      'src/hooks/library/useLibraryEditing.ts',
+      {
+        react: {
+          useState: initial => {
+            editing = initial;
+            return [
+              initial,
+              value => {
+                editing = value;
+              },
+            ];
+          },
+          useEffect: callback => {
+            effect = callback;
+          },
+        },
+      },
+      {
+        window: {
+          matchMedia: query => {
+            const media = {
+              matches: query.includes('any-pointer') ? touch : desktop,
+              addEventListener: (_, callback) => listeners.set(query, callback),
+              removeEventListener: () => listeners.delete(query),
+            };
+            queries.push(media);
+            return media;
+          },
+        },
+      },
+    );
+    assert.equal(hook.default(), false, 'Editing must start disabled');
+    const cleanup = effect();
+    assert.equal(editing, expected);
+    queries[1].matches = true;
+    [...listeners.values()][1]();
+    assert.equal(editing, false, 'A touch device must remain read-only');
+    cleanup();
+    assert.equal(listeners.size, 0);
+  }
+  const purify = require('isomorphic-dompurify');
+  const links = load(
+    'src/lib/library/descriptionLinks.ts',
+    {
+      'isomorphic-dompurify': purify,
+    },
+    { URL },
+  );
+  const descriptions = load('src/lib/library/descriptionHtml.ts', {
+    '@lib/library/descriptionLinks': links,
+    '@lib/sanitizeHtml': {
+      sanitizeHtml: value => purify.sanitize(value ?? ''),
+    },
+  });
+  const rich = load(
+    'src/lib/library/richText.ts',
+    {
+      'isomorphic-dompurify': purify,
+      '@lib/library/descriptionHtml': descriptions,
+      '@lib/library/descriptionLinks': links,
+      '@lib/library/objectMeta': {
+        htmlToPlainText: value =>
+          purify.sanitize(value, { RETURN_DOM_FRAGMENT: true }).textContent,
+      },
+    },
+    { Node: { TEXT_NODE: 3, ELEMENT_NODE: 1 } },
+  );
+  const note =
+    '<strong>Read</strong> https://example.com/book?q=one&lang=en.\n(www.example.org/book_(edition)).';
+  const linked = descriptions.descriptionToHtml(note);
+  const fragment = purify.sanitize(linked, {
+    RETURN_DOM_FRAGMENT: true,
+    ADD_ATTR: ['target', 'rel'],
+  });
+  const anchors = [...fragment.querySelectorAll('a')];
+  assert.equal(anchors.length, 2);
+  assert.equal(
+    anchors[0].getAttribute('href'),
+    'https://example.com/book?q=one&lang=en',
+  );
+  assert.equal(anchors[1].textContent, 'www.example.org/book_(edition)');
+  anchors.forEach(anchor => {
+    assert.equal(anchor.target, '_blank');
+    assert.equal(anchor.rel, 'noopener noreferrer');
+  });
+  assert.equal(fragment.querySelector('strong').textContent, 'Read');
+  assert.equal(fragment.querySelectorAll('br').length, 1);
+  assert.equal(
+    links.linkDescriptionUrls(links.linkDescriptionUrls(linked)),
+    links.linkDescriptionUrls(linked),
+  );
+  const editor = fragment.ownerDocument.createElement('div');
+  editor.innerHTML = rich.toEditorHtml(linked);
+  assert.equal(
+    rich.toEditorHtml(rich.serializeEditorHtml(editor)),
+    rich.toEditorHtml(linked),
+  );
+  assert.equal(links.descriptionLinkHref('javascript:alert(1)'), null);
+  assert.equal(links.descriptionLinkHref('data:text/html,bad'), null);
+  const unsafe = links.linkDescriptionUrls(
+    '<a href="javascript:alert(1)">bad</a><img src=x onerror=alert(1)>',
+  );
+  assert.equal(/javascript:|onerror=/.test(unsafe), false);
+  assert.equal(
+    links
+      .linkDescriptionUrls(
+        '<a href="https://example.com">https://example.com</a>',
+      )
+      .match(/<a /g).length,
+    1,
+  );
+  const ratingWrites = [];
+  const ratingApi = load('src/api/library/object/updateObject.ts', {
+    '@lib/library/axios': {
+      put: async (url, body) => {
+        const serialized = JSON.parse(JSON.stringify(body));
+        ratingWrites.push({ url, ...serialized });
+        return { data: { data: { id: 17, attributes: serialized.data } } };
+      },
+    },
+  });
+  for (const field of ['overall', 'difficulty']) {
+    const response = await ratingApi.updateObject(17, { [field]: null });
+    assert.equal(response.data.attributes[field], null);
+  }
+  assert.deepEqual(ratingWrites, [
+    { url: '/api/objects/17', data: { overall: null } },
+    { url: '/api/objects/17', data: { difficulty: null } },
+  ]);
   assert.equal(nativeTitles('<button title="bad" />'), 1);
   assert.equal(nativeTitles('<Modal title="heading" />'), 0);
   scan('src/components/library');

@@ -1,4 +1,4 @@
-// motion-passport: exempt — state container, renders no markup and ships no styles.
+// Guest preview motion follows the Library passport in CLAUDE.md.
 import { useSession } from 'next-auth/react';
 import {
   createContext,
@@ -7,8 +7,10 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 
 import type {
   ILibrary,
@@ -156,11 +158,69 @@ export function GlobalStateProvider({
     void refetchLibraries();
   }, [token, session, refetchLibraries]);
 
+  const modeTransition = useRef<{ skipTransition: () => void } | null>(null);
+  useEffect(() => () => modeTransition.current?.skipTransition(), []);
+
+  const toggleGuestMode = useCallback(() => {
+    const update = () => flushSync(() => setIsGuestMode(prev => !prev));
+    modeTransition.current?.skipTransition();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      update();
+      return;
+    }
+
+    const page = document as Document & {
+      startViewTransition?: (callback: () => void) => {
+        ready: Promise<void>;
+        finished: Promise<void>;
+        skipTransition: () => void;
+      };
+    };
+    if (page.startViewTransition) {
+      const transition = page.startViewTransition(update);
+      modeTransition.current = transition;
+      void transition.ready
+        .then(() => {
+          for (const [state, opacity] of [
+            ['old', [1, 0]],
+            ['new', [0, 1]],
+          ] as const) {
+            document.documentElement.animate(
+              { opacity: [...opacity] },
+              {
+                duration: 200,
+                easing: 'ease',
+                fill: 'both',
+                pseudoElement: `::view-transition-${state}(root)`,
+              },
+            );
+          }
+        })
+        .catch(() => {});
+      void transition.finished
+        .finally(() => {
+          if (modeTransition.current === transition)
+            modeTransition.current = null;
+        })
+        .catch(() => {});
+    } else {
+      update();
+      document
+        .querySelectorAll('[data-library-mode-surface]')
+        .forEach(surface => {
+          surface.animate?.(
+            { opacity: [0, 1] },
+            { duration: 200, easing: 'ease' },
+          );
+        });
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       isGuestMode,
       isSidebarOpen,
-      toggleGuestMode: () => setIsGuestMode(prev => !prev),
+      toggleGuestMode,
       setGuestMode: setIsGuestMode,
       toggleSidebar: () => setIsSidebarOpen(prev => !prev),
       closeSidebar: () => setIsSidebarOpen(false),
@@ -184,6 +244,7 @@ export function GlobalStateProvider({
     [
       isOwner,
       isGuestMode,
+      toggleGuestMode,
       isSidebarOpen,
       isSidebarCollapsed,
       toggleSidebarCollapsed,

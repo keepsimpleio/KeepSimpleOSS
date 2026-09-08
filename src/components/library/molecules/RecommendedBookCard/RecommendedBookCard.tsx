@@ -46,6 +46,7 @@ let dossierSerial = 0;
 export function RecommendedBookCard({
   book,
   className,
+  readOnly = false,
   locked = false,
   banned = false,
   onToggleLock,
@@ -136,54 +137,56 @@ export function RecommendedBookCard({
             {state === 'banned' ? 'Banned' : 'Locked'}
           </span>
 
-          <div className={styles.actions}>
-            {!banned && (
+          {!readOnly && (
+            <div className={styles.actions}>
+              {!banned && (
+                <Tooltip
+                  asChild
+                  tooltipContent={
+                    locked
+                      ? 'Unlock: a re-generate may replace it'
+                      : 'Lock: keeps this pick through a re-generate'
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.action}
+                    onClick={() => onToggleLock?.(book)}
+                    aria-label={
+                      locked
+                        ? `Unlock ${book.title}`
+                        : `Lock ${book.title} on the shelf`
+                    }
+                  >
+                    <LockIcon />
+                    {locked ? 'Unlock' : 'Lock'}
+                  </button>
+                </Tooltip>
+              )}
               <Tooltip
                 asChild
                 tooltipContent={
-                  locked
-                    ? 'Unlock: a re-generate may replace it'
-                    : 'Lock: keeps this pick through a re-generate'
+                  banned
+                    ? 'Unban: this book may be recommended again'
+                    : 'Ban: never recommend this book'
                 }
               >
                 <button
                   type="button"
                   className={styles.action}
-                  onClick={() => onToggleLock?.(book)}
+                  onClick={() => onToggleBan?.(book)}
                   aria-label={
-                    locked
-                      ? `Unlock ${book.title}`
-                      : `Lock ${book.title} on the shelf`
+                    banned
+                      ? `Unban ${book.title}`
+                      : `Ban ${book.title} from recommendations`
                   }
                 >
-                  <LockIcon />
-                  {locked ? 'Unlock' : 'Lock'}
+                  <BanIcon />
+                  {banned ? 'Unban' : 'Ban'}
                 </button>
               </Tooltip>
-            )}
-            <Tooltip
-              asChild
-              tooltipContent={
-                banned
-                  ? 'Unban: this book may be recommended again'
-                  : 'Ban: never recommend this book'
-              }
-            >
-              <button
-                type="button"
-                className={styles.action}
-                onClick={() => onToggleBan?.(book)}
-                aria-label={
-                  banned
-                    ? `Unban ${book.title}`
-                    : `Ban ${book.title} from recommendations`
-                }
-              >
-                <BanIcon />
-                {banned ? 'Unban' : 'Ban'}
-              </button>
-            </Tooltip>
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

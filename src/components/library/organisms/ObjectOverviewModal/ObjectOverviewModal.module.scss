@@ -484,3 +484,15 @@
   border-radius: var(--radius-control);
   background: var(--white);
 }
+
+.description a {
+  color: inherit;
+  text-decoration: underline dotted;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration-style: solid;
+  }
+}

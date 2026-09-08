@@ -5,13 +5,13 @@ export interface RatingBoxProps {
    * "<username> didn’t rate this book" while both values are empty. */
   username: string;
   /** Currently selected overall rating, 1–5. */
-  overallRating?: OverallRating;
+  overallRating?: OverallRating | null;
   /** Currently selected difficulty. */
-  difficulty?: Difficulty;
+  difficulty?: Difficulty | null;
   /** Fires when the owner picks a new overall value. */
-  onOverallChange?: (value: OverallRating) => void;
+  onOverallChange?: (value: OverallRating | null) => void;
   /** Fires when the owner picks a new difficulty. */
-  onDifficultyChange?: (value: Difficulty) => void;
+  onDifficultyChange?: (value: Difficulty | null) => void;
   /**
    * Viewer mode — render values with colors but no dropdown affordances
    * and no interactions. Defaults to `false` (owner mode).

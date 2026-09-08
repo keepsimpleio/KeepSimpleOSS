@@ -17,6 +17,7 @@ import {
 } from 'react-hook-form';
 
 import { SHELF_FULL_MESSAGE } from '@constants/library/common';
+import { COVER_MAX_BYTES } from '@constants/library/cover';
 
 import type { IAutofillSuggestion } from '@local-types/library/autofill';
 import type { IObject } from '@local-types/library/object';
@@ -559,7 +560,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           const hasResponse = !!(uploadErr as { response?: unknown })?.response;
           setSubmitError(
             status === 413 || !hasResponse
-              ? 'Image is too large. Maximum size is 5 MB.'
+              ? 'Image is too large. Maximum size is 550 KB.'
               : "Couldn't upload the image. Please try again.",
           );
           return;
@@ -794,7 +795,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       setShowSuccess(true);
     } catch (e) {
-      // Backend caps each shelf at 21 objects (all types combined) and rejects
+      // Backend caps each shelf at 30 objects (all types combined) and rejects
       // an over-limit create — or a move into a full shelf via the shelf
       // dropdown — with a 400. Surface the dedicated full-shelf copy.
       if (isShelfFullError(e)) {
@@ -972,6 +973,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
               name="coverImage"
               render={({ field }) => (
                 <ImageDropzone
+                  maxSize={COVER_MAX_BYTES}
                   value={field.value ?? null}
                   onChange={file => {
                     setCoverNotice(null);
@@ -1151,7 +1153,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const primaryLabel = editing ? config.editSubmitLabel : config.submitLabel;
   const successTitle = editing
     ? `${objectType[0].toUpperCase()}${objectType.slice(1)} updated`
-    : `New ${objectType} has been created!`;
+    : `New ${objectType} has been added!`;
   const successText = editing
     ? 'Your changes were saved successfully.'
     : `Your ${objectType} was successfully added to the library.`;

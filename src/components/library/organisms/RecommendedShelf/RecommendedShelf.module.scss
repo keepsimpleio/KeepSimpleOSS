@@ -86,15 +86,12 @@
       margin-left: 4px;
     }
 
-    // The name in the serif, spaced and set in capitals: this shelf is named
-    // by the library, not by the owner, and reads as a heading.
     .name {
       font-family: var(--font-source-serif);
       font-size: 16px;
       font-weight: 600;
       line-height: 22px;
       letter-spacing: 0.08em;
-      text-transform: uppercase;
       color: var(--gray-darkest);
     }
   }
@@ -566,5 +563,24 @@
   }
   .wrapper .content::before {
     opacity: 0.3;
+  }
+}
+
+.wrapper .header .readOnlyActions {
+  display: none;
+}
+
+@media (max-width: 1024px), (any-pointer: coarse) {
+  .wrapper .header {
+    .nameWrap {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .settings {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
   }
 }
