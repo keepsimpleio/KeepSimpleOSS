@@ -269,7 +269,7 @@ async function main() {
     const live = await load(
       'src/api/library/getPublicLibrarySeo.ts',
     ).getPublicLibrarySeo('wolf');
-    assert.equal(live.title, "Wolf's library | KeepSimple");
+    assert.equal(live.title, "Wolf Alexanyan's Library | Collected since 2007");
     assert(live.schema.mainEntity.numberOfItems > 0);
     console.log(
       'PASS: production anonymous library metadata and public objects',
