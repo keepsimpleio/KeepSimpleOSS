@@ -16,6 +16,7 @@ import useLibraryEditing from '@hooks/library/useLibraryEditing';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { libraryPath } from '@lib/library/libraryPath';
+import { richTextLength } from '@lib/library/richText';
 
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
@@ -55,13 +56,10 @@ import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal
 
 import styles from './Sidebar.module.scss';
 
-// aboutMe / aboutLibrary come back as CKEditor rich-text HTML; strip tags for
-// the sidebar display until a styled rich-text renderer is in place.
-const stripHtml = (s?: string | null) =>
-  s
-    ?.replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .trim() ?? '';
+// aboutMe / aboutLibrary hold rich text: the owner's line breaks and marks are
+// part of what they wrote, so the panel renders the stored markup instead of
+// flattening it. Emptiness is judged on the text alone, never on the tags.
+const hasText = (value?: string | null) => richTextLength(value) > 0;
 
 const tagKey = <T extends { name: string }>(tag: T) => tag.name;
 
@@ -156,10 +154,9 @@ export function Sidebar() {
     resolveStrapiUrl(currentOwner?.avatar) ??
     resolveStrapiUrl(currentOwner?.picture) ??
     (canEdit ? accountData?.picture : undefined);
-  const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
-  const aboutLibraryText = stripHtml(
-    currentLibrary?.attributes.libraryDetails?.aboutLibrary,
-  );
+  const aboutAuthorText = currentOwner?.aboutMe ?? '';
+  const aboutLibraryText =
+    currentLibrary?.attributes.libraryDetails?.aboutLibrary ?? '';
 
   // Owner sees their full tag palette; a true visitor sees only the tags
   // actually used on this library's objects — no cross-account tag fetch.
@@ -391,9 +388,9 @@ export function Sidebar() {
                     printing it raw showed the tags. Empty gets a line of its
                     own, like Author and Tags do. A written description folds
                     so it cannot push Content, Author and Tags off the sheet. */}
-                {aboutLibraryText ? (
+                {hasText(aboutLibraryText) ? (
                   <ExpandableText
-                    text={aboutLibraryText}
+                    value={aboutLibraryText}
                     title="About"
                     className={styles.label}
                     subject="library description"
@@ -454,7 +451,7 @@ export function Sidebar() {
                 </Text>
               </div>
               <ExpandableText
-                text={aboutAuthorText}
+                value={aboutAuthorText}
                 title="Author"
                 className={styles.text}
                 subject="author biography"

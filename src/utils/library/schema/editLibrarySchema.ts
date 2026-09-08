@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { htmlToPlainText } from '@lib/library/objectMeta';
+
 // Mirrors the backend username regex from docs/user-api.md §3:
 // ^(?!.*[&%:;*|></\\#?"=])[^\s]{4,30}$
 const USERNAME_REGEX = /^(?!.*[&%:;*|></\\#?"=])\S{4,30}$/;
@@ -7,7 +9,12 @@ const USERNAME_REGEX = /^(?!.*[&%:;*|></\\#?"=])\S{4,30}$/;
 // Backend limits per docs/library-api.md §"Library attributes (schema)":
 //   aboutMe        ≤ 2000 chars
 //   aboutLibrary   ≤ 4000 chars
-// (CKEditor rich text on backend; the form sends plain string today.)
+// Both fields hold rich text, so the limit is measured on the writing rather
+// than on the markup around it: a bold word must not cost the owner 17 of
+// their characters.
+const withinLimit = (max: number) => (value?: string) =>
+  htmlToPlainText(value ?? '').length <= max;
+
 export const editLibrarySchema = z.object({
   username: z
     .string()
@@ -18,11 +25,11 @@ export const editLibrarySchema = z.object({
     ),
   aboutMe: z
     .string()
-    .max(2000, 'About author must be 2000 characters or less')
+    .refine(withinLimit(2000), 'About author must be 2000 characters or less')
     .optional(),
   aboutLibrary: z
     .string()
-    .max(4000, 'About library must be 4000 characters or less')
+    .refine(withinLimit(4000), 'About library must be 4000 characters or less')
     .optional(),
 });
 

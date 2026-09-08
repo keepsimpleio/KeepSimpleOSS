@@ -1,7 +1,14 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { toEditorHtml } from '@lib/library/richText';
+
 import {
   Button,
   ButtonSize,
@@ -12,7 +19,8 @@ import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import styles from './ExpandableText.module.scss';
 
 interface ExpandableTextProps {
-  text: string;
+  /** Stored rich text in the editor dialect (see lib/library/richText). */
+  value: string;
   /** Heading the passage carries when it opens in full. */
   title: string;
   /** Lines kept on the sheet; the rest opens in the dialog. */
@@ -27,26 +35,32 @@ interface ExpandableTextProps {
 // of the column. The panel keeps the opening lines and hands the whole text to
 // a dialog. The cap is a line count, not a pixel height, so a longer line or a
 // different locale still cuts on a line boundary.
+//
+// The writer's own marks travel with the text: line breaks, bold, italic,
+// strikethrough and links all render here exactly as the editor stored them,
+// sanitized back down to that dialect on the way in.
 const ExpandableText = ({
-  text,
+  value,
   title,
   lines = 8,
   className,
   subject,
 }: ExpandableTextProps) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const passageRef = useRef<HTMLDivElement>(null);
   const [clipped, setClipped] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { closeRef, close } = useModalClose(() => setIsOpen(false));
 
+  const html = useMemo(() => toEditorHtml(value), [value]);
+
   const measure = useCallback(() => {
-    const passage = wrapperRef.current?.firstElementChild;
+    const passage = passageRef.current;
     if (!passage) return;
     setClipped(passage.scrollHeight - passage.clientHeight > 1);
   }, []);
 
   useEffect(() => {
-    const passage = wrapperRef.current?.firstElementChild;
+    const passage = passageRef.current;
     if (!passage) return undefined;
 
     measure();
@@ -57,15 +71,18 @@ const ExpandableText = ({
     const observer = new ResizeObserver(measure);
     observer.observe(passage);
     return () => observer.disconnect();
-  }, [measure, text]);
+  }, [measure, html]);
 
   return (
     <div
       className={styles.wrapper}
-      ref={wrapperRef}
       style={{ '--expandable-lines': lines } as React.CSSProperties}
     >
-      <Text className={classNames(styles.passage, className)}>{text}</Text>
+      <div
+        ref={passageRef}
+        className={classNames(styles.passage, className)}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
       {clipped && (
         <button
           type="button"
@@ -84,12 +101,10 @@ const ExpandableText = ({
           closeRef={closeRef}
         >
           <div className={styles.body}>
-            <Text
+            <div
               className={styles.fullText}
-              variant={TypographyVariant.TextRegular}
-            >
-              {text}
-            </Text>
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
           </div>
           <div className={styles.footer}>
             <Button

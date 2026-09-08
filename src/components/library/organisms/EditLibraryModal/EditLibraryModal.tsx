@@ -9,10 +9,12 @@ import {
 import axios from 'axios';
 import classNames from 'classnames';
 import React, { JSX, useMemo, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import type { IUpdateLibraryPayload } from '@local-types/library/library';
 import type { IUpdateMeErrorBody } from '@local-types/library/user';
+
+import { richTextLength, toEditorHtml } from '@lib/library/richText';
 
 import { createLibrary } from '@api/library/createLibrary';
 import { updateLibrary } from '@api/library/updateLibrary';
@@ -22,6 +24,7 @@ import { updateMe } from '@api/library/user/updateMe';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { Avatar } from '@components/library/atoms/Avatar';
+import { CharCount } from '@components/library/atoms/CharCount';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
@@ -32,7 +35,7 @@ import {
 import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Input } from '@components/library/molecules/Input';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
-import { Textarea } from '@components/library/molecules/Textarea';
+import { RichTextField } from '@components/library/molecules/RichTextField';
 
 import type { EditLibraryModalProps } from './EditLibraryModal.types';
 
@@ -55,14 +58,10 @@ function readUsernameError(
   return body.message.username ?? body.message.error;
 }
 
-// aboutMe / aboutLibrary are CKEditor rich-text fields server-side; until we
-// swap the plain Textarea for a rich-text editor, strip tags on display and
-// send plain text back. CKEditor will wrap on its own when edited via admin.
-const stripHtml = (s?: string | null) =>
-  s
-    ?.replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .trim() ?? '';
+// aboutMe / aboutLibrary are rich-text fields server-side. The editor and the
+// info panel both work in the small dialect from lib/library/richText, so the
+// marks an owner applies are what visitors read. Normalizing the stored value
+// on the way in gives the dirty check a baseline the editor can match exactly.
 
 export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const { className, library, onClose, onSaved } = props;
@@ -71,8 +70,8 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const currentAvatarUrl = absoluteUrl(
     library?.attributes.avatar?.data?.attributes.url,
   );
-  const currentAboutMe = stripHtml(library?.attributes.aboutMe);
-  const currentAboutLibrary = stripHtml(
+  const currentAboutMe = toEditorHtml(library?.attributes.aboutMe);
+  const currentAboutLibrary = toEditorHtml(
     library?.attributes.libraryDetails?.aboutLibrary,
   );
   const currentUsername = accountData?.username ?? '';
@@ -108,6 +107,7 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
     avatarFile !== null || (!avatarRemoved && Boolean(currentAvatarUrl));
 
   const {
+    control,
     register,
     handleSubmit,
     watch,
@@ -363,54 +363,47 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
           </div>
 
           <div className={styles.field}>
-            <div className={styles.labelRow}>
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.label}
-              >
-                About library
-              </Text>
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.counter}
-              >
-                {aboutLibraryValue.length} / 4000
-              </Text>
-            </div>
-            <Textarea
-              ariaLabel="About library"
-              placeholder="What is this library about?"
-              rows={4}
-              className={styles.textarea}
-              {...register('aboutLibrary')}
+            <Controller
+              control={control}
+              name="aboutLibrary"
+              render={({ field }) => (
+                <RichTextField
+                  label="About library"
+                  ariaLabel="About library"
+                  placeholder="What is this library about?"
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                />
+              )}
             />
+            <div className={styles.counterRow}>
+              <CharCount
+                current={richTextLength(aboutLibraryValue)}
+                max={4000}
+              />
+            </div>
             <p className={styles.error}>
               {errors.aboutLibrary?.message ?? ' '}
             </p>
           </div>
 
           <div className={styles.field}>
-            <div className={styles.labelRow}>
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.label}
-              >
-                About author
-              </Text>
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.counter}
-              >
-                {aboutMeValue.length} / 2000
-              </Text>
-            </div>
-            <Textarea
-              ariaLabel="About author"
-              placeholder="Tell visitors about yourself"
-              rows={4}
-              className={styles.textarea}
-              {...register('aboutMe')}
+            <Controller
+              control={control}
+              name="aboutMe"
+              render={({ field }) => (
+                <RichTextField
+                  label="About author"
+                  ariaLabel="About author"
+                  placeholder="Tell visitors about yourself"
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                />
+              )}
             />
+            <div className={styles.counterRow}>
+              <CharCount current={richTextLength(aboutMeValue)} max={2000} />
+            </div>
             <p className={styles.error}>{errors.aboutMe?.message ?? ' '}</p>
           </div>
 

@@ -124,6 +124,24 @@ at weight 700 so formatting is visible and native editing commands recognize it.
 Do not use a separate variable-font alias or override the wght axis for notes.
 Toolbar and keyboard shortcuts share one handler and emit semantic tags.
 
+## Library info panel passages
+
+About and Author are rich text in the editor dialect from `src/lib/library/richText.ts`:
+line breaks, bold, italic, strikethrough and links. The edit modal uses RichTextField,
+the panel and its dialog render the stored markup, and nothing on this path flattens
+it to plain text. Strong renders at 600 on display and 700 in the editor, as the
+description emphasis rule already sets. Character limits (4000 About library,
+2000 About author) count the writing, not the markup.
+
+The panel keeps the first eight lines, clamped by line count so the cut lands on a
+line boundary, and a single unbroken string wraps rather than leaving the column.
+Show all opens the whole passage in the shared Modal with its existing fade; the
+control appears only when the text is actually clipped, measured from the rendered
+paragraph and re-measured on resize. Dialog: 518px cap, height capped to the
+viewport, body scrolls behind a 12px themed scrollbar with the taupe thumb on
+white-100 and a 6px thumb radius. Links keep the surrounding face with a dotted
+underline that solidifies on hover and keyboard focus.
+
 ## Library AI Shelf design passport
 
 - Palette: Library paper and wood neutrals from `src/styles/library/variables.scss`. One accent: `--purple-100` for controls and `--purple-400` for light effects. Book artwork retains its own colors. Placeholder covers use the existing paper gradient.

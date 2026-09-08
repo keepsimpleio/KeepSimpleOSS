@@ -1,3 +1,32 @@
+// The writer's marks, wherever the passage is shown: the panel preview and the
+// dialog read the same. Strong sits at 600 like every other Library passage,
+// links keep the surrounding face with a dotted underline that solidifies on
+// hover and keyboard focus.
+@mixin owner-passage {
+  color: var(--gray-darkest);
+  overflow-wrap: anywhere;
+
+  strong,
+  b {
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 8px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline dotted;
+    overflow-wrap: anywhere;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration-style: solid;
+    }
+  }
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -9,11 +38,13 @@
 // line boundary, and `anywhere` so a single unbroken string wraps into the
 // column instead of running off its right edge.
 .passage {
+  @extend %text-base;
+  @include owner-passage;
+
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--expandable-lines, 8);
   overflow: hidden;
-  overflow-wrap: anywhere;
 }
 
 .showAll {
@@ -57,7 +88,6 @@
   max-height: calc(100dvh - 32px);
 
   .body {
-    color: var(--gray-darkest);
     padding: 32px;
     flex: 1 1 auto;
     // Lets the flex child shrink below its content so the cap scrolls the
@@ -86,9 +116,8 @@
   }
 
   .fullText {
-    // Owner text can hold a link or a long token; both wrap inside the dialog.
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
+    @extend %text-regular;
+    @include owner-passage;
   }
 
   .footer {
