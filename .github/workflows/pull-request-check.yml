@@ -12,15 +12,19 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
+      # Yarn's download cache is keyed on yarn.lock, so a cache hit only
+      # skips the network fetch. Linking and the checks themselves still
+      # run on every pull request.
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '20.19.0'
+          cache: yarn
 
       - name: Install Dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Type Check
         run: yarn tsc --noEmit

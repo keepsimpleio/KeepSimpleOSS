@@ -6,6 +6,13 @@ on:
       - 'main'
       - 'dev'
 
+# One deployment per target at a time, queued in push order. Without this,
+# two merges within one CI window run in parallel and the slower build wins
+# the :prod / :staging tag, so the older commit can be rolled out last.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -47,7 +54,20 @@ jobs:
           if-no-files-found: ignore
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
+
+      # Warm only the dependency stage (base image + yarn install) into the
+      # GitHub Actions cache. This runs before the env files exist and the
+      # target stops at `deps`, so the exported layers never contain .env,
+      # .env.staging, the built bundle or any secret. The full image build
+      # below reads this cache and exports nothing.
+      - name: Warm dependency layer cache
+        run: |
+          docker buildx build \
+            --target deps \
+            --cache-from type=gha,scope=deps \
+            --cache-to type=gha,scope=deps,mode=max \
+            .
 
       - name: 'Login to GitHub Container Registry'
         run: echo ${{secrets.REGISTRY_PASSWORD}} | docker login ${{secrets.REGISTRY_HOST}} --username ${{secrets.REGISTRY_USERNAME}} --password-stdin
@@ -67,11 +87,15 @@ jobs:
       - name: Production Deploy
         if: github.ref == 'refs/heads/main'
         run: |
-          docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod .
-          docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod
+          docker buildx build \
+            --cache-from type=gha,scope=deps \
+            --push \
+            -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:prod .
 
       - name: Staging Deploy
         if: github.ref == 'refs/heads/dev'
         run: |
-          docker build -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging .
-          docker push ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging
+          docker buildx build \
+            --cache-from type=gha,scope=deps \
+            --push \
+            -t ${{ secrets.REGISTRY_HOST }}/keepsimple-next:staging .

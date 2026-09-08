@@ -44,9 +44,13 @@ not been exercised through the actual handler before release.
   about framework input coercion; never claim the entire probe passed if it did not.
 - Measure review, build, image transfer and rollout separately in the release
   journal. Announce milestone changes; keep waiting messages short.
-- Engineering follow-up: cache Docker dependency/build layers and reduce runtime
-  image size. Current CI uses fresh runners and docker build without a registry
-  cache. Check these costs before redesigning deployment.
+- Deploy CI queues one run per branch, warms the dependency stage only into the
+  Actions cache (never the builder or runner stage: both carry .env files) and
+  ships a .dockerignore. Reference prod run before this: cleanup 35s, build
+  5m29s of which yarn install 74s, push 3m22s, registry poll about 6 min.
+  Standalone output and a single promotable image remain separate work; the
+  rollout after an image push is triggered by keepsimple-ctl redeploy, not by
+  waiting for the poll (scripts/release/README.md).
 - Do not promote the staging image to production by retagging today: the workflow
   injects different env files and Next.js embeds NEXT_PUBLIC values at build time.
   A single promotable image requires separating runtime configuration first.
