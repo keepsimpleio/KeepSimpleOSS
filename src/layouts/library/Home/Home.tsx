@@ -238,9 +238,11 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
           <InteractiveCover
             libraries={isControlled ? dataOverride : remoteItems}
             className={styles.image}
-            src="/assets/library/library.png"
-            wideSrc="/assets/library/library-wide.png"
-            ultraWideSrc="/assets/library/library-ultrawide.png"
+            src="/assets/library/library.webp"
+            wideSrc="/assets/library/library-wide.webp"
+            wideSrcSet="/assets/library/library-wide-1920.webp 1920w, /assets/library/library-wide.webp 3840w"
+            ultraWideSrc="/assets/library/library-ultrawide.webp"
+            backgroundSrc="/assets/library/library-ultrawide-blur.webp"
             alt="Keep Simple library cover"
           />
           <Button

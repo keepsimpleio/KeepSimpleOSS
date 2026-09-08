@@ -155,7 +155,9 @@ function Hotspot({
 export function InteractiveCover({
   src,
   wideSrc,
+  wideSrcSet,
   ultraWideSrc,
+  backgroundSrc,
   alt,
   mode = 'hover',
   className,
@@ -213,11 +215,13 @@ export function InteractiveCover({
   return (
     <div ref={frameRef} className={classNames(styles.frame, className)}>
       {/* Blurred fill so the side gaps on viewports wider than the art read as
-          intentional. Decorative — the <picture> below carries the real alt. */}
+          intentional. Decorative — the <picture> below carries the real alt.
+          Uses the small backgroundSrc when given: the full art would otherwise
+          be fetched a second time only to be blurred. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className={styles.background}
-        src={ultraWideSrc ?? wideSrc ?? src}
+        src={backgroundSrc ?? src}
         alt=""
         aria-hidden
         draggable={false}
@@ -227,7 +231,13 @@ export function InteractiveCover({
         {ultraWideSrc && (
           <source media="(min-width: 1920px)" srcSet={ultraWideSrc} />
         )}
-        {wideSrc && <source media="(min-width: 768px)" srcSet={wideSrc} />}
+        {wideSrc && (
+          <source
+            media="(min-width: 768px)"
+            srcSet={wideSrcSet ?? wideSrc}
+            sizes={wideSrcSet ? 'min(100vw, 1920px)' : undefined}
+          />
+        )}
         <img
           className={styles.image}
           src={src}
