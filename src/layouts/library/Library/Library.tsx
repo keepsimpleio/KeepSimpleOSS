@@ -532,6 +532,18 @@ export function LibraryTemplate({
   const lastFavoritesShelf = useRef(favoritesShelf);
   if (favoritesShelf) lastFavoritesShelf.current = favoritesShelf;
 
+  // Favorites stands above the draggable shelf order on the page, so its jump
+  // pill leads the toolbar's row and the reader's first pill matches the first
+  // board they see. It leaves the row on the same condition it leaves the page,
+  // which keeps the toolbar's "on N shelves" count over the searched shelves.
+  const jumpShelves = useMemo(
+    () =>
+      showFavoritesShelf && !hasSearch && favoritesShelf
+        ? [favoritesShelf, ...displayedShelves]
+        : displayedShelves,
+    [showFavoritesShelf, hasSearch, favoritesShelf, displayedShelves],
+  );
+
   const matchedCount = useMemo(() => {
     if (!matchedIdsByShelf) return null;
     let total = 0;
@@ -1055,7 +1067,7 @@ export function LibraryTemplate({
           the load itself so the toolbar never outlives the shelves it acts on. */}
       {!isLoading && shelves.length > 0 && (
         <LibraryToolbar
-          shelves={displayedShelves}
+          shelves={jumpShelves}
           search={search}
           onSearchChange={setSearch}
           matchedCount={matchedCount}

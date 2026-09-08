@@ -195,10 +195,6 @@
       display: none;
     }
 
-    .button {
-      color: var(--brown);
-    }
-
     // Mobile: split the cramped single row into two. Promote `.right`'s children
     // into the header's flex flow (display: contents) so a zero-height full-width
     // break can drop the two action buttons onto their own row:

@@ -221,7 +221,12 @@ export function Sidebar() {
 
   const handleCreateTag = async (formData: CreateTagFormData) => {
     try {
-      if (!accountData?.id) return;
+      // Throw rather than return: the modal reads a quiet resolve as a saved
+      // tag and shows the success card, so a silent bail claimed a tag that
+      // was never created.
+      if (!accountData?.id || !currentLibrary?.id) {
+        throw new Error('No library to create this tag in');
+      }
 
       // Strapi enforces unique slugs; a timestamp suffix keeps two tags whose
       // names normalize to the same string from colliding on write.
@@ -231,6 +236,7 @@ export function Sidebar() {
         description: formData.description,
         color: formData.color,
         user: accountData?.id,
+        library: currentLibrary.id,
         slug,
       };
 

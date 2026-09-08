@@ -72,9 +72,14 @@
     color: var(--brown);
   }
 
+  // Every surface this variant sits on is the library's cream paper, so it
+  // carries the same brown as the toolbar's other text controls. It defaulted
+  // to white and each consumer re-stated the brown, one of them behind an
+  // `!important`; the add-object modal's Go back button missed that override
+  // and its label rendered white on paper.
   &.text {
     background: transparent;
-    color: var(--white);
+    color: var(--brown);
 
     &:hover:not(:disabled) {
       background: var(--white-100);
