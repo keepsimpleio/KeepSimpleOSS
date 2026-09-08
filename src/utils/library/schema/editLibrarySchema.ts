@@ -19,31 +19,49 @@ export const ABOUT_AUTHOR_MAX = 1000;
 const withinLimit = (max: number) => (value?: string) =>
   htmlToPlainText(value ?? '').length <= max;
 
-export const editLibrarySchema = z.object({
-  username: z
-    .string()
-    .min(1, 'Username is required')
-    .regex(
-      USERNAME_REGEX,
-      'Username must be 4-30 characters, no whitespace, and must not contain & % : ; * | > < \\ # ? " =',
-    ),
-  aboutMe: z
-    .string()
-    .refine(
-      withinLimit(ABOUT_AUTHOR_MAX),
-      `About author must be ${ABOUT_AUTHOR_MAX} characters or less`,
-    )
-    .optional(),
-  aboutLibrary: z
-    .string()
-    .refine(
-      withinLimit(ABOUT_LIBRARY_MAX),
-      `About library must be ${ABOUT_LIBRARY_MAX} characters or less`,
-    )
-    .optional(),
-});
+/** What the owner opened the form with, so an untouched passage is exempt. */
+export interface EditLibraryInitialValues {
+  aboutMe?: string;
+  aboutLibrary?: string;
+}
 
-export type EditLibraryFormData = z.infer<typeof editLibrarySchema>;
+// The cap applies to what the owner writes from here on. A passage saved under
+// the old limits stays valid while it is left alone, so a long legacy About
+// cannot block an unrelated edit such as a username change; touching it brings
+// it under the cap.
+export const createEditLibrarySchema = (
+  initial: EditLibraryInitialValues = {},
+) =>
+  z.object({
+    username: z
+      .string()
+      .min(1, 'Username is required')
+      .regex(
+        USERNAME_REGEX,
+        'Username must be 4-30 characters, no whitespace, and must not contain & % : ; * | > < \\ # ? " =',
+      ),
+    aboutMe: z
+      .string()
+      .refine(
+        value =>
+          value === initial.aboutMe || withinLimit(ABOUT_AUTHOR_MAX)(value),
+        `About author must be ${ABOUT_AUTHOR_MAX} characters or less`,
+      )
+      .optional(),
+    aboutLibrary: z
+      .string()
+      .refine(
+        value =>
+          value === initial.aboutLibrary ||
+          withinLimit(ABOUT_LIBRARY_MAX)(value),
+        `About library must be ${ABOUT_LIBRARY_MAX} characters or less`,
+      )
+      .optional(),
+  });
+
+export type EditLibraryFormData = z.infer<
+  ReturnType<typeof createEditLibrarySchema>
+>;
 
 // Avatar constraints — frontend mirrors what docs/library-api.md describes:
 //   max 5 MB enforced server-side; the error message also implies a 10 KB minimum

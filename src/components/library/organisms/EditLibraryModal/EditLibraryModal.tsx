@@ -5,8 +5,8 @@ import {
   AVATAR_ACCEPT_MIME,
   AVATAR_MAX_BYTES,
   AVATAR_MIN_BYTES,
+  createEditLibrarySchema,
   type EditLibraryFormData,
-  editLibrarySchema,
 } from '@utils/library/schema/editLibrarySchema';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -108,6 +108,17 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const canRemovePicture =
     avatarFile !== null || (!avatarRemoved && Boolean(currentAvatarUrl));
 
+  // Built from what the form opened with: a passage the owner does not touch
+  // keeps whatever length it was saved with.
+  const editLibraryResolverSchema = useMemo(
+    () =>
+      createEditLibrarySchema({
+        aboutMe: currentAboutMe,
+        aboutLibrary: currentAboutLibrary,
+      }),
+    [currentAboutMe, currentAboutLibrary],
+  );
+
   const {
     control,
     register,
@@ -115,7 +126,7 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
     watch,
     formState: { errors, isDirty: formDirty },
   } = useForm<EditLibraryFormData>({
-    resolver: zodResolver(editLibrarySchema),
+    resolver: zodResolver(editLibraryResolverSchema),
     defaultValues: {
       username: currentUsername,
       aboutMe: currentAboutMe,

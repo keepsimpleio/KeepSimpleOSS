@@ -53,6 +53,19 @@ const ExpandableText = ({
 
   const html = useMemo(() => toEditorHtml(value), [value]);
 
+  // The clamp box holds inline content only. A legacy value authored in the
+  // CMS arrives wrapped in paragraphs, and block children under a line clamp
+  // are clipped inconsistently across browsers, so the preview reads those
+  // paragraphs as the line breaks they look like. The dialog below renders the
+  // passage exactly as stored.
+  const previewHtml = useMemo(
+    () =>
+      html
+        .replace(/<\/p>\s*<p[^>]*>/gi, '<br /><br />')
+        .replace(/<\/?p[^>]*>/gi, ''),
+    [html],
+  );
+
   const measure = useCallback(() => {
     const passage = passageRef.current;
     if (!passage) return;
@@ -71,7 +84,7 @@ const ExpandableText = ({
     const observer = new ResizeObserver(measure);
     observer.observe(passage);
     return () => observer.disconnect();
-  }, [measure, html]);
+  }, [measure, previewHtml]);
 
   return (
     <div
@@ -81,7 +94,7 @@ const ExpandableText = ({
       <div
         ref={passageRef}
         className={classNames(styles.passage, className)}
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: previewHtml }}
       />
       {clipped && (
         <button
