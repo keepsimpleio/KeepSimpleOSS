@@ -55,6 +55,7 @@
   font-size: 24px;
   line-height: 1.25;
   color: #ffffff;
+  overflow-wrap: anywhere;
 }
 
 .divider {
@@ -82,6 +83,14 @@
   font-size: 16px;
   line-height: 1.5;
   color: #ffffff;
+  // The card sits on the cover art at a fixed width, so the blurb is held to
+  // six lines and a single unbroken string wraps instead of running off the
+  // card and across the artwork. The full text lives in the info panel.
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .objects {
