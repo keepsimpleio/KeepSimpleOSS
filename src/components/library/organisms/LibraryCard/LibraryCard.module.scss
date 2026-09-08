@@ -83,15 +83,6 @@
         border-radius: 0;
         overflow: hidden;
 
-        // One uniform pass over every avatar, so a user's photo can't fight
-        // the sheet: pigments pulled off screen saturation, warmed toward the
-        // paper, contrast eased the way paint sits compared to print.
-        img,
-        svg {
-          filter: sepia(0.75) saturate(0.5) contrast(0.82) brightness(1.16)
-            hue-rotate(-12deg);
-        }
-
         // The paper's own colour laid over the photo, the way a wash tints
         // everything under it.
         &::after {
