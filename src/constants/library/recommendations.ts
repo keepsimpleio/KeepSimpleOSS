@@ -1,6 +1,6 @@
 import type { IRecommendedBook } from '@local-types/library/recommendation';
 
-export const RECOMMENDED_SHELF_NAME = 'AI Shelf';
+export const RECOMMENDED_SHELF_NAME = 'Personalized Recommendations (Private)';
 
 /** Said on the shelf's settings control: the shelf is the owner's alone. */
 export const RECOMMENDED_SHELF_HINT = 'Only you can see this shelf';

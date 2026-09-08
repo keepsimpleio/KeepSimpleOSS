@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { COVER_MAX_BYTES } from '@constants/library/cover';
+
 // The client pulls provider covers through an allowlisted proxy because
 // provider CDNs restrict browser-side downloads.
 const ALLOWED_HOSTS = [
@@ -14,11 +16,9 @@ const ALLOWED_HOSTS = [
   /^img\.youtube\.com$/,
 ];
 
-const MAX_BYTES = 5 * 1024 * 1024; // matches the cover upload limit
-
 // The full-resolution Google scan (zoom=0) is the cover worth having, but it is
 // not always there: some volumes answer it with an error, some rate-limit the
-// image endpoint, and a large scan blows the 5 MB cap. When it fails, the
+// image endpoint, and a large scan blows the 550 KB cap. When it fails, the
 // thumbnail the API actually advertised still beats an empty cover slot.
 function fallbacksFor(raw: string): string[] {
   try {
@@ -87,7 +87,7 @@ async function pull(
     const contentType = upstream.headers.get('content-type') ?? '';
     if (
       !contentType.startsWith('image/') ||
-      Number(upstream.headers.get('content-length')) > MAX_BYTES
+      Number(upstream.headers.get('content-length')) > COVER_MAX_BYTES
     ) {
       await upstream.body?.cancel();
       return null;
@@ -101,7 +101,7 @@ async function pull(
       const { done, value } = await reader.read();
       if (done) break;
       length += value.byteLength;
-      if (length > MAX_BYTES) {
+      if (length > COVER_MAX_BYTES) {
         await reader.cancel();
         return null;
       }

@@ -39,6 +39,7 @@ import styles from './RecommendedShelf.module.scss';
 
 interface RecommendedShelfProps {
   className?: string;
+  readOnly?: boolean;
   pool: IRecommendedBook[];
   collapsed: boolean;
   onCollapsedChange: (collapsed: boolean) => Promise<void>;
@@ -63,6 +64,7 @@ const bookKey = (book: IRecommendedBook) => book.id;
  */
 export default function RecommendedShelf({
   className,
+  readOnly = false,
   pool,
   collapsed,
   onCollapsedChange,
@@ -100,8 +102,8 @@ export default function RecommendedShelf({
 
   useEffect(() => {
     foldRef.current?.toggleAttribute('inert', isCollapsed);
-    actionsRef.current?.toggleAttribute('inert', isCollapsed);
-  }, [isCollapsed]);
+    actionsRef.current?.toggleAttribute('inert', isCollapsed || readOnly);
+  }, [isCollapsed, readOnly]);
 
   const toggleCollapsed = async () => {
     if (savingRef.current) return;
@@ -273,19 +275,20 @@ export default function RecommendedShelf({
 
           <span className={styles.nameWrap}>
             <Text variant={TypographyVariant.TextBase} className={styles.name}>
-              {RECOMMENDED_SHELF_NAME} (VISIBLE ONLY TO YOU)
+              {RECOMMENDED_SHELF_NAME}
             </Text>
           </span>
         </div>
 
         <div
-          className={styles.right}
+          className={cn(styles.right, { [styles.readOnlyActions]: readOnly })}
           ref={actionsRef}
-          aria-hidden={isCollapsed || undefined}
+          aria-hidden={isCollapsed || readOnly || undefined}
         >
           <button
             type="button"
             className={cn(styles.headerButton, styles.regenerate)}
+            disabled={readOnly}
             onClick={regenerate}
             aria-label="Re-generate the open picks on this shelf"
           >
@@ -295,6 +298,7 @@ export default function RecommendedShelf({
           <button
             type="button"
             className={cn(styles.headerButton, styles.bannedButton)}
+            disabled={readOnly}
             onClick={() => setBannedOpen(true)}
             aria-label={`Banned books, ${bannedBooks.length}`}
           >
@@ -373,6 +377,7 @@ export default function RecommendedShelf({
                   >
                     <RecommendedBookCard
                       book={book}
+                      readOnly={readOnly}
                       locked={locked.has(book.id)}
                       banned={banned.has(book.id)}
                       onToggleLock={toggleLock}
@@ -389,7 +394,7 @@ export default function RecommendedShelf({
         </div>
       </div>
 
-      {bannedOpen && (
+      {!readOnly && bannedOpen && (
         <Modal
           className={styles.bannedModal}
           title="Banned books"

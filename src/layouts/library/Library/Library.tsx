@@ -44,7 +44,7 @@ import type {
 } from '@local-types/library/shelf';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
-import useIsMobile from '@hooks/library/useIsMobile';
+import useLibraryEditing from '@hooks/library/useLibraryEditing';
 import { usePresence } from '@hooks/library/usePresence';
 
 import {
@@ -234,15 +234,15 @@ export function LibraryTemplate({
   // sees it. Owner-only data logic (library bootstrap, create-permission gating)
   // still keys off the real `isOwner`; everything user-facing — edit/add UI and
   // private-shelf visibility — keys off this so the preview is faithful.
-  const viewAsOwner = isOwner && !isGuestMode;
+  const supportsEditing = useLibraryEditing();
+  const viewAsOwner = isOwner && (!isGuestMode || !supportsEditing);
 
   // A phone is a reading surface. Every control that changes the library —
   // add shelf, add object, rename, reorder, settings, edit, delete — stays on
   // desktop; here the owner sees their library exactly as they left it, private
   // shelves included (`viewAsOwner` still governs those). False on the server
   // and on first paint, so the markup hydrates identically everywhere.
-  const isMobile = useIsMobile(768);
-  const canEditHere = viewAsOwner && !isMobile;
+  const canEditHere = viewAsOwner && supportsEditing;
 
   // Creating a library is gated by the `can-create-library` feature flag from
   // GET /api/users/me. The gate only matters before a library exists — once one
@@ -488,7 +488,7 @@ export function LibraryTemplate({
   // results predictable. Shelves with no match drop out so results stay dense.
   //
   // The shelves themselves are never rewritten: each keeps its full object
-  // list (so counts, the 21-object cap, reorder payloads and the open object
+  // list (so counts, the shelf capacity, reorder payloads and the open object
   // all read the real shelf) and carries a set of matching ids that only
   // decides which cards are drawn.
   // The box answers to what people actually type: extra spaces, wrong case,
@@ -1044,6 +1044,7 @@ export function LibraryTemplate({
 
   return (
     <div
+      data-library-mode-surface
       className={classNames(styles.wrapper, {
         [styles.withShareBar]: showSharePanel,
       })}
@@ -1126,7 +1127,7 @@ export function LibraryTemplate({
             variant={TypographyVariant.TitleSecondaryBold}
             className={styles.text}
           >
-            {viewAsOwner
+            {canEditHere
               ? 'Begin your journey by adding your first shelf'
               : 'This library is empty'}
           </Text>
@@ -1161,9 +1162,10 @@ export function LibraryTemplate({
         </div>
       ) : (
         <>
-          {canEditHere && !hasSearch && library && (
+          {viewAsOwner && !hasSearch && library && (
             <RecommendedShelf
               key={library.id}
+              readOnly={!canEditHere}
               pool={RECOMMENDED_SEED}
               collapsed={library.attributes.aiShelfCollapsed === true}
               onCollapsedChange={async collapsed => {
@@ -1282,7 +1284,7 @@ export function LibraryTemplate({
         </div>
       )}
 
-      {isOpen && (
+      {canEditHere && isOpen && (
         <AddShelfModal
           onClose={modalToggler}
           onAddShelf={handleCreateShelf}
