@@ -103,6 +103,11 @@
 
       .info {
         width: 100%;
+        // A flex item will not shrink below the widest unbreakable thing
+        // inside it unless it is told it may. Without this an About written
+        // as one long run of characters pushed this column, and with it the
+        // card's content, out past the card's own edge.
+        min-width: 0;
 
         .section {
           padding: 12px;
@@ -132,6 +137,9 @@
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 3;
           overflow: hidden;
+          // The clamp cuts height, never width: a single unbroken run of
+          // characters has to be allowed to break or it just keeps going.
+          overflow-wrap: anywhere;
           line-height: 22px;
           min-height: 66px;
 
