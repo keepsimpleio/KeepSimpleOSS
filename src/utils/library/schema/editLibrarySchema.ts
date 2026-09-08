@@ -28,7 +28,12 @@ export interface EditLibraryInitialValues {
 // The cap applies to what the owner writes from here on. A passage saved under
 // the old limits stays valid while it is left alone, so a long legacy About
 // cannot block an unrelated edit such as a username change; touching it brings
-// it under the cap.
+// it under the cap. "Left alone" is judged on the writing: the editor rewrites
+// legacy paragraph markup into line breaks on focus alone, and that costs the
+// owner nothing, so it must not count as an edit.
+const sameWriting = (value?: string, initial?: string) =>
+  initial !== undefined &&
+  htmlToPlainText(value ?? '') === htmlToPlainText(initial);
 export const createEditLibrarySchema = (
   initial: EditLibraryInitialValues = {},
 ) =>
@@ -44,7 +49,8 @@ export const createEditLibrarySchema = (
       .string()
       .refine(
         value =>
-          value === initial.aboutMe || withinLimit(ABOUT_AUTHOR_MAX)(value),
+          sameWriting(value, initial.aboutMe) ||
+          withinLimit(ABOUT_AUTHOR_MAX)(value),
         `About author must be ${ABOUT_AUTHOR_MAX} characters or less`,
       )
       .optional(),
@@ -52,7 +58,7 @@ export const createEditLibrarySchema = (
       .string()
       .refine(
         value =>
-          value === initial.aboutLibrary ||
+          sameWriting(value, initial.aboutLibrary) ||
           withinLimit(ABOUT_LIBRARY_MAX)(value),
         `About library must be ${ABOUT_LIBRARY_MAX} characters or less`,
       )

@@ -118,6 +118,17 @@ function check() {
     !keeping.safeParse({ username: 'Wolf', aboutLibrary: legacy + 'b' })
       .success,
   );
+  // The editor rewrites legacy paragraphs into line breaks on focus alone;
+  // same writing, so the passage still counts as untouched.
+  const blocks = createEditLibrarySchema({
+    aboutLibrary: `<p>${legacy}</p><p>${legacy}</p>`,
+  });
+  assert(
+    blocks.safeParse({
+      username: 'Wolf',
+      aboutLibrary: `${legacy}<br />${legacy}`,
+    }).success,
+  );
   const cms =
     'docs/library-ai-shelf-cms/src/extensions/users-permissions/validators/userValidators.js';
   if (fs.existsSync(cms)) {
