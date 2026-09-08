@@ -36,10 +36,11 @@ pulls the same tag immediately. Both actors recreate the same container, so a
 Watchtower rollout shortly after the manual one is expected and harmless, but
 never start a second manual rollout while one is running.
 
-The deploy workflow queues runs per branch, warms only the dependency layer into
-the Actions cache and reads it during the image build. Step durations for
-cleanup, cache warm, build and push are in the Actions run log; record them in
-the release journal separately, as the release lessons require.
+The deploy workflow queues runs per branch and uses no Docker layer cache:
+restoring the dependency layer from the Actions cache measured slower than a
+fresh install (184s against 74s on 2026-09-08). Step durations for cleanup,
+build and push are in the Actions run log; record them in the release journal
+separately, as the release lessons require.
 
 Inspect existing rollout before redeploy. Run one deployment operation at a time. A successful CI push or wrapper exit does not prove the live image. Match frontend live BUILD_ID, running image digest and successful CI SHA with `keepsimple-ctl verify SHA`. Match CMS running digest to CMS CI output and check schema/API. Never use frontend verify as proof of CMS deployment.
 
