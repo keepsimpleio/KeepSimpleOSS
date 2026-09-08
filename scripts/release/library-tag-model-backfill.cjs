@@ -107,10 +107,14 @@ SELECT old.tag_id,
        COALESCE(old.tag_order, 1),
        row_number() OVER (PARTITION BY old.tag_id ORDER BY old.object_id)
 FROM tags_object_links old
-WHERE NOT EXISTS (
-  SELECT 1 FROM tags_objects_links n
-  WHERE n.tag_id = old.tag_id AND n.object_id = old.object_id
-);
+JOIN objects o ON o.id = old.object_id
+-- Tags label books. Any older link to a video or an audio is left behind
+-- rather than carried into a model that has no place to draw it.
+WHERE o.type = 'book'
+  AND NOT EXISTS (
+    SELECT 1 FROM tags_objects_links n
+    WHERE n.tag_id = old.tag_id AND n.object_id = old.object_id
+  );
 
 UPDATE tags_objects_links n
 SET object_order = ranked.position
