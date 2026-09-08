@@ -57,7 +57,39 @@ module.exports = withBundleAnalyzer({
       .filter(Boolean)
       .join(' ');
 
+    // Files under public/ ship with Next's default `max-age=0`, so every visit
+    // revalidated each font and image and Cloudflare could not keep them at
+    // the edge. Fonts never change in place, and images are replaced under a
+    // new file name (see AGENTS.md, "Static asset caching"), so both can live
+    // in caches for long. Both spellings of each path are listed because
+    // headers match the request path before the /keepsimple_ rewrite runs.
+    // Development keeps the default so edits show up on the DEV preview.
+    const oneYear = 'public, max-age=31536000, immutable';
+    const thirtyDays = 'public, max-age=2592000, stale-while-revalidate=86400';
+    const cacheHeaders = isDev
+      ? []
+      : [
+          ...[
+            '/fonts/:path*',
+            '/keepsimple_/fonts/:path*',
+            '/uxcore_/fonts/:path*',
+          ].map(source => ({
+            source,
+            headers: [{ key: 'Cache-Control', value: oneYear }],
+          })),
+          ...[
+            '/assets/:path*',
+            '/keepsimple_/assets/:path*',
+            '/uxcore_/assets/:path*',
+            '/library/images/:path*',
+          ].map(source => ({
+            source,
+            headers: [{ key: 'Cache-Control', value: thirtyDays }],
+          })),
+        ];
+
     return [
+      ...cacheHeaders,
       {
         source: '/:path*',
         headers: [

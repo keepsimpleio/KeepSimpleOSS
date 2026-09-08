@@ -44,7 +44,10 @@ const perPage = 6;
 
 const libraryKey = (lib: HomeLibraryCardView) => String(lib.id);
 
-export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
+export function HomeTemplate({
+  data: dataOverride,
+  initialItems,
+}: HomeTemplateProps) {
   const router = useRouter();
   const { accountData } = useAuth();
 
@@ -89,8 +92,10 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [remoteItems, setRemoteItems] = useState<HomeLibraryCardView[]>([]);
-  const [isLoading, setIsLoading] = useState(!dataOverride);
+  const [remoteItems, setRemoteItems] = useState<HomeLibraryCardView[]>(
+    initialItems ?? [],
+  );
+  const [isLoading, setIsLoading] = useState(!dataOverride && !initialItems);
 
   const isControlled = dataOverride !== undefined;
 
@@ -108,15 +113,26 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
   // Invite-only product: the whole set fits one request (100 is Strapi's
   // pageSize ceiling), so fetch once and run search, sort and pagination
   // client-side. Revisit if libraries ever outgrow one page.
+  //
+  // The static HTML already carries the anonymous list (initialItems), so
+  // only a signed-in account refetches: its token may reveal libraries the
+  // anonymous query does not. The refetch replaces the grid in place, without
+  // the loader, so a matching result changes nothing on screen.
+  const accountId = accountData?.id;
   useEffect(() => {
     if (isControlled) {
+      return;
+    }
+    if (initialItems && !accountId) {
       return;
     }
 
     let cancelled = false;
 
     const load = async () => {
-      setIsLoading(true);
+      if (!initialItems) {
+        setIsLoading(true);
+      }
       const response = await getLibrariesPaginated(1, 100, '');
       if (cancelled) {
         return;
@@ -133,7 +149,7 @@ export function HomeTemplate({ data: dataOverride }: HomeTemplateProps) {
     return () => {
       cancelled = true;
     };
-  }, [isControlled]);
+  }, [isControlled, initialItems, accountId]);
 
   const { totalPages, currentLibraries } = useMemo(() => {
     const all = isControlled ? (dataOverride ?? []) : remoteItems;
