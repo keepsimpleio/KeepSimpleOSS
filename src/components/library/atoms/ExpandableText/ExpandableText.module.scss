@@ -2,39 +2,21 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  // The fold changes height on purpose; nothing beside it may be dragged along.
   min-width: 0;
 }
 
+// The visible part of the passage. Clamped by line count so the cut lands on a
+// line boundary, and `anywhere` so a single unbroken string wraps into the
+// column instead of running off its right edge.
 .passage {
-  position: relative;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--expandable-lines, 8);
   overflow: hidden;
-  // Same fold as the AI Shelf: measured height, one eased move.
-  transition: max-height 0.32s cubic-bezier(0.2, 0, 0, 1);
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
+  overflow-wrap: anywhere;
 }
 
-// Folded, the last visible line fades into the sheet so the passage reads as
-// continuing rather than as ending mid-sentence.
-.folded::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 24px;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 252, 247, 0),
-    var(--white-200)
-  );
-}
-
-.toggle {
+.showAll {
   align-self: flex-start;
   padding: 0;
   border: none;
@@ -59,8 +41,66 @@
     transition: none;
   }
 
-  // Phones and tablets read the panel; the fold control keeps a 44px target.
+  // Phones and tablets read the panel; the control keeps a 44px touch target.
   @media (max-width: 1024px) {
     min-height: 44px;
+  }
+}
+
+.modal {
+  max-width: 518px !important;
+  // One passage and a Close button: cap the dialog to the viewport and scroll
+  // the text within it, so Close stays reachable on a phone.
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+
+  .body {
+    color: var(--gray-darkest);
+    padding: 32px;
+    flex: 1 1 auto;
+    // Lets the flex child shrink below its content so the cap scrolls the
+    // passage instead of clipping it.
+    min-height: 0;
+    overflow-y: auto;
+    border: 0 solid var(--brown-border);
+    border-bottom-width: 1px;
+
+    // Panel scrollbar language: 12px track on white-100, taupe thumb, 6px radius.
+    scrollbar-width: thin;
+    scrollbar-color: var(--taupe) var(--white-100);
+
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--white-100);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--taupe);
+      border-radius: 6px;
+    }
+  }
+
+  .fullText {
+    // Owner text can hold a link or a long token; both wrap inside the dialog.
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .footer {
+    // Never give up height to the scrolling body.
+    flex-shrink: 0;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .close {
+      max-width: 70px;
+    }
   }
 }

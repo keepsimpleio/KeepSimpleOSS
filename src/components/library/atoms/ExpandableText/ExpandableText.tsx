@@ -1,96 +1,107 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Text } from '@components/library/atoms/Text';
+import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+} from '@components/library/molecules/Button';
+import { Modal, useModalClose } from '@components/library/molecules/Modal';
 
 import styles from './ExpandableText.module.scss';
 
 interface ExpandableTextProps {
   text: string;
-  /** Lines kept on the sheet while the passage is folded. */
+  /** Heading the passage carries when it opens in full. */
+  title: string;
+  /** Lines kept on the sheet; the rest opens in the dialog. */
   lines?: number;
   className?: string;
   /** Names the passage in the control, e.g. "author biography". */
   subject: string;
 }
 
-// Free text the owner writes has no length limit, so a long passage used to
-// push the panel's remaining sections past the bottom of the sticky column.
-// The passage folds to a measured number of lines instead: line height comes
-// from the rendered paragraph, never from a hardcoded pixel cap, so a locale
-// or font change cannot cut a line in half.
+// Owner-written passages have no length limit, so a long one filled the info
+// panel and pushed Content, Author, Tags and the library link past the bottom
+// of the column. The panel keeps the opening lines and hands the whole text to
+// a dialog. The cap is a line count, not a pixel height, so a longer line or a
+// different locale still cuts on a line boundary.
 const ExpandableText = ({
   text,
-  lines = 6,
+  title,
+  lines = 8,
   className,
   subject,
 }: ExpandableTextProps) => {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [expanded, setExpanded] = useState(false);
-  const [foldedHeight, setFoldedHeight] = useState<number | null>(null);
-  const [fullHeight, setFullHeight] = useState<number | null>(null);
-  const passageId = useId();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [clipped, setClipped] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { closeRef, close } = useModalClose(() => setIsOpen(false));
 
   const measure = useCallback(() => {
-    const node = contentRef.current;
-    if (!node) return;
-
-    const { lineHeight, fontSize } = window.getComputedStyle(node);
-    const parsedLineHeight = parseFloat(lineHeight);
-    // `normal` computes to a keyword rather than a length; 1.5 matches the
-    // panel's body copy and only ever acts as the fallback.
-    const step = Number.isNaN(parsedLineHeight)
-      ? parseFloat(fontSize) * 1.5
-      : parsedLineHeight;
-
-    setFoldedHeight(step * lines);
-    setFullHeight(node.scrollHeight);
-  }, [lines]);
+    const passage = wrapperRef.current?.firstElementChild;
+    if (!passage) return;
+    setClipped(passage.scrollHeight - passage.clientHeight > 1);
+  }, []);
 
   useEffect(() => {
-    const node = contentRef.current;
-    if (!node) return undefined;
+    const passage = wrapperRef.current?.firstElementChild;
+    if (!passage) return undefined;
 
     measure();
 
     if (typeof ResizeObserver === 'undefined') return undefined;
+    // The column narrows on the panel fold and on every viewport change, and
+    // the same text takes more lines when it does.
     const observer = new ResizeObserver(measure);
-    observer.observe(node);
+    observer.observe(passage);
     return () => observer.disconnect();
   }, [measure, text]);
 
-  // Before the first measurement the passage renders whole: an unmeasured fold
-  // would flash a clipped paragraph on load.
-  const measured = foldedHeight !== null && fullHeight !== null;
-  const overflows = measured && fullHeight > foldedHeight + 1;
-  const folded = overflows && !expanded;
-
   return (
-    <div className={styles.wrapper}>
-      <div
-        id={passageId}
-        className={classNames(styles.passage, { [styles.folded]: folded })}
-        style={
-          measured
-            ? { maxHeight: `${folded ? foldedHeight : fullHeight}px` }
-            : undefined
-        }
-      >
-        <div ref={contentRef}>
-          <Text className={className}>{text}</Text>
-        </div>
-      </div>
-      {overflows && (
+    <div
+      className={styles.wrapper}
+      ref={wrapperRef}
+      style={{ '--expandable-lines': lines } as React.CSSProperties}
+    >
+      <Text className={classNames(styles.passage, className)}>{text}</Text>
+      {clipped && (
         <button
           type="button"
-          className={styles.toggle}
-          onClick={() => setExpanded(current => !current)}
-          aria-expanded={expanded}
-          aria-controls={passageId}
-          aria-label={`${expanded ? 'Show less of the' : 'Show the full'} ${subject}`}
+          className={styles.showAll}
+          onClick={() => setIsOpen(true)}
+          aria-label={`Show the full ${subject}`}
         >
-          {expanded ? 'Show less' : 'Show more'}
+          Show all
         </button>
+      )}
+      {isOpen && (
+        <Modal
+          className={styles.modal}
+          title={title}
+          onClose={() => setIsOpen(false)}
+          closeRef={closeRef}
+        >
+          <div className={styles.body}>
+            <Text
+              className={styles.fullText}
+              variant={TypographyVariant.TextRegular}
+            >
+              {text}
+            </Text>
+          </div>
+          <div className={styles.footer}>
+            <Button
+              label="Close"
+              onClick={close}
+              type={ButtonType.Primary}
+              size={ButtonSize.Wide}
+              ariaLabel="Close"
+              className={styles.close}
+            />
+          </div>
+        </Modal>
       )}
     </div>
   );

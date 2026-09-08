@@ -394,6 +394,7 @@ export function Sidebar() {
                 {aboutLibraryText ? (
                   <ExpandableText
                     text={aboutLibraryText}
+                    title="About"
                     className={styles.label}
                     subject="library description"
                   />
@@ -454,6 +455,7 @@ export function Sidebar() {
               </div>
               <ExpandableText
                 text={aboutAuthorText}
+                title="Author"
                 className={styles.text}
                 subject="author biography"
               />
