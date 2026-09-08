@@ -182,20 +182,6 @@
       }
     }
   }
-
-  .curtains {
-    transform: translateY(0);
-    position: absolute;
-    will-change: transform, opacity;
-    transition:
-      transform 300ms ease,
-      opacity 300ms ease;
-    z-index: 55;
-  }
-
-  .curtainsOpen {
-    transform: translateY(100%);
-  }
 }
 
 .subUl {
@@ -223,7 +209,6 @@
   }
 
   .subNav {
-    .curtains,
     .subLink,
     .subLink svg path {
       transition: none !important;

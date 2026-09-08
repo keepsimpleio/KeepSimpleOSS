@@ -3,7 +3,7 @@
  * the artwork as it scales responsively without runtime measurement.
  *
  * Hotspots only render at 768px+, where the cover shows the wide
- * `library-wide.png` (3840x1704). All numbers below are authored directly
+ * `library-wide.webp` (3840x1704). All numbers below are authored directly
  * against that wide frame: left/top is the box's top-left corner as a percent
  * of the frame, width is a percent of the frame width, height a percent of the
  * frame height.
@@ -32,10 +32,10 @@ interface HotspotGeometry {
 
 export interface CoverHotspot {
   id: string;
-  /** Geometry for the wide `library-wide.png` cover, used at 768–1920px. */
+  /** Geometry for the wide `library-wide.webp` cover, used at 768–1920px. */
   wide: HotspotGeometry;
   /**
-   * Geometry for the `library-ultrawide.png` panorama (4000x852), used at 1920px+.
+   * Geometry for the `library-ultrawide.webp` panorama (4000x852), used at 1920px+.
    * Derived from `wide` (see `toUltraWide`), with optional per-hotspot tweaks.
    */
   ultraWide: HotspotGeometry;

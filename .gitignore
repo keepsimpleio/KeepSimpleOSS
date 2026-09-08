@@ -188,3 +188,6 @@ docker-compose.override.yml
 
 # Local share-card approval drafts and provenance.
 /scripts/release/previews/
+
+# Run trail of the web font generator (kept on purpose, one line per run)
+!scripts/fonts/journal.log

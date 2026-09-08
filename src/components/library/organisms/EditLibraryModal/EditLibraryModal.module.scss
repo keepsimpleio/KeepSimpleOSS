@@ -66,8 +66,11 @@
   color: var(--gray-darkest);
 }
 
-.counter {
-  color: var(--gray-medium);
+// The rich-text fields carry their own label and mark buttons, so the count
+// sits under the box, right-aligned, in the row the label used to share.
+.counterRow {
+  display: flex;
+  justify-content: flex-end;
 }
 
 // Fixed-height slot so showing/hiding an error doesn't reflow the modal.
@@ -77,10 +80,6 @@
   line-height: 18px;
   font-size: 12px;
   color: var(--red-600);
-}
-
-.textarea {
-  font-size: 16px;
 }
 
 .actions {

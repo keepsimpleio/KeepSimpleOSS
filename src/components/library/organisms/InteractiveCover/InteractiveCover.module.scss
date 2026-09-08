@@ -1,11 +1,11 @@
 // Two regimes meet at 1920px.
 //
-// 768–1920px: the previous wide art (library-wide.png, 3840x1704) in the
+// 768–1920px: the previous wide art (library-wide.webp, 3840x1704) in the
 // original resizable band — the whole band keeps the art's 2.25:1 aspect and
 // scales with the viewport (width fills, height shrinks), capping at its
 // natural 1920x852 at 1920px. The full art always shows, never cropped.
 //
-// 1920px and up: the 4000x852 panorama (library-ultrawide.png) in a fixed 852px
+// 1920px and up: the 4000x852 panorama (library-ultrawide.webp) in a fixed 852px
 // band, shown at full height and centered, so the frame clips it left/right
 // only (never top/bottom). Below 4000px the sides crop inward; at 4000px+ the
 // whole panorama is visible and the blurred .background fills any side gap.
@@ -13,7 +13,7 @@
 // .image and .layer share the same box in each regime, so the percentage
 // hotspot coordinates in coverHotspots.ts track whichever art is shown.
 //
-// Mobile (<768px) shows the taller 3:2 library.png.
+// Mobile (<768px) shows the taller 3:2 library.webp.
 $cover-height: 852px;
 $cover-max-width: 1920px;
 $cover-aspect-wide: calc(3840 / 1704);
