@@ -421,6 +421,12 @@
   }
 }
 
+// The explanation tooltip only exists while its control is off, the same
+// guard the shelves and the library toolbar carry.
+.tooltipOff :global(.react-tooltip) {
+  display: none;
+}
+
 @keyframes backdrop-in {
   from {
     opacity: 0;

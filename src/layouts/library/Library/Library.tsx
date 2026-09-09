@@ -37,7 +37,11 @@ import type {
   StrapiLibraryEntry,
   StrapiSingleShelfEntry,
 } from '@local-types/library/library';
-import type { IObject, ObjectType } from '@local-types/library/object';
+import type {
+  IObject,
+  IReorderObjectEntry,
+  ObjectType,
+} from '@local-types/library/object';
 import type {
   IReorderShelfEntry,
   ShelfVisibility,
@@ -61,6 +65,7 @@ import {
   matchesSearchTerms,
   tokenizeQuery,
 } from '@lib/library/searchMatch';
+import { applyDragToSequence, gatherTagShelf } from '@lib/library/tagShelf';
 
 import { createLibrary } from '@api/library/createLibrary';
 import { getLibraryIdByUsername } from '@api/library/getLibraryIdByUsername';
@@ -70,12 +75,14 @@ import {
 } from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
 import { reorderShelves } from '@api/library/shelf/reorderShelves';
+import { reorderTag } from '@api/library/tag/reorderTag';
 import { updateAiShelfCollapsed } from '@api/library/updateAiShelfCollapsed';
 import { updateLibrary } from '@api/library/updateLibrary';
 
 import { PlusIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { useShareSelection } from '@components/Context/library/ShareSelectionContext';
 import { Loader } from '@components/library/atoms/Loader';
@@ -187,6 +194,13 @@ export function LibraryTemplate({
     setIsCreateBlocked,
     setIsOwner,
   } = useGlobalState();
+  const {
+    libraryTags,
+    setLibraryTags,
+    refreshLibraryTags,
+    activeTagId,
+    setActiveTagId,
+  } = useDashboard();
   const {
     selectedObjects,
     limitReached,
@@ -532,14 +546,180 @@ export function LibraryTemplate({
   const lastFavoritesShelf = useRef(favoritesShelf);
   if (favoritesShelf) lastFavoritesShelf.current = favoritesShelf;
 
+  // Favorites stands above the draggable shelf order on the page, so its jump
+  // pill leads the toolbar's row and the reader's first pill matches the first
+  // board they see. It leaves the row on the same condition it leaves the page,
+  // which keeps the toolbar's "on N shelves" count over the searched shelves.
+  const jumpShelves = useMemo(
+    () =>
+      showFavoritesShelf && !hasSearch && favoritesShelf
+        ? [favoritesShelf, ...displayedShelves]
+        : displayedShelves,
+    [showFavoritesShelf, hasSearch, favoritesShelf, displayedShelves],
+  );
+
+  // ---- The tag filter -------------------------------------------------
+  //
+  // One tag at a time. While it stands, every shelf steps aside, the AI shelf
+  // and Favorites with them, and the books that tag labels are gathered into a
+  // single row, in the tag's own order.
+
+  const activeTag = useMemo(
+    () => libraryTags.find(tag => tag.id === activeTagId) ?? null,
+    [libraryTags, activeTagId],
+  );
+
+  // The page crossfades between the shelves and the gathered row: the content
+  // on screen is swapped at the trough of the fade, so nothing is ever seen
+  // half-replaced. Same 200ms ease the guest preview switches with.
+  const [renderedTagId, setRenderedTagId] = useState<number | null>(
+    activeTagId,
+  );
+  const [tagFading, setTagFading] = useState(false);
+  useEffect(() => {
+    if (activeTagId === renderedTagId) return;
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      setRenderedTagId(activeTagId);
+      return;
+    }
+    setTagFading(true);
+    const swap = window.setTimeout(() => {
+      setRenderedTagId(activeTagId);
+      setTagFading(false);
+    }, 200);
+    return () => window.clearTimeout(swap);
+  }, [activeTagId, renderedTagId]);
+
+  const renderedTag = useMemo(
+    () => libraryTags.find(tag => tag.id === renderedTagId) ?? null,
+    [libraryTags, renderedTagId],
+  );
+
+  const gathered = useMemo(
+    () => (renderedTag ? gatherTagShelf(renderedTag, shelves) : null),
+    [renderedTag, shelves],
+  );
+
+  // The address a link arrived with, and whether it has been answered yet.
+  // Reading it comes first: the writer below would otherwise clear an incoming
+  // `#deep-work` on the first paint, before the tags it names have loaded.
+  const addressRead = useRef(false);
+  const hashApplied = useRef<string | null>(null);
+
+  // The address is read back the moment the tags are known, so a link opens
+  // straight into the filtered view. A tag that no longer exists, or that
+  // labels nothing this viewer can open, simply leaves the library unfiltered.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const apply = () => {
+      const raw = window.location.hash.replace(/^#/, '');
+      if (!raw) {
+        addressRead.current = true;
+        return;
+      }
+      // The list decides what the address means, so nothing is answered until
+      // it has arrived.
+      if (libraryTags.length === 0) return;
+      const slug = decodeURIComponent(raw).toLowerCase();
+      addressRead.current = true;
+      if (hashApplied.current === slug) return;
+      hashApplied.current = slug;
+      const tag = libraryTags.find(t => t.slug?.toLowerCase() === slug);
+      // A tag labelling nothing is not a filter here either: the panel gives
+      // it no click, and a link to it opens the library as it stands.
+      setActiveTagId(tag && tag.objects.length > 0 ? tag.id : null);
+    };
+    apply();
+    window.addEventListener('hashchange', apply);
+    return () => window.removeEventListener('hashchange', apply);
+  }, [libraryTags, setActiveTagId]);
+
+  // A filtered library is a linkable one: the tag's own address rides on the
+  // library URL as `#deep-work`. Written with the History API rather than the
+  // router so the page is not re-rendered for a fragment, and re-applied after
+  // a navigation (opening an object pushes a path of its own).
+  useEffect(() => {
+    if (typeof window === 'undefined' || !addressRead.current) return;
+    const wanted = activeTag ? `#${encodeURIComponent(activeTag.slug)}` : '';
+    if (window.location.hash === wanted) return;
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${window.location.search}${wanted}`,
+    );
+  }, [activeTag, libraryTags, router.asPath]);
+
+  // Search runs inside the active tag: typing narrows the gathered row and
+  // never clears the filter.
+  const tagMatchedIds = useMemo(() => {
+    if (!gathered || !hasSearch) return null;
+    const matched = new Set<number>();
+    for (const o of gathered.shelf.attributes.objects?.data ?? []) {
+      const { title, author, tags } = o.attributes;
+      const haystack = buildSearchHaystack([
+        title,
+        author,
+        ...(tags?.data ?? []).map(t => t.attributes.name),
+      ]);
+      if (matchesSearchTerms(haystack, searchTerms)) matched.add(o.id);
+    }
+    return matched;
+  }, [gathered, hasSearch, searchTerms]);
+
+  // Everything standing on one shelf, and the shelf a book stands on: the
+  // gathered row is not a shelf, so an edit made from it lands on the book's
+  // own shelf through these.
+  const objectsOfShelf = useCallback(
+    (shelfId: number) =>
+      shelvesRef.current.find(s => s.id === shelfId)?.attributes.objects
+        ?.data ?? [],
+    [],
+  );
+
+  // A drag in the gathered row saves the tag's sequence, never a shelf's. The
+  // whole sequence is sent, so books this viewer cannot see keep their places.
+  const handleTagOrder = useCallback(
+    async (ordered: IReorderObjectEntry[]) => {
+      const tag = renderedTag;
+      if (!tag) return;
+      const previous = tag.objects;
+      const next = applyDragToSequence(
+        previous,
+        ordered.map(o => o.id),
+      );
+      const stamp = (objects: number[]) =>
+        setLibraryTags(current =>
+          current.map(t => (t.id === tag.id ? { ...t, objects } : t)),
+        );
+
+      stamp(next);
+      try {
+        await reorderTag({
+          tagId: tag.id,
+          objects: next.map((id, index) => ({ id, order: index })),
+        });
+      } catch (error) {
+        stamp(previous);
+        throw error;
+      }
+    },
+    [renderedTag, setLibraryTags],
+  );
+
   const matchedCount = useMemo(() => {
+    // While a tag stands, the count is of what it holds: the search runs
+    // inside the filter, not across the library behind it.
+    if (gathered) return tagMatchedIds ? tagMatchedIds.size : null;
     if (!matchedIdsByShelf) return null;
     let total = 0;
     matchedIdsByShelf.forEach(ids => {
       total += ids.size;
     });
     return total;
-  }, [matchedIdsByShelf]);
+  }, [gathered, tagMatchedIds, matchedIdsByShelf]);
 
   // A deep link to an object that no visible shelf holds (deleted, on a
   // private shelf, or from another library) used to open nothing and leave
@@ -636,8 +816,11 @@ export function LibraryTemplate({
   const handleObjectCreated = useCallback(
     (shelfId: number, created: IObject) => {
       mutateShelfObjects(shelfId, objects => [...objects, created]);
+      // A new book may arrive already labelled, and it lands at the end of
+      // every tag it carries.
+      void refreshLibraryTags();
     },
-    [mutateShelfObjects],
+    [mutateShelfObjects, refreshLibraryTags],
   );
 
   // Every mutation also reaches the share selection: it stores whole object
@@ -653,8 +836,11 @@ export function LibraryTemplate({
         ),
       );
       replaceSelection(updated);
+      // The tag set may have changed with the edit, and with it which rows
+      // this book stands in.
+      void refreshLibraryTags();
     },
-    [mutateShelfObjects, replaceSelection],
+    [mutateShelfObjects, replaceSelection, refreshLibraryTags],
   );
 
   const handleObjectDeleted = useCallback(
@@ -663,8 +849,10 @@ export function LibraryTemplate({
         objects.filter(o => o.id !== objectId),
       );
       removeSelection(objectId);
+      // The book leaves every tag it carried with it.
+      void refreshLibraryTags();
     },
-    [mutateShelfObjects, removeSelection],
+    [mutateShelfObjects, removeSelection, refreshLibraryTags],
   );
 
   // The shelf's privacy switch lands on the library tree, where the visitor
@@ -1055,7 +1243,7 @@ export function LibraryTemplate({
           the load itself so the toolbar never outlives the shelves it acts on. */}
       {!isLoading && shelves.length > 0 && (
         <LibraryToolbar
-          shelves={displayedShelves}
+          shelves={gathered ? [gathered.shelf] : jumpShelves}
           search={search}
           onSearchChange={setSearch}
           matchedCount={matchedCount}
@@ -1143,6 +1331,49 @@ export function LibraryTemplate({
             />
           )}
         </div>
+      ) : gathered ? (
+        <div
+          className={classNames(styles.filterSwap, {
+            [styles.filterSwapOut]: tagFading,
+          })}
+        >
+          {hasSearch && tagMatchedIds && tagMatchedIds.size === 0 ? (
+            <div className={styles.empty}>
+              <Text
+                variant={TypographyVariant.TitleSecondaryBold}
+                className={styles.text}
+              >
+                Nothing in “{gathered.shelf.attributes.name}” matches “
+                {search.trim()}”
+              </Text>
+              <Button
+                label="Clear search"
+                onClick={() => setSearch('')}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Wide}
+                ariaLabel="Clear search"
+                className={styles.button}
+              />
+            </div>
+          ) : (
+            <Shelf
+              tagFilter
+              title={gathered.shelf.attributes.name}
+              shelf={gathered.shelf}
+              ownerUsername={ownerUsername ?? libraryId}
+              isOwner={canEditHere}
+              visibleObjectIds={tagMatchedIds}
+              hiddenObjectIds={gathered.hiddenObjectIds}
+              saveOrder={handleTagOrder}
+              shelfOfObject={shelfIdForObject}
+              objectsOfShelf={objectsOfShelf}
+              onObjectUpdated={handleObjectUpdated}
+              onObjectDeleted={handleObjectDeleted}
+              onObjectMoved={handleObjectMoved}
+              onObjectsReordered={handleObjectsReordered}
+            />
+          )}
+        </div>
       ) : hasSearch && displayedShelves.length === 0 ? (
         <div className={styles.empty}>
           <Text
@@ -1161,7 +1392,11 @@ export function LibraryTemplate({
           />
         </div>
       ) : (
-        <>
+        <div
+          className={classNames(styles.filterSwap, {
+            [styles.filterSwapOut]: tagFading,
+          })}
+        >
           {viewAsOwner && !hasSearch && library && (
             <RecommendedShelf
               key={library.id}
@@ -1253,36 +1488,39 @@ export function LibraryTemplate({
               </SortableContext>
             </DndContext>
           </div>
-        </>
+        </div>
       )}
 
       {/* The next shelf is added
  from where it will appear: directly under the
           last board. The toolbar at the top of the page no longer carries this
           control. */}
-      {canEditHere && !isLoading && displayedShelves.length > 0 && (
-        <div className={styles.addShelfRow}>
-          <Tooltip
-            place="top"
-            tooltipContent={atShelfLimit ? LIBRARY_FULL_MESSAGE : ''}
-            wrapperClassName={classNames({
-              [styles.tooltipOff]: !atShelfLimit,
-            })}
-          >
-            <Button
-              label="Add shelf"
-              ariaLabel="Add shelf"
-              onClick={modalToggler}
-              type={ButtonType.Text}
-              size={ButtonSize.Default}
-              Icon={<PlusIcon />}
-              iconPosition={IconPosition.Right}
-              className={styles.addShelfButton}
-              disabled={atShelfLimit}
-            />
-          </Tooltip>
-        </div>
-      )}
+      {canEditHere &&
+        !isLoading &&
+        !gathered &&
+        displayedShelves.length > 0 && (
+          <div className={styles.addShelfRow}>
+            <Tooltip
+              place="top"
+              tooltipContent={atShelfLimit ? LIBRARY_FULL_MESSAGE : ''}
+              wrapperClassName={classNames({
+                [styles.tooltipOff]: !atShelfLimit,
+              })}
+            >
+              <Button
+                label="Add shelf"
+                ariaLabel="Add shelf"
+                onClick={modalToggler}
+                type={ButtonType.Text}
+                size={ButtonSize.Default}
+                Icon={<PlusIcon />}
+                iconPosition={IconPosition.Right}
+                className={styles.addShelfButton}
+                disabled={atShelfLimit}
+              />
+            </Tooltip>
+          </div>
+        )}
 
       {canEditHere && isOpen && (
         <AddShelfModal

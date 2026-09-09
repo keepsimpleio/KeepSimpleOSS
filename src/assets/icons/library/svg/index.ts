@@ -31,6 +31,7 @@ import SettingsIcon from './settings.svg';
 import ShareIcon from './share.svg';
 import SparkleIcon from './sparkle.svg';
 import StarIcon from './star.svg';
+import TagIcon from './tag.svg';
 import ToolsIcon from './tools.svg';
 import UxcoreIcon from './uxcore.svg';
 import VideoIcon from './video.svg';
@@ -70,6 +71,7 @@ export {
   ShareIcon,
   SparkleIcon,
   StarIcon,
+  TagIcon,
   ToolsIcon,
   UxcoreIcon,
   VideoIcon,

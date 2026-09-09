@@ -94,6 +94,12 @@
   padding: 8px 12px;
   cursor: pointer;
 
+  // The whole row picks the tag, the pill included, so the pointer does not
+  // change as it crosses the label.
+  * {
+    cursor: inherit;
+  }
+
   &:hover {
     background: var(--white-warm);
   }
@@ -166,6 +172,80 @@
 @media (prefers-reduced-motion: reduce) {
   .trigger,
   .icon {
+    transition: none;
+  }
+}
+
+// Compact form: one icon button in a row of icon actions, sized like the other
+// 36px controls it stands with. The box never changes with the tag count — the
+// icon takes the accent once the item carries a tag, and the count is spoken
+// rather than drawn.
+.wrapper.compact {
+  width: auto;
+}
+
+.compactTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  box-sizing: border-box;
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
+  background: var(--white);
+  color: var(--gray-darkest);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.hasValue {
+    color: var(--brown);
+  }
+
+  &.open,
+  &:not(:disabled):hover {
+    border-color: var(--brown);
+  }
+}
+
+// Hung from the button's right edge, wider than the button itself. Placement
+// is set inline against the trigger; this only keeps the anchor right when the
+// menu is not portaled.
+.menuCompact {
+  left: auto;
+  right: 0;
+}
+
+// The list scrolls past a handful of tags, so it carries the Library's own
+// scrollbar rather than the platform's.
+.menu {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--taupe) var(--white-100);
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--white-100);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--taupe);
+    border-radius: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compactTrigger {
     transition: none;
   }
 }

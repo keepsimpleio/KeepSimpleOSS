@@ -16,7 +16,10 @@ import {
   useForm,
 } from 'react-hook-form';
 
-import { SHELF_FULL_MESSAGE } from '@constants/library/common';
+import {
+  MAX_TAGS_PER_OBJECT,
+  SHELF_FULL_MESSAGE,
+} from '@constants/library/common';
 import { COVER_MAX_BYTES } from '@constants/library/cover';
 
 import type { IAutofillSuggestion } from '@local-types/library/autofill';
@@ -34,12 +37,12 @@ import { createObject } from '@api/library/object/createObject';
 import { reorderObjects } from '@api/library/object/reorderObjects';
 import { updateObject } from '@api/library/object/updateObject';
 import { getShelvesList } from '@api/library/shelf/getShelvesList';
-import { getTagsList } from '@api/library/tag/getTagsList';
 import { uploadFile } from '@api/library/upload/uploadFile';
 
 import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
@@ -147,7 +150,6 @@ function shelfObjectsToReorderItems(
     coverUrl:
       resolveStrapiUrl(o.attributes.coverImage?.data?.attributes.url) ??
       undefined,
-    tagIds: (o.attributes.tags?.data ?? []).map(t => t.id),
   }));
 }
 
@@ -168,6 +170,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const shelfLocked = defaultShelfId != null && !editing;
   const { accountData } = useAuth();
   const { currentOwner } = useGlobalState();
+  const { libraryTags, refreshLibraryTags } = useDashboard();
   // The editor only opens on the owner's own library, so the owner published by
   // LibraryTemplate and the signed-in account are the same person; the account
   // covers the moment before the library has published its owner.
@@ -195,7 +198,6 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [isFetchingCover, setIsFetchingCover] = useState(false);
   const [coverNotice, setCoverNotice] = useState<string | null>(null);
 
-  const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
   const [shelves, setShelves] = useState<IShelf[]>([]);
   const [selectedShelfId, setSelectedShelfId] = useState<string | undefined>(
@@ -210,23 +212,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     // Add mode: append a draft placeholder so the user can drag it into place.
     return [...base, { id: DRAFT_REORDER_ID, title: '' }];
   });
-  // Which tag the sequence is being read through. `null` = the whole shelf.
-  // A lens only; the saved order is always the shelf's single sequence.
-  const [sequenceTagId, setSequenceTagId] = useState<number | null>(null);
   const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(
     editing
       ? resolveStrapiUrl(object?.attributes.coverImage?.data?.attributes.url)
       : null,
   );
-
-  // Untick the tag the sequence is filtered by and the lens has nothing to
-  // stand on — fall back to the whole shelf.
-  useEffect(() => {
-    if (sequenceTagId == null) return;
-    if (!selectedTags.some(tag => tag.id === sequenceTagId)) {
-      setSequenceTagId(null);
-    }
-  }, [selectedTags, sequenceTagId]);
 
   const schema = useMemo(() => getSchemaForType(objectType), [objectType]);
 
@@ -427,21 +417,19 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     }
   };
 
-  useEffect(() => {
-    let cancelled = false;
-    getTagsList(accountData?.id).then(res => {
-      if (cancelled) return;
-      const opts: TagOption[] = res.data.map(t => ({
-        id: t.id,
-        name: t.attributes.name,
-        color: t.attributes.color,
-      }));
-      setTagOptions(opts);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [accountData?.id]);
+  // The palette is the library's own vocabulary, loaded once for the page.
+  // Not the account's: a tag belongs to the library it was made in, and the
+  // CMS refuses one that came from another.
+  const tagOptions = useMemo<TagOption[]>(
+    () =>
+      libraryTags.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color,
+        description: tag.description,
+      })),
+    [libraryTags],
+  );
 
   // Preset the object's existing tags exactly once, from the object's OWN
   // populated tag data — not by filtering the fetched options. An unpublished
@@ -584,8 +572,17 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         ? formatCalendarDate(pickedDate)
         : undefined;
 
+      // Only a book carries tags, and only a book shows the picker. Sending
+      // the field at all for anything else would hand the CMS a list the user
+      // was never offered, and it rightly refuses one: an older video that
+      // still held tags would then be unsaveable.
+      // An edit always states the whole set, the empty set included: sending
+      // nothing means "no change", so taking the last tag off a book used to
+      // save as leaving it exactly where it was.
       const tags =
-        selectedTags.length > 0 ? selectedTags.map(t => t.id) : undefined;
+        objectType === 'book' && (editing || selectedTags.length > 0)
+          ? selectedTags.map(t => t.id)
+          : undefined;
       // Prefer the user's explicit shelf choice (move-to dropdown / locked add
       // mode), then fall back to the shelf id the parent passed. The fallback
       // matters in edit mode: if the object's `shelf` relation wasn't populated,
@@ -746,6 +743,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       // reorder below can apply `order` to a state that already contains it.
       onCreated?.(resultObject);
 
+      // The panel counts the books behind each tag and the gathered row is
+      // drawn from the same list, so both are re-read once a book's tags move.
+      if (tags) void refreshLibraryTags();
+
       // Persist the step-2 drag order. The draft placeholder stands in for the
       // object we just created/updated, so map it to its real id.
       if (shelf != null && !movingShelf && reorderItems.length > 1) {
@@ -795,7 +796,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       setShowSuccess(true);
     } catch (e) {
-      // Backend caps each shelf at 30 objects (all types combined) and rejects
+      // Backend caps each shelf at 50 objects (all types combined) and rejects
       // an over-limit create — or a move into a full shelf via the shelf
       // dropdown — with a 400. Surface the dedicated full-shelf copy.
       if (isShelfFullError(e)) {
@@ -1102,23 +1103,9 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
           title: liveCurrentTitle || item.title,
           coverUrl: liveCurrentCoverUrl ?? item.coverUrl,
           isCurrent: true,
-          // The object being edited carries whatever tags are ticked right now,
-          // not what it was saved with, so it shows up under a tag the moment
-          // that tag is added above.
-          tagIds: selectedTags.map(t => t.id),
         }
       : item,
   );
-
-  // The sequence is shown through one tag at a time. Filtering only narrows
-  // what is on screen: positions are still the shelf's, and a drag inside the
-  // narrowed view writes back into the slots those objects hold in it.
-  const visibleReorderItems =
-    sequenceTagId == null
-      ? displayedReorderItems
-      : displayedReorderItems.filter(item =>
-          item.tagIds?.includes(sequenceTagId),
-        );
 
   const handleReorder = (next: ReorderItem[]) => {
     setReorderDirty(true);
@@ -1211,23 +1198,28 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     </div>
                   )}
 
-                  <div className={styles.field}>
-                    <Text
-                      variant={TypographyVariant.TextSmall}
-                      className={styles.label}
-                    >
-                      {config.tagsLabel}
-                    </Text>
-                    <TagMultiSelect
-                      options={tagOptions}
-                      value={selectedTags}
-                      onChange={setSelectedTags}
-                      placeholder={config.tagsLabel}
-                      emptyState="No tags yet. Create one from the Tags panel on the right"
-                      maxItems={10}
-                      portal
-                    />
-                  </div>
+                  {/* Tags label books. A tag gathers its books into one row
+                      with one sequence, and a row mixing a book, a video and
+                      an audio has no single shape to stand in. */}
+                  {objectType === 'book' && (
+                    <div className={styles.field}>
+                      <Text
+                        variant={TypographyVariant.TextSmall}
+                        className={styles.label}
+                      >
+                        {config.tagsLabel}
+                      </Text>
+                      <TagMultiSelect
+                        options={tagOptions}
+                        value={selectedTags}
+                        onChange={setSelectedTags}
+                        placeholder={config.tagsLabel}
+                        emptyState="No tags yet. Create one from the Tags panel on the right"
+                        maxItems={MAX_TAGS_PER_OBJECT}
+                        portal
+                      />
+                    </div>
+                  )}
 
                   <div className={styles.field}>
                     <Text
@@ -1236,52 +1228,15 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                     >
                       Modify object sequence
                     </Text>
-                    {selectedTags.length > 0 && (
-                      <div
-                        className={styles.sequenceFilters}
-                        role="group"
-                        aria-label="Show the sequence through one tag"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSequenceTagId(null)}
-                          aria-pressed={sequenceTagId === null}
-                          className={classNames(styles.sequenceFilter, {
-                            [styles.sequenceFilterActive]:
-                              sequenceTagId === null,
-                          })}
-                        >
-                          Whole shelf
-                        </button>
-                        {selectedTags.map(tag => (
-                          <button
-                            key={tag.id}
-                            type="button"
-                            onClick={() =>
-                              setSequenceTagId(
-                                sequenceTagId === tag.id ? null : tag.id,
-                              )
-                            }
-                            aria-pressed={sequenceTagId === tag.id}
-                            className={classNames(styles.sequenceFilter, {
-                              [styles.sequenceFilterActive]:
-                                sequenceTagId === tag.id,
-                            })}
-                          >
-                            {tag.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    {/* This grid sets the shelf's own order. A tag's order is
+                        the tag's own, set by dragging in the filtered shelf on
+                        the library page: showing the shelf's sequence through a
+                        tag here only ever looked like editing the tag's. */}
                     <ReorderGrid
-                      items={visibleReorderItems}
+                      items={displayedReorderItems}
                       onReorder={handleReorder}
                       itemShape={config.itemShape}
-                      emptyState={
-                        sequenceTagId == null
-                          ? 'No content yet on this shelf.'
-                          : 'Nothing else on this shelf carries that tag yet.'
-                      }
+                      emptyState="No content yet on this shelf."
                     />
                   </div>
                 </div>

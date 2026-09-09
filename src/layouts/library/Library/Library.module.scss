@@ -97,10 +97,6 @@ $share-bar-height: 87px;
 
 .addShelfButton {
   width: auto !important;
-  // The Text button variant defaults to white, which is meant for the dark
-  // surfaces it sits on elsewhere. On the library's cream page it has to carry
-  // the same brown the toolbar's own text buttons use.
-  color: var(--brown) !important;
 }
 
 // Laid over the top of the shelf list rather than holding a band above it:
@@ -203,6 +199,27 @@ $share-bar-height: 87px;
 
 @media (prefers-reduced-motion: reduce) {
   .favoritesSlot {
+    transition: none;
+  }
+}
+
+// Choosing a tag, and letting it go, is one movement: the page fades out, the
+// shelves and the tag's gathered row change places at the trough, and the page
+// fades back. The same 200ms ease the guest preview switches with.
+.filterSwap {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.filterSwapOut {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterSwap {
     transition: none;
   }
 }

@@ -194,6 +194,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onObjectsReordered,
     favorites = false,
     onFavoritesVisibilityChange,
+    tagFilter = false,
+    hiddenObjectIds = null,
+    saveOrder,
+    shelfOfObject,
+    objectsOfShelf,
     dragHandleProps,
     isDragging = false,
   } = props;
@@ -203,11 +208,16 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // shows. Stable: objects with no `order` keep their natural position.
   // The Favorites shelf keeps its own order (`favoriteOrder`, then the time
   // of the star), since its books each hold an `order` on their real shelf.
-  const objects = favorites
-    ? sortFavorites(shelf.attributes.objects?.data ?? [])
-    : [...(shelf.attributes.objects?.data ?? [])].sort(
-        (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
-      );
+  // A tag's row arrives in the tag's own order, which is a property of the
+  // tag and not of any shelf: re-sorting it by `order` here would draw the
+  // books in the sequence of whichever shelf each one happens to stand on.
+  const objects = tagFilter
+    ? (shelf.attributes.objects?.data ?? [])
+    : favorites
+      ? sortFavorites(shelf.attributes.objects?.data ?? [])
+      : [...(shelf.attributes.objects?.data ?? [])].sort(
+          (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+        );
   // What a search leaves on screen. Everything else below (count, cap, the
   // reorder grid, the open object) keeps reading `objects`, the real shelf.
   const drawnObjects = visibleObjectIds
@@ -282,7 +292,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
   );
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
 
-  // Backend caps a shelf at 30 objects (all types combined). Pre-disable the
+  // Backend caps a shelf at 50 objects (all types combined). Pre-disable the
   // Add control once the shelf is full — the backend stays the source of truth
   // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
   const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
@@ -524,9 +534,23 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // The object this shelf currently owns *and* the URL points at, if any.
   // The Favorites shelf never opens one: the same book stands on its real
   // shelf, and that shelf's overview is the one that knows where it lives.
+  // A gathered row is drawn from the tag's own list, so taking that tag off a
+  // book takes the book out of the row under the click that did it. The
+  // overview belongs to the book, not to the row it was opened from: when the
+  // row no longer holds it, it is found on the shelf it actually stands on,
+  // and only a book gone from the library closes the overview.
+  const homeOfActive =
+    !favorites && activeObjectId != null && tagFilter
+      ? shelfOfObject?.(activeObjectId)
+      : undefined;
   const activeObject =
     !favorites && activeObjectId != null
-      ? (objects.find(o => o.id === activeObjectId) ?? null)
+      ? (objects.find(o => o.id === activeObjectId) ??
+        (homeOfActive != null
+          ? (objectsOfShelf?.(homeOfActive)?.find(
+              o => o.id === activeObjectId,
+            ) ?? null)
+          : null))
       : null;
 
   // Dragging a card into a new place is the owner's own shelf, on a desktop
@@ -552,6 +576,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // and its dossier belong to the card that stayed behind.
   const renderCard = (obj: IObject, travelling = false) => {
     const selected = isSelected(obj.id);
+    // In a gathered row every book brings its own shelf's privacy with it.
+    const cardHidden = !!hiddenObjectIds?.has(obj.id);
+    const cardPublic = tagFilter ? !cardHidden : isPublic;
     // Only the owner can build a share link, so a visitor never sees the chip.
     // The owner sees it on every kind of object (book, video, audio), and it
     // carries its own reason when it cannot be used: the backend refuses
@@ -559,10 +586,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
     // "this kind of object cannot be shared".
     const onSelectToggle =
       isOwner && !travelling ? () => toggleSelection(obj) : undefined;
-    const selectDisabled = !isPublic || limitReached;
+    const selectDisabled = !cardPublic || limitReached;
     // Short enough to stand on the chip over the artwork; the shelf's own
     // Select button carries the full sentence.
-    const selectReason = !isPublic
+    const selectReason = !cardPublic
       ? 'Shelf is private'
       : limitReached
         ? 'Link is full'
@@ -582,6 +609,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     return (
       <BookCard
         {...shared}
+        hidden={cardHidden}
         ownerUsername={ownerUsername}
         favorite={isFavorite(obj)}
         onFavoriteToggle={
@@ -671,9 +699,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
     const ordered = nextIds.map((id, index) => ({ id, order: index }));
     onObjectsReordered?.(shelf.id, ordered);
 
-    const save = favorites
-      ? reorderFavorites({ objects: ordered })
-      : reorderObjects({ shelfId: shelf.id, objects: ordered });
+    const save = saveOrder
+      ? saveOrder(ordered)
+      : favorites
+        ? reorderFavorites({ objects: ordered })
+        : reorderObjects({ shelfId: shelf.id, objects: ordered });
     save.catch(error => {
       console.error('[Shelf] object reorder failed to persist', {
         shelfId: shelf.id,
@@ -688,7 +718,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
       );
       setOrderOverride(null);
       setObjectOrderError(
-        `Could not save the new ${typeLabel} order. The shelf is unchanged.`,
+        tagFilter
+          ? `Could not save the new order for “${shelfName}”. The tag is unchanged.`
+          : `Could not save the new ${typeLabel} order. The shelf is unchanged.`,
       );
     });
   };
@@ -831,27 +863,34 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // The modal stays up after a create: it shows its own confirmation (and
   // any reorder warning) and closes itself. Closing it from here unmounted
   // that confirmation before it could appear.
+  // A gathered row is not a shelf. Everything an object does from here (an
+  // edit, a move, a delete, the sequence in step 2) lands on the shelf the
+  // book actually stands on.
+  const homeShelfId = (objectId: number) =>
+    tagFilter ? (shelfOfObject?.(objectId) ?? shelf.id) : shelf.id;
+
   const handleCreated = (created: IObject) => {
     revealObjectId.current = created.id;
     onObjectCreated?.(shelf.id, created);
   };
 
   const handleUpdated = (updated: IObject) => {
+    const from = homeShelfId(updated.id);
     const newShelfId = updated.attributes.shelf?.data?.id;
     // Move detected — pop out of this shelf, drop into the new one, and
     // close the overview so the user sees the move take effect.
-    if (newShelfId != null && newShelfId !== shelf.id) {
-      onObjectMoved?.(shelf.id, newShelfId, updated);
+    if (newShelfId != null && newShelfId !== from) {
+      onObjectMoved?.(from, newShelfId, updated);
       closeObject();
       return;
     }
     // No need to track the object locally — it flows back through `objects` and
     // the URL still points at its id, so the overview re-renders with the edit.
-    onObjectUpdated?.(shelf.id, updated);
+    onObjectUpdated?.(from, updated);
   };
 
   const handleDeleted = (id: number) => {
-    onObjectDeleted?.(shelf.id, id);
+    onObjectDeleted?.(homeShelfId(id), id);
     closeObject();
   };
 
@@ -888,7 +927,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </Tooltip>
           )}
 
-          {isOwner && (
+          {isOwner && !tagFilter && (
             <Dropdown
               className={styles.settingsDropdown}
               menuClassName={styles.settingsMenu}
@@ -918,7 +957,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
           <span className={styles.count}>({objects.length})</span>
 
           <span className={styles.nameWrap}>
-            {isOwner && !favorites ? (
+            {isOwner && !favorites && !tagFilter ? (
               <button
                 type="button"
                 className={styles.nameButton}
@@ -934,7 +973,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
         </div>
 
         <div className={styles.right}>
-          {isOwner && (
+          {isOwner && !tagFilter && (
             <Tooltip
               place="bottom"
               tooltipContent={selectShelfReason ?? ''}
@@ -955,7 +994,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
             </Tooltip>
           )}
 
-          {isOwner && !favorites && (
+          {isOwner && !favorites && !tagFilter && (
             <Tooltip
               place="bottom"
               tooltipContent={
@@ -1129,13 +1168,20 @@ export function Shelf(props: ShelfProps): JSX.Element {
           object={activeObject}
           isOwner={isOwner}
           ownerUsername={ownerUsername}
-          shelfObjects={objects}
-          defaultShelfId={shelf.id}
+          // Step 2 of the edit form sets a position on a shelf, so it is
+          // handed the book's own shelf and everything standing on it, never
+          // the gathered row, whose sequence belongs to the tag.
+          shelfObjects={
+            tagFilter
+              ? (objectsOfShelf?.(homeShelfId(activeObject.id)) ?? objects)
+              : objects
+          }
+          defaultShelfId={homeShelfId(activeObject.id)}
           onClose={closeObject}
           onUpdated={handleUpdated}
           onDeleted={handleDeleted}
           onObjectsReordered={ordered =>
-            onObjectsReordered?.(shelf.id, ordered)
+            onObjectsReordered?.(homeShelfId(activeObject.id), ordered)
           }
         />
       )}

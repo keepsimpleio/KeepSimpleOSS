@@ -326,3 +326,98 @@ Owners can view private recommendations and persist their fold preference;
 recommendation verdicts and regeneration remain desktop controls.
 Mobile recommendation headings wrap within the existing 16px header inset;
 the fold control has a 44px touch target. Existing colors, fonts and fold motion apply.
+
+## Library tag filter
+
+A tag is a label on books and a filter over the library. Clicking one in the
+right panel gathers every book it labels into a single row, in the tag's own
+order, and every shelf steps aside while it stands: the AI shelf and Favorites
+with them. One tag at a time; clicking the active tag clears the filter.
+
+- Tags are controls in the right panel only. On cards, in the hover dossier and
+  in the object overview they stay labels.
+- A tag says on hover what its owner wrote about it, which is what the tag form
+  promises when it asks. The pill's own name leads that hint when the pill is
+  too narrow to show the whole word, and the state note follows it. The
+  description is capped at 180 characters at both ends, counted under the field
+  as it is typed: the form used to allow 500 where the CMS refused past 150.
+  The CMS side is keepsimple-cms-new commit ad1cb40, on the staging CMS since
+  2026-09-09. Proved there against the live API as the library's owner: 180
+  characters saved and read back at 180, 181 refused with "description must be
+  at most 180 characters", and the probed tag restored.
+- A tag that labels nothing the viewer can open does not answer a click: it
+  carries the pointer of a label, not of a control, and says `Tag not used` on
+  hover and on keyboard focus, keeping its tab stop as a control that is off.
+  A visitor is not shown it at all. No tag is ever a text selection.
+- The filtered view is addressable: the tag's slug rides on the library URL as
+  `#deep-work`. The CMS derives that slug from the name, transliterated to
+  Latin and unique inside the library; the client never sends one. A rename
+  carries the address with it quietly, and a link to a tag that is gone opens
+  the library unfiltered.
+- Search runs inside the active tag. Clearing the search keeps the filter.
+- Dragging a book in the gathered row saves the tag's own sequence through
+  `POST /tags/reorder`, never a shelf's. Owner and desktop only, the same rule
+  the shelves follow. A newly tagged book lands at the end.
+- A tag belongs to one library. The palette in the object form is that
+  library's, and the CMS refuses a tag from another one.
+- A library keeps at most 13 tags. At the cap the Create control is disabled
+  and says `You have reached your limit maximum 13 tags`.
+- Deleting a tag asks first and says that it leaves every book that carries it.
+  The books stay.
+
+### Design passport
+
+- Palette: the tag's own colour on its chip. Active and hover draw the existing
+  `--white` and `--brown` ring, as a selected cover does. A book on a private
+  shelf is veiled with `--white-transparent-400` easing into
+  `--white-transparent-600` (the same paper at 78%, added with this surface)
+  and marked with `--brown-100` on `--white-200` inside a `--beige` border.
+- Typography: existing Library faces. The Hidden mark is Source Sans Pro at
+  11px, uppercase, 0.12em tracking.
+- Spacing and radius: existing shelf geometry and control radii. The gathered
+  row is drawn by the Shelf component, so it keeps every measurement a shelf
+  has.
+- Motion passport: entering and leaving the filtered view is one 200ms ease
+  crossfade, the content swapped at the trough so nothing is seen half
+  replaced. Reduced motion switches immediately.
+- Scrollbar passport: the gathered row uses the shelf's own themed scroller.
+- Stability passport: the active ring is drawn outside the chip's box, so
+  choosing a tag moves nothing in the row it stands in. The gathered row holds
+  the same card geometry as a shelf, veil included.
+
+## Library tag assignment
+
+A tag is put on a book from the book itself. The object overview carries a tag
+picker in the row with Copy URL, the star and the owner menu: one icon button
+opening the library's palette as a multi-select. Each click is saved on its own
+through `PUT /api/objects/:id`, the Tags row under the author answers it, and the
+panel's tag list is re-read so counts, the gathered row and the unused-tag hint
+follow immediately. A failed save returns the row to the last set the server
+accepted and says so; a set is never assumed saved from a click. Every pill
+inside the book, in the row and in the picker's menu, says on hover what its
+owner wrote about it, the same sentence the panel gives; the pill itself stays
+a label there.
+
+The picker is the owner's, on a book, on desktop, the same rule the shelves
+follow. Videos and audio carry no tags on any surface. The edit form keeps its
+own picker on step 2; both read `MAX_TAGS_PER_OBJECT`, and both state the whole
+set on save, the empty set included, so taking the last tag off a book actually
+takes it off.
+
+### Design passport
+
+- Palette: existing paper tokens. The button is `--white` on `--brown-border`,
+  its glyph `--gray-darkest`, turning to `--brown` once the book carries a tag
+  and on hover. Chips keep the tag's own colour.
+- Typography: existing Library faces; the menu and the row add no size.
+- Spacing and radius: 36px square button in the existing 8px action row,
+  `--radius-control`. The menu is 260px wide, hung from the button's right
+  edge, 4px below it, with the existing 8px by 12px option rows.
+- Motion passport: the menu's existing 140ms fade in, 120ms out. Tags arrive
+  and leave the row through `useAnimatedList`. Reduced motion cuts both.
+- Scrollbar passport: the menu caps at 240px and scrolls behind a 12px themed
+  scrollbar, taupe thumb on white-100, 6px thumb radius.
+- Stability passport: the button's box never changes with the tag count, which
+  is spoken rather than drawn. The owner's Tags row stands from the start under
+  the author and above Published, as tall as a pill when empty, so the first tag
+  lands in space already held.

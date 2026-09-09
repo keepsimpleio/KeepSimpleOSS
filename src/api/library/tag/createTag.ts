@@ -4,8 +4,10 @@ import axiosInstance from '@lib/library/axios';
 
 export interface CreateTagRequest {
   name: string;
-  slug: string;
   user: string;
+  // A tag belongs to a library, not to the whole platform: the CMS refuses a
+  // tag that does not name one, and checks the caller owns it.
+  library: number;
   color: string;
   description?: string;
 }
@@ -15,6 +17,8 @@ export interface CreateTagResponse {
   meta: Record<string, unknown>;
 }
 
+// The address (`slug`) is not sent: the CMS derives it from the name, unique
+// inside this library, so a tag can be named in a URL as `#deep-work`.
 export const createTag = async (
   tagData: CreateTagRequest,
 ): Promise<CreateTagResponse> => {

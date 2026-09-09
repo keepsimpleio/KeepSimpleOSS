@@ -7,6 +7,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   KEEPSIMPLE_URL,
   LIBRARY_SHELVES_REFETCH_EVENT,
+  MAX_TAGS_PER_LIBRARY,
+  TAG_LIMIT_MESSAGE,
 } from '@constants/library/common';
 
 import { ITagAttributes } from '@local-types/library/tag';
@@ -20,7 +22,6 @@ import { richTextLength } from '@lib/library/richText';
 
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
-import { getTagsList } from '@api/library/tag/getTagsList';
 import { updateTag, UpdateTagRequest } from '@api/library/tag/updateTag';
 
 import avatarImage from '@icons/library/images/avatar.png';
@@ -41,6 +42,7 @@ import ExpandableText from '@components/library/atoms/ExpandableText';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   Button,
   ButtonSize,
@@ -67,7 +69,8 @@ export function Sidebar() {
   const router = useRouter();
 
   const { accountData } = useAuth();
-  const { tags, setTags } = useDashboard();
+  const { libraryTags, tags, refreshLibraryTags, activeTagId, setActiveTagId } =
+    useDashboard();
   const {
     isSidebarOpen,
     isSidebarCollapsed,
@@ -158,25 +161,33 @@ export function Sidebar() {
   const aboutLibraryText =
     currentLibrary?.attributes.libraryDetails?.aboutLibrary ?? '';
 
-  // Owner sees their full tag palette; a true visitor sees only the tags
-  // actually used on this library's objects — no cross-account tag fetch.
-  const libraryTags = useMemo(() => {
-    const byName = new Map<string, { name: string; color: string }>();
+  // Everything the viewer can open right now. A tag's row is drawn from it,
+  // so an owner previewing as a guest sees the same tags a visitor does.
+  const visibleObjectIds = useMemo(() => {
+    const ids = new Set<number>();
     for (const shelf of currentShelves) {
-      for (const obj of shelf.attributes.objects?.data ?? []) {
-        for (const tag of obj.attributes.tags?.data ?? []) {
-          byName.set(tag.attributes.name, tag.attributes);
-        }
-      }
+      for (const obj of shelf.attributes.objects?.data ?? []) ids.add(obj.id);
     }
-    return Array.from(byName.values());
+    return ids;
   }, [currentShelves]);
 
-  // The owner's full palette is theirs to see; guest mode is a faithful
-  // preview, so it shows exactly what a visitor gets: the tags in use.
-  const displayedTags = canEdit
-    ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
-    : libraryTags;
+  // The library's own tags, each with the number of books it labels here. The
+  // owner keeps their whole palette on screen, empty tags included, because it
+  // is the vocabulary they write with; a visitor is shown only the tags that
+  // lead somewhere. A tag labelling nothing is not a filter, so it does not
+  // answer a click.
+  const displayedTags = useMemo(
+    () =>
+      libraryTags
+        .map(tag => ({
+          ...tag,
+          count: tag.objects.filter(id => visibleObjectIds.has(id)).length,
+        }))
+        .filter(tag => canEdit || tag.count > 0),
+    [libraryTags, visibleObjectIds, canEdit],
+  );
+
+  const atTagLimit = libraryTags.length >= MAX_TAGS_PER_LIBRARY;
 
   // A created tag rises into the row, a deleted one fades where it stood and
   // the rest slide over, instead of the whole row re-wrapping in one frame.
@@ -221,23 +232,23 @@ export function Sidebar() {
 
   const handleCreateTag = async (formData: CreateTagFormData) => {
     try {
-      if (!accountData?.id) return;
+      // Throw rather than return: the modal reads a quiet resolve as a saved
+      // tag and shows the success card, so a silent bail claimed a tag that
+      // was never created.
+      if (!accountData?.id || !currentLibrary?.id) {
+        throw new Error('No library to create this tag in');
+      }
 
-      // Strapi enforces unique slugs; a timestamp suffix keeps two tags whose
-      // names normalize to the same string from colliding on write.
-      const slug = `${formData.name.toLowerCase()}-${Date.now()}`;
       const body: CreateTagRequest = {
         name: formData.name,
         description: formData.description,
         color: formData.color,
         user: accountData?.id,
-        slug,
+        library: currentLibrary.id,
       };
 
       await createTag(body);
-      const { data } = await getTagsList(accountData.id);
-
-      setTags(data);
+      await refreshLibraryTags();
     } catch (error) {
       console.error('Failed to create or refresh tags:', error);
       throw error;
@@ -248,19 +259,15 @@ export function Sidebar() {
     try {
       if (!selectedTag || !accountData?.id) return;
 
-      const slug = `${formData.name.toLowerCase()}-${Date.now()}`;
       const body: UpdateTagRequest = {
         name: formData.name,
         description: formData.description,
         color: formData.color,
         user: accountData?.id,
-        slug,
       };
 
       await updateTag(selectedTag.id, body);
-      const { data } = await getTagsList(accountData.id);
-
-      setTags(data);
+      await refreshLibraryTags();
       refetchLibrary();
       setIsOpenTagModal(null);
       setSelectedTag(null);
@@ -275,9 +282,7 @@ export function Sidebar() {
 
     try {
       await deleteTag(selectedTag.id);
-      const { data } = await getTagsList(accountData.id);
-
-      setTags(data);
+      await refreshLibraryTags();
       refetchLibrary();
       setIsOpenTagModal(null);
       setSelectedTag(null);
@@ -295,19 +300,6 @@ export function Sidebar() {
       return () => clearTimeout(timer);
     }
   }, [isCopied]);
-
-  // Load the tag list on mount. `setTags` is otherwise only called after a
-  // create/edit/delete, so without this the Tags panel renders empty on every
-  // fresh page load until the user mutates a tag.
-  useEffect(() => {
-    let cancelled = false;
-    getTagsList(accountData?.id).then(({ data }) => {
-      if (!cancelled) setTags(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [setTags, accountData?.id]);
 
   // Hide the right panel entirely when the owner lacks permission to create a
   // library — the page shows only the centered no-permission message.
@@ -481,16 +473,25 @@ export function Sidebar() {
                       labelClassName={styles.text}
                     />
                   )}
-                  <Button
-                    label="Create"
-                    ariaLabel="Create tag"
-                    onClick={() => setIsOpenTagModal('create')}
-                    type={ButtonType.Secondary}
-                    size={ButtonSize.Default}
-                    Icon={<PlusIcon />}
-                    className={styles.button}
-                    labelClassName={styles.text}
-                  />
+                  <Tooltip
+                    place="bottom"
+                    tooltipContent={atTagLimit ? TAG_LIMIT_MESSAGE : ''}
+                    wrapperClassName={classNames({
+                      [styles.tooltipOff]: !atTagLimit,
+                    })}
+                  >
+                    <Button
+                      label="Create"
+                      ariaLabel="Create tag"
+                      onClick={() => setIsOpenTagModal('create')}
+                      type={ButtonType.Secondary}
+                      size={ButtonSize.Default}
+                      Icon={<PlusIcon />}
+                      className={styles.button}
+                      labelClassName={styles.text}
+                      disabled={atTagLimit}
+                    />
+                  </Tooltip>
                 </span>
               )}
             </div>
@@ -514,7 +515,26 @@ export function Sidebar() {
                     data-flip-leaving={leaving ? 'true' : undefined}
                     aria-hidden={leaving || undefined}
                   >
-                    <Tag label={tag.name} color={tag.color} />
+                    {/* This row is the only place a tag is a control. On the
+                        cards, in the dossier and in the object overview a tag
+                        stays a label. */}
+                    <Tag
+                      label={tag.name}
+                      color={tag.color}
+                      active={activeTagId === tag.id}
+                      description={tag.description}
+                      // A tag on no book has no row to open, so it says what
+                      // it is instead of sitting there as a dead control.
+                      hint={tag.count === 0 ? 'Tag not used' : undefined}
+                      onClick={
+                        tag.count > 0 && !leaving
+                          ? () =>
+                              setActiveTagId(
+                                activeTagId === tag.id ? null : tag.id,
+                              )
+                          : undefined
+                      }
+                    />
                   </span>
                 ))}
               </div>
