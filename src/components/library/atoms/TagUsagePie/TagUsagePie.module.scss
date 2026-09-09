@@ -1,0 +1,203 @@
+// Where a tag is used, drawn as a ring in the tag's own colour, with the
+// shelves listed beside it. See the tag usage passport in CLAUDE.md.
+.chart {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+}
+
+.ringWrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 132px;
+  height: 132px;
+  align-self: center;
+}
+
+.ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.slice {
+  cursor: default;
+  transition: stroke-opacity 0.2s ease;
+
+  &:focus {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// The count sits in the ring's own eye. Absolute, so a three-digit library
+// never pushes the ring out of shape.
+.total {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.totalCount {
+  font-family: var(--font-source-serif);
+  font-size: 24px;
+  line-height: 1;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+
+.totalLabel {
+  font-family: var(--font-source-sans);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-darker);
+}
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+  // The gutter is held from the start, so a library that grows past the cap
+  // does not narrow the shelf names it already drew.
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--taupe) var(--white-100);
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--white-100);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--taupe);
+    border-radius: 6px;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: var(--radius-control);
+  cursor: default;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--off-white);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// The shelves the pointer is not on step back, in the ring and in the list
+// alike, and by the same amount. Colour only: the row keeps its place and its
+// size.
+.rowMuted {
+  opacity: 0.35;
+}
+
+.swatch {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-tag);
+}
+
+.shelf {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--black);
+}
+
+.percent {
+  flex-shrink: 0;
+  // Sized by the widest reading, so the column stands still whatever the
+  // share works out to.
+  min-width: 38px;
+  text-align: right;
+  color: var(--gray-darker);
+  font-variant-numeric: tabular-nums;
+}
+
+// The hint: the shelf named once, then the books it holds under this tag, in
+// the shelf's own sequence.
+.hint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.hintTitle {
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+
+.hintRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.hintOrder {
+  flex-shrink: 0;
+  min-width: 26px;
+  color: var(--gray-darker);
+  font-variant-numeric: tabular-nums;
+}
+
+.hintName {
+  min-width: 0;
+}
+
+.hintMore {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--gray-darker);
+}

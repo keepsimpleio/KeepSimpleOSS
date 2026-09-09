@@ -354,10 +354,17 @@ with them. One tag at a time; clicking the active tag clears the filter.
   Latin and unique inside the library; the client never sends one. A rename
   carries the address with it quietly, and a link to a tag that is gone opens
   the library unfiltered.
-- Search runs inside the active tag. Clearing the search keeps the filter.
+- Search runs inside the active tag. Clearing the search keeps the filter,
+  and clearing the tag hands the library back exactly as the search left it:
+  the shelves it excluded do not return with the tag.
 - Dragging a book in the gathered row saves the tag's own sequence through
   `POST /tags/reorder`, never a shelf's. Owner and desktop only, the same rule
   the shelves follow. A newly tagged book lands at the end.
+- A tag's name is the owner's own word, written the way they write it:
+  spaces, accents, punctuation, any script, up to `MAX_TAG_NAME_LENGTH`.
+  Nothing about it has to be URL-safe, since the CMS derives the address from
+  the name and never takes one from the client. The form is not to hold the
+  name to a character class again.
 - A tag belongs to one library. The palette in the object form is that
   library's, and the CMS refuses a tag from another one.
 - A library keeps at most 13 tags. At the cap the Create control is disabled
@@ -498,15 +505,15 @@ batch branch and reaches production as one pull request; a go that says
 
 ## Library dark mode design passport
 
-The Library reads in two lights. The lamp beside the search (toolbar and home
-page) turns the light down and up; the choice is a device one, kept a year in
-the `ks_library_theme` cookie, painted server-side by the pages that read the
-cookie so a dark reader never sees a light flash, and mirrored onto `<html>`
-after hydration so surfaces portaled to `<body>` read the same tokens. The
-static home page catches up on mount. Components know nothing of it: every
-token in `variables.scss` has a night value in `themes.scss`, keyed on the
-wrapper's `data-theme`, and a component that hardcodes a color is off
-passport in both lights.
+The Library reads in two lights, and the switch is the site's own: keepsimple's
+navbar toggle (`useGlobals`, persisted in localStorage, applied app-wide by
+`_app` on cold load) puts `darkTheme` on `<body>`, and every Library surface
+reads it from there. The Library ships no control of its own and must not grow
+one: a second switch for one section is a second answer to the same question.
+Components know nothing of the theme either: every token in `variables.scss`
+has a night value in `themes.scss` under `body.darkTheme .library`, which also
+covers surfaces portaled to `<body>` since they carry the `.library` class. A
+component that hardcodes a colour is off passport in both lights.
 
 - Palette: night paper is warm, never grey: page `#191614`, surfaces
   `#1f1c19` to `#2b2724`, borders `#3b3530`, ink `#efe7dc`, secondary ink
@@ -516,12 +523,49 @@ passport in both lights.
   tokens for former hardcoded values: `--white-400`, `--gray-300`,
   `--gray-400`, `--sand-100/200/300`, `--panel-tab-shadow-hover`.
 - Typography: unchanged in both lights.
-- Spacing and radius: the lamp is a 40px square on `--radius-control`, 8px
-  left of the search; nothing else moves.
+- Spacing and radius: unchanged in both lights. The theme adds no control and
+  takes no space.
 - Motion passport: page and ink cross over in 200ms ease; the plank dims in
-  200ms; sun and moon cross over in place over 200ms with a 40° turn.
-  Reduced motion switches at once.
+  200ms. Reduced motion switches at once.
 - Scrollbar passport: themed scrollbars read `--taupe` and `--white-100`, so
   they follow the theme; `color-scheme: dark` themes the native ones.
-- Stability passport: the lamp holds both glyphs from the start and never
-  changes size; the theme changes color only, never geometry.
+- Stability passport: the theme changes colour only, never geometry.
+
+## Library tag usage chart
+
+In the tag's edit form, `Where this tag is used` is a ring rather than a list:
+one slice per shelf, the shelves the tag actually reaches, biggest share
+first. The share is spoken in percent beside each shelf name, worked out by
+largest remainder so the column adds up to a hundred; a share under half a
+percent reads `<1%` rather than rounding away to nothing. The ring's eye
+holds the total. Resting on a slice, or on its row in the list, or reaching
+either by keyboard, names that shelf and the books it holds under this tag in
+the shelf's own sequence, ten of them before the hint says how many more
+remain: the hint has no scrolling surface, so the list ends where the paper
+does. A tag on nothing still says so in words. The chart is drawn from the
+library on screen, so no request is made for it, and it follows the colour
+being picked in the form as it is picked.
+
+### Design passport
+
+- Palette: the tag's own colour, and nothing else. Slices fall from full
+  strength to 0.35 by rank, the paper showing through, so the ring reads the
+  same in both lights. The hovered shelf holds its strength while the others
+  step back to 0.35 of theirs, slice and legend row by the same amount; the
+  hovered row itself takes the existing `--off-white`. Text is `--black` with `--gray-darker` for the figures, and
+  the hint's shelf name is `--brown`.
+- Typography: the total is Source Serif 4 at 24px over an 11px uppercase
+  Source Sans Pro label; shelf names and percentages are the existing 14px
+  small text; the hint runs at 14px with a 12px uppercase heading and a 12px
+  footer line.
+- Spacing and radius: the ring is 132px square, drawn in a 120-unit box with a
+  44 radius and an 18 stroke; slices are parted by 1.2 units of paper. The
+  chart and its legend sit 20px apart, legend rows 4px by 6px on
+  `--radius-control`, swatches 10px round on `--radius-tag`.
+- Motion passport: strength and row background ease over 200ms; the hint keeps
+  the shared Tooltip's 150ms opacity. Reduced motion disables all three.
+- Scrollbar passport: the legend caps at 240px behind a 12px themed scrollbar,
+  taupe thumb on white-100, 6px thumb radius, its gutter held from the start.
+- Stability passport: the ring's box never changes with the shelf count, the
+  total is laid over it rather than in the flow, and the percentage column is
+  sized for its widest reading. Hover changes colour only.

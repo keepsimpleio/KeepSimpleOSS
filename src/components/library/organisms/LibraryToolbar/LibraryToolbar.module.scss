@@ -285,14 +285,6 @@
   animation: toolbar-fade 0.3s ease;
 }
 
-// The lamp stands left of the search, the two as one row; the search keeps
-// its own width and the count below it stays where it was.
-.searchRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 // One line, always present, under the search field. On desktop it hangs
 // below the field out of flow, so the field itself, not field plus caption,
 // is what centres against the heading switcher on the same row. The 16px
