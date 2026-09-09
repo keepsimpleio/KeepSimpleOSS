@@ -348,8 +348,8 @@ export function ObjectOverviewModal(
       };
       onUpdated?.(moved);
     } catch (e) {
-      // The target shelf may already hold 30 objects — the backend rejects the
-      // move with a 400. Surface the dedicated full-shelf copy.
+      // The target shelf may already hold its 50 objects, in which case the
+      // backend rejects the move with a 400. Surface the full-shelf copy.
       const message = isShelfFullError(e)
         ? SHELF_FULL_MESSAGE
         : e instanceof Error

@@ -785,7 +785,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
 
       setShowSuccess(true);
     } catch (e) {
-      // Backend caps each shelf at 30 objects (all types combined) and rejects
+      // Backend caps each shelf at 50 objects (all types combined) and rejects
       // an over-limit create — or a move into a full shelf via the shelf
       // dropdown — with a 400. Surface the dedicated full-shelf copy.
       if (isShelfFullError(e)) {
