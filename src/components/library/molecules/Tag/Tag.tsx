@@ -30,17 +30,25 @@ export function Tag(props: TagProps): JSX.Element {
     }
   }, [label]);
 
+  // A tag with a hint and no click is a control that is off, so it keeps its
+  // tab stop and says why on focus as well as on hover. Dropping it out of the
+  // tab order would leave a keyboard reader with a tag that simply ignores
+  // them and no sentence to explain it.
+  const explained = !onClick && !!hint;
+
   const tagContent = (
     <div
-      role={onClick ? 'button' : undefined}
+      role={onClick || explained ? 'button' : undefined}
       // A tag that filters the library is a control, so it takes a tab stop
-      // and answers the keys a button answers. A label takes neither.
-      tabIndex={onClick ? 0 : undefined}
+      // and answers the keys a button answers. A plain label takes neither.
+      tabIndex={onClick || explained ? 0 : undefined}
       aria-pressed={onClick ? !!active : undefined}
+      aria-disabled={explained || undefined}
       style={{ background, color: textColor }}
       className={classNames(className, styles.wrapper, {
         [styles.withRemove]: !!onRemove,
         [styles.clickable]: !!onClick,
+        [styles.explained]: explained,
         [styles.active]: !!active,
       })}
       onClick={onClick}

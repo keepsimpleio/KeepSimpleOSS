@@ -34,6 +34,15 @@
     }
   }
 
+  // The tag that is off keeps the same ring on keyboard focus, so a reader
+  // who tabs to it sees what a reader who points at it sees.
+  &.explained:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--white),
+      0 0 0 3px var(--brown);
+    outline: none;
+  }
+
   &.active {
     box-shadow:
       0 0 0 2px var(--white),
