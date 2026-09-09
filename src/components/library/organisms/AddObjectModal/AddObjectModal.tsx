@@ -426,6 +426,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
         id: tag.id,
         name: tag.name,
         color: tag.color,
+        description: tag.description,
       })),
     [libraryTags],
   );

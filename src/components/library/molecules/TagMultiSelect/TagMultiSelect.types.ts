@@ -2,6 +2,11 @@ import { ITagAttributes } from '@local-types/library/tag';
 
 export interface TagOption extends Pick<ITagAttributes, 'name' | 'color'> {
   id: number;
+  /**
+   * What the owner wrote about this tag. Said on hover wherever the pill
+   * stands, which is the promise the tag form makes when it asks for it.
+   */
+  description?: string;
 }
 
 export interface TagMultiSelectProps {

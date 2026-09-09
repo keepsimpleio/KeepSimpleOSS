@@ -393,7 +393,10 @@ opening the library's palette as a multi-select. Each click is saved on its own
 through `PUT /api/objects/:id`, the Tags row under the author answers it, and the
 panel's tag list is re-read so counts, the gathered row and the unused-tag hint
 follow immediately. A failed save returns the row to the last set the server
-accepted and says so; a set is never assumed saved from a click.
+accepted and says so; a set is never assumed saved from a click. Every pill
+inside the book, in the row and in the picker's menu, says on hover what its
+owner wrote about it, the same sentence the panel gives; the pill itself stays
+a label there.
 
 The picker is the owner's, on a book, on desktop, the same rule the shelves
 follow. Videos and audio carry no tags on any surface. The edit form keeps its

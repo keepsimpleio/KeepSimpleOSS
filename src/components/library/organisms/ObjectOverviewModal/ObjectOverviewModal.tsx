@@ -152,7 +152,15 @@ export function ObjectOverviewModal(
         id: tag.id,
         name: tag.name,
         color: tag.color,
+        description: tag.description,
       })),
+    [libraryTags],
+  );
+  // A tag says what its owner wrote about it wherever it stands, and a book's
+  // own tag relation carries only a name and a colour: the sentence is looked
+  // up in the library's list, which the panel reads from too.
+  const tagDescriptions = useMemo(
+    () => new Map(libraryTags.map(tag => [tag.id, tag.description])),
     [libraryTags],
   );
   // What the object arrived carrying, in the picker's shape.
@@ -774,7 +782,11 @@ export function ObjectOverviewModal(
                         [styles.tagLeaving]: leaving,
                       })}
                     >
-                      <Tag label={tag.name} color={tag.color} />
+                      <Tag
+                        label={tag.name}
+                        color={tag.color}
+                        description={tagDescriptions.get(tag.id)}
+                      />
                     </span>
                   ))}
                 </div>

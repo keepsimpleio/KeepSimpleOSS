@@ -199,7 +199,11 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
                           }
                         }}
                       >
-                        <Tag label={option.name} color={option.color} />
+                        <Tag
+                          label={option.name}
+                          color={option.color}
+                          description={option.description}
+                        />
                         {selected && (
                           <CheckMarkIcon
                             width={15}
@@ -230,6 +234,7 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
               key={tag.id}
               label={tag.name}
               color={tag.color}
+              description={tag.description}
               onRemove={() => remove(tag.id)}
             />
           ))}
