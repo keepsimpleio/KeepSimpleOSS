@@ -191,3 +191,6 @@ docker-compose.override.yml
 
 # Run trail of the web font generator (kept on purpose, one line per run)
 !scripts/fonts/journal.log
+
+# Library data snapshots taken from production. Personal data, never committed.
+/backups/
