@@ -371,9 +371,14 @@ export function ObjectOverviewModal(
       await refreshLibraryTags();
     } catch (e) {
       console.error('[ObjectOverviewModal] tag save failed', e);
-      pendingTags.current = null;
-      setTags(savedTags.current);
-      setTagsError('Could not save these tags. Please try again.');
+      // A click made while this save was in flight is newer than the set it
+      // failed on: it stays queued, `finally` sends it, and its own outcome
+      // has the say. Only a failure with nothing behind it returns the row to
+      // the last set the server accepted.
+      if (!pendingTags.current) {
+        setTags(savedTags.current);
+        setTagsError('Could not save these tags. Please try again.');
+      }
     } finally {
       tagSaveInFlight.current = false;
       if (pendingTags.current) void flushTagSave();
