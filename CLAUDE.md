@@ -421,3 +421,31 @@ takes it off.
   is spoken rather than drawn. The owner's Tags row stands from the start under
   the author and above Published, as tall as a pill when empty, so the first tag
   lands in space already held.
+
+## Library shared memory: member books in the title search
+
+Books on the public shelves of the shared libraries are offered while a member
+types a title in the Add book wizard, ahead of Google Books and Open Library.
+The shared owners are listed in `src/constants/library/sharedLibraries.ts`,
+Wolf's library alone for now (Wolf, 2026-09-09); widening it is one entry there.
+The book route reads the CMS anonymously, exactly as a visitor sees the
+library, so a private shelf never reaches the wizard. A member row carries
+title, author, publication date, source URL and the owner's uploaded cover in
+the largest rendition under the upload cap, served through the cover proxy,
+which admits the CMS upload folder for that. It never carries the owner's
+notes, rating, difficulty, tags or shelf: those are the owner's own. Provider
+rows repeating a member title are dropped. Every lookup leaves a
+`library.autofill.member` JSON line.
+
+### Design passport
+
+- Palette: the member ring is the existing `--blue-500`, `--blue-400` on hover
+  and keyboard selection. No other color on this surface changes.
+- Typography: existing autocomplete faces; the hint uses the shared Tooltip at
+  its own size. The origin is also read out with the row for screen readers.
+- Spacing and radius: existing option row; the ring is drawn inset.
+- Motion passport: the Tooltip's existing 150ms opacity; the ring is static.
+  Reduced motion follows the Tooltip.
+- Scrollbar passport: no new scrollable surface.
+- Stability passport: the ring lives inside the row's box, so a member row is
+  exactly as tall and wide as a provider row and hover costs no space.

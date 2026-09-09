@@ -47,9 +47,37 @@ function candidatesFor(raw: string): string[] {
   return [raw, ...fallbacksFor(raw)];
 }
 
+// Our own CMS serves the covers members uploaded, offered through the shared
+// library suggestions. Only its upload folder, only over https.
+const CMS_HOSTS = [process.env.STRAPI_URL, process.env.NEXT_PUBLIC_STRAPI]
+  .filter((base): base is string => !!base)
+  .flatMap(base => {
+    try {
+      const url = new URL(base);
+      return url.protocol === 'https:' ? [url.hostname] : [];
+    } catch {
+      return [];
+    }
+  });
+
+function isCmsUpload(url: URL): boolean {
+  return (
+    CMS_HOSTS.includes(url.hostname) && url.pathname.startsWith('/uploads/')
+  );
+}
+
 function isAllowed(raw: string): boolean {
   try {
     const url = new URL(raw);
+    if (
+      url.protocol === 'https:' &&
+      !url.username &&
+      !url.password &&
+      (!url.port || url.port === '443') &&
+      isCmsUpload(url)
+    ) {
+      return true;
+    }
     return (
       url.protocol === 'https:' &&
       !url.username &&

@@ -40,6 +40,26 @@
   }
 }
 
+// A book from a shared member library. The ring is drawn inside the row's
+// box, so it moves nothing around it, and the hover hint names the owner.
+.optionMember {
+  box-shadow: inset 0 0 0 1px var(--blue-500);
+
+  &:hover,
+  &.active {
+    box-shadow: inset 0 0 0 1px var(--blue-400);
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .thumb {
   flex-shrink: 0;
   width: 32px;
