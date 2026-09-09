@@ -735,6 +735,50 @@ export function ObjectOverviewModal(
             {favoriteError && <p className={styles.error}>{favoriteError}</p>}
             {tagsError && <p className={styles.error}>{tagsError}</p>}
 
+            {/* The tags sit with the controls that set them, under the author
+                and above the object's own facts. The owner keeps this row from
+                the start, empty or not: it is where the picker's answer lands,
+                and a row appearing on the first tag would shift everything
+                under it. */}
+            {(showTags || tags.length > 0) && (
+              <div className={styles.row}>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.rowLabel}
+                >
+                  Tags
+                </Text>
+                <div
+                  ref={tagsRef}
+                  className={classNames(styles.tags, {
+                    [styles.tagsEmpty]: tags.length === 0,
+                  })}
+                >
+                  {tags.length === 0 && (
+                    <Text
+                      variant={TypographyVariant.TextBase}
+                      className={styles.rowValue}
+                    >
+                      No tags yet
+                    </Text>
+                  )}
+                  {/* One pill per slot: the slot is what the list motion
+                      measures and moves. */}
+                  {tagEntries.map(({ item: tag, leaving }) => (
+                    <span
+                      key={tag.id}
+                      data-flip-id={String(tag.id)}
+                      className={classNames(styles.tagSlot, {
+                        [styles.tagLeaving]: leaving,
+                      })}
+                    >
+                      <Tag label={tag.name} color={tag.color} />
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {publishedFormatted && (
               <div className={styles.row}>
                 <Text
@@ -775,48 +819,6 @@ export function ObjectOverviewModal(
                 </Text>
               )}
             </div>
-
-            {/* The owner keeps this row from the start, empty or not: it is
-                where the picker's answer lands, and a row appearing on the
-                first tag would shift everything under it. */}
-            {(showTags || tags.length > 0) && (
-              <div className={styles.row}>
-                <Text
-                  variant={TypographyVariant.TextSmall}
-                  className={styles.rowLabel}
-                >
-                  Tags
-                </Text>
-                <div
-                  ref={tagsRef}
-                  className={classNames(styles.tags, {
-                    [styles.tagsEmpty]: tags.length === 0,
-                  })}
-                >
-                  {tags.length === 0 && (
-                    <Text
-                      variant={TypographyVariant.TextBase}
-                      className={styles.rowValue}
-                    >
-                      No tags yet
-                    </Text>
-                  )}
-                  {/* One pill per slot: the slot is what the list motion
-                      measures and moves. */}
-                  {tagEntries.map(({ item: tag, leaving }) => (
-                    <span
-                      key={tag.id}
-                      data-flip-id={String(tag.id)}
-                      className={classNames(styles.tagSlot, {
-                        [styles.tagLeaving]: leaving,
-                      })}
-                    >
-                      <Tag label={tag.name} color={tag.color} />
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div className={styles.row}>
               <Text

@@ -390,7 +390,7 @@ with them. One tag at a time; clicking the active tag clears the filter.
 A tag is put on a book from the book itself. The object overview carries a tag
 picker in the row with Copy URL, the star and the owner menu: one icon button
 opening the library's palette as a multi-select. Each click is saved on its own
-through `PUT /api/objects/:id`, the Tags row under the notes answers it, and the
+through `PUT /api/objects/:id`, the Tags row under the author answers it, and the
 panel's tag list is re-read so counts, the gathered row and the unused-tag hint
 follow immediately. A failed save returns the row to the last set the server
 accepted and says so; a set is never assumed saved from a click.
@@ -415,5 +415,6 @@ takes it off.
 - Scrollbar passport: the menu caps at 240px and scrolls behind a 12px themed
   scrollbar, taupe thumb on white-100, 6px thumb radius.
 - Stability passport: the button's box never changes with the tag count, which
-  is spoken rather than drawn. The owner's Tags row stands from the start, as
-  tall as a pill when empty, so the first tag lands in space already held.
+  is spoken rather than drawn. The owner's Tags row stands from the start under
+  the author and above Published, as tall as a pill when empty, so the first tag
+  lands in space already held.
