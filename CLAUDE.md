@@ -485,9 +485,13 @@ fixed, and the save goes through the library like its privacy does. The same
 
 ## Staging and production need Wolf's word (Wolf, 2026-09-09)
 
-Nothing goes to staging or production without Wolf's direct instruction in
-the conversation: no merge to `dev` or `main` in this repo or in
+Wolf's order, twice the same evening, after an unasked CMS merge to dev rolled
+the staging CMS: I have no right to push anything to staging or production
+until he tells me directly to do it. Nothing goes to staging or production
+without Wolf's direct instruction in the conversation: no merge to `dev` or `main` in this repo or in
 keepsimple-cms-new, no staging redeploy or restart, no CMS schema rollout.
 DEV (this working tree) is the only surface changed freely. Prepare the pull
 request, leave it unmerged, and ask for the go in one line. The A-Z grant
-covers execution, never the decision.
+covers execution, never the decision. Every feature collects on the one
+batch branch and reaches production as one pull request; a go that says
+"everything on staging" covers the whole batch, CMS included.
