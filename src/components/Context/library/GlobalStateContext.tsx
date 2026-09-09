@@ -24,7 +24,6 @@ import {
   readSidebarCollapsed,
   writeSidebarCollapsed,
 } from '@lib/library/sidebarPanel';
-import { type LibraryTheme, readTheme, writeTheme } from '@lib/library/theme';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
 
@@ -85,13 +84,6 @@ interface GlobalStateContextValue {
    */
   isCreateBlocked: boolean;
   setIsCreateBlocked: (value: boolean) => void;
-  /**
-   * The light the Library is read in. A device choice kept in a cookie
-   * (`@lib/library/theme`), painted server-side where the page reads the
-   * cookie and mirrored onto <html> for surfaces portaled to <body>.
-   */
-  theme: LibraryTheme;
-  toggleTheme: () => void;
 }
 
 const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(
@@ -106,18 +98,11 @@ interface GlobalStateProviderProps {
    * and a refresh never shows it open for a frame before folding.
    */
   initialSidebarCollapsed?: boolean;
-  /**
-   * The theme as read from the request cookie by the page's
-   * `getServerSideProps`. Pages without one (the static home) start light and
-   * read the cookie on mount.
-   */
-  initialTheme?: LibraryTheme;
 }
 
 export function GlobalStateProvider({
   children,
   initialSidebarCollapsed = false,
-  initialTheme,
 }: GlobalStateProviderProps) {
   const { data: session } = useSession();
   const { accountData, token } = useAuth();
@@ -137,31 +122,6 @@ export function GlobalStateProvider({
   const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(null);
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
-  const [theme, setTheme] = useState<LibraryTheme>(initialTheme ?? 'light');
-
-  // A page that could not read the cookie on the server catches up here.
-  useEffect(() => {
-    if (initialTheme) return;
-    const saved = readTheme();
-    if (saved) setTheme(saved);
-  }, [initialTheme]);
-
-  // Portals under <body> carry the .library class but not the wrapper's
-  // attribute; <html> tells them which theme to read.
-  useEffect(() => {
-    document.documentElement.dataset.libraryTheme = theme;
-    return () => {
-      delete document.documentElement.dataset.libraryTheme;
-    };
-  }, [theme]);
-
-  const toggleTheme = useCallback(() => {
-    setTheme(current => {
-      const next: LibraryTheme = current === 'dark' ? 'light' : 'dark';
-      writeTheme(next);
-      return next;
-    });
-  }, []);
   const [isOwner, setIsOwner] = useState(false);
 
   const refetchLibraries = useCallback(async () => {
@@ -280,8 +240,6 @@ export function GlobalStateProvider({
       setCurrentLibrary,
       isCreateBlocked,
       setIsCreateBlocked,
-      theme,
-      toggleTheme,
     }),
     [
       isOwner,
@@ -302,8 +260,6 @@ export function GlobalStateProvider({
       setCurrentLibrary,
       isCreateBlocked,
       setIsCreateBlocked,
-      theme,
-      toggleTheme,
     ],
   );
 

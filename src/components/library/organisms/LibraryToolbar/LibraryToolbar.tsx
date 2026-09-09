@@ -13,7 +13,6 @@ import {
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
-import { ThemeToggle } from '@components/library/atoms/ThemeToggle';
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   Button,
@@ -262,20 +261,16 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
       </div>
 
       <div className={styles.searchWrap}>
-        <div className={styles.searchRow}>
-          {/* The lamp: the Library's light, turned down or up, kept per device. */}
-          <ThemeToggle />
-          <Input
-            type="search"
-            value={search}
-            placeholder="Search everywhere"
-            placeholderColor="#C4C4C4"
-            onChange={e => onSearchChange?.(e.target.value)}
-            onClear={() => onSearchChange?.('')}
-            wrapperClassName={styles.search}
-            ariaLabel="Search everywhere"
-          />
-        </div>
+        <Input
+          type="search"
+          value={search}
+          placeholder="Search everywhere"
+          placeholderColor="#C4C4C4"
+          onChange={e => onSearchChange?.(e.target.value)}
+          onClear={() => onSearchChange?.('')}
+          wrapperClassName={styles.search}
+          ariaLabel="Search everywhere"
+        />
         {/* The count sits in a line held from the start, so typing never
               pushes the toolbar around. */}
         <Text

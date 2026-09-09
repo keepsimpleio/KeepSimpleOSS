@@ -3,12 +3,12 @@
 // changes: components keep reading the same names, so a surface that is
 // paper by day is night paper here without knowing it.
 //
-// Two hooks for the same values. The page wrapper carries `data-theme` from
-// the server (the cookie decides it before the first paint), and the <html>
-// element mirrors it after hydration so surfaces portaled to <body> with the
-// `.library` class (tooltips, drag overlays) read the same tokens.
-.library[data-theme='dark'],
-html[data-library-theme='dark'] .library {
+// The light is the site's, not the Library's: keepsimple's own switch in the
+// navbar puts `darkTheme` on <body> (useGlobals, persisted in localStorage,
+// applied app-wide by _app on cold load), and every Library surface reads it
+// from there. Surfaces portaled to <body> carry the `.library` class and so
+// stand inside the same selector. The Library ships no switch of its own.
+body.darkTheme .library {
   color-scheme: dark;
 
   /* Paper becomes night paper: warm near-blacks, never a cold grey. */

@@ -384,7 +384,7 @@
 
         // The plank is a photograph of daylight wood; at night it is dimmed
         // to the room rather than swapped for another file.
-        [data-theme='dark'] & {
+        :global(body.darkTheme) & {
           filter: brightness(0.5) saturate(0.85);
         }
 

@@ -301,7 +301,7 @@
         transition: filter 0.2s ease;
 
         // Daylight wood, dimmed to the room at night.
-        [data-theme='dark'] & {
+        :global(body.darkTheme) & {
           filter: brightness(0.5) saturate(0.85);
         }
 

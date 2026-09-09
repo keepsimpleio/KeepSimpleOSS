@@ -10,7 +10,6 @@ import type {
 } from '@local-types/library/shareLink';
 
 import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
-import { type LibraryTheme, readThemeFromHeader } from '@lib/library/theme';
 
 import { getShareLink } from '@api/library/getShareLink';
 
@@ -23,7 +22,6 @@ import {
   useGlobalState,
 } from '@components/Context/library/GlobalStateContext';
 import { ShareSelectionProvider } from '@components/Context/library/ShareSelectionContext';
-import { LibraryRoot } from '@components/library/atoms/LibraryRoot';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import {
   Button,
@@ -47,8 +45,6 @@ type SharePageProps = {
   token: string;
   /** Desktop info panel folded to its spine — read from the viewer's cookie. */
   initialSidebarCollapsed?: boolean;
-  /** The viewer's light or dark reading, from the cookie; null when unset. */
-  initialTheme?: LibraryTheme | null;
 };
 
 // Copy for the non-ok outcomes. `error` is the retryable transport/parse case;
@@ -260,16 +256,12 @@ const SharePage: NextPage<SharePageProps> = ({
   username,
   token,
   initialSidebarCollapsed,
-  initialTheme,
 }) => {
   const pageTitle = `${username} | ${DEFAULT_SEO.siteName}`;
 
   return (
     <AuthProvider>
-      <GlobalStateProvider
-        initialSidebarCollapsed={initialSidebarCollapsed}
-        initialTheme={initialTheme ?? undefined}
-      >
+      <GlobalStateProvider initialSidebarCollapsed={initialSidebarCollapsed}>
         <DashboardProvider>
           <ShareSelectionProvider>
             <SeoGenerator
@@ -290,12 +282,12 @@ const SharePage: NextPage<SharePageProps> = ({
                 },
               }}
             />
-            <LibraryRoot className={pageStyles.dashboard}>
+            <div className={`library ${pageStyles.dashboard}`}>
               <main className={pageStyles.content}>
                 <LibraryTemplate libraryId={username} hideSharePanel />
               </main>
               <Sidebar />
-            </LibraryRoot>
+            </div>
             <ShareRecipientView username={username} token={token} />
           </ShareSelectionProvider>
         </DashboardProvider>
@@ -319,9 +311,8 @@ export const getServerSideProps: GetServerSideProps<
   const initialSidebarCollapsed = readSidebarCollapsedForRequest(
     context.req.headers.cookie,
   );
-  const initialTheme = readThemeFromHeader(context.req.headers.cookie);
 
   return {
-    props: { username, token, initialSidebarCollapsed, initialTheme },
+    props: { username, token, initialSidebarCollapsed },
   };
 };

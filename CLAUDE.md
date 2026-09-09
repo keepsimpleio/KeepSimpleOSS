@@ -505,15 +505,15 @@ batch branch and reaches production as one pull request; a go that says
 
 ## Library dark mode design passport
 
-The Library reads in two lights. The lamp beside the search (toolbar and home
-page) turns the light down and up; the choice is a device one, kept a year in
-the `ks_library_theme` cookie, painted server-side by the pages that read the
-cookie so a dark reader never sees a light flash, and mirrored onto `<html>`
-after hydration so surfaces portaled to `<body>` read the same tokens. The
-static home page catches up on mount. Components know nothing of it: every
-token in `variables.scss` has a night value in `themes.scss`, keyed on the
-wrapper's `data-theme`, and a component that hardcodes a color is off
-passport in both lights.
+The Library reads in two lights, and the switch is the site's own: keepsimple's
+navbar toggle (`useGlobals`, persisted in localStorage, applied app-wide by
+`_app` on cold load) puts `darkTheme` on `<body>`, and every Library surface
+reads it from there. The Library ships no control of its own and must not grow
+one: a second switch for one section is a second answer to the same question.
+Components know nothing of the theme either: every token in `variables.scss`
+has a night value in `themes.scss` under `body.darkTheme .library`, which also
+covers surfaces portaled to `<body>` since they carry the `.library` class. A
+component that hardcodes a colour is off passport in both lights.
 
 - Palette: night paper is warm, never grey: page `#191614`, surfaces
   `#1f1c19` to `#2b2724`, borders `#3b3530`, ink `#efe7dc`, secondary ink
@@ -523,15 +523,13 @@ passport in both lights.
   tokens for former hardcoded values: `--white-400`, `--gray-300`,
   `--gray-400`, `--sand-100/200/300`, `--panel-tab-shadow-hover`.
 - Typography: unchanged in both lights.
-- Spacing and radius: the lamp is a 40px square on `--radius-control`, 8px
-  left of the search; nothing else moves.
+- Spacing and radius: unchanged in both lights. The theme adds no control and
+  takes no space.
 - Motion passport: page and ink cross over in 200ms ease; the plank dims in
-  200ms; sun and moon cross over in place over 200ms with a 40° turn.
-  Reduced motion switches at once.
+  200ms. Reduced motion switches at once.
 - Scrollbar passport: themed scrollbars read `--taupe` and `--white-100`, so
   they follow the theme; `color-scheme: dark` themes the native ones.
-- Stability passport: the lamp holds both glyphs from the start and never
-  changes size; the theme changes color only, never geometry.
+- Stability passport: the theme changes colour only, never geometry.
 
 ## Library tag usage chart
 
