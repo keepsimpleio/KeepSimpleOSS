@@ -603,31 +603,28 @@ export function LibraryTemplate({
     [renderedTag, shelves],
   );
 
-  // A filtered library is a linkable one: the tag's own address rides on the
-  // library URL as `#deep-work`. Written with the History API rather than the
-  // router so the page is not re-rendered for a fragment, and re-applied after
-  // a navigation (opening an object pushes a path of its own).
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const wanted = activeTag ? `#${encodeURIComponent(activeTag.slug)}` : '';
-    if (window.location.hash === wanted) return;
-    window.history.replaceState(
-      null,
-      '',
-      `${window.location.pathname}${window.location.search}${wanted}`,
-    );
-  }, [activeTag, router.asPath]);
+  // The address a link arrived with, and whether it has been answered yet.
+  // Reading it comes first: the writer below would otherwise clear an incoming
+  // `#deep-work` on the first paint, before the tags it names have loaded.
+  const addressRead = useRef(false);
+  const hashApplied = useRef<string | null>(null);
 
   // The address is read back the moment the tags are known, so a link opens
   // straight into the filtered view. A tag that no longer exists, or that
   // labels nothing this viewer can open, simply leaves the library unfiltered.
-  const hashApplied = useRef<string | null>(null);
   useEffect(() => {
-    if (typeof window === 'undefined' || libraryTags.length === 0) return;
+    if (typeof window === 'undefined') return;
     const apply = () => {
       const raw = window.location.hash.replace(/^#/, '');
-      if (!raw) return;
+      if (!raw) {
+        addressRead.current = true;
+        return;
+      }
+      // The list decides what the address means, so nothing is answered until
+      // it has arrived.
+      if (libraryTags.length === 0) return;
       const slug = decodeURIComponent(raw).toLowerCase();
+      addressRead.current = true;
       if (hashApplied.current === slug) return;
       hashApplied.current = slug;
       const tag = libraryTags.find(t => t.slug?.toLowerCase() === slug);
@@ -639,6 +636,21 @@ export function LibraryTemplate({
     window.addEventListener('hashchange', apply);
     return () => window.removeEventListener('hashchange', apply);
   }, [libraryTags, setActiveTagId]);
+
+  // A filtered library is a linkable one: the tag's own address rides on the
+  // library URL as `#deep-work`. Written with the History API rather than the
+  // router so the page is not re-rendered for a fragment, and re-applied after
+  // a navigation (opening an object pushes a path of its own).
+  useEffect(() => {
+    if (typeof window === 'undefined' || !addressRead.current) return;
+    const wanted = activeTag ? `#${encodeURIComponent(activeTag.slug)}` : '';
+    if (window.location.hash === wanted) return;
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${window.location.search}${wanted}`,
+    );
+  }, [activeTag, libraryTags, router.asPath]);
 
   // Search runs inside the active tag: typing narrows the gathered row and
   // never clears the filter.

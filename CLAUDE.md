@@ -358,8 +358,9 @@ with them. One tag at a time; clicking the active tag clears the filter.
 
 - Palette: the tag's own colour on its chip. Active and hover draw the existing
   `--white` and `--brown` ring, as a selected cover does. A book on a private
-  shelf is veiled with `--white-transparent-400` over the paper wash and marked
-  with `--brown-100` on `--white-200` inside a `--beige` border.
+  shelf is veiled with `--white-transparent-400` easing into
+  `--white-transparent-600` (the same paper at 78%, added with this surface)
+  and marked with `--brown-100` on `--white-200` inside a `--beige` border.
 - Typography: existing Library faces. The Hidden mark is Source Sans Pro at
   11px, uppercase, 0.12em tracking.
 - Spacing and radius: existing shelf geometry and control radii. The gathered
