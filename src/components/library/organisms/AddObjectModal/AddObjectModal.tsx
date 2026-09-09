@@ -16,7 +16,10 @@ import {
   useForm,
 } from 'react-hook-form';
 
-import { SHELF_FULL_MESSAGE } from '@constants/library/common';
+import {
+  MAX_TAGS_PER_OBJECT,
+  SHELF_FULL_MESSAGE,
+} from '@constants/library/common';
 import { COVER_MAX_BYTES } from '@constants/library/cover';
 
 import type { IAutofillSuggestion } from '@local-types/library/autofill';
@@ -167,7 +170,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const shelfLocked = defaultShelfId != null && !editing;
   const { accountData } = useAuth();
   const { currentOwner } = useGlobalState();
-  const { libraryTags } = useDashboard();
+  const { libraryTags, refreshLibraryTags } = useDashboard();
   // The editor only opens on the owner's own library, so the owner published by
   // LibraryTemplate and the signed-in account are the same person; the account
   // covers the moment before the library has published its owner.
@@ -572,8 +575,11 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       // the field at all for anything else would hand the CMS a list the user
       // was never offered, and it rightly refuses one: an older video that
       // still held tags would then be unsaveable.
+      // An edit always states the whole set, the empty set included: sending
+      // nothing means "no change", so taking the last tag off a book used to
+      // save as leaving it exactly where it was.
       const tags =
-        objectType === 'book' && selectedTags.length > 0
+        objectType === 'book' && (editing || selectedTags.length > 0)
           ? selectedTags.map(t => t.id)
           : undefined;
       // Prefer the user's explicit shelf choice (move-to dropdown / locked add
@@ -735,6 +741,10 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       // Land the created/updated object in the parent's list first so the
       // reorder below can apply `order` to a state that already contains it.
       onCreated?.(resultObject);
+
+      // The panel counts the books behind each tag and the gathered row is
+      // drawn from the same list, so both are re-read once a book's tags move.
+      if (tags) void refreshLibraryTags();
 
       // Persist the step-2 drag order. The draft placeholder stands in for the
       // object we just created/updated, so map it to its real id.
@@ -1204,7 +1214,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
                         onChange={setSelectedTags}
                         placeholder={config.tagsLabel}
                         emptyState="No tags yet. Create one from the Tags panel on the right"
-                        maxItems={10}
+                        maxItems={MAX_TAGS_PER_OBJECT}
                         portal
                       />
                     </div>

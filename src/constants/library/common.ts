@@ -103,3 +103,10 @@ export const MAX_TAGS_PER_LIBRARY = 13;
 export const MAX_TAG_DESCRIPTION_LENGTH = 180;
 
 export const TAG_LIMIT_MESSAGE = `You have reached your limit maximum ${MAX_TAGS_PER_LIBRARY} tags`;
+
+// How many tags one object may carry. Shared by the picker in the object
+// overview and the one in the edit form, so a book cannot be filled past the
+// cap on one surface and refused on the other.
+export const MAX_TAGS_PER_OBJECT = 10;
+
+export const TAG_PER_OBJECT_LIMIT_MESSAGE = `Up to ${MAX_TAGS_PER_OBJECT} tags per item. Remove one to add another.`;

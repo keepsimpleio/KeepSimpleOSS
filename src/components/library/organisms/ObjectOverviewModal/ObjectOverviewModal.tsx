@@ -9,7 +9,11 @@ import React, {
   useState,
 } from 'react';
 
-import { KEEPSIMPLE_URL, SHELF_FULL_MESSAGE } from '@constants/library/common';
+import {
+  KEEPSIMPLE_URL,
+  MAX_TAGS_PER_OBJECT,
+  SHELF_FULL_MESSAGE,
+} from '@constants/library/common';
 
 import type {
   Difficulty,
@@ -17,6 +21,7 @@ import type {
   OverallRating,
 } from '@local-types/library/object';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
@@ -43,6 +48,7 @@ import {
   ShareIcon,
 } from '@icons/library/svg';
 
+import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
 import { IconName } from '@components/library/atoms/Icon';
@@ -64,6 +70,8 @@ import { FavoriteToggle } from '@components/library/molecules/FavoriteToggle';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { RatingBox } from '@components/library/molecules/RatingBox';
 import { Tag } from '@components/library/molecules/Tag';
+import { TagMultiSelect } from '@components/library/molecules/TagMultiSelect';
+import type { TagOption } from '@components/library/molecules/TagMultiSelect/TagMultiSelect.types';
 import { AddObjectModal } from '@components/library/organisms/AddObjectModal';
 
 import { overviewConfigByType } from './ObjectOverviewModal.config';
@@ -99,6 +107,10 @@ export function ObjectOverviewModal(
       : null;
 
   const [menuOpen, setMenuOpen] = useState(false);
+  // motion-passport: exempt — every motion on this surface is declared
+  // elsewhere and already answers prefers-reduced-motion: the menu and popup
+  // fades in ObjectOverviewModal.module.scss, and the tag row's arrivals and
+  // departures in useAnimatedList, which cuts them under reduced motion.
   // The owner menu stays mounted for its fade-out.
   const { mounted: menuMounted, shown: menuShown } = usePresence(menuOpen, 120);
   const [editing, setEditing] = useState(false);
@@ -131,6 +143,28 @@ export function ObjectOverviewModal(
   const [shareCopied, setShareCopied] = useState(false);
 
   const { currentShelves } = useGlobalState();
+  const { libraryTags, refreshLibraryTags } = useDashboard();
+
+  // The palette this book can be labelled from is the library's own vocabulary.
+  const tagOptions = useMemo<TagOption[]>(
+    () =>
+      libraryTags.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color,
+      })),
+    [libraryTags],
+  );
+  // What the object arrived carrying, in the picker's shape.
+  const objectTags = useMemo<TagOption[]>(
+    () =>
+      (attributes.tags?.data ?? []).map(t => ({
+        id: t.id,
+        name: t.attributes.name,
+        color: t.attributes.color,
+      })),
+    [attributes.tags],
+  );
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const menuRef = useClickOutside(closeMenu);
@@ -277,6 +311,74 @@ export function ObjectOverviewModal(
     },
   });
 
+  // The tags this object carries, held here rather than read from the prop:
+  // the picker writes them one click at a time and the row below must follow
+  // the click, not the round trip.
+  const [tags, setTags] = useState<TagOption[]>(objectTags);
+  const [tagsError, setTagsError] = useState<string | null>(null);
+  // The last set the server accepted, and the one waiting to be sent. A save
+  // in flight is never raced: the newest choice is queued behind it, so a run
+  // of quick clicks ends with the server holding exactly what is on screen.
+  const savedTags = useRef(objectTags);
+  const pendingTags = useRef<TagOption[] | null>(null);
+  const tagSaveInFlight = useRef(false);
+  // A different object in the same modal instance starts from its own tags.
+  const seededFor = useRef(id);
+  useEffect(() => {
+    if (seededFor.current === id) return;
+    seededFor.current = id;
+    setTags(objectTags);
+    savedTags.current = objectTags;
+    pendingTags.current = null;
+    setTagsError(null);
+  }, [id, objectTags]);
+
+  const flushTagSave = async () => {
+    if (tagSaveInFlight.current) return;
+    const next = pendingTags.current;
+    if (!next) return;
+    pendingTags.current = null;
+    tagSaveInFlight.current = true;
+    try {
+      const res = await updateObject(id, { tags: next.map(t => t.id) });
+      savedTags.current = next;
+      const withRelations = preserveRelations(res.data);
+      onUpdated?.({
+        ...withRelations,
+        attributes: {
+          ...withRelations.attributes,
+          // A PUT answers without the relation it just wrote, and a cleared
+          // set has nothing to carry forward, so the saved list is written in
+          // here for the card and the hover dossier to read.
+          tags: {
+            data: next.map(t => ({
+              id: t.id,
+              attributes: { name: t.name, color: t.color },
+            })),
+          },
+        },
+      });
+      // The panel counts the books behind each tag and the gathered row is
+      // drawn from the same list, so both are re-read once the tag lands.
+      await refreshLibraryTags();
+    } catch (e) {
+      console.error('[ObjectOverviewModal] tag save failed', e);
+      pendingTags.current = null;
+      setTags(savedTags.current);
+      setTagsError('Could not save these tags. Please try again.');
+    } finally {
+      tagSaveInFlight.current = false;
+      if (pendingTags.current) void flushTagSave();
+    }
+  };
+
+  const handleTagsChange = (next: TagOption[]) => {
+    setTags(next);
+    setTagsError(null);
+    pendingTags.current = next;
+    void flushTagSave();
+  };
+
   // The last values the server accepted, so a failed save falls back to
   // them and not to whatever the modal opened with.
   const savedRating = useRef({
@@ -365,7 +467,16 @@ export function ObjectOverviewModal(
   const coverUrl = resolveStrapiUrl(
     attributes.coverImage?.data?.attributes.url,
   );
-  const tagsList = attributes.tags?.data ?? [];
+  // Only a book carries tags, and only its owner may set them; a visitor sees
+  // the row when there is something on it.
+  const showTags = isOwner && objectType === 'book';
+  // A tag that arrives rises into the row, one that is taken off fades where
+  // it stood and the rest slide over.
+  const { ref: tagsRef, entries: tagEntries } = useAnimatedList(
+    tags,
+    tag => String(tag.id),
+    { collapse: 'width' },
+  );
   const shelfData = attributes.shelf?.data;
   // Prefer the live shelf from GlobalState (matched by id) so a rename reflects
   // instantly — the object's embedded `shelf.data` is frozen at fetch time.
@@ -560,6 +671,22 @@ export function ObjectOverviewModal(
                     className={styles.favoriteButton}
                   />
                 )}
+                {/* A tag labels a book, so the picker stands with the other
+                    controls of the book itself. Each click is saved on its
+                    own; the row below carries the answer. */}
+                {isOwner && objectType === 'book' && (
+                  <TagMultiSelect
+                    variant="compact"
+                    options={tagOptions}
+                    value={tags}
+                    onChange={handleTagsChange}
+                    maxItems={MAX_TAGS_PER_OBJECT}
+                    emptyState="No tags yet. Create one from the Tags panel."
+                    ariaLabel="Tags"
+                    hint="Tags"
+                    portal
+                  />
+                )}
                 {isOwner && (
                   <div ref={menuRef} className={styles.menuWrapper}>
                     <button
@@ -606,6 +733,7 @@ export function ObjectOverviewModal(
               </div>
             </div>
             {favoriteError && <p className={styles.error}>{favoriteError}</p>}
+            {tagsError && <p className={styles.error}>{tagsError}</p>}
 
             {publishedFormatted && (
               <div className={styles.row}>
@@ -648,7 +776,10 @@ export function ObjectOverviewModal(
               )}
             </div>
 
-            {tagsList.length > 0 && (
+            {/* The owner keeps this row from the start, empty or not: it is
+                where the picker's answer lands, and a row appearing on the
+                first tag would shift everything under it. */}
+            {(showTags || tags.length > 0) && (
               <div className={styles.row}>
                 <Text
                   variant={TypographyVariant.TextSmall}
@@ -656,13 +787,32 @@ export function ObjectOverviewModal(
                 >
                   Tags
                 </Text>
-                <div className={styles.tags}>
-                  {tagsList.map(t => (
-                    <Tag
-                      key={t.id}
-                      label={t.attributes.name}
-                      color={t.attributes.color}
-                    />
+                <div
+                  ref={tagsRef}
+                  className={classNames(styles.tags, {
+                    [styles.tagsEmpty]: tags.length === 0,
+                  })}
+                >
+                  {tags.length === 0 && (
+                    <Text
+                      variant={TypographyVariant.TextBase}
+                      className={styles.rowValue}
+                    >
+                      No tags yet
+                    </Text>
+                  )}
+                  {/* One pill per slot: the slot is what the list motion
+                      measures and moves. */}
+                  {tagEntries.map(({ item: tag, leaving }) => (
+                    <span
+                      key={tag.id}
+                      data-flip-id={String(tag.id)}
+                      className={classNames(styles.tagSlot, {
+                        [styles.tagLeaving]: leaving,
+                      })}
+                    >
+                      <Tag label={tag.name} color={tag.color} />
+                    </span>
                   ))}
                 </div>
               </div>

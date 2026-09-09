@@ -6,9 +6,10 @@ import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
 import { usePresence } from '@hooks/library/usePresence';
 
-import { ArrowIcon, CheckMarkIcon } from '@icons/library/svg';
+import { ArrowIcon, CheckMarkIcon, TagIcon } from '@icons/library/svg';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import { Tag } from '@components/library/molecules/Tag';
 
 import type { TagMultiSelectProps, TagOption } from './TagMultiSelect.types';
@@ -27,7 +28,14 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
     className,
     ariaLabel = 'Select tags',
     portal = false,
+    variant = 'field',
+    menuWidth = 260,
+    hint,
   } = props;
+  // The compact form is one icon button in a row of icon actions: no label, no
+  // chips, and a menu that hangs from the button's right edge instead of
+  // stretching to a field's width.
+  const compact = variant === 'compact';
 
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useClickOutside(() => setIsOpen(false));
@@ -37,6 +45,8 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
   // is tracked against the trigger and recomputed on scroll/resize.
   const menuPos = useAnchoredPosition(triggerRef, portal && isOpen);
   // The menu stays mounted for its fade-out.
+  // motion-passport: exempt — the fade and its prefers-reduced-motion branch
+  // live in TagMultiSelect.module.scss, which this file only times.
   const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const isSelected = (option: TagOption) => value.some(t => t.id === option.id);
@@ -54,32 +64,69 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
 
   const remove = (id: number) => onChange(value.filter(t => t.id !== id));
 
+  const fieldTrigger = (
+    <button
+      ref={triggerRef}
+      type="button"
+      className={classNames(styles.trigger, { [styles.open]: isOpen })}
+      onClick={() => !disabled && setIsOpen(prev => !prev)}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      aria-expanded={isOpen}
+    >
+      <Text variant={TypographyVariant.TextBase} className={styles.placeholder}>
+        {value.length > 0 ? `${value.length} selected` : placeholder}
+      </Text>
+      <div className={styles.iconWrapper}>
+        <ArrowIcon
+          width={16}
+          height={16}
+          className={classNames(styles.icon, { [styles.rotated]: isOpen })}
+        />
+      </div>
+    </button>
+  );
+
+  // The icon carries the state the chips carry in the field form: brown once
+  // the item is labelled, and the count is spoken to a screen reader rather
+  // than drawn, so the button's box never changes with the tag count.
+  const compactTrigger = (
+    <button
+      ref={triggerRef}
+      type="button"
+      className={classNames(styles.compactTrigger, {
+        [styles.open]: isOpen,
+        [styles.hasValue]: value.length > 0,
+      })}
+      onClick={() => !disabled && setIsOpen(prev => !prev)}
+      disabled={disabled}
+      aria-label={
+        value.length > 0 ? `${ariaLabel}, ${value.length} selected` : ariaLabel
+      }
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+    >
+      <TagIcon width={16} height={16} />
+    </button>
+  );
+
   return (
-    <div ref={rootRef} className={classNames(className, styles.wrapper)}>
+    <div
+      ref={rootRef}
+      className={classNames(className, styles.wrapper, {
+        [styles.compact]: compact,
+      })}
+    >
       <div className={styles.field}>
-        <button
-          ref={triggerRef}
-          type="button"
-          className={classNames(styles.trigger, { [styles.open]: isOpen })}
-          onClick={() => !disabled && setIsOpen(prev => !prev)}
-          disabled={disabled}
-          aria-label={ariaLabel}
-          aria-expanded={isOpen}
-        >
-          <Text
-            variant={TypographyVariant.TextBase}
-            className={styles.placeholder}
-          >
-            {value.length > 0 ? `${value.length} selected` : placeholder}
-          </Text>
-          <div className={styles.iconWrapper}>
-            <ArrowIcon
-              width={16}
-              height={16}
-              className={classNames(styles.icon, { [styles.rotated]: isOpen })}
-            />
-          </div>
-        </button>
+        {!compact && fieldTrigger}
+        {compact &&
+          (hint ? (
+            <Tooltip place="bottom" tooltipContent={hint} asChild>
+              {compactTrigger}
+            </Tooltip>
+          ) : (
+            compactTrigger
+          ))}
         {menuMounted &&
           (!portal || menuPos) &&
           (() => {
@@ -87,6 +134,7 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
               <div
                 className={classNames(styles.menu, {
                   [styles.menuClosing]: !menuShown,
+                  [styles.menuCompact]: compact,
                 })}
                 role="listbox"
                 style={
@@ -94,11 +142,21 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
                     ? {
                         position: 'fixed',
                         top: menuPos.top,
-                        left: menuPos.left,
-                        width: menuPos.width,
+                        // The compact menu is wider than the button it hangs
+                        // from, so it is hung by its right edge and held
+                        // inside the viewport.
+                        left: compact
+                          ? Math.max(
+                              8,
+                              menuPos.left + menuPos.width - menuWidth,
+                            )
+                          : menuPos.left,
+                        width: compact ? menuWidth : menuPos.width,
                         zIndex: 1500,
                       }
-                    : undefined
+                    : compact
+                      ? { width: menuWidth }
+                      : undefined
                 }
                 // Portaled menu sits outside rootRef, so useClickOutside would close
                 // it on the click that's about to toggle an option. Stop the
@@ -165,7 +223,7 @@ export function TagMultiSelect(props: TagMultiSelectProps): JSX.Element {
           })()}
       </div>
 
-      {value.length > 0 && (
+      {!compact && value.length > 0 && (
         <div className={styles.chips}>
           {value.map(tag => (
             <Tag
