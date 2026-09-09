@@ -522,6 +522,7 @@ export function Sidebar() {
                       label={tag.name}
                       color={tag.color}
                       active={activeTagId === tag.id}
+                      description={tag.description}
                       // A tag on no book has no row to open, so it says what
                       // it is instead of sitting there as a dead control.
                       hint={tag.count === 0 ? 'Tag not used' : undefined}

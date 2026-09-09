@@ -105,6 +105,18 @@
   }
 }
 
+// A hint of several parts: the name, what it was written to mean, and its
+// state. One line each, on the tooltip's own 4px rhythm.
+.tip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tipLine {
+  display: block;
+}
+
 .arrow {
   left: 20px;
 }

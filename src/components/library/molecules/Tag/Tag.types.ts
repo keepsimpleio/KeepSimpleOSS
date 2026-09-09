@@ -8,7 +8,12 @@ export interface TagProps {
    */
   active?: boolean;
   /**
-   * What to say on hover instead of the label: why this tag is standing there
+   * What the owner wrote about this tag. Said on hover, which is the promise
+   * the tag form makes when it asks for it.
+   */
+  description?: string;
+  /**
+   * What to say on hover besides the label: why this tag is standing there
    * without a click to give. Shown through the shared Tooltip, the same way
    * every other disabled control in the Library explains itself.
    */

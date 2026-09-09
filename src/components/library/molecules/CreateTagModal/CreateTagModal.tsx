@@ -5,11 +5,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { MAX_TAG_DESCRIPTION_LENGTH } from '@constants/library/common';
 import { tagColors } from '@constants/library/tags';
 
 import { ArrowIcon, DeleteIcon, InfoIcon } from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
@@ -103,6 +105,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
   });
 
   const tagName = watch('name');
+  const tagDescription = watch('description') ?? '';
   const activeColor = watch('color');
 
   const handleColorSelect = (color: string) => {
@@ -267,7 +270,12 @@ export function CreateTagModal(props: CreateTagModalProps) {
                       placeholder="This description will appear on tag hover"
                       wrapperClassName={styles.shareInputWrapper}
                       className={styles.shareInput}
+                      maxLength={MAX_TAG_DESCRIPTION_LENGTH}
                       {...register('description')}
+                    />
+                    <CharCount
+                      current={tagDescription.length}
+                      max={MAX_TAG_DESCRIPTION_LENGTH}
                     />
                     {errors.description && (
                       <p className={styles.error}>

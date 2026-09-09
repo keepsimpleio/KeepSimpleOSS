@@ -14,7 +14,16 @@ import styles from './Tag.module.scss';
 const DEFAULT_TAG_COLOR = '#0268ab';
 
 export function Tag(props: TagProps): JSX.Element {
-  const { className, label, color, active, hint, onClick, onRemove } = props;
+  const {
+    className,
+    label,
+    color,
+    active,
+    description,
+    hint,
+    onClick,
+    onRemove,
+  } = props;
   const background = color && color.trim() ? color : DEFAULT_TAG_COLOR;
   const textColor = getContrastTextColor(background);
   const textRef = useRef<HTMLDivElement>(null);
@@ -82,15 +91,31 @@ export function Tag(props: TagProps): JSX.Element {
     </div>
   );
 
-  // The hint carries the label with it when the pill is too narrow to show
-  // the whole word, so a clipped tag never trades its name for its state.
-  const tooltipContent = hint
-    ? isTruncated && label
-      ? `${label}. ${hint}`
-      : hint
-    : isTruncated
-      ? (label ?? '')
-      : '';
+  // What the pill says when the pointer rests on it: its own name when the
+  // pill is too narrow to show the whole word, what the owner wrote about it,
+  // and why it has no click to give. Each is only there when it has something
+  // to say, and one line alone is handed over as plain text so a single hint
+  // reads exactly as it always has.
+  const lines = [
+    isTruncated ? label : null,
+    description?.trim() || null,
+    hint ?? null,
+  ].filter((line): line is string => !!line);
+
+  const tooltipContent =
+    lines.length === 0 ? (
+      ''
+    ) : lines.length === 1 ? (
+      lines[0]
+    ) : (
+      <span className={styles.tip}>
+        {lines.map(line => (
+          <span key={line} className={styles.tipLine}>
+            {line}
+          </span>
+        ))}
+      </span>
+    );
 
   return tooltipContent ? (
     <Tooltip

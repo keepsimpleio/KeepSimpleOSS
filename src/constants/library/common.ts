@@ -98,4 +98,8 @@ export const SHELF_NAME_MAX_LENGTH = 100;
 // library reaches this count, and says why.
 export const MAX_TAGS_PER_LIBRARY = 13;
 
+// Mirrors the `description` cap in the CMS tag schema. Shared so the counter
+// in the form and the validator behind it cannot drift apart.
+export const MAX_TAG_DESCRIPTION_LENGTH = 180;
+
 export const TAG_LIMIT_MESSAGE = `You have reached your limit maximum ${MAX_TAGS_PER_LIBRARY} tags`;
