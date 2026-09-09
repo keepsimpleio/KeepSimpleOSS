@@ -768,6 +768,8 @@ export function ObjectOverviewModal(
                     <span
                       key={tag.id}
                       data-flip-id={String(tag.id)}
+                      data-flip-leaving={leaving ? 'true' : undefined}
+                      aria-hidden={leaving || undefined}
                       className={classNames(styles.tagSlot, {
                         [styles.tagLeaving]: leaving,
                       })}

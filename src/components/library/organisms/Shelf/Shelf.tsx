@@ -534,9 +534,23 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // The object this shelf currently owns *and* the URL points at, if any.
   // The Favorites shelf never opens one: the same book stands on its real
   // shelf, and that shelf's overview is the one that knows where it lives.
+  // A gathered row is drawn from the tag's own list, so taking that tag off a
+  // book takes the book out of the row under the click that did it. The
+  // overview belongs to the book, not to the row it was opened from: when the
+  // row no longer holds it, it is found on the shelf it actually stands on,
+  // and only a book gone from the library closes the overview.
+  const homeOfActive =
+    !favorites && activeObjectId != null && tagFilter
+      ? shelfOfObject?.(activeObjectId)
+      : undefined;
   const activeObject =
     !favorites && activeObjectId != null
-      ? (objects.find(o => o.id === activeObjectId) ?? null)
+      ? (objects.find(o => o.id === activeObjectId) ??
+        (homeOfActive != null
+          ? (objectsOfShelf?.(homeOfActive)?.find(
+              o => o.id === activeObjectId,
+            ) ?? null)
+          : null))
       : null;
 
   // Dragging a card into a new place is the owner's own shelf, on a desktop
