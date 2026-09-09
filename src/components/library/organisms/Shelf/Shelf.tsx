@@ -846,10 +846,21 @@ export function Shelf(props: ShelfProps): JSX.Element {
         await onFavoritesDescriptionChange(trimmedDescription);
       } else {
         // Only what changed travels; an empty description clears the hint.
-        await updateShelf(shelf.id, {
+        const saved = await updateShelf(shelf.id, {
           ...(nameChanged ? { name: trimmed } : {}),
           ...(descriptionChanged ? { description: trimmedDescription } : {}),
         });
+        // A CMS without the field answers 200 and drops it: the answer, not
+        // the request, says what was kept.
+        const stored = saved.data?.attributes;
+        if (
+          !stored ||
+          (nameChanged && stored.name !== trimmed) ||
+          (descriptionChanged &&
+            (stored.description ?? '') !== trimmedDescription)
+        ) {
+          throw new Error('The shelf was not saved. Please try again.');
+        }
       }
       setShelfName(trimmed);
       setShelfDescription(trimmedDescription);
