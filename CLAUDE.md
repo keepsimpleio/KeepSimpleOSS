@@ -354,7 +354,9 @@ with them. One tag at a time; clicking the active tag clears the filter.
   Latin and unique inside the library; the client never sends one. A rename
   carries the address with it quietly, and a link to a tag that is gone opens
   the library unfiltered.
-- Search runs inside the active tag. Clearing the search keeps the filter.
+- Search runs inside the active tag. Clearing the search keeps the filter,
+  and clearing the tag hands the library back exactly as the search left it:
+  the shelves it excluded do not return with the tag.
 - Dragging a book in the gathered row saves the tag's own sequence through
   `POST /tags/reorder`, never a shelf's. Owner and desktop only, the same rule
   the shelves follow. A newly tagged book lands at the end.

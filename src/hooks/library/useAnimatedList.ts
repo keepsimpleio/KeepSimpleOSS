@@ -97,7 +97,12 @@ export function useAnimatedList<T>(
       .map((entry, index) => ({ ...entry, index }))
       .filter(entry => !currentKeys.has(entry.key));
     previous.current = current;
-    if (removed.length === 0 || reducedMotion()) return;
+    // A list that is not on the page has nothing to fade out. Without this,
+    // members dropped while the container is away (the shelves put aside by a
+    // tag filter, say) sit in state with no node to animate them, and are drawn
+    // again in full the moment the list comes back — a search that had already
+    // excluded them notwithstanding.
+    if (removed.length === 0 || reducedMotion() || !ref.current) return;
     setDeparting(list => [
       ...list.filter(d => !removed.some(r => r.key === d.key)),
       ...removed,
@@ -133,7 +138,12 @@ export function useAnimatedList<T>(
   const prevRects = useRef<Map<string, DOMRect>>(new Map());
   useIsomorphicLayoutEffect(() => {
     const container = ref.current;
-    if (!container) return;
+    if (!container) {
+      // The list left the page while members were still on their way out:
+      // let them go rather than hold them for a return they would spoil.
+      setDeparting(list => (list.length > 0 ? [] : list));
+      return;
+    }
 
     const slots = Array.from(
       container.querySelectorAll<HTMLElement>(':scope > [data-flip-id]'),
