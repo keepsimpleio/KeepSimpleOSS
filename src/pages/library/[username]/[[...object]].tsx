@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import type { GetServerSideProps, NextPage } from 'next';
 
 import { DEFAULT_SEO } from '@constants/library/seo.config';
@@ -70,7 +71,7 @@ const LibraryPage: NextPage<LibraryPageProps> = ({
                 },
               }}
             />
-            <div className={`library ${styles.dashboard}`}>
+            <div className={classNames('library', styles.dashboard)}>
               <main className={styles.content}>
                 <LibraryTemplate libraryId={username} />
               </main>

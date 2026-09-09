@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import type { GetServerSideProps, NextPage } from 'next';
 import React, { JSX, useEffect, useMemo, useState } from 'react';
 
@@ -282,7 +283,7 @@ const SharePage: NextPage<SharePageProps> = ({
                 },
               }}
             />
-            <div className={`library ${pageStyles.dashboard}`}>
+            <div className={classNames('library', pageStyles.dashboard)}>
               <main className={pageStyles.content}>
                 <LibraryTemplate libraryId={username} hideSharePanel />
               </main>
