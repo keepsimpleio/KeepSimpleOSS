@@ -2,6 +2,10 @@
   // Wider side padding than the vertical: a pill needs the extra room so the
   // label clears the rounded ends.
   padding: 2px 12px;
+  // A tag is a pill, not a passage. Without this the caret over one invited a
+  // selection the label never answers.
+  cursor: default;
+  user-select: none;
   border-radius: var(--radius-tag);
   max-width: 143.5px;
   // Flex-centred rather than inline-block: the label is the only thing in the

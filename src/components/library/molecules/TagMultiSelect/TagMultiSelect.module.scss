@@ -94,6 +94,12 @@
   padding: 8px 12px;
   cursor: pointer;
 
+  // The whole row picks the tag, the pill included, so the pointer does not
+  // change as it crosses the label.
+  * {
+    cursor: inherit;
+  }
+
   &:hover {
     background: var(--white-warm);
   }

@@ -336,8 +336,9 @@ with them. One tag at a time; clicking the active tag clears the filter.
 
 - Tags are controls in the right panel only. On cards, in the hover dossier and
   in the object overview they stay labels.
-- A tag that labels nothing the viewer can open does not answer a click. A
-  visitor is not shown it at all.
+- A tag that labels nothing the viewer can open does not answer a click: it
+  carries the pointer of a label, not of a control, and says `Tag not used` on
+  hover. A visitor is not shown it at all. No tag is ever a text selection.
 - The filtered view is addressable: the tag's slug rides on the library URL as
   `#deep-work`. The CMS derives that slug from the name, transliterated to
   Latin and unique inside the library; the client never sends one. A rename

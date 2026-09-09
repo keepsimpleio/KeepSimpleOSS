@@ -14,7 +14,7 @@ import styles from './Tag.module.scss';
 const DEFAULT_TAG_COLOR = '#0268ab';
 
 export function Tag(props: TagProps): JSX.Element {
-  const { className, label, color, active, onClick, onRemove } = props;
+  const { className, label, color, active, hint, onClick, onRemove } = props;
   const background = color && color.trim() ? color : DEFAULT_TAG_COLOR;
   const textColor = getContrastTextColor(background);
   const textRef = useRef<HTMLDivElement>(null);
@@ -74,11 +74,21 @@ export function Tag(props: TagProps): JSX.Element {
     </div>
   );
 
-  return isTruncated ? (
+  // The hint carries the label with it when the pill is too narrow to show
+  // the whole word, so a clipped tag never trades its name for its state.
+  const tooltipContent = hint
+    ? isTruncated && label
+      ? `${label}. ${hint}`
+      : hint
+    : isTruncated
+      ? (label ?? '')
+      : '';
+
+  return tooltipContent ? (
     <Tooltip
       place="bottom-start"
       arrowClassName={styles.arrow}
-      tooltipContent={label ?? ''}
+      tooltipContent={tooltipContent}
     >
       {tagContent}
     </Tooltip>
