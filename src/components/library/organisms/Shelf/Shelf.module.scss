@@ -332,7 +332,7 @@
       height: 43px;
       padding: 0;
       border-radius: var(--radius-control);
-      background: #fefdf9 !important;
+      background: var(--white-400) !important;
 
       right: 16px;
 
@@ -380,6 +380,17 @@
 
       img {
         width: inherit;
+        transition: filter 0.2s ease;
+
+        // The plank is a photograph of daylight wood; at night it is dimmed
+        // to the room rather than swapped for another file.
+        [data-theme='dark'] & {
+          filter: brightness(0.5) saturate(0.85);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
       }
 
       // Mobile: pull the board wider past both edges so it spans the narrow
@@ -493,7 +504,7 @@
       // the webkit pseudo-element styling active. (Overrides `.items`' `none`.)
       scrollbar-width: auto;
       // Firefox can't honor the 12px height, but still gets the tint.
-      scrollbar-color: #c0b6ae transparent;
+      scrollbar-color: var(--taupe) transparent;
 
       &::-webkit-scrollbar {
         display: block;
@@ -513,7 +524,7 @@
       }
 
       &::-webkit-scrollbar-thumb {
-        background: #c0b6ae;
+        background: var(--taupe);
         border-radius: 6px;
       }
     }

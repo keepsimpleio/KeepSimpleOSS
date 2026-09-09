@@ -4,6 +4,7 @@ import { DEFAULT_SEO } from '@constants/library/seo.config';
 
 import { librarySeo } from '@lib/library/seo';
 import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
+import { type LibraryTheme, readThemeFromHeader } from '@lib/library/theme';
 
 import { getLibraryRedirect } from '@api/library/getLibraryRedirect';
 import { getPublicLibrarySeo } from '@api/library/getPublicLibrarySeo';
@@ -12,6 +13,7 @@ import { AuthProvider } from '@components/Context/library/AuthContext';
 import { DashboardProvider } from '@components/Context/library/DashboardContext';
 import { GlobalStateProvider } from '@components/Context/library/GlobalStateContext';
 import { ShareSelectionProvider } from '@components/Context/library/ShareSelectionContext';
+import { LibraryRoot } from '@components/library/atoms/LibraryRoot';
 import { Sidebar } from '@components/library/organisms/Sidebar';
 import SeoGenerator from '@components/SeoGenerator';
 
@@ -24,6 +26,8 @@ type LibraryPageProps = {
   seo: ReturnType<typeof librarySeo>;
   /** Desktop info panel folded to its spine — read from the viewer's cookie. */
   initialSidebarCollapsed: boolean;
+  /** The viewer's light or dark reading, from the cookie; null when unset. */
+  initialTheme: LibraryTheme | null;
 };
 
 // Optional catch-all so the library and a single object share one page module:
@@ -38,12 +42,16 @@ const LibraryPage: NextPage<LibraryPageProps> = ({
   username,
   seo,
   initialSidebarCollapsed,
+  initialTheme,
 }) => {
   const pageTitle = seo.title;
 
   return (
     <AuthProvider>
-      <GlobalStateProvider initialSidebarCollapsed={initialSidebarCollapsed}>
+      <GlobalStateProvider
+        initialSidebarCollapsed={initialSidebarCollapsed}
+        initialTheme={initialTheme ?? undefined}
+      >
         <DashboardProvider>
           <ShareSelectionProvider>
             <SeoGenerator
@@ -70,12 +78,12 @@ const LibraryPage: NextPage<LibraryPageProps> = ({
                 },
               }}
             />
-            <div className={`library ${styles.dashboard}`}>
+            <LibraryRoot className={styles.dashboard}>
               <main className={styles.content}>
                 <LibraryTemplate libraryId={username} />
               </main>
               <Sidebar />
-            </div>
+            </LibraryRoot>
           </ShareSelectionProvider>
         </DashboardProvider>
       </GlobalStateProvider>
@@ -96,6 +104,7 @@ export const getServerSideProps: GetServerSideProps<
   const initialSidebarCollapsed = readSidebarCollapsedForRequest(
     context.req.headers.cookie,
   );
+  const initialTheme = readThemeFromHeader(context.req.headers.cookie);
 
   let seo = librarySeo();
   try {
@@ -104,6 +113,6 @@ export const getServerSideProps: GetServerSideProps<
     console.error('Library metadata unavailable');
   }
   return {
-    props: { username, initialSidebarCollapsed, seo },
+    props: { username, initialSidebarCollapsed, initialTheme, seo },
   };
 };

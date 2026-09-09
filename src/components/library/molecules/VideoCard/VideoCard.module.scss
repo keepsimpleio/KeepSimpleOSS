@@ -187,8 +187,8 @@
     // Swap the floating drop shadow for the double frame (inner 1.5px cream,
     // outer 1px brown) so it matches the book/audio tiles in the panel.
     box-shadow:
-      0 0 0 1.5px #f9f4eb,
-      0 0 0 2.5px #af6a34;
+      0 0 0 1.5px var(--off-white),
+      0 0 0 2.5px var(--brown);
   }
 
   .thumbWrap {

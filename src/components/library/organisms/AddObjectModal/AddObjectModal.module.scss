@@ -26,7 +26,7 @@
   overflow-x: hidden;
 
   scrollbar-width: thin;
-  scrollbar-color: #c0b6ae transparent;
+  scrollbar-color: var(--taupe) transparent;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -37,7 +37,7 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c0b6ae;
+    background: var(--taupe);
     border-radius: 5px;
   }
 }

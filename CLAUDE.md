@@ -495,3 +495,33 @@ request, leave it unmerged, and ask for the go in one line. The A-Z grant
 covers execution, never the decision. Every feature collects on the one
 batch branch and reaches production as one pull request; a go that says
 "everything on staging" covers the whole batch, CMS included.
+
+## Library dark mode design passport
+
+The Library reads in two lights. The lamp beside the search (toolbar and home
+page) turns the light down and up; the choice is a device one, kept a year in
+the `ks_library_theme` cookie, painted server-side by the pages that read the
+cookie so a dark reader never sees a light flash, and mirrored onto `<html>`
+after hydration so surfaces portaled to `<body>` read the same tokens. The
+static home page catches up on mount. Components know nothing of it: every
+token in `variables.scss` has a night value in `themes.scss`, keyed on the
+wrapper's `data-theme`, and a component that hardcodes a color is off
+passport in both lights.
+
+- Palette: night paper is warm, never grey: page `#191614`, surfaces
+  `#1f1c19` to `#2b2724`, borders `#3b3530`, ink `#efe7dc`, secondary ink
+  `#a39b91`. The one accent lifts to `#c98a52` (`#dca46f` on hover) so it
+  clears 4.5:1 on night paper. Book artwork keeps its own colors; the wood
+  plank photograph is dimmed to brightness 0.5, saturation 0.85. New light
+  tokens for former hardcoded values: `--white-400`, `--gray-300`,
+  `--gray-400`, `--sand-100/200/300`, `--panel-tab-shadow-hover`.
+- Typography: unchanged in both lights.
+- Spacing and radius: the lamp is a 40px square on `--radius-control`, 8px
+  left of the search; nothing else moves.
+- Motion passport: page and ink cross over in 200ms ease; the plank dims in
+  200ms; sun and moon cross over in place over 200ms with a 40° turn.
+  Reduced motion switches at once.
+- Scrollbar passport: themed scrollbars read `--taupe` and `--white-100`, so
+  they follow the theme; `color-scheme: dark` themes the native ones.
+- Stability passport: the lamp holds both glyphs from the start and never
+  changes size; the theme changes color only, never geometry.

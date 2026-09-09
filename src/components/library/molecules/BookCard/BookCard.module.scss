@@ -224,8 +224,8 @@
     // No hover lift in the share panel — these tiles drag-reorder.
     transform: none;
     box-shadow:
-      0 0 0 1.5px #f9f4eb,
-      0 0 0 2.5px #af6a34;
+      0 0 0 1.5px var(--off-white),
+      0 0 0 2.5px var(--brown);
   }
 
   .placeholder,

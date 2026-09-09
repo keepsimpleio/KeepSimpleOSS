@@ -41,7 +41,7 @@
   // cursor in the DragOverlay; this dashed outline marks where it will land.
   &.placeholder {
     background: transparent;
-    border: 1px dashed #cebda1;
+    border: 1px dashed var(--sand-200);
     box-shadow: none;
 
     .cover {
