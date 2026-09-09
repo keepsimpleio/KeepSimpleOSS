@@ -448,7 +448,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
           variant="delete"
           icon={IconName.Info}
           title={`Are you sure you want to delete the "${tagName || 'this'}" tag?`}
-          text="It will be removed from every object that carries it. This cannot be undone."
+          text="It will be removed from every book that carries it, and from the filter panel. The books themselves stay. This cannot be undone."
           error={deleteError ?? undefined}
           actionButtonLabel={isDeleting ? 'Deleting…' : 'Delete'}
           actionButtonType={ButtonType.Warning}

@@ -34,12 +34,12 @@ import { createObject } from '@api/library/object/createObject';
 import { reorderObjects } from '@api/library/object/reorderObjects';
 import { updateObject } from '@api/library/object/updateObject';
 import { getShelvesList } from '@api/library/shelf/getShelvesList';
-import { getTagsList } from '@api/library/tag/getTagsList';
 import { uploadFile } from '@api/library/upload/uploadFile';
 
 import { ArrowIcon, SearchIcon } from '@icons/library/svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
+import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
@@ -167,6 +167,7 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const shelfLocked = defaultShelfId != null && !editing;
   const { accountData } = useAuth();
   const { currentOwner } = useGlobalState();
+  const { libraryTags } = useDashboard();
   // The editor only opens on the owner's own library, so the owner published by
   // LibraryTemplate and the signed-in account are the same person; the account
   // covers the moment before the library has published its owner.
@@ -194,7 +195,6 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
   const [isFetchingCover, setIsFetchingCover] = useState(false);
   const [coverNotice, setCoverNotice] = useState<string | null>(null);
 
-  const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
   const [shelves, setShelves] = useState<IShelf[]>([]);
   const [selectedShelfId, setSelectedShelfId] = useState<string | undefined>(
@@ -414,21 +414,18 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
     }
   };
 
-  useEffect(() => {
-    let cancelled = false;
-    getTagsList(accountData?.id).then(res => {
-      if (cancelled) return;
-      const opts: TagOption[] = res.data.map(t => ({
-        id: t.id,
-        name: t.attributes.name,
-        color: t.attributes.color,
-      }));
-      setTagOptions(opts);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [accountData?.id]);
+  // The palette is the library's own vocabulary, loaded once for the page.
+  // Not the account's: a tag belongs to the library it was made in, and the
+  // CMS refuses one that came from another.
+  const tagOptions = useMemo<TagOption[]>(
+    () =>
+      libraryTags.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color,
+      })),
+    [libraryTags],
+  );
 
   // Preset the object's existing tags exactly once, from the object's OWN
   // populated tag data — not by filtering the fetched options. An unpublished

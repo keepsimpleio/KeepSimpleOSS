@@ -29,4 +29,8 @@ export interface BookCardProps {
   onFavoriteToggle?: () => void;
   // True while a star press is being saved.
   favoriteBusy?: boolean;
+  // The book stands on a private shelf and is drawn where that shelf is not:
+  // in a tag's gathered row, which its owner alone sees it in. The cover is
+  // veiled and marked so the owner reads at a glance that no visitor has it.
+  hidden?: boolean;
 }

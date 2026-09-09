@@ -14,7 +14,7 @@ import styles from './Tag.module.scss';
 const DEFAULT_TAG_COLOR = '#0268ab';
 
 export function Tag(props: TagProps): JSX.Element {
-  const { className, label, color, onClick, onRemove } = props;
+  const { className, label, color, active, onClick, onRemove } = props;
   const background = color && color.trim() ? color : DEFAULT_TAG_COLOR;
   const textColor = getContrastTextColor(background);
   const textRef = useRef<HTMLDivElement>(null);
@@ -33,11 +33,27 @@ export function Tag(props: TagProps): JSX.Element {
   const tagContent = (
     <div
       role={onClick ? 'button' : undefined}
+      // A tag that filters the library is a control, so it takes a tab stop
+      // and answers the keys a button answers. A label takes neither.
+      tabIndex={onClick ? 0 : undefined}
+      aria-pressed={onClick ? !!active : undefined}
       style={{ background, color: textColor }}
       className={classNames(className, styles.wrapper, {
         [styles.withRemove]: !!onRemove,
+        [styles.clickable]: !!onClick,
+        [styles.active]: !!active,
       })}
       onClick={onClick}
+      onKeyDown={
+        onClick
+          ? e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
     >
       <div ref={textRef} className={styles.textWrapper}>
         <Text className={styles.text}>{label}</Text>

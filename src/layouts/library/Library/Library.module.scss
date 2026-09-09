@@ -202,3 +202,24 @@ $share-bar-height: 87px;
     transition: none;
   }
 }
+
+// Choosing a tag, and letting it go, is one movement: the page fades out, the
+// shelves and the tag's gathered row change places at the trough, and the page
+// fades back. The same 200ms ease the guest preview switches with.
+.filterSwap {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.filterSwapOut {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterSwap {
+    transition: none;
+  }
+}
