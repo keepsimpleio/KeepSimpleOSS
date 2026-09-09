@@ -78,6 +78,29 @@ export interface ShelfProps {
    * the save fails, so the menu can fall back.
    */
   onFavoritesVisibilityChange?: (visibility: ShelfVisibility) => Promise<void>;
+  /**
+   * The library filtered down to one tag: every book that tag labels, gathered
+   * off the shelves they stand on, in the tag's own order (id TAG_SHELF_ID).
+   * The row cannot be renamed, deleted, added to or made private, being a
+   * view of a tag rather than a shelf, and a drag on it saves the tag's own
+   * sequence through `saveOrder`.
+   */
+  tagFilter?: boolean;
+  /**
+   * Books whose own shelf is private. Marked on the board, since a gathered
+   * row otherwise says nothing about where each book came from. Owner-only:
+   * a visitor's tag sequence never names them.
+   */
+  hiddenObjectIds?: Set<number> | null;
+  /**
+   * Where a drag on this board is persisted, when it is not this shelf's own
+   * order. Rejects on failure, so the row can fall back and say so.
+   */
+  saveOrder?: (ordered: IReorderObjectEntry[]) => Promise<unknown>;
+  /** Gathered rows only: the shelf a book actually stands on. */
+  shelfOfObject?: (objectId: number) => number | undefined;
+  /** Gathered rows only: everything standing on that shelf. */
+  objectsOfShelf?: (shelfId: number) => IObject[];
   /** Grip wiring for reordering shelves; owner-only, absent while searching. */
   dragHandleProps?: ShelfDragHandleProps;
   /** True while this shelf is the one being dragged. */

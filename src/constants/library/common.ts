@@ -93,3 +93,9 @@ export const LIBRARY_FULL_MESSAGE =
 // Mirrors the single-shelf `name` constraint in the backend schema. Shared so
 // the create (AddShelfModal) and rename (Shelf) inputs stay in sync.
 export const SHELF_NAME_MAX_LENGTH = 100;
+
+// Backend caps a library at 13 tags; the Create control disables once a
+// library reaches this count, and says why.
+export const MAX_TAGS_PER_LIBRARY = 13;
+
+export const TAG_LIMIT_MESSAGE = `You have reached your limit maximum ${MAX_TAGS_PER_LIBRARY} tags`;

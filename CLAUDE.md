@@ -326,3 +326,49 @@ Owners can view private recommendations and persist their fold preference;
 recommendation verdicts and regeneration remain desktop controls.
 Mobile recommendation headings wrap within the existing 16px header inset;
 the fold control has a 44px touch target. Existing colors, fonts and fold motion apply.
+
+## Library tag filter
+
+A tag is a label on books and a filter over the library. Clicking one in the
+right panel gathers every book it labels into a single row, in the tag's own
+order, and every shelf steps aside while it stands: the AI shelf and Favorites
+with them. One tag at a time; clicking the active tag clears the filter.
+
+- Tags are controls in the right panel only. On cards, in the hover dossier and
+  in the object overview they stay labels.
+- A tag that labels nothing the viewer can open does not answer a click. A
+  visitor is not shown it at all.
+- The filtered view is addressable: the tag's slug rides on the library URL as
+  `#deep-work`. The CMS derives that slug from the name, transliterated to
+  Latin and unique inside the library; the client never sends one. A rename
+  carries the address with it quietly, and a link to a tag that is gone opens
+  the library unfiltered.
+- Search runs inside the active tag. Clearing the search keeps the filter.
+- Dragging a book in the gathered row saves the tag's own sequence through
+  `POST /tags/reorder`, never a shelf's. Owner and desktop only, the same rule
+  the shelves follow. A newly tagged book lands at the end.
+- A tag belongs to one library. The palette in the object form is that
+  library's, and the CMS refuses a tag from another one.
+- A library keeps at most 13 tags. At the cap the Create control is disabled
+  and says `You have reached your limit maximum 13 tags`.
+- Deleting a tag asks first and says that it leaves every book that carries it.
+  The books stay.
+
+### Design passport
+
+- Palette: the tag's own colour on its chip. Active and hover draw the existing
+  `--white` and `--brown` ring, as a selected cover does. A book on a private
+  shelf is veiled with `--white-transparent-400` over the paper wash and marked
+  with `--brown-100` on `--white-200` inside a `--beige` border.
+- Typography: existing Library faces. The Hidden mark is Source Sans Pro at
+  11px, uppercase, 0.12em tracking.
+- Spacing and radius: existing shelf geometry and control radii. The gathered
+  row is drawn by the Shelf component, so it keeps every measurement a shelf
+  has.
+- Motion passport: entering and leaving the filtered view is one 200ms ease
+  crossfade, the content swapped at the trough so nothing is seen half
+  replaced. Reduced motion switches immediately.
+- Scrollbar passport: the gathered row uses the shelf's own themed scroller.
+- Stability passport: the active ring is drawn outside the chip's box, so
+  choosing a tag moves nothing in the row it stands in. The gathered row holds
+  the same card geometry as a shelf, veil included.

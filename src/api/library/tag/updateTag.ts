@@ -2,7 +2,6 @@ import axiosInstance from '@lib/library/axios';
 
 export interface UpdateTagRequest {
   name: string;
-  slug: string;
   user: string;
   color: string;
   description?: string;

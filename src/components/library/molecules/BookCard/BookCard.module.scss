@@ -160,6 +160,38 @@
   opacity: 1;
 }
 
+// A book on a private shelf, standing in a tag's gathered row. The art keeps
+// its place and its size; a paper wash settles over it and names the state, so
+// the owner sees which of these books nobody else can reach.
+.hiddenVeil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 16px;
+  background: linear-gradient(
+    180deg,
+    var(--white-transparent-400) 0%,
+    rgb(248 241 229 / 78%) 100%
+  );
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+.hiddenLabel {
+  font-family: var(--font-source-sans);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brown-100);
+  background: var(--white-200);
+  border: 1px solid var(--beige);
+  padding: 2px 8px;
+}
+
 .tags {
   display: flex;
   flex-direction: column;

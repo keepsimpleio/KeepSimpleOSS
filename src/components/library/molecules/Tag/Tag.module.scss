@@ -11,6 +11,31 @@
   align-items: center;
   justify-content: center;
 
+  // A tag that filters the library. The ring is drawn outside the pill's own
+  // box, so choosing one moves nothing in the row it stands in.
+  &.clickable {
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      box-shadow:
+        0 0 0 2px var(--white),
+        0 0 0 3px var(--brown);
+      outline: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &.active {
+    box-shadow:
+      0 0 0 2px var(--white),
+      0 0 0 3px var(--brown);
+  }
+
   &.withRemove {
     display: inline-flex;
     align-items: center;

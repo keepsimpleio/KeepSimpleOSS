@@ -30,6 +30,7 @@ export function BookCard({
   favorite = false,
   onFavoriteToggle,
   favoriteBusy = false,
+  hidden = false,
 }: BookCardProps): JSX.Element {
   const { attributes } = object;
   const coverUrl = resolveStrapiUrl(
@@ -121,6 +122,14 @@ export function BookCard({
               })}
               onLoad={() => setCoverLoaded(true)}
             />
+          )}
+          {/* A veil over the art, and the word for what it means. Said on the
+              cover rather than beside the title: the cover is what a visitor
+              would be looking at, and it is the thing they do not get. */}
+          {hidden && (
+            <span className={styles.hiddenVeil}>
+              <span className={styles.hiddenLabel}>Hidden</span>
+            </span>
           )}
         </div>
         {(favorite || onFavoriteToggle) && !compact && (
