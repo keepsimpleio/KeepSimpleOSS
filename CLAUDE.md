@@ -449,3 +449,30 @@ rows repeating a member title are dropped. Every lookup leaves a
 - Scrollbar passport: no new scrollable surface.
 - Stability passport: the ring lives inside the row's box, so a member row is
   exactly as tall and wide as a provider row and hover costs no space.
+
+## Library shelf description
+
+A shelf may carry a description, written by the owner in the Add shelf form
+and in the shelf's Edit shelf form under the name, 180 characters at most,
+counted under the field; the cap is `MAX_SHELF_DESCRIPTION_LENGTH`, mirroring
+the CMS `single-shelf.description` field (keepsimple-cms-new #412). When a
+description is set, a (?) mark stands right after the shelf name for owner
+and visitor alike and says it on hover and keyboard focus through the shared
+Tooltip. With nothing written there is no mark at all. Saving sends only what
+changed; an emptied description clears the hint.
+
+### Design passport
+
+- Palette: the mark is `--white` inside a `--brown-border` ring, its glyph
+  `--gray-darkest`, both turning `--brown` on hover and focus. The hint is the
+  shared Tooltip's paper.
+- Typography: the glyph is Source Sans Pro at 12px, weight 600. The hint is
+  the Tooltip's Source Serif 4 at 16px.
+- Spacing and radius: 20px round mark, 2px after the name inside the header's
+  existing 6px gap. Form fields keep the 6px label gap and 24px between fields.
+- Motion passport: the Tooltip's 150ms opacity in and out; the mark's color
+  and ring ease over 200ms. Reduced motion disables both.
+- Scrollbar passport: no scrollable surface; the hint wraps within 300px.
+- Stability passport: the mark exists only with a description, so a shelf
+  without one is drawn exactly as before; hover changes color only. The hint
+  is portaled and reserves no space.

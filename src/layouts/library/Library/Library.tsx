@@ -360,7 +360,11 @@ export function LibraryTemplate({
     setIsOpen(open => !open);
   };
 
-  const handleCreateShelf = async (modalShelfType: ShelfType, name: string) => {
+  const handleCreateShelf = async (
+    modalShelfType: ShelfType,
+    name: string,
+    description = '',
+  ) => {
     // resolveLibraryId throws when the lookup itself fails; the modal shows
     // that as an error, which is right: we must not bootstrap a library on
     // top of one we simply could not read.
@@ -402,6 +406,7 @@ export function LibraryTemplate({
     try {
       await createShelf({
         name,
+        ...(description ? { description } : {}),
         type,
         library: resolvedId,
         order: nextOrder,
@@ -1091,25 +1096,28 @@ export function LibraryTemplate({
       });
   };
 
-  const handleShelfRenamed = useCallback((shelfId: number, name: string) => {
-    setLibrary(current => {
-      if (!current) return current;
-      const shelvesData = current.attributes.singleShelves?.data ?? [];
-      return {
-        ...current,
-        attributes: {
-          ...current.attributes,
-          singleShelves: {
-            data: shelvesData.map(s =>
-              s.id === shelfId
-                ? { ...s, attributes: { ...s.attributes, name } }
-                : s,
-            ),
+  const handleShelfRenamed = useCallback(
+    (shelfId: number, name: string, description: string) => {
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: {
+              data: shelvesData.map(s =>
+                s.id === shelfId
+                  ? { ...s, attributes: { ...s.attributes, name, description } }
+                  : s,
+              ),
+            },
           },
-        },
-      };
-    });
-  }, []);
+        };
+      });
+    },
+    [],
+  );
 
   const handleShelfDeleted = useCallback(
     (shelfId: number) => {

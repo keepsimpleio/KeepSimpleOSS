@@ -67,6 +67,8 @@ export interface StrapiShelfObjectsRelation {
 
 export interface StrapiSingleShelfAttributes {
   name: string;
+  /** What the owner wrote about the shelf; absent or null when unset. */
+  description?: string | null;
   visibility: string;
   type: string;
   order: number;

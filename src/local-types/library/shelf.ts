@@ -5,6 +5,8 @@ export type ShelfVisibility = 'public' | 'private';
 
 export interface IShelfAttributes {
   name: string;
+  /** What the owner wrote about the shelf; shown beside its name when set. */
+  description?: string | null;
   visibility: ShelfVisibility;
   type: ObjectType;
   order: number;
@@ -23,6 +25,7 @@ export interface IShelfRef {
 
 export interface ICreateShelfPayload {
   name: string;
+  description?: string;
   type: ObjectType;
   library: number | string;
   // Defaulted by `createShelf` (private / order 0 / no objects / published now)
@@ -40,6 +43,8 @@ export type IShelfSingleResponse = IStrapiSingleResponse<IShelf>;
 // are intentionally omitted from the update payload.
 export interface IUpdateShelfPayload {
   name?: string;
+  /** An empty string clears the hint. */
+  description?: string;
   visibility?: ShelfVisibility;
   order?: number;
 }

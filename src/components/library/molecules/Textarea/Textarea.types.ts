@@ -7,5 +7,6 @@ export interface TextareaProps {
   disabled?: boolean;
   ariaLabel?: string;
   rows?: number;
+  maxLength?: number;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
