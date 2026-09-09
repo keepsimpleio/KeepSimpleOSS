@@ -82,6 +82,11 @@ export interface ShelfProps {
    */
   onFavoritesVisibilityChange?: (visibility: ShelfVisibility) => Promise<void>;
   /**
+   * Favorites only: saves the library's `favoritesDescription`, the hint the
+   * shelf shows beside its name. Rejects when the save fails.
+   */
+  onFavoritesDescriptionChange?: (description: string) => Promise<void>;
+  /**
    * The library filtered down to one tag: every book that tag labels, gathered
    * off the shelves they stand on, in the tag's own order (id TAG_SHELF_ID).
    * The row cannot be renamed, deleted, added to or made private, being a

@@ -455,6 +455,7 @@ export function LibraryTemplate({
   // starred, and for visitors only when the owner has made it public.
   const favoritesVisibility: ShelfVisibility =
     library?.attributes.favoritesVisibility ?? 'private';
+  const favoritesDescription = library?.attributes.favoritesDescription ?? '';
   const favoritesShelf = useMemo<StrapiSingleShelfEntry | null>(() => {
     const starred = sortFavorites(
       shelves.flatMap(s =>
@@ -466,6 +467,7 @@ export function LibraryTemplate({
       id: FAVORITES_SHELF_ID,
       attributes: {
         name: FAVORITES_SHELF_NAME,
+        description: favoritesDescription,
         visibility: favoritesVisibility,
         type: 'book',
         order: -1,
@@ -475,7 +477,7 @@ export function LibraryTemplate({
         objects: { data: starred },
       },
     };
-  }, [shelves, favoritesVisibility]);
+  }, [shelves, favoritesVisibility, favoritesDescription]);
   const showFavoritesShelf =
     favoritesShelf != null && (viewAsOwner || favoritesVisibility === 'public');
 
@@ -993,6 +995,34 @@ export function LibraryTemplate({
     [library],
   );
 
+  // The Favorites shelf's hint is a field on the library itself, saved the
+  // same way as its privacy and stamped on the loaded library afterwards.
+  const saveFavoritesDescription = useCallback(
+    async (description: string) => {
+      if (!library) return;
+      const result = await updateLibrary(library.id, {
+        favoritesDescription: description,
+      });
+      if (
+        (result.data?.attributes.favoritesDescription ?? '') !== description
+      ) {
+        throw new Error('The Favorites description was not saved.');
+      }
+      setLibrary(current =>
+        current
+          ? {
+              ...current,
+              attributes: {
+                ...current.attributes,
+                favoritesDescription: description,
+              },
+            }
+          : current,
+      );
+    },
+    [library],
+  );
+
   // Stamps each shelf's new position onto the loaded library. The `shelves`
   // memo re-sorts by `order` at render, so the list lands in the new sequence
   // without a refetch.
@@ -1443,6 +1473,7 @@ export function LibraryTemplate({
                 ownerUsername={ownerUsername ?? libraryId}
                 isOwner={canEditHere}
                 onFavoritesVisibilityChange={saveFavoritesVisibility}
+                onFavoritesDescriptionChange={saveFavoritesDescription}
                 onObjectUpdated={handleFavoriteObjectUpdated}
                 onObjectDeleted={handleFavoriteObjectDeleted}
                 onObjectMoved={handleObjectMoved}

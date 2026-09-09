@@ -196,6 +196,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onObjectsReordered,
     favorites = false,
     onFavoritesVisibilityChange,
+    onFavoritesDescriptionChange,
     tagFilter = false,
     hiddenObjectIds = null,
     saveOrder,
@@ -825,10 +826,14 @@ export function Shelf(props: ShelfProps): JSX.Element {
     }
   };
 
+  // The Favorites shelf keeps its name; only its hint is the owner's to write,
+  // and it lives on the library rather than on a shelf.
+  const editsFavorites = favorites && !!onFavoritesDescriptionChange;
+
   const confirmRename = async () => {
-    const trimmed = renameValue.trim();
+    const trimmed = editsFavorites ? shelfName : renameValue.trim();
     const trimmedDescription = renameDescription.trim();
-    const nameChanged = !!trimmed && trimmed !== shelfName;
+    const nameChanged = !editsFavorites && !!trimmed && trimmed !== shelfName;
     const descriptionChanged = trimmedDescription !== shelfDescription.trim();
     if (!trimmed || (!nameChanged && !descriptionChanged)) {
       setRenameOpen(false);
@@ -837,11 +842,15 @@ export function Shelf(props: ShelfProps): JSX.Element {
     setRenameLoading(true);
     setRenameError(null);
     try {
-      // Only what changed travels; an empty description clears the hint.
-      await updateShelf(shelf.id, {
-        ...(nameChanged ? { name: trimmed } : {}),
-        ...(descriptionChanged ? { description: trimmedDescription } : {}),
-      });
+      if (editsFavorites) {
+        await onFavoritesDescriptionChange(trimmedDescription);
+      } else {
+        // Only what changed travels; an empty description clears the hint.
+        await updateShelf(shelf.id, {
+          ...(nameChanged ? { name: trimmed } : {}),
+          ...(descriptionChanged ? { description: trimmedDescription } : {}),
+        });
+      }
       setShelfName(trimmed);
       setShelfDescription(trimmedDescription);
       onShelfRenamed?.(shelf.id, trimmed, trimmedDescription);
@@ -976,12 +985,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
           <span className={styles.count}>({objects.length})</span>
 
           <span className={styles.nameWrap}>
-            {isOwner && !favorites && !tagFilter ? (
+            {isOwner && !tagFilter && (!favorites || editsFavorites) ? (
               <button
                 type="button"
                 className={styles.nameButton}
                 onClick={openRename}
-                aria-label="Edit shelf name"
+                aria-label={editsFavorites ? 'Edit Favorites' : 'Edit shelf'}
               >
                 <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
               </button>
@@ -1222,38 +1231,40 @@ export function Shelf(props: ShelfProps): JSX.Element {
       {isOwner && renameOpen && (
         <Modal
           className={styles.renameModal}
-          title="Edit shelf"
+          title={editsFavorites ? 'Edit Favorites' : 'Edit shelf'}
           onClose={closeRename}
           closeRef={renameCloseRef}
         >
           <div className={styles.renameWrapper}>
-            <div className={styles.renameField}>
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.renameLabel}
-              >
-                Shelf name
-              </Text>
-              <Input
-                type="text"
-                value={renameValue}
-                onChange={e => setRenameValue(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && !renameLoading) {
-                    e.preventDefault();
-                    void confirmRename();
-                  }
-                }}
-                placeholder="My shelf"
-                placeholderColor="#9E9E9E"
-                ariaLabel="Shelf name"
-                maxLength={SHELF_NAME_MAX_LENGTH}
-              />
-              <CharCount
-                current={renameValue.length}
-                max={SHELF_NAME_MAX_LENGTH}
-              />
-            </div>
+            {!editsFavorites && (
+              <div className={styles.renameField}>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.renameLabel}
+                >
+                  Shelf name
+                </Text>
+                <Input
+                  type="text"
+                  value={renameValue}
+                  onChange={e => setRenameValue(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && !renameLoading) {
+                      e.preventDefault();
+                      void confirmRename();
+                    }
+                  }}
+                  placeholder="My shelf"
+                  placeholderColor="#9E9E9E"
+                  ariaLabel="Shelf name"
+                  maxLength={SHELF_NAME_MAX_LENGTH}
+                />
+                <CharCount
+                  current={renameValue.length}
+                  max={SHELF_NAME_MAX_LENGTH}
+                />
+              </div>
+            )}
 
             <div className={styles.renameField}>
               <Text
@@ -1299,7 +1310,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 type={ButtonType.Primary}
                 size={ButtonSize.Wide}
                 ariaLabel="Save shelf"
-                disabled={renameLoading || renameValue.trim().length === 0}
+                disabled={
+                  renameLoading ||
+                  (!editsFavorites && renameValue.trim().length === 0)
+                }
               />
             </div>
           </div>

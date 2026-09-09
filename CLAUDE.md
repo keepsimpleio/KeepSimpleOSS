@@ -461,6 +461,12 @@ and visitor alike and says it on hover and keyboard focus through the shared
 Tooltip. With nothing written there is no mark at all. Saving sends only what
 changed; an emptied description clears the hint.
 
+The Favorites shelf carries one too, as `library.favoritesDescription`
+(keepsimple-cms-new #413, unmerged until Wolf says so): the owner opens it
+from the shelf name, the form shows the description alone since the name is
+fixed, and the save goes through the library like its privacy does. The same
+(?) mark and hint follow.
+
 ### Design passport
 
 - Palette: the mark is `--white` inside a `--brown-border` ring, its glyph
@@ -476,3 +482,12 @@ changed; an emptied description clears the hint.
 - Stability passport: the mark exists only with a description, so a shelf
   without one is drawn exactly as before; hover changes color only. The hint
   is portaled and reserves no space.
+
+## Staging and production need Wolf's word (Wolf, 2026-09-09)
+
+Nothing goes to staging or production without Wolf's direct instruction in
+the conversation: no merge to `dev` or `main` in this repo or in
+keepsimple-cms-new, no staging redeploy or restart, no CMS schema rollout.
+DEV (this working tree) is the only surface changed freely. Prepare the pull
+request, leave it unmerged, and ask for the go in one line. The A-Z grant
+covers execution, never the decision.
