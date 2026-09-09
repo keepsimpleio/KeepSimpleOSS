@@ -219,47 +219,6 @@
   }
 }
 
-.taggedList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 160px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--brown-border) transparent;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--brown-border);
-    border-radius: 3px;
-  }
-}
-
-.taggedRow {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.taggedTitle {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.taggedMeta {
-  flex-shrink: 0;
-  color: var(--gray-darker);
-}
-
 // A message lands in a line held from the start and fades in, so the form
 // neither jumps nor blinks when validation speaks.
 @keyframes message-in {

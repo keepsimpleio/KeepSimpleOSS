@@ -14,6 +14,7 @@ import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { CharCount } from '@components/library/atoms/CharCount';
 import { IconName } from '@components/library/atoms/Icon';
 import { InkLine } from '@components/library/atoms/InkLine';
+import { TagUsagePie } from '@components/library/atoms/TagUsagePie';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
@@ -326,7 +327,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
                         </Text>
                         <Tooltip
                           place="top"
-                          tooltipContent="The order within a shelf is set when editing an object: step 2 shows the shelf's sequence through this tag."
+                          tooltipContent="Each slice is a shelf; rest on one to read the books it holds under this tag. The order within a shelf is set when editing an object: step 2 shows the shelf's sequence through this tag."
                         >
                           <span
                             className={styles.infoIcon}
@@ -341,27 +342,13 @@ export function CreateTagModal(props: CreateTagModalProps) {
                       {taggedObjects.length === 0 ? (
                         <Text variant={TypographyVariant.TextBase}>
                           No objects carry this tag yet. Add it to an object to
-                          see it listed here.
+                          see it counted here.
                         </Text>
                       ) : (
-                        <ul className={styles.taggedList}>
-                          {taggedObjects.map(row => (
-                            <li key={row.id} className={styles.taggedRow}>
-                              <Text
-                                variant={TypographyVariant.TextBase}
-                                className={styles.taggedTitle}
-                              >
-                                {row.title}
-                              </Text>
-                              <Text
-                                variant={TypographyVariant.TextSmall}
-                                className={styles.taggedMeta}
-                              >
-                                {row.shelf} · #{row.order}
-                              </Text>
-                            </li>
-                          ))}
-                        </ul>
+                        <TagUsagePie
+                          rows={taggedObjects}
+                          color={activeColor || defaultColor}
+                        />
                       )}
                     </div>
                   )}

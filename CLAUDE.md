@@ -525,3 +525,42 @@ passport in both lights.
   they follow the theme; `color-scheme: dark` themes the native ones.
 - Stability passport: the lamp holds both glyphs from the start and never
   changes size; the theme changes color only, never geometry.
+
+## Library tag usage chart
+
+In the tag's edit form, `Where this tag is used` is a ring rather than a list:
+one slice per shelf, the shelves the tag actually reaches, biggest share
+first. The share is spoken in percent beside each shelf name, worked out by
+largest remainder so the column adds up to a hundred; a share under half a
+percent reads `<1%` rather than rounding away to nothing. The ring's eye
+holds the total. Resting on a slice, or on its row in the list, or reaching
+either by keyboard, names that shelf and the books it holds under this tag in
+the shelf's own sequence, ten of them before the hint says how many more
+remain: the hint has no scrolling surface, so the list ends where the paper
+does. A tag on nothing still says so in words. The chart is drawn from the
+library on screen, so no request is made for it, and it follows the colour
+being picked in the form as it is picked.
+
+### Design passport
+
+- Palette: the tag's own colour, and nothing else. Slices fall from full
+  strength to 0.35 by rank, the paper showing through, so the ring reads the
+  same in both lights. The hovered shelf holds its strength while the others
+  step back to 0.35 of theirs; the legend row it belongs to takes the existing
+  `--off-white`. Text is `--black` with `--gray-darker` for the figures, and
+  the hint's shelf name is `--brown`.
+- Typography: the total is Source Serif 4 at 24px over an 11px uppercase
+  Source Sans Pro label; shelf names and percentages are the existing 14px
+  small text; the hint runs at 14px with a 12px uppercase heading and a 12px
+  footer line.
+- Spacing and radius: the ring is 132px square, drawn in a 120-unit box with a
+  44 radius and an 18 stroke; slices are parted by 1.2 units of paper. The
+  chart and its legend sit 20px apart, legend rows 4px by 6px on
+  `--radius-control`, swatches 10px round on `--radius-tag`.
+- Motion passport: strength and row background ease over 200ms; the hint keeps
+  the shared Tooltip's 150ms opacity. Reduced motion disables all three.
+- Scrollbar passport: the legend caps at 240px behind a 12px themed scrollbar,
+  taupe thumb on white-100, 6px thumb radius, its gutter held from the start.
+- Stability passport: the ring's box never changes with the shelf count, the
+  total is laid over it rather than in the flow, and the percentage column is
+  sized for its widest reading. Hover changes colour only.
