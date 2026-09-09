@@ -2,6 +2,10 @@
   // Wider side padding than the vertical: a pill needs the extra room so the
   // label clears the rounded ends.
   padding: 2px 12px;
+  // A tag is a pill, not a passage. Without this the caret over one invited a
+  // selection the label never answers.
+  cursor: default;
+  user-select: none;
   border-radius: var(--radius-tag);
   max-width: 143.5px;
   // Flex-centred rather than inline-block: the label is the only thing in the
@@ -28,6 +32,15 @@
     @media (prefers-reduced-motion: reduce) {
       transition: none;
     }
+  }
+
+  // The tag that is off keeps the same ring on keyboard focus, so a reader
+  // who tabs to it sees what a reader who points at it sees.
+  &.explained:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--white),
+      0 0 0 3px var(--brown);
+    outline: none;
   }
 
   &.active {
@@ -90,6 +103,18 @@
       }
     }
   }
+}
+
+// A hint of several parts: the name, what it was written to mean, and its
+// state. One line each, on the tooltip's own 4px rhythm.
+.tip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tipLine {
+  display: block;
 }
 
 .arrow {

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { MAX_TAG_DESCRIPTION_LENGTH } from '@constants/library/common';
+
 // Backend generates the tag slug from the name and enforces the Strapi uid
 // regex /^[A-Za-z0-9-_.~]*$/. We mirror it client-side so the user sees a
 // friendly message instead of the raw Strapi validation error.
@@ -17,7 +19,10 @@ export const createTagSchema = z.object({
     ),
   description: z
     .string()
-    .max(500, 'Description must be 500 characters or less')
+    .max(
+      MAX_TAG_DESCRIPTION_LENGTH,
+      `Description must be ${MAX_TAG_DESCRIPTION_LENGTH} characters or less`,
+    )
     .optional(),
   color: z.string().min(1, 'Color is required'),
 });

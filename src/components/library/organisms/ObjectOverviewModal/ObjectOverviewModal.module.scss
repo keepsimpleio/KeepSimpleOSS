@@ -323,7 +323,23 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
+
+  // The empty row stands as tall as a pill, so the first tag lands in space
+  // that was already held.
+  &.tagsEmpty {
+    min-height: 26px;
+  }
+}
+
+// One pill per slot: the slot is what the list motion measures and moves.
+.tagSlot {
+  display: inline-flex;
+
+  &.tagLeaving {
+    pointer-events: none;
+  }
 }
 
 .destination {

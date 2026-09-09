@@ -78,10 +78,10 @@ export const MAX_SHELVES_PER_LIBRARY = 21;
 // selection reaches this count.
 export const MAX_SHARE_OBJECTS = 21;
 
-// Backend caps a shelf at 30 objects (all types combined); the Add control
+// Backend caps a shelf at 50 objects (all types combined); the Add control
 // disables once a shelf reaches this count, and a rejected create/move surfaces
 // SHELF_FULL_MESSAGE. Backend is the source of truth — see isShelfFullError.
-export const MAX_OBJECTS_PER_SHELF = 30;
+export const MAX_OBJECTS_PER_SHELF = 50;
 
 export const SHELF_FULL_MESSAGE = 'This shelf is full.';
 
@@ -98,4 +98,13 @@ export const SHELF_NAME_MAX_LENGTH = 100;
 // library reaches this count, and says why.
 export const MAX_TAGS_PER_LIBRARY = 13;
 
+// Mirrors the `description` cap in the CMS tag schema. Shared so the counter
+// in the form and the validator behind it cannot drift apart.
+export const MAX_TAG_DESCRIPTION_LENGTH = 180;
+
 export const TAG_LIMIT_MESSAGE = `You have reached your limit maximum ${MAX_TAGS_PER_LIBRARY} tags`;
+
+// How many tags one object may carry. Shared by the picker in the object
+// overview and the one in the edit form, so a book cannot be filled past the
+// cap on one surface and refused on the other.
+export const MAX_TAGS_PER_OBJECT = 10;
