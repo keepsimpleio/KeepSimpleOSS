@@ -292,7 +292,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
   );
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
 
-  // Backend caps a shelf at 30 objects (all types combined). Pre-disable the
+  // Backend caps a shelf at 50 objects (all types combined). Pre-disable the
   // Add control once the shelf is full — the backend stays the source of truth
   // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
   const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
