@@ -67,6 +67,8 @@ export interface StrapiShelfObjectsRelation {
 
 export interface StrapiSingleShelfAttributes {
   name: string;
+  /** What the owner wrote about the shelf; absent or null when unset. */
+  description?: string | null;
   visibility: string;
   type: string;
   order: number;
@@ -100,6 +102,8 @@ export interface StrapiLibraryAttributes {
    * private. Backend spec: docs/library-favorites-backend.md.
    */
   favoritesVisibility?: 'public' | 'private';
+  /** The Favorites shelf's hint, shown beside its name when set. */
+  favoritesDescription?: string | null;
   /** Owner-only account preference. Missing legacy values mean expanded. */
   aiShelfCollapsed?: boolean;
 }
@@ -132,6 +136,8 @@ export interface IUpdateLibraryPayload {
   libraryDetails?: { aboutLibrary: string };
   avatar?: number | null;
   favoritesVisibility?: 'public' | 'private';
+  /** An empty string clears the Favorites hint. */
+  favoritesDescription?: string;
   aiShelfCollapsed?: boolean;
 }
 

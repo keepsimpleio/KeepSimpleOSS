@@ -421,3 +421,107 @@ takes it off.
   is spoken rather than drawn. The owner's Tags row stands from the start under
   the author and above Published, as tall as a pill when empty, so the first tag
   lands in space already held.
+
+## Library shared memory: member books in the title search
+
+Books on the public shelves of the shared libraries are offered while a member
+types a title in the Add book wizard, ahead of Google Books and Open Library.
+The shared owners are listed in `src/constants/library/sharedLibraries.ts`,
+Wolf's library alone for now (Wolf, 2026-09-09); widening it is one entry there.
+The book route reads the CMS anonymously, exactly as a visitor sees the
+library, so a private shelf never reaches the wizard. A member row carries
+title, author, publication date, source URL and the owner's uploaded cover in
+the largest rendition under the upload cap, served through the cover proxy,
+which admits the CMS upload folder for that. It never carries the owner's
+notes, rating, difficulty, tags or shelf: those are the owner's own. Provider
+rows repeating a member title are dropped. Every lookup leaves a
+`library.autofill.member` JSON line.
+
+### Design passport
+
+- Palette: the member ring is the existing `--blue-500`, `--blue-400` on hover
+  and keyboard selection. No other color on this surface changes.
+- Typography: existing autocomplete faces; the hint uses the shared Tooltip at
+  its own size. The origin is also read out with the row for screen readers.
+- Spacing and radius: existing option row; the ring is drawn inset.
+- Motion passport: the Tooltip's existing 150ms opacity; the ring is static.
+  Reduced motion follows the Tooltip.
+- Scrollbar passport: no new scrollable surface.
+- Stability passport: the ring lives inside the row's box, so a member row is
+  exactly as tall and wide as a provider row and hover costs no space.
+
+## Library shelf description
+
+A shelf may carry a description, written by the owner in the Add shelf form
+and in the shelf's Edit shelf form under the name, 180 characters at most,
+counted under the field; the cap is `MAX_SHELF_DESCRIPTION_LENGTH`, mirroring
+the CMS `single-shelf.description` field (keepsimple-cms-new #412). When a
+description is set, a (?) mark stands right after the shelf name for owner
+and visitor alike and says it on hover and keyboard focus through the shared
+Tooltip. With nothing written there is no mark at all. Saving sends only what
+changed; an emptied description clears the hint.
+
+The Favorites shelf carries one too, as `library.favoritesDescription`
+(keepsimple-cms-new #413, unmerged until Wolf says so): the owner opens it
+from the shelf name, the form shows the description alone since the name is
+fixed, and the save goes through the library like its privacy does. The same
+(?) mark and hint follow.
+
+### Design passport
+
+- Palette: the mark is `--white` inside a `--brown-border` ring, its glyph
+  `--gray-darkest`, both turning `--brown` on hover and focus. The hint is the
+  shared Tooltip's paper.
+- Typography: the glyph is Source Sans Pro at 12px, weight 600. The hint is
+  the Tooltip's Source Serif 4 at 16px.
+- Spacing and radius: 20px round mark, 2px after the name inside the header's
+  existing 6px gap. Form fields keep the 6px label gap and 24px between fields.
+- Motion passport: the Tooltip's 150ms opacity in and out; the mark's color
+  and ring ease over 200ms. Reduced motion disables both.
+- Scrollbar passport: no scrollable surface; the hint wraps within 300px.
+- Stability passport: the mark exists only with a description, so a shelf
+  without one is drawn exactly as before; hover changes color only. The hint
+  is portaled and reserves no space.
+
+## Staging and production need Wolf's word (Wolf, 2026-09-09)
+
+Wolf's order, twice the same evening, after an unasked CMS merge to dev rolled
+the staging CMS: I have no right to push anything to staging or production
+until he tells me directly to do it. Nothing goes to staging or production
+without Wolf's direct instruction in the conversation: no merge to `dev` or `main` in this repo or in
+keepsimple-cms-new, no staging redeploy or restart, no CMS schema rollout.
+DEV (this working tree) is the only surface changed freely. Prepare the pull
+request, leave it unmerged, and ask for the go in one line. The A-Z grant
+covers execution, never the decision. Every feature collects on the one
+batch branch and reaches production as one pull request; a go that says
+"everything on staging" covers the whole batch, CMS included.
+
+## Library dark mode design passport
+
+The Library reads in two lights. The lamp beside the search (toolbar and home
+page) turns the light down and up; the choice is a device one, kept a year in
+the `ks_library_theme` cookie, painted server-side by the pages that read the
+cookie so a dark reader never sees a light flash, and mirrored onto `<html>`
+after hydration so surfaces portaled to `<body>` read the same tokens. The
+static home page catches up on mount. Components know nothing of it: every
+token in `variables.scss` has a night value in `themes.scss`, keyed on the
+wrapper's `data-theme`, and a component that hardcodes a color is off
+passport in both lights.
+
+- Palette: night paper is warm, never grey: page `#191614`, surfaces
+  `#1f1c19` to `#2b2724`, borders `#3b3530`, ink `#efe7dc`, secondary ink
+  `#a39b91`. The one accent lifts to `#c98a52` (`#dca46f` on hover) so it
+  clears 4.5:1 on night paper. Book artwork keeps its own colors; the wood
+  plank photograph is dimmed to brightness 0.5, saturation 0.85. New light
+  tokens for former hardcoded values: `--white-400`, `--gray-300`,
+  `--gray-400`, `--sand-100/200/300`, `--panel-tab-shadow-hover`.
+- Typography: unchanged in both lights.
+- Spacing and radius: the lamp is a 40px square on `--radius-control`, 8px
+  left of the search; nothing else moves.
+- Motion passport: page and ink cross over in 200ms ease; the plank dims in
+  200ms; sun and moon cross over in place over 200ms with a 40° turn.
+  Reduced motion switches at once.
+- Scrollbar passport: themed scrollbars read `--taupe` and `--white-100`, so
+  they follow the theme; `color-scheme: dark` themes the native ones.
+- Stability passport: the lamp holds both glyphs from the start and never
+  changes size; the theme changes color only, never geometry.

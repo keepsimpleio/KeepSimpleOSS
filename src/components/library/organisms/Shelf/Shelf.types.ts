@@ -44,8 +44,11 @@ export interface ShelfProps {
   onObjectDeleted?: (shelfId: number, objectId: number) => void;
   /** Fired after the shelf itself is deleted — used to drop it from the library list. */
   onShelfDeleted?: (shelfId: number) => void;
-  /** Fired after the shelf is renamed — lets the library (and toolbar jump-to nav) update in the same render. */
-  onShelfRenamed?: (shelfId: number, name: string) => void;
+  /**
+   * Fired after the shelf form saved its name and description — lets the
+   * library (and toolbar jump-to nav) update in the same render.
+   */
+  onShelfRenamed?: (shelfId: number, name: string, description: string) => void;
   /**
    * Fired when an object on this shelf is moved to another shelf (PUT shelf: id).
    * Lets the library remove the object from the source shelf and add it to the
@@ -78,6 +81,11 @@ export interface ShelfProps {
    * the save fails, so the menu can fall back.
    */
   onFavoritesVisibilityChange?: (visibility: ShelfVisibility) => Promise<void>;
+  /**
+   * Favorites only: saves the library's `favoritesDescription`, the hint the
+   * shelf shows beside its name. Rejects when the save fails.
+   */
+  onFavoritesDescriptionChange?: (description: string) => Promise<void>;
   /**
    * The library filtered down to one tag: every book that tag labels, gathered
    * off the shelves they stand on, in the tag's own order (id TAG_SHELF_ID).

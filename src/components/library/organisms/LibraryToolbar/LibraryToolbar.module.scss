@@ -222,7 +222,7 @@
   width: 43px;
   height: 43px;
   border-radius: var(--radius-control);
-  background: #fefdf9 !important;
+  background: var(--white-400) !important;
 }
 
 .arrowLeft svg {
@@ -283,6 +283,14 @@
   gap: 2px;
   flex-shrink: 0;
   animation: toolbar-fade 0.3s ease;
+}
+
+// The lamp stands left of the search, the two as one row; the search keeps
+// its own width and the count below it stays where it was.
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 // One line, always present, under the search field. On desktop it hangs
@@ -407,7 +415,7 @@
   &:hover {
     background: var(--pattern-panel-tab), var(--off-white);
     color: var(--brown-100);
-    box-shadow: -14px 0 20px -8px #533a3a3d;
+    box-shadow: var(--panel-tab-shadow-hover);
   }
 
   &:focus-visible {

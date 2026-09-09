@@ -5,7 +5,7 @@
   pointer-events: none;
   // Fallback while the tile renders (or when canvas is unavailable): the
   // paper's own flat colour.
-  background-color: #f2e9d6;
+  background-color: var(--sand-300);
   background-repeat: repeat;
 
   .washes {

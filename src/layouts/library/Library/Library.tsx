@@ -360,7 +360,11 @@ export function LibraryTemplate({
     setIsOpen(open => !open);
   };
 
-  const handleCreateShelf = async (modalShelfType: ShelfType, name: string) => {
+  const handleCreateShelf = async (
+    modalShelfType: ShelfType,
+    name: string,
+    description = '',
+  ) => {
     // resolveLibraryId throws when the lookup itself fails; the modal shows
     // that as an error, which is right: we must not bootstrap a library on
     // top of one we simply could not read.
@@ -402,6 +406,7 @@ export function LibraryTemplate({
     try {
       await createShelf({
         name,
+        ...(description ? { description } : {}),
         type,
         library: resolvedId,
         order: nextOrder,
@@ -450,6 +455,7 @@ export function LibraryTemplate({
   // starred, and for visitors only when the owner has made it public.
   const favoritesVisibility: ShelfVisibility =
     library?.attributes.favoritesVisibility ?? 'private';
+  const favoritesDescription = library?.attributes.favoritesDescription ?? '';
   const favoritesShelf = useMemo<StrapiSingleShelfEntry | null>(() => {
     const starred = sortFavorites(
       shelves.flatMap(s =>
@@ -461,6 +467,7 @@ export function LibraryTemplate({
       id: FAVORITES_SHELF_ID,
       attributes: {
         name: FAVORITES_SHELF_NAME,
+        description: favoritesDescription,
         visibility: favoritesVisibility,
         type: 'book',
         order: -1,
@@ -470,7 +477,7 @@ export function LibraryTemplate({
         objects: { data: starred },
       },
     };
-  }, [shelves, favoritesVisibility]);
+  }, [shelves, favoritesVisibility, favoritesDescription]);
   const showFavoritesShelf =
     favoritesShelf != null && (viewAsOwner || favoritesVisibility === 'public');
 
@@ -988,6 +995,34 @@ export function LibraryTemplate({
     [library],
   );
 
+  // The Favorites shelf's hint is a field on the library itself, saved the
+  // same way as its privacy and stamped on the loaded library afterwards.
+  const saveFavoritesDescription = useCallback(
+    async (description: string) => {
+      if (!library) return;
+      const result = await updateLibrary(library.id, {
+        favoritesDescription: description,
+      });
+      if (
+        (result.data?.attributes.favoritesDescription ?? '') !== description
+      ) {
+        throw new Error('The Favorites description was not saved.');
+      }
+      setLibrary(current =>
+        current
+          ? {
+              ...current,
+              attributes: {
+                ...current.attributes,
+                favoritesDescription: description,
+              },
+            }
+          : current,
+      );
+    },
+    [library],
+  );
+
   // Stamps each shelf's new position onto the loaded library. The `shelves`
   // memo re-sorts by `order` at render, so the list lands in the new sequence
   // without a refetch.
@@ -1091,25 +1126,28 @@ export function LibraryTemplate({
       });
   };
 
-  const handleShelfRenamed = useCallback((shelfId: number, name: string) => {
-    setLibrary(current => {
-      if (!current) return current;
-      const shelvesData = current.attributes.singleShelves?.data ?? [];
-      return {
-        ...current,
-        attributes: {
-          ...current.attributes,
-          singleShelves: {
-            data: shelvesData.map(s =>
-              s.id === shelfId
-                ? { ...s, attributes: { ...s.attributes, name } }
-                : s,
-            ),
+  const handleShelfRenamed = useCallback(
+    (shelfId: number, name: string, description: string) => {
+      setLibrary(current => {
+        if (!current) return current;
+        const shelvesData = current.attributes.singleShelves?.data ?? [];
+        return {
+          ...current,
+          attributes: {
+            ...current.attributes,
+            singleShelves: {
+              data: shelvesData.map(s =>
+                s.id === shelfId
+                  ? { ...s, attributes: { ...s.attributes, name, description } }
+                  : s,
+              ),
+            },
           },
-        },
-      };
-    });
-  }, []);
+        };
+      });
+    },
+    [],
+  );
 
   const handleShelfDeleted = useCallback(
     (shelfId: number) => {
@@ -1435,6 +1473,7 @@ export function LibraryTemplate({
                 ownerUsername={ownerUsername ?? libraryId}
                 isOwner={canEditHere}
                 onFavoritesVisibilityChange={saveFavoritesVisibility}
+                onFavoritesDescriptionChange={saveFavoritesDescription}
                 onObjectUpdated={handleFavoriteObjectUpdated}
                 onObjectDeleted={handleFavoriteObjectDeleted}
                 onObjectMoved={handleObjectMoved}

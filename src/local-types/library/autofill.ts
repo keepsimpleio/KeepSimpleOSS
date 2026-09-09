@@ -1,5 +1,6 @@
 // Normalized metadata shape every autofill provider (Google Books, iTunes
-// Search, YouTube) is mapped into by the /api/library/autofill/* routes.
+// Search, YouTube) and a shared member library are mapped into by the
+// /api/library/autofill/* routes.
 export interface IAutofillSuggestion {
   title: string;
   author?: string;
@@ -13,4 +14,10 @@ export interface IAutofillSuggestion {
   sourceUrl?: string;
   /** Track length in whole seconds (iTunes only — books/videos omit it). */
   durationSeconds?: number;
+  /**
+   * Set when the record is a book on a public shelf of another member's
+   * library, offered ahead of the providers. Such a record never carries the
+   * owner's notes, rating or difficulty: those are the owner's own words.
+   */
+  memberLibrary?: { username: string; objectId: number };
 }

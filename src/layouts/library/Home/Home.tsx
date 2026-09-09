@@ -22,7 +22,9 @@ import PlusIcon from '@icons/library/svg/plus.svg';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { BrushPaper } from '@components/library/atoms/BrushPaper';
+import { LibraryRoot } from '@components/library/atoms/LibraryRoot';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { ThemeToggle } from '@components/library/atoms/ThemeToggle';
 import { AboutLibraryModal } from '@components/library/molecules/AboutLibraryModal';
 import {
   Button,
@@ -248,7 +250,7 @@ export function HomeTemplate({
   ));
 
   return (
-    <main className="library">
+    <LibraryRoot as="main">
       <section className={styles.banner}>
         <div className={styles.bannerInner}>
           <InteractiveCover
@@ -285,6 +287,7 @@ export function HomeTemplate({
               </Text>
             </span>
             <div className={styles.searchGroup}>
+              <ThemeToggle />
               <Input
                 type="search"
                 value={value}
@@ -337,6 +340,6 @@ export function HomeTemplate({
       </section>
 
       {isOpen && <AboutLibraryModal onClose={modalToggler} />}
-    </main>
+    </LibraryRoot>
   );
 }
