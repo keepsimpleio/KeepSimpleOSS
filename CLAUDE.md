@@ -341,6 +341,10 @@ with them. One tag at a time; clicking the active tag clears the filter.
   too narrow to show the whole word, and the state note follows it. The
   description is capped at 180 characters at both ends, counted under the field
   as it is typed: the form used to allow 500 where the CMS refused past 150.
+  The CMS side is keepsimple-cms-new commit ad1cb40, on the staging CMS since
+  2026-09-09. Proved there against the live API as the library's owner: 180
+  characters saved and read back at 180, 181 refused with "description must be
+  at most 180 characters", and the probed tag restored.
 - A tag that labels nothing the viewer can open does not answer a click: it
   carries the pointer of a label, not of a control, and says `Tag not used` on
   hover and on keyboard focus, keeping its tab stop as a control that is off.
