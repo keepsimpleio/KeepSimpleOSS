@@ -360,6 +360,11 @@ with them. One tag at a time; clicking the active tag clears the filter.
 - Dragging a book in the gathered row saves the tag's own sequence through
   `POST /tags/reorder`, never a shelf's. Owner and desktop only, the same rule
   the shelves follow. A newly tagged book lands at the end.
+- A tag's name is the owner's own word, written the way they write it:
+  spaces, accents, punctuation, any script, up to `MAX_TAG_NAME_LENGTH`.
+  Nothing about it has to be URL-safe, since the CMS derives the address from
+  the name and never takes one from the client. The form is not to hold the
+  name to a character class again.
 - A tag belongs to one library. The palette in the object form is that
   library's, and the CMS refuses a tag from another one.
 - A library keeps at most 13 tags. At the cap the Create control is disabled

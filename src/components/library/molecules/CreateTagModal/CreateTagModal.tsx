@@ -5,7 +5,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { MAX_TAG_DESCRIPTION_LENGTH } from '@constants/library/common';
+import {
+  MAX_TAG_DESCRIPTION_LENGTH,
+  MAX_TAG_NAME_LENGTH,
+} from '@constants/library/common';
 import { tagColors } from '@constants/library/tags';
 
 import { ArrowIcon, DeleteIcon, InfoIcon } from '@icons/library/svg';
@@ -249,6 +252,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
                       ariaLabel="Enter the name"
                       placeholder="Enter the name"
                       placeholderColor="#9E9E9E"
+                      maxLength={MAX_TAG_NAME_LENGTH}
                       {...register('name')}
                     />
                     {errors.name && (
