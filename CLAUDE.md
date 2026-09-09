@@ -546,8 +546,8 @@ being picked in the form as it is picked.
 - Palette: the tag's own colour, and nothing else. Slices fall from full
   strength to 0.35 by rank, the paper showing through, so the ring reads the
   same in both lights. The hovered shelf holds its strength while the others
-  step back to 0.35 of theirs; the legend row it belongs to takes the existing
-  `--off-white`. Text is `--black` with `--gray-darker` for the figures, and
+  step back to 0.35 of theirs, slice and legend row by the same amount; the
+  hovered row itself takes the existing `--off-white`. Text is `--black` with `--gray-darker` for the figures, and
   the hint's shelf name is `--brown`.
 - Typography: the total is Source Serif 4 at 24px over an 11px uppercase
   Source Sans Pro label; shelf names and percentages are the existing 14px

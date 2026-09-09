@@ -15,6 +15,8 @@ const STROKE = 18;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 // A hairline of paper between neighbouring slices, in circumference units.
 const GAP = 1.2;
+// The thinnest a shelf is ever drawn: below this a slice reads as a scratch.
+const MIN_SLICE = 0.6;
 // How many books a hint names before it says how many more there are. The
 // tooltip has no scrolling surface, so the list has to end somewhere.
 const HINT_ROWS = 10;
@@ -30,6 +32,10 @@ interface Slice {
 }
 
 const books = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}`;
+
+// A share too small to round to a whole percent is still a share: it says so
+// rather than reading as nothing. One reading, drawn and spoken alike.
+const share = (percent: number) => (percent === 0 ? '<1%' : `${percent}%`);
 
 /**
  * Shelves in the order they will be drawn: the biggest share first, so the
@@ -66,20 +72,36 @@ function sliceLibrary(rows: TagUsageRow[]): Slice[] {
     spare -= 1;
   }
 
+  // The ring, less the paper between the slices, is what there is to divide.
+  // A shelf too thin to be seen is drawn at MIN_SLICE and the width for it
+  // comes off the shelves that have width to spare, so the slices always sit
+  // side by side and always fill the ring exactly.
   const gap = entries.length > 1 ? GAP : 0;
+  const room = CIRCUMFERENCE - entries.length * gap;
+  const lengths = entries.map(entry =>
+    Math.max((entry.items.length / total) * room, MIN_SLICE),
+  );
+  const over = lengths.reduce((sum, value) => sum + value, 0) - room;
+  if (over > 0) {
+    const spareRoom = lengths.map(value => Math.max(0, value - MIN_SLICE));
+    const spareTotal = spareRoom.reduce((sum, value) => sum + value, 0);
+    if (spareTotal > 0) {
+      lengths.forEach((value, index) => {
+        lengths[index] = value - (over * spareRoom[index]) / spareTotal;
+      });
+    }
+  }
+
   let offset = 0;
   return entries.map((entry, index) => {
-    const share = (entry.items.length / total) * CIRCUMFERENCE;
     const slice: Slice = {
       ...entry,
       percent: percents[index],
       offset,
-      // Never a negative dash: a one-book shelf in a large library is thinner
-      // than the gap it would give away.
-      length: Math.max(share - gap, 0.6),
+      length: lengths[index],
       opacity: Math.max(0.35, 1 - index * 0.13),
     };
-    offset += share;
+    offset += lengths[index] + gap;
     return slice;
   });
 }
@@ -178,7 +200,7 @@ export function TagUsagePie({
                   [styles.rowMuted]: !!active && active !== slice.shelf,
                 })}
                 tabIndex={0}
-                aria-label={`${slice.shelf}: ${books(slice.items.length)}, ${slice.percent}%`}
+                aria-label={`${slice.shelf}: ${books(slice.items.length)}, ${share(slice.percent)}`}
                 {...watch(slice.shelf)}
               >
                 <span
@@ -196,7 +218,7 @@ export function TagUsagePie({
                   variant={TypographyVariant.TextSmall}
                   className={styles.percent}
                 >
-                  {slice.percent === 0 ? '<1' : slice.percent}%
+                  {share(slice.percent)}
                 </Text>
               </span>
             </Tooltip>

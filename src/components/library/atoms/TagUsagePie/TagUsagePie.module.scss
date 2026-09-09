@@ -127,9 +127,10 @@
 }
 
 // The shelves the pointer is not on step back, in the ring and in the list
-// alike. Colour only: the row keeps its place and its size.
+// alike, and by the same amount. Colour only: the row keeps its place and its
+// size.
 .rowMuted {
-  opacity: 0.5;
+  opacity: 0.35;
 }
 
 .swatch {
