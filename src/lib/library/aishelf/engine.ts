@@ -54,9 +54,19 @@ export const AI_SHELF_BENCH = 6;
  * row rather than being exiled to its end. */
 const STRETCH_SLOTS = [3, 7, 11];
 
-/** Asked for per half: more than the board needs, because a candidate no
- * source can confirm never stands, and what is left over sits on the bench. */
-const ASK: Record<RecommendedKind, number> = { fit: 14, stretch: 6 };
+/**
+ * Asked for per half: more than the board needs, because a candidate no
+ * source can confirm never stands, and what is left over sits on the bench.
+ *
+ * The ceiling that sets these numbers is not the model, it is the road to it.
+ * Between a project container and the relay stands an edge that closes a
+ * request at 100 seconds, and two opus calls measured from production at
+ * high effort took 107 and 117. Latency here is mostly what the model
+ * writes, so the ask is cut to what the board actually needs plus a little,
+ * and the second pass covers a candidate no source could confirm. Nothing
+ * about the picks themselves is lowered: still opus 5, still high effort.
+ */
+const ASK: Record<RecommendedKind, number> = { fit: 12, stretch: 5 };
 /** Book sources queried at once. */
 const VERIFY_CONCURRENCY = 6;
 
@@ -348,6 +358,8 @@ export interface BoardRun {
   errors: string[];
   served: MagicServed | null;
   tracksExhausted: boolean;
+  /** True when the road to the engine closed mid-answer. */
+  cutOff: boolean;
 }
 
 export interface BoardRequest {
@@ -362,6 +374,10 @@ export interface BoardRequest {
   banned: string[];
 }
 
+/** Statuses an edge returns when it gives up on a request that is still
+ * being written on the other side. */
+const CUT_OFF = new Set([408, 502, 504, 522, 524]);
+
 interface HalfRun {
   picks: RecommendedPick[];
   calls: number;
@@ -369,6 +385,8 @@ interface HalfRun {
   errors: string[];
   served: MagicServed | null;
   tracksExhausted: boolean;
+  /** The road to the engine closed while the model was still writing. */
+  cutOff: boolean;
   calibration: { offset: number; samples: number };
 }
 
@@ -391,6 +409,7 @@ export async function runBoard(
     errors: [],
     served: null,
     tracksExhausted: false,
+    cutOff: false,
   };
   if (request.need.fit <= 0 && request.need.stretch <= 0) return empty;
 
@@ -417,6 +436,7 @@ export async function runBoard(
       errors: [],
       served: null,
       tracksExhausted: false,
+      cutOff: false,
       calibration: { offset: 0, samples: 0 },
     };
     if (need <= 0) return half;
@@ -445,12 +465,13 @@ export async function runBoard(
         half.served = reply.served;
       } catch (error) {
         half.errors.push(error instanceof Error ? error.message : 'model');
-        if (
-          error instanceof RelayError &&
-          (error.exhausted || error.status === 0)
-        ) {
-          half.tracksExhausted = true;
+        if (error instanceof RelayError) {
+          if (error.exhausted || error.status === 0)
+            half.tracksExhausted = true;
+          if (CUT_OFF.has(error.status)) half.cutOff = true;
         }
+        // A cut-off call is not retried here: the model kept writing on the
+        // other side and the subscription has already paid for it once.
         break;
       }
       if (!answer) {
@@ -521,6 +542,7 @@ export async function runBoard(
     errors: [...fit.errors, ...stretch.errors],
     served: fit.served ?? stretch.served,
     tracksExhausted: fit.tracksExhausted || stretch.tracksExhausted,
+    cutOff: fit.cutOff || stretch.cutOff,
   };
 }
 

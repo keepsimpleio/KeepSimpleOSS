@@ -463,7 +463,9 @@ async function stockTheBoard(request: StockRequest): Promise<void> {
     const note = !answered
       ? run.tracksExhausted
         ? 'The engine is out of reach right now. Roll again in a while.'
-        : 'Nothing could be confirmed this time. Roll again.'
+        : run.cutOff
+          ? 'The engine ran long and the line closed. Roll again.'
+          : 'Nothing could be confirmed this time. Roll again.'
       : picks.length < AI_SHELF_SIZE
         ? 'Some candidates could not be confirmed. Roll again to fill the shelf.'
         : null;
@@ -513,6 +515,7 @@ async function stockTheBoard(request: StockRequest): Promise<void> {
       modelCalls: run.calls,
       served: run.served,
       tracksExhausted: run.tracksExhausted,
+      cutOff: run.cutOff,
       calibration: run.calibration,
       unverified: run.unverified.length,
       errors: run.errors.slice(0, 5),
