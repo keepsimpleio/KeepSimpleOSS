@@ -1,0 +1,118 @@
+{
+  "seoTitle": "Wolf’s Terminal: an atlas of my orchestration harness",
+  "seoDescription": "How I run a team of AI agents: one task, from my message to the result, every feature explained by me.",
+  "seoKeywords": "Wolf’s Terminal, orchestration harness, AI agents",
+  "ogImageAlt": "Wolf’s Terminal",
+  "loading": "Loading…",
+  "failedToLoad": "Failed to load data : ",
+  "welcomeBanner": "AN ATLAS OF MY ORCHESTRATION HARNESS",
+  "day": "DAY",
+  "daySinceTail": "since we started building this",
+  "apexFounderFallback": "founder",
+  "redactedPlaceholder": "REDACTED",
+  "engLeadLabel": "Eng. Lead",
+  "publicInternetLabel": "PUBLIC INTERNET",
+  "telegramLabel": "TELEGRAM",
+  "claudeMdLabel": "claude.md",
+  "canvasStats": {
+    "humans": "humans",
+    "agents": "ai agents",
+    "subAgents": "ai sub-agents",
+    "products": "products"
+  },
+  "introDossierTitle": "THE ATLAS",
+  "introDossierCjk": "地図帳",
+  "introStoryBody": "This is how I run a team of AI agents. One task travels from my message to the result, and every tile on the map is a feature I built along that path. Click a tile and I explain what it does for me and why it exists.",
+  "introStoryLink": "",
+  "introQuestionsBefore": "",
+  "introQuestionsLink": "",
+  "introQuestionsAfter": "",
+  "introDepthLabel": "depth",
+  "introDepthValue": "Ownership and the life of one task",
+  "introInhabitantsLabel": "basis",
+  "introPrincipleLabel": "evidence",
+  "principles": [
+    "Every card is a feature I use daily. Where I say something works, a journal on my server says it too."
+  ],
+  "legendTitle": "Legend",
+  "legendCjk": "凡例",
+  "legendHumanLabel": "human",
+  "legendHumanDesc": "direction · final judgment",
+  "legendAgentLabel": "ai agent",
+  "legendAgentDesc": "project owner",
+  "legendSubAgentLabel": "support",
+  "legendSubAgentDesc": "scoped work",
+  "legendProductLabel": "mechanism",
+  "legendProductDesc": "a stage or what supports it",
+  "legendSolidLabel": "solid line",
+  "legendSolidDesc": "arrows: the order of a task",
+  "legendFilledLabel": "filled tile",
+  "legendFilledDesc": "supports a stage",
+  "legendArticleCta": "",
+  "legendArticleUrl": "",
+  "toggleEnvironment": "Environment",
+  "toggleSecurity": "Security",
+  "doctrineTitle": "Doctrine",
+  "doctrineCjk": "守則",
+  "doctrineImageAlt": "Terminal authority and evidence",
+  "securityIntroTitle": "AUTHORITY & EVIDENCE",
+  "securityIntroCjk": "守り",
+  "securityIntroDesc": "These are the domains of access and accountability on my server. The rings group them. It is not a security certificate.",
+  "securityIntroRows": [
+    {
+      "k": "permission",
+      "v": "Recorded project grants"
+    },
+    {
+      "k": "enforcement",
+      "v": "Depends on the mechanism"
+    },
+    {
+      "k": "evidence",
+      "v": "Run records and journals"
+    }
+  ],
+  "securityLayers": [],
+  "securityWhyWeLikeIt": "Evidence",
+  "securityCenterCore": "WORK",
+  "securityCenterKanji": "守",
+  "statsHeading": "Operating principles",
+  "statsCjk": "数",
+  "securityStats": [
+    {
+      "v": "Scope",
+      "k": "Recorded ownership"
+    },
+    {
+      "v": "Access",
+      "k": "Per-surface conditions"
+    },
+    {
+      "v": "Proof",
+      "k": "Run evidence"
+    },
+    {
+      "v": "Review",
+      "k": "I confirm completion"
+    }
+  ],
+  "agentsHeading": "Ownership across the system",
+  "agentsCjk": "共棲",
+  "agentsSubtitle": "Project operators act within the grants I recorded. Shared infrastructure belongs to The Order.",
+  "authorityAgentRole": "Shared infrastructure",
+  "orderName": "The Order",
+  "orderCjk": "序",
+  "orderCreds": ["Access boundaries", "Shared infrastructure"],
+  "securityAgents": [],
+  "agentsPunchline": "Permission rules say what an agent may do. They say nothing about technical isolation.",
+  "patternsHeading": "Continuity & evidence",
+  "patternsCjk": "型",
+  "patternsSubtitle": "The mechanisms that keep context and record what happened.",
+  "securityPatterns": [],
+  "footerEnd": "END · WOLF’S TERMINAL",
+  "hankoSelfTitle": "built here, run here",
+  "hankoCoTitle": "one owner per project",
+  "modalCloseLabel": "Close",
+  "modalHint": "Esc closes. A topic inside opens in place.",
+  "readMoreHint": "click to read more"
+}

@@ -1,0 +1,620 @@
+{
+  "generatedAt": "2026-09-10T19:49:41.143805+00:00",
+  "steps": [
+    {
+      "id": "project-home",
+      "title": "Project",
+      "location": "Terminal.",
+      "text": "I pick the project. Its rules, its memory and its build decisions apply to everything that follows.",
+      "children": ["keys", "monitoring", "backlog"]
+    },
+    {
+      "id": "task",
+      "title": "I give a task",
+      "location": "My browser",
+      "text": "I send the task. The browser passes my message to Terminal.",
+      "children": ["message", "queue", "reply-mode", "recipient", "actions"]
+    },
+    {
+      "id": "terminal",
+      "title": "Terminal dispatches it",
+      "location": "Our server",
+      "text": "Terminal sends the task to the agent session of the project I chose.",
+      "children": ["project", "engine-switch", "tracks", "steering"]
+    },
+    {
+      "id": "prepare",
+      "title": "Agent prepares",
+      "location": "Agent session.",
+      "text": "A new session loads its rules; an existing one resumes with what it remembers.",
+      "children": [
+        "onboarding",
+        "global",
+        "local",
+        "session-resume",
+        "session-end"
+      ]
+    },
+    {
+      "id": "agent",
+      "title": "Agent works",
+      "location": "Our server + model provider",
+      "text": "The agent works through the task from its rules and memory. Its tools run on my server; the model it calls runs at the provider.",
+      "children": [
+        "work-checks",
+        "directory",
+        "memorymd",
+        "palace",
+        "skills",
+        "tools",
+        "sendto",
+        "human-collab",
+        "background-work",
+        "codemap"
+      ]
+    },
+    {
+      "id": "result",
+      "title": "I get the result",
+      "location": "My browser",
+      "text": "Terminal streams the agent’s answer back to me. What its tools built stays in the project.",
+      "children": [
+        "delivered-work",
+        "review-result",
+        "notify",
+        "history",
+        "decisions",
+        "auto-capture",
+        "discipline",
+        "phases"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "id": "message",
+      "title": "Message",
+      "text": "My browser sends the task to Terminal.",
+      "detail": [
+        "I tell the agent what needs to change and what result I expect."
+      ]
+    },
+    {
+      "id": "attachments",
+      "title": "Attachments",
+      "text": "Files travel with the task.",
+      "detail": [
+        "Screenshots and files ride along with the message. The agent works from what I show it, not from my retelling."
+      ]
+    },
+    {
+      "id": "reply-mode",
+      "title": "DEF / SIM",
+      "text": "DEF sends the ordinary task. SIM appends a short-Russian-reply instruction without restricting work or tools.",
+      "detail": [
+        "DEF is the normal reply. SIM asks for a short answer in Russian while the agent still does the whole job. I read less, the work stays the same."
+      ]
+    },
+    {
+      "id": "recipient",
+      "title": "Recipient & model",
+      "text": "The message targets the selected agent and carries the selected model.",
+      "detail": [
+        "I choose the agent, the model and how hard it thinks. Each lane keeps its own picks, so switching engines and back costs me nothing."
+      ]
+    },
+    {
+      "id": "actions",
+      "title": "Save work & decisions",
+      "text": "Two requests I make on purpose: save the decisions, push the code.",
+      "children": ["action-prep", "action-push"]
+    },
+    {
+      "id": "project",
+      "title": "Engine",
+      "text": "The engine determines whether Claude or OpenAI carries out the task.",
+      "detail": [
+        "Terminal runs the agent on the engine I chose, Claude or OpenAI, inside the project I opened."
+      ]
+    },
+    {
+      "id": "queue",
+      "title": "Smart Queuing",
+      "text": "How queued work waits and starts.",
+      "children": [
+        "timing-order",
+        "timing-availability",
+        "timing-schedule",
+        "timing-server"
+      ]
+    },
+    {
+      "id": "sendto",
+      "title": "AI Collaboration",
+      "text": "An agent names a colleague in one SEND TO line. Terminal delivers the ask into that colleague’s own session; the two conversations stay separate.",
+      "children": ["ask-once", "auto"]
+    },
+    {
+      "id": "global",
+      "title": "Global CLAUDE.md",
+      "text": "The shared rules: how agents work with me and what they are authorized to change.",
+      "detail": [
+        "One rules file above every project. It says how agents verify claims, talk to me, respect ownership and finish the work they were given. Claude loads it itself; Codex is told to read it first."
+      ]
+    },
+    {
+      "id": "local",
+      "title": "Local CLAUDE.md",
+      "text": "The project’s own rules file at the root of its folder. In Terminal, AGENTS.md points to the same file for the OpenAI lane.",
+      "detail": [
+        "Every project folder has its own rules at the root: how to work here, the design passport, where ownership ends. The agent reads it before touching anything."
+      ]
+    },
+    {
+      "id": "memorymd",
+      "title": "MEMORY.md",
+      "text": "A project memory index with links to saved notes. It points the agent toward prior decisions; it is separate from the full conversation and MemPalace.",
+      "detail": [
+        "An index of what the project already learned. Claude loads it at session start; Codex is pointed at it in its first turn."
+      ]
+    },
+    {
+      "id": "palace",
+      "title": "MemPalace",
+      "text": "A searchable store of saved decisions, organized by project. Agents retrieve relevant entries and save new decisions through its tools. A session-start brief can supply recent entries.",
+      "detail": [
+        "MemPalace is where decisions go to survive. An agent files what we agreed, and a new session searches it before asking me again."
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "Skills",
+      "text": "Instructions for a particular kind of work. The agent reads a relevant skill and follows its workflow. A skill can describe which tools to use.",
+      "detail": [
+        "A skill is a written method for one kind of work. The agent opens the matching skill and follows it instead of improvising."
+      ]
+    },
+    {
+      "id": "tools",
+      "title": "Tools",
+      "text": "Tools perform actions: read or edit a file, run a command, or reach an external service. Results return to the agent so it can decide what to do next.",
+      "detail": [
+        "Tools are how an agent acts: edit a file, run a command, reach a service. The result comes back and the agent decides the next step."
+      ]
+    },
+    {
+      "id": "history",
+      "title": "Conversation history",
+      "text": "The session keeps a record of the conversation. Resuming a session and searching curated memory use different stores.",
+      "detail": [
+        "The session keeps the whole conversation, so I can come back to it. An archive keeps every session past the CLI's own retention, and a full-text index searches all of them."
+      ]
+    },
+    {
+      "id": "decisions",
+      "title": "Saved decisions",
+      "text": "A decision can be saved for future work in project memory or MemPalace. The agent must perform that save; a final reply alone does not guarantee it.",
+      "detail": [
+        "A decision that lives only in the chat is lost. The agent writes it into memory, or the next session starts from zero."
+      ]
+    },
+    {
+      "id": "action-prep",
+      "title": "PREP",
+      "text": "Save and verify decisions.",
+      "detail": [
+        "PREP is the last thing before leaving: save the decisions, then read them back to prove they landed."
+      ]
+    },
+    {
+      "id": "action-push",
+      "title": "PUSH",
+      "text": "Commit and push changes.",
+      "detail": [
+        "PUSH commits the source changes and sends them to the project's repository. The code is the record, the chat is not."
+      ]
+    },
+    {
+      "id": "timing-order",
+      "title": "Execution order",
+      "text": "One queued task after another.",
+      "detail": [
+        "Queued tasks reach the agent one after another, in the order I set."
+      ]
+    },
+    {
+      "id": "timing-availability",
+      "title": "Agent availability",
+      "text": "Waits until the slot can accept work.",
+      "detail": [
+        "The next task waits until its agent is free. The server checks before it dispatches."
+      ]
+    },
+    {
+      "id": "timing-schedule",
+      "title": "Delayed start",
+      "text": "Time gates the first queued task.",
+      "detail": [
+        "I set when queued work may start. The first task fires when that time comes and the agent is free."
+      ]
+    },
+    {
+      "id": "timing-server",
+      "title": "Server-owned queue",
+      "text": "Runs without an open browser.",
+      "detail": [
+        "The server holds the queue. I close the browser and the work still happens."
+      ]
+    },
+    {
+      "id": "ask-once",
+      "title": "Ask once",
+      "text": "One request from an agent to a colleague.",
+      "detail": [
+        "An agent names a colleague in one SEND TO line. Terminal delivers the ask into that colleague's own session, with that project's context, and brings the answer back."
+      ]
+    },
+    {
+      "id": "auto",
+      "title": "Auto Mode",
+      "text": "Auto Mode runs on the Terminal server.",
+      "detail": [
+        "Auto Mode lets an armed pair of agents pass work back and forth through the server with my browser closed. It stops at the hop limit or when a message repeats."
+      ]
+    },
+    {
+      "id": "onboarding",
+      "title": "Agent onboarding",
+      "text": "A new session starts with an introduction to how we work and the project it belongs to.",
+      "detail": [
+        "Codex is told to read the global rules, the project rules, then the memory index. Claude gets the project rules; its CLI loads the rest itself. A facts file states lane, model and mode."
+      ]
+    },
+    {
+      "id": "directory",
+      "title": "Project owners",
+      "text": "Agents can look up their colleagues and see who owns each project.",
+      "detail": [
+        "The directory says who owns each project. Crossing into a colleague's territory means asking that colleague, never doing their work for them."
+      ]
+    },
+    {
+      "id": "new-project",
+      "title": "New project",
+      "text": "I give the project its purpose and a place in the system.",
+      "detail": [
+        "Terminal runs my project script: it prepares the workspace and the starting rules. Opening the project starts its agent's first turn."
+      ]
+    },
+    {
+      "id": "new-agent",
+      "title": "New agent",
+      "text": "The project gets its agent identity when I open it.",
+      "detail": [
+        "Open a project and its agent is born, named after the folder. Its first turn reads the rules and lists the open backlog."
+      ]
+    },
+    {
+      "id": "keys",
+      "title": "Composite Keys",
+      "text": "I choose proven structures the project needs. Each Key carries a specification the agent builds from.",
+      "detail": [
+        "Keys are proven structures I build into any project: a design passport, a health watcher. They belong to the project and outlive its agent.",
+        "Before a key is built, the agent asks its intake questions and records my answers. They stay with the key, so nobody asks twice.",
+        "Lighting a key goes ASK, intake, contract check, execution, mechanical proof, version record, LIT. Every step is journaled. Only a LIT key counts.",
+        "A weekly sweep stamps key versions, rebuilds the feed and tells me which project runs an outdated key. Silent when everything is current."
+      ]
+    },
+    {
+      "id": "work-checks",
+      "title": "Doors",
+      "text": "Rules need checks while the work is happening. Enabled gates, including Doors, catch violations and send the agent back to fix them.",
+      "detail": [
+        "Doors are hooks on the Claude lane at fixed moments: task submit, before a read, after every edit, turn end. A triggered door means fix the work. Codex has none."
+      ]
+    },
+    {
+      "id": "monitoring",
+      "title": "Monitoring",
+      "text": "The project still needs watching after the agent finishes. Enrolled watchers check that it is running and delivering its declared result.",
+      "detail": [
+        "Watchers check enrolled projects after launch and report a failure to Telegram, naming the owner. Health Watcher checks that the thing is up and delivers what it declared. It never repairs."
+      ]
+    },
+    {
+      "id": "backlog",
+      "title": "Backlog",
+      "text": "Project tasks wait here until taken into work. The agent marks a delivered task for review; I confirm completion.",
+      "detail": [
+        "Project tasks wait in the backlog until taken. The agent marks delivered work for review; only I close it."
+      ]
+    },
+    {
+      "id": "background-work",
+      "title": "Background work",
+      "text": "A process can keep running after the agent’s turn ends. Terminal tracks it and can accept another message; background activity alone does not restart the agent.",
+      "detail": [
+        "A process can keep running after the turn ends. Terminal tracks it and takes my next message; a background process alone never restarts the agent."
+      ]
+    },
+    {
+      "id": "session-resume",
+      "title": "Session start",
+      "text": "Return to an existing session with the context it retained. Saved project memory supplies earlier decisions when the conversation no longer holds them.",
+      "detail": [
+        "I return to a session and it still holds its context. When the conversation has forgotten, saved memory remembers."
+      ]
+    },
+    {
+      "id": "delivered-work",
+      "title": "Delivered work",
+      "text": "The agent reports what changed and what it checked. The resulting work stays in the project for me to use.",
+      "detail": [
+        "The agent reports what changed and what it checked. The work itself stays in the project, where I use it."
+      ]
+    },
+    {
+      "id": "review-result",
+      "title": "Review result",
+      "text": "I assess the delivered work and ask for corrections. A backlog task closes only on my confirmation.",
+      "detail": [
+        "I judge the result and send it back if it is wrong. A backlog task closes on my confirmation, never on the agent's report.",
+        "LOOP is the assessment path: the agent reads the project's evidence and offers three candidates with metric, baseline, gain, cost and risk. I pick one."
+      ]
+    },
+    {
+      "id": "engine-switch",
+      "title": "Engine switch",
+      "text": "Any tile runs Claude or Codex; a handover brief carries the work across.",
+      "detail": [
+        "Any tile runs Claude or Codex. A switch mid-turn is refused: finish or stop first. A brief built from server state hands the work over; nothing is retyped."
+      ]
+    },
+    {
+      "id": "tracks",
+      "title": "Tracks",
+      "text": "Which subscription pays for the tile's next turn.",
+      "detail": [
+        "Three tracks per lane, one subscription each, under my alias. A tile bills its track from its next turn. A track with no key, or turned off, refuses the move."
+      ]
+    },
+    {
+      "id": "steering",
+      "title": "Live Steering",
+      "text": "A mid-turn message steers a Codex turn; a Claude turn receives it directly.",
+      "detail": [
+        "Codex: a message mid-turn steers the running turn. Claude: the message enters the open turn directly. Terminal never parks it."
+      ]
+    },
+    {
+      "id": "session-end",
+      "title": "Session end",
+      "text": "Kill or clear ends the session; the queue survives a clear.",
+      "detail": [
+        "Kill or clear ends the session. The queue survives a clear; a kill drops it into a 14-day trash. A scheduled end leaves an epitaph line."
+      ]
+    },
+    {
+      "id": "auto-capture",
+      "title": "Automatic memory capture",
+      "text": "Configured Claude hooks save to MemPalace at session stop and before compaction.",
+      "detail": [
+        "On the Claude lane, hooks save memory at session stop and before compaction. Codex saves through its memory tools. PREP saves on purpose and reads it back."
+      ]
+    },
+    {
+      "id": "notify",
+      "title": "Notification to me",
+      "text": "Arena outcomes, Reception flags and lines forwarded to a human reach me on Telegram.",
+      "detail": [
+        "Telegram carries Arena outcomes and forwarded messages to me. Reception returns a task's result to the private chat that asked. Forwarding from the browser still needs an open tab.",
+        "Reception shows execution and delivery as two facts. Execution ending makes the result available; delivery is confirmed by the courier's record only. Accepting it is my call."
+      ]
+    },
+    {
+      "id": "codemap",
+      "title": "Code map",
+      "text": "A symbol index available through tools; configured Claude doors redirect reads and searches into it.",
+      "detail": [
+        "CodeGraph indexes every symbol in the project. On the Claude lane, doors redirect whole-file reads and searches into it. Codex calls the index directly."
+      ]
+    },
+    {
+      "id": "discipline",
+      "title": "Discipline",
+      "text": "A nightly audit of an agent's own last day becomes a notice it reads before its next task.",
+      "detail": [
+        "A nightly audit writes a notice the agent reads at its next start: where it broke the charter, my rulings and my hand edits to its work. Repeated mistakes become rules and doors."
+      ]
+    },
+    {
+      "id": "phases",
+      "title": "Turn measurements",
+      "text": "Every finished turn journals how long the command waited for the provider, the first streamed words and the final event; a five-minute line records server stalls.",
+      "detail": [
+        "Terminal writes one line per finished turn: milliseconds to the provider, to the first word, to the end, per lane and slot. Every five minutes a line reports server stalls. No prompt text."
+      ]
+    },
+    {
+      "id": "human-collab",
+      "title": "Human Collaboration",
+      "text": "Agents address people on the roster the same way they address each other; a line to a person leaves for Telegram, and a granted person can hand a task back the same way.",
+      "children": ["notify"]
+    }
+  ],
+  "system": {
+    "nodes": [
+      {
+        "id": "wolf",
+        "title": "Wolf",
+        "role": "Direction",
+        "detail": [
+          "I set the task and decide who owns what. Agents work inside the authority I already gave them; whatever needs my call waits for it."
+        ],
+        "basis": "My ownership charter and approval rules."
+      },
+      {
+        "id": "access",
+        "title": "Cloudflare",
+        "role": "Entry",
+        "detail": [
+          "Cloudflare Tunnel publishes the web apps; nothing on the server listens to the internet directly. Access checks who you are before an internal app. Public sites answer anyone."
+        ],
+        "basis": "The tunnel configuration and the list of Access apps."
+      },
+      {
+        "id": "models",
+        "title": "Models",
+        "role": "External reasoning",
+        "detail": [
+          "Claude and Codex send the conversation to their model providers. The thinking happens there; the tools run here, or reach the hosts the project is allowed to touch."
+        ],
+        "basis": "Provider dispatch in Terminal and the connected tools."
+      },
+      {
+        "id": "services",
+        "title": "Connected services",
+        "role": "External tools",
+        "detail": [
+          "Agents reach the outside through tools: a GitHub repository, a headless browser for pages a plain request cannot read, a spreadsheet, an analytics feed. Each connection has its own scope."
+        ],
+        "basis": "The connected tool interfaces."
+      },
+      {
+        "id": "telegram",
+        "title": "Telegram",
+        "role": "Human handoff",
+        "detail": [
+          "Telegram carries alerts and my voice tasks. Reception takes a task from a person I granted full access and returns the result to their private chat."
+        ],
+        "basis": "The notification relays and Reception's grant check."
+      },
+      {
+        "id": "order",
+        "title": "The Order",
+        "role": "Server owner",
+        "detail": [
+          "The Order is my server agent. It owns the shared infrastructure and the access boundaries, and it executes restarts and rebuilds itself instead of bouncing them back to me."
+        ],
+        "basis": "The ownership charter, delegated exceptions included."
+      },
+      {
+        "id": "secrets",
+        "title": "Secrets",
+        "role": "Credential boundary",
+        "detail": [
+          "The Order keeps the shared credentials. A project operator gets the ones its grant names and none of the others."
+        ],
+        "basis": "The credential ownership rules."
+      },
+      {
+        "id": "apex",
+        "title": "Server cockpit",
+        "role": "Infrastructure controls",
+        "detail": [
+          "The server cockpit shows every Docker service and carries the operations I allow over SSH. Changes to shared infrastructure go through The Order."
+        ],
+        "basis": "The read-only Docker proxy and the forced-command gate."
+      },
+      {
+        "id": "terminal",
+        "title": "Terminal",
+        "role": "Task orchestration",
+        "detail": [
+          "Terminal is where a task lives: it opens here, runs here and comes back here. Its branches and selections stay exactly as I left them."
+        ],
+        "basis": "Terminal's dispatch and the task lifecycle on this map."
+      },
+      {
+        "id": "agents",
+        "title": "Colleagues",
+        "role": "Who to ask",
+        "detail": [
+          "Terminal runs one session per project. The directory says who owns what; SEND TO asks the owner instead of doing the owner's work."
+        ],
+        "basis": "The project-owner directory and the collaboration relay."
+      },
+      {
+        "id": "projects",
+        "title": "Project services",
+        "role": "Delivered products",
+        "detail": [
+          "Dozens of project services run on this host behind loopback ports and the Tunnel. Some bind to the tailnet; some live on their own servers."
+        ],
+        "basis": "Host container bindings and the recorded remote-host grants."
+      },
+      {
+        "id": "memory",
+        "title": "Memory",
+        "role": "Context across sessions",
+        "detail": [
+          "Project notes and MemPalace carry earlier decisions into later work. They are separate from the live conversation and its session history."
+        ],
+        "basis": "Project memory, the session records and the MemPalace interface."
+      },
+      {
+        "id": "tools",
+        "title": "Tools",
+        "role": "Execution",
+        "detail": [
+          "Tools read and change project work within what the project was authorized to do. What a tool can do and what it may do are two different questions."
+        ],
+        "basis": "Project ownership rules."
+      },
+      {
+        "id": "deploy",
+        "title": "Project operators",
+        "role": "Release responsibility",
+        "detail": [
+          "Project operators deploy, restart and read logs within my recorded grants, remote hosts included. Shared infrastructure stays with The Order. Scheduled work runs on host cron or inside services."
+        ],
+        "basis": "The delegated operator grants."
+      },
+      {
+        "id": "records",
+        "title": "Run records",
+        "role": "Evidence",
+        "detail": [
+          "Session history and mechanism journals keep what happened. An agent's final answer is a claim; the journal is the proof."
+        ],
+        "basis": "The logging rule: every mechanism leaves a trail."
+      },
+      {
+        "id": "watchers",
+        "title": "Watchers",
+        "role": "After release",
+        "detail": [
+          "Watchers probe enrolled projects and report failures. Trivy scans images and hosts for vulnerabilities. They report; repairing is a person's job."
+        ],
+        "basis": "The watcher runner and its heartbeat."
+      },
+      {
+        "id": "recovery",
+        "title": "Recovery",
+        "role": "Persistent state",
+        "detail": [
+          "Restic copies selected state off the server every night, encrypted. Coverage has exclusions. A snapshot counts once it exists and a restore has been tested."
+        ],
+        "basis": "Backup configuration and the backup log."
+      },
+      {
+        "id": "remote",
+        "title": "Other hosts",
+        "role": "Project targets",
+        "detail": [
+          "Some projects run on machines outside this server. Each has a wrapper its agent uses to deploy, restart and read logs there. Production stays behind a gate."
+        ],
+        "basis": "The delegated remote-host wrappers."
+      },
+      {
+        "id": "backups",
+        "title": "Backup storage",
+        "role": "Outside the server",
+        "detail": [
+          "Restic copies selected state off-site; the GitHub mirror copies eligible repositories. Both have exclusions. Recovery is proven by a successful copy and a tested restore."
+        ],
+        "basis": "The mirror configuration and its run log; the Restic snapshot list."
+      }
+    ]
+  }
+}

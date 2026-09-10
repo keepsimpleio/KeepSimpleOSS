@@ -114,7 +114,7 @@
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
-  color: var(--black-rich);
+  color: var(--ink-on-cover);
 }
 
 .frontAuthor {
@@ -125,7 +125,7 @@
   font-family: var(--font-source-serif);
   font-size: 14px;
   line-height: 19px;
-  color: var(--gray-darkest);
+  color: var(--ink-on-cover-soft);
 }
 
 .by {
@@ -139,13 +139,13 @@
   bottom: 12px;
   z-index: 2;
   padding: 3px 8px;
-  background: var(--white-200);
-  border: 1px solid var(--brown-border);
+  background: var(--wash-on-cover);
+  border: 1px solid var(--rule-on-cover);
   border-radius: var(--radius-control);
   font-family: var(--font-source-serif);
   font-size: 11px;
   line-height: 14px;
-  color: var(--gray-darkest);
+  color: var(--ink-on-cover-soft);
   pointer-events: none;
 }
 
@@ -235,10 +235,10 @@
   gap: 6px;
   width: 84px;
   padding: 5px 10px;
-  border: 1px solid var(--brown-border);
+  border: 1px solid var(--rule-on-cover);
   border-radius: var(--radius-control);
-  background: var(--white-200);
-  color: var(--black-rich);
+  background: var(--wash-on-cover);
+  color: var(--ink-on-cover);
   font-family: var(--font-source-sans);
   font-size: 14px;
   line-height: 19px;
@@ -258,9 +258,9 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--purple-100);
-    border-color: var(--purple-100);
-    color: var(--white);
+    background: var(--accent-on-cover);
+    border-color: var(--accent-on-cover);
+    color: var(--wash-on-cover);
   }
 
   &:focus-visible {
@@ -309,8 +309,8 @@
 // with a lilac edge, so new ground reads apart from a verdict the owner gave.
 .statusStretch {
   opacity: 1;
-  background: var(--white-200);
-  border: 1px solid var(--purple-100);
-  color: var(--purple-100);
+  background: var(--wash-on-cover);
+  border: 1px solid var(--accent-on-cover);
+  color: var(--accent-on-cover);
   padding: 2px 9px;
 }

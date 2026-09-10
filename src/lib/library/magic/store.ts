@@ -60,6 +60,12 @@ export interface StoredLibrary {
   /** The owner's standing setting for the AI shelf. It outlives every
    * board: set to non-fiction, the shelf stays non-fiction. */
   preference: RecommendedPreference;
+  /** When the roll running right now started, UTC. A roll outlives the
+   * request that asked for it, so this is what a later request reads to
+   * know one is under way. Cleared when it lands. */
+  rollingSince?: string | null;
+  /** What the last roll had to say for itself, when it had something. */
+  rollNote?: string | null;
 }
 
 interface Store {
@@ -72,7 +78,9 @@ export const MAGIC_DAILY_CALL_CAP = 60;
 let queue: Promise<unknown> = Promise.resolve();
 
 /** Reads and writes are serialised: two requests for one library at once
- * must not lose each other's picks. */
+ * must not lose each other's picks. This is one promise chain inside one
+ * process, not a file lock: the shelf runs in a single container per host,
+ * and serving it from replicas would need a real cross-process lock. */
 const serial = <T>(task: () => Promise<T>): Promise<T> => {
   const run = queue.then(task, task);
   queue = run.catch(() => undefined);
