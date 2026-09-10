@@ -569,3 +569,26 @@ being picked in the form as it is picked.
 - Stability passport: the ring's box never changes with the shelf count, the
   total is laid over it rather than in the flow, and the percentage column is
   sized for its widest reading. Hover changes colour only.
+
+## Library MCP
+
+An agent keeps a library in order through `mcp/library`: five tools over one
+library, and nothing else. It lists books with their notes, creates and edits
+tags, puts a tag on a book or takes it off, sets the order the tag's books
+stand in, and writes a book's note, rating and difficulty. It deletes nothing:
+removing a book, a shelf or a tag asks the owner first, in the Library.
+
+The key is not a second authority. Every Library controller decides who may
+write by reading the authenticated user, so the key is exchanged at
+`POST /api/auth/library-agent/session` for the ordinary two-hour session that
+library's owner holds, and the same ownership checks, feature flag and limits
+decide every write afterwards. The CMS holds only `<label>:<sha256>:<library
+id>` in `LIBRARY_AGENT_KEYS`, so that configuration leaking hands nobody a
+session; the key itself lives with the agent that holds it. A key belongs to
+one target, because prod and staging number their libraries separately.
+
+Every call leaves a line in `logs/library-mcp.jsonl`: tool, arguments cut to
+120 characters, outcome, duration, UTC. Never the key, never the session.
+Before any release of this surface run `mcp/library/probe.mjs` against a
+library you may touch: it exercises all five tools and takes back every write.
+Setup and wiring live in `mcp/library/README.md`.
