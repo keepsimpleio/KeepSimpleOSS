@@ -12,14 +12,14 @@ import {
 } from '@api/library/magic/getMagicBooks';
 
 /**
- * The magic books of one library, one per book shelf, read once when the
- * owner arrives and rolled again one shelf at a time. The engine's own
- * store keeps the picks between visits; this hook keeps them between
- * renders and marks the shelf that is being rolled.
+ * The magic books of one library, one per book shelf. Arriving reads what
+ * the engine's store already holds and costs no model call; a shelf with
+ * nothing stands idle until the owner rolls it, one shelf at a time. This
+ * hook keeps the picks between renders and marks the shelf being rolled.
  */
 
 export interface MagicShelfSlot {
-  status: 'loading' | 'ready' | 'empty' | 'ineligible' | 'error';
+  status: 'loading' | 'idle' | 'ready' | 'empty' | 'ineligible' | 'error';
   pick?: MagicBook;
   note?: string;
   /** True while this shelf is being rolled again. */

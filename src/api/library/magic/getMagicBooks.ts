@@ -37,4 +37,4 @@ export const getMagicBooks = (libraryId: number) =>
   call({ libraryId, action: 'load' });
 
 export const rerollMagicBook = (libraryId: number, shelfId: number) =>
-  call({ libraryId, shelfId, action: 'reroll' });
+  call({ libraryId, shelfId, action: 'roll' });

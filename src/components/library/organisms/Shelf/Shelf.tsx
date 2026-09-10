@@ -1185,7 +1185,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
                     about a part of it. */}
                 {showMagic && magic && (
                   <div className={styles.cardSlot} data-magic-book>
-                    <MagicBookCard slot={magic} ownerUsername={ownerUsername} />
+                    <MagicBookCard
+                      slot={magic}
+                      shelfName={shelfName}
+                      ownerUsername={ownerUsername}
+                    />
                   </div>
                 )}
               </div>

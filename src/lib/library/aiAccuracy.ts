@@ -252,20 +252,24 @@ export function scoreLibraryAccuracy(
       ? 0
       : ACCURACY_WEIGHTS.shelves * (topical / bookShelves.length);
 
-  // The cheapest step per component: a handful of books, or fewer when the
-  // component is nearly full. Gains are the whole-percent difference, since
-  // the total is what the owner sees.
-  const step = (missing: number) => Math.min(missing, 4);
+  // The cheapest step per component: as many books as it takes to move the
+  // total by one whole percent, never more than are missing. In a library of
+  // 166 books four notes buy under a point, so a fixed handful read as
+  // "Full" on a row that stood at 20 of 25.
+  const step = (missing: number, weight: number) =>
+    missing <= 0
+      ? 0
+      : Math.min(missing, Math.max(1, Math.ceil(total / weight)));
 
   const notesMissing = total - withNote;
-  const notesStep = step(notesMissing);
+  const notesStep = step(notesMissing, ACCURACY_WEIGHTS.notes);
   const notesGain =
     notesStep === 0
       ? 0
       : ACCURACY_WEIGHTS.notes * share(withNote + notesStep) - notesPoints;
 
   const ratedMissing = total - rated;
-  const ratedStep = step(ratedMissing);
+  const ratedStep = step(ratedMissing, RATING_COVERAGE_POINTS);
   const ratedGain =
     ratedStep === 0
       ? 0
@@ -281,7 +285,7 @@ export function scoreLibraryAccuracy(
         (1 - clamp01(lowRated / ACCURACY_LOW_RATED_FULL));
 
   const tagMissing = total - tagged;
-  const tagStep = step(tagMissing);
+  const tagStep = step(tagMissing, TAG_COVERAGE_POINTS);
   const tagGain =
     tagStep === 0
       ? 0
@@ -289,7 +293,7 @@ export function scoreLibraryAccuracy(
         TAG_COVERAGE_POINTS * share(tagged);
 
   const difficultyMissing = total - withDifficulty;
-  const difficultyStep = step(difficultyMissing);
+  const difficultyStep = step(difficultyMissing, ACCURACY_WEIGHTS.difficulty);
   const difficultyGain =
     difficultyStep === 0
       ? 0

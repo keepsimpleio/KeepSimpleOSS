@@ -22,15 +22,17 @@ import {
 /**
  * POST /api/library/magic-book
  *
- * The owner's magic books: one per book shelf, made by the engine and kept
- * until the shelf changes or the owner rolls again. Owner-only: the caller's
+ * The owner's magic books: one per book shelf, made by the engine when the
+ * owner asks and kept until the shelf changes or the owner rolls again.
+ * Nothing is made unasked (Wolf, 2026-09-10). Owner-only: the caller's
  * Strapi session is asked who it is, the library is read with that session,
  * and the library's owner must be that account. Nothing here is readable by
  * a visitor or another owner.
  *
- * Body: { libraryId, action: 'load' | 'reroll', shelfId? }
- *   load    every book shelf; stale or missing picks are made now
- *   reroll  one shelf; the standing pick joins that shelf's exclusions
+ * Body: { libraryId, action: 'load' | 'roll', shelfId? }
+ *   load    every book shelf as the store has it; no model call
+ *   roll    one shelf; the standing pick, if any, joins that shelf's exclusions
+ *   reroll  the same as roll, kept for older callers
  */
 
 const STRAPI = process.env.NEXT_PUBLIC_STRAPI ?? '';
@@ -45,7 +47,7 @@ const POPULATE = new URLSearchParams({
 
 interface Body {
   libraryId?: number;
-  action?: 'load' | 'reroll';
+  action?: 'load' | 'roll' | 'reroll';
   shelfId?: number;
 }
 
@@ -68,13 +70,21 @@ const strapi = async <T>(path: string, token: string): Promise<T | null> => {
 const fromStore = (
   shelf: DigestShelf,
   stored?: StoredShelf,
-): MagicShelfResult | null => {
-  if (!stored || stored.fingerprint !== shelf.fingerprint) return null;
+): MagicShelfResult => {
   if (shelf.books.length === 0) {
     return {
       shelfId: shelf.id,
       status: 'ineligible',
       note: 'Put a book on this shelf and one will be recommended.',
+    };
+  }
+  // A pick made for a shelf that has since changed is not offered as if it
+  // were current: the owner rolls a fresh one.
+  if (!stored || stored.fingerprint !== shelf.fingerprint) {
+    return {
+      shelfId: shelf.id,
+      status: 'idle',
+      note: 'Roll to get a book for this shelf.',
     };
   }
   if (stored.pick)
@@ -98,13 +108,14 @@ export default async function handler(
   }
   const body = (req.body ?? {}) as Body;
   const libraryId = Number(body.libraryId);
-  const action = body.action === 'reroll' ? 'reroll' : 'load';
+  const action =
+    body.action === 'roll' || body.action === 'reroll' ? 'roll' : 'load';
   const shelfId = body.shelfId != null ? Number(body.shelfId) : null;
   if (!Number.isInteger(libraryId) || libraryId <= 0) {
     res.status(400).json({ error: 'libraryId is required.' });
     return;
   }
-  if (action === 'reroll' && (shelfId == null || !Number.isInteger(shelfId))) {
+  if (action === 'roll' && (shelfId == null || !Number.isInteger(shelfId))) {
     res.status(400).json({ error: 'shelfId is required to roll again.' });
     return;
   }
@@ -145,7 +156,7 @@ export default async function handler(
   const toRun: DigestShelf[] = [];
   const exclusions = new Map<number, string[]>();
 
-  if (action === 'reroll') {
+  if (action === 'roll') {
     const shelf = digest.shelves.find(s => s.id === shelfId);
     if (!shelf) {
       res.status(404).json({ error: 'No such shelf on this library.' });
@@ -158,14 +169,10 @@ export default async function handler(
     toRun.push(shelf);
   } else {
     for (const shelf of digest.shelves) {
-      const kept = fromStore(shelf, stored.shelves[String(shelf.id)]);
-      if (kept) {
-        results.push(kept);
-        continue;
-      }
-      exclusions.set(shelf.id, stored.shelves[String(shelf.id)]?.history ?? []);
-      toRun.push(shelf);
+      results.push(fromStore(shelf, stored.shelves[String(shelf.id)]));
     }
+    res.status(200).json({ shelves: results, ratedBooks: digest.ratedBooks });
+    return;
   }
 
   const needsModel = toRun.some(s => s.books.length > 0);

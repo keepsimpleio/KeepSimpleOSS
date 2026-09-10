@@ -38,7 +38,8 @@ export interface MagicBook {
   at: string;
 }
 
-export type MagicShelfStatus = 'ready' | 'empty' | 'ineligible';
+/** idle: no pick yet, or the shelf changed since the last one; the owner rolls. */
+export type MagicShelfStatus = 'idle' | 'ready' | 'empty' | 'ineligible';
 
 export interface MagicShelfResult {
   shelfId: number;

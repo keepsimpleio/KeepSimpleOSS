@@ -131,8 +131,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 40px 16px;
+  gap: 8px;
+  padding: 24px 14px;
   text-align: center;
 }
 
@@ -228,62 +228,46 @@
   white-space: nowrap;
   color: var(--white);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 
   svg {
     width: 14px;
     height: 14px;
   }
-}
-
-// The one verdict, mid-cover, revealed under the pointer.
-.card .actions {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
 }
 
-.card:hover .actions,
-.card:has(:focus-visible) .actions {
+.statusShown {
   opacity: 1;
-  pointer-events: auto;
 }
 
-.card.busy .actions {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.action {
+// Roll, on the blank paper: the only control the slot carries. Present in
+// every state and revealed only when a roll is possible, so the paper keeps
+// its layout.
+.roll {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  width: 92px;
-  padding: 5px 10px;
-  border: 1px solid var(--brown-border);
+  margin-top: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--purple-100);
   border-radius: var(--radius-control);
-  background: var(--white-200);
-  color: var(--black-rich);
+  background: var(--purple-100);
+  color: var(--white);
   font-family: var(--font-source-sans);
   font-size: 14px;
   line-height: 19px;
   white-space: nowrap;
   cursor: pointer;
-  box-shadow: var(--tooltip-shadow);
+  opacity: 0;
+  pointer-events: none;
   transition:
+    opacity 0.2s ease,
     background 0.2s ease,
-    color 0.2s ease,
     border-color 0.2s ease;
 
   svg {
@@ -294,9 +278,8 @@
 
   &:hover:not(:disabled),
   &:focus-visible {
-    background: var(--purple-100);
-    border-color: var(--purple-100);
-    color: var(--white);
+    background: var(--purple-200);
+    border-color: var(--purple-200);
   }
 
   &:focus-visible {
@@ -304,14 +287,19 @@
     outline-offset: 1px;
   }
 
-  &:disabled {
-    cursor: default;
-    opacity: 0.6;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+}
+
+.rollShown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// A pick opens to its brief, so the whole card reads as a control.
+.openable {
+  cursor: pointer;
 }
 
 @keyframes magic-shimmer {
