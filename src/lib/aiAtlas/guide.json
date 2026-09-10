@@ -6,34 +6,34 @@
       "title": "Project",
       "location": "Terminal.",
       "text": "I pick the project. Its rules, its memory and its build decisions apply to everything that follows.",
-      "children": ["local", "keys", "work-checks", "monitoring", "backlog"]
+      "children": ["keys", "monitoring", "backlog"]
     },
     {
       "id": "task",
       "title": "I give a task",
       "location": "My browser",
       "text": "I send the task. The browser passes my message to Terminal.",
-      "children": [
-        "message",
-        "attachments",
-        "reply-mode",
-        "recipient",
-        "actions"
-      ]
+      "children": ["message", "queue", "reply-mode", "recipient", "actions"]
     },
     {
       "id": "terminal",
       "title": "Terminal dispatches it",
       "location": "Our server",
       "text": "Terminal sends the task to the agent session of the project I chose.",
-      "children": ["project", "engine-switch", "tracks", "steering", "queue"]
+      "children": ["project", "engine-switch", "tracks", "steering"]
     },
     {
       "id": "prepare",
       "title": "Agent prepares",
       "location": "Agent session.",
       "text": "A new session loads its rules; an existing one resumes with what it remembers.",
-      "children": ["onboarding", "global", "session-resume", "session-end"]
+      "children": [
+        "onboarding",
+        "global",
+        "local",
+        "session-resume",
+        "session-end"
+      ]
     },
     {
       "id": "agent",
@@ -41,6 +41,7 @@
       "location": "Our server + model provider",
       "text": "The agent works through the task from its rules and memory. Its tools run on my server; the model it calls runs at the provider.",
       "children": [
+        "work-checks",
         "directory",
         "memorymd",
         "palace",
@@ -117,7 +118,7 @@
     },
     {
       "id": "queue",
-      "title": "Queue",
+      "title": "Smart Queuing",
       "text": "How queued work waits and starts.",
       "children": [
         "timing-order",
@@ -294,7 +295,7 @@
     },
     {
       "id": "keys",
-      "title": "Composites",
+      "title": "Composite Keys",
       "text": "I choose proven structures the project needs. Each Key carries a specification the agent builds from.",
       "detail": [
         "Keys are proven structures I build into any project: a design passport, a health watcher. They belong to the project and outlive its agent.",
@@ -305,7 +306,7 @@
     },
     {
       "id": "work-checks",
-      "title": "Rule checks",
+      "title": "Doors",
       "text": "Rules need checks while the work is happening. Enabled gates, including Doors, catch violations and send the agent back to fix them.",
       "detail": [
         "Doors are hooks on the Claude lane at fixed moments: task submit, before a read, after every edit, turn end. A triggered door means fix the work. Codex has none."
@@ -337,7 +338,7 @@
     },
     {
       "id": "session-resume",
-      "title": "Session resume",
+      "title": "Session start",
       "text": "Return to an existing session with the context it retained. Saved project memory supplies earlier decisions when the conversation no longer holds them.",
       "detail": [
         "I return to a session and it still holds its context. When the conversation has forgotten, saved memory remembers."
@@ -378,7 +379,7 @@
     },
     {
       "id": "steering",
-      "title": "Message during a turn",
+      "title": "Live Steering",
       "text": "A mid-turn message steers a Codex turn; a Claude turn receives it directly.",
       "detail": [
         "Codex: a message mid-turn steers the running turn. Claude: the message enters the open turn directly. Terminal never parks it."

@@ -51,10 +51,10 @@ export function adaptGuide(guide: any) {
   const angles = [210, 270, 330, 30, 90, 150];
   const chosen = [
     ['keys', 'backlog'],
-    ['message', 'attachments'],
-    ['queue', 'tracks'],
-    ['global', 'session-resume'],
-    ['skills', 'sendto'],
+    ['message', 'queue'],
+    ['engine-switch', 'steering'],
+    ['global', 'local', 'session-resume'],
+    ['work-checks', 'sendto', 'skills'],
     ['history', 'decisions'],
   ];
   const topicToStage: any = {};
@@ -92,8 +92,10 @@ export function adaptGuide(guide: any) {
       support: support[index].map(systemRef),
       diamond: 'red',
       theta: angles[index],
-      territoryArc: 36,
-      childrenArc: 22,
+      // A stage carrying three tiles needs a wider arc, or the tiles
+      // would sit on top of each other at this radius.
+      territoryArc: chosen[index].length > 2 ? 54 : 36,
+      childrenArc: chosen[index].length > 2 ? 46 : 22,
       territoryLabel: '',
       children: chosen[index].map(child => ({
         id: child,

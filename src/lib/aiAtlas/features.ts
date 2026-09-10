@@ -8,8 +8,10 @@
    text.
 
    TILE: a black tile on the outer ring of the map. Twelve of them:
-     Composites, Backlog, Message, Attachments, Queue, Tracks,
-     Global CLAUDE.md, Session resume, Skills, Involve an agent,
+     Composite Keys, Backlog, Message, Smart Queuing, Engine switch,
+     Live Steering,
+     Global CLAUDE.md, Local CLAUDE.md, Session start, Skills,
+     Involve an agent,
      Conversation history, Saved decisions.
    card: every other card, opened from a stage, a ring or the Topics list.
 
@@ -50,10 +52,11 @@ const features: Record<string, string[]> = {
   /* ---------- giving a task ---------- */
   // TILE: Message
   message: [
-    'This is where I brief the agent. I say what has to change and what result I expect, and I keep it short because the agent already has the rules and the history.',
-    'The browser passes the text to Terminal. Nothing is added to it unless I turn a mode on.',
+    'There are three ways a task gets into Terminal. I type it, with screenshots and files attached whenever showing beats describing. I speak it, straight into Terminal. Or I send it from Telegram, where my agents are one chat away and my voice is transcribed on arrival.',
+    'The Telegram lane carries its own rules, and they hold even if someone clones my voice. A voice that sounds like mine is not authority by itself.',
+    'Every message goes to my server, so I am never tied to one machine. Phone, laptop, a borrowed browser, the work sits in the same place either way. I had this running long before Anthropic and OpenAI shipped anything like it.',
   ],
-  // TILE: Attachments
+  // card: Attachments
   attachments: [
     'I attach a screenshot or a file instead of describing it. The agent works from what I show it, not from my retelling, which removes the round of "no, the other button".',
   ],
@@ -86,21 +89,25 @@ const features: Record<string, string[]> = {
   ],
   // card: Engine switch
   'engine-switch': [
-    'Any project tile can run on Claude or on Codex, and I can switch. A switch mid-turn is refused; the agent finishes or stops first.',
-    'A handover brief built from server state carries the work across, so nothing is retyped.',
+    'Terminal runs both Claude and Codex, and under each of them I keep three to five tracks active at any time. A track is a subscription. On a normal day that is around five Claude subscriptions and five Codex subscriptions standing ready.',
+    'Moving between them is soft. The work hands over to another track with its context carried across, so nothing breaks in the middle of a task. The same holds when I move a project from Claude to Codex: the agent finishes or stops first, then a brief built from server state carries the work over and nothing is retyped.',
+    'That dispatcher is its own engine. It runs my Terminal, and it also runs inside the products I build, so those projects get the same failover I do.',
   ],
-  // TILE: Tracks
+  // card: Tracks
   tracks: [
-    'Each engine has three tracks, one subscription each. A tile bills its track from its next turn. A track with no key, or one I turned off, refuses the move.',
-    'This is how I decide which subscription pays for which project, and stop one without touching the rest.',
+    'A track is one subscription. A tile bills the track I put it on from its next turn, and a track with no key, or one I turned off, refuses to take work.',
+    'This is how I choose which subscription pays for which project, and stop one without touching the rest.',
   ],
-  // card: Message during a turn
+  // TILE: Live Steering
   steering: [
-    'I can write to an agent while it is working. On Codex the message steers the running turn; on Claude it enters the open turn directly. Terminal never parks the message for later.',
+    'An agent being busy does not mean I have to wait for it. I can write to it while it works, and the message goes into the turn that is already running instead of sitting in a queue until it finishes.',
+    'So when I see it heading the wrong way, I say so now, and it corrects there. Terminal never parks a message of mine for later.',
   ],
-  // TILE: Queue
+  // TILE: Smart Queuing
   queue: [
-    'I can line up several tasks for one agent and walk away. Terminal holds the queue on the server and feeds the next task when the agent is free, in the order I set, even when my browser is closed.',
+    'I can stack a pile of commands in the order I want, hand them to an agent and walk away. The server runs them one after another with my browser closed.',
+    'Every command in the queue carries its own model, so one task can open on a fast cheap model and finish on the strongest one, with the context carried across.',
+    'System commands go in the same line. PREP files the key decisions of the work so far into my agents’ memory. Clear empties the context window. So I can queue fifteen commands knowing that after the heavy ones the agent saves what matters into a memory drawer on my server and then starts clean, instead of degrading as the window fills up.',
   ],
   // card: Execution order
   'timing-order': [
@@ -127,17 +134,25 @@ const features: Record<string, string[]> = {
   ],
   // TILE: Global CLAUDE.md
   global: [
-    'One rules file sits above every project. It says how agents verify a claim before making it, how they talk to me, where their ownership ends and what counts as finished.',
-    'Claude loads it by itself; Codex is told to read it first.',
+    'One rules file sits above every project, and every session reads it before it does anything. It is where I put what I want to be true everywhere: how an agent talks to me, where its authority ends, what counts as finished.',
+    'It also introduces the agent to the rest of the server. There are dozens of agents here and around ten people, and the roster holds all of them the same way, with the same handles. An agent that needs something outside its own project addresses the owner by name in one line. If that owner is a person, the line leaves the server and reaches them on Telegram. That is the real onboarding: on its first turn a session already knows who exists, who owns what, and who to ask.',
+    'The rule I care about most is the one about evidence. An agent may not certify its own work. Done is earned by something that cannot argue back, an exit code, a live probe, a test that actually ran, or by another agent with a clean context checking it. Its own report does not count.',
+    'The same file carries the logging law: anything an agent builds has to leave a trail of its own runs, one line per run, next to the thing itself. A mechanism that acts and leaves no record is a defect, however well it works.',
+    'None of this was written in advance. Every line in that file is there because something broke once, and I audit it every month against what went wrong.',
   ],
-  // card: Local CLAUDE.md
+  // TILE: Local CLAUDE.md
   local: [
-    'Every project folder has its own rules at the root: how to work here, the design passport, what this agent owns. The agent reads it before touching anything.',
-    'The standards of a project travel with the project, not with whoever happens to be working on it.',
+    'Every project folder has its own rules at the root, and its agent reads them before touching anything. In practice that file is three things stacked on each other.',
+    'The first layer is the composite keys I activated here. A key leaves its law in the file: the UI passport fixes this project’s type scale, its one accent and its contrast floor, and off-passport is a violation rather than a preference. The security passport does the same for what may be exposed. So the standards of a project belong to the project, not to whoever is working on it today.',
+    'The second layer comes from the template every new project is born with. Some of it is unglamorous and matters anyway: what the thing is for, which vendor credits it burns, and a checklist for shutting it down properly if I ever kill it. A project knows how to die from the day it is born.',
+    'The third layer is the one that cannot be copied from anywhere. It is the record of what went wrong here: dated lines, most of them written the day something broke, saying what not to do again in this codebase. That is why an agent opening a project it has never seen still works like it has been here for months.',
+    'All of it runs against a budget. What I am aiming for is an agent that fits in around three hundred lines of rules, global and local together. Every line I add is attention the agent spends on me instead of on the work, so a rule either earns that or it comes out.',
   ],
-  // TILE: Session resume
+  // TILE: Session start
   'session-resume': [
-    'I return to a session and it still holds its context. When the conversation has been compacted and forgotten, the saved memory remembers. Two layers, so neither one has to be perfect.',
+    'A session does not open empty. A hook on my server hands the agent the last decisions parked for this project, newest first, before I have said a word. It starts knowing what we already settled, so it does not ask me again.',
+    'It also reads a notice about itself. Every night a scan with no model in it goes over that agent’s last day of transcripts and writes down where it broke the charter, next to my rulings and the edits I made by hand to its work. The agent reads that before its first task, so a rule it broke yesterday is the first thing it sees today. The notice clears itself after a clean day.',
+    'When I come back to a session it still holds the conversation. When I start a fresh one it is rebuilt from the layers that outlive any conversation: the global rules, the project rules, the memory index and that brief. So a new session is not a worse agent, it is the same agent with a lighter head, which is why clearing context costs me nothing.',
   ],
   // card: Session end
   'session-end': [
@@ -200,16 +215,21 @@ const features: Record<string, string[]> = {
   codemap: [
     'CodeGraph indexes every symbol in a project. On the Claude lane, doors redirect whole-file reads and searches into the index, so the agent reads the function it needs instead of the whole file. Codex calls the index directly.',
   ],
-  // TILE: Composites
+  // TILE: Composite Keys
   keys: [
-    'Keys are proven structures I can build into any project: a design passport, a health watcher, a set of gates. Each key carries a specification the agent builds from, never a copy of another project’s code.',
-    'Before a key is built, the agent asks its intake questions and records my answers with the key, so nobody asks twice. Building goes through intake, contract check, execution, mechanical proof and a version record, every step journaled. Only a key that finished this path counts as lit.',
-    'A weekly sweep tells me which project runs an outdated version. It stays silent when everything is current.',
+    'I have been shipping software for over ten years. After a few months of building project after project with my agents, I ran a research over all of it to find the things I do most often, and then picked out the ones that can be automated. Those became Keys, aka Composites.',
+    'A Key is not a skill. A skill tells an agent how to do one kind of work. A Key holds everything a capability needs: where it should go, checks that run in git and fail loudly, access to an agent that holds the credentials for some API, how the interface behaves, what data it may not touch. Some Keys also point at a skeleton of the thing, so the agent starts from real ground instead of an empty folder.',
+    'I also built a cross-key orchestration mechanism, so depending on what keys are active, the agent will be re-organizing his approach to building.',
+    'Activating a key is not silent. The agent comes back with a few questions to calibrate it to this project, and my answers stay with the key, so nobody asks me twice.',
+    'When I start a new project I just activate the needed keys to have 40-80% of work done upfront with a single prompt. That is the bootstrap, and on a big one the agent goes away and works alone for a few hours before it shows me anything. With the right Keys active I can write one prompt and have a working B2B service the next morning, built the way I would have built it, with interface interactions I want, limits I need etc.',
   ],
-  // card: Rule checks
+  // TILE: Doors
   'work-checks': [
-    'Rules on paper are not enough; I check them while the work happens. On the Claude lane, hooks I call Doors fire at fixed moments: when a task is submitted, before a read, after every edit, at the end of a turn.',
-    'A triggered door means the agent fixes the work before it can continue. Codex has no such hooks.',
+    'I got tired of agents agreeing with a rule and then breaking it an hour later. Reading a rule and following it turned out to be two different things, so I stopped writing rules and started running them. Doors are small programs that sit at fixed moments of a turn. When one fires, the agent goes back and fixes the work. There is no way to skip it and no flag to turn it off.',
+    'The first one meets my task. It makes the agent say out loud how it understood me before it starts building the wrong thing. The next one stands in front of every file read, because I watched agents burn half their context reading whole files to find one function. Now that read goes into a symbol index instead.',
+    'Then there is a row of them after every edit, and those came from real damage. Type sizes and colours get checked against the project’s passport, because agents kept inventing a nicer shade. Animations get checked for reduced motion. Layout gets checked for things that jump under the cursor. And the text gets read for AI filler, after I found the word seamless sitting in one of my own modals.',
+    'The last door stands at the end of the turn and it is the one I care about most. An agent cannot tell me the work is done unless the same turn contains something that cannot argue back: a command it ran after the change, a probe, a read-back. I have been told done too many times by something that never checked.',
+    'Every one of these exists because of a specific bad day. Arguing with a door, editing it, going around it, all of that is worse than the original mistake.',
   ],
   // card: Monitoring
   monitoring: [
@@ -218,8 +238,8 @@ const features: Record<string, string[]> = {
   ],
   // TILE: Backlog
   backlog: [
-    'Each project has a backlog. Tasks wait there until an agent takes them. The agent marks delivered work for review; only I close it.',
-    'An agent cannot declare its own task done.',
+    'The backlog does two things for me. The first one is memory for my own ideas. Anything I think of for a project goes in there instead of into my head, and the agent that owns the project can read it whenever it needs to know where this thing is going.',
+    'The second one is how Composite Keys stay current. When I improve a key at the root, every project running that key gets a task in its backlog to check with me whether it should take the update. Say I changed how an interface behaves, or something about a payment flow. The agent does not quietly rewrite itself, and the improvement does not get lost either. It comes to me as a question, per project.',
   ],
 
   /* ---------- the result ---------- */
