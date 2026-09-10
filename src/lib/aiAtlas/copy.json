@@ -1,0 +1,115 @@
+{
+  "seoTitle": "Terminal Atlas",
+  "seoDescription": "How I run a team of AI agents: one task, from my message to the result.",
+  "seoKeywords": "Terminal Atlas",
+  "ogImageAlt": "Terminal Atlas",
+  "loading": "Loading…",
+  "failedToLoad": "Failed to load data : ",
+  "welcomeBanner": "WOLF’S AI ORCHESTRATION HARNESS",
+  "day": "DAY",
+  "daySinceTail": "since we started building this",
+  "apexFounderFallback": "founder",
+  "redactedPlaceholder": "REDACTED",
+  "engLeadLabel": "Eng. Lead",
+  "publicInternetLabel": "PUBLIC INTERNET",
+  "telegramLabel": "TELEGRAM",
+  "claudeMdLabel": "claude.md",
+  "canvasStats": {
+    "humans": "humans",
+    "agents": "ai agents",
+    "subAgents": "ai sub-agents",
+    "products": "products"
+  },
+  "introDossierTitle": "THE ATLAS",
+  "introDossierCjk": "地図帳",
+  "introStoryBody": "I set the direction. Terminal carries the task into a project session, where the agent works from its rules and what it remembers. The result comes back to me for judgment.",
+  "introStoryLink": "",
+  "introQuestionsBefore": "",
+  "introQuestionsLink": "",
+  "introQuestionsAfter": "",
+  "introDepthLabel": "depth",
+  "introDepthValue": "Ownership and the life of one task",
+  "introInhabitantsLabel": "basis",
+  "introPrincipleLabel": "evidence",
+  "principles": [
+    "A card explains a mechanism. A successful run has its own record."
+  ],
+  "legendTitle": "Legend",
+  "legendCjk": "凡例",
+  "legendHumanLabel": "human",
+  "legendHumanDesc": "direction · final judgment",
+  "legendAgentLabel": "ai agent",
+  "legendAgentDesc": "project owner",
+  "legendSubAgentLabel": "support",
+  "legendSubAgentDesc": "scoped work",
+  "legendProductLabel": "mechanism",
+  "legendProductDesc": "a stage or what supports it",
+  "legendSolidLabel": "solid line",
+  "legendSolidDesc": "arrows: the order of a task",
+  "legendFilledLabel": "filled tile",
+  "legendFilledDesc": "supports a stage",
+  "legendArticleCta": "",
+  "legendArticleUrl": "",
+  "toggleEnvironment": "Environment",
+  "toggleSecurity": "Security",
+  "doctrineTitle": "Doctrine",
+  "doctrineCjk": "守則",
+  "doctrineImageAlt": "Terminal authority and evidence",
+  "securityIntroTitle": "AUTHORITY & EVIDENCE",
+  "securityIntroCjk": "此守り",
+  "securityIntroDesc": "These are the domains of access and accountability. The rings group topics. Nobody should read them as a security certificate.",
+  "securityIntroRows": [
+    {
+      "k": "permission",
+      "v": "Recorded project grants"
+    },
+    {
+      "k": "enforcement",
+      "v": "Depends on the mechanism"
+    },
+    {
+      "k": "evidence",
+      "v": "Source references and run records"
+    }
+  ],
+  "securityLayers": [],
+  "securityWhyWeLikeIt": "Evidence",
+  "securityCenterCore": "WORK",
+  "securityCenterKanji": "守",
+  "statsHeading": "Operating principles",
+  "statsCjk": "数",
+  "securityStats": [
+    {
+      "v": "Scope",
+      "k": "Recorded ownership"
+    },
+    {
+      "v": "Access",
+      "k": "Per-surface conditions"
+    },
+    {
+      "v": "Proof",
+      "k": "Run evidence"
+    },
+    {
+      "v": "Review",
+      "k": "I confirm completion"
+    }
+  ],
+  "agentsHeading": "Ownership across the system",
+  "agentsCjk": "共棲",
+  "agentsSubtitle": "Project operators act within the grants I recorded. Shared infrastructure belongs to The Order.",
+  "authorityAgentRole": "Shared infrastructure",
+  "orderName": "The Order",
+  "orderCjk": "序",
+  "orderCreds": ["Access boundaries", "Shared infrastructure"],
+  "securityAgents": [],
+  "agentsPunchline": "Permission rules say what an agent may do. They say nothing about technical isolation.",
+  "patternsHeading": "Continuity & evidence",
+  "patternsCjk": "型",
+  "patternsSubtitle": "The mechanisms that keep context and record what happened.",
+  "securityPatterns": [],
+  "footerEnd": "END · TERMINAL ATLAS",
+  "hankoSelfTitle": "built here, run here",
+  "hankoCoTitle": "one owner per project"
+}

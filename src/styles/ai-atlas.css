@@ -1,10 +1,19 @@
 /* ============================================================
+   AI ATLAS — the Terminal Atlas, revision 64, as Wolf handed it
+   back. This sheet is the Atlas's own composition (original.css)
+   followed by the integration rules the Terminal worked out
+   (terminal.css), with the global ones held to this page: the
+   Atlas shares a site here, it does not own the document.
+   Everything is scoped to .ai-atlas-root or body.ai-atlas-page.
+   ============================================================ */
+
+/* ============================================================
    ADMINISTRATION.AE — AI Atlas stylesheet (ported into KeepSimple)
    Scoped under .ai-atlas-root so CSS variables and body styling
    never leak into the rest of the site.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+@import url('/ai-atlas/fonts.css?v=57');
 
 /* Match KeepSimple's global navbar to the Atlas paper while this
    page is mounted. Light mode only; dark mode handled separately. */
@@ -1540,24 +1549,229 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   }
 }
 
-/* ============================================================
-   ATLAS r64 — the fixes the Terminal Atlas worked out on this
-   same composition and handed back. Everything here is scoped
-   to .ai-atlas-root, as the rest of this sheet is.
-   ============================================================ */
-
-/* The dossier heading sits inside the scrolling frame and wraps, instead of
-   being pinned over the text and measured in JavaScript. */
+/* ---------- integration rules, from the Terminal ---------- */
+/* Integration rules. Orbital composition and components come from KeepSimple. */
+body.ai-atlas-page {
+  margin: 0;
+  min-height: 100%;
+  background: #ece4cf;
+  color: #1a1a1a;
+  scrollbar-gutter: stable;
+}
+body.ai-atlas-page {
+  font:
+    16px/1.5 'JetBrains Mono',
+    monospace;
+}
+body.ai-atlas-page * {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #6a6457 #e6dcc2;
+}
+body.ai-atlas-page *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body.ai-atlas-page *::-webkit-scrollbar-track {
+  background: #e6dcc2;
+}
+body.ai-atlas-page *::-webkit-scrollbar-thumb {
+  background: #6a6457;
+  transition: background 160ms ease;
+}
+body.ai-atlas-page *::-webkit-scrollbar-thumb:hover {
+  background: #b3392b;
+}
+body.ai-atlas-page button,
+body.ai-atlas-page select {
+  font: inherit;
+}
+body.ai-atlas-page button,
+body.ai-atlas-page [role='button'],
+body.ai-atlas-page a,
+body.ai-atlas-page select {
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+body.ai-atlas-page button:focus-visible,
+body.ai-atlas-page [role='button']:focus-visible,
+body.ai-atlas-page a:focus-visible,
+body.ai-atlas-page select:focus-visible {
+  outline: 2px solid #b3392b;
+  outline-offset: 4px;
+}
+.ai-atlas-root .sheet {
+  padding-top: 24px;
+}
+.ai-atlas-root .dossier__desc,
+.ai-atlas-root .kv .v,
+.ai-atlas-root .sec-callout p,
+.ai-atlas-root .sec-sib p,
+.ai-atlas-root .sec-pattern p,
+.ai-atlas-root .security-sub {
+  font-size: 16px;
+}
+.ai-atlas-root .node__label {
+  font-size: 16px;
+}
 .ai-atlas-root .panel--dossier {
-  padding: 20px 16px 16px;
   min-height: 480px;
   max-height: 70dvh;
   overflow: auto;
   scrollbar-gutter: stable;
   overscroll-behavior: contain;
+}
+.ai-atlas-root .topic-picker {
+  display: block;
+  font:
+    12px/20px 'JetBrains Mono',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.ai-atlas-root .topic-picker select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 8px;
+  border: 1px solid #2a2a2a;
+  border-radius: 2px;
+  background: #ece4cf;
+  color: #1a1a1a;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+.ai-atlas-root .terminal-doctrine {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #b3392b;
+  color: #b3392b;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 31px,
+    rgba(42, 42, 42, 0.16) 32px
+  );
+}
+.ai-atlas-root .terminal-doctrine > span {
+  font:
+    48px/1.5 'EB Garamond',
+    serif;
+}
+.ai-atlas-root .terminal-doctrine small {
+  font:
+    12px/20px 'JetBrains Mono',
+    monospace;
+}
+.ai-atlas-root .sec-callout {
+  overflow: auto;
+  max-height: 32%;
+  scrollbar-gutter: stable;
+}
+.ai-atlas-root .legend-cta:empty {
+  display: none;
+}
+.ai-atlas-root .view-stage {
+  transition: opacity 240ms ease;
+}
+.ai-atlas-root .view-stage.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+.ai-atlas-root .security-canvas .orbital-svg {
+  pointer-events: none;
+}
+@media (max-width: 900px) {
+  .ai-atlas-root .topic-picker {
+    grid-row: 3;
+  }
+  .ai-atlas-root .view-stage {
+    grid-row: 4;
+    min-width: 0;
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+  .ai-atlas-root .rail > .panel--dossier {
+    grid-row: 5;
+  }
+  .ai-atlas-root .canvas--orbital:not(.security-canvas) {
+    min-width: 1100px;
+  }
+  .ai-atlas-root .canvas--orbital:not(.security-canvas) .orbital-svg {
+    min-height: 1100px;
+  }
+  .ai-atlas-root .panel--dossier {
+    min-height: 400px;
+    max-height: 70dvh;
+  }
+  .ai-atlas-root .security-canvas .sec-callout {
+    max-height: none;
+    overflow: visible;
+  }
+  .ai-atlas-root .sheet {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.ai-atlas-page *,
+  body.ai-atlas-page *::before,
+  body.ai-atlas-page *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 900px) {
+  .ai-atlas-root .topic-picker {
+    order: 3;
+  }
+  .ai-atlas-root .view-stage {
+    order: 4;
+  }
+  .ai-atlas-root .rail > .panel--dossier {
+    order: 5;
+  }
+}
+.ai-atlas-root .task-route-segment {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 2;
+  opacity: 0.65;
+  transition:
+    opacity 240ms ease,
+    stroke-width 240ms ease;
+}
+.ai-atlas-root .task-route-segment.is-current {
+  opacity: 1;
+  stroke-width: 3;
+}
+.ai-atlas-root .stage-support {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+.ai-atlas-root .stage-support.is-current {
+  opacity: 0.8;
+}
+.ai-atlas-root .node__label small {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+/* Dossier titles stay inside the scrolling frame, including wrapped headings. */
+.ai-atlas-root .panel--dossier {
+  padding: 20px 16px 16px;
   transition: none;
 }
-
 .ai-atlas-root .panel--dossier .panel__title {
   position: static;
   display: block;
@@ -1570,58 +1784,11 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   line-height: 20px;
   overflow-wrap: anywhere;
 }
-
 .ai-atlas-root .panel--dossier .panel__corner-mark {
   top: 20px;
   right: 16px;
 }
-
-/* Every topic, reachable without hunting for its node. */
-.ai-atlas-root .topic-picker {
-  display: block;
-  font-family: var(--mono);
-  font-size: 12px;
-  line-height: 20px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.ai-atlas-root .topic-picker select {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 12px 8px;
-  border: 1px solid var(--rule);
-  border-radius: 2px;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--mono);
-  font-size: 14px;
-  letter-spacing: 0;
-}
-
-/* Anything that answers a click answers a keyboard, and says so. */
-.ai-atlas-root button:focus-visible,
-.ai-atlas-root [role='button']:focus-visible,
-.ai-atlas-root a:focus-visible,
-.ai-atlas-root select:focus-visible {
-  outline: 2px solid var(--red);
-  outline-offset: 4px;
-}
-
-/* The views change over rather than cutting. */
-.ai-atlas-root .view-stage {
-  transition: opacity 240ms ease;
-}
-
-.ai-atlas-root .view-stage.is-leaving {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* A ring is lit by the dot crossing it, on the one clock the script paints
-   from; hover still owns the full red. */
+/* Passage intensity is computed from the same clock as the moving dot. */
 .ai-atlas-root .security-canvas .ring__circle {
   stroke: color-mix(
     in srgb,
@@ -1630,50 +1797,23 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   );
   stroke-width: calc(1px + var(--security-passage, 0) * 1px);
 }
-
 .ai-atlas-root .security-canvas .ring__circle.is-glow {
   stroke: var(--red);
 }
-
-/* Callouts end inside the frame: the rail scrolls, the canvas does not grow,
-   and the last two rows are held shorter so they cannot cross the border. */
-.ai-atlas-root .sec-callout {
-  overflow: auto;
-  max-height: 32%;
-  scrollbar-gutter: stable;
+@media (prefers-reduced-motion: reduce) {
+  .ai-atlas-root .security-pulse {
+    display: none;
+  }
 }
-
+/* The final row must end before the canvas border. */
 .ai-atlas-root .security-canvas .sec-callout[data-layer='5'],
 .ai-atlas-root .security-canvas .sec-callout[data-layer='6'] {
   max-height: 24%;
   overscroll-behavior: contain;
 }
-
-/* Stacked, there is room again, so nothing is capped or scrolled inside. */
 @media (max-width: 1100px) {
   .ai-atlas-root .security-canvas .sec-callout[data-layer] {
     max-height: none;
     overflow: visible;
-  }
-}
-
-@media (max-width: 900px) {
-  .ai-atlas-root .panel--dossier {
-    min-height: 400px;
-  }
-
-  .ai-atlas-root .security-canvas .sec-callout {
-    max-height: none;
-    overflow: visible;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ai-atlas-root .security-pulse {
-    display: none;
-  }
-
-  .ai-atlas-root .view-stage {
-    transition: none;
   }
 }
