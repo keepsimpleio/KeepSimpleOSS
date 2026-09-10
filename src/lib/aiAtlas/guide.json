@@ -48,6 +48,7 @@
         "skills",
         "tools",
         "sendto",
+        "human-collab",
         "background-work",
         "codemap"
       ]
@@ -129,7 +130,7 @@
     },
     {
       "id": "sendto",
-      "title": "Involve an agent",
+      "title": "AI Collaboration",
       "text": "An agent names a colleague in one SEND TO line. Terminal delivers the ask into that colleague’s own session; the two conversations stay separate.",
       "children": ["ask-once", "auto"]
     },
@@ -433,6 +434,12 @@
       "detail": [
         "Terminal writes one line per finished turn: milliseconds to the provider, to the first word, to the end, per lane and slot. Every five minutes a line reports server stalls. No prompt text."
       ]
+    },
+    {
+      "id": "human-collab",
+      "title": "Human Collaboration",
+      "text": "Agents address people on the roster the same way they address each other; a line to a person leaves for Telegram, and a granted person can hand a task back the same way.",
+      "children": ["notify"]
     }
   ],
   "links": [
@@ -559,6 +566,16 @@
       "discipline",
       "memorymd",
       "Audit notices are written into the memory index the agent reads at start."
+    ],
+    [
+      "human-collab",
+      "directory",
+      "A person on the roster is addressed by handle, like any owner."
+    ],
+    [
+      "human-collab",
+      "notify",
+      "The line that leaves for a person travels on Telegram."
     ]
   ],
   "system": {

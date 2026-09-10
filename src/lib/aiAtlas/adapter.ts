@@ -54,7 +54,7 @@ export function adaptGuide(guide: any) {
     ['message', 'queue'],
     ['engine-switch', 'steering'],
     ['global', 'local', 'session-resume'],
-    ['work-checks', 'sendto', 'skills'],
+    ['work-checks', 'sendto', 'human-collab'],
     ['history', 'decisions'],
   ];
   const topicToStage: any = {};

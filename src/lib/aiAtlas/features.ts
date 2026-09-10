@@ -10,8 +10,8 @@
    TILE: a black tile on the outer ring of the map. Twelve of them:
      Composite Keys, Backlog, Message, Smart Queuing, Engine switch,
      Live Steering,
-     Global CLAUDE.md, Local CLAUDE.md, Session start, Skills,
-     Involve an agent,
+     Global CLAUDE.md, Local CLAUDE.md, Session start, Doors,
+     AI Collaboration, Human Collaboration,
      Conversation history, Saved decisions.
    card: every other card, opened from a stage, a ring or the Topics list.
 
@@ -192,10 +192,17 @@ const features: Record<string, string[]> = {
     'Tools are how the agent acts: edit a file, run a command, query a database, reach a service. Every result comes back to the agent, which decides the next step.',
     'What a tool can do and what the agent is allowed to do are two different questions. The rules answer the second.',
   ],
-  // TILE: Involve an agent
+  // TILE: AI Collaboration
   sendto: [
-    'An agent that needs something from another project’s owner writes one line addressed to that colleague. Terminal delivers it into the colleague’s own session and brings the answer back.',
-    'The two conversations stay separate, so nobody’s context fills up with someone else’s work.',
+    'Every project belongs to one agent. When an agent needs something from another project, it asks that project’s owner instead of going in and doing it.',
+    'It names the colleague in one line. The question lands in that colleague’s own session, with that project’s files and rules around it, and the answer comes back. The two conversations stay separate.',
+    'A question can travel two hops and no further. If I arm a pair of agents, they can pass work back and forth on my server with my browser closed. That stops at the hop limit or when one of them repeats itself.',
+  ],
+  // TILE: Human Collaboration
+  'human-collab': [
+    'The roster on my server lists people the same way it lists agents, with handles.',
+    'When an agent needs something only a person can give, a credential, a decision, a fact nobody wrote down, it addresses that person by name in one line. The line leaves the server and lands in their Telegram.',
+    'It works the other way too. Someone I granted access hands a task to my agents from their own chat and gets the result back there. Execution and delivery are shown as two separate facts, because a task finishing is not the same as the answer reaching a person.',
   ],
   // card: Ask once
   'ask-once': [
