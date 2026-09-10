@@ -60,6 +60,12 @@ export interface StoredLibrary {
   /** The owner's standing setting for the AI shelf. It outlives every
    * board: set to non-fiction, the shelf stays non-fiction. */
   preference: RecommendedPreference;
+  /** When the roll running right now started, UTC. A roll outlives the
+   * request that asked for it, so this is what a later request reads to
+   * know one is under way. Cleared when it lands. */
+  rollingSince?: string | null;
+  /** What the last roll had to say for itself, when it had something. */
+  rollNote?: string | null;
 }
 
 interface Store {

@@ -17,6 +17,7 @@ import {
   arrangeBoard,
   runBoard,
 } from '@lib/library/aishelf/engine';
+import type { LibraryDigest } from '@lib/library/magic/digest';
 import { digestLibrary, normaliseTitle } from '@lib/library/magic/digest';
 import type { StoredBoard, StoredLibrary } from '@lib/library/magic/store';
 import {
@@ -52,12 +53,23 @@ import { ownerOfLibrary } from '@lib/library/owner';
  */
 
 const MECHANISM = 'library.ai-shelf';
+/** What the shelf says while the engine works. */
+const ROLLING_NOTE = 'Stocking the shelf. This takes a minute.';
+/** A roll that has not landed in this long is treated as gone: the process
+ * that was running it may have been recreated under it. */
+const ROLL_STALE_MS = 5 * 60 * 1000;
 /** Titles remembered per shelf, so the prompt cannot grow without end. */
 const HISTORY_CAP = 200;
 
-/** One roll per library at a time: two at once would each read the board
- * before the other wrote it, and one would be lost. */
+/** One roll per library at a time in this process: two at once would each
+ * read the board before the other wrote it, and one would be lost. The store
+ * carries the same fact across processes. */
 const rolling = new Set<number>();
+
+/** True when no roll is under way, or the one recorded is old enough that
+ * nothing is coming from it. */
+const rollIsStale = (since?: string | null): boolean =>
+  !since || Date.now() - Date.parse(since) > ROLL_STALE_MS;
 
 interface Body {
   libraryId?: number;
@@ -127,7 +139,9 @@ const stateOf = (
     banned: library.banned,
   };
   if (board) state.rolledWith = board.rolledWith;
+  if (!rollIsStale(library.rollingSince)) state.status = 'rolling';
   if (note) state.note = note;
+  else if (library.rollNote) state.note = library.rollNote;
   return state;
 };
 
@@ -340,11 +354,70 @@ export default async function handler(
     return;
   }
 
-  if (rolling.has(libraryId)) {
-    res.status(409).json({ error: 'This shelf is already being stocked.' });
+  // A roll takes longer than a gateway will hold a request open: measured on
+  // production, the edge closed at 60s while the engine was still working and
+  // the board landed anyway, unseen. So the request that asks for a board does
+  // not wait for it. The roll is started, the shelf answers "rolling", and the
+  // client polls until the board stands. The container is long-lived, so the
+  // work outlives the request that began it.
+  if (rolling.has(libraryId) || !rollIsStale(stored.rollingSince)) {
+    res.status(200).json({
+      ...stateOf(stored, books, digest.ratedBooks, ROLLING_NOTE),
+      status: 'rolling',
+    });
     return;
   }
+
   rolling.add(libraryId);
+  stored = await updateLibrary(libraryId, current => ({
+    ...current,
+    rollingSince: new Date().toISOString(),
+    rollNote: null,
+  }));
+  await journal({
+    mechanism: MECHANISM,
+    outcome: 'started',
+    libraryId,
+    action,
+    auto: action === 'load',
+    preference: stored.preference,
+    books,
+  });
+
+  void stockTheBoard({
+    libraryId,
+    digest,
+    board: stored.board,
+    preference: stored.preference,
+    banned: stored.banned.map(b => b.title),
+    books,
+    action,
+  });
+
+  res.status(200).json({
+    ...stateOf(stored, books, digest.ratedBooks, ROLLING_NOTE),
+    status: 'rolling',
+  });
+}
+
+interface StockRequest {
+  libraryId: number;
+  digest: LibraryDigest;
+  board?: StoredBoard;
+  preference: RecommendedPreference;
+  banned: string[];
+  books: number;
+  action: string;
+}
+
+/**
+ * The roll itself, running past the request that asked for it. It writes the
+ * board, clears the marker the shelf polls on, and leaves the note the shelf
+ * shows when the engine had something to say.
+ */
+async function stockTheBoard(request: StockRequest): Promise<void> {
+  const { libraryId, digest, board, preference, banned, books, action } =
+    request;
   const started = Date.now();
   try {
     // A roll keeps what the owner locked, where they locked it, and deals
@@ -370,11 +443,11 @@ export default async function handler(
     ].slice(-HISTORY_CAP);
 
     const run = await runBoard(digest, {
-      preference: stored.preference,
+      preference,
       need,
       standing: kept.map(p => p.title),
       history,
-      banned: stored.banned.map(b => b.title),
+      banned,
     });
 
     const picks = arrangeBoard(keep, {
@@ -386,12 +459,22 @@ export default async function handler(
       ...run.stretch.slice(Math.max(0, need.stretch)),
     ].slice(0, AI_SHELF_BENCH);
 
+    const answered = run.fit.length + run.stretch.length > 0;
+    const note = !answered
+      ? run.tracksExhausted
+        ? 'The engine is out of reach right now. Roll again in a while.'
+        : 'Nothing could be confirmed this time. Roll again.'
+      : picks.length < AI_SHELF_SIZE
+        ? 'Some candidates could not be confirmed. Roll again to fill the shelf.'
+        : null;
+
     // A roll the engine never answered leaves the board as it was, so the
     // next attempt starts from what stands rather than from a failure.
-    const answered = run.fit.length + run.stretch.length > 0;
-    stored = await updateLibrary(libraryId, current => ({
+    await updateLibrary(libraryId, current => ({
       ...current,
       calls: withCalls(current, run.calls),
+      rollingSince: null,
+      rollNote: note,
       board: answered
         ? {
             picks,
@@ -400,7 +483,7 @@ export default async function handler(
               picks.some(p => p.id === id),
             ),
             history,
-            rolledWith: current.preference,
+            rolledWith: preference,
             updatedAt: new Date().toISOString(),
           }
         : // A board that failed is still a board: it stands empty and waits
@@ -410,7 +493,7 @@ export default async function handler(
             bench: [],
             locked: [],
             history,
-            rolledWith: current.preference,
+            rolledWith: preference,
             updatedAt: new Date().toISOString(),
           }),
     }));
@@ -421,7 +504,7 @@ export default async function handler(
       libraryId,
       action,
       auto: action === 'load',
-      preference: stored.preference,
+      preference,
       books,
       need,
       stood: picks.length,
@@ -440,15 +523,20 @@ export default async function handler(
         match: p.match ?? null,
       })),
     });
-
-    const note = !answered
-      ? run.tracksExhausted
-        ? 'The engine is out of reach right now. Roll again in a while.'
-        : 'Nothing could be confirmed this time. Roll again.'
-      : picks.length < AI_SHELF_SIZE
-        ? 'Some candidates could not be confirmed. Roll again to fill the shelf.'
-        : undefined;
-    res.status(200).json(stateOf(stored, books, digest.ratedBooks, note));
+  } catch (error) {
+    await updateLibrary(libraryId, current => ({
+      ...current,
+      rollingSince: null,
+      rollNote: 'The roll did not go through. Try again.',
+    }));
+    await journal({
+      mechanism: MECHANISM,
+      outcome: 'crashed',
+      libraryId,
+      action,
+      ms: Date.now() - started,
+      error: error instanceof Error ? error.message : 'unknown',
+    });
   } finally {
     rolling.delete(libraryId);
   }
