@@ -4,6 +4,8 @@ import type { StrapiSingleShelfEntry } from '@local-types/library';
 import type { IObject, IReorderObjectEntry } from '@local-types/library/object';
 import type { ShelfVisibility } from '@local-types/library/shelf';
 
+import type { MagicShelfSlot } from '@hooks/library/useMagicBooks';
+
 /**
  * dnd-kit's activator wiring, handed down so the grip rendered inside the
  * shelf header is what starts a drag. Absent when the viewer can't reorder.
@@ -113,4 +115,9 @@ export interface ShelfProps {
   dragHandleProps?: ShelfDragHandleProps;
   /** True while this shelf is the one being dragged. */
   isDragging?: boolean;
+  /**
+   * The magic book for this shelf: the engine's one pick, standing after the
+   * last book. Owner-only, book shelves only; null or absent draws nothing.
+   */
+  magic?: MagicShelfSlot | null;
 }

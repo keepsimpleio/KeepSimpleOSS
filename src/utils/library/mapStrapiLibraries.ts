@@ -81,13 +81,21 @@ const MAX_CARD_COVERS = 4;
 function collectCoverUrls(
   shelves: StrapiSingleShelfEntry[],
   strapiBase?: string,
+  limit: number = MAX_CARD_COVERS,
+  skip: Set<number> = new Set(),
 ): string[] {
   const urls: string[] = [];
+  if (limit <= 0) {
+    return urls;
+  }
   for (const shelf of shelves) {
     if (shelf.attributes?.visibility === 'private') {
       continue;
     }
     for (const obj of shelf.attributes?.objects?.data ?? []) {
+      if (skip.has(obj.id)) {
+        continue;
+      }
       const resolved = resolveMediaUrl(
         obj.attributes?.coverImage?.data?.attributes?.url,
         strapiBase,
@@ -95,7 +103,7 @@ function collectCoverUrls(
       if (resolved) {
         urls.push(resolved);
       }
-      if (urls.length >= MAX_CARD_COVERS) {
+      if (urls.length >= limit) {
         return urls;
       }
     }
@@ -132,10 +140,22 @@ export function mapStrapiLibraryEntryToCard(
       ),
     )
     .filter((url): url is string => Boolean(url));
-  const coverUrls =
-    publicFavorites.length >= MAX_CARD_COVERS
-      ? favoriteCovers.slice(0, MAX_CARD_COVERS)
-      : collectCoverUrls(shelves, strapiBase);
+  // Favourites lead the mini-shelf for every library, however few there are:
+  // a library with two starred books shows those two and fills the rest of
+  // the row from its public shelves. The row used to switch to favourites
+  // only when there were four or more, so a library with one or two starred
+  // books showed none of them and looked like it had no favourites at all,
+  // while a library with a dozen showed nothing else.
+  const favoriteIds = new Set(publicFavorites.map(object => object.id));
+  const coverUrls = [
+    ...favoriteCovers.slice(0, MAX_CARD_COVERS),
+    ...collectCoverUrls(
+      shelves,
+      strapiBase,
+      MAX_CARD_COVERS - Math.min(favoriteCovers.length, MAX_CARD_COVERS),
+      favoriteIds,
+    ),
+  ];
 
   const aboutLibraryPlain = stripHtml(
     attributes.libraryDetails?.aboutLibrary ?? '',

@@ -1,0 +1,332 @@
+// The brief: the cover on the left at the shelf's own proportions, the
+// words on the right, one row of actions at the foot. 560px wide so the
+// reason can breathe; the cover column is fixed so a roll swaps the text
+// without moving it.
+.modal {
+  width: 560px;
+  max-width: calc(100vw - 32px);
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 146px minmax(0, 1fr);
+  grid-template-areas:
+    'cover text'
+    'foot foot';
+  column-gap: 24px;
+  row-gap: 24px;
+  padding: 20px 32px 24px;
+
+  @media (max-width: 560px) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'cover'
+      'text'
+      'foot';
+  }
+}
+
+.cover {
+  grid-area: cover;
+  position: relative;
+  width: 146px;
+  height: 206px;
+  overflow: hidden;
+  border: 1px solid var(--brown-border);
+  background: var(--gradient-cover-placeholder);
+}
+
+.coverImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: opacity 0.3s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.coverBlank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--purple-100);
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+// The same light the card carries, moving only while the engine works.
+.coverLight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 28%,
+    var(--purple-400) 44%,
+    var(--white-200) 50%,
+    var(--purple-400) 56%,
+    transparent 72%
+  );
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 0.2s ease;
+}
+
+.busy .coverLight {
+  opacity: 0.32;
+  animation: brief-light 1.6s ease-in-out infinite;
+}
+
+.busy .coverImage {
+  opacity: 0.5;
+}
+
+.text {
+  grid-area: text;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.title {
+  color: var(--black-rich);
+}
+
+.byline {
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--gray-darker);
+}
+
+// The number first, its meaning after, on one baseline.
+.match {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.matchValue {
+  font-family: var(--font-source-serif);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--purple-100);
+}
+
+.matchLabel {
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--gray-darker);
+}
+
+// Where the number came from: five dots per dimension the library carries.
+.rubric {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rubricRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 62px 32px;
+  align-items: center;
+  gap: 10px;
+}
+
+.rubricLabel {
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--gray-darker);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rubricDots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--off-white);
+  border: 1px solid var(--beige);
+  transition: background 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.dotOn {
+  background: var(--purple-100);
+  border-color: var(--purple-100);
+}
+
+.rubricValue {
+  text-align: right;
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray-darker);
+}
+
+.reason {
+  margin: 0;
+  font-family: var(--font-source-serif);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--black-rich);
+}
+
+.source {
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--gray-darker);
+
+  a {
+    color: inherit;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--brown);
+      text-decoration-style: solid;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+}
+
+.foot {
+  grid-area: foot;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--beige);
+}
+
+// Held in the row from the start, so "Rolling…" never moves the buttons.
+.footNote {
+  min-height: 19px;
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--gray-darker);
+}
+
+.footActions {
+  display: flex;
+  gap: 8px;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--brown-border);
+  border-radius: var(--radius-control);
+  background: var(--white-200);
+  color: var(--black-rich);
+  font-family: var(--font-source-sans);
+  font-size: 14px;
+  line-height: 19px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.primary {
+  min-width: 96px;
+  justify-content: center;
+  background: var(--purple-100);
+  border-color: var(--purple-100);
+  color: var(--white);
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: var(--purple-200);
+    border-color: var(--purple-200);
+  }
+}
+
+.secondary {
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brown);
+    color: var(--brown);
+  }
+}
+
+@keyframes brief-light {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coverLight,
+  .busy .coverLight {
+    animation: none;
+    transition: none;
+    transform: none;
+    opacity: 0.1;
+  }
+}

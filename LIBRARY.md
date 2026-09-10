@@ -126,6 +126,23 @@ values; public reads omit the field, anonymous writes and invalid values are
 rejected. The probe restored the original preference. Production rollout remains
 separate from this DEV release.
 
+## Library info panel: the fold and its shortcut
+
+The panel folds to its spine through the tab at the toolbar's right edge and
+through **Ctrl+\\** (Meta+\\ answers too), `usePanelHotkey`, called once by
+`LibraryTemplate`. Desktop only above 1025px, where the tab itself lives; on
+a phone the panel is a drawer with its own opener. The binding stands down
+while the caret is in an input, a textarea, a select or a rich-text editor,
+so it can never eat a keystroke meant for text, and it reads `event.code`
+so a layout that prints another character on that key still answers. The
+choice is per account and survives a refresh, as the tab's already does.
+
+## Library content counts
+
+A kind the library does not hold is not written as a zero: neither its icon
+nor its number stands in the panel's Content line (Wolf, 2026-09-10). With
+no books, videos or audio at all the Content heading goes with them.
+
 ## Library switcher design passport
 
 - Palette: existing paper and wood tokens; brown is the accent.
@@ -215,6 +232,8 @@ A tag is a label on books and a filter over the library. Clicking one in the
 right panel gathers every book it labels into a single row, in the tag's own
 order, and every shelf steps aside while it stands: the AI shelf and Favorites
 with them. One tag at a time; clicking the active tag clears the filter.
+So does Clear, a word in brown ink beside the row's one pill on the toolbar
+(Wolf, 2026-09-10).
 
 - Tags are controls in the right panel only. On cards, in the hover dossier and
   in the object overview they stay labels.
@@ -491,6 +510,170 @@ the owner's own view arrives without the shelves blinking out.
 - Scrollbar passport: no scrollable surface.
 - Stability passport: the article is drawn once from the server and never
   changes shape; hover changes colour only.
+
+## Library magic book and AI accuracy
+
+Owner-only, signed in, desktop: the same rule every editing control on a
+shelf follows. A visitor, a guest preview and a phone see neither.
+
+### The magic book
+
+One slot stands at the end of every book shelf. Nothing is chosen unasked
+(Wolf, 2026-09-10): the empty slot is blank paper with a Roll, and the roll
+is the owner's click, one shelf at a time. Arriving at the library reads the
+store only and costs no model call. A pick is dressed as a shelved book: the
+same 180 by 208 cell, the same mockup, a "Magic" mark at the head of the
+cover, the chance the owner likes it on a slip at the foot. Under the
+pointer the dossier says why in the owner's own terms, with the match and
+the source that confirmed the book. A click opens the brief: the cover, the
+title, author and year, the chance as a number with the rubric that made it
+(five dots per dimension the library carries), the reason, the source link,
+and Re-roll, which runs the engine for that shelf again and swaps the brief
+in place. A pick whose shelf has since changed is not offered as current;
+the slot goes back to Roll. It is not a shelved object: it cannot be
+dragged, dropped on, selected or shared, and it steps aside while a search
+narrows the row. The Favorites shelf and a tag's row carry none, being views
+of other shelves' books.
+
+The algorithm, agreed with Wolf on 2026-09-10 and kept in
+`src/lib/library/magic`:
+
+1. The library is digested with every field the owner wrote and none they
+   did not: title, author, year, tags, rating, difficulty, the note as plain
+   text cut at 900 characters, the shelf description, and the shelf name only
+   when it carries a subject (`isTopicalShelfName`: stage words such as
+   "Reading now", "Favorites", "Misc", bare years, and names under three
+   letters are dropped). Absence is never defaulted.
+2. Ratings are labels: 5s define what the owner likes, 1s and 2s are negative
+   examples and matter as much. Notes say why, and the pick runs along the
+   axis they praise rather than along genre. Tags are the owner's ontology.
+   Difficulty is calibration: the pick lands in the band the owner rates
+   highest. The shelf name sets the subject; its books set level and style;
+   when they disagree the name wins on subject and the books on the rest.
+3. Eligibility: a shelf without books gets no pick. A percent is shown only
+   once the library holds three rated books (`MAGIC_MIN_RATED_FOR_MATCH`).
+4. One model call per batch of up to ten shelves, Opus 5 at high effort on
+   Wolf's subscriptions through `claude-relay` (below), asking for one JSON
+   object with five ranked candidates per shelf, each with a rubric of five integers 0..5: theme, notes, tags,
+   difficulty, distance from the negative examples. Books in the library,
+   titles the owner rolled past on that shelf and banned titles are excluded
+   in the prompt and again on the way out.
+5. Every candidate is verified, in rank order, against Google Books and then
+   Open Library by title overlap and author surname. The first confirmed one
+   stands, with the source's own title, author, year and cover through the
+   cover proxy. Candidates nothing confirms are listed to the model in one
+   second pass; a shelf still empty after that stands empty until the next
+   roll.
+6. The percent is the weighted mean of the rubric (notes 30, theme 20, tags
+   20, difficulty 15, distance 15, over 5), with any dimension the library
+   carries no data for dropped and the rest renormalised, moved by a
+   calibration offset: up to five rated books are held out of the prompt
+   with their ratings withheld, the model predicts them, and the mean signed
+   error at eight percent per rating point, clamped to sixteen, shifts the
+   scale. Clamped to 5..97, whole percent. The model never writes the number.
+7. Picks persist per shelf with the digest fingerprint of that shelf, in
+   `logs/library-magic/store.json` beside the journal, and are made only
+   when the owner rolls. A roll adds the standing pick, if any, to that
+   shelf's exclusions; a changed shelf empties the slot until the next roll. Sixty model calls per library per UTC day,
+   after which what stands stays and the rest waits. Every request leaves a
+   `library.magic-book` line in `logs/library-magic/journal.jsonl` and on
+   stdout: outcome, shelves run, ready and empty counts, model calls,
+   calibration, unverified count, duration and the picks by normalised title.
+   Never the token or the key.
+
+### Paid for by the subscriptions, never an API key
+
+Wolf's rule (2026-09-10): everything AI in the Library, for every owner,
+runs on his Claude subscriptions, the Terminal's tracks t1, t2 and t3, in
+that order, and the owner never notices which. No paid API. The tokens never
+enter this app: `src/lib/library/magic/relay.ts` sends an Anthropic Messages
+request to `claude-relay` (The Order's container on the `wolf-shared`
+network, `wolfs-server/docs/claude-relay.md`), which holds the tracks,
+tries t1 first, moves to t2 and then t3 on a rate limit or a dead token, and
+names the track that served in `x-relay-slot`. Opus runs through the real
+Claude Code CLI inside the relay, one turn, no tools, so the schema is asked
+for in the prompt and the JSON is read out of the text. Every journal line
+carries `served` (track, model, transport); `tracksExhausted` marks a run
+where no track answered or the relay was out of reach, and the owner reads
+"The engine is out of reach right now" on the card. Runtime values, both
+provisioned by The Order per container: `CLAUDE_RELAY_URL` (default
+`http://claude-relay:8080/v1/messages`) and `CLAUDE_RELAY_TOKEN`. The
+`ANTHROPIC_API_KEY` and `OPENAI_API_KEY` on this host are not read by the
+Library.
+
+Route: `POST /api/library/magic-book` with the owner's Strapi session as a
+Bearer token and `{ libraryId, action: 'load' | 'roll', shelfId? }`: load
+reads the store for every book shelf and makes no model call; roll runs the
+engine for one shelf. The
+route asks Strapi who is calling, reads the library with that session and
+refuses anyone but the library's owner. The store is a DEV stand-in: moving
+picks and exclusions into the CMS is a schema change and its own release.
+
+### AI accuracy
+
+Where the AI Librarian opener stood on the toolbar, the owner reads
+`AI accuracy NN%`: how much of what the engine reads is written into the
+library. It is a coverage score computed from the library on screen by
+`scoreLibraryAccuracy`, no request made, books only. Weights agreed with
+Wolf on 2026-09-10, 100 points:
+
+| #   | Component           | Points | Measure                                                                    |
+| --- | ------------------- | ------ | -------------------------------------------------------------------------- |
+| 1   | Notes and takeaways | 25     | share of books with a note of 40 words or more                             |
+| 2   | Ratings             | 20     | 15 for the share rated, 5 once three books are rated 1 or 2                |
+| 3   | Rated volume        | 20     | log curve on the count of rated books, full at 30                          |
+| 4   | Tags                | 15     | 12 for the share tagged, 3 for the share of tags used on two books or more |
+| 5   | Difficulty          | 10     | share of books with a difficulty set                                       |
+| 6   | Themed shelves      | 10     | share of book shelves whose name carries a subject                         |
+
+Clicking the status opens the ledger: the total with one line under it, then
+six quiet lines, each a name, a meter and earned over maximum, and at the
+foot the one step that buys the most per book touched with its gain in whole
+percent. The counts behind a line and its own cheapest step are said on
+hover and keyboard focus through the shared Tooltip, not drawn (Wolf,
+2026-09-10: the first cut was too noisy). A step is sized to move the total
+by a whole percent, so a large library is asked for seven notes rather than
+four and never reads "Full" on a row that is not. The number measures data
+coverage, not model accuracy; calibration from held-out ratings feeds the
+magic book's percent, not this one.
+
+### Design passport
+
+- Palette: Library paper and wood neutrals; the AI accent `--purple-100`
+  for the Magic mark, the meters, the Re-roll and Done hovers, with
+  `--purple-400` in the cover light. Nothing else changes colour.
+- Typography: Source Serif 4 and Source Sans Pro. The status label is Source
+  Sans Pro 13px uppercase 0.08em as the Librarian label was, the value
+  Source Serif 4 16px semibold tabular. The ledger: total at 34px, lines and
+  the foot at 14px. The card: title 16px, author 14px, slip 11px, mark 12px,
+  Roll 14px, blank paper 14px. The brief: title in the existing
+  subtitle-secondary-semi variant, byline 14px, the chance at 34px with its
+  label at 14px, rubric 12px, reason 16px over 24px, source 12px, buttons
+  14px.
+- Spacing and radius: 4px grid; the status keeps the Librarian's 300 by 44px
+  box, 2px `--beige` border and 16px padding; the ledger is 400px wide with
+  20px by 32px body padding, 36px lines on a 148px, meter, 64px grid; the
+  brief is 560px wide, cover column 146px, 24px gaps, 36px buttons; meters
+  are 6px and 4px tall, rubric dots 8px round. `--radius-control`
+  throughout.
+- Motion passport: the card lifts 6px over 250ms as every shelved book does;
+  pick and blank paper crossfade over 300ms ease; the slip, the mark and the
+  Roll fade over 200ms; the cover light runs 1.6s while the engine works, on
+  the card and in the brief, and 12s under the pointer; meters fill by scaleX
+  over 600ms with cubic-bezier(0.2, 0, 0, 1); ledger lines and rubric dots
+  colour over 200ms; the ledger and the brief use the shared Modal fade.
+  Reduced motion disables every transition and animation and leaves the
+  light at a still 0.1.
+- Scrollbar passport: no new scrollable surface. The ledger is capped by the
+  Modal and its six rows fit.
+- Stability passport: the magic slot is one card wide in every state, idle,
+  loading, ready, empty and ineligible, so the row never changes length; the
+  slip, the mark and the Roll are held in the DOM and shown by opacity; the
+  status value is sized for 100% and the meter fill is scaled, not resized;
+  hover changes colour and lift only. The ledger's lines are fixed columns
+  and hold their geometry as the numbers change. The brief's cover column is
+  fixed and its foot note is held in the row, so a re-roll swaps the words
+  without moving the buttons.
 
 ## Library MCP
 

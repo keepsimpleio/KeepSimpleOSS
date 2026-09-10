@@ -1,3 +1,73 @@
+// The shelf speaks in one control: a 32px paper button with a lilac edge,
+// filled for the action that changes something, outlined for the one that
+// only opens a list. The modal is portaled to <body> and stands outside
+// .wrapper, so these live at the top of the file where both can extend them.
+// The hover is a lilac fill in both readings: the old lilac wash carried ink
+// lettering, and on night paper ink is light, so the label vanished.
+%shelfControl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--purple-100);
+  border-radius: var(--radius-control);
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+%shelfFilled {
+  background: var(--purple-100);
+  color: var(--white);
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background: var(--black-rich);
+    border-color: var(--black-rich);
+    color: var(--white);
+  }
+}
+
+%shelfGhost {
+  background: var(--white-200);
+  color: var(--purple-100);
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background: var(--purple-100);
+    color: var(--white);
+  }
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -53,8 +123,8 @@
 
       &:hover,
       &:focus-visible {
-        background: var(--purple-400);
-        color: var(--black-rich);
+        background: var(--purple-100);
+        color: var(--white);
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -96,63 +166,16 @@
     }
   }
 
-  // The two header controls and the modal's own: lilac fill for the action
-  // that changes the shelf, lilac outline for the one that only opens a list.
   .headerButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    height: 32px;
-    padding: 0 14px;
-    border: 1px solid var(--purple-100);
-    border-radius: var(--radius-control);
-    font-family: var(--font-source-serif);
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 19px;
-    white-space: nowrap;
-    cursor: pointer;
-    transition:
-      background 0.2s ease,
-      color 0.2s ease,
-      border-color 0.2s ease;
-
-    svg {
-      flex-shrink: 0;
-      width: 16px;
-      height: 16px;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--focus-ring);
-      outline-offset: 1px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      transition: none;
-    }
+    @extend %shelfControl;
   }
 
   .regenerate {
-    background: var(--purple-100);
-    color: var(--white);
-
-    &:hover,
-    &:focus-visible {
-      background: var(--black-rich);
-      border-color: var(--black-rich);
-    }
+    @extend %shelfFilled;
   }
 
   .bannedButton {
-    background: var(--white-200);
-    color: var(--purple-100);
-
-    &:hover,
-    &:focus-visible {
-      background: var(--purple-400);
-      color: var(--black-rich);
-    }
+    @extend %shelfGhost;
   }
 
   .noticeRow {
@@ -491,23 +514,88 @@
   }
 }
 
+// THE BANNED BOOKS DIALOG. It is portaled to <body>, so every rule here
+// stands on its own and none of it is nested under .wrapper.
 .bannedModal {
   width: 100% !important;
   max-width: 520px !important;
 }
 
 .bannedBody {
-  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 32px 28px;
 }
 
-.bannedEmpty {
+// What a ban means, said once: it is the whole library, not this shelf.
+.bannedLede {
   color: var(--gray-darkest);
 }
 
+// Nothing banned yet. The dialog holds the height a short list would take,
+// so opening it on an empty list and on a full one is the same window.
+.bannedEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 148px;
+  text-align: center;
+  color: var(--gray-darkest);
+}
+
+.bannedEmptyMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--brown-border);
+  border-radius: 50%;
+  background: var(--white-100);
+  color: var(--gray-darkest);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// A long list scrolls inside the dialog rather than growing it past the
+// window. The gutter is held open from the start, so the first ban never
+// shifts the rows sideways.
+.bannedScroll {
+  max-height: 292px;
+  min-height: 148px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--taupe) var(--white-100);
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--white-100);
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--taupe);
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
 .bannedList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
 }
@@ -517,11 +605,21 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 0;
+  padding: 10px 8px;
+  margin: 0 -8px;
   border-bottom: 1px solid var(--brown-border);
+  transition: background 0.2s ease;
 
-  &:first-child {
-    padding-top: 0;
+  &:hover {
+    background: var(--white-100);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
@@ -532,16 +630,39 @@
 .bannedTitle {
   line-height: 22px;
   color: var(--black-rich);
+  overflow-wrap: anywhere;
 }
 
 .bannedAuthor {
   color: var(--gray-darkest);
 }
 
+// Sized for the longest word it can carry, so a click never moves the row.
+.bannedUnban {
+  @extend %shelfControl;
+  @extend %shelfGhost;
+
+  min-width: 92px;
+}
+
 .bannedFooter {
   display: flex;
-  justify-content: center;
-  margin-top: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.bannedCount {
+  color: var(--gray-darkest);
+}
+
+.bannedDone {
+  @extend %shelfControl;
+  @extend %shelfFilled;
+
+  min-width: 92px;
+  margin-left: auto;
 }
 
 @keyframes card-enter {
@@ -592,5 +713,122 @@
       height: 44px;
       flex-shrink: 0;
     }
+  }
+}
+
+// What the shelf deals in. Three states of one control, sized by the widest
+// of them, so choosing never moves the buttons beside it.
+.wrapper .header .preference {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--purple-100);
+  border-radius: var(--radius-control);
+  background: var(--white-200);
+}
+
+.wrapper .header .preferenceOption {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--purple-100);
+  font-family: var(--font-source-serif);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--purple-100);
+    color: var(--white);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.wrapper .header .preferenceOn {
+  background: var(--purple-100);
+  color: var(--white);
+
+  &:hover:not(:disabled) {
+    background: var(--purple-100);
+    color: var(--white);
+  }
+}
+
+// A place held open for a pick that is not there yet: before the shelf
+// opens, while the engine works, and where a roll fell short. The board
+// stands its full length in every state, so nothing on the page moves when
+// the picks land.
+.wrapper .content .cards .ghost {
+  flex: 0 0 auto;
+  width: 180px;
+  height: 208px;
+  border-radius: 2px 4px 4px 2px;
+  background: linear-gradient(
+    100deg,
+    var(--white-200) 0%,
+    var(--cream) 45%,
+    var(--white-100) 100%
+  );
+  border: 1px solid var(--brown-border);
+  opacity: 0.4;
+}
+
+// While the engine works the board holds its geometry and dims: the picks
+// standing on it are still the truth until the new ones land.
+.wrapper .content.working {
+  .cardSlot {
+    opacity: 0.5;
+  }
+
+  .cards .ghost {
+    animation: ghost-breathe 2.4s ease-in-out infinite;
+  }
+}
+
+.wrapper .content .cardSlot {
+  transition: opacity 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@keyframes ghost-breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper .content.working .cards .ghost {
+    animation: none;
   }
 }

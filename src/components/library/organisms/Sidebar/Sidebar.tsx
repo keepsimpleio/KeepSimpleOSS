@@ -397,29 +397,41 @@ export function Sidebar() {
               </div>
               <InkLine seed={7} className={styles.innerRule} />
 
-              <div className={styles.totalObjects}>
-                <Text className={styles.subLabel}>Content</Text>
-                <div className={styles.objects}>
-                  <Object
-                    className={styles.count}
-                    type={ObjectType.Book}
-                    number={bookCount}
-                    noBorder
-                  />
-                  <Object
-                    className={styles.count}
-                    type={ObjectType.Video}
-                    number={videoCount}
-                    noBorder
-                  />
-                  <Object
-                    className={styles.count}
-                    type={ObjectType.Audio}
-                    number={songCount}
-                    noBorder
-                  />
+              {/* A kind the library does not hold is not written as a zero:
+                  neither its icon nor its number stands here (Wolf,
+                  2026-09-10). A library with no books at all keeps the
+                  Content heading off the panel too. */}
+              {(bookCount > 0 || videoCount > 0 || songCount > 0) && (
+                <div className={styles.totalObjects}>
+                  <Text className={styles.subLabel}>Content</Text>
+                  <div className={styles.objects}>
+                    {bookCount > 0 && (
+                      <Object
+                        className={styles.count}
+                        type={ObjectType.Book}
+                        number={bookCount}
+                        noBorder
+                      />
+                    )}
+                    {videoCount > 0 && (
+                      <Object
+                        className={styles.count}
+                        type={ObjectType.Video}
+                        number={videoCount}
+                        noBorder
+                      />
+                    )}
+                    {songCount > 0 && (
+                      <Object
+                        className={styles.count}
+                        type={ObjectType.Audio}
+                        number={songCount}
+                        noBorder
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <InkLine seed={1} className={styles.sectionRule} />
           </div>
