@@ -168,15 +168,23 @@ async function askDirect(request: RelayRequest): Promise<RelayReply> {
   return readReply((await r.json()) as MessagesBody, request, slot, transport);
 }
 
-/**
- * Hand the call over and collect it. A poll that fails on the way is not the
- * job failing: the work is running and already paid for, so the next poll
- * asks again until the deadline.
- */
-async function askAsJob(
+/** Submissions of one call. A job the relay has forgotten is dealt again,
+ * once: the run behind it died with the relay, so nothing is paid twice. */
+const MAX_SUBMISSIONS = 2;
+/** Below this there is not enough of the deadline left to be worth dealing
+ * a lost job again. */
+const RESUBMIT_FLOOR_MS = 90_000;
+
+interface HandedJob {
+  /** Where to ask for the answer. */
+  poll: string;
+}
+
+/** Hands the call over. Null means this relay does not know jobs at all. */
+async function handOver(
   url: string,
   request: RelayRequest,
-): Promise<RelayReply> {
+): Promise<HandedJob | null> {
   let accepted: Response;
   try {
     accepted = await fetch(url, {
@@ -192,9 +200,7 @@ async function askAsJob(
     );
   }
   // A relay that does not know jobs is asked the old way instead.
-  if (accepted.status === 404 || accepted.status === 405) {
-    return askDirect(request);
-  }
+  if (accepted.status === 404 || accepted.status === 405) return null;
   if (!accepted.ok) {
     const text = await accepted.text().catch(() => '');
     throw new RelayError(
@@ -209,9 +215,23 @@ async function askAsJob(
   if (!handed?.id) {
     throw new RelayError('the relay accepted the job without naming it', 502);
   }
-  const poll = new URL(handed.poll ?? `/v1/jobs/${handed.id}`, url).toString();
+  return {
+    poll: new URL(handed.poll ?? `/v1/jobs/${handed.id}`, url).toString(),
+  };
+}
 
-  const deadline = Date.now() + JOB_DEADLINE_MS;
+/**
+ * Collects one job. A poll that fails on the way is not the job failing: the
+ * work is running and already paid for, so the next poll asks again until the
+ * deadline. `lost` means the relay no longer knows the job, which is the one
+ * case where dealing it again costs nothing: whatever was running died with
+ * the relay that forgot it.
+ */
+async function collect(
+  poll: string,
+  request: RelayRequest,
+  deadline: number,
+): Promise<RelayReply | 'lost'> {
   let lastPollError = '';
   while (Date.now() < deadline) {
     await sleep(POLL_MS);
@@ -225,9 +245,7 @@ async function askAsJob(
       lastPollError = error instanceof Error ? error.message : 'fetch failed';
       continue;
     }
-    if (asked.status === 404) {
-      throw new RelayError('the relay forgot the job before it landed', 404);
-    }
+    if (asked.status === 404) return 'lost';
     if (!asked.ok) {
       lastPollError = `poll ${asked.status}`;
       continue;
@@ -260,6 +278,29 @@ async function askAsJob(
     `the relay job did not land inside ${Math.round(JOB_DEADLINE_MS / 1000)}s${lastPollError ? ` (last poll: ${lastPollError})` : ''}`,
     504,
   );
+}
+
+/** Hand the call over, collect it, and deal it again if the relay lost it. */
+async function askAsJob(
+  url: string,
+  request: RelayRequest,
+): Promise<RelayReply> {
+  const deadline = Date.now() + JOB_DEADLINE_MS;
+  for (let submission = 1; ; submission += 1) {
+    const handed = await handOver(url, request);
+    if (!handed) return askDirect(request);
+    const answer = await collect(handed.poll, request, deadline);
+    if (answer !== 'lost') return answer;
+    if (
+      submission >= MAX_SUBMISSIONS ||
+      deadline - Date.now() < RESUBMIT_FLOOR_MS
+    ) {
+      throw new RelayError(
+        'the relay lost the job and there is no time to deal it again',
+        404,
+      );
+    }
+  }
 }
 
 export async function askRelay(request: RelayRequest): Promise<RelayReply> {
