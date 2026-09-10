@@ -124,6 +124,11 @@ export const definitions = [
           description:
             "What this tag is for, in the owner's words. Shown on hover.",
         },
+        instruction: {
+          type: 'string',
+          description:
+            "The words this write was asked in, ideally the owner's own. Kept in the journal beside the write; a production change without them is a change nobody ordered.",
+        },
       },
     },
   },
@@ -145,6 +150,11 @@ export const definitions = [
           items: { type: 'string' },
           description: 'Books to unlabel',
         },
+        instruction: {
+          type: 'string',
+          description:
+            "The words this write was asked in, ideally the owner's own. Kept in the journal beside the write; a production change without them is a change nobody ordered.",
+        },
       },
       required: ['tag'],
     },
@@ -161,6 +171,11 @@ export const definitions = [
           type: 'array',
           items: { type: 'string' },
           description: 'Books by title or id, first to last',
+        },
+        instruction: {
+          type: 'string',
+          description:
+            "The words this write was asked in, ideally the owner's own. Kept in the journal beside the write; a production change without them is a change nobody ordered.",
         },
       },
       required: ['tag', 'order'],
@@ -186,6 +201,11 @@ export const definitions = [
           type: ['string', 'null'],
           enum: [...DIFFICULTIES, null],
           description: 'very_hard, hard, moderate, easy, or null to clear',
+        },
+        instruction: {
+          type: 'string',
+          description:
+            "The words this write was asked in, ideally the owner's own. Kept in the journal beside the write; a production change without them is a change nobody ordered.",
         },
       },
       required: ['book'],

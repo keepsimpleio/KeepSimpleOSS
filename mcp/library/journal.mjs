@@ -31,6 +31,12 @@ const briefArgs = args =>
     : args;
 
 let ready = false;
+let caller = null;
+
+/** Who is on the other end of the pipe, as the client named itself. */
+export const setCaller = name => {
+  caller = name ?? null;
+};
 
 export const record = entry => {
   try {
@@ -39,7 +45,7 @@ export const record = entry => {
       ready = true;
     }
 
-    const line = { at: new Date().toISOString(), target, ...entry };
+    const line = { at: new Date().toISOString(), target, caller, ...entry };
 
     if (line.args) line.args = briefArgs(line.args);
 

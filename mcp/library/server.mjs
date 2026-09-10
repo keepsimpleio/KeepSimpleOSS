@@ -11,7 +11,7 @@
 import { createInterface } from 'node:readline';
 
 import { strapiUrl, target } from './config.mjs';
-import { record } from './journal.mjs';
+import { record, setCaller } from './journal.mjs';
 import { call, definitions } from './tools.mjs';
 
 const NAME = 'keepsimple-library';
@@ -32,7 +32,8 @@ const onMessage = async message => {
 
   switch (method) {
     case 'initialize':
-      record({ event: 'initialize', client: params?.clientInfo?.name ?? null });
+      setCaller(params?.clientInfo?.name ?? null);
+      record({ event: 'initialize' });
 
       return reply(id, {
         protocolVersion:

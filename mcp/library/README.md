@@ -68,8 +68,11 @@ Order, who sets it on the CMS the target names.
 | `KS_LIBRARY_STRAPI`         | A CMS address, overriding the target's own.                                                                            |
 | `KS_LIBRARY_JOURNAL`        | Where the trail is written. Defaults to `logs/library-mcp.jsonl` in this checkout.                                     |
 
-Every call leaves one line in the journal: the tool, its arguments, the
-outcome and how long it took, in UTC. Long text is cut to a hundred and twenty
+Every call leaves one line in the journal: who called (the client's own name
+from the handshake), the tool, its arguments, the outcome and how long it took,
+in UTC. Each write tool takes an optional `instruction`: the words the change
+was asked in, ideally the owner's own, kept beside the write. A production
+write is that word relayed, so pass it. Long text is cut to a hundred and twenty
 characters, so the trail says which book was reached without copying the
 library into a log. The key and the session never appear in it.
 
