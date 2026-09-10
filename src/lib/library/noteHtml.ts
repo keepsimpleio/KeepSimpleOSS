@@ -10,18 +10,10 @@
  * owner cannot put a script on their own public page.
  */
 
-const SIMPLE_TAGS = [
-  'strong',
-  'b',
-  'em',
-  'i',
-  's',
-  'p',
-  'br',
-  'ul',
-  'ol',
-  'li',
-];
+// The note dialect, as `EDITOR_TAGS` in richText.ts has it, less the anchor,
+// which is rebuilt below with its address checked. Kept equal to that list so
+// the dialog and this page never read one note two ways.
+const SIMPLE_TAGS = ['p', 'br', 'strong', 'em', 's', 'b', 'i', 'strike', 'del'];
 
 const escape = (value: string) =>
   value
