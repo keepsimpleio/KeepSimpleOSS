@@ -215,6 +215,8 @@ A tag is a label on books and a filter over the library. Clicking one in the
 right panel gathers every book it labels into a single row, in the tag's own
 order, and every shelf steps aside while it stands: the AI shelf and Favorites
 with them. One tag at a time; clicking the active tag clears the filter.
+So does Clear, a word in brown ink beside the row's one pill on the toolbar
+(Wolf, 2026-09-10).
 
 - Tags are controls in the right panel only. On cards, in the hover dossier and
   in the object overview they stay labels.
@@ -569,14 +571,14 @@ library. It is a coverage score computed from the library on screen by
 `scoreLibraryAccuracy`, no request made, books only. Weights agreed with
 Wolf on 2026-09-10, 100 points:
 
-| # | Component | Points | Measure |
-|---|---|---|---|
-| 1 | Notes and takeaways | 25 | share of books with a note of 40 words or more |
-| 2 | Ratings | 20 | 15 for the share rated, 5 once three books are rated 1 or 2 |
-| 3 | Rated volume | 20 | log curve on the count of rated books, full at 30 |
-| 4 | Tags | 15 | 12 for the share tagged, 3 for the share of tags used on two books or more |
-| 5 | Difficulty | 10 | share of books with a difficulty set |
-| 6 | Themed shelves | 10 | share of book shelves whose name carries a subject |
+| #   | Component           | Points | Measure                                                                    |
+| --- | ------------------- | ------ | -------------------------------------------------------------------------- |
+| 1   | Notes and takeaways | 25     | share of books with a note of 40 words or more                             |
+| 2   | Ratings             | 20     | 15 for the share rated, 5 once three books are rated 1 or 2                |
+| 3   | Rated volume        | 20     | log curve on the count of rated books, full at 30                          |
+| 4   | Tags                | 15     | 12 for the share tagged, 3 for the share of tags used on two books or more |
+| 5   | Difficulty          | 10     | share of books with a difficulty set                                       |
+| 6   | Themed shelves      | 10     | share of book shelves whose name carries a subject                         |
 
 Clicking the status opens the ledger: the total, one row per component with
 earned over maximum, a meter, the count behind it and the cheapest single

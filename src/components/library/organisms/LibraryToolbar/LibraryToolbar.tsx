@@ -6,6 +6,7 @@ import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
 
 import { ArrowIcon, ChevronUpIcon, PanelIcon } from '@icons/library/svg';
 
+import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
@@ -47,6 +48,9 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     currentShelves,
   } = useGlobalState();
   const switcher = useLibrarySwitcher();
+  // The active tag: while one gathers the library into a row, its pill is
+  // the only one here, and a Clear beside it hands the shelves back.
+  const { activeTagId, setActiveTagId } = useDashboard();
   const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(
     null,
   );
@@ -250,6 +254,16 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
               );
             })}
           </div>
+          {activeTagId != null && (
+            <button
+              type="button"
+              className={styles.clearTag}
+              onClick={() => setActiveTagId(null)}
+              aria-label="Clear the tag filter"
+            >
+              Clear
+            </button>
+          )}
         </div>
         {jumpOverflowing && (
           <Button

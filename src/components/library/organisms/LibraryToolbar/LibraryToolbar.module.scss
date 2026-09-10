@@ -180,6 +180,42 @@
   gap: 12px;
 }
 
+// Clear, beside the one pill a tag filter leaves: a word in the brown ink,
+// not a box, so the pill stays the only control that looks like a shelf.
+// Sized by the pill's line so the row keeps its height; a dotted underline
+// solidifies under the pointer, as links in the Library do.
+.clearTag {
+  flex-shrink: 0;
+  padding: 6px 4px;
+  border: none;
+  background: transparent;
+  color: var(--brown);
+  font-family: var(--font-source-serif);
+  font-size: 16px;
+  line-height: 22px;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--brown-100);
+    text-decoration-style: solid;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 .pillSlot {
   display: inline-flex;
   flex: 0 0 auto;
