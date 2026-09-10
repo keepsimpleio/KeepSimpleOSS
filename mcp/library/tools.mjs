@@ -22,17 +22,38 @@ import {
   writeObject,
 } from './library.mjs';
 
-// The Library's own limits, kept where the CMS keeps them. Breaking them here
-// costs a round trip and gives a sentence the caller can act on.
-const MAX_TAG_NAME_LENGTH = 20;
-const MAX_TAG_DESCRIPTION_LENGTH = 180;
-const MAX_TAGS_PER_OBJECT = 10;
-const MAX_NOTE_LENGTH = 5000;
 const DIFFICULTIES = ['very_hard', 'hard', 'moderate', 'easy'];
 
 const NOTE_PREVIEW = 400;
 
 const repoRoot = path.resolve(new URL('../..', import.meta.url).pathname);
+
+/**
+ * The Library's own limits, read from the constant the forms read so the two
+ * cannot drift; the figures beside each name are what they were on
+ * 2026-09-10, used only outside a checkout. Breaking a limit here costs a
+ * round trip and gives a sentence the caller can act on. The note cap is the
+ * CMS schema's own (`object.description`, 5000) and has no frontend constant.
+ */
+const limit = (name, fallback) => {
+  try {
+    const source = readFileSync(
+      path.join(repoRoot, 'src/constants/library/common.ts'),
+      'utf8',
+    );
+    const match = new RegExp(`export const ${name} = (\\d+);`).exec(source);
+
+    return match ? Number(match[1]) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const MAX_TAG_NAME_LENGTH = limit('MAX_TAG_NAME_LENGTH', 20);
+const MAX_TAG_DESCRIPTION_LENGTH = limit('MAX_TAG_DESCRIPTION_LENGTH', 180);
+const MAX_TAGS_PER_OBJECT = limit('MAX_TAGS_PER_OBJECT', 10);
+const MAX_TAGS_PER_LIBRARY = limit('MAX_TAGS_PER_LIBRARY', 13);
+const MAX_NOTE_LENGTH = 5000;
 
 /**
  * The palette the tag form offers, read from the constant the form itself
@@ -295,6 +316,12 @@ const handlers = {
 
     if (!args.name) throw new LibraryError('A new tag needs a name');
 
+    if (tags.length >= MAX_TAGS_PER_LIBRARY) {
+      throw new LibraryError(
+        `A library keeps at most ${MAX_TAGS_PER_LIBRARY} tags`,
+      );
+    }
+
     const taken = new Set(tags.map(tag => tag.color?.toUpperCase()));
     const color =
       args.color ||
@@ -334,37 +361,62 @@ const handlers = {
       throw new LibraryError('Name books to add or remove');
     }
 
+    // Each book is its own write, and one that fails must not hide the ones
+    // that landed before it: every book is answered for by name, and the call
+    // as a whole fails only when nothing at all was changed.
     const changed = [];
+    const failed = [];
 
     for (const book of add) {
       if (book.tags.some(carried => carried.id === tag.id)) continue;
 
       if (book.tags.length >= MAX_TAGS_PER_OBJECT) {
-        throw new LibraryError(
-          `"${book.title}" already carries ${MAX_TAGS_PER_OBJECT} tags`,
-        );
+        failed.push({
+          book: book.title,
+          reason: `already carries ${MAX_TAGS_PER_OBJECT} tags`,
+        });
+        continue;
       }
 
-      await writeObject(book.id, {
-        tags: [...book.tags.map(carried => carried.id), tag.id],
-      });
-      changed.push({ book: book.title, tagged: true });
+      try {
+        await writeObject(book.id, {
+          tags: [...book.tags.map(carried => carried.id), tag.id],
+        });
+        changed.push({ book: book.title, tagged: true });
+      } catch (error) {
+        failed.push({ book: book.title, reason: error.message });
+      }
     }
 
     for (const book of remove) {
       if (!book.tags.some(carried => carried.id === tag.id)) continue;
 
-      await writeObject(book.id, {
-        tags: book.tags
-          .filter(carried => carried.id !== tag.id)
-          .map(carried => carried.id),
-      });
-      changed.push({ book: book.title, tagged: false });
+      try {
+        await writeObject(book.id, {
+          tags: book.tags
+            .filter(carried => carried.id !== tag.id)
+            .map(carried => carried.id),
+        });
+        changed.push({ book: book.title, tagged: false });
+      } catch (error) {
+        failed.push({ book: book.title, reason: error.message });
+      }
+    }
+
+    if (changed.length === 0 && failed.length > 0) {
+      throw new LibraryError(
+        failed.map(entry => `"${entry.book}": ${entry.reason}`).join('; '),
+      );
     }
 
     const after = resolveTag(tag.id, await readTags());
 
-    return { tag: after.name, changed, carries: after.objects.length };
+    return {
+      tag: after.name,
+      changed,
+      ...(failed.length ? { failed } : {}),
+      carries: after.objects.length,
+    };
   },
 
   async library_tag_order(args) {
@@ -458,11 +510,25 @@ const handlers = {
     const after = saved?.data?.attributes ?? {};
 
     // The response is the only proof the write landed. A 200 that carries the
-    // old value is a failed save, not a saved one.
+    // old value is a failed save, not a saved one. The note is compared with
+    // its whitespace folded, since the CMS may tidy markup on the way in, and
+    // no value is put in the message: the message reaches the journal.
+    const fold = value =>
+      String(value ?? '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
     for (const [field, value] of Object.entries(data)) {
-      if (after[field] !== undefined && after[field] !== value) {
+      if (after[field] === undefined) continue;
+
+      const same =
+        field === 'description'
+          ? fold(after[field]) === fold(value)
+          : after[field] === value;
+
+      if (!same) {
         throw new LibraryError(
-          `The server kept ${field} as ${JSON.stringify(after[field])}`,
+          `The server did not keep the ${field === 'description' ? 'note' : field} as sent`,
         );
       }
     }

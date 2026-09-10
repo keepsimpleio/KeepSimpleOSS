@@ -48,6 +48,7 @@ export const record = entry => {
     const line = { at: new Date().toISOString(), target, caller, ...entry };
 
     if (line.args) line.args = briefArgs(line.args);
+    if (line.detail) line.detail = brief(line.detail);
 
     appendFileSync(journalPath, `${JSON.stringify(line)}\n`);
   } catch (error) {
