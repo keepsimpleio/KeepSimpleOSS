@@ -7,12 +7,12 @@
    tile, and a renamed key silently falls back to the Terminal's own
    text.
 
-   TILE: a black tile on the outer ring of the map. Twelve of them:
+   TILE: a black tile on the outer ring of the map. Fifteen of them:
      Composite Keys, Backlog, Message, Smart Queuing, Engine switch,
      Live Steering,
      Global CLAUDE.md, Local CLAUDE.md, Session start, Doors,
      AI Collaboration, Human Collaboration,
-     Conversation history, Saved decisions.
+     Conversation history, Saved decisions, Discipline.
    card: every other card, opened from a stage, a ring or the Topics list.
 
    The NAME printed on a tile is not here, it comes from the guide
@@ -26,27 +26,33 @@ const features: Record<string, string[]> = {
   /* ---------- the six stages of one task ---------- */
   // card: Project (stage 1)
   'stage-project-home': [
-    'Every task starts with me choosing a project. A project is a folder with its own rules, its own memory and its own agent, so whatever I ask next is answered by someone who already knows that codebase and its history.',
+    'Every task starts with me picking a project. A project is a folder with its own rules, its own memory and one agent that owns it, so whatever I ask next is answered by someone who already knows this codebase and what went wrong in it before.',
+    'The project also carries what I decided before the task: the Keys I activated, which fix how it is built, and the backlog, where my ideas for it wait. I do not explain any of that in the task. It is already there.',
   ],
   // card: I give a task (stage 2)
   'stage-task': [
-    'I type the task in my browser the way I would brief a colleague: what has to change and what I expect at the end. The browser passes it to Terminal on my server.',
+    'I brief the agent the way I would brief a colleague: what has to change and what I expect at the end. Typed, spoken or sent from Telegram, with a screenshot when showing beats describing.',
+    'Before it goes I pick who gets it, which model thinks and how hard, and whether I want a full answer or a few lines. One task or fifteen in a queue, the server takes them the same way and runs them with my browser closed.',
   ],
   // card: Terminal dispatches it (stage 3)
   'stage-terminal': [
-    'Terminal is the dispatcher I built. It takes my message and routes it to the agent session of the project I picked, on the engine I picked. Nothing leaves my server except the call to the model.',
+    'Terminal is the dispatcher I built. It takes my message and puts it into the session of the project I picked, on the engine I picked, on the subscription I put that project on. Nothing leaves my server except the call to the model.',
+    'If a track runs dry the work moves to another one with its context intact. And a running agent is not a closed door: I can write to it mid-turn and it corrects where it stands.',
   ],
   // card: Agent prepares (stage 4)
   'stage-prepare': [
-    'Before the agent touches anything it loads the rules. A fresh session reads the global rules, the project rules and the memory index. A session I return to resumes with what it already remembers.',
+    'Before the agent touches anything it loads the law. The global rules say how it talks to me, where its authority ends and what counts as done. The project rules say what this codebase demands and what broke here before. Then it reads the decisions we already made and the notice about its own last day.',
+    'So a fresh session starts already knowing what we settled, and it does not ask me twice.',
   ],
   // card: Agent works (stage 5)
   'stage-agent': [
-    'The agent reads, edits, runs commands and asks colleagues, all on my server. Only the thinking happens at the model provider. I do not watch every step; the rules and the checks do that for me.',
+    'The agent reads, edits, runs commands and asks colleagues, all on my server. Only the thinking happens at the provider. I do not watch every step. Doors do: small programs at fixed moments of the turn that send the work back when it is off, with no flag to switch them off.',
+    'What lies outside its project it does not touch. It asks the owner by name, agent or person, and the answer comes back into its own session.',
   ],
   // card: I get the result (stage 6)
   'stage-result': [
-    'The answer streams back to my browser. The code and the deployments stay in the project. I judge the result, and I am the only one who can call a task done.',
+    'The answer streams back to my browser; the code and the deployments stay in the project. I read the report against the evidence, and I am the only one who can call a task done.',
+    'A task does not end when I read it. The conversation is kept and searchable, the decisions are written where the next session finds them, and what I sent back is read overnight and becomes a rule before the next morning. That is the arrow from Result back to Project.',
   ],
 
   /* ---------- giving a task ---------- */
@@ -266,23 +272,25 @@ const features: Record<string, string[]> = {
   ],
   // TILE: Conversation history
   history: [
-    'Every session keeps its whole conversation, so I can come back to it. An archive keeps sessions past the CLI’s own retention, and a full-text index searches all of them.',
-    'When an agent tells me "we never did that", I can check.',
+    'Every session keeps its whole conversation, and an archive holds it past the CLI’s own retention. One full-text search runs across all of them, so when an agent tells me "we never did that", I check.',
+    'The reason I keep them is what happens once a month. The whole record is read back: every task I gave, every correction I had to make twice, every place the work stalled or came back wrong. What returns is a list of proposals, each carrying the evidence it came from, and each naming the exact thing to change. A line in one project’s own rules. A line in the global rules every agent reads. The way the queue orders my work. A composite key that carries the same flaw into every project built from it.',
+    'I accept or refuse each one myself. What I accept is in the rules by the next session, so a month of me repeating myself becomes something the system does on its own.',
   ],
   // TILE: Saved decisions
   decisions: [
-    'A decision that lives only in the chat is lost. The agent has to write it into project memory or MemPalace, and I check that it did.',
-    'A final reply saying "noted" is not a save.',
+    'A decision that lives only in the chat is lost. The agent writes it into project memory or MemPalace, and I check that it landed.',
+    'A reply saying "noted" is not a save.',
+  ],
+  // TILE: Discipline
+  discipline: [
+    'A result I send back does not stop at me. Every night a scan with no model in it reads that agent’s last day: where it broke the charter, what I ruled, and every edit I made to its work by hand.',
+    'It comes back as a notice the agent reads before its first task the next morning, so a rule it broke yesterday is the first thing it sees today. The notice clears itself after a clean day.',
+    'Once a month the same evidence goes against the global rules. A mistake that keeps coming back stops being a notice and becomes a rule everyone reads, or a door nobody can walk around.',
   ],
   // card: Automatic memory capture
   'auto-capture': [
     'On the Claude lane, hooks save memory when a session stops and before its context is compacted. Codex saves through its memory tools.',
     'PREP is the deliberate save on top of that: it saves and reads back.',
-  ],
-  // card: Discipline feedback
-  discipline: [
-    'Audits of past sessions write a notice the agent reads at its next start: its discipline score, lessons from colleagues, my rulings and my hand edits to its work.',
-    'An agent that broke a rule yesterday learns it before its first task today.',
   ],
   // card: Turn measurements
   phases: [
@@ -298,25 +306,30 @@ const features: Record<string, string[]> = {
   ],
   // card: The Order
   order: [
-    'The Order is my server agent. It owns the shared infrastructure and the access boundaries, and it executes restarts and rebuilds itself instead of bouncing them back to me.',
+    'The Order is my primary orchestrator. It holds every key the doors answer to, owns the shared infrastructure and the access boundaries, and knows close to everything that happens on the server. Restarts and rebuilds it executes itself instead of bouncing them back to me.',
+    'It is also the only agent that reaches me on its own. When it needs something, it writes to me on Telegram, and when it cannot wait, it calls my phone and wakes me up.',
     'Project agents ask it only for what is central. Everything inside their own project they run themselves.',
   ],
-  // card: Project agents
+  // card: Colleagues (resource ring)
   agents: [
-    'Terminal runs one session per project. The directory says who owns what; an agent that needs a colleague asks the owner instead of doing the owner’s work.',
-    'One owner per project is the rule that keeps dozens of agents from stepping on each other.',
+    'Two kinds of colleague, one roster. Agents, one per project, each the only one that changes its project. People I granted access, listed the same way, addressed by handle, reached on Telegram when a line is for them.',
+    'Anything outside an agent’s own project is a question to a named owner. Each carries the authority I wrote down for it and no more; past that line it asks me and waits.',
   ],
-  // card: Memory
+  // card: Memory (resource ring)
   memory: [
-    'Project notes and MemPalace carry earlier decisions into later work. They are separate from the live conversation and its session history, so a decision outlives the session that made it.',
+    'Memory here is layers, and each layer answers a different question. The conversation itself, every session archived and searchable, answers whether we ever did this. Project memory, one note per lesson with a short index the agent loads at start, answers what this codebase demands. MemPalace holds the decisions, filed with PREP and handed back at the next session start. Every mechanism keeps a journal, one line per run, and every finished turn writes its timings.',
+    'Every layer gets read back. A weekly scan goes through each project’s notes, keeps the lessons that would hurt another project, and sends me a numbered digest on Telegram; I answer by index, and a promoted line goes into the global rules by hand. A monthly audit of the transcripts tells me where agents broke the charter. When I asked whether PREP was worth its cost, the answer came from the same data: 41% of sessions end with a save, and most of the palace turned out to be auto-mined noise drowning the drawers I filed by hand, so search now skips it.',
   ],
-  // card: Tools & workspace (system ring)
+  // card: Tools (resource ring)
   'system-tools': [
-    'Tools read and change project work within what the project was authorized to do. What a tool can do and what it may do are two different questions, and the rules answer the second.',
+    'What a tool can do and what the agent may do are two different questions. The rules answer the second.',
+    'Tools are how an agent acts, and most of mine are my own. CodeGraph indexes every symbol of a project, so the agent reads the one function it needs instead of the file. MemPalace holds the decisions. A headless browser reads the pages a plain request cannot. Each project has a lever for its own containers, deploy, restart, logs, a shell, within what I granted it.',
+    'The network is a tool too. Tailscale joins my servers into one mesh, so an agent on one of them reaches another by hostname, wherever it stands. My own VPN and my own pool of proxy servers are there for the work that needs a different exit.',
   ],
-  // card: Model providers
+  // card: Models (resource ring)
   models: [
-    'The thinking happens at the provider. Claude and Codex send the conversation to their model providers; the tools run on my server and reach only the hosts a project is allowed to touch.',
+    'The thinking happens at the provider. Today that is Claude and OpenAI’s Codex, several subscriptions of each, and the tools stay on my server whichever one is thinking.',
+    'The switch between them is my own code, so a third engine is a slot on it and not a rewrite. The groundwork for local models is in place: the box is chosen, the model is picked and the plan is written. It is not running yet, and the atlas says so.',
   ],
   // card: Terminal
   terminal: [
@@ -349,6 +362,7 @@ const features: Record<string, string[]> = {
   // card: Project operators
   deploy: [
     'Project operators deploy, restart and read logs within my recorded grants, remote hosts included. Shared infrastructure stays with The Order. Scheduled work runs on host cron or inside services.',
+    'A grant covers execution and never the decision. Deleting data, opening a port or touching production needs my go, and where the lever supports it my words are quoted in the command and kept in its journal.',
   ],
   // card: Run records
   records: [

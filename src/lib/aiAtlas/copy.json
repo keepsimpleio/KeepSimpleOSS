@@ -1,11 +1,11 @@
 {
-  "seoTitle": "Terminal Atlas",
+  "seoTitle": "Wolf’s Terminal: an atlas of my orchestration harness",
   "seoDescription": "How I run a team of AI agents: one task, from my message to the result, every feature explained by me.",
-  "seoKeywords": "Terminal Atlas",
-  "ogImageAlt": "Terminal Atlas",
+  "seoKeywords": "Wolf’s Terminal, orchestration harness, AI agents",
+  "ogImageAlt": "Wolf’s Terminal",
   "loading": "Loading…",
   "failedToLoad": "Failed to load data : ",
-  "welcomeBanner": "WOLF’S AI ORCHESTRATION HARNESS",
+  "welcomeBanner": "AN ATLAS OF MY ORCHESTRATION HARNESS",
   "day": "DAY",
   "daySinceTail": "since we started building this",
   "apexFounderFallback": "founder",
@@ -56,8 +56,8 @@
   "doctrineCjk": "守則",
   "doctrineImageAlt": "Terminal authority and evidence",
   "securityIntroTitle": "AUTHORITY & EVIDENCE",
-  "securityIntroCjk": "此守り",
-  "securityIntroDesc": "These are the domains of access and accountability. The rings group topics. Nobody should read them as a security certificate.",
+  "securityIntroCjk": "守り",
+  "securityIntroDesc": "These are the domains of access and accountability on my server. The rings group them. It is not a security certificate.",
   "securityIntroRows": [
     {
       "k": "permission",
@@ -69,7 +69,7 @@
     },
     {
       "k": "evidence",
-      "v": "Source references and run records"
+      "v": "Run records and journals"
     }
   ],
   "securityLayers": [],
@@ -109,9 +109,10 @@
   "patternsCjk": "型",
   "patternsSubtitle": "The mechanisms that keep context and record what happened.",
   "securityPatterns": [],
-  "footerEnd": "END · TERMINAL ATLAS",
+  "footerEnd": "END · WOLF’S TERMINAL",
   "hankoSelfTitle": "built here, run here",
   "hankoCoTitle": "one owner per project",
   "modalCloseLabel": "Close",
-  "modalHint": "Esc closes. A topic inside opens in place."
+  "modalHint": "Esc closes. A topic inside opens in place.",
+  "readMoreHint": "click to read more"
 }

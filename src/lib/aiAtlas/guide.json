@@ -421,10 +421,10 @@
     },
     {
       "id": "discipline",
-      "title": "Discipline feedback",
-      "text": "Audits of past sessions write notices the agent reads at its next start.",
+      "title": "Discipline",
+      "text": "A nightly audit of an agent's own last day becomes a notice it reads before its next task.",
       "detail": [
-        "Audits of past sessions write a notice the agent reads at its next start: its discipline score, lessons from colleagues, my rulings and my hand edits to its work."
+        "A nightly audit writes a notice the agent reads at its next start: where it broke the charter, my rulings and my hand edits to its work. Repeated mistakes become rules and doors."
       ]
     },
     {
@@ -441,142 +441,6 @@
       "text": "Agents address people on the roster the same way they address each other; a line to a person leaves for Telegram, and a granted person can hand a task back the same way.",
       "children": ["notify"]
     }
-  ],
-  "links": [
-    [
-      "engine-switch",
-      "project",
-      "The engine a tile runs is what the switch changes."
-    ],
-    [
-      "engine-switch",
-      "tracks",
-      "Each lane keeps its own track; a switch flips which one bills."
-    ],
-    [
-      "tracks",
-      "recipient",
-      "Model picks are remembered per lane, tracks are assigned per lane."
-    ],
-    [
-      "recipient",
-      "project",
-      "The chosen model belongs to the engine that runs it."
-    ],
-    [
-      "steering",
-      "timing-availability",
-      "Codex can steer a running turn; Claude receives the message directly. Queued tasks wait for availability."
-    ],
-    [
-      "steering",
-      "background-work",
-      "A parked slot accepts a fresh message instead of steering."
-    ],
-    [
-      "session-end",
-      "session-resume",
-      "One ends the retained context, the other returns to it."
-    ],
-    [
-      "session-end",
-      "timing-server",
-      "The server-owned queue survives a clear."
-    ],
-    [
-      "session-end",
-      "background-work",
-      "A queued kill waits for a real idle edge, never fires into parked work."
-    ],
-    [
-      "session-resume",
-      "history",
-      "Resume reopens the provider session record."
-    ],
-    ["onboarding", "new-agent", "Opening a project starts onboarding."],
-    ["onboarding", "local", "Onboarding reads the project's own rules."],
-    [
-      "onboarding",
-      "memorymd",
-      "Onboarding loads the project memory index: Claude's CLI by itself, Codex on instruction."
-    ],
-    [
-      "onboarding",
-      "backlog",
-      "The session introduction lists open backlog items."
-    ],
-    ["global", "local", "Local rules extend the shared rules."],
-    ["new-project", "local", "A new project receives its starting rules."],
-    ["new-project", "keys", "Keys can be selected at creation."],
-    ["keys", "work-checks", "Doors are a key; rule checks are its runtime."],
-    ["action-prep", "palace", "PREP files decisions into MemPalace."],
-    ["action-prep", "decisions", "PREP is the deliberate save."],
-    [
-      "auto-capture",
-      "palace",
-      "Configured Claude hooks capture memory in MemPalace."
-    ],
-    [
-      "auto-capture",
-      "decisions",
-      "Claude hook capture complements an explicit, verified decision save."
-    ],
-    [
-      "decisions",
-      "memorymd",
-      "Project memory is the other place a decision can be saved."
-    ],
-    [
-      "backlog",
-      "review-result",
-      "Backlog closure needs Wolf's confirmation after review."
-    ],
-    [
-      "action-push",
-      "delivered-work",
-      "PUSH persists the delivered source changes."
-    ],
-    [
-      "ask-once",
-      "directory",
-      "The recipient handle resolves through the directory."
-    ],
-    [
-      "ask-once",
-      "notify",
-      "A forwarded line can leave for a human on Telegram."
-    ],
-    [
-      "monitoring",
-      "notify",
-      "Watchers report failures to Telegram, naming the owner."
-    ],
-    ["skills", "tools", "A skill names the tools to use."],
-    [
-      "tools",
-      "delivered-work",
-      "Work performed by tools is what stays in the project."
-    ],
-    [
-      "codemap",
-      "tools",
-      "Configured Claude doors redirect reads and searches into CodeGraph. Codex can call its tools directly."
-    ],
-    [
-      "discipline",
-      "memorymd",
-      "Audit notices are written into the memory index the agent reads at start."
-    ],
-    [
-      "human-collab",
-      "directory",
-      "A person on the roster is addressed by handle, like any owner."
-    ],
-    [
-      "human-collab",
-      "notify",
-      "The line that leaves for a person travels on Telegram."
-    ]
   ],
   "system": {
     "nodes": [
@@ -600,7 +464,7 @@
       },
       {
         "id": "models",
-        "title": "Model providers",
+        "title": "Models",
         "role": "External reasoning",
         "detail": [
           "Claude and Codex send the conversation to their model providers. The thinking happens there; the tools run here, or reach the hosts the project is allowed to touch."
@@ -663,8 +527,8 @@
       },
       {
         "id": "agents",
-        "title": "Project agents",
-        "role": "Work ownership",
+        "title": "Colleagues",
+        "role": "Who to ask",
         "detail": [
           "Terminal runs one session per project. The directory says who owns what; SEND TO asks the owner instead of doing the owner's work."
         ],
@@ -690,7 +554,7 @@
       },
       {
         "id": "tools",
-        "title": "Tools & workspace",
+        "title": "Tools",
         "role": "Execution",
         "detail": [
           "Tools read and change project work within what the project was authorized to do. What a tool can do and what it may do are two different questions."
@@ -750,129 +614,6 @@
           "Restic copies selected state off-site; the GitHub mirror copies eligible repositories. Both have exclusions. Recovery is proven by a successful copy and a tested restore."
         ],
         "basis": "The mirror configuration and its run log; the Restic snapshot list."
-      }
-    ],
-    "edges": [
-      {
-        "from": "wolf",
-        "to": "access",
-        "label": "Task entry",
-        "status": "documented"
-      },
-      {
-        "from": "access",
-        "to": "terminal",
-        "label": "Authenticated access",
-        "status": "documented"
-      },
-      {
-        "from": "models",
-        "to": "terminal",
-        "label": "Model exchange",
-        "status": "documented"
-      },
-      {
-        "from": "services",
-        "to": "tools",
-        "label": "Tool calls",
-        "status": "documented"
-      },
-      {
-        "from": "terminal",
-        "to": "agents",
-        "label": "Dispatch & collaboration",
-        "status": "documented"
-      },
-      {
-        "from": "order",
-        "to": "agents",
-        "label": "Records and enforces my delegation",
-        "status": "documented"
-      },
-      {
-        "from": "apex",
-        "to": "projects",
-        "label": "Container operations",
-        "status": "documented"
-      },
-      {
-        "from": "terminal",
-        "to": "memory",
-        "label": "Load & save context",
-        "status": "documented"
-      },
-      {
-        "from": "terminal",
-        "to": "tools",
-        "label": "Run tools",
-        "status": "documented"
-      },
-      {
-        "from": "tools",
-        "to": "deploy",
-        "label": "Release work",
-        "status": "documented"
-      },
-      {
-        "from": "deploy",
-        "to": "projects",
-        "label": "Deploy",
-        "status": "documented"
-      },
-      {
-        "from": "deploy",
-        "to": "remote",
-        "label": "Other targets",
-        "status": "documented"
-      },
-      {
-        "from": "tools",
-        "to": "records",
-        "label": "Record runs",
-        "status": "documented"
-      },
-      {
-        "from": "watchers",
-        "to": "projects",
-        "label": "Probes each project",
-        "status": "documented"
-      },
-      {
-        "from": "watchers",
-        "to": "telegram",
-        "label": "Report failures",
-        "overview": "Tasks and notifications",
-        "status": "documented"
-      },
-      {
-        "from": "deploy",
-        "to": "recovery",
-        "label": "Selected state for backup",
-        "status": "documented"
-      },
-      {
-        "from": "recovery",
-        "to": "backups",
-        "label": "Encrypted backup",
-        "status": "documented"
-      },
-      {
-        "from": "order",
-        "to": "secrets",
-        "status": "documented",
-        "label": "Holds every shared secret"
-      },
-      {
-        "from": "secrets",
-        "to": "projects",
-        "status": "documented",
-        "label": "Model access for project containers"
-      },
-      {
-        "from": "telegram",
-        "to": "terminal",
-        "status": "documented",
-        "label": "Voice and project tasks"
       }
     ]
   }

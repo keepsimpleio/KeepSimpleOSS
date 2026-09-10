@@ -1,8 +1,8 @@
 /* Strip the Terminal's guide to the fields the public Atlas page renders.
    The Terminal's export carries source references (file, line, sha256),
-   its own placement notes and a tool inventory that describe the private
-   server. None of it is drawn on keepsimple.io/ai-atlas, so none of it
-   ships. Run after every refresh of src/lib/aiAtlas/guide.json:
+   its own placement notes, a tool inventory and cross-link sentences in
+   its own voice. None of it is drawn on keepsimple.io/ai-atlas, so none
+   of it ships. Run after every refresh of src/lib/aiAtlas/guide.json:
 
      node scripts/ai-atlas/strip-guide.mjs
 
@@ -25,12 +25,10 @@ const stripped = {
   entries: guide.entries.map(e =>
     pick(e, ['id', 'title', 'text', 'detail', 'children']),
   ),
-  links: guide.links,
   system: {
     nodes: guide.system.nodes.map(n =>
       pick(n, ['id', 'title', 'role', 'detail', 'basis']),
     ),
-    edges: guide.system.edges,
   },
 };
 

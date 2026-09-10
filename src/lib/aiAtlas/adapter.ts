@@ -24,29 +24,18 @@ export function adaptGuide(guide: any) {
       desc: describe(id, entry.detail || [entry.text]).join('\n\n'),
       rows: [
         ...(entry.children || []).map((child: string) => ({
-          k: 'topic',
+          k: 'inside',
           v: (entries.get(child) as any)?.title || child,
           ref: child,
         })),
       ],
     };
   }
-  for (const [a, b, why] of guide.links) {
-    if (dossiers[a] && dossiers[b])
-      dossiers[a].rows.push({ k: dossiers[b].title, v: why, ref: b });
-  }
+  /* The rows under a card are its own contents only. The Terminal's
+     cross-links and system edges carried its own explanations in another
+     voice; they are not drawn. */
   const systemRef = (id: string) =>
     dossiers['system-' + id] ? 'system-' + id : id;
-  for (const edge of guide.system.edges) {
-    const from = systemRef(edge.from),
-      to = systemRef(edge.to);
-    if (dossiers[from] && dossiers[to])
-      dossiers[from].rows.push({
-        k: dossiers[to].title,
-        v: edge.why || edge.label,
-        ref: to,
-      });
-  }
   const labels = ['Project', 'Task', 'Dispatch', 'Prepare', 'Work', 'Result'];
   const angles = [210, 270, 330, 30, 90, 150];
   const chosen = [
@@ -55,7 +44,7 @@ export function adaptGuide(guide: any) {
     ['engine-switch', 'steering'],
     ['global', 'local', 'session-resume'],
     ['work-checks', 'sendto', 'human-collab'],
-    ['history', 'decisions'],
+    ['history', 'decisions', 'discipline'],
   ];
   const topicToStage: any = {};
   const support = [
@@ -78,7 +67,7 @@ export function adaptGuide(guide: any) {
       title: step.title,
       desc: describe(id, [step.text]).join('\n\n'),
       rows: step.children.map((child: string) => ({
-        k: 'topic',
+        k: 'mechanism',
         v: (entries.get(child) as any)?.title || child,
         ref: child,
       })),
@@ -104,12 +93,39 @@ export function adaptGuide(guide: any) {
       })),
     };
   });
+  /* What lights up together on hover, beyond a stage and its own tiles.
+     Wolf directs The Order; The Order stands behind every resource; a
+     resource is used by the tiles named here. A stage's support lines are
+     declared on the stage itself. */
+  const resourceUses: Record<string, string[]> = {
+    [systemRef('agents')]: ['sendto', 'human-collab'],
+    [systemRef('memory')]: [
+      'session-resume',
+      'history',
+      'decisions',
+      'discipline',
+    ],
+    [systemRef('tools')]: ['work-checks', 'keys'],
+    [systemRef('models')]: ['engine-switch', 'queue'],
+  };
+  const relations: string[][] = [
+    ['wolf', 'order'],
+    ...['agents', 'memory', 'tools', 'models'].map(id => [
+      'order',
+      systemRef(id),
+    ]),
+    ...Object.entries(resourceUses).flatMap(([res, tiles]) =>
+      tiles.map(tile => [res, tile]),
+    ),
+  ];
   const node = (id: string) => guide.system.nodes.find((n: any) => n.id === id);
-  const nodeDesc = (id: string) =>
-    describe(
-      dossiers['system-' + id] ? 'system-' + id : id,
-      node(id).detail,
-    ).join(' ');
+  /* The Security view shows a node in one paragraph; the resource cards
+     on the map carry the full text. */
+  const nodeParagraph = (id: string, index: number) => {
+    const paragraphs = describe(systemRef(id), node(id).detail);
+    return paragraphs[Math.min(index, paragraphs.length - 1)];
+  };
+  const nodeDesc = (id: string) => nodeParagraph(id, 0);
   const layerIds = [
     'access',
     'secrets',
@@ -128,15 +144,21 @@ export function adaptGuide(guide: any) {
       what: nodeDesc(id),
       why: node(id).basis,
     })),
+    /* Ownership across the system: the paragraph about limits, where a
+       card has one, so a layer and an agent never repeat each other. */
     securityAgents: ['agents', 'deploy', 'models', 'telegram'].map(id => ({
       name: node(id).title,
       badge: node(id).role,
-      desc: nodeDesc(id),
+      desc: nodeParagraph(id, id === 'agents' || id === 'deploy' ? 1 : 0),
     })),
-    securityPatterns: ['memory', 'records', 'watchers', 'recovery'].map(id => ({
-      title: node(id).title,
-      desc: nodeDesc(id),
-    })),
+    /* Continuity and evidence, from the cards themselves; none of these
+       repeats a layer above. */
+    securityPatterns: ['memory', 'history', 'discipline', 'watchers'].map(
+      id => ({
+        title: dossiers[systemRef(id)].title,
+        desc: dossiers[systemRef(id)].desc.split('\n\n')[0],
+      }),
+    ),
   };
   dossiers['ring:order'] = {
     title: 'Ownership',
@@ -144,10 +166,10 @@ export function adaptGuide(guide: any) {
     rows: [],
   };
   dossiers['ring:devEnv'] = {
-    title: 'Working context',
-    desc: 'What the agent works with: colleagues, memory, tools, models.',
+    title: 'Resources',
+    desc: 'What every stage of a task draws on: colleagues, memory, tools, models.',
     rows: ['agents', 'memory', 'tools', 'models'].map(id => ({
-      k: 'topic',
+      k: 'resource',
       v: node(id).title,
       ref: dossiers['system-' + id] ? 'system-' + id : id,
     })),
@@ -161,18 +183,19 @@ export function adaptGuide(guide: any) {
     title: 'Mechanisms',
     desc: 'Every topic opens its own card.',
     rows: guide.entries.map((e: any) => ({
-      k: 'topic',
+      k: 'mechanism',
       v: e.title,
       ref: e.id,
     })),
   };
   return {
     topicToStage,
+    relations,
     copy: t,
-    brand: { title: 'Terminal Atlas', kanji: '天' },
+    brand: { title: 'Wolf’s Terminal', kanji: '天' },
     ringLabels: {
       order: { label: 'I · Ownership', theta: 270, offset: 0.09 },
-      devEnv: { label: 'II · Context', theta: 270 },
+      devEnv: { label: 'II · Resources', theta: 270 },
       projects: { label: 'III · Task lifecycle', theta: 270, offset: 0.08 },
       territories: { label: 'IV · Mechanisms', theta: 270 },
     },
@@ -190,7 +213,7 @@ export function adaptGuide(guide: any) {
     devEnv: {
       r: 0.39,
       members: [
-        ['agents', 'Project agents'],
+        ['agents', 'Colleagues'],
         ['memory', 'Memory'],
         ['tools', 'Tools'],
         ['models', 'Models'],
@@ -198,6 +221,9 @@ export function adaptGuide(guide: any) {
         id: dossiers['system-' + id] ? 'system-' + id : id,
         label,
         diamond: id === 'agents' ? 'blue' : 'red',
+        // Colleagues are the one node covering both kinds the legend
+        // names: the people I granted access and the project agents.
+        diamonds: id === 'agents' ? ['gold', 'blue'] : undefined,
         theta: [0, 90, 180, 270][i],
       })),
     },

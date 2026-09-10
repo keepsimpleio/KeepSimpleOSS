@@ -60,6 +60,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   --blue: #4a6f99;
   --gold: #c08a2c;
   --ink-fill: #181818;
+  --panel-bg: color-mix(in srgb, #fffaeb 25%, #ece4cf);
 
   --mono:
     'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo,
@@ -642,6 +643,13 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .wire.is-dim {
   opacity: 0.18;
+}
+
+/* Stage to mechanism. Dimmed until its stage is picked, but legible
+   from the start: the map has to show what a stage carries. */
+.wire--mechanism.is-dim {
+  opacity: 0.45;
+  stroke: var(--ink-3);
 }
 
 /* public internet globe */
@@ -1616,12 +1624,46 @@ body.ai-atlas-page select:focus-visible {
 .ai-atlas-root .node__label {
   font-size: 16px;
 }
+/* The rail is exactly as tall as the map beside it (the map is square,
+   its width is the container minus the rail column and the gap), and the
+   hover card takes whatever height is left. A card that does not fit is
+   clipped with a fade and a line that says the click opens the rest: the
+   card follows the pointer, so a scrollbar on it can never be reached. */
+.ai-atlas-root .workspace--v4 {
+  container-type: inline-size;
+}
+.ai-atlas-root .rail {
+  height: calc(100cqw - 404px);
+}
 .ai-atlas-root .panel--dossier {
-  min-height: 480px;
-  max-height: 70dvh;
-  overflow: auto;
-  scrollbar-gutter: stable;
-  overscroll-behavior: contain;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--panel-bg);
+}
+.ai-atlas-root .dossier__more {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 44px 16px 14px;
+  background: linear-gradient(to bottom, transparent, var(--panel-bg) 52%);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.ai-atlas-root .dossier__more::before {
+  content: '… ';
+  color: var(--ink-3);
+  letter-spacing: 0;
+}
+.ai-atlas-root .panel--dossier.is-clipped .dossier__more {
+  opacity: 1;
 }
 .ai-atlas-root .topic-picker {
   display: block;
@@ -1707,9 +1749,18 @@ body.ai-atlas-page select:focus-visible {
   .ai-atlas-root .canvas--orbital:not(.security-canvas) .orbital-svg {
     min-height: 1100px;
   }
+  .ai-atlas-root .rail {
+    height: auto;
+  }
   .ai-atlas-root .panel--dossier {
     min-height: 400px;
     max-height: 70dvh;
+    overflow: auto;
+    scrollbar-gutter: stable;
+    overscroll-behavior: contain;
+  }
+  .ai-atlas-root .dossier__more {
+    display: none;
   }
   .ai-atlas-root .security-canvas .sec-callout {
     max-height: none;
@@ -1978,4 +2029,180 @@ body.ai-atlas-page select:focus-visible {
   .ai-atlas-root .feature-modal__hint {
     display: none;
   }
+}
+
+/* ============================================================
+   Dark mode: the site's own switch (body.darkTheme), no second
+   theme. The palette flips on the same variables the page already
+   draws with; below it, every colour the sheet hardcodes for paper
+   gets its night value. Text stays at 4.5:1 or better on the dark
+   paper: ink 12.5, ink-2 9.8, ink-3 6.9, red 5.5, blue 6.6, gold 7.3.
+   ============================================================ */
+body.darkTheme .ai-atlas-root {
+  --paper: #1b1e26;
+  --paper-2: #22262f;
+  --rule: #cdc6b5;
+  --rule-soft: rgba(205, 198, 181, 0.35);
+  --rule-faint: rgba(205, 198, 181, 0.16);
+
+  --ink: #e6dfcf;
+  --ink-2: #cdc6b5;
+  --ink-3: #aea797;
+
+  --red: #e8705a;
+  /* red-deep is a hover colour for text here, so it goes lighter, not darker. */
+  --red-deep: #f08a76;
+  --blue: #86a6cc;
+  --gold: #d9a24a;
+  --ink-fill: #e6dfcf;
+  --panel-bg: color-mix(in srgb, #fffaeb 3.5%, #1b1e26);
+
+  color-scheme: dark;
+}
+body.ai-atlas-page.darkTheme {
+  background: #1b1e26;
+  color: #e6dfcf;
+}
+body.darkTheme .ai-atlas-root::before {
+  background:
+    radial-gradient(
+      ellipse 110% 80% at 50% 50%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.35) 100%
+    ),
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 250, 235, 0.05),
+      transparent 50%
+    );
+}
+body.darkTheme .ai-atlas-root .panel,
+body.darkTheme .ai-atlas-root .security-section {
+  background: rgba(255, 250, 235, 0.035);
+}
+body.darkTheme .ai-atlas-root .canvas--orbital {
+  background:
+    linear-gradient(rgba(27, 30, 38, 0.9), rgba(27, 30, 38, 0.9)),
+    url('/ai-atlas/bg.webp') center / 100% 100% no-repeat,
+    radial-gradient(
+      ellipse 70% 60% at 50% 50%,
+      var(--paper-2) 0%,
+      var(--paper) 75%
+    );
+}
+
+/* Nodes: the filled tiles turn light with dark text, so their small
+   print and hover states need their own values. */
+body.darkTheme .ai-atlas-root .node:hover,
+body.darkTheme .ai-atlas-root .node.is-active,
+body.darkTheme .ai-atlas-root .center-mark.is-active circle:first-child {
+  background: #262a34;
+  fill: #262a34;
+}
+body.darkTheme .ai-atlas-root .node--filled small {
+  color: rgba(27, 30, 38, 0.7);
+}
+body.darkTheme .ai-atlas-root .node--filled:hover,
+body.darkTheme .ai-atlas-root .node--filled.is-active {
+  background: #f3eee0;
+  color: var(--paper);
+}
+body.darkTheme .ai-atlas-root .node__dot--ok {
+  background: #5fbf6e;
+}
+body.darkTheme .ai-atlas-root .dmd.subagent {
+  background: linear-gradient(
+    to bottom right,
+    var(--blue) 50%,
+    var(--paper) 50%
+  );
+}
+body.darkTheme .ai-atlas-root .ring__label {
+  opacity: 0.9;
+}
+
+/* Security: the apex box is light now, its print goes dark. */
+body.darkTheme .ai-atlas-root .sec-apex__role {
+  color: rgba(27, 30, 38, 0.7);
+}
+body.darkTheme .ai-atlas-root .sec-apex__creds li {
+  color: rgba(27, 30, 38, 0.9);
+}
+body.darkTheme .ai-atlas-root .sec-sib__badge {
+  background: rgba(230, 223, 207, 0.12);
+}
+body.darkTheme .ai-atlas-root .terminal-doctrine {
+  border-color: var(--red);
+  color: var(--red);
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 31px,
+    rgba(230, 223, 207, 0.16) 32px
+  );
+}
+
+/* Controls: the topic picker, focus rings, the modal. */
+body.darkTheme .ai-atlas-root .topic-picker select {
+  border-color: var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+}
+body.ai-atlas-page.darkTheme button:focus-visible,
+body.ai-atlas-page.darkTheme [role='button']:focus-visible,
+body.ai-atlas-page.darkTheme a:focus-visible,
+body.ai-atlas-page.darkTheme select:focus-visible {
+  outline-color: #e8705a;
+}
+body.darkTheme .ai-atlas-root .feature-modal__scrim {
+  background: rgba(0, 0, 0, 0.6);
+}
+body.darkTheme .ai-atlas-root .feature-modal__close {
+  background: #8d2a20;
+  color: #e6dfcf;
+}
+body.darkTheme .ai-atlas-root .feature-modal__close:hover,
+body.darkTheme .ai-atlas-root .feature-modal__close:focus-visible {
+  background: #6e2019;
+}
+
+/* Scrollbars follow the night paper: the page, every scrollable
+   surface on it, and the modal body. */
+html.scroll-style-atlas:has(body.darkTheme) {
+  scrollbar-color: #aea797 #22262f;
+}
+html.scroll-style-atlas:has(body.darkTheme)::-webkit-scrollbar {
+  border-left: 1px solid #22262f;
+}
+html.scroll-style-atlas:has(body.darkTheme)::-webkit-scrollbar-track {
+  background: #22262f;
+}
+html.scroll-style-atlas:has(body.darkTheme)::-webkit-scrollbar-thumb {
+  background: #aea797;
+  border-left: 1px solid #22262f;
+}
+html.scroll-style-atlas:has(body.darkTheme)::-webkit-scrollbar-thumb:hover {
+  background: #e8705a;
+}
+body.ai-atlas-page.darkTheme * {
+  scrollbar-color: #aea797 #22262f;
+}
+body.ai-atlas-page.darkTheme *::-webkit-scrollbar-track {
+  background: #22262f;
+}
+body.ai-atlas-page.darkTheme *::-webkit-scrollbar-thumb {
+  background: #aea797;
+}
+body.ai-atlas-page.darkTheme *::-webkit-scrollbar-thumb:hover {
+  background: #e8705a;
+}
+body.darkTheme .ai-atlas-root .feature-modal__body {
+  scrollbar-color: #e8705a #22262f;
+}
+body.darkTheme .ai-atlas-root .feature-modal__body::-webkit-scrollbar-track {
+  background: #22262f;
+}
+body.darkTheme .ai-atlas-root .feature-modal__body::-webkit-scrollbar-thumb {
+  background: #e8705a;
+  border-left: 1px solid #22262f;
 }

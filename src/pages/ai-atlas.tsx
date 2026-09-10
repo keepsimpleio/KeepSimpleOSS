@@ -250,7 +250,11 @@ function NodeBody({
           onMouseEnter={() => onSelect(node.id, 'hover')}
           onMouseLeave={() => onSelect(null, 'hover')}
         >
-          {node.diamond && <Diamond kind={node.diamond} />}
+          {node.diamonds
+            ? node.diamonds.map((kind: string) => (
+                <Diamond key={kind} kind={kind} />
+              ))
+            : node.diamond && <Diamond kind={node.diamond} />}
           <span className="node__label">
             <span>
               {node.redacted ? (
@@ -322,7 +326,7 @@ function StatusDot({ status }: { status: string }) {
   return <span className={cls} aria-label={`status: ${status}`} />;
 }
 
-function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
+function Spoke({ from, to, kind = 'auth', dim, glow, cls }: any) {
   if (!from || !to) return null;
   const stroke = glow
     ? 'var(--red)'
@@ -343,7 +347,7 @@ function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
       stroke={stroke}
       strokeWidth={glow ? 1.4 : kind === 'auth' ? 0.9 : 0.7}
       strokeDasharray={dash}
-      className={'wire ' + (dim ? 'is-dim' : '')}
+      className={'wire ' + (cls ? cls + ' ' : '') + (dim ? 'is-dim' : '')}
     />
   );
 }
@@ -681,9 +685,31 @@ function FeatureModal({ id, dossiers, onSelect, onClose, t }: any) {
   );
 }
 
-function Dossier({ data, onSelect, dossiers }: any) {
+/* The hover card in the rail. It is as tall as the space the map leaves
+   it and never scrolls: the card follows the pointer, so its scrollbar
+   could never be reached. When the text does not fit, a fade and a hint
+   say that the click opens the rest. Measured, not guessed. */
+function Dossier({ data, onSelect, dossiers, readMoreHint }: any) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const [clipped, setClipped] = useState(false);
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const measure = () =>
+      setClipped(panel.scrollHeight > panel.clientHeight + 1);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(panel);
+    const body = panel.querySelector('.dossier__body');
+    if (body) observer.observe(body);
+    return () => observer.disconnect();
+  }, [data.title, data.desc]);
   return (
-    <div className="panel panel--dossier">
+    <div
+      className={'panel panel--dossier' + (clipped ? ' is-clipped' : '')}
+      ref={panelRef}
+    >
       <span className="panel__corner-mark">印</span>
       <span className="panel__title" key={'t-' + data.title}>
         {data.title} <span className="cjk">{data.cjk}</span>
@@ -703,6 +729,9 @@ function Dossier({ data, onSelect, dossiers }: any) {
           </div>
         )}
         <DossierRows rows={data.rows} onSelect={onSelect} dossiers={dossiers} />
+      </div>
+      <div className="dossier__more" aria-hidden={!clipped}>
+        {readMoreHint}
       </div>
     </div>
   );
@@ -1378,6 +1407,23 @@ export function AiAtlasApp({
     return m;
   }, [data, t.engLeadLabel]);
 
+  /* Undirected neighbour map over every line the map draws: the declared
+     relations plus each stage's support lines. */
+  const relatedTo = useMemo(() => {
+    const m = new Map<string, Set<string>>();
+    if (!data) return m;
+    const link = (a: string, b: string) => {
+      if (!m.has(a)) m.set(a, new Set());
+      if (!m.has(b)) m.set(b, new Set());
+      m.get(a)!.add(b);
+      m.get(b)!.add(a);
+    };
+    for (const [a, b] of data.relations || []) link(a, b);
+    for (const p of data.projects.members)
+      for (const id of p.support) link(id, p.id);
+    return m;
+  }, [data]);
+
   if (!data) {
     return (
       <div className="sheet">
@@ -1445,11 +1491,16 @@ export function AiAtlasApp({
     highlight.add('ring:projects');
     highlight.add('ring:territories');
   }
+  /* Every drawn line is a relation, and a hovered node lights up its
+     neighbours: Wolf lights The Order, The Order lights the resources, a
+     resource lights the stages it supports and the tiles that use it. */
+  if (highlightId) {
+    relatedTo.get(highlightId)?.forEach(id => highlight.add(id));
+  }
 
   const isDim = (id: string) => !!highlightId && !highlight.has(id);
-  const noSpokeGlow = highlightId === 'wolf' || highlightId === 'terminal';
   const spokeGlow = (a: string, b: string) =>
-    !noSpokeGlow && !!highlightId && highlight.has(a) && highlight.has(b);
+    !!highlightId && highlight.has(a) && highlight.has(b);
 
   const brand = data.brand || { title: 'AI Atlas', kanji: '天' };
   const ringLbls = data.ringLabels || {};
@@ -1512,29 +1563,27 @@ export function AiAtlasApp({
                       defaultTheta: 270,
                     },
                   ];
-                  return ringMeta
-                    .filter(rm => rm.key !== 'projects')
-                    .map(rm => {
-                      const cfg = rL(rm.key);
-                      const ringHL = `ring:${rm.key}`;
-                      return (
-                        <Ring
-                          key={rm.key}
-                          r={rm.r}
-                          label={cfg && cfg.label}
-                          theta={(cfg && cfg.theta) || rm.defaultTheta}
-                          offset={cfg && cfg.offset}
-                          ringId={rm.key}
-                          onSelect={onSelect}
-                          hovered={highlightId === ringHL}
-                          dimmed={
-                            !!highlightId &&
-                            highlightId !== ringHL &&
-                            !highlight.has(ringHL)
-                          }
-                        />
-                      );
-                    });
+                  return ringMeta.map(rm => {
+                    const cfg = rL(rm.key);
+                    const ringHL = `ring:${rm.key}`;
+                    return (
+                      <Ring
+                        key={rm.key}
+                        r={rm.r}
+                        label={cfg && cfg.label}
+                        theta={(cfg && cfg.theta) || rm.defaultTheta}
+                        offset={cfg && cfg.offset}
+                        ringId={rm.key}
+                        onSelect={onSelect}
+                        hovered={highlightId === ringHL}
+                        dimmed={
+                          !!highlightId &&
+                          highlightId !== ringHL &&
+                          !highlight.has(ringHL)
+                        }
+                      />
+                    );
+                  });
                 })()}
 
                 {data.projects.members.map((p: any) => (
@@ -1608,25 +1657,42 @@ export function AiAtlasApp({
                       );
                     })}
                 </g>
-                {data.projects.members.map((p: any) => (
-                  <g
-                    key={'support-' + p.id}
-                    className={
-                      'stage-support' +
-                      (selectedStage?.id === p.id ? ' is-current' : '')
-                    }
-                    aria-hidden="true"
-                  >
-                    {p.support.map((id: string) => (
+                {data.projects.members.flatMap((p: any) =>
+                  p.support.map((id: string) => (
+                    <g
+                      key={'support-' + p.id + '-' + id}
+                      className={
+                        'stage-support' +
+                        (spokeGlow(id, p.id) ? ' is-current' : '')
+                      }
+                      aria-hidden="true"
+                    >
                       <Spoke
-                        key={id}
                         from={points[id]}
                         to={points[p.id]}
                         kind="advisory"
                         glow={true}
                         dim={false}
                       />
-                    ))}
+                    </g>
+                  )),
+                )}
+
+                {(data.relations || []).map(([a, b]: string[]) => (
+                  <g
+                    key={'relation-' + a + '-' + b}
+                    className={
+                      'stage-support' + (spokeGlow(a, b) ? ' is-current' : '')
+                    }
+                    aria-hidden="true"
+                  >
+                    <Spoke
+                      from={points[a]}
+                      to={points[b]}
+                      kind="advisory"
+                      glow={true}
+                      dim={false}
+                    />
                   </g>
                 ))}
 
@@ -1665,6 +1731,7 @@ export function AiAtlasApp({
                         from={points[p.id]}
                         to={points[c.id]}
                         kind={c.external ? 'advisory' : 'deploy'}
+                        cls="wire--mechanism"
                         dim={!selectedStage || selectedStage.id !== p.id}
                         glow={spokeGlow(p.id, c.id)}
                       />
@@ -1983,6 +2050,7 @@ export function AiAtlasApp({
             data={dossier}
             onSelect={onSelect}
             dossiers={data.dossiers}
+            readMoreHint={t.readMoreHint}
           />
         </aside>
       </div>
