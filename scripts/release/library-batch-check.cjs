@@ -67,13 +67,28 @@ function check() {
     'cover-6.jpg',
     'cover-5.jpg',
   ]);
-  for (const count of [0, 1, 3])
-    assert.deepEqual(covers(entry([...ordinary, ...starred.slice(0, count)])), [
-      'cover-1.jpg',
-      'cover-2.jpg',
-      'cover-3.jpg',
-      'cover-4.jpg',
-    ]);
+  // Favourites lead the row however few there are, and the rest of the row
+  // is filled from the shelves behind them. The row used to fall back to the
+  // first four covers unless there were four favourites, so a library with
+  // one or two starred books showed none of them.
+  assert.deepEqual(covers(entry([...ordinary])), [
+    'cover-1.jpg',
+    'cover-2.jpg',
+    'cover-3.jpg',
+    'cover-4.jpg',
+  ]);
+  assert.deepEqual(covers(entry([...ordinary, ...starred.slice(0, 1)])), [
+    'cover-5.jpg',
+    'cover-1.jpg',
+    'cover-2.jpg',
+    'cover-3.jpg',
+  ]);
+  assert.deepEqual(covers(entry([...ordinary, ...starred.slice(0, 3)])), [
+    'cover-7.jpg',
+    'cover-6.jpg',
+    'cover-5.jpg',
+    'cover-1.jpg',
+  ]);
   for (const visibility of ['private', undefined]) {
     const privateEntry = entry([...ordinary, ...starred]);
     privateEntry.attributes.favoritesVisibility = visibility;
@@ -84,12 +99,99 @@ function check() {
     attributes: { visibility: 'private', objects: { data: starred } },
   });
   assert.equal(covers(hidden)[0], 'cover-1.jpg');
-  assert.equal(
+  // One book starred twice is one favourite: it takes one place, not two.
+  assert.deepEqual(
     covers(
       entry([...ordinary, starred[0], starred[0], starred[1], starred[2]]),
-    )[0],
-    'cover-1.jpg',
+    ),
+    ['cover-7.jpg', 'cover-6.jpg', 'cover-5.jpg', 'cover-1.jpg'],
   );
+  // THE AI SHELF. The board is thirteen places: ten fit, three stretch, and
+  // the stretch picks punctuate the row instead of standing at its end. A
+  // locked pick holds the exact place it stood in, and a roll that comes back
+  // short leaves a shorter row rather than a row with holes in it.
+  const digestModule = load('src/lib/library/magic/digest.ts');
+  const shelfMocks = {
+    './digest': digestModule,
+    './relay': {
+      askRelay: async () => ({ text: '', slot: '', transport: '', model: '' }),
+      parseJsonReply: () => ({}),
+      RelayError: class RelayError extends Error {},
+    },
+    './verify': { verifyBook: async () => ({ book: null, errors: [] }) },
+    '@lib/library/magic/relay': {
+      askRelay: async () => ({ text: '', slot: '', transport: '', model: '' }),
+      parseJsonReply: () => ({}),
+      RelayError: class RelayError extends Error {},
+    },
+    '@lib/library/magic/verify': {
+      verifyBook: async () => ({ book: null, errors: [] }),
+    },
+  };
+  const {
+    arrangeBoard,
+    reachPercent,
+    AI_SHELF_SIZE,
+    AI_SHELF_STRETCH,
+    AI_SHELF_FIT,
+  } = load('src/lib/library/aishelf/engine.ts', shelfMocks);
+  const pick = (kind, i) => ({
+    id: `${kind}-${i}`,
+    title: `${kind} ${i}`,
+    kind,
+  });
+  const deal = (fit, stretch) => ({
+    fit: Array.from({ length: fit }, (_, i) => pick('fit', i)),
+    stretch: Array.from({ length: stretch }, (_, i) => pick('stretch', i)),
+  });
+  const fresh = arrangeBoard(
+    Array.from({ length: AI_SHELF_SIZE }, () => null),
+    deal(AI_SHELF_FIT, AI_SHELF_STRETCH),
+  );
+  assert.equal(fresh.length, AI_SHELF_SIZE);
+  assert.equal(
+    fresh.filter(p => p.kind === 'stretch').length,
+    AI_SHELF_STRETCH,
+  );
+  assert.deepEqual(
+    Array.from(
+      fresh.map((p, i) => (p.kind === 'stretch' ? i : -1)).filter(i => i >= 0),
+    ),
+    [3, 7, 11],
+  );
+  const heldFit = { ...pick('fit', 'locked'), id: 'kept-fit' };
+  const heldStretch = { ...pick('stretch', 'locked'), id: 'kept-stretch' };
+  const keep = Array.from({ length: AI_SHELF_SIZE }, () => null);
+  keep[0] = heldFit;
+  keep[7] = heldStretch;
+  const rolled = arrangeBoard(
+    keep,
+    deal(AI_SHELF_FIT - 1, AI_SHELF_STRETCH - 1),
+  );
+  assert.equal(rolled.length, AI_SHELF_SIZE);
+  assert.equal(rolled[0].id, 'kept-fit');
+  assert.equal(rolled[7].id, 'kept-stretch');
+  assert.equal(
+    rolled.filter(p => p.kind === 'stretch').length,
+    AI_SHELF_STRETCH,
+  );
+  const short = arrangeBoard(
+    Array.from({ length: AI_SHELF_SIZE }, () => null),
+    deal(5, 1),
+  );
+  assert.equal(short.length, 6);
+  assert(short.every(Boolean));
+  // Reach is scored on its own weights and stays inside the shown range.
+  const full = { theme: 5, notes: 5, tags: 5, difficulty: 5, distance: 5 };
+  const none = { theme: 0, notes: 0, tags: 0, difficulty: 0, distance: 0 };
+  const signals = { notes: true, tags: true, difficulty: true, lowRated: true };
+  assert.equal(reachPercent(full, signals), 97);
+  assert.equal(reachPercent(none, signals), 5);
+  assert(
+    reachPercent({ ...none, distance: 5, difficulty: 5 }, signals) >
+      reachPercent({ ...none, theme: 5 }, signals),
+  );
+
   const { createEditLibrarySchema, ABOUT_LIBRARY_MAX, ABOUT_AUTHOR_MAX } = load(
     'src/utils/library/schema/editLibrarySchema.ts',
   );
@@ -161,7 +263,7 @@ let status = 'PASS';
 try {
   check();
   console.log(
-    'PASS: favorites threshold, privacy, ordering, username boundaries and loader styles',
+    'PASS: favourites lead the card, privacy, ordering, the AI shelf board, username boundaries and loader styles',
   );
 } catch (error) {
   status = 'FAIL';
