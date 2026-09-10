@@ -4,7 +4,7 @@
    never leak into the rest of the site.
    ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
 
 /* Match KeepSimple's global navbar to the Atlas paper while this
    page is mounted. Light mode only; dark mode handled separately. */
@@ -36,24 +36,26 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 
 .ai-atlas-root {
-  --paper:        #ece4cf;
-  --paper-2:      #e6dcc2;
-  --rule:         #2a2a2a;
-  --rule-soft:    rgba(42, 42, 42, 0.35);
-  --rule-faint:   rgba(42, 42, 42, 0.16);
+  --paper: #ece4cf;
+  --paper-2: #e6dcc2;
+  --rule: #2a2a2a;
+  --rule-soft: rgba(42, 42, 42, 0.35);
+  --rule-faint: rgba(42, 42, 42, 0.16);
 
-  --ink:          #1a1a1a;
-  --ink-2:        #3d3a33;
-  --ink-3:        #6a6457;
+  --ink: #1a1a1a;
+  --ink-2: #3d3a33;
+  --ink-3: #6a6457;
 
-  --red:          #b3392b;
-  --red-deep:     #8d2a20;
-  --blue:         #4a6f99;
-  --gold:         #c08a2c;
-  --ink-fill:     #181818;
+  --red: #b3392b;
+  --red-deep: #8d2a20;
+  --blue: #4a6f99;
+  --gold: #c08a2c;
+  --ink-fill: #181818;
 
-  --mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --serif: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  --mono:
+    'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+  --serif: 'EB Garamond', 'Cormorant Garamond', Georgia, serif;
   --r: 2px;
   --hairline: 1px;
 
@@ -67,14 +69,27 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   letter-spacing: 0.01em;
   min-height: 100vh;
 }
-.ai-atlas-root *, .ai-atlas-root *::before, .ai-atlas-root *::after { box-sizing: border-box; }
+.ai-atlas-root *,
+.ai-atlas-root *::before,
+.ai-atlas-root *::after {
+  box-sizing: border-box;
+}
 .ai-atlas-root::before {
-  content: "";
-  position: absolute; inset: 0;
+  content: '';
+  position: absolute;
+  inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 110% 80% at 50% 50%, transparent 60%, rgba(0,0,0,0.08) 100%),
-    radial-gradient(circle at 20% 10%, rgba(255,250,235,0.4), transparent 50%);
+    radial-gradient(
+      ellipse 110% 80% at 50% 50%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 250, 235, 0.4),
+      transparent 50%
+    );
   z-index: 1;
 }
 
@@ -89,39 +104,77 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 
 /* ---------- header ---------- */
 .doc-header {
-  display: flex; justify-content: space-between; align-items: baseline;
-  gap: 18px; padding-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  padding-bottom: 14px;
   border-bottom: var(--hairline) solid var(--rule);
-  font-size: 12px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--ink-2);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
   white-space: nowrap;
 }
 .doc-header .header-left {
-  display: inline-flex; align-items: baseline; gap: 22px; flex-wrap: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 22px;
+  flex-wrap: nowrap;
 }
 .doc-header .meta {
-  display: flex; gap: 22px; flex-wrap: nowrap; align-items: baseline;
+  display: flex;
+  gap: 22px;
+  flex-wrap: nowrap;
+  align-items: baseline;
 }
-.doc-header .meta b { color: var(--ink); font-weight: 600; letter-spacing: 0.04em; }
+.doc-header .meta b {
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
 .doc-header .cjk {
-  font-family: var(--serif); font-size: 16px;
-  letter-spacing: 0.32em; color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  letter-spacing: 0.32em;
+  color: var(--ink);
   white-space: nowrap;
 }
-.cjk__kanji { color: var(--red); font-weight: 600; }
+.cjk__kanji {
+  color: var(--red);
+  font-weight: 600;
+}
 
 /* meta groups: red label + bold value + faded unit/tail.
    the eye lands on a red anchor, then reads the number, then the unit. */
-.meta-group { display: inline-flex; align-items: baseline; gap: 8px; }
-.meta-label {
-  color: var(--red); font-weight: 600;
-  letter-spacing: 0.22em; font-size: 12px;
+.meta-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
 }
-.meta-unit { color: var(--ink-3); opacity: 0.85; letter-spacing: 0.18em; font-size: 12px; }
-.meta-tail { color: var(--ink-3); opacity: 0.7; letter-spacing: 0.14em; font-size: 12px; }
+.meta-label {
+  color: var(--red);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+}
+.meta-unit {
+  color: var(--ink-3);
+  opacity: 0.85;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+}
+.meta-tail {
+  color: var(--ink-3);
+  opacity: 0.7;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+}
 .meta-sep {
-  color: var(--red); opacity: 0.55;
-  font-size: 12px; letter-spacing: 0;
+  color: var(--red);
+  opacity: 0.55;
+  font-size: 12px;
+  letter-spacing: 0;
   display: inline-block;
   transform: scale(0.65) translateY(-1px);
   transform-origin: center;
@@ -131,7 +184,6 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   font-weight: 600;
   letter-spacing: 0.18em;
 }
-
 
 /* ---------- workspace: diagram + right rail ---------- */
 .workspace--v4 {
@@ -158,33 +210,54 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   padding: 22px 16px 16px;
 }
 .panel__title {
-  position: absolute; top: -10px; left: 14px;
-  background: var(--paper); padding: 0 8px;
-  font-size: 14px; letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--ink);
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  background: var(--paper);
+  padding: 0 8px;
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
   max-width: calc(100% - 56px);
   line-height: 1.25;
   display: inline-block;
 }
 .panel__title .cjk {
-  font-family: var(--serif); color: var(--red);
-  margin-left: 6px; letter-spacing: 0;
+  font-family: var(--serif);
+  color: var(--red);
+  margin-left: 6px;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 .panel__corner-mark {
-  position: absolute; top: -12px; right: 14px;
-  width: 20px; height: 20px;
+  position: absolute;
+  top: -12px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
   background: var(--red);
-  display: grid; place-items: center;
-  color: var(--paper); font-family: var(--serif); font-size: 14px;
+  display: grid;
+  place-items: center;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 14px;
   z-index: 2;
 }
-.panel--dossier { transition: padding-top 0.25s ease; }
-.panel--dossier .panel__title { top: -9px; }
+.panel--dossier {
+  transition: padding-top 0.25s ease;
+}
+.panel--dossier .panel__title {
+  top: -9px;
+}
 
 @keyframes ai-atlas-dossier-fade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .dossier__body {
   animation: ai-atlas-dossier-fade 0.32s ease-out both;
@@ -192,32 +265,76 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .panel--dossier .panel__title {
   animation: ai-atlas-dossier-fade 0.32s ease-out both;
 }
-.legend-kv li, .panel--dossier .kv li {
+.legend-kv li,
+.panel--dossier .kv li {
   transition: color 0.25s ease;
 }
 
 /* ---------- key/value list ---------- */
-.kv { list-style: none; padding: 0; margin: 0; font-size: 14px; }
-.kv li { display: flex; gap: 10px; padding: 5px 0; color: var(--ink-2); }
-.kv li .k { color: var(--ink-3); flex: 0 0 110px; text-transform: lowercase; display: flex; align-items: center; }
-.kv li .v { color: var(--ink); flex: 1; min-width: 0; word-break: break-word; }
-.kv li .v.red  { color: var(--red); }
-.kv li .v.blue { color: var(--blue); }
-.kv li .v.gold { color: var(--gold); }
-.kv li .v.subagent { color: var(--blue); }
-.kv li .v.v--ref { cursor: pointer; transition: filter 0.15s ease; }
-.kv li .v.v--ref:hover { filter: brightness(1.15); }
-.legend-kv li { padding: 8px 0; }
+.kv {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+.kv li {
+  display: flex;
+  gap: 10px;
+  padding: 5px 0;
+  color: var(--ink-2);
+}
+.kv li .k {
+  color: var(--ink-3);
+  flex: 0 0 110px;
+  text-transform: lowercase;
+  display: flex;
+  align-items: center;
+}
+.kv li .v {
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+.kv li .v.red {
+  color: var(--red);
+}
+.kv li .v.blue {
+  color: var(--blue);
+}
+.kv li .v.gold {
+  color: var(--gold);
+}
+.kv li .v.subagent {
+  color: var(--blue);
+}
+.kv li .v.v--ref {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.kv li .v.v--ref:hover {
+  filter: brightness(1.15);
+}
+.legend-kv li {
+  padding: 8px 0;
+}
 
 /* ---------- diamond ---------- */
 .dmd {
-  display: inline-block; width: 10px; height: 10px;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
   background: var(--red);
   transform: rotate(45deg) translateY(-1px);
-  margin-right: 7px; flex: none;
+  margin-right: 7px;
+  flex: none;
 }
-.dmd.blue { background: var(--blue); }
-.dmd.gold { background: var(--gold); }
+.dmd.blue {
+  background: var(--blue);
+}
+.dmd.gold {
+  background: var(--gold);
+}
 .dmd.subagent {
   /* half-filled: the span is rotated 45deg, so "to bottom right" reads
      as a clean vertical split — blue half, white half, blue outline */
@@ -231,7 +348,9 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
    rendering. Desktop (and non-iOS touch) keep the diamond. */
 @media (hover: none) and (pointer: coarse) {
   @supports (-webkit-touch-callout: none) {
-    .canvas--orbital .dmd { display: none; }
+    .canvas--orbital .dmd {
+      display: none;
+    }
     .canvas--orbital .node--dmd-red {
       outline: 2px solid var(--red);
       outline-offset: -1px;
@@ -256,15 +375,19 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   position: relative;
   border: var(--hairline) solid var(--rule);
   background:
-    linear-gradient(rgba(236, 228, 207, 0.70), rgba(236, 228, 207, 0.70)),
-    url("/ai-atlas/bg.webp") center / 100% 100% no-repeat,
-    radial-gradient(ellipse 70% 60% at 50% 50%, var(--paper-2) 0%, var(--paper) 75%);
+    linear-gradient(rgba(236, 228, 207, 0.7), rgba(236, 228, 207, 0.7)),
+    url('/ai-atlas/bg.webp') center / 100% 100% no-repeat,
+    radial-gradient(
+      ellipse 70% 60% at 50% 50%,
+      var(--paper-2) 0%,
+      var(--paper) 75%
+    );
   aspect-ratio: 1500 / 1500;
   padding: 24px;
   isolation: isolate;
 }
 .canvas--orbital::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -274,10 +397,12 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   z-index: 0;
 }
 .canvas--orbital::after {
-  content: "";
+  content: '';
   position: absolute;
-  bottom: 14px; right: 14px;
-  width: 150px; height: 150px;
+  bottom: 14px;
+  right: 14px;
+  width: 150px;
+  height: 150px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='82' font-family='serif' font-size='96' font-weight='400' fill='%231a1a1a' text-anchor='middle'>%E5%9B%B3</text></svg>");
   background-repeat: no-repeat;
   background-size: contain;
@@ -286,7 +411,14 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   user-select: none;
   z-index: 0;
 }
-.orbital-svg { width: 100%; height: 100%; display: block; overflow: visible; position: relative; z-index: 1; }
+.orbital-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
 
 /* ---------- canvas stats overlay (top-left) ---------- */
 .canvas-stats {
@@ -303,29 +435,70 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   z-index: 2;
   user-select: none;
 }
-.canvas-stats__row { display: flex; gap: 8px; padding: 1px 0; }
-.canvas-stats__row .k { color: var(--ink-3); }
-.canvas-stats__row .v { color: var(--ink); font-feature-settings: 'tnum'; }
+.canvas-stats__row {
+  display: flex;
+  gap: 8px;
+  padding: 1px 0;
+}
+.canvas-stats__row .k {
+  color: var(--ink-3);
+}
+.canvas-stats__row .v {
+  color: var(--ink);
+  font-feature-settings: 'tnum';
+}
 
 /* corner ticks */
 .corner {
-  position: absolute; width: 14px; height: 14px;
-  border: 1px solid var(--ink); pointer-events: none;
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--ink);
+  pointer-events: none;
 }
-.corner--tl { top: 6px;    left: 6px;    border-right: 0; border-bottom: 0; }
-.corner--tr { top: 6px;    right: 6px;   border-left: 0;  border-bottom: 0; }
-.corner--bl { bottom: 6px; left: 6px;    border-right: 0; border-top: 0; }
-.corner--br { bottom: 6px; right: 6px;   border-left: 0;  border-top: 0; }
+.corner--tl {
+  top: 6px;
+  left: 6px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.corner--tr {
+  top: 6px;
+  right: 6px;
+  border-left: 0;
+  border-bottom: 0;
+}
+.corner--bl {
+  bottom: 6px;
+  left: 6px;
+  border-right: 0;
+  border-top: 0;
+}
+.corner--br {
+  bottom: 6px;
+  right: 6px;
+  border-left: 0;
+  border-top: 0;
+}
 
 /* center mark */
-.center-mark { transition: opacity 0.2s ease; }
-.center-mark.is-dim { opacity: 0.35; }
+.center-mark {
+  transition: opacity 0.2s ease;
+}
+.center-mark.is-dim {
+  opacity: 0.35;
+}
 .center-mark.is-active circle:first-child {
   fill: #fff8e6;
 }
 @keyframes ai-atlas-center-pulse {
-  0%, 100% { stroke-width: 1.4; }
-  50%      { stroke-width: 5; }
+  0%,
+  100% {
+    stroke-width: 1.4;
+  }
+  50% {
+    stroke-width: 5;
+  }
 }
 .center-mark.is-glow circle:first-child {
   animation: ai-atlas-center-pulse 1.4s ease-in-out infinite;
@@ -371,14 +544,32 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  transition: opacity 0.18s ease, fill 0.18s ease;
+  transition:
+    opacity 0.18s ease,
+    fill 0.18s ease;
 }
-.ring__label:hover, .ring__label.is-glow { opacity: 1; fill: var(--red); }
-.ring__label.is-dim { opacity: 0.28; }
+.ring__label:hover,
+.ring__label.is-glow {
+  opacity: 1;
+  fill: var(--red);
+}
+.ring__label.is-dim {
+  opacity: 0.28;
+}
 
-.ring__circle { transition: stroke 0.18s ease, stroke-width 0.18s ease, opacity 0.18s ease; }
-.ring__circle.is-glow { stroke: var(--red); stroke-width: 1.4; }
-.ring__circle.is-dim { opacity: 0.32; }
+.ring__circle {
+  transition:
+    stroke 0.18s ease,
+    stroke-width 0.18s ease,
+    opacity 0.18s ease;
+}
+.ring__circle.is-glow {
+  stroke: var(--red);
+  stroke-width: 1.4;
+}
+.ring__circle.is-dim {
+  opacity: 0.32;
+}
 
 .node.node--redacted {
   font-variant-numeric: tabular-nums;
@@ -389,20 +580,33 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   color: #d4ffd4;
 }
 .node--redacted.node--filled .node__label small,
-.node--redacted .node__label small { color: rgba(255,255,255,0.6); }
+.node--redacted .node__label small {
+  color: rgba(255, 255, 255, 0.6);
+}
 
 .node__dot {
-  width: 7px; height: 7px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--ink-3);
   flex: none;
   box-shadow: 0 0 0 1px var(--paper);
 }
-.node__dot--ok      { background: #2f8a3e; }
-.node__dot--warn    { background: var(--gold); }
-.node__dot--down    { background: var(--red); }
-.node__dot--unknown { background: var(--ink-3); }
-.node--filled .node__dot { box-shadow: 0 0 0 1px var(--ink-fill); }
+.node__dot--ok {
+  background: #2f8a3e;
+}
+.node__dot--warn {
+  background: var(--gold);
+}
+.node__dot--down {
+  background: var(--red);
+}
+.node__dot--unknown {
+  background: var(--ink-3);
+}
+.node--filled .node__dot {
+  box-shadow: 0 0 0 1px var(--ink-fill);
+}
 
 /* loading state */
 .atlas-loading {
@@ -422,11 +626,19 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 
 /* wires */
-.wire { transition: opacity 0.2s ease, stroke 0.2s ease; }
-.wire.is-dim { opacity: 0.18; }
+.wire {
+  transition:
+    opacity 0.2s ease,
+    stroke 0.2s ease;
+}
+.wire.is-dim {
+  opacity: 0.18;
+}
 
 /* public internet globe */
-.globe-mark { transition: opacity 0.2s ease; }
+.globe-mark {
+  transition: opacity 0.2s ease;
+}
 .globe-mark circle,
 .globe-mark ellipse,
 .globe-mark line {
@@ -439,15 +651,21 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   letter-spacing: 0.22em;
   fill: var(--ink-3);
 }
-.globe-mark__label--sm { font-size: 12px; }
+.globe-mark__label--sm {
+  font-size: 12px;
+}
 .globe-mark__plane {
   fill: var(--ink-3);
   stroke: none;
 }
-.globe-mark.is-dim { opacity: 0.28; }
+.globe-mark.is-dim {
+  opacity: 0.28;
+}
 
 /* telegram relay marker */
-.telegram-mark { transition: opacity 0.2s ease; }
+.telegram-mark {
+  transition: opacity 0.2s ease;
+}
 .telegram-mark circle {
   stroke: var(--ink-3);
   stroke-width: 0.9;
@@ -458,17 +676,24 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   letter-spacing: 0.22em;
   fill: var(--ink-3);
 }
-.telegram-mark__label--sm { font-size: 12px; }
+.telegram-mark__label--sm {
+  font-size: 12px;
+}
 .telegram-mark__plane {
   fill: var(--ink-3);
   stroke: none;
 }
-.telegram-mark.is-dim { opacity: 0.28; }
+.telegram-mark.is-dim {
+  opacity: 0.28;
+}
 
 /* ---------- node ---------- */
 .node-wrap {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--mono);
 }
 .node {
@@ -483,7 +708,11 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   gap: 8px;
   white-space: nowrap;
   cursor: pointer;
-  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, opacity .2s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    opacity 0.2s ease;
   user-select: none;
 }
 .node small {
@@ -493,7 +722,11 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   letter-spacing: 0.04em;
   margin-top: 2px;
 }
-.node__label { display: flex; flex-direction: column; line-height: 1.2; }
+.node__label {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
 .node:hover {
   background: #fff8e6;
   box-shadow: 0 2px 0 var(--ink);
@@ -501,24 +734,40 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .node.is-active {
   background: #fff8e6;
-  box-shadow: 0 0 0 1.4px var(--red), 1px 2px 0 -0.5px var(--red-deep);
+  box-shadow:
+    0 0 0 1.4px var(--red),
+    1px 2px 0 -0.5px var(--red-deep);
 }
-.node.is-dim { opacity: 0.45; }
+.node.is-dim {
+  opacity: 0.45;
+}
 
 @keyframes ai-atlas-node-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 1px var(--red), 0 0 0 0 rgba(179, 57, 43, 0);
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px var(--red),
+      0 0 0 0 rgba(179, 57, 43, 0);
   }
   50% {
-    box-shadow: 0 0 0 1px var(--red), 0 0 0 7px rgba(179, 57, 43, 0.27);
+    box-shadow:
+      0 0 0 1px var(--red),
+      0 0 0 7px rgba(179, 57, 43, 0.27);
   }
 }
 @keyframes ai-atlas-node-pulse-active {
-  0%, 100% {
-    box-shadow: 0 0 0 1px var(--red), 1px 2px 0 -0.5px var(--red-deep), 0 0 0 0 rgba(179, 57, 43, 0);
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px var(--red),
+      1px 2px 0 -0.5px var(--red-deep),
+      0 0 0 0 rgba(179, 57, 43, 0);
   }
   50% {
-    box-shadow: 0 0 0 1px var(--red), 1px 2px 0 -0.5px var(--red-deep), 0 0 0 8px rgba(179, 57, 43, 0.27);
+    box-shadow:
+      0 0 0 1px var(--red),
+      1px 2px 0 -0.5px var(--red-deep),
+      0 0 0 8px rgba(179, 57, 43, 0.27);
   }
 }
 .node.is-glow {
@@ -532,8 +781,12 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   color: var(--paper);
   border-color: var(--ink-fill);
 }
-.node--filled small { color: rgba(255,255,255,0.55); }
-.node--filled:hover { background: #2a2a2a; }
+.node--filled small {
+  color: rgba(255, 255, 255, 0.55);
+}
+.node--filled:hover {
+  background: #2a2a2a;
+}
 .node--filled.is-active {
   background: #2a2a2a;
   color: var(--paper);
@@ -545,14 +798,18 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   text-decoration: none;
   border-bottom: 1px solid var(--rule-soft);
 }
-.dossier__link:hover { border-bottom-color: var(--red); }
+.dossier__link:hover {
+  border-bottom-color: var(--red);
+}
 .dossier__tip {
   text-decoration: underline dotted var(--rule-soft);
   text-underline-offset: 3px;
   cursor: help;
   transition: text-decoration-color 0.15s ease;
 }
-.dossier__tip:hover { text-decoration-color: var(--red); }
+.dossier__tip:hover {
+  text-decoration-color: var(--red);
+}
 .dossier__desc {
   font-family: var(--mono);
   font-size: 14px;
@@ -565,52 +822,80 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 
 /* ---------- footer ---------- */
 .doc-footer {
-  margin-top: 26px; padding-top: 14px;
+  margin-top: 26px;
+  padding-top: 14px;
   border-top: 1px solid var(--rule);
-  display: flex; justify-content: space-between;
-  font-size: 14px; letter-spacing: 0.18em;
-  text-transform: uppercase; color: var(--ink-3);
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 .doc-footer .serif {
-  font-family: var(--serif); font-style: italic;
-  text-transform: none; letter-spacing: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 /* ---------- ink-consume easter egg ---------- */
 .ink-consume {
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   pointer-events: auto;
   z-index: 50;
   background: var(--ink-fill);
   clip-path: circle(0% at 50% 50%);
   animation:
-    ai-atlas-ink-grow 7s cubic-bezier(.55, 0, .82, .55) forwards,
+    ai-atlas-ink-grow 7s cubic-bezier(0.55, 0, 0.82, 0.55) forwards,
     ai-atlas-ink-fade 9.5s linear forwards;
 }
 @keyframes ai-atlas-ink-grow {
-  0%   { clip-path: circle(0%  at 50% 50%); }
-  100% { clip-path: circle(80% at 50% 50%); }
+  0% {
+    clip-path: circle(0% at 50% 50%);
+  }
+  100% {
+    clip-path: circle(80% at 50% 50%);
+  }
 }
 @keyframes ai-atlas-ink-fade {
-  0%, 80% { opacity: 1; }
-  100%    { opacity: 0; }
+  0%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* hanko stamps */
-.hanko-row { display: inline-flex; gap: 8px; align-items: center; }
+.hanko-row {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
 .hanko {
-  display: inline-flex; align-items: center; justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   color: var(--red);
-  font-family: var(--serif); font-size: 16px;
-  letter-spacing: 0.06em; text-transform: none;
+  font-family: var(--serif);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: none;
   padding: 4px 9px;
   box-shadow: inset 0 0 0 1px var(--red);
   user-select: none;
   cursor: default;
 }
 
-.hr-dotted { border: 0; border-top: 1px dashed var(--rule-soft); margin: 10px 0; }
+.hr-dotted {
+  border: 0;
+  border-top: 1px dashed var(--rule-soft);
+  margin: 10px 0;
+}
 
 .legend-cta {
   display: block;
@@ -618,21 +903,34 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   padding-top: 12px;
   border-top: 1px dashed var(--rule-soft);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 0.04em;
   text-align: center;
   color: var(--red);
   text-decoration: none;
-  transition: color 0.18s ease, letter-spacing 0.18s ease;
+  transition:
+    color 0.18s ease,
+    letter-spacing 0.18s ease;
 }
 .legend-cta:hover {
   color: var(--red-deep);
   letter-spacing: 0.08em;
 }
-.muted { color: var(--ink-3); }
-.serif { font-family: var(--serif); }
-.italic { font-style: italic; }
-.cjk { font-family: var(--serif); color: var(--red); font-size: 14px; letter-spacing: 0.2em; }
+.muted {
+  color: var(--ink-3);
+}
+.serif {
+  font-family: var(--serif);
+}
+.italic {
+  font-style: italic;
+}
+.cjk {
+  font-family: var(--serif);
+  color: var(--red);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+}
 
 /* ============================================================
    Doctrine panel — swaps in for Legend in Security mode.
@@ -675,16 +973,18 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   isolation: isolate;
 }
 .view-toggle::before {
-  content: "";
+  content: '';
   position: absolute;
-  top: 0; left: 0;
-  width: 50%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
   background: var(--ink-fill);
   z-index: 0;
   transition: transform 0.42s cubic-bezier(0.5, 0.05, 0.2, 1);
   transform: translateX(0%);
 }
-.view-toggle[data-mode="security"]::before {
+.view-toggle[data-mode='security']::before {
   transform: translateX(100%);
 }
 .view-toggle__btn {
@@ -701,7 +1001,9 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   cursor: pointer;
   transition: color 0.32s ease;
 }
-.view-toggle__btn:hover { color: var(--ink); }
+.view-toggle__btn:hover {
+  color: var(--ink);
+}
 .view-toggle__btn.is-active {
   color: var(--paper);
 }
@@ -715,8 +1017,14 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   min-width: 0;
 }
 @keyframes ai-atlas-stage-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============================================================
@@ -727,7 +1035,9 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   flex-direction: column;
   gap: 28px;
 }
-.security-canvas { position: relative; }
+.security-canvas {
+  position: relative;
+}
 
 .sec-callout {
   position: absolute;
@@ -736,9 +1046,11 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   border: var(--hairline) solid var(--rule);
   padding: 12px 14px;
   z-index: 3;
-  box-shadow: 1px 2px 0 -0.5px rgba(42,42,42,0.18);
+  box-shadow: 1px 2px 0 -0.5px rgba(42, 42, 42, 0.18);
   cursor: default;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 .sec-callout.is-glow {
   border-color: var(--red);
@@ -746,11 +1058,13 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .sec-callout__num {
   display: inline-block;
-  width: 22px; height: 22px;
+  width: 22px;
+  height: 22px;
   background: var(--red);
   color: var(--paper);
   font-family: var(--mono);
-  font-size: 12px; font-weight: 600;
+  font-size: 12px;
+  font-weight: 600;
   text-align: center;
   line-height: 22px;
   margin-right: 9px;
@@ -768,7 +1082,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .sec-callout__what {
   margin: 9px 0 0;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ink-2);
   line-height: 1.5;
 }
@@ -781,18 +1095,28 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   padding-left: 8px;
   border-left: 2px solid var(--red);
 }
-.sec-callout__why b { color: var(--ink); font-weight: 600; }
+.sec-callout__why b {
+  color: var(--ink);
+  font-weight: 600;
+}
 
 /* center mark in security mode pulses red ring */
 .security-canvas .center-mark circle:first-child {
   animation: ai-atlas-center-pulse 1.4s ease-in-out infinite;
 }
-.security-pulse { transform-origin: center; }
+.security-pulse {
+  transform-origin: center;
+}
 
 /* hovered ring breathes; arc label flips to red — security canvas only */
 @keyframes ai-atlas-ring-pulse {
-  0%, 100% { stroke-width: 1.4; }
-  50%      { stroke-width: 2.6; }
+  0%,
+  100% {
+    stroke-width: 1.4;
+  }
+  50% {
+    stroke-width: 2.6;
+  }
 }
 .security-canvas .ring__circle.is-glow {
   animation: ai-atlas-ring-pulse 1.4s ease-in-out infinite;
@@ -824,7 +1148,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .security-sub {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ink-3);
   margin: 0 0 22px;
   line-height: 1.55;
@@ -842,10 +1166,12 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   position: relative;
 }
 .sec-stat::before {
-  content: "";
+  content: '';
   position: absolute;
-  top: 8px; left: 8px;
-  width: 8px; height: 8px;
+  top: 8px;
+  left: 8px;
+  width: 8px;
+  height: 8px;
   background: var(--red);
   transform: rotate(45deg);
 }
@@ -885,7 +1211,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .sec-apex__role {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(236, 228, 207, 0.55);
@@ -904,7 +1230,14 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   font-size: 18px;
   letter-spacing: 0;
 }
-.sec-apex__creds { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.sec-apex__creds {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .sec-apex__creds li {
   font-family: var(--mono);
   font-size: 12px;
@@ -912,7 +1245,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   color: rgba(236, 228, 207, 0.85);
 }
 .sec-apex__creds li::before {
-  content: "◆ ";
+  content: '◆ ';
   color: var(--red);
   margin-right: 4px;
 }
@@ -930,7 +1263,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .sec-sib h4 {
   margin: 0 0 4px;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -940,9 +1273,9 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
   gap: 8px;
 }
 .sec-sib__badge {
-  background: rgba(42,42,42,0.08);
+  background: rgba(42, 42, 42, 0.08);
   color: var(--ink-3);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   padding: 2px 6px;
   letter-spacing: 0.06em;
@@ -952,7 +1285,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .sec-sib p {
   margin: 0;
   font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 14px;
   color: var(--ink-3);
   line-height: 1.55;
 }
@@ -960,7 +1293,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .security-punch {
   margin: 22px 0 0;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ink-2);
   line-height: 1.6;
 }
@@ -982,7 +1315,8 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 }
 .sec-pattern__marker {
   display: inline-block;
-  width: 9px; height: 9px;
+  width: 9px;
+  height: 9px;
   background: var(--red);
   transform: rotate(45deg);
   margin-bottom: 12px;
@@ -990,7 +1324,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .sec-pattern h3 {
   margin: 0 0 8px;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1000,7 +1334,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
 .sec-pattern p {
   margin: 0;
   font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 14px;
   color: var(--ink-3);
   line-height: 1.6;
 }
@@ -1022,11 +1356,23 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
     aspect-ratio: 1 / 1;
     flex: 0 0 auto;
   }
-  .sec-callout { position: static; width: auto; margin-top: 0; }
-  .sec-stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .sec-pattern-grid { grid-template-columns: 1fr; }
-  .sec-agent-stage { grid-template-columns: 1fr; }
-  .sec-sib-grid { grid-template-columns: 1fr; }
+  .sec-callout {
+    position: static;
+    width: auto;
+    margin-top: 0;
+  }
+  .sec-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sec-pattern-grid {
+    grid-template-columns: 1fr;
+  }
+  .sec-agent-stage {
+    grid-template-columns: 1fr;
+  }
+  .sec-sib-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ============================================================
@@ -1050,7 +1396,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
     flex-wrap: wrap;
     white-space: normal;
     gap: 10px;
-    font-size: 11px;
+    font-size: 12px;
   }
   .doc-header .header-left {
     flex-wrap: wrap;
@@ -1067,7 +1413,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
     letter-spacing: 0.22em;
   }
   .meta-intro {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.12em;
   }
   .meta-tail {
@@ -1110,7 +1456,7 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
     aspect-ratio: 380 / 307;
   }
   .canvas-stats {
-    font-size: 10px;
+    font-size: 12px;
     top: 10px;
     left: 12px;
   }
@@ -1154,7 +1500,9 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
    make others vanish — keep the full constellation visible at all
    times. Wires and ring labels still dim for focus guidance. */
 @media (hover: none) and (pointer: coarse) {
-  .canvas--orbital .node.is-dim { opacity: 1; }
+  .canvas--orbital .node.is-dim {
+    opacity: 1;
+  }
 }
 
 @media (hover: none) {
@@ -1174,13 +1522,158 @@ html.scroll-style-atlas::-webkit-scrollbar-thumb:hover {
     opacity: 0.85;
     fill: inherit;
   }
-  .kv li .v.v--ref:hover { filter: none; }
-  .dossier__link:hover { border-bottom-color: var(--rule-soft); }
-  .dossier__tip:hover { text-decoration-color: var(--rule-soft); }
+  .kv li .v.v--ref:hover {
+    filter: none;
+  }
+  .dossier__link:hover {
+    border-bottom-color: var(--rule-soft);
+  }
+  .dossier__tip:hover {
+    text-decoration-color: var(--rule-soft);
+  }
   .legend-cta:hover {
     color: var(--red);
     letter-spacing: 0.04em;
   }
-  .view-toggle__btn:hover { color: inherit; }
+  .view-toggle__btn:hover {
+    color: inherit;
+  }
 }
 
+/* ============================================================
+   ATLAS r64 — the fixes the Terminal Atlas worked out on this
+   same composition and handed back. Everything here is scoped
+   to .ai-atlas-root, as the rest of this sheet is.
+   ============================================================ */
+
+/* The dossier heading sits inside the scrolling frame and wraps, instead of
+   being pinned over the text and measured in JavaScript. */
+.ai-atlas-root .panel--dossier {
+  padding: 20px 16px 16px;
+  min-height: 480px;
+  max-height: 70dvh;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  transition: none;
+}
+
+.ai-atlas-root .panel--dossier .panel__title {
+  position: static;
+  display: block;
+  max-width: none;
+  min-height: 60px;
+  padding: 0 32px 0 0;
+  margin: 0 0 16px;
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.ai-atlas-root .panel--dossier .panel__corner-mark {
+  top: 20px;
+  right: 16px;
+}
+
+/* Every topic, reachable without hunting for its node. */
+.ai-atlas-root .topic-picker {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.ai-atlas-root .topic-picker select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+/* Anything that answers a click answers a keyboard, and says so. */
+.ai-atlas-root button:focus-visible,
+.ai-atlas-root [role='button']:focus-visible,
+.ai-atlas-root a:focus-visible,
+.ai-atlas-root select:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+}
+
+/* The views change over rather than cutting. */
+.ai-atlas-root .view-stage {
+  transition: opacity 240ms ease;
+}
+
+.ai-atlas-root .view-stage.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* A ring is lit by the dot crossing it, on the one clock the script paints
+   from; hover still owns the full red. */
+.ai-atlas-root .security-canvas .ring__circle {
+  stroke: color-mix(
+    in srgb,
+    var(--red) calc(var(--security-passage, 0) * 100%),
+    var(--rule)
+  );
+  stroke-width: calc(1px + var(--security-passage, 0) * 1px);
+}
+
+.ai-atlas-root .security-canvas .ring__circle.is-glow {
+  stroke: var(--red);
+}
+
+/* Callouts end inside the frame: the rail scrolls, the canvas does not grow,
+   and the last two rows are held shorter so they cannot cross the border. */
+.ai-atlas-root .sec-callout {
+  overflow: auto;
+  max-height: 32%;
+  scrollbar-gutter: stable;
+}
+
+.ai-atlas-root .security-canvas .sec-callout[data-layer='5'],
+.ai-atlas-root .security-canvas .sec-callout[data-layer='6'] {
+  max-height: 24%;
+  overscroll-behavior: contain;
+}
+
+/* Stacked, there is room again, so nothing is capped or scrolled inside. */
+@media (max-width: 1100px) {
+  .ai-atlas-root .security-canvas .sec-callout[data-layer] {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 900px) {
+  .ai-atlas-root .panel--dossier {
+    min-height: 400px;
+  }
+
+  .ai-atlas-root .security-canvas .sec-callout {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-atlas-root .security-pulse {
+    display: none;
+  }
+
+  .ai-atlas-root .view-stage {
+    transition: none;
+  }
+}

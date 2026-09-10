@@ -7,6 +7,8 @@ import React, {
   useState,
 } from 'react';
 
+import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
+
 import SeoGenerator from '@components/SeoGenerator';
 
 const VIEW = 1500;
@@ -125,6 +127,8 @@ const STRINGS = {
     legendArticleCta: 'Read why do you need this',
     legendArticleUrl:
       'https://keepsimple.io/articles/agent-orchestration-for-career',
+    topicsLabel: 'Topics',
+    topicsAll: 'The Atlas',
     toggleEnvironment: 'Environment',
     toggleSecurity: 'Security',
     doctrineTitle: 'Doctrine',
@@ -351,6 +355,8 @@ const STRINGS = {
     legendArticleCta: 'Прочитайте, зачем это нужно',
     legendArticleUrl:
       'https://keepsimple.io/ru/articles/agent-orchestration-for-career',
+    topicsLabel: 'Разделы',
+    topicsAll: 'Атлас',
     toggleEnvironment: 'Среда',
     toggleSecurity: 'Защита',
     doctrineTitle: 'Доктрина',
@@ -686,6 +692,15 @@ function NodeBody({
       <div className="node-wrap">
         <div
           className={klass}
+          role="button"
+          tabIndex={0}
+          aria-label={node.label}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect(node.id);
+            }
+          }}
           onClick={() => onSelect(node.id)}
           onMouseEnter={() => onSelect(node.id, 'hover')}
           onMouseLeave={() => onSelect(null, 'hover')}
@@ -971,16 +986,10 @@ function Dossier({ data, onSelect, dossiers }: any) {
     () => new Set(Object.keys(dossiers || {})),
     [dossiers],
   );
-  const titleRef = useRef<HTMLSpanElement | null>(null);
-  const [titleH, setTitleH] = useState(20);
-  useLayoutEffect(() => {
-    if (titleRef.current) setTitleH(titleRef.current.offsetHeight);
-  }, [data.title]);
-  const padTop = Math.max(28, titleH + 14);
   return (
-    <div className="panel panel--dossier" style={{ paddingTop: padTop + 'px' }}>
+    <div className="panel panel--dossier">
       <span className="panel__corner-mark">印</span>
-      <span ref={titleRef} className="panel__title" key={'t-' + data.title}>
+      <span className="panel__title" key={'t-' + data.title}>
         {data.title} <span className="cjk">{data.cjk}</span>
       </span>
       <div className="dossier__body" key={data.title}>
@@ -1027,6 +1036,14 @@ function Dossier({ data, onSelect, dossiers }: any) {
                 <span
                   className={'v ' + (r.cls || '') + (refId ? ' v--ref' : '')}
                   {...(refHandlers || {})}
+                  role={refId ? 'button' : undefined}
+                  tabIndex={refId ? 0 : undefined}
+                  onKeyDown={e => {
+                    if (refId && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault();
+                      onSelect(refId);
+                    }
+                  }}
                 >
                   {r.cls === 'red' && <Diamond kind="red" />}
                   {r.cls === 'blue' && <Diamond kind="blue" />}
@@ -1248,6 +1265,24 @@ function ViewToggle({
   setMode: (m: ViewMode) => void;
   t: T;
 }) {
+  const pending = useRef(false);
+  const change = (next: ViewMode) => {
+    if (next === mode || pending.current) return;
+    const stage = document.querySelector('.view-stage');
+    const instant = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    pending.current = true;
+    stage?.classList.add('is-leaving');
+    window.setTimeout(
+      () => {
+        setMode(next);
+        stage?.classList.remove('is-leaving');
+        pending.current = false;
+      },
+      instant ? 1 : 240,
+    );
+  };
   return (
     <div
       className="view-toggle"
@@ -1262,7 +1297,7 @@ function ViewToggle({
         className={
           'view-toggle__btn ' + (mode === 'environment' ? 'is-active' : '')
         }
-        onClick={() => setMode('environment')}
+        onClick={() => change('environment')}
       >
         {t.toggleEnvironment}
       </button>
@@ -1273,7 +1308,7 @@ function ViewToggle({
         className={
           'view-toggle__btn ' + (mode === 'security' ? 'is-active' : '')
         }
-        onClick={() => setMode('security')}
+        onClick={() => change('security')}
       >
         {t.toggleSecurity}
       </button>
@@ -1305,11 +1340,53 @@ function SecurityRings({
   const VS = 1500;
   const CX = 0;
   const CY = 0;
-  const ringRs = [0.95, 0.8, 0.65, 0.5, 0.36, 0.22];
+  const ringRs = securityRadii;
+  const passageRef = useRef<SVGSVGElement | null>(null);
+
+  // The dot's fall and each ring's light are painted from the same solved
+  // trajectory, so a ring brightens exactly when the dot crosses it. Reduced
+  // motion leaves the rings dark and the dot hidden.
+  useEffect(() => {
+    const svg = passageRef.current;
+    if (!svg) return;
+    const dot = svg.querySelector('.security-pulse');
+    const rings = svg.querySelectorAll<SVGCircleElement>('.ring__circle');
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    let start = 0;
+    const paint = (now: number) => {
+      const state = securityPassage(now - start);
+      dot?.setAttribute('cy', String(state.cy));
+      dot?.setAttribute('opacity', String(state.opacity));
+      rings.forEach((ring, index) =>
+        ring.style.setProperty(
+          '--security-passage',
+          String(state.rings[index] ?? 0),
+        ),
+      );
+      frame = requestAnimationFrame(paint);
+    };
+    const reset = () => {
+      cancelAnimationFrame(frame);
+      rings.forEach(ring => ring.style.setProperty('--security-passage', '0'));
+      dot?.setAttribute('opacity', '0');
+      if (!media.matches) {
+        start = performance.now();
+        frame = requestAnimationFrame(paint);
+      }
+    };
+    reset();
+    media.addEventListener('change', reset);
+    return () => {
+      cancelAnimationFrame(frame);
+      media.removeEventListener('change', reset);
+    };
+  }, []);
   const radius = (r: number) => (r * VS) / 2;
   const layers = t.securityLayers;
   return (
     <svg
+      ref={passageRef}
       viewBox={`${-VS / 2} ${-VS / 2 - TOP_PAD} ${VS} ${VS + TOP_PAD + BOT_PAD}`}
       className="orbital-svg"
       preserveAspectRatio="xMidYMid meet"
@@ -1409,25 +1486,15 @@ function SecurityRings({
         </text>
       </g>
 
-      {/* traveling pulse: outside → center */}
-      <circle r="6" fill="var(--red)" className="security-pulse">
-        <animate
-          attributeName="cy"
-          values={`${-radius(0.95)}; 0`}
-          dur="6.5s"
-          repeatCount="indefinite"
-          keyTimes="0; 1"
-          calcMode="spline"
-          keySplines="0.4 0 0.6 1"
-        />
-        <animate
-          attributeName="opacity"
-          values="0; 1; 1; 0"
-          dur="6.5s"
-          repeatCount="indefinite"
-          keyTimes="0; 0.08; 0.92; 1"
-        />
-      </circle>
+      {/* The dot falls on the same clock that lights the rings; both are
+          painted from securityPassage above. */}
+      <circle
+        r="6"
+        cy="-712.5"
+        opacity="0"
+        fill="var(--red)"
+        className="security-pulse"
+      />
     </svg>
   );
 }
@@ -1448,6 +1515,7 @@ function SecurityCallout({
   return (
     <div
       className={'sec-callout' + (isHovered ? ' is-glow' : '')}
+      data-layer={layer.n}
       style={position}
       onMouseEnter={() => onHover(layer.n)}
       onMouseLeave={() => onHover(null)}
@@ -2441,6 +2509,25 @@ function AiAtlasApp() {
         <aside className="rail">
           {viewMode === 'security' ? <DoctrinePanel t={t} /> : <Legend t={t} />}
           <ViewToggle mode={viewMode} setMode={setViewMode} t={t} />
+          <label className="topic-picker">
+            {t.topicsLabel}
+            <select
+              value={focusedNode || ''}
+              onChange={e => {
+                setViewMode('environment');
+                setFocusedNode(e.target.value || null);
+              }}
+            >
+              <option value="">{t.topicsAll}</option>
+              {Object.entries(data.dossiers as Record<string, any>).map(
+                ([id, entry]) => (
+                  <option key={id} value={id}>
+                    {entry.title}
+                  </option>
+                ),
+              )}
+            </select>
+          </label>
           <Dossier
             data={dossier}
             onSelect={onSelect}
