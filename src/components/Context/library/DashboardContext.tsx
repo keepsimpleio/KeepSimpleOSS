@@ -47,14 +47,23 @@ const DashboardContext = createContext<DashboardContextValue | undefined>(
 
 interface DashboardProviderProps {
   children: ReactNode;
+  /**
+   * The tags as the server read them for this request, anonymously. Without
+   * them the panel's first HTML says `No tags yet` to a reader who runs no
+   * scripts, whatever the library actually holds.
+   */
+  initialTags?: LibraryTag[];
 }
 
-export function DashboardProvider({ children }: DashboardProviderProps) {
+export function DashboardProvider({
+  children,
+  initialTags = [],
+}: DashboardProviderProps) {
   const { token } = useAuth();
   const { currentLibrary } = useGlobalState();
   const libraryId = currentLibrary?.id ?? null;
 
-  const [libraryTags, setLibraryTags] = useState<LibraryTag[]>([]);
+  const [libraryTags, setLibraryTags] = useState<LibraryTag[]>(initialTags);
   const [activeTagId, setActiveTagId] = useState<number | null>(null);
 
   const refreshLibraryTags = useCallback(async () => {

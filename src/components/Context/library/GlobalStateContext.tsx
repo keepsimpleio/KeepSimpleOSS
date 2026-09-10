@@ -98,11 +98,41 @@ interface GlobalStateProviderProps {
    * and a refresh never shows it open for a frame before folding.
    */
   initialSidebarCollapsed?: boolean;
+  /**
+   * The library as the server read it, anonymously, for this request. The
+   * panel's About, counts and Author are published here by `LibraryTemplate`
+   * after it loads, which is a paint too late for a reader who runs no
+   * scripts: seeded here, the first HTML already carries them.
+   */
+  initialLibrary?: ILibrary | null;
 }
+
+/** The panel's reading of the owner, from the same fields the template uses. */
+const ownerOf = (library: ILibrary | null): LibraryOwner | null => {
+  if (!library) return null;
+
+  const owner = library.attributes.user?.data;
+
+  return {
+    id: owner?.id,
+    username: owner?.attributes.username,
+    name: owner?.attributes.name,
+    picture: owner?.attributes.picture,
+    avatar: library.attributes.avatar?.data?.attributes?.url,
+    aboutMe: library.attributes.aboutMe,
+  };
+};
+
+/** Shelves in their saved sequence, as the page draws them. */
+const shelvesOf = (library: ILibrary | null): StrapiSingleShelfEntry[] =>
+  [...(library?.attributes.singleShelves?.data ?? [])].sort(
+    (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+  );
 
 export function GlobalStateProvider({
   children,
   initialSidebarCollapsed = false,
+  initialLibrary = null,
 }: GlobalStateProviderProps) {
   const { data: session } = useSession();
   const { accountData, token } = useAuth();
@@ -118,9 +148,13 @@ export function GlobalStateProvider({
   const [isLibrariesLoading, setIsLibrariesLoading] = useState(false);
   const [currentShelves, setCurrentShelves] = useState<
     StrapiSingleShelfEntry[]
-  >([]);
-  const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(null);
-  const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
+  >(() => shelvesOf(initialLibrary));
+  const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(() =>
+    ownerOf(initialLibrary),
+  );
+  const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(
+    initialLibrary,
+  );
   const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
 

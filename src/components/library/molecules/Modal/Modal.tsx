@@ -173,6 +173,14 @@ export function Modal(props: ModalProps): JSX.Element {
 
   useLockBodyScroll(true);
 
+  // A dialog is drawn into the document body, and on the server there is no
+  // body to draw into: since the library began arriving server-rendered, an
+  // address naming an object opened its overview while the page was still
+  // being written and took the whole response down with it. The page renders
+  // without the dialog and the browser opens it on arrival, which is what it
+  // did before the shelves came with the response.
+  if (typeof document === 'undefined') return null;
+
   return createPortal(
     <div className="library">
       <div
