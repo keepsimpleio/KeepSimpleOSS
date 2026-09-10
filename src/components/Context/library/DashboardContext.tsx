@@ -7,6 +7,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -81,9 +82,17 @@ export function DashboardProvider({
   }, [refreshLibraryTags, token]);
 
   // A different library is a different vocabulary, so nothing filters until
-  // its own tags arrive.
+  // its own tags arrive. Only a change from one library to another counts:
+  // the first arrival (null to an id) used to fire this too, and since the
+  // tags come with the page the address's `#deep-work` had already been
+  // answered by then, so the reset undid it and the writer wiped the hash.
+  // That is how https://keepsimple.io/library/wolf#negotiation opened the
+  // library unfiltered on 2026-09-10.
+  const previousLibraryId = useRef<number | null>(null);
   useEffect(() => {
-    setActiveTagId(null);
+    const previous = previousLibraryId.current;
+    previousLibraryId.current = libraryId;
+    if (previous != null && previous !== libraryId) setActiveTagId(null);
   }, [libraryId]);
 
   // A tag that is gone (deleted, or no longer visible to this viewer) cannot
