@@ -55,15 +55,24 @@ import { ownerOfLibrary } from '@lib/library/owner';
 const MECHANISM = 'library.ai-shelf';
 /** What the shelf says while the engine works. */
 const ROLLING_NOTE = 'Stocking the shelf. This takes a minute.';
-/** A roll that has not landed in this long is treated as gone: the process
- * that was running it may have been recreated under it. */
+/** A roll whose heartbeat is this old is treated as gone: the process that
+ * was running it may have been recreated under it. A running roll renews
+ * the marker every ROLL_BEAT_MS, so a legitimately long roll (the relay now
+ * polls a job and one call may take minutes) is never mistaken for a dead
+ * one. */
 const ROLL_STALE_MS = 5 * 60 * 1000;
+/** How often a running roll renews its marker. Comfortably inside the window
+ * above, so one missed beat does not declare the roll dead. */
+const ROLL_BEAT_MS = 60 * 1000;
 /** Titles remembered per shelf, so the prompt cannot grow without end. */
 const HISTORY_CAP = 200;
 
 /** One roll per library at a time in this process: two at once would each
- * read the board before the other wrote it, and one would be lost. The store
- * carries the same fact across processes. */
+ * read the board before the other wrote it, and one would be lost. This set
+ * is in-process only, and so is the store's write queue; the persisted
+ * marker below is a heartbeat, not a lock. The shelf runs in one container
+ * per host, so a second process cannot start a roll for the same library.
+ * Serving this route from replicas would need a real cross-process lock. */
 const rolling = new Set<number>();
 
 /** True when no roll is under way, or the one recorded is old enough that
@@ -419,6 +428,16 @@ async function stockTheBoard(request: StockRequest): Promise<void> {
   const { libraryId, digest, board, preference, banned, books, action } =
     request;
   const started = Date.now();
+  // The marker the shelf polls on is renewed while the work runs, so a roll
+  // that legitimately outlives ROLL_STALE_MS is not declared stale under
+  // itself and rolled a second time.
+  const beat = setInterval(() => {
+    void updateLibrary(libraryId, current =>
+      current.rollingSince
+        ? { ...current, rollingSince: new Date().toISOString() }
+        : current,
+    ).catch(() => undefined);
+  }, ROLL_BEAT_MS);
   try {
     // A roll keeps what the owner locked, where they locked it, and deals
     // fresh into every other place.
@@ -541,6 +560,7 @@ async function stockTheBoard(request: StockRequest): Promise<void> {
       error: error instanceof Error ? error.message : 'unknown',
     });
   } finally {
+    clearInterval(beat);
     rolling.delete(libraryId);
   }
 }

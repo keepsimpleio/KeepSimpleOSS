@@ -189,7 +189,7 @@ const features: Record<string, string[]> = {
     'MemPalace is the store where decisions survive. An agent files what we agreed, and a new session searches it before asking me the same question again.',
     'It is organized by project and searchable by every agent.',
   ],
-  // TILE: Skills
+  // card: Skills
   skills: [
     'A skill is a written method for one kind of work: how to release, how to review, how to write in the house style. The agent opens the matching skill and follows it instead of improvising a process each time.',
   ],

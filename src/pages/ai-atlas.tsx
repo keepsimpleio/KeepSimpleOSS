@@ -638,8 +638,34 @@ function FeatureModal({ id, dossiers, onSelect, onClose, t }: any) {
   useEffect(() => {
     if (!held || closing) return;
     cardRef.current?.focus({ preventScroll: true });
+    /* Tab stays inside the dialog: without this a keyboard user walks
+       straight past the close button onto the map behind the scrim. */
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const card = cardRef.current;
+      if (!card) return;
+      const stops = Array.from(
+        card.querySelectorAll<HTMLElement>(
+          'button, [href], select, textarea, input, [tabindex]:not([tabindex="-1"]), [role="button"]',
+        ),
+      ).filter(el => el.offsetParent !== null || el === card);
+      const first = stops[0] || card;
+      const last = stops[stops.length - 1] || card;
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === card)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (active && !card.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -1433,7 +1459,12 @@ export function AiAtlasApp({
   }
 
   const focusId = hoverNode || focusedNode;
-  const focusedDossier = focusId && data.dossiers[focusId];
+  /* A click opens the modal, and the modal owns the clicked card. The rail
+     behind the scrim must not show the same text twice, so it falls back to
+     the intro until the pointer picks something else. */
+  const modalOpen = viewMode === 'environment' && !!focusedNode;
+  const railFocusId = hoverNode || (modalOpen ? null : focusedNode);
+  const focusedDossier = railFocusId && data.dossiers[railFocusId];
   let dossier =
     viewMode === 'security'
       ? buildSecurityIntroDossier(t)
@@ -1444,8 +1475,8 @@ export function AiAtlasApp({
      `claudeMdLines` on the dossier itself when the metrics endpoint
      doesn't (yet) know about the entity — keeps the row format uniform. */
   const metricsLines =
-    focusId && metrics?.claudeMdLines?.[focusId] != null
-      ? metrics.claudeMdLines[focusId]
+    railFocusId && metrics?.claudeMdLines?.[railFocusId] != null
+      ? metrics.claudeMdLines[railFocusId]
       : null;
   const staticLines =
     focusedDossier && typeof (focusedDossier as any).claudeMdLines === 'number'

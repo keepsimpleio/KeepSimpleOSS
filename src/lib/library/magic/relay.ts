@@ -280,7 +280,15 @@ async function collect(
   );
 }
 
-/** Hand the call over, collect it, and deal it again if the relay lost it. */
+/** Hand the call over, collect it, and deal it again if the relay lost it.
+ *
+ * A poll answered 404 is read as the job dying with the relay, which is true
+ * while the relay is the single container it is today: job state lives in
+ * that process, so a lost job is a job nobody is running and dealing it again
+ * pays for nothing twice. Behind more than one replica a poll could reach an
+ * instance that never saw the job and 404 while the original still runs, and
+ * this would pay twice; that would need the relay to carry job state outside
+ * the process. */
 async function askAsJob(
   url: string,
   request: RelayRequest,

@@ -18,11 +18,17 @@ const guide = JSON.parse(
 const src = readFileSync(new URL('src/lib/aiAtlas/features.ts', root), 'utf8');
 
 const keys = [...src.matchAll(/^ {2}'?([a-z0-9-]+)'?: \[$/gm)].map(m => m[1]);
+/* Mirror adapter.ts exactly: a system node keeps its own id unless that id
+   also names an entry, and only then is it prefixed. A looser set here would
+   pass a key the page never reads, which is the one thing this script exists
+   to catch. */
+const entryIds = new Set(guide.entries.map(e => e.id));
 const ids = new Set([
   ...guide.steps.map(s => 'stage-' + s.id),
-  ...guide.entries.map(e => e.id),
-  ...guide.system.nodes.map(n => n.id),
-  ...guide.system.nodes.map(n => 'system-' + n.id),
+  ...entryIds,
+  ...guide.system.nodes.map(n =>
+    entryIds.has(n.id) ? 'system-' + n.id : n.id,
+  ),
 ]);
 
 const dead = keys.filter(k => !ids.has(k));

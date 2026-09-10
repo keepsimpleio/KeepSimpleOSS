@@ -13,7 +13,7 @@
    never leak into the rest of the site.
    ============================================================ */
 
-@import url('/ai-atlas/fonts.css?v=57');
+@import url('/ai-atlas/fonts.css?v=58');
 
 /* Match KeepSimple's global navbar to the Atlas paper while this
    page is mounted. Light mode only; dark mode handled separately. */
@@ -1840,7 +1840,11 @@ body.ai-atlas-page select:focus-visible {
   right: 16px;
 }
 /* Passage intensity is computed from the same clock as the moving dot. */
+/* The passage drives stroke and width on every animation frame, so the
+   0.18s transition the map rings carry would fight it and lag the light
+   behind the dot. Opacity still eases; nothing else here needs to. */
 .ai-atlas-root .security-canvas .ring__circle {
+  transition: opacity 0.18s ease;
   stroke: color-mix(
     in srgb,
     var(--red) calc(var(--security-passage, 0) * 100%),

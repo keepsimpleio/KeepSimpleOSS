@@ -78,7 +78,9 @@ export const MAGIC_DAILY_CALL_CAP = 60;
 let queue: Promise<unknown> = Promise.resolve();
 
 /** Reads and writes are serialised: two requests for one library at once
- * must not lose each other's picks. */
+ * must not lose each other's picks. This is one promise chain inside one
+ * process, not a file lock: the shelf runs in a single container per host,
+ * and serving it from replicas would need a real cross-process lock. */
 const serial = <T>(task: () => Promise<T>): Promise<T> => {
   const run = queue.then(task, task);
   queue = run.catch(() => undefined);

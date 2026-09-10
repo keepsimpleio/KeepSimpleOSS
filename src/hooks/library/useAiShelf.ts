@@ -97,7 +97,15 @@ export function useAiShelf(
       polls.current = 0;
       return;
     }
-    if (polls.current >= POLL_LIMIT) return;
+    // Out of polls: the roll is either still running past its allowance or
+    // it died in a way the server has not noticed. Say so instead of leaving
+    // the shelf saying "stocking" for the rest of the session.
+    if (polls.current >= POLL_LIMIT) {
+      setError(
+        'The shelf is still working. Reload the page to see where it got to.',
+      );
+      return;
+    }
     const seq = sequence.current;
     const timer = window.setTimeout(() => {
       polls.current += 1;
