@@ -528,9 +528,9 @@ The algorithm, agreed with Wolf on 2026-09-10 and kept in
    when they disagree the name wins on subject and the books on the rest.
 3. Eligibility: a shelf without books gets no pick. A percent is shown only
    once the library holds three rated books (`MAGIC_MIN_RATED_FOR_MATCH`).
-4. One model call per batch of up to ten shelves (`claude-opus-5`, tool
-   use, the system prompt cached), asking for five ranked candidates per
-   shelf, each with a rubric of five integers 0..5: theme, notes, tags,
+4. One model call per batch of up to ten shelves, Opus 5 at high effort on
+   Wolf's subscriptions through `claude-relay` (below), asking for one JSON
+   object with five ranked candidates per shelf, each with a rubric of five integers 0..5: theme, notes, tags,
    difficulty, distance from the negative examples. Books in the library,
    titles the owner rolled past on that shelf and banned titles are excluded
    in the prompt and again on the way out.
@@ -556,6 +556,26 @@ The algorithm, agreed with Wolf on 2026-09-10 and kept in
    stdout: outcome, shelves run, ready and empty counts, model calls,
    calibration, unverified count, duration and the picks by normalised title.
    Never the token or the key.
+
+### Paid for by the subscriptions, never an API key
+
+Wolf's rule (2026-09-10): everything AI in the Library, for every owner,
+runs on his Claude subscriptions, the Terminal's tracks t1, t2 and t3, in
+that order, and the owner never notices which. No paid API. The tokens never
+enter this app: `src/lib/library/magic/relay.ts` sends an Anthropic Messages
+request to `claude-relay` (The Order's container on the `wolf-shared`
+network, `wolfs-server/docs/claude-relay.md`), which holds the tracks,
+tries t1 first, moves to t2 and then t3 on a rate limit or a dead token, and
+names the track that served in `x-relay-slot`. Opus runs through the real
+Claude Code CLI inside the relay, one turn, no tools, so the schema is asked
+for in the prompt and the JSON is read out of the text. Every journal line
+carries `served` (track, model, transport); `tracksExhausted` marks a run
+where no track answered or the relay was out of reach, and the owner reads
+"The engine is out of reach right now" on the card. Runtime values, both
+provisioned by The Order per container: `CLAUDE_RELAY_URL` (default
+`http://claude-relay:8080/v1/messages`) and `CLAUDE_RELAY_TOKEN`. The
+`ANTHROPIC_API_KEY` and `OPENAI_API_KEY` on this host are not read by the
+Library.
 
 Route: `POST /api/library/magic-book` with the owner's Strapi session as a
 Bearer token and `{ libraryId, action: 'load' | 'reroll', shelfId? }`. The

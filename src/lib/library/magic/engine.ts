@@ -4,17 +4,9 @@ import type {
   MagicShelfResult,
 } from '@local-types/library/magicBook';
 
-import {
-  ANTHROPIC_KEY,
-  ANTHROPIC_URL,
-  anthropicHeaders,
-  OPENAI_KEY,
-  OPENAI_URL,
-  openAIHeaders,
-} from '@lib/widget/llmClient';
-
 import type { DigestBook, DigestShelf, LibraryDigest } from './digest';
 import { normaliseTitle } from './digest';
+import { askRelay, parseJsonReply, RelayError } from './relay';
 import { verifyBook } from './verify';
 
 /**
@@ -27,10 +19,15 @@ import { verifyBook } from './verify';
  */
 
 export const MAGIC_MODEL = 'claude-opus-5';
-/** Stands in only while the Anthropic key cannot pay or is absent, so the
- * shelf still fills on DEV; the journal names which engine answered. */
-export const MAGIC_FALLBACK_MODEL = 'gpt-4.1';
-export type MagicEngine = typeof MAGIC_MODEL | typeof MAGIC_FALLBACK_MODEL;
+/** Wolf's setting for the Library's picks: Opus 5 at high effort. */
+export const MAGIC_EFFORT = 'high' as const;
+
+/** Which subscription track and model answered a run. */
+export interface MagicServed {
+  slot: string;
+  model: string;
+  transport: string;
+}
 /** Shelves per model call: beyond this the batch is chunked. */
 export const MAGIC_BATCH_SIZE = 10;
 /** Candidates asked for per shelf: the first verified one stands. */
@@ -42,7 +39,6 @@ const heldOutCount = (rated: number) => (rated >= 10 ? 5 : rated >= 6 ? 3 : 0);
 /** Each rating point the model is off moves the shown percent this much. */
 const CALIBRATION_PERCENT_PER_POINT = 8;
 const CALIBRATION_CLAMP = 16;
-const MODEL_TIMEOUT_MS = 120_000;
 
 /** Weights of the rubric dimensions. A dimension the library carries no
  * data for is dropped and the rest are renormalised. */
@@ -217,118 +213,38 @@ const buildUserBlock = (
   return lines.join('\n');
 };
 
-async function callClaude(userBlock: string): Promise<ModelAnswer | null> {
-  if (!ANTHROPIC_KEY) throw new Error('ANTHROPIC_API_KEY is not set');
-  const r = await fetch(ANTHROPIC_URL, {
-    method: 'POST',
-    headers: anthropicHeaders(),
-    signal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
-    body: JSON.stringify({
-      model: MAGIC_MODEL,
-      max_tokens: 6000,
-      system: [
-        { type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } },
-      ],
-      messages: [{ role: 'user', content: userBlock }],
-      tools: [
-        {
-          name: 'recommend',
-          description:
-            'Submit the candidates per shelf and the calibration predictions.',
-          input_schema: TOOL_SCHEMA,
-        },
-      ],
-      tool_choice: { type: 'tool', name: 'recommend' },
-    }),
-  });
-  if (!r.ok) {
-    const text = await r.text().catch(() => '');
-    throw new Error(`anthropic ${r.status} ${text.slice(0, 200)}`);
-  }
-  const data = (await r.json()) as {
-    content?: Array<{ type?: string; name?: string; input?: ModelAnswer }>;
-  };
-  const tool = (data.content ?? []).find(
-    b => b?.type === 'tool_use' && b?.name === 'recommend',
-  );
-  return tool?.input ?? null;
-}
-
-async function callOpenAI(userBlock: string): Promise<ModelAnswer | null> {
-  if (!OPENAI_KEY) throw new Error('OPENAI_API_KEY is not set');
-  const r = await fetch(OPENAI_URL, {
-    method: 'POST',
-    headers: openAIHeaders(),
-    signal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
-    body: JSON.stringify({
-      model: MAGIC_FALLBACK_MODEL,
-      temperature: 0.4,
-      max_tokens: 6000,
-      messages: [
-        { role: 'system', content: SYSTEM },
-        { role: 'user', content: userBlock },
-      ],
-      tools: [
-        {
-          type: 'function',
-          function: {
-            name: 'recommend',
-            description:
-              'Submit the candidates per shelf and the calibration predictions.',
-            parameters: TOOL_SCHEMA,
-          },
-        },
-      ],
-      tool_choice: { type: 'function', function: { name: 'recommend' } },
-    }),
-  });
-  if (!r.ok) {
-    const text = await r.text().catch(() => '');
-    throw new Error(`openai ${r.status} ${text.slice(0, 200)}`);
-  }
-  const data = (await r.json()) as {
-    choices?: Array<{
-      message?: {
-        tool_calls?: Array<{
-          function?: { name?: string; arguments?: string };
-        }>;
-      };
-    }>;
-  };
-  const call = data.choices?.[0]?.message?.tool_calls?.find(
-    c => c.function?.name === 'recommend',
-  );
-  if (!call?.function?.arguments) return null;
-  return JSON.parse(call.function.arguments) as ModelAnswer;
-}
-
 /**
- * Opus 5 answers. When it cannot (no key, no credit, an outage) and an
- * OpenAI key is present, the fallback answers the same prompt with the same
- * schema, and the run records which one it was.
+ * One turn on the subscription relay. The relay runs Opus through the Claude
+ * Code CLI, which answers in text and takes no tools, so the schema is put
+ * in the prompt and the JSON is read back out of the text. Every failure
+ * the relay could not cure with another track surfaces as a RelayError.
  */
 async function callModel(
   userBlock: string,
-): Promise<{
-  answer: ModelAnswer | null;
-  engine: MagicEngine;
-  errors: string[];
-}> {
-  const errors: string[] = [];
+): Promise<{ answer: ModelAnswer | null; served: MagicServed }> {
+  const reply = await askRelay({
+    model: MAGIC_MODEL,
+    effort: MAGIC_EFFORT,
+    maxTokens: 6000,
+    system: `${SYSTEM}
+
+OUTPUT. Answer with one JSON object and nothing else, no prose before or after it, matching this JSON schema exactly:
+${JSON.stringify(TOOL_SCHEMA)}`,
+    prompt: userBlock,
+  });
+  const served = {
+    slot: reply.slot,
+    model: reply.model,
+    transport: reply.transport,
+  };
+  let answer: ModelAnswer | null = null;
   try {
-    const answer = await callClaude(userBlock);
-    return { answer, engine: MAGIC_MODEL, errors };
-  } catch (error) {
-    errors.push(error instanceof Error ? error.message : 'anthropic');
+    answer = parseJsonReply<ModelAnswer>(reply.text);
+  } catch {
+    answer = null;
   }
-  if (!OPENAI_KEY) throw new Error(errors.join('; '));
-  try {
-    const answer = await callOpenAI(userBlock);
-    return { answer, engine: MAGIC_FALLBACK_MODEL, errors };
-  } catch (error) {
-    errors.push(error instanceof Error ? error.message : 'openai');
-    throw new Error(errors.join('; '));
-  }
+  if (answer && !Array.isArray(answer.shelves)) answer = null;
+  return { answer, served };
 }
 
 /** Held-out books: the strongest and weakest verdicts, spread over shelves,
@@ -412,8 +328,10 @@ export interface EngineRun {
   unverified: Record<number, string[]>;
   calibration: { offset: number; samples: number };
   errors: string[];
-  /** Which model answered, or null when none did. */
-  engine: MagicEngine | null;
+  /** Which track and model answered, or null when none did. */
+  served: MagicServed | null;
+  /** True when the relay reported every track failed, or is unreachable. */
+  tracksExhausted: boolean;
   /** Shelves whose run ended in a model failure rather than a verdict:
    * nothing about them is to be remembered, so the next load tries again. */
   failed: number[];
@@ -435,7 +353,8 @@ export async function runEngine(
   const errors: string[] = [];
   let calls = 0;
   let calibration = { offset: 0, samples: 0 };
-  let engine: MagicEngine | null = null;
+  let served: MagicServed | null = null;
+  let tracksExhausted = false;
   const failed: number[] = [];
 
   const eligible = shelves.filter(shelf => {
@@ -468,15 +387,20 @@ export async function runEngine(
           buildUserBlock(digest, batch, heldOut, batchExclusions, banned),
         );
         answer = reply.answer;
-        engine = reply.engine;
-        errors.push(...reply.errors);
+        served = reply.served;
       } catch (error) {
         errors.push(error instanceof Error ? error.message : 'model');
+        if (
+          error instanceof RelayError &&
+          (error.exhausted || error.status === 0)
+        ) {
+          tracksExhausted = true;
+        }
         failed.push(...batch.map(s => s.id));
         break;
       }
       if (!answer) {
-        errors.push('model returned no tool call');
+        errors.push('model reply was not the JSON asked for');
         failed.push(...batch.map(s => s.id));
         break;
       }
@@ -541,10 +465,21 @@ export async function runEngine(
       results.push({
         shelfId: shelf.id,
         status: 'empty',
-        note: 'Nothing could be confirmed for this shelf this time. Roll again.',
+        note: tracksExhausted
+          ? 'The engine is out of reach right now. Roll again in a while.'
+          : 'Nothing could be confirmed for this shelf this time. Roll again.',
       });
     }
   }
 
-  return { results, calls, unverified, calibration, errors, engine, failed };
+  return {
+    results,
+    calls,
+    unverified,
+    calibration,
+    errors,
+    served,
+    tracksExhausted,
+    failed,
+  };
 }

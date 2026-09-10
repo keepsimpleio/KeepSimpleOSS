@@ -202,7 +202,8 @@ export default async function handler(
         unverified: {},
         calibration: { offset: 0, samples: 0 },
         errors: [],
-        engine: null,
+        served: null,
+        tracksExhausted: false,
         failed: [],
       };
   results.push(...run.results);
@@ -243,7 +244,8 @@ export default async function handler(
     ready: run.results.filter(r => r.status === 'ready').length,
     empty: run.results.filter(r => r.status === 'empty').length,
     modelCalls: run.calls,
-    engine: run.engine,
+    served: run.served,
+    tracksExhausted: run.tracksExhausted,
     failed: run.failed,
     calibration: run.calibration,
     unverified: Object.values(run.unverified).flat().length,
