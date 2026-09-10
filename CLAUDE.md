@@ -569,3 +569,56 @@ being picked in the form as it is picked.
 - Stability passport: the ring's box never changes with the shelf count, the
   total is laid over it rather than in the flow, and the percentage column is
   sized for its widest reading. Hover changes colour only.
+
+## Library server rendering and its addresses
+
+A library is written into the response, not fetched after it. Until 2026-09-10
+`/library/wolf` answered with a shell: the title, the description and the
+schema.org list were in the first HTML and everything a reader could actually
+read arrived later by script, so a crawler that runs no scripts, which is most
+of them and every AI one, indexed `Loading`, `0 Books` and `No tags yet` on a
+page linked from elea.co, the CV and LinkedIn as proof of 165 read books.
+
+`getPublicLibraryView` makes that read once, on the request, always
+anonymously: the same read a visitor's browser would make, so a private shelf
+never reaches the page source even on the owner's own request. Its answer
+seeds `GlobalStateProvider`, `DashboardProvider` and `LibraryTemplate`, which
+is why the panel's About, counts, Author and tags stand in the first paint
+rather than a beat later. The browser still re-reads on mount, silently, so
+the owner's own view arrives without the shelves blinking out.
+
+- Book notes do not travel with the list. They are the longest thing a library
+  holds and no shelf draws them; the note rides with the one object the URL
+  names, in full, and lives on that book's own page.
+- Covers are trimmed to the fields the cards read. A cover carries six
+  renditions of metadata that nothing on this page opens.
+- Every object address carries its own metadata through `objectSeo`: its own
+  title, a description drawn from the owner's note, its cover as the shared
+  image, and a `Book`, `VideoObject` or `AudioObject` entry whose `review`
+  holds the note and the rating. Before this, 165 addresses answered with the
+  library's own title and picture, which reads as one page repeated.
+- A dialog cannot be server-rendered: `Modal` returns null where there is no
+  document, and the browser opens it on arrival. Any new portal follows that
+  rule or it takes the whole response down at an object's address.
+- `/library-sitemap.xml` lists every public library and every object on a
+  public shelf. Strapi's own sitemap plugin does not know these URLs: on
+  2026-09-10 not one of them was in it. `public/robots.txt` names both
+  sitemaps, but the file served on keepsimple.io is not this one (it carries a
+  line the repo never had), so a robots change reaches production only through
+  The Order.
+
+### Library object article design passport
+
+- Palette: existing paper tokens. `--white-200` page, `--beige` border,
+  `--black` ink, `--gray-darker` for the secondary line, `--brown` for links.
+  Night values come from the theme sheet; the component names no colour.
+- Typography: Source Serif 4 at 24px for the title and 16px for the author and
+  the note; Source Sans Pro at 12px, uppercase, 0.12em for the metadata line
+  and the tags; 14px for links.
+- Spacing and radius: 24px padding, 24px between cover and text, 720px cap,
+  132px cover, `--radius-control` throughout. 16px padding under 768px.
+- Motion passport: the link's underline solidifies over 200ms ease, disabled
+  under reduced motion. Nothing else moves.
+- Scrollbar passport: no scrollable surface.
+- Stability passport: the article is drawn once from the server and never
+  changes shape; hover changes colour only.

@@ -170,12 +170,15 @@ function SortableShelf(props: {
 export function LibraryTemplate({
   libraryId,
   hideSharePanel = false,
+  initialLibrary = null,
 }: LibraryTemplateProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [library, setLibrary] = useState<StrapiLibraryEntry | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [library, setLibrary] = useState<StrapiLibraryEntry | null>(
+    initialLibrary,
+  );
+  const [isLoading, setIsLoading] = useState(!initialLibrary);
   // Set when the library could not be fetched at all. Distinct from "no
   // library": that one renders the empty state, this one an error with retry.
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -330,8 +333,15 @@ export function LibraryTemplate({
     [libraryId, resolveLibraryId],
   );
 
+  // The server already painted this library, so the browser's own first read
+  // is a refresh rather than a load: silent, so the shelves on screen are
+  // never swapped for "Loading…" only to come back the same. Every later read
+  // (a sign-in, another library) is a real load again.
+  const serverPainted = useRef(!!initialLibrary);
+
   useEffect(() => {
-    void loadLibrary();
+    void loadLibrary(serverPainted.current ? { silent: true } : undefined);
+    serverPainted.current = false;
     return () => {
       loadSequence.current += 1;
     };
