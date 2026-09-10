@@ -45,7 +45,9 @@
     }
 
     .count {
-      color: var(--color-text);
+      // --color-text was never a token this project defines, so the count fell
+      // back to whatever it inherited. It is the paper ink, in both lights.
+      color: var(--gray-darkest);
       padding: 0 8px;
     }
   }

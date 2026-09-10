@@ -34,7 +34,7 @@ body.darkTheme .library {
   --gray-200: #e6ded3;
   --gray-300: #9a928a;
   --gray-400: #6f6862;
-  --gray-medium: #8f877e;
+  --gray-medium: #a89f95;
   --gray-light: #6a635c;
   --gray-darkest: #d8d0c5;
   --gray-darker: #cfc7bc;
@@ -55,6 +55,26 @@ body.darkTheme .library {
   --white-transparent-600: rgba(25, 22, 20, 0.78);
   --white-overlay: rgba(255, 255, 255, 0.06);
   --surface-overlay: rgba(255, 255, 255, 0.03);
+
+  /* Ink that was black at a fraction. On night paper it has to be light at a
+     fraction, or every label, counter, hint and placeholder that reads as
+     secondary by day disappears entirely: the tag form's labels, the rating
+     box's, the character counters, the notes editor's own. */
+  --black-transparent-300: rgba(239, 231, 220, 0.72);
+  --black-transparent-100: rgba(255, 255, 255, 0.16);
+  --black-transparent-200: rgba(255, 255, 255, 0.08);
+  /* The dim behind a dialog. A fifth of black over a light page is a veil;
+     over a dark one it is nothing, so the dialog floated with no ground. */
+  --black-100: rgba(0, 0, 0, 0.66);
+
+  /* Signal colours are lifted off the floor: every one of them is read as
+     text somewhere (a form error, the AI shelf's own heading, a success
+     line), and the daylight values sit under 4.5:1 on night paper. */
+  --red-500: #ff7f74;
+  --red-600: #ff9b9b;
+  --red-700: #ff8f7a;
+  --green-100: #6fd39a;
+  --purple-100: #b49bff;
 
   --focus-ring: #67c3ff;
 
