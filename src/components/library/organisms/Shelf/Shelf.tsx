@@ -72,6 +72,7 @@ import {
 import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Dropdown } from '@components/library/molecules/Dropdown';
 import { Input } from '@components/library/molecules/Input';
+import { MagicBookCard } from '@components/library/molecules/MagicBookCard';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { ShelfGhostRow } from '@components/library/molecules/ShelfGhostRow';
 import { Textarea } from '@components/library/molecules/Textarea';
@@ -204,6 +205,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     objectsOfShelf,
     dragHandleProps,
     isDragging = false,
+    magic = null,
   } = props;
   const shelfType = shelf.attributes.type as ObjectType;
   // Render in persisted-order sequence. Strapi's populate doesn't sort the
@@ -570,6 +572,16 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // nothing about the objects it hides.
   const canReorderObjects =
     isOwner && visibleObjectIds === null && objects.length > 1;
+
+  // The magic book is the owner's, on a real book shelf, with nothing
+  // filtered. Favorites and a tag's row are views of other shelves' books,
+  // and a pick made for them would be a pick for no shelf at all.
+  const showMagic =
+    isOwner &&
+    !favorites &&
+    !tagFilter &&
+    shelfType === 'book' &&
+    visibleObjectIds === null;
 
   // 4px of travel separates a drag from a click, the same threshold the
   // reorder grid in the object's edit screen uses.
@@ -1166,6 +1178,20 @@ export function Shelf(props: ShelfProps): JSX.Element {
                     {renderCard(obj)}
                   </SortableCardSlot>
                 ))}
+                {/* The magic book stands after the last book, outside the
+                    sortable set: it is not the owner's yet, so it cannot be
+                    dragged or dropped on. Absent while a search narrows the
+                    row, since a pick made for the whole shelf says nothing
+                    about a part of it. */}
+                {showMagic && magic && (
+                  <div className={styles.cardSlot} data-magic-book>
+                    <MagicBookCard
+                      slot={magic}
+                      shelfName={shelfName}
+                      ownerUsername={ownerUsername}
+                    />
+                  </div>
+                )}
               </div>
             </SortableContext>
           </div>

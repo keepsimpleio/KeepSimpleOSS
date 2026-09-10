@@ -31,7 +31,6 @@ import {
   LIBRARY_SHELVES_REFETCH_EVENT,
   MAX_SHELVES_PER_LIBRARY,
 } from '@constants/library/common';
-import { RECOMMENDED_SEED } from '@constants/library/recommendations';
 
 import type {
   StrapiLibraryEntry,
@@ -49,6 +48,8 @@ import type {
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useLibraryEditing from '@hooks/library/useLibraryEditing';
+import { useMagicBooks } from '@hooks/library/useMagicBooks';
+import usePanelHotkey from '@hooks/library/usePanelHotkey';
 import { usePresence } from '@hooks/library/usePresence';
 
 import {
@@ -196,7 +197,11 @@ export function LibraryTemplate({
     setCurrentLibrary,
     setIsCreateBlocked,
     setIsOwner,
+    toggleSidebarCollapsed,
   } = useGlobalState();
+
+  // Ctrl+\ throws the same switch as the panel's tab.
+  usePanelHotkey(toggleSidebarCollapsed);
   const {
     libraryTags,
     setLibraryTags,
@@ -260,6 +265,14 @@ export function LibraryTemplate({
   // shelves included (`viewAsOwner` still governs those). False on the server
   // and on first paint, so the markup hydrates identically everywhere.
   const canEditHere = viewAsOwner && supportsEditing;
+
+  // The magic books are read once the owner is known to be editing here:
+  // desktop, own library, not previewing as a guest. The engine's own store
+  // answers at once for shelves it has already picked for.
+  const magicFor = useMagicBooks(
+    library?.id ?? null,
+    canEditHere && !!accountData,
+  );
 
   // Creating a library is gated by the `can-create-library` feature flag from
   // GET /api/users/me. The gate only matters before a library exists — once one
@@ -1268,6 +1281,7 @@ export function LibraryTemplate({
       onShelfVisibilityChanged={handleShelfVisibilityChanged}
       dragHandleProps={dragHandleProps}
       isDragging={isDragging}
+      magic={magicFor(shelf.id)}
     />
   );
 
@@ -1449,7 +1463,7 @@ export function LibraryTemplate({
             <RecommendedShelf
               key={library.id}
               readOnly={!canEditHere}
-              pool={RECOMMENDED_SEED}
+              libraryId={library.id}
               collapsed={library.attributes.aiShelfCollapsed === true}
               onCollapsedChange={async collapsed => {
                 const id = library.id;

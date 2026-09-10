@@ -1,0 +1,221 @@
+// The status stands where the Librarian opener stood: the width of the
+// search field, on the pills row, in the same border language. The meter
+// inside it fills in the AI accent.
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 300px;
+  max-width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--beige);
+  border-radius: var(--radius-control);
+  background: var(--white);
+  color: var(--brown);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--purple-100);
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brown-border);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.label {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+// The meter takes what is left between the label and the number; the fill
+// is scaled, not resized, so the bar's box never changes.
+.meter {
+  flex: 1;
+  min-width: 40px;
+  height: 6px;
+  background: var(--off-white);
+  border: 1px solid var(--beige);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--purple-100);
+  transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.2, 0, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Sized for its widest reading, 100%, so the meter never moves with the score.
+.value {
+  flex-shrink: 0;
+  min-width: 44px;
+  text-align: right;
+  font-family: var(--font-source-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--black-rich);
+}
+
+// The ledger: one column, 400px, six quiet lines. Each line is a name, a
+// meter and a score; the counts behind a line are said on hover, not drawn,
+// so the eye reads six bars and one sentence.
+.modal {
+  width: 400px;
+  max-width: calc(100vw - 32px);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 32px 28px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.total {
+  flex-shrink: 0;
+  min-width: 72px;
+  font-family: var(--font-source-serif);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--black-rich);
+}
+
+.lede {
+  color: var(--gray-darker);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Name, meter, score on one line. The columns are fixed so the meters line
+// up and a longer name never nudges its bar.
+.row {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 16px;
+  height: 36px;
+  padding: 0 8px;
+  margin: 0 -8px;
+  border-radius: var(--radius-control);
+  transition: background 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--off-white);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.rowLabel {
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--black-rich);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowMeter {
+  display: block;
+  height: 4px;
+  background: var(--off-white);
+  border: 1px solid var(--beige);
+  overflow: hidden;
+}
+
+.rowFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--purple-100);
+  transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.2, 0, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.rowPoints {
+  text-align: right;
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  font-variant-numeric: tabular-nums;
+  color: var(--black-rich);
+}
+
+.rowMax {
+  color: var(--gray-darker);
+}
+
+// The one step that buys the most, as a sentence in the accent.
+.foot {
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--beige);
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--purple-100);
+}

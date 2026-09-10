@@ -180,6 +180,42 @@
   gap: 12px;
 }
 
+// Clear, beside the one pill a tag filter leaves: a word in the brown ink,
+// not a box, so the pill stays the only control that looks like a shelf.
+// Sized by the pill's line so the row keeps its height; a dotted underline
+// solidifies under the pointer, as links in the Library do.
+.clearTag {
+  flex-shrink: 0;
+  padding: 6px 4px;
+  border: none;
+  background: transparent;
+  color: var(--brown);
+  font-family: var(--font-source-serif);
+  font-size: 16px;
+  line-height: 22px;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--brown-100);
+    text-decoration-style: solid;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 .pillSlot {
   display: inline-flex;
   flex: 0 0 auto;
@@ -302,52 +338,14 @@
   }
 }
 
-// The Librarian opener: a rectangle the width of the search field, sitting
-// under it on the pills row. Same border language as the jump pills, in the
-// panel's caps voice. Disabled while the agent is being built.
-.librarian {
+// AI accuracy stands where the Librarian opener stood: the width of the
+// search field, under it on the pills row, at the right edge.
+.accuracySlot {
   grid-area: librarian;
   justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 300px;
   max-width: 100%;
-  height: 44px;
-  padding: 0 16px;
-  border: 2px solid var(--beige);
-  border-radius: var(--radius-control);
-  background: var(--white);
-  color: var(--brown);
-  font-family: inherit;
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease;
-
-  svg {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-  }
-
-  &:hover:not(:disabled),
-  &:focus-visible {
-    border-color: var(--brown-border);
-  }
-
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 
   @media (max-width: 768px) {
-    width: 100%;
     justify-self: stretch;
   }
 }
@@ -422,15 +420,6 @@
       transition: none;
     }
   }
-}
-
-.librarianLabel {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1;
-  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {

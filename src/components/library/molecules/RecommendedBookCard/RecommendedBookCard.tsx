@@ -3,7 +3,7 @@ import React, { JSX, useMemo, useRef, useState } from 'react';
 
 import type { IObject } from '@local-types/library/object';
 
-import { BanIcon, LockIcon } from '@icons/library/svg';
+import { BanIcon, LockIcon, SparkleIcon } from '@icons/library/svg';
 
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
@@ -60,17 +60,35 @@ export function RecommendedBookCard({
   }, []);
   const dossierId = `recommended-dossier-${serial}`;
   const object = useMemo(() => asObject(book, serial), [book, serial]);
+  const stretch = book.kind === 'stretch';
+  // A stretch pick is not scored for fit and does not claim to be: what it
+  // shows is how far it reaches, and the ground it opens.
+  const scoreLabel = stretch ? 'Reach' : 'Match';
   const rows = useMemo(() => {
     const list: { label: string; value: string }[] = [];
     if (book.match != null)
-      list.push({ label: 'Match', value: `${book.match}%` });
+      list.push({ label: scoreLabel, value: `${book.match}%` });
+    if (book.newGround)
+      list.push({ label: 'New ground', value: book.newGround });
     if (book.source) list.push({ label: 'Source', value: book.source.name });
     return list;
-  }, [book.match, book.source]);
+  }, [book.match, book.newGround, book.source, scoreLabel]);
 
-  const state = banned ? 'banned' : locked ? 'locked' : 'open';
+  const state = banned
+    ? 'banned'
+    : locked
+      ? 'locked'
+      : stretch
+        ? 'stretch'
+        : 'open';
   const stateLabel =
-    state === 'banned' ? 'banned' : state === 'locked' ? 'locked in' : '';
+    state === 'banned'
+      ? 'banned'
+      : state === 'locked'
+        ? 'locked in'
+        : state === 'stretch'
+          ? 'new ground'
+          : '';
 
   return (
     <div className={cn(styles.row, className)}>
@@ -121,7 +139,9 @@ export function RecommendedBookCard({
           )}
 
           {book.match != null && (
-            <span className={styles.match}>{book.match}% match</span>
+            <span className={styles.match}>
+              {book.match}% {stretch ? 'reach' : 'match'}
+            </span>
           )}
 
           {/* The pick's standing, pinned at the head of the cover. Held in
@@ -130,11 +150,22 @@ export function RecommendedBookCard({
             className={cn(styles.status, {
               [styles.statusLocked]: state === 'locked',
               [styles.statusBanned]: state === 'banned',
+              [styles.statusStretch]: state === 'stretch',
             })}
             aria-hidden={state === 'open' || undefined}
           >
-            {state === 'banned' ? <BanIcon /> : <LockIcon />}
-            {state === 'banned' ? 'Banned' : 'Locked'}
+            {state === 'banned' ? (
+              <BanIcon />
+            ) : state === 'stretch' ? (
+              <SparkleIcon />
+            ) : (
+              <LockIcon />
+            )}
+            {state === 'banned'
+              ? 'Banned'
+              : state === 'stretch'
+                ? 'New ground'
+                : 'Locked'}
           </span>
 
           {!readOnly && (
@@ -200,7 +231,9 @@ export function RecommendedBookCard({
             ? 'Banned'
             : state === 'locked'
               ? 'Locked in'
-              : 'Recommended'
+              : state === 'stretch'
+                ? 'New ground'
+                : 'Recommended'
         }
         rows={rows}
         showReview={false}
