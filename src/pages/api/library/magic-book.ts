@@ -202,7 +202,12 @@ export default async function handler(
 
   const started = Date.now();
   const run = toRun.length
-    ? await runEngine(digest, toRun, exclusions, stored.banned)
+    ? await runEngine(
+        digest,
+        toRun,
+        exclusions,
+        stored.banned.map(b => b.title),
+      )
     : {
         results: [],
         calls: 0,

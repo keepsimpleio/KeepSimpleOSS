@@ -594,3 +594,120 @@
     }
   }
 }
+
+// What the shelf deals in. Three states of one control, sized by the widest
+// of them, so choosing never moves the buttons beside it.
+.wrapper .header .preference {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--purple-100);
+  border-radius: var(--radius-control);
+  background: var(--white-200);
+}
+
+.wrapper .header .preferenceOption {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--purple-100);
+  font-family: var(--font-source-serif);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--purple-400);
+    color: var(--black-rich);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.wrapper .header .preferenceOn {
+  background: var(--purple-100);
+  color: var(--white);
+
+  &:hover:not(:disabled) {
+    background: var(--purple-100);
+    color: var(--white);
+  }
+}
+
+// A place held open for a pick that is not there yet: before the shelf
+// opens, while the engine works, and where a roll fell short. The board
+// stands its full length in every state, so nothing on the page moves when
+// the picks land.
+.wrapper .content .cards .ghost {
+  flex: 0 0 auto;
+  width: 180px;
+  height: 208px;
+  border-radius: 2px 4px 4px 2px;
+  background: linear-gradient(
+    100deg,
+    var(--white-200) 0%,
+    var(--cream) 45%,
+    var(--white-100) 100%
+  );
+  border: 1px solid var(--brown-border);
+  opacity: 0.4;
+}
+
+// While the engine works the board holds its geometry and dims: the picks
+// standing on it are still the truth until the new ones land.
+.wrapper .content.working {
+  .cardSlot {
+    opacity: 0.5;
+  }
+
+  .cards .ghost {
+    animation: ghost-breathe 2.4s ease-in-out infinite;
+  }
+}
+
+.wrapper .content .cardSlot {
+  transition: opacity 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@keyframes ghost-breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper .content.working .cards .ghost {
+    animation: none;
+  }
+}

@@ -304,3 +304,13 @@
     transition: none;
   }
 }
+
+// The three picks that stand beyond the library wear their own mark: paper
+// with a lilac edge, so new ground reads apart from a verdict the owner gave.
+.statusStretch {
+  opacity: 1;
+  background: var(--white-200);
+  border: 1px solid var(--purple-100);
+  color: var(--purple-100);
+  padding: 2px 9px;
+}

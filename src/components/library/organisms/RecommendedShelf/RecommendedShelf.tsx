@@ -5,18 +5,26 @@ import React, {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 
 import {
+  lockedLine,
+  RECOMMENDED_PREFERENCES,
   RECOMMENDED_SHELF_EMPTY,
+  RECOMMENDED_SHELF_MIN_BOOKS,
   RECOMMENDED_SHELF_NAME,
   RECOMMENDED_SHELF_SIZE,
 } from '@constants/library/recommendations';
 
-import type { IRecommendedBook } from '@local-types/library/recommendation';
+import type {
+  BannedBook,
+  RecommendedPick,
+} from '@local-types/library/recommendation';
 
+import { useAiShelf } from '@hooks/library/useAiShelf';
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import { usePresence } from '@hooks/library/usePresence';
 
@@ -40,32 +48,34 @@ import styles from './RecommendedShelf.module.scss';
 interface RecommendedShelfProps {
   className?: string;
   readOnly?: boolean;
-  pool: IRecommendedBook[];
+  /** The library the board is stocked for. */
+  libraryId: number;
   collapsed: boolean;
   onCollapsedChange: (collapsed: boolean) => Promise<void>;
 }
 
-const bookKey = (book: IRecommendedBook) => book.id;
+const bookKey = (book: RecommendedPick) => book.id;
 
 /**
- * The owner's AI shelf, standing above the rest of the library: books
- * gathered from outside it that the owner might want in it. Nobody else sees
- * it. A pick can be locked (it survives a re-generate) or banned (it dims,
- * and is never dealt again until unbanned); the banned list opens from the
- * header.
+ * The owner's AI shelf, standing above the rest of the library: thirteen
+ * books gathered from outside it, ten answering the library as it stands
+ * and three on ground it does not cover yet. Nobody else sees it.
  *
- * Every verdict, every re-generate and every departure on the board is
- * motion: replaced picks fade where they stood and the rest glide into
- * place (useAnimatedList); the modal fades through the shared Modal.
- * Reduced motion is honoured in the stylesheet and by the hook.
+ * The shelf opens at thirty books and stocks its first board itself; every
+ * board after that is a Re-Roll. A pick can be locked, and holds its place
+ * through the next roll, or banned, and is never proposed again on this
+ * shelf or on any magic book. What the shelf deals in, fiction or not, is
+ * the owner's setting: it is remembered and holds for every later roll.
  *
- * Mocked: the engine is not built yet. The pool is a seed list, the scores
- * are placeholders, and verdicts live for the session only.
+ * Every departure on the board is motion: a pick that leaves fades where it
+ * stood and the rest glide into place (useAnimatedList); the modal fades
+ * through the shared Modal. Reduced motion is honoured in the stylesheet
+ * and by the hook.
  */
 export default function RecommendedShelf({
   className,
   readOnly = false,
-  pool,
+  libraryId,
   collapsed,
   onCollapsedChange,
 }: RecommendedShelfProps): JSX.Element {
@@ -83,6 +93,17 @@ export default function RecommendedShelf({
     !!saveError,
     200,
   );
+
+  const shelf = useAiShelf(libraryId, !readOnly);
+  const state = shelf.state;
+  const board = useMemo(() => state?.picks ?? [], [state]);
+  const locked = useMemo(() => new Set(state?.locked ?? []), [state]);
+  const bannedBooks: BannedBook[] = state?.banned ?? [];
+  const preference = state?.preference ?? 'any';
+  const required = state?.required ?? RECOMMENDED_SHELF_MIN_BOOKS;
+  const books = state?.books ?? 0;
+  const isLocked = state?.status === 'locked';
+  const [bannedOpen, setBannedOpen] = useState(false);
 
   useEffect(() => {
     if (!savingRef.current && !unsavedChoiceRef.current) {
@@ -124,70 +145,11 @@ export default function RecommendedShelf({
     }
   };
 
-  // Which of the pool stand on the board, in order. Starts at the top of it.
-  const [boardIds, setBoardIds] = useState<string[]>(() =>
-    pool.slice(0, RECOMMENDED_SHELF_SIZE).map(bookKey),
-  );
-  const [locked, setLocked] = useState<Set<string>>(() => new Set());
-  const [banned, setBanned] = useState<Set<string>>(() => new Set());
-  const [bannedOpen, setBannedOpen] = useState(false);
-
-  const byId = new Map(pool.map(book => [book.id, book]));
-  const board = boardIds
-    .map(id => byId.get(id))
-    .filter((book): book is IRecommendedBook => !!book);
-  const bannedBooks = pool.filter(book => banned.has(book.id));
-  const drawnKey = boardIds.join(',');
-
   const { ref: cardsRef, entries } = useAnimatedList(board, bookKey, {
     enters: false,
     collapse: 'width',
   });
-
-  const toggleLock = (book: IRecommendedBook) => {
-    setLocked(prev => {
-      const next = new Set(prev);
-      if (next.has(book.id)) next.delete(book.id);
-      else next.add(book.id);
-      return next;
-    });
-  };
-
-  const toggleBan = (book: IRecommendedBook) => {
-    setBanned(prev => {
-      const next = new Set(prev);
-      if (next.has(book.id)) next.delete(book.id);
-      else next.add(book.id);
-      return next;
-    });
-    // A banned pick is nobody's keeper.
-    setLocked(prev => {
-      if (!prev.has(book.id)) return prev;
-      const next = new Set(prev);
-      next.delete(book.id);
-      return next;
-    });
-  };
-
-  // Mocked re-generate: every open pick on the board is swapped for the
-  // next unseen, unbanned book in the pool, in order. Locked and banned
-  // picks hold their places. When the pool runs dry the open picks stay.
-  const regenerate = () => {
-    setBoardIds(current => {
-      const onBoard = new Set(current);
-      const fresh = pool
-        .map(bookKey)
-        .filter(id => !onBoard.has(id) && !banned.has(id));
-      let dealt = 0;
-      return current.map(id => {
-        if (locked.has(id) || banned.has(id)) return id;
-        const next = fresh[dealt];
-        if (!next) return id;
-        dealt += 1;
-        return next;
-      });
-    });
-  };
+  const drawnKey = board.map(bookKey).join(',');
 
   const closeBanned = useCallback(() => setBannedOpen(false), []);
   const { closeRef: bannedCloseRef, close: closeBannedAnimated } =
@@ -241,7 +203,21 @@ export default function RecommendedShelf({
     });
   };
 
-  const openCount = board.filter(book => !banned.has(book.id)).length;
+  // The board keeps its height in every state: what is not a pick yet is a
+  // place held open for one.
+  const ghosts = Math.max(0, RECOMMENDED_SHELF_SIZE - board.length);
+  const working = shelf.loading || shelf.rolling;
+
+  // One line, and only one: what is in the way, then what the engine said,
+  // then the empty board.
+  const notice = isLocked
+    ? `${lockedLine(required)} (${books}/${required})`
+    : shelf.error
+      ? shelf.error
+      : (state?.note ??
+        (state && board.length === 0 && !working
+          ? RECOMMENDED_SHELF_EMPTY
+          : ''));
 
   return (
     <div
@@ -285,15 +261,45 @@ export default function RecommendedShelf({
           ref={actionsRef}
           aria-hidden={isCollapsed || readOnly || undefined}
         >
+          {/* The setting outlives the board: it is kept even while the shelf
+              is still locked, and every later roll obeys it. */}
+          <div
+            className={styles.preference}
+            role="group"
+            aria-label="What this shelf recommends"
+          >
+            {RECOMMENDED_PREFERENCES.map(option => (
+              <Tooltip
+                key={option.value}
+                asChild
+                place="bottom"
+                tooltipContent={option.hint}
+              >
+                <button
+                  type="button"
+                  className={cn(styles.preferenceOption, {
+                    [styles.preferenceOn]: preference === option.value,
+                  })}
+                  aria-pressed={preference === option.value}
+                  disabled={readOnly || shelf.busy}
+                  onClick={() => shelf.choosePreference(option.value)}
+                >
+                  {option.label}
+                </button>
+              </Tooltip>
+            ))}
+          </div>
+
           <button
             type="button"
             className={cn(styles.headerButton, styles.regenerate)}
-            disabled={readOnly}
-            onClick={regenerate}
-            aria-label="Re-generate the open picks on this shelf"
+            disabled={readOnly || isLocked || shelf.busy || working}
+            aria-busy={shelf.rolling}
+            onClick={shelf.roll}
+            aria-label="Re-roll every pick that is not locked"
           >
             <SparkleIcon />
-            Re-Generate
+            Re-Roll
           </button>
           <button
             type="button"
@@ -327,14 +333,17 @@ export default function RecommendedShelf({
         style={{ height: isCollapsed ? 0 : (bodyHeight ?? undefined) }}
       >
         <div className={styles.body} ref={bodyRef}>
-          <div className={styles.content}>
+          <div
+            className={cn(styles.content, { [styles.working]: working })}
+            aria-busy={working || undefined}
+          >
             <div className={styles.noticeRow} role="status" aria-live="polite">
-              {openCount === 0 && (
+              {!!notice && (
                 <Text
                   variant={TypographyVariant.TextSmall}
                   className={styles.notice}
                 >
-                  {RECOMMENDED_SHELF_EMPTY}
+                  {notice}
                 </Text>
               )}
             </div>
@@ -377,13 +386,19 @@ export default function RecommendedShelf({
                   >
                     <RecommendedBookCard
                       book={book}
-                      readOnly={readOnly}
+                      readOnly={readOnly || shelf.busy}
                       locked={locked.has(book.id)}
-                      banned={banned.has(book.id)}
-                      onToggleLock={toggleLock}
-                      onToggleBan={toggleBan}
+                      onToggleLock={pick => shelf.toggleLock(pick.id)}
+                      onToggleBan={pick => shelf.ban(pick.id)}
                     />
                   </div>
+                ))}
+                {Array.from({ length: ghosts }, (_, index) => (
+                  <div
+                    key={`ghost-${index}`}
+                    className={styles.ghost}
+                    aria-hidden="true"
+                  />
                 ))}
               </div>
             </div>
@@ -412,7 +427,7 @@ export default function RecommendedShelf({
             ) : (
               <ul className={styles.bannedList}>
                 {bannedBooks.map(book => (
-                  <li key={book.id} className={styles.bannedRow}>
+                  <li key={book.title} className={styles.bannedRow}>
                     <div className={styles.bannedText}>
                       <Text
                         variant={TypographyVariant.TextBaseSemibold}
@@ -432,7 +447,8 @@ export default function RecommendedShelf({
                     <button
                       type="button"
                       className={cn(styles.headerButton, styles.bannedButton)}
-                      onClick={() => toggleBan(book)}
+                      disabled={shelf.busy}
+                      onClick={() => shelf.unban(book)}
                       aria-label={`Unban ${book.title}`}
                     >
                       Unban

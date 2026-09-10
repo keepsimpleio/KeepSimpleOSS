@@ -31,7 +31,6 @@ import {
   LIBRARY_SHELVES_REFETCH_EVENT,
   MAX_SHELVES_PER_LIBRARY,
 } from '@constants/library/common';
-import { RECOMMENDED_SEED } from '@constants/library/recommendations';
 
 import type {
   StrapiLibraryEntry,
@@ -1464,7 +1463,7 @@ export function LibraryTemplate({
             <RecommendedShelf
               key={library.id}
               readOnly={!canEditHere}
-              pool={RECOMMENDED_SEED}
+              libraryId={library.id}
               collapsed={library.attributes.aiShelfCollapsed === true}
               onCollapsedChange={async collapsed => {
                 const id = library.id;

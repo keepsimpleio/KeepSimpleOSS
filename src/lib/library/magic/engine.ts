@@ -153,7 +153,7 @@ Rules:
 - The reason is addressed to the owner, one or two plain sentences, grounded in their own notes and ratings. No adjectives that cannot be checked, no dashes.
 - Calibration: for each book in the calibration block, predict the rating this owner gave it, 1-5, from everything else you know about them.`;
 
-const describeBook = (book: DigestBook, withRating: boolean): string => {
+export const describeBook = (book: DigestBook, withRating: boolean): string => {
   const parts: string[] = [`#${book.id} "${book.title}"`];
   if (book.author) parts.push(`by ${book.author}`);
   if (book.year) parts.push(`(${book.year})`);
@@ -249,7 +249,7 @@ ${JSON.stringify(TOOL_SCHEMA)}`,
 
 /** Held-out books: the strongest and weakest verdicts, spread over shelves,
  * chosen deterministically so a re-roll calibrates on the same set. */
-const pickHeldOut = (digest: LibraryDigest): DigestBook[] => {
+export const pickHeldOut = (digest: LibraryDigest): DigestBook[] => {
   const count = heldOutCount(digest.ratedBooks);
   if (count === 0) return [];
   const rated = digest.shelves
@@ -270,7 +270,7 @@ const pickHeldOut = (digest: LibraryDigest): DigestBook[] => {
   return out;
 };
 
-const clamp = (n: number, min: number, max: number) =>
+export const clamp = (n: number, min: number, max: number) =>
   Math.max(min, Math.min(max, n));
 
 /** Rubric to percent: weighted mean of the dimensions the library carries
@@ -295,8 +295,8 @@ export function rubricToPercent(
   return Math.round(clamp(raw * 100 + calibration, 5, 97));
 }
 
-const calibrationOffset = (
-  answer: ModelAnswer,
+export const calibrationOffset = (
+  answer: { calibration?: { bookId: number; predicted: number }[] },
   heldOut: DigestBook[],
 ): { offset: number; samples: number } => {
   const predictions = new Map(
