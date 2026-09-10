@@ -4,16 +4,12 @@ import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import { useLibrarySwitcher } from '@hooks/library/useLibrarySwitcher';
 
-import {
-  ArrowIcon,
-  ChevronUpIcon,
-  LibrarianIcon,
-  PanelIcon,
-} from '@icons/library/svg';
+import { ArrowIcon, ChevronUpIcon, PanelIcon } from '@icons/library/svg';
 
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
+import { AiAccuracyStatus } from '@components/library/molecules/AiAccuracyStatus';
 import {
   Button,
   ButtonSize,
@@ -41,8 +37,15 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
     onSearchChange,
     className,
   } = props;
-  const { toggleSidebar, isSidebarCollapsed, toggleSidebarCollapsed } =
-    useGlobalState();
+  const {
+    toggleSidebar,
+    isSidebarCollapsed,
+    toggleSidebarCollapsed,
+    isOwner,
+    isGuestMode,
+    user,
+    currentShelves,
+  } = useGlobalState();
   const switcher = useLibrarySwitcher();
   const [selectedJumpShelfId, setSelectedJumpShelfId] = useState<number | null>(
     null,
@@ -282,18 +285,14 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
         </Text>
       </div>
 
-      {/* The Librarian: a chat with an agent that knows this library, opened
-          in a modal rather than the site-wide Copilot pill (hidden on library
-          pages). Disabled until the agent ships. */}
-      <button
-        type="button"
-        className={styles.librarian}
-        disabled
-        aria-disabled="true"
-      >
-        <LibrarianIcon aria-hidden="true" />
-        <span className={styles.librarianLabel}>AI Librarian</span>
-      </button>
+      {/* AI accuracy, where the Librarian opener stood: how much of what the
+          engine reads is written into this library. The owner's alone, and
+          not in a guest preview, since a visitor is told nothing of it. */}
+      {isOwner && !isGuestMode && user && (
+        <div className={styles.accuracySlot}>
+          <AiAccuracyStatus shelves={currentShelves} />
+        </div>
+      )}
 
       {/* Desktop: folds the info panel away so the shelves take the width,
           and brings it back. One column at the toolbar's right edge, the

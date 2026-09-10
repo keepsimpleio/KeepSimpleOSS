@@ -302,52 +302,14 @@
   }
 }
 
-// The Librarian opener: a rectangle the width of the search field, sitting
-// under it on the pills row. Same border language as the jump pills, in the
-// panel's caps voice. Disabled while the agent is being built.
-.librarian {
+// AI accuracy stands where the Librarian opener stood: the width of the
+// search field, under it on the pills row, at the right edge.
+.accuracySlot {
   grid-area: librarian;
   justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 300px;
   max-width: 100%;
-  height: 44px;
-  padding: 0 16px;
-  border: 2px solid var(--beige);
-  border-radius: var(--radius-control);
-  background: var(--white);
-  color: var(--brown);
-  font-family: inherit;
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease;
-
-  svg {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-  }
-
-  &:hover:not(:disabled),
-  &:focus-visible {
-    border-color: var(--brown-border);
-  }
-
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 
   @media (max-width: 768px) {
-    width: 100%;
     justify-self: stretch;
   }
 }
@@ -422,15 +384,6 @@
       transition: none;
     }
   }
-}
-
-.librarianLabel {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1;
-  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {
