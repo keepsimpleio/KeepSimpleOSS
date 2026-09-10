@@ -23,3 +23,6 @@ Disallow: /hy/career-path-of-a-manager-and-a-few-universal-tips/
 Disallow: /hy/overengineering_and_demo_readiness/
 Disallow: /articles/[page]
 Disallow: /uxcore_next/
+
+Sitemap: https://strapi.keepsimple.io/sitemap/index.xml
+Sitemap: https://keepsimple.io/library-sitemap.xml
