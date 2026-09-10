@@ -126,6 +126,23 @@ values; public reads omit the field, anonymous writes and invalid values are
 rejected. The probe restored the original preference. Production rollout remains
 separate from this DEV release.
 
+## Library info panel: the fold and its shortcut
+
+The panel folds to its spine through the tab at the toolbar's right edge and
+through **Ctrl+\\** (Meta+\\ answers too), `usePanelHotkey`, called once by
+`LibraryTemplate`. Desktop only above 1025px, where the tab itself lives; on
+a phone the panel is a drawer with its own opener. The binding stands down
+while the caret is in an input, a textarea, a select or a rich-text editor,
+so it can never eat a keystroke meant for text, and it reads `event.code`
+so a layout that prints another character on that key still answers. The
+choice is per account and survives a refresh, as the tab's already does.
+
+## Library content counts
+
+A kind the library does not hold is not written as a zero: neither its icon
+nor its number stands in the panel's Content line (Wolf, 2026-09-10). With
+no books, videos or audio at all the Content heading goes with them.
+
 ## Library switcher design passport
 
 - Palette: existing paper and wood tokens; brown is the accent.

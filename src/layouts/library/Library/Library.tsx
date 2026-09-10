@@ -50,6 +50,7 @@ import type {
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useLibraryEditing from '@hooks/library/useLibraryEditing';
 import { useMagicBooks } from '@hooks/library/useMagicBooks';
+import usePanelHotkey from '@hooks/library/usePanelHotkey';
 import { usePresence } from '@hooks/library/usePresence';
 
 import {
@@ -197,7 +198,11 @@ export function LibraryTemplate({
     setCurrentLibrary,
     setIsCreateBlocked,
     setIsOwner,
+    toggleSidebarCollapsed,
   } = useGlobalState();
+
+  // Ctrl+\ throws the same switch as the panel's tab.
+  usePanelHotkey(toggleSidebarCollapsed);
   const {
     libraryTags,
     setLibraryTags,

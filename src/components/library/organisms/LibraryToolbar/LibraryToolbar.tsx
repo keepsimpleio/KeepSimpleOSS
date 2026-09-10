@@ -320,7 +320,9 @@ export function LibraryToolbar(props: LibraryToolbarProps): JSX.Element {
         })}
         onClick={toggleSidebarCollapsed}
         aria-label={
-          isSidebarCollapsed ? 'Show library panel' : 'Hide library panel'
+          isSidebarCollapsed
+            ? 'Show library panel, Control backslash'
+            : 'Hide library panel, Control backslash'
         }
         aria-expanded={!isSidebarCollapsed}
         aria-controls="library-info-panel"
