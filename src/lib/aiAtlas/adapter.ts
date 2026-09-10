@@ -1,10 +1,15 @@
 import base from './copy.json';
+import features from './features';
 
 export const copy: any = {
   ...base,
   linesValue: (n: number) => String(n),
   introInhabitantsTpl: () => '',
 };
+/* Wolf's prose for a card, or the guide's own text when he has none. */
+const describe = (id: string, fallback: string[]) =>
+  features[id] || fallback.filter(Boolean);
+
 export function adaptGuide(guide: any) {
   const dossiers: any = {};
   const entries = new Map(guide.entries.map((entry: any) => [entry.id, entry]));
@@ -16,7 +21,7 @@ export function adaptGuide(guide: any) {
         : entry.id;
     dossiers[id] = {
       title: entry.title,
-      desc: (entry.detail || [entry.text]).filter(Boolean).join('\n\n'),
+      desc: describe(id, entry.detail || [entry.text]).join('\n\n'),
       rows: [
         ...(entry.children || []).map((child: string) => ({
           k: 'topic',
@@ -71,7 +76,7 @@ export function adaptGuide(guide: any) {
     step.children.forEach(register);
     dossiers[id] = {
       title: step.title,
-      desc: step.text,
+      desc: describe(id, [step.text]).join('\n\n'),
       rows: step.children.map((child: string) => ({
         k: 'topic',
         v: (entries.get(child) as any)?.title || child,
@@ -98,6 +103,11 @@ export function adaptGuide(guide: any) {
     };
   });
   const node = (id: string) => guide.system.nodes.find((n: any) => n.id === id);
+  const nodeDesc = (id: string) =>
+    describe(
+      dossiers['system-' + id] ? 'system-' + id : id,
+      node(id).detail,
+    ).join(' ');
   const layerIds = [
     'access',
     'secrets',
@@ -113,22 +123,22 @@ export function adaptGuide(guide: any) {
       side: index % 2 ? 'right' : 'left',
       label: node(id).title.toLowerCase(),
       title: node(id).title,
-      what: node(id).detail.join(' '),
+      what: nodeDesc(id),
       why: node(id).basis,
     })),
     securityAgents: ['agents', 'deploy', 'models', 'telegram'].map(id => ({
       name: node(id).title,
       badge: node(id).role,
-      desc: node(id).detail.join(' '),
+      desc: nodeDesc(id),
     })),
     securityPatterns: ['memory', 'records', 'watchers', 'recovery'].map(id => ({
       title: node(id).title,
-      desc: node(id).detail.join(' '),
+      desc: nodeDesc(id),
     })),
   };
   dossiers['ring:order'] = {
     title: 'Ownership',
-    desc: node('order').detail.join(' '),
+    desc: nodeDesc('order'),
     rows: [],
   };
   dossiers['ring:devEnv'] = {

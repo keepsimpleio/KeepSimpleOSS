@@ -525,11 +525,162 @@ function renderDossierValue(v: string) {
   return <>{parts}</>;
 }
 
-function Dossier({ data, onSelect, dossiers }: any) {
+/* A card's prose is one or more paragraphs separated by a blank line. */
+function DossierDesc({ desc }: { desc: string }) {
+  if (!desc) return null;
+  const paragraphs = String(desc)
+    .split(/\n{2,}/)
+    .filter(Boolean);
+  return (
+    <div className="dossier__desc">
+      {paragraphs.map((para, i) => (
+        <p key={i}>{renderDossierValue(para)}</p>
+      ))}
+    </div>
+  );
+}
+
+function DossierRows({ rows, onSelect, dossiers }: any) {
   const validIds = useMemo(
     () => new Set(Object.keys(dossiers || {})),
     [dossiers],
   );
+  return (
+    <ul className="kv">
+      {rows.map((r: any, i: number) => {
+        const isUrl = r.k === 'url';
+        const href = isUrl
+          ? /^https?:\/\//i.test(r.v)
+            ? r.v
+            : 'https://' + r.v
+          : null;
+        const refId = (() => {
+          if (isUrl || !onSelect) return null;
+          if (r.ref && validIds.has(r.ref)) return r.ref;
+          if (DOSSIER_REF_KEYS.has(r.k))
+            return resolveDossierRef(r.v, validIds as Set<string>);
+          return null;
+        })();
+        const refHandlers = refId
+          ? {
+              onMouseEnter: () => onSelect(refId, 'link-hover'),
+              onMouseLeave: () => onSelect(null, 'link-hover'),
+              onClick: () => onSelect(refId),
+            }
+          : null;
+        return (
+          <li key={i}>
+            <span className="k">{r.k}</span>
+            <span
+              className={'v ' + (r.cls || '') + (refId ? ' v--ref' : '')}
+              {...(refHandlers || {})}
+              role={refId ? 'button' : undefined}
+              tabIndex={refId ? 0 : undefined}
+              onKeyDown={e => {
+                if (refId && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault();
+                  onSelect(refId);
+                }
+              }}
+            >
+              {r.cls === 'red' && <Diamond kind="red" />}
+              {r.cls === 'blue' && <Diamond kind="blue" />}
+              {r.cls === 'gold' && <Diamond kind="gold" />}
+              {r.cls === 'subagent' && <Diamond kind="subagent" />}
+              {isUrl ? (
+                <a
+                  href={href as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dossier__link"
+                >
+                  {r.v}
+                </a>
+              ) : (
+                renderDossierValue(r.v)
+              )}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/* The card that opens on click. It stays mounted through its exit so the
+   fade out plays; the id it holds survives a focus change so the content
+   crossfades in place when a topic inside it is chosen. */
+const MODAL_EXIT_MS = 240;
+function FeatureModal({ id, dossiers, onSelect, onClose, t }: any) {
+  const [held, setHeld] = useState<string | null>(id);
+  const [closing, setClosing] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (id && dossiers && dossiers[id]) {
+      setHeld(id);
+      setClosing(false);
+      return;
+    }
+    if (!held) return;
+    setClosing(true);
+    const timer = setTimeout(() => {
+      setHeld(null);
+      setClosing(false);
+    }, MODAL_EXIT_MS);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, dossiers]);
+  useEffect(() => {
+    if (!held || closing) return;
+    cardRef.current?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [held, closing, onClose]);
+  if (!held || !dossiers || !dossiers[held]) return null;
+  const data = dossiers[held];
+  return (
+    <div
+      className={'feature-modal' + (closing ? ' is-closing' : '')}
+      role="presentation"
+    >
+      <div className="feature-modal__scrim" onClick={onClose} />
+      <div
+        className="feature-modal__card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feature-modal-title"
+        tabIndex={-1}
+        ref={cardRef}
+      >
+        <span className="panel__title" id="feature-modal-title" key={held}>
+          {data.title} {data.cjk && <span className="cjk">{data.cjk}</span>}
+        </span>
+        <button
+          type="button"
+          className="feature-modal__close"
+          aria-label={t.modalCloseLabel}
+          onClick={onClose}
+        >
+          ×
+        </button>
+        <div className="feature-modal__body" key={'b-' + held}>
+          <DossierDesc desc={data.desc} />
+          <DossierRows
+            rows={data.rows || []}
+            onSelect={onSelect}
+            dossiers={dossiers}
+          />
+        </div>
+        <div className="feature-modal__hint">{t.modalHint}</div>
+      </div>
+    </div>
+  );
+}
+
+function Dossier({ data, onSelect, dossiers }: any) {
   return (
     <div className="panel panel--dossier">
       <span className="panel__corner-mark">印</span>
@@ -537,9 +688,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
         {data.title} <span className="cjk">{data.cjk}</span>
       </span>
       <div className="dossier__body" key={data.title}>
-        {data.desc && (
-          <div className="dossier__desc">{renderDossierValue(data.desc)}</div>
-        )}
+        <DossierDesc desc={data.desc} />
         {data.link && (
           <div className="dossier__desc">
             <a
@@ -552,64 +701,7 @@ function Dossier({ data, onSelect, dossiers }: any) {
             </a>
           </div>
         )}
-        <ul className="kv">
-          {data.rows.map((r: any, i: number) => {
-            const isUrl = r.k === 'url';
-            const href = isUrl
-              ? /^https?:\/\//i.test(r.v)
-                ? r.v
-                : 'https://' + r.v
-              : null;
-            const refId = (() => {
-              if (isUrl || !onSelect) return null;
-              if (r.ref && validIds.has(r.ref)) return r.ref;
-              if (DOSSIER_REF_KEYS.has(r.k))
-                return resolveDossierRef(r.v, validIds as Set<string>);
-              return null;
-            })();
-            const refHandlers = refId
-              ? {
-                  onMouseEnter: () => onSelect(refId, 'link-hover'),
-                  onMouseLeave: () => onSelect(null, 'link-hover'),
-                  onClick: () => onSelect(refId),
-                }
-              : null;
-            return (
-              <li key={i}>
-                <span className="k">{r.k}</span>
-                <span
-                  className={'v ' + (r.cls || '') + (refId ? ' v--ref' : '')}
-                  {...(refHandlers || {})}
-                  role={refId ? 'button' : undefined}
-                  tabIndex={refId ? 0 : undefined}
-                  onKeyDown={e => {
-                    if (refId && (e.key === 'Enter' || e.key === ' ')) {
-                      e.preventDefault();
-                      onSelect(refId);
-                    }
-                  }}
-                >
-                  {r.cls === 'red' && <Diamond kind="red" />}
-                  {r.cls === 'blue' && <Diamond kind="blue" />}
-                  {r.cls === 'gold' && <Diamond kind="gold" />}
-                  {r.cls === 'subagent' && <Diamond kind="subagent" />}
-                  {isUrl ? (
-                    <a
-                      href={href as string}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="dossier__link"
-                    >
-                      {r.v}
-                    </a>
-                  ) : (
-                    renderDossierValue(r.v)
-                  )}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+        <DossierRows rows={data.rows} onSelect={onSelect} dossiers={dossiers} />
       </div>
     </div>
   );
@@ -1372,6 +1464,11 @@ export function AiAtlasApp({
     }
   };
 
+  const closeModal = () => {
+    setLinkHoverNode(null);
+    setFocusedNode(null);
+  };
+
   const selectedStage = data.projects.members.find(
     (p: any) =>
       p.id === highlightId || p.id === data.topicToStage[highlightId || ''],
@@ -1925,6 +2022,14 @@ export function AiAtlasApp({
           />
         </aside>
       </div>
+
+      <FeatureModal
+        id={viewMode === 'environment' ? focusedNode : null}
+        dossiers={data.dossiers}
+        onSelect={onSelect}
+        onClose={closeModal}
+        t={t}
+      />
 
       <footer className="doc-footer">
         <span className="hanko-row">

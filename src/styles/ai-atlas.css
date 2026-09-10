@@ -1817,3 +1817,165 @@ body.ai-atlas-page select:focus-visible {
     overflow: visible;
   }
 }
+
+/* ============================================================
+   Feature modal: the card a click opens. Hover keeps the rail;
+   a click holds the same card in the middle of the sheet until
+   Esc, the scrim or the stamp closes it. Enter and exit are eased;
+   the reduced-motion rule above shortens both to a frame.
+   ============================================================ */
+.ai-atlas-root .feature-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.ai-atlas-root .feature-modal__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.46);
+  animation: ai-atlas-scrim-in 0.28s ease-out both;
+}
+.ai-atlas-root .feature-modal__card {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(80vh, 760px);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: var(--hairline) solid var(--rule);
+  box-shadow:
+    0 0 0 1.4px var(--red),
+    0 18px 40px rgba(0, 0, 0, 0.28);
+  padding: 26px 0 0;
+  outline: none;
+  animation: ai-atlas-modal-in 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.ai-atlas-root .feature-modal.is-closing .feature-modal__scrim {
+  animation: ai-atlas-scrim-out 0.24s ease-in both;
+}
+.ai-atlas-root .feature-modal.is-closing .feature-modal__card {
+  animation: ai-atlas-modal-out 0.24s cubic-bezier(0.4, 0, 1, 1) both;
+}
+.ai-atlas-root .feature-modal__card .panel__title {
+  top: -10px;
+  left: 14px;
+  animation: ai-atlas-dossier-fade 0.32s ease-out both;
+}
+.ai-atlas-root .feature-modal__close {
+  position: absolute;
+  top: -12px;
+  right: 14px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  padding: 0;
+  background: var(--red);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.15s ease;
+}
+.ai-atlas-root .feature-modal__close:hover,
+.ai-atlas-root .feature-modal__close:focus-visible {
+  background: var(--red-deep);
+  outline: none;
+}
+.ai-atlas-root .feature-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding: 4px 20px 16px;
+  animation: ai-atlas-dossier-fade 0.32s ease-out both;
+  scrollbar-width: thin;
+  scrollbar-color: #b3392b #e6dcc2;
+}
+.ai-atlas-root .feature-modal__body::-webkit-scrollbar {
+  width: 8px;
+}
+.ai-atlas-root .feature-modal__body::-webkit-scrollbar-track {
+  background: #e6dcc2;
+}
+.ai-atlas-root .feature-modal__body::-webkit-scrollbar-thumb {
+  background: #b3392b;
+  border-radius: 2px;
+  border-left: 1px solid #e6dcc2;
+}
+.ai-atlas-root .feature-modal__body .dossier__desc {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 6px 0 14px;
+}
+.ai-atlas-root .feature-modal__body .kv li .k {
+  flex-basis: 96px;
+}
+.ai-atlas-root .feature-modal__hint {
+  flex: 0 0 auto;
+  padding: 8px 20px 10px;
+  border-top: 1px dashed var(--rule-soft);
+  color: var(--ink-3);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ai-atlas-root .dossier__desc p {
+  margin: 0 0 10px;
+}
+.ai-atlas-root .dossier__desc p:last-child {
+  margin-bottom: 0;
+}
+@keyframes ai-atlas-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ai-atlas-scrim-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ai-atlas-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes ai-atlas-modal-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+}
+@media (max-width: 600px) {
+  .ai-atlas-root .feature-modal {
+    padding: 16px;
+  }
+  .ai-atlas-root .feature-modal__card {
+    max-height: 84vh;
+  }
+  .ai-atlas-root .feature-modal__hint {
+    display: none;
+  }
+}

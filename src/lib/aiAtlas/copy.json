@@ -1,6 +1,6 @@
 {
   "seoTitle": "Terminal Atlas",
-  "seoDescription": "How I run a team of AI agents: one task, from my message to the result.",
+  "seoDescription": "How I run a team of AI agents: one task, from my message to the result, every feature explained by me.",
   "seoKeywords": "Terminal Atlas",
   "ogImageAlt": "Terminal Atlas",
   "loading": "Loading…",
@@ -22,7 +22,7 @@
   },
   "introDossierTitle": "THE ATLAS",
   "introDossierCjk": "地図帳",
-  "introStoryBody": "I set the direction. Terminal carries the task into a project session, where the agent works from its rules and what it remembers. The result comes back to me for judgment.",
+  "introStoryBody": "This is how I run a team of AI agents. One task travels from my message to the result, and every tile on the map is a feature I built along that path. Click a tile and I explain what it does for me and why it exists.",
   "introStoryLink": "",
   "introQuestionsBefore": "",
   "introQuestionsLink": "",
@@ -32,7 +32,7 @@
   "introInhabitantsLabel": "basis",
   "introPrincipleLabel": "evidence",
   "principles": [
-    "A card explains a mechanism. A successful run has its own record."
+    "Every card is a feature I use daily. Where I say something works, a journal on my server says it too."
   ],
   "legendTitle": "Legend",
   "legendCjk": "凡例",
@@ -111,5 +111,7 @@
   "securityPatterns": [],
   "footerEnd": "END · TERMINAL ATLAS",
   "hankoSelfTitle": "built here, run here",
-  "hankoCoTitle": "one owner per project"
+  "hankoCoTitle": "one owner per project",
+  "modalCloseLabel": "Close",
+  "modalHint": "Esc closes. A topic inside opens in place."
 }
