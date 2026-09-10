@@ -57,6 +57,8 @@
   --gray-light: #c4c4c4;
   --gray-darkest: #494949;
   --gray-darker: #515151;
+  --gray-300: #868686;
+  --gray-400: #aaaaaa;
 
   --brown: #af6a34;
   --brown-100: #7b4a24;
@@ -73,6 +75,13 @@
   --white-300: #fffcf5;
   --off-white: #f9f4eb;
   --white-warm: #fffbf4;
+  /* The lifted sheet under a selected pill or an open menu row. */
+  --white-400: #fefdf9;
+  /* Sand: the paper's own darker fibres, for the brush texture, a dashed
+     drop slot and the home card's mini shelf. */
+  --sand-100: #e8d9b8;
+  --sand-200: #cebda1;
+  --sand-300: #f2e9d6;
 
   /* Empty-shelf figure — the wooden mannequin that stands on a shelf holding
      nothing yet. Its tones are the shelf board's own (see
@@ -152,6 +161,7 @@
      shadow, cast leftward onto the page so the tab reads as the panel's
      leading edge rather than a patch of paint. */
   --panel-tab-shadow: -10px 0 16px -8px #533a3a2e;
+  --panel-tab-shadow-hover: -14px 0 20px -8px #533a3a3d;
 
   /* Fonts — the upstream library injected these via next/font on <body>;
      here we declare them directly with web-safe fallbacks. */

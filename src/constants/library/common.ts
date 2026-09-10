@@ -94,9 +94,17 @@ export const LIBRARY_FULL_MESSAGE =
 // the create (AddShelfModal) and rename (Shelf) inputs stay in sync.
 export const SHELF_NAME_MAX_LENGTH = 100;
 
+// Mirrors the `description` cap in the CMS single-shelf schema: the hint a
+// shelf shows beside its name. Shared by the create and edit forms.
+export const MAX_SHELF_DESCRIPTION_LENGTH = 180;
+
 // Backend caps a library at 13 tags; the Create control disables once a
 // library reaches this count, and says why.
 export const MAX_TAGS_PER_LIBRARY = 13;
+
+// Mirrors the `name` cap in the CMS tag schema. A tag is a pill on a book,
+// so it stays a word or two.
+export const MAX_TAG_NAME_LENGTH = 20;
 
 // Mirrors the `description` cap in the CMS tag schema. Shared so the counter
 // in the form and the validator behind it cannot drift apart.

@@ -21,7 +21,7 @@
     // Same thin rail as the modal body, so the field's own scrollbar does not
     // fall back to the native grey one.
     scrollbar-width: thin;
-    scrollbar-color: #c0b6ae transparent;
+    scrollbar-color: var(--taupe) transparent;
 
     &::-webkit-scrollbar {
       width: 8px;
@@ -32,7 +32,7 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #c0b6ae;
+      background: var(--taupe);
       border-radius: 5px;
     }
 

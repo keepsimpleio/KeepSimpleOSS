@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { JSX, useCallback, useState } from 'react';
 
 import {
+  MAX_SHELF_DESCRIPTION_LENGTH,
   SHELF_NAME_MAX_LENGTH,
   shelfCardData,
 } from '@constants/library/common';
@@ -13,6 +14,7 @@ import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Button, ButtonSize, ButtonType } from '../Button';
 import { Input } from '../Input';
 import { Modal, useModalClose } from '../Modal';
+import { Textarea } from '../Textarea';
 import type { AddShelfModalProps, ShelfType } from './AddShelfModal.types';
 
 import styles from './AddShelfModal.module.scss';
@@ -21,6 +23,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
   const { onClose, onAddShelf, existingNames = [] } = props;
   const [activeItem, setActiveItem] = useState<ShelfType>('books');
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,7 +57,7 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
     setError(null);
     setIsSubmitting(true);
     try {
-      await onAddShelf(activeItem, trimmedName);
+      await onAddShelf(activeItem, trimmedName, description.trim());
     } catch (e: any) {
       // The create failed server-side. Keep the modal open and warn instead of
       // crashing. Strapi answers a request it does not consider logged in with
@@ -118,6 +121,28 @@ export function AddShelfModal(props: AddShelfModalProps): JSX.Element {
             />
             <CharCount current={name.length} max={SHELF_NAME_MAX_LENGTH} />
             {error && <p className={styles.error}>{error}</p>}
+          </div>
+
+          <div className={styles.field}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
+              Description
+            </Text>
+            <Textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Shown beside the shelf name on hover"
+              placeholderColor="#9E9E9E"
+              ariaLabel="Shelf description"
+              rows={3}
+              maxLength={MAX_SHELF_DESCRIPTION_LENGTH}
+            />
+            <CharCount
+              current={description.length}
+              max={MAX_SHELF_DESCRIPTION_LENGTH}
+            />
           </div>
 
           <Text variant={TypographyVariant.TextSmall} className={styles.label}>

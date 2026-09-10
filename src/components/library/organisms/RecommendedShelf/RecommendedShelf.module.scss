@@ -298,6 +298,16 @@
 
       img {
         width: 100%;
+        transition: filter 0.2s ease;
+
+        // Daylight wood, dimmed to the room at night.
+        :global(body.darkTheme) & {
+          filter: brightness(0.5) saturate(0.85);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
       }
     }
 

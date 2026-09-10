@@ -222,7 +222,7 @@
   width: 43px;
   height: 43px;
   border-radius: var(--radius-control);
-  background: #fefdf9 !important;
+  background: var(--white-400) !important;
 }
 
 .arrowLeft svg {
@@ -407,7 +407,7 @@
   &:hover {
     background: var(--pattern-panel-tab), var(--off-white);
     color: var(--brown-100);
-    box-shadow: -14px 0 20px -8px #533a3a3d;
+    box-shadow: var(--panel-tab-shadow-hover);
   }
 
   &:focus-visible {

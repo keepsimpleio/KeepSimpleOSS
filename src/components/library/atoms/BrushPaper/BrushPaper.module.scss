@@ -5,7 +5,7 @@
   pointer-events: none;
   // Fallback while the tile renders (or when canvas is unavailable): the
   // paper's own flat colour.
-  background-color: #f2e9d6;
+  background-color: var(--sand-300);
   background-repeat: repeat;
 
   .washes {
@@ -37,5 +37,27 @@
       rgba(90, 74, 44, 0) 55%,
       rgba(90, 74, 44, 0.09) 100%
     );
+  }
+
+  // At night the painted sheet is put away. The tile is a canvas of daylight
+  // paper handed to the element as an inline background, so it cannot be
+  // dimmed from here, and its washes multiply into mud on a dark ground: what
+  // stays is the flat night sheet the token gives, lit faintly from the
+  // middle. Without this the whole Libraries page read as light mode with a
+  // few dark cards laid on it.
+  :global(body.darkTheme) & {
+    background-image: none !important;
+
+    .washes {
+      display: none;
+    }
+
+    .vignette {
+      background: radial-gradient(
+        ellipse at 50% 40%,
+        rgba(255, 255, 255, 0.035) 0%,
+        rgba(255, 255, 255, 0) 62%
+      );
+    }
   }
 }

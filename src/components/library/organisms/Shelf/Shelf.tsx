@@ -24,6 +24,7 @@ import { createPortal } from 'react-dom';
 import {
   MAX_OBJECTS_PER_SHELF,
   MAX_SHARE_OBJECTS,
+  MAX_SHELF_DESCRIPTION_LENGTH,
   SHELF_FULL_MESSAGE,
   SHELF_NAME_MAX_LENGTH,
 } from '@constants/library/common';
@@ -73,6 +74,7 @@ import { Dropdown } from '@components/library/molecules/Dropdown';
 import { Input } from '@components/library/molecules/Input';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { ShelfGhostRow } from '@components/library/molecules/ShelfGhostRow';
+import { Textarea } from '@components/library/molecules/Textarea';
 import { VideoCard } from '@components/library/molecules/VideoCard';
 import { AddObjectModal } from '@components/library/organisms/AddObjectModal';
 import { ObjectOverviewModal } from '@components/library/organisms/ObjectOverviewModal';
@@ -194,6 +196,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     onObjectsReordered,
     favorites = false,
     onFavoritesVisibilityChange,
+    onFavoritesDescriptionChange,
     tagFilter = false,
     hiddenObjectIds = null,
     saveOrder,
@@ -353,6 +356,14 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const [renameValue, setRenameValue] = useState(title ?? '');
   const [renameLoading, setRenameLoading] = useState(false);
   const [renameError, setRenameError] = useState<string | null>(null);
+  // What the owner wrote about the shelf. Shown beside the name only when
+  // there is something to show; follows the library tree after a save.
+  const savedDescription = shelf.attributes.description ?? '';
+  const [shelfDescription, setShelfDescription] = useState(savedDescription);
+  useEffect(() => {
+    setShelfDescription(savedDescription);
+  }, [savedDescription]);
+  const [renameDescription, setRenameDescription] = useState(savedDescription);
 
   // Horizontal scroller: keep every card on one row. When the row overflows we
   // expose the styled scrollbar (`.scrollable`) so the overflow is discoverable
@@ -767,6 +778,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
   const openRename = () => {
     setRenameError(null);
     setRenameValue(shelfName);
+    setRenameDescription(shelfDescription);
     setRenameOpen(true);
   };
 
@@ -814,18 +826,45 @@ export function Shelf(props: ShelfProps): JSX.Element {
     }
   };
 
+  // The Favorites shelf keeps its name; only its hint is the owner's to write,
+  // and it lives on the library rather than on a shelf.
+  const editsFavorites = favorites && !!onFavoritesDescriptionChange;
+
   const confirmRename = async () => {
-    const trimmed = renameValue.trim();
-    if (!trimmed || trimmed === shelfName) {
+    const trimmed = editsFavorites ? shelfName : renameValue.trim();
+    const trimmedDescription = renameDescription.trim();
+    const nameChanged = !editsFavorites && !!trimmed && trimmed !== shelfName;
+    const descriptionChanged = trimmedDescription !== shelfDescription.trim();
+    if (!trimmed || (!nameChanged && !descriptionChanged)) {
       setRenameOpen(false);
       return;
     }
     setRenameLoading(true);
     setRenameError(null);
     try {
-      await updateShelf(shelf.id, { name: trimmed });
+      if (editsFavorites) {
+        await onFavoritesDescriptionChange(trimmedDescription);
+      } else {
+        // Only what changed travels; an empty description clears the hint.
+        const saved = await updateShelf(shelf.id, {
+          ...(nameChanged ? { name: trimmed } : {}),
+          ...(descriptionChanged ? { description: trimmedDescription } : {}),
+        });
+        // A CMS without the field answers 200 and drops it: the answer, not
+        // the request, says what was kept.
+        const stored = saved.data?.attributes;
+        if (
+          !stored ||
+          (nameChanged && stored.name !== trimmed) ||
+          (descriptionChanged &&
+            (stored.description ?? '') !== trimmedDescription)
+        ) {
+          throw new Error('The shelf was not saved. Please try again.');
+        }
+      }
       setShelfName(trimmed);
-      onShelfRenamed?.(shelf.id, trimmed);
+      setShelfDescription(trimmedDescription);
+      onShelfRenamed?.(shelf.id, trimmed, trimmedDescription);
       setRenameOpen(false);
     } catch (e) {
       const message =
@@ -957,12 +996,12 @@ export function Shelf(props: ShelfProps): JSX.Element {
           <span className={styles.count}>({objects.length})</span>
 
           <span className={styles.nameWrap}>
-            {isOwner && !favorites && !tagFilter ? (
+            {isOwner && !tagFilter && (!favorites || editsFavorites) ? (
               <button
                 type="button"
                 className={styles.nameButton}
                 onClick={openRename}
-                aria-label="Edit shelf name"
+                aria-label={editsFavorites ? 'Edit Favorites' : 'Edit shelf'}
               >
                 <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
               </button>
@@ -970,6 +1009,20 @@ export function Shelf(props: ShelfProps): JSX.Element {
               <Text variant={TypographyVariant.TextBase}>{shelfName}</Text>
             )}
           </span>
+
+          {/* The owner's word about the shelf, for anyone who rests on the
+              mark. Absent entirely while there is nothing written. */}
+          {shelfDescription.trim() && (
+            <Tooltip asChild place="bottom" tooltipContent={shelfDescription}>
+              <button
+                type="button"
+                className={styles.hint}
+                aria-label={`About ${shelfName}: ${shelfDescription}`}
+              >
+                ?
+              </button>
+            </Tooltip>
+          )}
         </div>
 
         <div className={styles.right}>
@@ -1189,36 +1242,60 @@ export function Shelf(props: ShelfProps): JSX.Element {
       {isOwner && renameOpen && (
         <Modal
           className={styles.renameModal}
-          title="Edit shelf name"
+          title={editsFavorites ? 'Edit Favorites' : 'Edit shelf'}
           onClose={closeRename}
           closeRef={renameCloseRef}
         >
           <div className={styles.renameWrapper}>
+            {!editsFavorites && (
+              <div className={styles.renameField}>
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.renameLabel}
+                >
+                  Shelf name
+                </Text>
+                <Input
+                  type="text"
+                  value={renameValue}
+                  onChange={e => setRenameValue(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && !renameLoading) {
+                      e.preventDefault();
+                      void confirmRename();
+                    }
+                  }}
+                  placeholder="My shelf"
+                  placeholderColor="#9E9E9E"
+                  ariaLabel="Shelf name"
+                  maxLength={SHELF_NAME_MAX_LENGTH}
+                />
+                <CharCount
+                  current={renameValue.length}
+                  max={SHELF_NAME_MAX_LENGTH}
+                />
+              </div>
+            )}
+
             <div className={styles.renameField}>
               <Text
                 variant={TypographyVariant.TextSmall}
                 className={styles.renameLabel}
               >
-                Shelf name
+                Description
               </Text>
-              <Input
-                type="text"
-                value={renameValue}
-                onChange={e => setRenameValue(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && !renameLoading) {
-                    e.preventDefault();
-                    void confirmRename();
-                  }
-                }}
-                placeholder="My shelf"
+              <Textarea
+                value={renameDescription}
+                onChange={e => setRenameDescription(e.target.value)}
+                placeholder="Shown beside the shelf name on hover"
                 placeholderColor="#9E9E9E"
-                ariaLabel="Shelf name"
-                maxLength={SHELF_NAME_MAX_LENGTH}
+                ariaLabel="Shelf description"
+                rows={3}
+                maxLength={MAX_SHELF_DESCRIPTION_LENGTH}
               />
               <CharCount
-                current={renameValue.length}
-                max={SHELF_NAME_MAX_LENGTH}
+                current={renameDescription.length}
+                max={MAX_SHELF_DESCRIPTION_LENGTH}
               />
               {renameError && (
                 <Text
@@ -1243,8 +1320,11 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 onClick={confirmRename}
                 type={ButtonType.Primary}
                 size={ButtonSize.Wide}
-                ariaLabel="Save shelf name"
-                disabled={renameLoading || renameValue.trim().length === 0}
+                ariaLabel="Save shelf"
+                disabled={
+                  renameLoading ||
+                  (!editsFavorites && renameValue.trim().length === 0)
+                }
               />
             </div>
           </div>

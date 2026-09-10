@@ -1,0 +1,127 @@
+// The Library's dark reading: every token the paper theme defines in
+// variables.scss, retuned for a room with the lights down. Nothing else
+// changes: components keep reading the same names, so a surface that is
+// paper by day is night paper here without knowing it.
+//
+// The light is the site's, not the Library's: keepsimple's own switch in the
+// navbar puts `darkTheme` on <body> (useGlobals, persisted in localStorage,
+// applied app-wide by _app on cold load), and every Library surface reads it
+// from there. Surfaces portaled to <body> carry the `.library` class and so
+// stand inside the same selector. The Library ships no switch of its own.
+body.darkTheme .library {
+  color-scheme: dark;
+
+  /* Paper becomes night paper: warm near-blacks, never a cold grey. */
+  --white: #1f1c19;
+  --white-100: #2b2724;
+  --white-200: #262320;
+  --white-300: #262320;
+  --white-400: #24211e;
+  --white-warm: #191614;
+  --off-white: #2a2622;
+  --cream: #1d1a17;
+  --beige: #3b3530;
+  --taupe: #5d554e;
+  --sand-100: #3a332b;
+  --sand-200: #4a4238;
+  --sand-300: #221f1b;
+
+  /* Ink turns to light: the same warmth, inverted. */
+  --black: #efe7dc;
+  --black-rich: #f3ece2;
+  --gray: #a39b91;
+  --gray-100: #3f3934;
+  --gray-200: #e6ded3;
+  --gray-300: #9a928a;
+  --gray-400: #6f6862;
+  --gray-medium: #a89f95;
+  --gray-light: #6a635c;
+  --gray-darkest: #d8d0c5;
+  --gray-darker: #cfc7bc;
+
+  /* The one accent, lifted so it still clears 4.5:1 on night paper. */
+  --brown: #c98a52;
+  --brown-100: #dca46f;
+  --brown-200: #e7b98a;
+  --brown-border: rgba(201, 138, 82, 0.32);
+
+  --figure-wood-light: #4a4238;
+  --figure-wood-mid: #3a332b;
+  --figure-wood-dark: #2f2925;
+  --figure-wood-deep: #241f1b;
+  --figure-wood-edge: var(--brown-100);
+
+  --white-transparent-400: rgba(25, 22, 20, 0.4);
+  --white-transparent-600: rgba(25, 22, 20, 0.78);
+  --white-overlay: rgba(255, 255, 255, 0.06);
+  --surface-overlay: rgba(255, 255, 255, 0.03);
+
+  /* Ink that was black at a fraction. On night paper it has to be light at a
+     fraction, or every label, counter, hint and placeholder that reads as
+     secondary by day disappears entirely: the tag form's labels, the rating
+     box's, the character counters, the notes editor's own. */
+  --black-transparent-300: rgba(239, 231, 220, 0.72);
+  --black-transparent-100: rgba(255, 255, 255, 0.16);
+  --black-transparent-200: rgba(255, 255, 255, 0.08);
+  /* The dim behind a dialog. A fifth of black over a light page is a veil;
+     over a dark one it is nothing, so the dialog floated with no ground. */
+  --black-100: rgba(0, 0, 0, 0.66);
+
+  /* Signal colours are lifted off the floor: every one of them is read as
+     text somewhere (a form error, the AI shelf's own heading, a success
+     line), and the daylight values sit under 4.5:1 on night paper. */
+  --red-500: #ff7f74;
+  --red-600: #ff9b9b;
+  --red-700: #ff8f7a;
+  --green-100: #6fd39a;
+  --purple-100: #b49bff;
+
+  --focus-ring: #67c3ff;
+
+  --gradient-shelf-color: linear-gradient(
+    to bottom,
+    #3a332b 0%,
+    rgba(40, 36, 32, 0) 100%
+  );
+  --gradient-object-shadow: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  --pattern-panel-tab:
+    repeating-linear-gradient(
+      to right,
+      rgba(201, 138, 82, 0.08) 0px,
+      rgba(201, 138, 82, 0.08) 1px,
+      rgba(201, 138, 82, 0) 1px,
+      rgba(201, 138, 82, 0) 5px
+    ),
+    linear-gradient(
+      to right,
+      rgba(201, 138, 82, 0.07) 0%,
+      rgba(201, 138, 82, 0) 45%
+    );
+  --gradient-book-placeholder: linear-gradient(
+    135deg,
+    #4a4238 0%,
+    #3a332b 100%
+  );
+
+  --tooltip-shadow: 0px 0px 22px 0px #00000080;
+  --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+  --sidebar-shadow: -18px 31px 19.2px 0px #00000040;
+  --panel-tab-shadow: -10px 0 16px -8px #00000066;
+  --panel-tab-shadow-hover: -14px 0 20px -8px #00000080;
+}
+
+// The switch itself is eased: page and ink cross over together instead of
+// snapping, and the wood plank photograph is dimmed to the same evening.
+.library {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

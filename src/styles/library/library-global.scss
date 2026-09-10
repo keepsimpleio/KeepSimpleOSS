@@ -15,6 +15,10 @@
 // styles/globals.scss alongside the other Source Serif faces — not here.
 @use './variables.scss';
 @use './global.scss';
+// themes.scss   -> the dark reading of the same tokens, keyed on the
+//                  `darkTheme` class keepsimple's own navbar switch puts on
+//                  <body>. The Library ships no switch of its own.
+@use './themes.scss';
 
 // Library pages scroll horizontally (shelf rows, jump pills), so a touchpad
 // swipe that runs past a row's edge must NOT escalate into the browser's
