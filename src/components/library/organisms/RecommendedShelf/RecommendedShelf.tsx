@@ -98,7 +98,7 @@ export default function RecommendedShelf({
   const state = shelf.state;
   const board = useMemo(() => state?.picks ?? [], [state]);
   const locked = useMemo(() => new Set(state?.locked ?? []), [state]);
-  const bannedBooks: BannedBook[] = state?.banned ?? [];
+  const bannedBooks: BannedBook[] = useMemo(() => state?.banned ?? [], [state]);
   const preference = state?.preference ?? 'any';
   const required = state?.required ?? RECOMMENDED_SHELF_MIN_BOOKS;
   const books = state?.books ?? 0;
@@ -150,6 +150,14 @@ export default function RecommendedShelf({
     collapse: 'width',
   });
   const drawnKey = board.map(bookKey).join(',');
+
+  // The banned list is a list whose members come and go like any other: an
+  // unbanned book fades out where it stood and the rows below close the gap.
+  const { ref: bannedListRef, entries: bannedEntries } = useAnimatedList(
+    bannedBooks,
+    book => book.title,
+    { collapse: 'height' },
+  );
 
   const closeBanned = useCallback(() => setBannedOpen(false), []);
   const { closeRef: bannedCloseRef, close: closeBannedAnimated } =
@@ -417,50 +425,83 @@ export default function RecommendedShelf({
           closeRef={bannedCloseRef}
         >
           <div className={styles.bannedBody}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.bannedLede}
+            >
+              A banned book is never recommended again, here or on a magic book,
+              until you take it off this list.
+            </Text>
+
             {bannedBooks.length === 0 ? (
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={styles.bannedEmpty}
-              >
-                No banned books yet. Ban a pick on the shelf and it lands here.
-              </Text>
+              <div className={styles.bannedEmpty}>
+                <span className={styles.bannedEmptyMark} aria-hidden="true">
+                  <BanIcon />
+                </span>
+                <Text variant={TypographyVariant.TextSmall}>
+                  Nothing is banned. Ban a pick on the shelf and it lands here.
+                </Text>
+              </div>
             ) : (
-              <ul className={styles.bannedList}>
-                {bannedBooks.map(book => (
-                  <li key={book.title} className={styles.bannedRow}>
-                    <div className={styles.bannedText}>
-                      <Text
-                        variant={TypographyVariant.TextBaseSemibold}
-                        className={styles.bannedTitle}
-                      >
-                        {book.title}
-                      </Text>
-                      {book.author && (
-                        <Text
-                          variant={TypographyVariant.TextSmall}
-                          className={styles.bannedAuthor}
-                        >
-                          {book.author}
-                        </Text>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      className={cn(styles.headerButton, styles.bannedButton)}
-                      disabled={shelf.busy}
-                      onClick={() => shelf.unban(book)}
-                      aria-label={`Unban ${book.title}`}
+              <div className={styles.bannedScroll}>
+                <div
+                  className={styles.bannedList}
+                  ref={bannedListRef}
+                  role="list"
+                >
+                  {bannedEntries.map(({ item: book, leaving }) => (
+                    <div
+                      key={book.title}
+                      role="listitem"
+                      className={styles.bannedRow}
+                      data-flip-id={book.title}
+                      data-flip-leaving={leaving ? 'true' : undefined}
+                      aria-hidden={leaving || undefined}
                     >
-                      Unban
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      <div className={styles.bannedText}>
+                        <Text
+                          variant={TypographyVariant.TextBaseSemibold}
+                          className={styles.bannedTitle}
+                        >
+                          {book.title}
+                        </Text>
+                        {book.author && (
+                          <Text
+                            variant={TypographyVariant.TextSmall}
+                            className={styles.bannedAuthor}
+                          >
+                            {book.author}
+                          </Text>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className={styles.bannedUnban}
+                        disabled={shelf.busy || leaving}
+                        onClick={() => shelf.unban(book)}
+                        aria-label={`Unban ${book.title}`}
+                      >
+                        Unban
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
+
             <div className={styles.bannedFooter}>
+              {bannedBooks.length > 0 && (
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={styles.bannedCount}
+                >
+                  {bannedBooks.length}{' '}
+                  {bannedBooks.length === 1 ? 'book' : 'books'}
+                </Text>
+              )}
               <button
                 type="button"
-                className={cn(styles.headerButton, styles.regenerate)}
+                className={styles.bannedDone}
                 onClick={closeBannedAnimated}
               >
                 Done
