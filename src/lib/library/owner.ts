@@ -34,6 +34,15 @@ const strapi = async <T>(path: string, token: string): Promise<T | null> => {
   return (await r.json()) as T;
 };
 
+/** A route says who its private surface is, so the reader is told about the
+ * thing they asked for rather than about "this shelf". */
+export interface OwnerWording {
+  /** No session at all. */
+  signIn?: string;
+  /** A session, but not the owner of this library. */
+  forbidden?: string;
+}
+
 export interface OwnerCheck {
   status: number;
   error?: string;
@@ -44,9 +53,14 @@ export interface OwnerCheck {
 export async function ownerOfLibrary(
   req: NextApiRequest,
   libraryId: number,
+  wording: OwnerWording = {},
 ): Promise<OwnerCheck> {
   const token = bearer(req);
-  if (!token) return { status: 401, error: 'Sign in to see this shelf.' };
+  if (!token)
+    return {
+      status: 401,
+      error: wording.signIn ?? 'Sign in to see this shelf.',
+    };
   if (!STRAPI)
     return { status: 500, error: 'The library backend is not configured.' };
 
@@ -63,7 +77,11 @@ export async function ownerOfLibrary(
 
   const ownerId = library.attributes.user?.data?.id;
   if (ownerId == null || String(ownerId) !== String(me.id))
-    return { status: 403, error: 'Only the owner sees this shelf.' };
+    return {
+      status: 403,
+      error: wording.forbidden ?? 'Only the owner sees this shelf.',
+      userId: me.id,
+    };
 
   return { status: 200, userId: me.id, library };
 }

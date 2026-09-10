@@ -1,7 +1,6 @@
 // motion-passport: exempt — a server route; nothing here is drawn.
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import type { StrapiLibraryEntry } from '@local-types/library/library';
 import type {
   MagicBooksResponse,
   MagicShelfResult,
@@ -18,6 +17,7 @@ import {
   readLibrary,
   updateLibrary,
 } from '@lib/library/magic/store';
+import { ownerOfLibrary } from '@lib/library/owner';
 
 /**
  * POST /api/library/magic-book
@@ -35,37 +35,11 @@ import {
  *   reroll  the same as roll, kept for older callers
  */
 
-const STRAPI = process.env.NEXT_PUBLIC_STRAPI ?? '';
-const STRAPI_TIMEOUT_MS = 10_000;
-
-const POPULATE = new URLSearchParams({
-  'populate[user]': 'true',
-  'populate[singleShelves][populate][objects][populate][tags]': 'true',
-  'populate[singleShelves][sort][0]': 'order:asc',
-  'populate[singleShelves][populate][objects][sort][0]': 'order:asc',
-}).toString();
-
 interface Body {
   libraryId?: number;
   action?: 'load' | 'roll' | 'reroll';
   shelfId?: number;
 }
-
-const bearer = (req: NextApiRequest): string | null => {
-  const header = req.headers.authorization;
-  if (!header || !header.startsWith('Bearer ')) return null;
-  const token = header.slice(7).trim();
-  return token || null;
-};
-
-const strapi = async <T>(path: string, token: string): Promise<T | null> => {
-  const r = await fetch(`${STRAPI}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    signal: AbortSignal.timeout(STRAPI_TIMEOUT_MS),
-  });
-  if (!r.ok) return null;
-  return (await r.json()) as T;
-};
 
 const fromStore = (
   shelf: DigestShelf,
@@ -119,36 +93,24 @@ export default async function handler(
     res.status(400).json({ error: 'shelfId is required to roll again.' });
     return;
   }
-  const token = bearer(req);
-  if (!token) {
-    res.status(401).json({ error: 'Sign in to see your magic books.' });
+  // Who is asking, and do they own this library: the same check the AI shelf
+  // makes, in the one place both routes read it from.
+  const owner = await ownerOfLibrary(req, libraryId, {
+    signIn: 'Sign in to see your magic books.',
+    forbidden: 'Only the owner sees the magic books.',
+  });
+  if (owner.status !== 200 || !owner.library) {
+    if (owner.status === 403)
+      await journal({
+        outcome: 'forbidden',
+        libraryId,
+        userId: owner.userId,
+        action,
+      });
+    res.status(owner.status).json({ error: owner.error ?? 'Not allowed.' });
     return;
   }
-  if (!STRAPI) {
-    res.status(500).json({ error: 'The library backend is not configured.' });
-    return;
-  }
-
-  const me = await strapi<{ id?: number }>('/api/users/me', token);
-  if (!me?.id) {
-    res.status(401).json({ error: 'Your session has expired. Sign in again.' });
-    return;
-  }
-  const read = await strapi<{ data: StrapiLibraryEntry }>(
-    `/api/libraries/${libraryId}?${POPULATE}`,
-    token,
-  );
-  const library = read?.data;
-  if (!library) {
-    res.status(404).json({ error: 'No such library.' });
-    return;
-  }
-  const ownerId = library.attributes.user?.data?.id;
-  if (ownerId == null || String(ownerId) !== String(me.id)) {
-    await journal({ outcome: 'forbidden', libraryId, userId: me.id, action });
-    res.status(403).json({ error: 'Only the owner sees the magic books.' });
-    return;
-  }
+  const library = owner.library;
 
   const digest = digestLibrary(library);
   const stored = await readLibrary(libraryId);
