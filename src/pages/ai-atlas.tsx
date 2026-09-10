@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 
 import { adaptGuide, copy } from '@lib/aiAtlas/adapter';
+import guide from '@lib/aiAtlas/guide.json';
 import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
 
 import SeoGenerator from '@components/SeoGenerator';
@@ -42,9 +43,9 @@ function useHasHover() {
   return hasHover;
 }
 
-type Lang = 'en' | 'ru';
-// The Atlas content, served from this site rather than the Terminal's frame.
-const dataUrlFor = (_lang: Lang) => '/ai-atlas/guide.json';
+/* The Atlas content is bundled into the page and rendered on the server.
+   It is never served as a standalone file: the guide describes the private
+   Terminal and only what the page draws may leave this host. */
 
 /* ============================================================
    Locale strings — every user-facing piece of text in EN + RU.
@@ -1192,12 +1193,10 @@ export function AiAtlasApp({
   initialView = 'environment',
   initialFocus = null,
 }: any = {}) {
-  const lang: Lang = 'en';
-  const [data, setData] = useState<any>(() =>
+  const [data] = useState<any>(() =>
     initialGuide ? adaptGuide(initialGuide) : null,
   );
   const t = data?.copy || copy;
-  const [fetchError, setFetchError] = useState<string | null>(null);
   const [now] = useState<Date>(() => new Date());
   const [focusedNode, setFocusedNode] = useState<string | null>(initialFocus);
   const [hoverNode, setHoverNode] = useState<string | null>(null);
@@ -1265,32 +1264,6 @@ export function AiAtlasApp({
       window.history.replaceState(null, '', url);
     }
   }, [viewMode, focusedNode]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const url = dataUrlFor(lang);
-    setData(null);
-    const load = () => {
-      fetch(url, { cache: 'no-store' })
-        .then(r => {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        })
-        .then(d => {
-          if (!cancelled) {
-            setData(adaptGuide(d));
-            setFetchError(null);
-          }
-        })
-        .catch(e => {
-          if (!cancelled) setFetchError(String(e.message || e));
-        });
-    };
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [lang]);
 
   const metrics = null;
   useEffect(() => {
@@ -1408,16 +1381,7 @@ export function AiAtlasApp({
   if (!data) {
     return (
       <div className="sheet">
-        <div className="atlas-loading">
-          {fetchError ? (
-            <>
-              {t.failedToLoad}
-              <code>{fetchError}</code>
-            </>
-          ) : (
-            t.loading
-          )}
-        </div>
+        <div className="atlas-loading">{t.loading}</div>
       </div>
     );
   }
@@ -2074,7 +2038,7 @@ export default function AiAtlasPage() {
         }}
       />
       <div className="ai-atlas-root">
-        <AiAtlasApp />
+        <AiAtlasApp initialGuide={guide} />
       </div>
     </>
   );
