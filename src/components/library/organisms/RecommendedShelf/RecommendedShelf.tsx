@@ -37,6 +37,7 @@ import {
   SparkleIcon,
 } from '@icons/library/svg';
 
+import SpellSlot from '@components/library/atoms/SpellSlot';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import { Button, ButtonType } from '@components/library/molecules/Button';
@@ -402,10 +403,10 @@ export default function RecommendedShelf({
                   </div>
                 ))}
                 {Array.from({ length: ghosts }, (_, index) => (
-                  <div
-                    key={`ghost-${index}`}
-                    className={styles.ghost}
-                    aria-hidden="true"
+                  <SpellSlot
+                    key={`spell-${index}`}
+                    index={board.length + index}
+                    working={working}
                   />
                 ))}
               </div>

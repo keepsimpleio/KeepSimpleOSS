@@ -778,35 +778,11 @@
   }
 }
 
-// A place held open for a pick that is not there yet: before the shelf
-// opens, while the engine works, and where a roll fell short. The board
-// stands its full length in every state, so nothing on the page moves when
-// the picks land.
-.wrapper .content .cards .ghost {
-  flex: 0 0 auto;
-  width: 180px;
-  height: 208px;
-  border-radius: 2px 4px 4px 2px;
-  background: linear-gradient(
-    100deg,
-    var(--white-200) 0%,
-    var(--cream) 45%,
-    var(--white-100) 100%
-  );
-  border: 1px solid var(--brown-border);
-  opacity: 0.4;
-}
-
 // While the engine works the board holds its geometry and dims: the picks
-// standing on it are still the truth until the new ones land.
-.wrapper .content.working {
-  .cardSlot {
-    opacity: 0.5;
-  }
-
-  .cards .ghost {
-    animation: ghost-breathe 2.4s ease-in-out infinite;
-  }
+// standing on it are still the truth until the new ones land, and the empty
+// places carry the light instead.
+.wrapper .content.working .cardSlot {
+  opacity: 0.5;
 }
 
 .wrapper .content .cardSlot {
@@ -814,21 +790,5 @@
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
-  }
-}
-
-@keyframes ghost-breathe {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.55;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wrapper .content.working .cards .ghost {
-    animation: none;
   }
 }
