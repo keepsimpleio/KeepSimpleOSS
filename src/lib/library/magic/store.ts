@@ -13,8 +13,8 @@ import type {
  * leaves.
  *
  * A JSON file beside the journal, under `logs/library-magic/`, gitignored.
- * One pick per shelf with the fingerprint it was made for, the titles the
- * owner has rolled past on that shelf, the AI shelf's board, and the
+ * One pick per shelf, the titles the owner has rolled past on that shelf,
+ * the AI shelf's board, and the
  * library's banned titles, which the magic book and the AI shelf share: a
  * book banned on one is never proposed by the other. Moving this into the
  * CMS is a schema change and a separate release; the file is what DEV runs
@@ -26,7 +26,8 @@ const STORE = path.join(ROOT, 'store.json');
 const JOURNAL = path.join(ROOT, 'journal.jsonl');
 
 export interface StoredShelf {
-  fingerprint: string;
+  /** The book this shelf stands with. It stands until the owner rolls
+   * again: editing the shelf never spends a model call behind their back. */
   pick: MagicBook | null;
   /** Titles rolled past on this shelf, normalised, never dealt again. */
   history: string[];

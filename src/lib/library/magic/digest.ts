@@ -1,5 +1,3 @@
-import { createHash } from 'crypto';
-
 import type { StrapiLibraryEntry } from '@local-types/library/library';
 import type { Difficulty, OverallRating } from '@local-types/library/object';
 
@@ -35,8 +33,6 @@ export interface DigestShelf {
   /** What the owner wrote about the shelf, when they did. */
   description?: string;
   books: DigestBook[];
-  /** Hash of everything above: the pick is stale once it changes. */
-  fingerprint: string;
 }
 
 export interface LibraryDigest {
@@ -116,22 +112,12 @@ export function digestLibrary(library: StrapiLibraryEntry): LibraryDigest {
         return book;
       });
 
-    const entry: DigestShelf = { id: shelf.id, books, fingerprint: '' };
+    const entry: DigestShelf = { id: shelf.id, books };
     if (isTopicalShelfName(shelf.attributes.name)) {
       entry.name = shelf.attributes.name;
     }
     const description = shelf.attributes.description?.trim();
     if (description) entry.description = description;
-    entry.fingerprint = createHash('sha1')
-      .update(
-        JSON.stringify({
-          name: entry.name ?? null,
-          description: entry.description ?? null,
-          books,
-        }),
-      )
-      .digest('hex')
-      .slice(0, 16);
     return entry;
   });
 
