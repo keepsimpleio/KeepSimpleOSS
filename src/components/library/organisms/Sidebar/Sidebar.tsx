@@ -139,10 +139,9 @@ export function Sidebar() {
   // under it must not move under a swipe, same as every modal.
   useLockBodyScroll(isSidebarOpen);
 
-  // An owner can edit their About panel before any library row exists — the
-  // row is created lazily on first save. Any signed-in owner of this address
-  // may create one (since 2026-09-12), so editing needs no loaded library.
-  const canEditLibrary = canEdit;
+  // An owner can edit their About panel before any library row exists: the
+  // row is created lazily on first save, and any signed-in owner of this
+  // address may create one (since 2026-09-12), so `canEdit` is the whole gate.
 
   // The public owner profile supplies the same identity and photo to every visitor.
   const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
@@ -352,7 +351,7 @@ export function Sidebar() {
           <div className={styles.about}>
             <div className={styles.header}>
               <Text className={styles.label}>About</Text>
-              {canEditLibrary && (
+              {canEdit && (
                 <Button
                   label="Edit"
                   onClick={() => setIsEditLibraryOpen(true)}
@@ -381,7 +380,7 @@ export function Sidebar() {
                   />
                 ) : (
                   <Text className={classNames(styles.label, styles.emptyTags)}>
-                    {canEditLibrary
+                    {canEdit
                       ? 'No description yet. Add one with Edit'
                       : 'No description yet'}
                   </Text>
@@ -606,7 +605,7 @@ export function Sidebar() {
           }
         />
       )}
-      {isEditLibraryOpen && canEditLibrary && (
+      {isEditLibraryOpen && canEdit && (
         <EditLibraryModal
           library={currentLibrary}
           onClose={() => setIsEditLibraryOpen(false)}

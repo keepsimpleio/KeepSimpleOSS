@@ -76,19 +76,6 @@
     }
   }
 
-  .menuItem.disabled {
-    color: #9e9e9e;
-    cursor: not-allowed;
-
-    .menuIcon {
-      opacity: 0.4;
-    }
-
-    &:hover {
-      background-color: transparent;
-    }
-  }
-
   // "Create library" is the one thing in this menu a visitor without a library
   // is here to do: a warm band and an accent rule mark it, the rest of the menu
   // stays quiet ink.
