@@ -164,7 +164,7 @@ export default async function handler(
     for (const shelf of toRun) {
       const current = stored.shelves[String(shelf.id)];
       results.push(
-        current?.pick
+        current?.pick && !gone(current.pick.title)
           ? { shelfId: shelf.id, status: 'ready', pick: current.pick }
           : {
               shelfId: shelf.id,
