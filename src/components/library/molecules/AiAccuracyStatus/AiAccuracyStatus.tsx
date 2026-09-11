@@ -20,9 +20,15 @@ import styles from './AiAccuracyStatus.module.scss';
 /**
  * AI accuracy: how much of what the engine reads is written into this
  * library, as a percent on a meter where the Librarian opener stood. The
- * owner's alone. Clicking it opens the ledger: one line per signal with
- * what it earned of what it could, the counts behind it on hover, and at
- * the foot the one step that buys the most.
+ * owner's alone. Clicking it opens the ledger.
+ *
+ * The ledger says what the number is made of, in the open (Wolf,
+ * 2026-09-11: the bare "20 / 25" told him nothing). One block per signal:
+ * its name, the points it earns of the points it is worth, its meter, and
+ * underneath, in words, the count those points were read from. The header
+ * says once that the six signals share 100 points, so no row has to. The
+ * hover carries only the next step, and the foot the one step that buys
+ * the most.
  */
 export function AiAccuracyStatus({
   shelves,
@@ -79,6 +85,12 @@ export function AiAccuracyStatus({
                   : `How much of your taste the engine can read from ${report.books} ${report.books === 1 ? 'book' : 'books'}.`}
               </Text>
             </div>
+            {report.books > 0 && (
+              <p className={styles.legend}>
+                Six signals, 100 points between them. The score is what they add
+                up to.
+              </p>
+            )}
             <ul className={styles.rows}>
               {report.components.map(row => (
                 <Tooltip
@@ -87,12 +99,21 @@ export function AiAccuracyStatus({
                   key={row.key}
                   tooltipContent={
                     row.next
-                      ? `${row.detail}. ${row.next.action}: +${row.next.gain}%.`
-                      : `${row.detail}.`
+                      ? `${row.next.action}: +${row.next.gain}% on the score.`
+                      : 'This signal is full. Nothing to add here.'
                   }
                 >
                   <li className={styles.row} tabIndex={0}>
-                    <span className={styles.rowLabel}>{row.label}</span>
+                    <span className={styles.rowHead}>
+                      <span className={styles.rowLabel}>{row.label}</span>
+                      <span className={styles.rowPoints}>
+                        {Math.round(row.earned)}
+                        <span className={styles.rowMax}>
+                          {' '}
+                          of {row.max} points
+                        </span>
+                      </span>
+                    </span>
                     <span className={styles.rowMeter} aria-hidden="true">
                       <span
                         className={styles.rowFill}
@@ -101,10 +122,7 @@ export function AiAccuracyStatus({
                         }}
                       />
                     </span>
-                    <span className={styles.rowPoints}>
-                      {row.earned}
-                      <span className={styles.rowMax}> / {row.max}</span>
-                    </span>
+                    <span className={styles.rowDetail}>{row.detail}</span>
                   </li>
                 </Tooltip>
               ))}

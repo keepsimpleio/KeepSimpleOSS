@@ -571,10 +571,13 @@ The algorithm, agreed with Wolf on 2026-09-10 and kept in
    with their ratings withheld, the model predicts them, and the mean signed
    error at eight percent per rating point, clamped to sixteen, shifts the
    scale. Clamped to 5..97, whole percent. The model never writes the number.
-7. Picks persist per shelf with the digest fingerprint of that shelf, in
-   `logs/library-magic/store.json` beside the journal, and are made only
-   when the owner rolls. A roll adds the standing pick, if any, to that
-   shelf's exclusions; a changed shelf empties the slot until the next roll. Sixty model calls per library per UTC day,
+7. Picks persist per shelf in `logs/library-magic/store.json` beside the
+   journal, and are made only when the owner rolls. A pick stands until the
+   owner rolls it away (Wolf, 2026-09-11): editing the shelf, renaming it,
+   rating or annotating its books never unseats it and never spends a model
+   call unasked. It gives up its place for two reasons only, both free: the
+   owner now owns that book, or has banned it. A roll adds the standing
+   pick, if any, to that shelf's exclusions. Sixty model calls per library per UTC day,
    after which what stands stays and the rest waits. Every request leaves a
    `library.magic-book` line in `logs/library-magic/journal.jsonl` and on
    stdout: outcome, shelves run, ready and empty counts, model calls,
