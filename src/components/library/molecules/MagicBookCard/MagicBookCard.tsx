@@ -13,7 +13,8 @@ import type { MagicBookCardProps } from './MagicBookCard.types';
 import styles from './MagicBookCard.module.scss';
 
 // motion-passport: exempt — this file carries no animation of its own. The
-// lift, the light while a pick is being made, the crossfade between states
+// lift, the light while a pick is being made, the word over it, the
+// crossfade between states
 // and the reduced-motion branches live in MagicBookCard.module.scss; the
 // dossier's fade in ObjectHoverCard.module.scss; the brief's in Modal.
 
@@ -32,7 +33,7 @@ const asObject = (
     type: 'book',
     title: slot.pick?.title ?? 'Magic book',
     author: slot.pick?.author,
-    description: slot.pick?.reason ?? slot.note,
+    description: slot.pick?.about ?? slot.pick?.reason ?? slot.note,
     publicationDate: slot.pick?.year ? `${slot.pick.year}-01-01` : undefined,
     createdAt: '',
     updatedAt: '',
@@ -207,6 +208,16 @@ export function MagicBookCard({
           >
             <SparkleIcon />
             Magic
+          </span>
+
+          {/* The engine at work, over whatever the slot holds. Held in the
+              DOM and revealed by class, so a roll never resizes the slot. */}
+          <span
+            className={cn(styles.rolling, { [styles.rollingShown]: busy })}
+            aria-hidden="true"
+          >
+            <SparkleIcon />
+            Rolling
           </span>
         </div>
       </div>

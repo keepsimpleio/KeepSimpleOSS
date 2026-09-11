@@ -555,7 +555,12 @@ The algorithm, agreed with Wolf on 2026-09-10 and kept in
 4. One model call per batch of up to ten shelves, Opus 5 at high effort on
    Wolf's subscriptions through `claude-relay` (below), asking for one JSON
    object with five ranked candidates per shelf, each with a rubric of five integers 0..5: theme, notes, tags,
-   difficulty, distance from the negative examples. Books in the library,
+   difficulty, distance from the negative examples. Every candidate carries two
+   separate texts and neither may do the other's work: `about`, what the
+   book is, two or three sentences in the third person, and `reason`, why
+   this owner is being given it, addressed to them and grounded in their own
+   notes. The same two on the AI shelf. A card shows the short one and opens
+   to a brief that cuts nothing (Wolf, 2026-09-11). Books in the library,
    titles the owner rolled past on that shelf and banned titles are excluded
    in the prompt and again on the way out.
 5. Every candidate is verified, in rank order, against Google Books and then

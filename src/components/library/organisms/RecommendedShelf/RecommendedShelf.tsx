@@ -305,7 +305,9 @@ export default function RecommendedShelf({
 
           <button
             type="button"
-            className={cn(styles.headerButton, styles.regenerate)}
+            className={cn(styles.headerButton, styles.regenerate, {
+              [styles.regenerateWorking]: shelf.rolling,
+            })}
             disabled={readOnly || isLocked || shelf.busy || working}
             aria-busy={shelf.rolling}
             onClick={shelf.roll}
@@ -387,7 +389,7 @@ export default function RecommendedShelf({
               ref={itemsRef}
             >
               <div className={styles.cards} ref={cardsRef}>
-                {entries.map(({ item: book, leaving }) => (
+                {entries.map(({ item: book, leaving }, index) => (
                   <div
                     key={book.id}
                     className={cn(styles.cardSlot, {
@@ -401,6 +403,10 @@ export default function RecommendedShelf({
                       book={book}
                       readOnly={readOnly || shelf.busy || working}
                       locked={locked.has(book.id)}
+                      // A locked pick survives the roll, so it stays still
+                      // while the light runs over the places that do not.
+                      working={shelf.rolling && !locked.has(book.id)}
+                      slotIndex={index}
                       onToggleLock={pick => shelf.toggleLock(pick.id)}
                       onToggleBan={pick => shelf.ban(pick.id)}
                     />

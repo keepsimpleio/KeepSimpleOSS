@@ -204,6 +204,11 @@ export function paintAmbientWashes(
  * canvas with a hand wobble, variable pressure and slightly tapered ends.
  * Replaces the boxed 1px borders inside cards.
  */
+/** The ink a rule is drawn in on paper, and the one night paper takes. The
+ * tokens `--ink-line` carry the same two values to CSS. */
+export const INK_LINE: Pigment = [51, 41, 28];
+export const INK_LINE_NIGHT: Pigment = [226, 214, 198];
+
 export function paintInkLine(
   canvas: HTMLCanvasElement,
   seed: number,
@@ -211,6 +216,9 @@ export function paintInkLine(
   // for the canvas lands on screen thinner than it was painted. Pressure and
   // width below carry the rule past that loss.
   alpha = 0.62,
+  // Dark ink on paper, light ink at night: the rule is the same hand either
+  // way, and the caller says which pigment is in the nib.
+  ink: Pigment = INK_LINE,
 ): void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -229,7 +237,7 @@ export function paintInkLine(
     let y = py + (rng() - 0.5) * h * 0.35;
     y = Math.min(h * 0.8, Math.max(h * 0.2, y));
     const taper = t < 0.08 || t > 0.92 ? 0.55 : 1;
-    ctx.strokeStyle = `rgba(51,41,28,${alpha * (0.7 + rng() * 0.5) * taper})`;
+    ctx.strokeStyle = `rgba(${ink[0]},${ink[1]},${ink[2]},${alpha * (0.7 + rng() * 0.5) * taper})`;
     ctx.lineWidth = (1.35 + rng() * 1.25) * taper;
     ctx.beginPath();
     ctx.moveTo(px, py);

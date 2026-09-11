@@ -6,9 +6,19 @@
 - Contrast: **4.5:1** minimum, or **3:1** for text at 18px and above.
 - If text does not fit, fix the layout. This passport outranks template and skill defaults.
 
-# CLAUDE.md — keepsimple (for Claude Code agents)
+# CLAUDE.md, keepsimple (for Claude Code agents)
 
 ## Release lessons (Wolf, 2026-09-07)
+
+**The order in force, in three lines.** Nothing reaches staging or production
+without Wolf's direct word in the conversation (see "Staging and production
+need Wolf's word" below, 2026-09-09, which is the later and stronger rule).
+Every feature collects on the one batch branch, and before any repeat build
+Wolf is told why another build is needed and given the chance to batch more
+into it. The lessons below are the detail behind those two gates; they explain
+how a release is run, they do not soften either gate.
+
+### Before a build is triggered
 
 Before any repeat build, tell Wolf why another build is needed and wait for his
 decision on the batch of changes. He may have other tasks to include. Do not
@@ -22,6 +32,8 @@ Wolf requires faster production releases. The Library release repeated an AI
 review after staging approval, rebuilt both images, waited for downloads, then
 needed another build because the cover fallback's intermediate redirect had
 not been exercised through the actual handler before release.
+
+### Running the release
 
 - Keep one agreed release branch per repository. Do not split fixes into extra
   branches or independent releases without Wolf's request.
@@ -44,6 +56,9 @@ not been exercised through the actual handler before release.
   about framework input coercion; never claim the entire probe passed if it did not.
 - Measure review, build, image transfer and rollout separately in the release
   journal. Announce milestone changes; keep waiting messages short.
+
+### CI, images and rollout
+
 - Deploy CI queues one run per branch and ships a .dockerignore. A Docker
   layer cache was tried and removed on 2026-09-08: restoring the 2.25 GB
   node_modules layer from the Actions cache took 184s against 74s for yarn
@@ -61,11 +76,11 @@ not been exercised through the actual handler before release.
 - Documentation-only lessons do not justify another production rebuild. Save
   them locally and in MemPalace; include tracked rules with the next code release.
 
-> **Global rules apply.** Communication style + Agent Directory routing live in `~/.claude/CLAUDE.md` — read that first. This project participates in the directory; use `/send-to` to ask peers.
+> **Global rules apply.** Communication style and Agent Directory routing live in `~/.claude/CLAUDE.md`; read that first. This project participates in the directory; use `/send-to` to ask peers.
 
 MemPalace wing: `keepsimple` (protocol lives in `~/.claude/CLAUDE.md`).
 
-Human-readable agent guidelines live in `AGENTS.md` next to this file; this file is the machine-facing version. See `AGENTS.md` for repo conventions, build/test commands, and contribution rules — imported below so it loads automatically.
+Human-readable agent guidelines live in `AGENTS.md` next to this file; this file is the machine-facing version. See `AGENTS.md` for repo conventions, build/test commands, and contribution rules, imported below so it loads automatically.
 
 @AGENTS.md
 
@@ -77,7 +92,7 @@ under `src/*/library`, `src/pages/library`, `mcp/library` or the Library CMS
 types, and write new Library rules there, never here. It is not imported into
 this file on purpose: it is read when the Library is the work.
 
-## Code search — prefer CodeGraph over Grep
+## Code search: prefer CodeGraph over Grep
 
 Repo is indexed by **CodeGraph** (MCP `codegraph`, registered globally). Use it FIRST when you have a symbol name: `codegraph_search`, `codegraph_callers`/`callees`, `codegraph_context`, `codegraph_impact`, `codegraph_files`. Grep/Glob only when query is conceptual or CodeGraph returned nothing. Index lags writes ~500ms.
 
@@ -86,10 +101,14 @@ Repo is indexed by **CodeGraph** (MCP `codegraph`, registered globally). Use it 
 When writing copy that ships to users (microcopy, page headings, marketing blurbs, articles, error messages):
 
 - First-person, direct, no filler.
-- Em-dashes and semicolons over staccato fragments — let sentences breathe; reserve short fragments for deliberate punctuation, never as default rhythm.
+- Let sentences breathe. Commas, semicolons, colons and parentheses carry the
+  rhythm; short fragments are a deliberate accent, never the default. Em-dashes
+  are banned outright by the global rules in `~/.claude/CLAUDE.md` and that ban
+  outranks this section, the reference piece included: where the article uses
+  one, write the sentence without it.
 - Cross-disciplinary framing welcome when it actually fits (behavioral science × product × longevity × AI).
 - Sparse profanity is fine when it lands; default to clean.
-- No AI-isms — no "let me know if…", no "happy to help", no preamble before the answer.
+- No AI-isms: no "let me know if…", no "happy to help", no preamble before the answer.
 - Reference piece: **"The Rise of the Choice Architect"** (article on keepsimple.io). Match its register.
 
 ## ⚠️ UX Core data is canonical
@@ -102,7 +121,7 @@ The 100+ cognitive biases in UX Core are the product of 5+ years of curation and
 
 ## MemPalace usage (wing: `keepsimple`)
 
-When you find yourself stuck > 10 minutes on a problem and figure it out, write a brief drawer in your wing — chronology + fix. Next-session-you won't waste the same 10 minutes. Same when a deployment/config decision is non-obvious — capture _why_ alongside _what_.
+When you find yourself stuck > 10 minutes on a problem and figure it out, write a brief drawer in your wing: chronology plus fix. Next-session-you won't waste the same 10 minutes. Same when a deployment or config decision is non-obvious: capture _why_ alongside _what_.
 
 ## A-Z OWNERSHIP (KEY-72580, forced by Wolf 2026-09-07, written by The Order on his order)
 
