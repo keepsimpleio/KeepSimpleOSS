@@ -21,7 +21,6 @@ type UserProfileProps = {
   isDarkTheme?: boolean;
   hideDropdown?: boolean;
   hideUsername?: boolean;
-  canCreateLibrary?: boolean;
   hasLibrary?: boolean;
   setAccountData?: (updater: (prev: boolean) => boolean) => void;
   setOpenLoginModal?: (openModal: boolean) => void;
@@ -56,7 +55,6 @@ const UserProfile: FC<UserProfileProps> = ({
   isDarkTheme,
   hideDropdown,
   hideUsername,
-  canCreateLibrary,
   hasLibrary,
   setAccountData,
   setOpenLoginModal,
@@ -86,25 +84,13 @@ const UserProfile: FC<UserProfileProps> = ({
     handleOpenSettings?.();
   }, [handleOpenSettings]);
 
-  // With neither an existing library nor create permission, the user has no
-  // library page to open, so the item is inert.
-  const myLibraryDisabled = !hasLibrary && !canCreateLibrary;
-
-  const handleMyLibrary = useCallback(() => {
-    if (myLibraryDisabled) return;
+  // Every signed-in account has a library page: the one it owns, or its own
+  // address, where the first shelf creates one. Both items lead there; the
+  // page decides what it shows.
+  const openMyLibrary = useCallback(() => {
     setIsDropdownOpen(false);
     router.push(libraryPath(username));
-  }, [router, username, myLibraryDisabled]);
-
-  // A library has no standalone create step — it's bootstrapped on the owner's
-  // own page once they add content (gated server-side by the same feature
-  // flag). So "Create library" just routes there; the flag drives whether the
-  // item is actionable at all.
-  const handleCreateLibrary = useCallback(() => {
-    if (!canCreateLibrary) return;
-    setIsDropdownOpen(false);
-    router.push(libraryPath(username));
-  }, [router, username, canCreateLibrary]);
+  }, [router, username]);
 
   useEffect(() => {
     if (hideDropdown) setIsDropdownOpen(false);
@@ -181,13 +167,7 @@ const UserProfile: FC<UserProfileProps> = ({
         {isDropdownOpen && isAccessTokenExist && (
           <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
             {username && (
-              <div
-                className={cn(styles.menuItem, {
-                  [styles.disabled]: myLibraryDisabled,
-                })}
-                onClick={handleMyLibrary}
-                aria-disabled={myLibraryDisabled}
-              >
+              <div className={styles.menuItem} onClick={openMyLibrary}>
                 <LibraryIcon
                   width={20}
                   height={11}
@@ -202,12 +182,8 @@ const UserProfile: FC<UserProfileProps> = ({
                 the only honest entry and this item would just repeat it. */}
             {!hasLibrary && (
               <div
-                className={cn(styles.menuItem, {
-                  [styles.disabled]: !canCreateLibrary,
-                  [styles.highlighted]: canCreateLibrary,
-                })}
-                onClick={handleCreateLibrary}
-                aria-disabled={!canCreateLibrary}
+                className={cn(styles.menuItem, styles.highlighted)}
+                onClick={openMyLibrary}
               >
                 <PlusIcon
                   width={14}

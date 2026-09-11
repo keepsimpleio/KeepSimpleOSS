@@ -83,6 +83,20 @@ export const MAX_SHARE_OBJECTS = 21;
 // SHELF_FULL_MESSAGE. Backend is the source of truth — see isShelfFullError.
 export const MAX_OBJECTS_PER_SHELF = 50;
 
+// Backend caps a whole library at 300 objects across all its shelves, on top
+// of the per-shelf cap. Every Add control disables together at this count,
+// and a rejected create surfaces LIBRARY_OBJECTS_FULL_MESSAGE. Backend is the
+// source of truth — see isLibraryFullError.
+export const MAX_OBJECTS_PER_LIBRARY = 300;
+
+export const LIBRARY_OBJECTS_FULL_MESSAGE =
+  'This library is full. Delete an item to add a new one.';
+
+// The account flag that unlocks the AI shelf and the magic books, read from
+// GET /api/users/me as `featureNames`. An operator hands it out; creating a
+// library needs no flag since 2026-09-12.
+export const LIBRARY_AI_FLAG = 'library-ai';
+
 export const SHELF_FULL_MESSAGE = 'This shelf is full.';
 
 // The library-level twin, worded the same way so the two limits read as one

@@ -27,8 +27,10 @@ import React, {
 } from 'react';
 
 import {
+  LIBRARY_AI_FLAG,
   LIBRARY_FULL_MESSAGE,
   LIBRARY_SHELVES_REFETCH_EVENT,
+  MAX_OBJECTS_PER_LIBRARY,
   MAX_SHELVES_PER_LIBRARY,
 } from '@constants/library/common';
 
@@ -59,6 +61,7 @@ import {
   keepFavoriteFields,
   sortFavorites,
 } from '@lib/library/favorites';
+import { holdsFlag } from '@lib/library/flags';
 import { libraryPath } from '@lib/library/libraryPath';
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 import {
@@ -195,7 +198,6 @@ export function LibraryTemplate({
     setCurrentShelves,
     setCurrentOwner,
     setCurrentLibrary,
-    setIsCreateBlocked,
     setIsOwner,
     toggleSidebarCollapsed,
   } = useGlobalState();
@@ -266,22 +268,20 @@ export function LibraryTemplate({
   // and on first paint, so the markup hydrates identically everywhere.
   const canEditHere = viewAsOwner && supportsEditing;
 
+  // The AI shelf and the magic books are behind the `library-ai` account
+  // flag from GET /api/users/me; the routes behind them check the same flag,
+  // so this decides what is drawn, not what is allowed. Creating a library
+  // needs no flag: any signed-in owner of this address bootstraps one from
+  // their first shelf.
+  const hasLibraryAi = holdsFlag(accountData, LIBRARY_AI_FLAG);
+
   // The magic books are read once the owner is known to be editing here:
-  // desktop, own library, not previewing as a guest. The engine's own store
-  // answers at once for shelves it has already picked for.
+  // desktop, own library, not previewing as a guest, and flagged. The
+  // engine's own store answers at once for shelves it has already picked for.
   const magicFor = useMagicBooks(
     library?.id ?? null,
-    canEditHere && !!accountData,
+    canEditHere && hasLibraryAi,
   );
-
-  // Creating a library is gated by the `can-create-library` feature flag from
-  // GET /api/users/me. The gate only matters before a library exists — once one
-  // is created, owners keep full control. Decide at render time from the flag,
-  // never by probing POST /api/libraries (that would create one for flag-holders).
-  const canCreateLibrary =
-    accountData?.featureNames?.includes('can-create-library') ?? false;
-  const showNoCreatePermission =
-    isOwner && library === null && !canCreateLibrary;
 
   // URL param is `/library/[username]` — accept either a numeric id or a username slug.
   const resolveLibraryId = useCallback(async (): Promise<number | null> => {
@@ -809,12 +809,6 @@ export function LibraryTemplate({
     setCurrentLibrary(library);
   }, [library, setCurrentLibrary]);
 
-  // Mirror the no-permission screen into GlobalState so the Sidebar (right
-  // panel) hides itself when we're showing only the permission message.
-  useEffect(() => {
-    setIsCreateBlocked(showNoCreatePermission);
-  }, [showNoCreatePermission, setIsCreateBlocked]);
-
   const mutateShelfObjects = useCallback(
     (shelfId: number, mutator: (objects: IObject[]) => IObject[]) => {
       setLibrary(current => {
@@ -1256,6 +1250,14 @@ export function LibraryTemplate({
     [removeSelection, replaceSelection],
   );
 
+  // The library-wide object cap, on top of the per-shelf one: every Add
+  // control disables together once the whole library holds its 300.
+  const atLibraryObjectLimit =
+    shelves.reduce(
+      (count, shelf) => count + (shelf.attributes.objects?.data?.length ?? 0),
+      0,
+    ) >= MAX_OBJECTS_PER_LIBRARY;
+
   const renderShelf = (
     shelf: StrapiSingleShelfEntry,
     dragHandleProps?: ShelfDragHandleProps,
@@ -1271,6 +1273,7 @@ export function LibraryTemplate({
       isOwner={canEditHere}
       visibleObjectIds={matchedIdsByShelf?.get(shelf.id) ?? null}
       reorderLocked={canEditHere && !canReorderShelves && shelves.length > 1}
+      libraryFull={atLibraryObjectLimit}
       onObjectCreated={handleObjectCreated}
       onObjectUpdated={handleObjectUpdated}
       onObjectDeleted={handleObjectDeleted}
@@ -1310,6 +1313,15 @@ export function LibraryTemplate({
           onSearchChange={setSearch}
           matchedCount={matchedCount}
         />
+      )}
+      {/* An operator took this library off the public surface; its owner
+          is the one person who still sees it, and is told so. */}
+      {isOwner && library?.attributes.hidden === true && (
+        <div className={styles.hiddenRow} role="status">
+          <Text variant={TypographyVariant.TextSmall}>
+            This library is hidden: only you can see it.
+          </Text>
+        </div>
       )}
       {/* Notices land in a slot held from the start, so the shelf list never
           jumps when one appears. Owner-only: every message here follows an
@@ -1362,13 +1374,13 @@ export function LibraryTemplate({
             className={styles.button}
           />
         </div>
-      ) : showNoCreatePermission ? (
+      ) : !isOwner && library === null ? (
         <div className={styles.empty}>
           <Text
             variant={TypographyVariant.TitleSecondaryBold}
             className={styles.text}
           >
-            You don&apos;t have permission to create a library
+            No such library
           </Text>
         </div>
       ) : shelves.length === 0 ? (
@@ -1379,7 +1391,9 @@ export function LibraryTemplate({
           >
             {canEditHere
               ? 'Begin your journey by adding your first shelf'
-              : 'This library is empty'}
+              : isOwner && library === null
+                ? 'Use a desktop to create your library'
+                : 'This library is empty'}
           </Text>
 
           {canEditHere && (
@@ -1459,7 +1473,7 @@ export function LibraryTemplate({
             [styles.filterSwapOut]: tagFading,
           })}
         >
-          {viewAsOwner && !hasSearch && library && (
+          {viewAsOwner && hasLibraryAi && !hasSearch && library && (
             <RecommendedShelf
               key={library.id}
               readOnly={!canEditHere}

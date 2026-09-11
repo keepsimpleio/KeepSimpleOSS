@@ -77,13 +77,6 @@ interface GlobalStateContextValue {
    */
   currentLibrary: ILibrary | null;
   setCurrentLibrary: (library: ILibrary | null) => void;
-  /**
-   * True when the owner is on their own library with no library yet and lacks
-   * the `can-create-library` feature flag. Published by `LibraryTemplate` so the
-   * Sidebar (right panel) can hide itself alongside the no-permission screen.
-   */
-  isCreateBlocked: boolean;
-  setIsCreateBlocked: (value: boolean) => void;
 }
 
 const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(
@@ -155,7 +148,6 @@ export function GlobalStateProvider({
   const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(
     initialLibrary,
   );
-  const [isCreateBlocked, setIsCreateBlocked] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
 
   const refetchLibraries = useCallback(async () => {
@@ -272,8 +264,6 @@ export function GlobalStateProvider({
       setCurrentOwner,
       currentLibrary,
       setCurrentLibrary,
-      isCreateBlocked,
-      setIsCreateBlocked,
     }),
     [
       isOwner,
@@ -292,8 +282,6 @@ export function GlobalStateProvider({
       setCurrentOwner,
       currentLibrary,
       setCurrentLibrary,
-      isCreateBlocked,
-      setIsCreateBlocked,
     ],
   );
 

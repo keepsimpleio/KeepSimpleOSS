@@ -106,6 +106,11 @@ export interface StrapiLibraryAttributes {
   favoritesDescription?: string | null;
   /** Owner-only account preference. Missing legacy values mean expanded. */
   aiShelfCollapsed?: boolean;
+  /**
+   * Set by an operator to take the library off the public surface. Only the
+   * owner's own reads carry it; everyone else gets a 404.
+   */
+  hidden?: boolean;
 }
 
 export interface StrapiLibraryEntry {

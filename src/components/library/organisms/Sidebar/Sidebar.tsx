@@ -80,7 +80,6 @@ export function Sidebar() {
     currentShelves,
     currentOwner,
     currentLibrary,
-    isCreateBlocked,
     isOwner,
   } = useGlobalState();
 
@@ -140,13 +139,9 @@ export function Sidebar() {
   // under it must not move under a swipe, same as every modal.
   useLockBodyScroll(isSidebarOpen);
 
-  // An owner can edit their About panel before any library row exists — the
-  // row is created lazily on first save. So the editable affordance is gated on
-  // the `can-create-library` permission, not on a loaded library (the same flag
-  // LibraryTemplate uses to allow bootstrapping via the first shelf).
-  const canCreateLibrary =
-    accountData?.featureNames?.includes('can-create-library') ?? false;
-  const canEditLibrary = canEdit && (!!currentLibrary || canCreateLibrary);
+  // An owner can edit their About panel before any library row exists: the
+  // row is created lazily on first save, and any signed-in owner of this
+  // address may create one (since 2026-09-12), so `canEdit` is the whole gate.
 
   // The public owner profile supplies the same identity and photo to every visitor.
   const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
@@ -301,10 +296,6 @@ export function Sidebar() {
     }
   }, [isCopied]);
 
-  // Hide the right panel entirely when the owner lacks permission to create a
-  // library — the page shows only the centered no-permission message.
-  if (isCreateBlocked) return null;
-
   return (
     <>
       {/* Mobile-only fallback opener. The toolbar carries the About button
@@ -360,7 +351,7 @@ export function Sidebar() {
           <div className={styles.about}>
             <div className={styles.header}>
               <Text className={styles.label}>About</Text>
-              {canEditLibrary && (
+              {canEdit && (
                 <Button
                   label="Edit"
                   onClick={() => setIsEditLibraryOpen(true)}
@@ -389,7 +380,7 @@ export function Sidebar() {
                   />
                 ) : (
                   <Text className={classNames(styles.label, styles.emptyTags)}>
-                    {canEditLibrary
+                    {canEdit
                       ? 'No description yet. Add one with Edit'
                       : 'No description yet'}
                   </Text>
@@ -614,7 +605,7 @@ export function Sidebar() {
           }
         />
       )}
-      {isEditLibraryOpen && canEditLibrary && (
+      {isEditLibraryOpen && canEdit && (
         <EditLibraryModal
           library={currentLibrary}
           onClose={() => setIsEditLibraryOpen(false)}

@@ -12,6 +12,8 @@ import React, {
 } from 'react';
 import { flushSync } from 'react-dom';
 
+import { AUTH_OPEN_LOGIN_EVENT } from '@constants/auth';
+
 import type { TRouter } from '@local-types/global';
 
 import useGlobals from '@hooks/useGlobals';
@@ -50,15 +52,9 @@ const Header: FC = () => {
   const { accountData, setAccountData } = useContext(GlobalContext);
   const [{ toggleSidebar }, { isDarkTheme, isOpenedSidebar }] = useGlobals();
 
-  // Creating a library is gated by the `can-create-library` feature flag from
-  // GET /api/users/me (same flag the library page enforces). Drives whether the
-  // dropdown's "Create library" item is actionable.
-  const canCreateLibrary =
-    accountData?.featureNames?.includes('can-create-library') ?? false;
-
-  // "My Library" is only reachable once a library exists, or could be
-  // bootstrapped by a flag-holder. With neither, the user has no library page,
-  // so the dropdown item is disabled. Check via the owner-scoped lookup.
+  // Whether the account owns a library decides which dropdown item leads to
+  // its page: "My Library" once one exists, "Create library" before. Check
+  // via the owner-scoped lookup.
   const [hasLibrary, setHasLibrary] = useState(false);
   useEffect(() => {
     if (!accountData?.id) {
@@ -84,6 +80,14 @@ const Header: FC = () => {
       setOpenLogin(true);
     }
   }, [router.query.authError]);
+
+  // The Library home opens this dialog too: its "Create Library" button signs
+  // a visitor in before there is an account to route to.
+  useEffect(() => {
+    const open = () => setOpenLogin(true);
+    window.addEventListener(AUTH_OPEN_LOGIN_EVENT, open);
+    return () => window.removeEventListener(AUTH_OPEN_LOGIN_EVENT, open);
+  }, []);
 
   const handleToggleSidebar = useCallback(() => {
     toggleSidebar();
@@ -189,7 +193,6 @@ const Header: FC = () => {
               setOpenLoginModal={setOpenLogin}
               userImage={accountData?.picture}
               handleOpenSettings={handleOpenSettings}
-              canCreateLibrary={canCreateLibrary}
               hasLibrary={hasLibrary}
               hideDropdown={isOpenedSidebar}
               hideUsername
@@ -270,7 +273,6 @@ const Header: FC = () => {
                 setOpenLoginModal={setOpenLogin}
                 userImage={accountData?.picture}
                 handleOpenSettings={handleOpenSettings}
-                canCreateLibrary={canCreateLibrary}
                 hasLibrary={hasLibrary}
                 hideUsername={isCompactDesktop && !!accountData}
               />

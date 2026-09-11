@@ -42,15 +42,22 @@
   }
 
   .footer {
-    // Never give up height to the scrolling body: Close stays on screen.
+    // Never give up height to the scrolling body: the buttons stay on screen.
     flex-shrink: 0;
     padding: 24px 32px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    gap: 12px;
 
     .close {
       max-width: 70px;
+    }
+
+    // Sized for its longer label so the switch to "Open my library" moves
+    // nothing.
+    .action {
+      max-width: 168px;
     }
   }
 }
