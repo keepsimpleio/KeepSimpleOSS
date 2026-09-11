@@ -41,6 +41,52 @@ copied links. Legacy numeric URLs redirect to the owner username while retaining
 object paths and query strings. Do not restore numeric links to work around a
 failed username lookup; fix the public lookup instead.
 
+## Library access: who creates, who gets the AI, what an operator hides
+
+Wolf opened library creation on 2026-09-12. Any account signed in through the
+site's own auth may create one library, from its own address
+(`/library/<username>`): the first shelf creates it, as before. The CMS asks
+for no feature flag on library, shelf, object or tag writes any more; the
+`can-create-library` flag still exists as a row and gates nothing. The Library
+home offers [Create Library] to a visitor (it opens the header's sign-in
+dialog through AUTH_OPEN_LOGIN_EVENT) and to a signed-in member without a
+library (it sends them to their address); a member with a library gets
+[Open my library]. The "What is this place?" modal ends on the same button.
+The account dropdown's "My Library" and "Create library" both lead to the
+owner's address. Phones and tablets stay read-only, so a signed-in owner
+without a library reads "Use a desktop to create your library" there. A
+visitor at an address no library answers to reads "No such library".
+
+The AI shelf and the magic books are behind the `library-ai` account flag,
+read from `GET /api/users/me` as `featureNames` (LIBRARY_AI_FLAG). The page
+draws neither surface without it, and `/api/library/ai-shelf` and
+`/api/library/magic-book` answer 403 without it through `ownerOfLibrary`, so
+the hidden shelf is not the gate. Both surfaces are the owner's alone on
+every account: a visitor never sees them. An operator hands the flag out in
+the CMS admin panel (the user's Feature Flags relation) or ahead of signup
+through the Mail Permission List; it takes effect on the account's next page
+load, no new sign-in. Wolf names the accounts, one at a time, to the agent;
+on 2026-09-12 they are Alina, Mary, Lemongrass and Wolf. Cover, video and
+audio autofill stay open to everyone: they cost no model call.
+
+A library carries `hidden`, set only in the CMS admin panel (the content API
+refuses it on update). Hidden, it leaves the home list and
+`/library-sitemap.xml`, answers 404 at its address and on its share links to
+everyone but its owner, who sees it whole under the line "This library is
+hidden: only you can see it." Wolf says which library to hide; the agent
+flips the switch. Objects read by id straight from the CMS are not covered.
+
+A library holds at most 300 objects across all its shelves, on top of 50 per
+shelf (MAX_OBJECTS_PER_LIBRARY). The object lifecycle in the CMS rejects the
+301st; every Add control on the page disables together at the cap with
+LIBRARY_OBJECTS_FULL_MESSAGE, and the Add form shows the same line when the
+CMS says no first (isLibraryFullError).
+
+Known limit: the home grid reads the first 100 libraries in one request
+(Strapi's page ceiling) and pages client-side. Past 100 libraries it needs
+server-side paging; separate work. The address lookup already walks every
+page, so the 101st library's own page resolves.
+
 ## Library calendar layout
 
 The calendar reserves separate rows for the month/year selectors and navigation.

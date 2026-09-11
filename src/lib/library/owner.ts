@@ -2,6 +2,8 @@ import type { NextApiRequest } from 'next';
 
 import type { StrapiLibraryEntry } from '@local-types/library/library';
 
+import { holdsFlag } from '@lib/library/flags';
+
 /**
  * Who is asking, and do they own the library they are asking about. Every
  * Library route that reads a private surface answers this first: the
@@ -9,7 +11,9 @@ import type { StrapiLibraryEntry } from '@local-types/library/library';
  * see the library cannot borrow ours to see it.
  */
 
-const STRAPI = process.env.NEXT_PUBLIC_STRAPI ?? '';
+// Read when asked, not at load: the release checks load this module outside
+// Next, where there is no process.env to read.
+const strapiBase = () => process.env.NEXT_PUBLIC_STRAPI ?? '';
 const STRAPI_TIMEOUT_MS = 10_000;
 
 const POPULATE = new URLSearchParams({
@@ -26,7 +30,7 @@ export const bearer = (req: NextApiRequest): string | null => {
 };
 
 const strapi = async <T>(path: string, token: string): Promise<T | null> => {
-  const r = await fetch(`${STRAPI}${path}`, {
+  const r = await fetch(`${strapiBase()}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
     signal: AbortSignal.timeout(STRAPI_TIMEOUT_MS),
   });
@@ -41,6 +45,14 @@ export interface OwnerWording {
   signIn?: string;
   /** A session, but not the owner of this library. */
   forbidden?: string;
+  /** The owner, but without the account flag this surface needs. */
+  locked?: string;
+}
+
+/** What the surface needs of the account beyond owning the library. */
+export interface OwnerRequires {
+  /** A `featureNames` entry from /api/users/me, e.g. LIBRARY_AI_FLAG. */
+  flag?: string;
 }
 
 export interface OwnerCheck {
@@ -54,6 +66,7 @@ export async function ownerOfLibrary(
   req: NextApiRequest,
   libraryId: number,
   wording: OwnerWording = {},
+  requires: OwnerRequires = {},
 ): Promise<OwnerCheck> {
   const token = bearer(req);
   if (!token)
@@ -61,10 +74,13 @@ export async function ownerOfLibrary(
       status: 401,
       error: wording.signIn ?? 'Sign in to see this shelf.',
     };
-  if (!STRAPI)
+  if (!strapiBase())
     return { status: 500, error: 'The library backend is not configured.' };
 
-  const me = await strapi<{ id?: number }>('/api/users/me', token);
+  const me = await strapi<{ id?: number; featureNames?: string[] }>(
+    '/api/users/me',
+    token,
+  );
   if (!me?.id)
     return { status: 401, error: 'Your session has expired. Sign in again.' };
 
@@ -80,6 +96,15 @@ export async function ownerOfLibrary(
     return {
       status: 403,
       error: wording.forbidden ?? 'Only the owner sees this shelf.',
+      userId: me.id,
+    };
+
+  // The owner, but the surface is behind an account flag they do not hold:
+  // the page does not draw it, and this is what stops a direct call.
+  if (requires.flag && !holdsFlag(me, requires.flag))
+    return {
+      status: 403,
+      error: wording.locked ?? 'This surface is not open to your account.',
       userId: me.id,
     };
 

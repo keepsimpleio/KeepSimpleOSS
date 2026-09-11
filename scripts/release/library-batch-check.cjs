@@ -234,14 +234,32 @@ function check() {
   const cms =
     'docs/library-ai-shelf-cms/src/extensions/users-permissions/validators/userValidators.js';
   if (fs.existsSync(cms)) {
+    // The CMS reads its username bounds from one enum since cms #416; the
+    // frontend schema keeps its own floor (4), the stricter of the two, so
+    // the CMS side is checked against its own bounds and the shared shape.
+    const policy = require(
+      path.resolve(
+        'docs/library-ai-shelf-cms/src/extensions/enums/username-policy-enum.js',
+      ),
+    );
     const module = { exports: {} };
     vm.runInNewContext(fs.readFileSync(cms, 'utf8'), {
       module,
-      require: () => ({}),
+      require: id => (id.endsWith('username-policy-enum') ? policy : {}),
     });
-    for (const username of ['Wolf', 'W'.repeat(30)])
+    for (const username of [
+      'Wolf',
+      'W'.repeat(policy.USERNAME_MIN_LENGTH),
+      'W'.repeat(policy.USERNAME_MAX_LENGTH),
+    ])
       assert(!module.exports.validateInputs({ username }).username);
-    for (const username of ['abc', 'W'.repeat(31), 'a bc', 'ab/c', 'ab?c'])
+    for (const username of [
+      'W'.repeat(policy.USERNAME_MIN_LENGTH - 1),
+      'W'.repeat(policy.USERNAME_MAX_LENGTH + 1),
+      'a bc',
+      'ab/c',
+      'ab?c',
+    ])
       assert(module.exports.validateInputs({ username }).username);
   }
   const css = require('sass')
@@ -258,6 +276,61 @@ function check() {
   assert(loader.includes("Array.from('LIBRARY')"));
   assert(loader.includes('role="status"'));
   assert(!loader.includes('roots-realistic'));
+  // LIBRARY ACCESS. Creation needs no flag; the AI does, and the routes
+  // behind it check the same flag the page draws by, so a direct call is
+  // stopped where the shelf is not drawn.
+  const { holdsFlag } = load('src/lib/library/flags.ts');
+  assert(holdsFlag({ featureNames: ['library-ai'] }, 'library-ai'));
+  assert(!holdsFlag({ featureNames: ['can-create-library'] }, 'library-ai'));
+  assert(!holdsFlag({ featureNames: 'library-ai' }, 'library-ai'));
+  assert(!holdsFlag({}, 'library-ai'));
+  assert(!holdsFlag(null, 'library-ai'));
+  // The constants file carries icon components for its sample cards; the
+  // icons are not what is checked here.
+  const common = load('src/constants/library/common.ts', {
+    '@icons/library/svg': new Proxy({}, { get: () => () => null }),
+  });
+  assert.equal(common.LIBRARY_AI_FLAG, 'library-ai');
+  assert.equal(common.MAX_OBJECTS_PER_LIBRARY, 300);
+  for (const route of [
+    'src/pages/api/library/ai-shelf.ts',
+    'src/pages/api/library/magic-book.ts',
+  ])
+    assert(
+      fs.readFileSync(route, 'utf8').includes('flag: LIBRARY_AI_FLAG'),
+      route,
+    );
+  for (const file of [
+    'src/layouts/library/Library/Library.tsx',
+    'src/layouts/library/Home/Home.tsx',
+    'src/components/Header/Header.tsx',
+    'src/components/UserProfile/UserProfile.tsx',
+  ])
+    assert(!fs.readFileSync(file, 'utf8').includes('can-create-library'), file);
+  const libraryPage = fs.readFileSync(
+    'src/layouts/library/Library/Library.tsx',
+    'utf8',
+  );
+  assert(libraryPage.includes('viewAsOwner && hasLibraryAi'));
+  assert(libraryPage.includes('canEditHere && hasLibraryAi'));
+  // The library-wide cap's rejection is told apart from the shelf's.
+  const { isLibraryFullError, isShelfFullError } = load(
+    'src/lib/library/shelfFull.ts',
+  );
+  const reject = message => ({
+    response: { status: 400, data: { error: { message } } },
+  });
+  assert(
+    isLibraryFullError(reject('A library cannot hold more than 300 objects')),
+  );
+  assert(
+    !isShelfFullError(reject('A library cannot hold more than 300 objects')),
+  );
+  assert(isShelfFullError(reject('A shelf cannot have more than 50 objects')));
+  assert(
+    !isLibraryFullError(reject('A shelf cannot have more than 50 objects')),
+  );
+  assert(!isLibraryFullError({ response: { status: 500, data: {} } }));
 }
 let status = 'PASS';
 try {

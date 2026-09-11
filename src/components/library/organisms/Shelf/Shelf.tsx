@@ -22,6 +22,7 @@ import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import {
+  LIBRARY_OBJECTS_FULL_MESSAGE,
   MAX_OBJECTS_PER_SHELF,
   MAX_SHARE_OBJECTS,
   MAX_SHELF_DESCRIPTION_LENGTH,
@@ -206,6 +207,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     dragHandleProps,
     isDragging = false,
     magic = null,
+    libraryFull = false,
   } = props;
   const shelfType = shelf.attributes.type as ObjectType;
   // Render in persisted-order sequence. Strapi's populate doesn't sort the
@@ -297,10 +299,15 @@ export function Shelf(props: ShelfProps): JSX.Element {
   );
   const typeLabel = SHELF_TYPE_LABEL[shelfType] ?? 'item';
 
-  // Backend caps a shelf at 50 objects (all types combined). Pre-disable the
-  // Add control once the shelf is full — the backend stays the source of truth
-  // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
-  const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
+  // Backend caps a shelf at 50 objects (all types combined) and a library at
+  // 300. Pre-disable the Add control once either is full — the backend stays
+  // the source of truth (AddObjectModal still surfaces the 400), this just
+  // stops a doomed attempt and says which cap it hit.
+  const shelfFull = objects.length >= MAX_OBJECTS_PER_SHELF;
+  const atObjectLimit = shelfFull || libraryFull;
+  const fullMessage = shelfFull
+    ? `${SHELF_FULL_MESSAGE} Delete an item to add a new one.`
+    : LIBRARY_OBJECTS_FULL_MESSAGE;
 
   const router = useRouter();
   // On the share-link page the object opens through a query parameter, so
@@ -1062,11 +1069,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
           {isOwner && !favorites && !tagFilter && (
             <Tooltip
               place="bottom"
-              tooltipContent={
-                atObjectLimit
-                  ? `${SHELF_FULL_MESSAGE} Delete an item to add a new one.`
-                  : ''
-              }
+              tooltipContent={atObjectLimit ? fullMessage : ''}
               wrapperClassName={classNames(styles.addWrap, {
                 [styles.tooltipOff]: !atObjectLimit,
               })}

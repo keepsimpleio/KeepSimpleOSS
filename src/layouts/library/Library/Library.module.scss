@@ -102,6 +102,18 @@ $share-bar-height: 87px;
 // Laid over the top of the shelf list rather than holding a band above it:
 // the shelves never move when a message lands, and the owner's library sits
 // exactly where a visitor's does.
+// The owner's standing word that their library is off the public surface.
+// Its own row, not the notice slot: it stays for as long as the switch is on.
+.hiddenRow {
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px 0;
+
+  p {
+    color: var(--red-500);
+  }
+}
+
 .noticeRow {
   position: absolute;
   top: 0;

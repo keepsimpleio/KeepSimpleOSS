@@ -17,6 +17,7 @@ import {
 } from 'react-hook-form';
 
 import {
+  LIBRARY_OBJECTS_FULL_MESSAGE,
   MAX_TAGS_PER_OBJECT,
   SHELF_FULL_MESSAGE,
 } from '@constants/library/common';
@@ -27,7 +28,7 @@ import type { IObject } from '@local-types/library/object';
 import type { IShelf } from '@local-types/library/shelf';
 
 import { notesLabel } from '@lib/library/notesLabel';
-import { isShelfFullError } from '@lib/library/shelfFull';
+import { isLibraryFullError, isShelfFullError } from '@lib/library/shelfFull';
 
 import { fetchCoverFile } from '@api/library/autofill/fetchCoverFile';
 import { lookupVideoByUrl } from '@api/library/autofill/lookupVideoByUrl';
@@ -801,6 +802,12 @@ export function AddObjectModal(props: AddObjectModalProps): JSX.Element {
       // dropdown — with a 400. Surface the dedicated full-shelf copy.
       if (isShelfFullError(e)) {
         setSubmitError(SHELF_FULL_MESSAGE);
+        return;
+      }
+      // The library as a whole holds 300; the CMS says so before the page
+      // has counted, when two tabs add at once.
+      if (isLibraryFullError(e)) {
+        setSubmitError(LIBRARY_OBJECTS_FULL_MESSAGE);
         return;
       }
       // Axios failures carry a raw "Request failed with status code 500" — not

@@ -39,7 +39,7 @@ function validateDatabase(data, expectedCluster) {
     }
   }
   assert.equal(data.isOwner, true, 'Selected account does not own the library');
-  assert.equal(data.hasFlag, true, 'Actual owner lacks can-create-library');
+  assert.equal(data.hasFlag, true, 'Actual owner lacks library-ai');
   assert.equal(data.canUpdate, true, 'Actual owner role lacks library.update');
   assert.equal(data.publicCanUpdate, false, 'Anonymous library writes enabled');
 }

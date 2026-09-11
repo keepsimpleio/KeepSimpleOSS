@@ -71,7 +71,7 @@ async function main() {
       'cluster',(SELECT system_identifier::text FROM pg_control_system()),
       'columns',(SELECT jsonb_agg(to_jsonb(c)) FROM (SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_schema='public' AND table_name IN ('library','objects')) c),
       'isOwner',EXISTS(SELECT 1 FROM library_user_links WHERE library_id=${library} AND user_id=${owner}),
-      'hasFlag',EXISTS(SELECT 1 FROM feature_flags_users_links l JOIN feature_flags f ON f.id=l.feature_flag_id WHERE l.user_id=${owner} AND f.feature_name='can-create-library'),
+      'hasFlag',EXISTS(SELECT 1 FROM feature_flags_users_links l JOIN feature_flags f ON f.id=l.feature_flag_id WHERE l.user_id=${owner} AND f.feature_name='library-ai'),
       'canUpdate',EXISTS(SELECT 1 FROM up_users_role_links u JOIN up_permissions_role_links l ON l.role_id=u.role_id JOIN up_permissions p ON p.id=l.permission_id WHERE u.user_id=${owner} AND p.action='api::library.library.update'),
       'publicCanUpdate',EXISTS(SELECT 1 FROM up_roles r JOIN up_permissions_role_links l ON l.role_id=r.id JOIN up_permissions p ON p.id=l.permission_id WHERE r.type='public' AND p.action='api::library.library.update')
     );`);

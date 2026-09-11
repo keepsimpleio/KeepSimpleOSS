@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { AUTH_OPEN_LOGIN_EVENT } from '@constants/auth';
+
 import type { HomeLibraryCardView } from '@local-types/library/library';
 
 import { useAnimatedList } from '@hooks/library/useAnimatedList';
@@ -51,16 +53,10 @@ export function HomeTemplate({
   const router = useRouter();
   const { accountData } = useAuth();
 
-  // Creating a library is gated by the `can-create-library` feature flag from
-  // GET /api/users/me — the same gate the user dropdown's "Create library" item
-  // uses. A library has no standalone create step: it's bootstrapped on the
-  // owner's own page, so the button just routes there when the flag is present.
-  const canCreateLibrary =
-    accountData?.featureNames?.includes('can-create-library') ?? false;
-
-  // A user may create at most one library, so the button is also disabled once
-  // they already own one. Check via the owner-scoped lookup the library page
-  // uses, not the home grid (which is paginated and may not include theirs).
+  // One library per account, and any account may open one. Whether this one
+  // already has a library decides what the control promises. Check via the
+  // owner-scoped lookup the library page uses, not the home grid (which is
+  // paginated and may not include theirs).
   const [hasLibrary, setHasLibrary] = useState(false);
   useEffect(() => {
     if (!accountData?.id) {
@@ -76,15 +72,18 @@ export function HomeTemplate({
     };
   }, [accountData?.id]);
 
-  // One library per user, so the control has two jobs: create the first one, or
-  // open the one that exists. Both land on the owner's own page — the button
-  // only changes what it promises.
+  // The control has three jobs and one destination. A visitor is signed in
+  // first (the header's dialog, so the flow is the site's own); a member
+  // without a library is sent to their own address, where the first shelf
+  // creates one; a member with a library opens it. A library has no
+  // standalone create step, so every path lands on the owner's own page.
   const ownsLibrary = hasLibrary && !!accountData?.username;
-  const createDisabled = !canCreateLibrary || hasLibrary;
-  const libraryButtonDisabled = ownsLibrary ? false : createDisabled;
 
   const handleLibraryButton = () => {
-    if (libraryButtonDisabled || !accountData?.username) return;
+    if (!accountData?.username) {
+      window.dispatchEvent(new Event(AUTH_OPEN_LOGIN_EVENT));
+      return;
+    }
     router.push(libraryPath(accountData.username));
   };
 
@@ -110,9 +109,10 @@ export function HomeTemplate({
     setCurrentPage(1);
   }, [debouncedQuery]);
 
-  // Invite-only product: the whole set fits one request (100 is Strapi's
-  // pageSize ceiling), so fetch once and run search, sort and pagination
-  // client-side. Revisit if libraries ever outgrow one page.
+  // The whole set is fetched in one request (100 is Strapi's pageSize
+  // ceiling) and searched, sorted and paged client-side. Creation is open to
+  // every account since 2026-09-12, so this ceiling will be reached: server-side
+  // paging of the grid is the follow-up (LIBRARY.md, "Library access").
   //
   // The static HTML already carries the anonymous list (initialItems), so
   // only a signed-in account refetches: its token may reveal libraries the
@@ -306,7 +306,6 @@ export function HomeTemplate({
                   )
                 }
                 onClick={handleLibraryButton}
-                disabled={libraryButtonDisabled}
                 className={styles.createButton}
               />
             </div>
@@ -336,7 +335,16 @@ export function HomeTemplate({
         </div>
       </section>
 
-      {isOpen && <AboutLibraryModal onClose={modalToggler} />}
+      {isOpen && (
+        <AboutLibraryModal
+          onClose={modalToggler}
+          ownsLibrary={ownsLibrary}
+          onLibraryAction={() => {
+            modalToggler();
+            handleLibraryButton();
+          }}
+        />
+      )}
     </main>
   );
 }

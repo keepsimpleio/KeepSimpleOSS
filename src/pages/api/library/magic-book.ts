@@ -1,6 +1,8 @@
 // motion-passport: exempt — a server route; nothing here is drawn.
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { LIBRARY_AI_FLAG } from '@constants/library/common';
+
 import type {
   MagicBooksResponse,
   MagicShelfResult,
@@ -102,10 +104,16 @@ export default async function handler(
   }
   // Who is asking, and do they own this library: the same check the AI shelf
   // makes, in the one place both routes read it from.
-  const owner = await ownerOfLibrary(req, libraryId, {
-    signIn: 'Sign in to see your magic books.',
-    forbidden: 'Only the owner sees the magic books.',
-  });
+  const owner = await ownerOfLibrary(
+    req,
+    libraryId,
+    {
+      signIn: 'Sign in to see your magic books.',
+      forbidden: 'Only the owner sees the magic books.',
+      locked: 'The magic books are not open to your account.',
+    },
+    { flag: LIBRARY_AI_FLAG },
+  );
   if (owner.status !== 200 || !owner.library) {
     if (owner.status === 403)
       await journal({
