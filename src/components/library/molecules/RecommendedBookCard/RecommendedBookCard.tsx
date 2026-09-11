@@ -112,7 +112,9 @@ export function RecommendedBookCard({
           [styles.working]: working,
         })}
         style={{ '--slot': slotIndex } as CSSProperties}
-        role="button"
+        // No interactive role here: Lock and Ban are real buttons inside this
+        // box, and a button may not hold buttons. The card stays focusable and
+        // labelled, and its own keys open the brief.
         tabIndex={0}
         aria-busy={working || undefined}
         aria-haspopup="dialog"

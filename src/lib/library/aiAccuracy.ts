@@ -40,8 +40,9 @@ export interface AccuracyReport {
   /** 0..100, rounded to a whole number. */
   total: number;
   components: AccuracyComponent[];
-  /** The move that buys the most per book touched, with what it costs. */
-  best?: { action: string; gain: number; cost: number };
+  /** The move that buys the most per book touched. Its cost is in the
+   * sentence: "Write notes on 33 more books". */
+  best?: { action: string; gain: number };
   /** How many books the score was read from. */
   books: number;
 }
@@ -409,15 +410,10 @@ export function scoreLibraryAccuracy(
   const sum = components.reduce((acc, c) => acc + c.earned, 0);
 
   // The best win: the move that pays most per book touched, of those worth a
-  // whole percent. Its cost travels with it, because "+5%" is only an answer
-  // when the owner can see what it costs.
+  // whole percent. What it costs is already in the sentence it carries.
   const winner = ranked.find(move => Math.round(move.gain) >= 1);
   const best = winner
-    ? {
-        action: winner.action,
-        gain: Math.round(winner.gain),
-        cost: winner.cost,
-      }
+    ? { action: winner.action, gain: Math.round(winner.gain) }
     : undefined;
 
   return { total: Math.round(sum), components, best, books: total };
