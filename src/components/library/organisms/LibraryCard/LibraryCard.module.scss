@@ -258,4 +258,32 @@
     margin: 0 16px;
     width: calc(100% - 32px);
   }
+
+  // Night reading of the sheet. Only the profile card changes: the page it
+  // lies on, and the paper theme, stay as they were.
+  :global(body.darkTheme) & {
+    background: var(--library-card-paper);
+
+    // The sheet keeps its colour under the pointer; hover speaks through the
+    // rule and the way in, not by darkening the card.
+    &:hover {
+      background: var(--library-card-paper);
+    }
+
+    // A canvas cannot follow a variable on its own, but InkLine reads this
+    // token when it paints, so both rules come out in the card's own
+    // pigment. Screen blending would lift that pigment off the value it was
+    // mixed to, so the nib lays it down straight.
+    .divider,
+    .dividerInner {
+      --ink-line: var(--library-card-rule);
+      mix-blend-mode: normal;
+    }
+
+    // The mark in front of the name carries the same accent the way in is
+    // painted with, instead of the daylight brown baked into the file.
+    .header .titleMark path {
+      stroke: var(--brown);
+    }
+  }
 }

@@ -1,18 +1,14 @@
-import { GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
-import React, { FC, useContext, useEffect, useState } from 'react';
-
-import type { BiasType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
 import { getStrapiBiases } from '@uxcore/api/biases';
 import { getUXCoreSeo } from '@uxcore/api/mainPageSeo';
-
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import Spinner from '@uxcore/components/Spinner';
-
 import UXCoreLayout from '@uxcore/layouts/UXCoreLayout';
+import type { BiasType } from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
+import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
+import React, { FC, useContext, useEffect, useState } from 'react';
 
 interface UXCoreProps {
   biases: BiasType[];
@@ -53,13 +49,16 @@ const Index: FC<UXCoreProps> = ({ seo, biases }) => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const current = locale as 'en' | 'ru' | 'hy';
   const biases = await getStrapiBiases();
-  const mainSeo = await getUXCoreSeo(locale as 'en' | 'ru' | 'hy');
+  const mainSeo = await getUXCoreSeo(current);
 
   return {
     props: {
       seo: mainSeo,
-      biases: biases || null,
+      // The page reads `biases[locale]` and nothing else; shipping the other
+      // two locales was two thirds of a megabyte of page data per view.
+      biases: biases ? { [current]: biases[current] ?? [] } : null,
     },
     revalidate: 5,
   };
