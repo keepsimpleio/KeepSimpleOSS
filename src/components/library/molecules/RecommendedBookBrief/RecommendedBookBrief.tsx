@@ -2,7 +2,6 @@ import cn from 'classnames';
 import React, { JSX } from 'react';
 
 import type { MagicRubric } from '@local-types/library/magicBook';
-import type { RecommendedPick } from '@local-types/library/recommendation';
 
 import { BanIcon, LockIcon, SparkleIcon } from '@icons/library/svg';
 
@@ -50,7 +49,7 @@ export function RecommendedBookBrief({
 }: RecommendedBookBriefProps): JSX.Element {
   const { closeRef, close } = useModalClose(onClose);
   const stretch = book.kind === 'stretch';
-  const rubric = (book as RecommendedPick).rubric as MagicRubric | undefined;
+  const rubric = book.rubric;
   const rubricRows = rubric
     ? (Object.keys(RUBRIC_LABELS) as (keyof MagicRubric)[])
         .map(key => ({ key, label: RUBRIC_LABELS[key], value: rubric[key] }))

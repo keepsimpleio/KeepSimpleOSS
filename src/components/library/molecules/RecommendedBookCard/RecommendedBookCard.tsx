@@ -120,6 +120,11 @@ export function RecommendedBookCard({
         aria-describedby={dossierId}
         onClick={() => setBriefOpen(true)}
         onKeyDown={e => {
+          // Only the card's own keys open the brief. A keydown on Lock or Ban
+          // bubbles here before the browser turns it into a click, so calling
+          // preventDefault on it would swallow the button's activation and
+          // open the brief instead of giving the verdict.
+          if (e.target !== e.currentTarget) return;
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             setBriefOpen(true);

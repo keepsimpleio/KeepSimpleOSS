@@ -41,6 +41,9 @@ export interface IRecommendedBook {
   /** Cover art, when the source offers one. Absent covers render the
    * book's own typeset front. */
   coverUrl?: string;
+  /** How the engine scored it. Every pick carries one; a book handed to the
+   * card from anywhere else may not. */
+  rubric?: MagicRubric;
 }
 
 /** A pick as the engine made it: verified against a book source, scored on
