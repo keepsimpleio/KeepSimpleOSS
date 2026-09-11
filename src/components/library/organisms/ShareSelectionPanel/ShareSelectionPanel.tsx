@@ -343,8 +343,8 @@ export function ShareSelectionPanel({
         {!readOnly && (
           <div className={styles.actions} onClick={e => e.stopPropagation()}>
             <Button
-              label={isSharing ? 'Sharing…' : 'Share selection via link'}
-              ariaLabel="Share selection via link"
+              label={isSharing ? 'Sharing…' : 'Share selection'}
+              ariaLabel="Share selection"
               onClick={handleShare}
               type={ButtonType.Primary}
               size={ButtonSize.Default}

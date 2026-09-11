@@ -1,7 +1,6 @@
-// The brief: the cover on the left at the shelf's own proportions, the
-// words on the right, one row of actions at the foot. 560px wide so the
-// reason can breathe; the cover column is fixed so a roll swaps the text
-// without moving it.
+// The brief of an AI shelf pick: the cover on the left at the shelf's own
+// proportions, everything the engine wrote on the right, one row of
+// verdicts at the foot. 560px wide so two passages of prose can breathe.
 .modal {
   width: 560px;
   max-width: calc(100vw - 32px);
@@ -76,18 +75,8 @@
     var(--purple-400) 56%,
     transparent 72%
   );
-  opacity: 0;
-  transform: translateX(-100%);
-  transition: opacity 0.2s ease;
-}
-
-.busy .coverLight {
-  opacity: 0.32;
-  animation: brief-light 1.6s ease-in-out infinite;
-}
-
-.busy .coverImage {
-  opacity: 0.5;
+  opacity: 0.12;
+  transform: translateX(-20%);
 }
 
 .text {
@@ -192,12 +181,51 @@
   color: var(--gray-darker);
 }
 
-.reason {
+// Two passages, each under its own word, so "what it is" is never read as
+// "why you". Neither is cut: the brief exists to hold the whole text.
+.part {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.partLabel {
+  margin: 0;
+  font-family: var(--font-source-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 16px;
+  color: var(--gray-darker);
+}
+
+.prose {
   margin: 0;
   font-family: var(--font-source-serif);
   font-size: 16px;
   line-height: 24px;
   color: var(--black-rich);
+}
+
+// The ground a stretch pick opens, in the shelf's own accent.
+.ground {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--purple-100);
+  border-radius: var(--radius-control);
+  color: var(--purple-100);
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  line-height: 16px;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
 }
 
 .source {
@@ -310,42 +338,4 @@
     border-color: var(--brown);
     color: var(--brown);
   }
-}
-
-@keyframes brief-light {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .coverLight,
-  .busy .coverLight {
-    animation: none;
-    transition: none;
-    transform: none;
-    opacity: 0.1;
-  }
-}
-
-// What the book is, and why you are being given it: two passages, each under
-// its own word, so neither is read as the other.
-.part {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.partLabel {
-  margin: 0;
-  font-family: var(--font-source-sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 16px;
-  color: var(--gray-darker);
 }

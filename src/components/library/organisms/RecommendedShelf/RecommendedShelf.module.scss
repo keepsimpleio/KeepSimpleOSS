@@ -792,3 +792,26 @@
     transition: none;
   }
 }
+
+// Re-Roll while the engine works: the spark turns, the word stays. The
+// button keeps its size, so the row of controls never moves under a click.
+.regenerateWorking {
+  svg {
+    animation: regenerate-turn 1.9s linear infinite;
+  }
+}
+
+@keyframes regenerate-turn {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .regenerateWorking svg {
+    animation: none;
+  }
+}

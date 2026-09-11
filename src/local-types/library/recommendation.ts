@@ -22,6 +22,9 @@ export interface IRecommendedBook {
   author?: string;
   /** Four-digit year of first publication. */
   year?: number;
+  /** What the book is: its subject and its argument, for a reader who has
+   * never heard of it. Absent on picks made before the engine wrote one. */
+  about?: string;
   /** One line on why this book is on the owner's shelf. */
   reason?: string;
   /** How well the pick fits the owner, 0..100, as the engine scored it. */
@@ -38,6 +41,9 @@ export interface IRecommendedBook {
   /** Cover art, when the source offers one. Absent covers render the
    * book's own typeset front. */
   coverUrl?: string;
+  /** How the engine scored it. Every pick carries one; a book handed to the
+   * card from anywhere else may not. */
+  rubric?: MagicRubric;
 }
 
 /** A pick as the engine made it: verified against a book source, scored on

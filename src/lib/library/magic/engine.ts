@@ -53,6 +53,7 @@ const RUBRIC_WEIGHTS: Record<keyof MagicRubric, number> = {
 interface ModelCandidate {
   title: string;
   author?: string;
+  about: string;
   reason: string;
   rubric: MagicRubric;
 }
@@ -86,10 +87,15 @@ const TOOL_SCHEMA = {
             items: {
               type: 'object',
               additionalProperties: false,
-              required: ['title', 'author', 'reason', 'rubric'],
+              required: ['title', 'author', 'about', 'reason', 'rubric'],
               properties: {
                 title: { type: 'string' },
                 author: { type: 'string' },
+                about: {
+                  type: 'string',
+                  description:
+                    'What the book is: subject, argument and shape, in two or three sentences, for a reader who has never heard of it. Third person, no second person, no marketing.',
+                },
                 reason: {
                   type: 'string',
                   description:
@@ -150,7 +156,7 @@ Rules:
 - Never propose a book on the exclusion lists, nor any book already in the library, nor another edition of one.
 - For a shelf with no books, propose nothing.
 - Score each candidate on the rubric, 0-5 integers: theme (fits the shelf's subject), notes (runs along the praised axis), tags (fits the owner's vocabulary), difficulty (lands in the owner's best band), distance (far from the owner's negative examples). Score 0 on a dimension when the library carries no data for it.
-- The reason is addressed to the owner, one or two plain sentences, grounded in their own notes and ratings. No adjectives that cannot be checked, no dashes.
+- Two separate texts per candidate, and neither may do the other's work. \`about\` says what the book IS: subject, argument, shape, two or three sentences, third person, as an encyclopedia entry would, never addressed to the owner. \`reason\` says why THIS owner gets it: one or two sentences, second person, grounded in their own notes and ratings. No adjectives that cannot be checked, no dashes.
 - Calibration: for each book in the calibration block, predict the rating this owner gave it, 1-5, from everything else you know about them.`;
 
 export const describeBook = (book: DigestBook, withRating: boolean): string => {
@@ -440,6 +446,7 @@ export async function runEngine(
               title: book.title,
               author: book.author ?? candidate.author,
               year: book.year,
+              about: candidate.about,
               reason: candidate.reason,
               rubric: candidate.rubric,
               coverUrl: book.coverUrl,

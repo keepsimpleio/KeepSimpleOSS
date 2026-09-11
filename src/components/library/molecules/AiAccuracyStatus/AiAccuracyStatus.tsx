@@ -27,8 +27,9 @@ import styles from './AiAccuracyStatus.module.scss';
  * its name, the points it earns of the points it is worth, its meter, and
  * underneath, in words, the count those points were read from. The header
  * says once that the six signals share 100 points, so no row has to. The
- * hover carries only the next step, and the foot the one step that buys
- * the most.
+ * hover carries only the next step, and the foot the best win there is: the
+ * move that pays the most percent per book touched, said in full rather than
+ * cut to a token one percent.
  */
 export function AiAccuracyStatus({
   shelves,
@@ -100,7 +101,9 @@ export function AiAccuracyStatus({
                   tooltipContent={
                     row.next
                       ? `${row.next.action}: +${row.next.gain}% on the score.`
-                      : 'This signal is full. Nothing to add here.'
+                      : row.earned >= row.max - 0.5
+                        ? 'This signal is full. Nothing to add here.'
+                        : 'Rating books fills this one. The move is counted on Ratings, so it is not charged twice.'
                   }
                 >
                   <li className={styles.row} tabIndex={0}>
@@ -128,11 +131,17 @@ export function AiAccuracyStatus({
               ))}
             </ul>
             <p className={styles.foot}>
-              {report.best
-                ? `${report.best.action}: +${report.best.gain}%`
-                : report.books === 0
-                  ? 'Add a book to begin.'
-                  : 'The engine reads all of it.'}
+              {report.best ? (
+                <>
+                  <span className={styles.footLabel}>Your best win:</span>{' '}
+                  {report.best.action}
+                  <span className={styles.footGain}> +{report.best.gain}%</span>
+                </>
+              ) : report.books === 0 ? (
+                'Add a book to begin.'
+              ) : (
+                'The engine reads all of it.'
+              )}
             </p>
           </div>
         </Modal>
