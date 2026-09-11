@@ -51,6 +51,13 @@ body.darkTheme .library {
   /* A ghost control needs its outline lifted with it. */
   --ink-outline: rgba(220, 164, 111, 0.55);
 
+  /* The profile sheet on the Libraries wall reads warmer than the page it
+     lies on, and the rules drawn inside it take its own pigment instead of
+     the page's light ink (Wolf, 2026-09-11). The rule is a triple because
+     the nib mixes its own alpha per stroke. */
+  --library-card-paper: #3a332d;
+  --library-card-rule: 107, 93, 80;
+
   --figure-wood-light: #4a4238;
   --figure-wood-mid: #3a332b;
   --figure-wood-dark: #2f2925;
