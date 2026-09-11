@@ -318,7 +318,7 @@ export function scoreLibraryAccuracy(
       label: 'Notes and takeaways',
       earned: round1(notesPoints),
       max: ACCURACY_WEIGHTS.notes,
-      detail: `${withNote} of ${plural(total, 'book', 'books')} with ${ACCURACY_NOTE_WORDS}+ words`,
+      detail: `Notes of ${ACCURACY_NOTE_WORDS}+ words on ${withNote} of ${plural(total, 'book', 'books')}`,
       next: nextOf(
         notesGain,
         `Write notes on ${plural(notesStep, 'more book', 'more books')}`,
@@ -329,7 +329,7 @@ export function scoreLibraryAccuracy(
       label: 'Ratings',
       earned: round1(ratingPoints),
       max: ACCURACY_WEIGHTS.rating,
-      detail: `${rated} rated, ${lowRated} rated 1 or 2`,
+      detail: `${rated} of ${total} rated, ${lowRated} of them 1 or 2`,
       next:
         ratedStep > 0 && ratedGain >= lowGain
           ? nextOf(
@@ -343,10 +343,10 @@ export function scoreLibraryAccuracy(
     },
     {
       key: 'volume',
-      label: 'Rated volume',
+      label: 'Sample size',
       earned: round1(volumePoints),
       max: ACCURACY_WEIGHTS.volume,
-      detail: `${rated} rated, full at ${ACCURACY_VOLUME_FULL}`,
+      detail: `${plural(rated, 'rated book', 'rated books')} to read you by, full at ${ACCURACY_VOLUME_FULL}`,
       next:
         ratedStep > 0
           ? nextOf(
@@ -361,7 +361,7 @@ export function scoreLibraryAccuracy(
       label: 'Tags',
       earned: round1(tagPoints),
       max: ACCURACY_WEIGHTS.tags,
-      detail: `${tagged} tagged, ${reusedTags} of ${plural(distinctTags, 'tag', 'tags')} reused`,
+      detail: `${tagged} of ${total} tagged, ${reusedTags} of ${plural(distinctTags, 'tag', 'tags')} on more than one book`,
       next: nextOf(
         tagGain,
         `Tag ${plural(tagStep, 'more book', 'more books')}`,
@@ -372,7 +372,7 @@ export function scoreLibraryAccuracy(
       label: 'Difficulty',
       earned: round1(difficultyPoints),
       max: ACCURACY_WEIGHTS.difficulty,
-      detail: `${withDifficulty} of ${total} set`,
+      detail: `Difficulty set on ${withDifficulty} of ${total} books`,
       next: nextOf(
         difficultyGain,
         `Set difficulty on ${plural(difficultyStep, 'more book', 'more books')}`,
@@ -383,7 +383,7 @@ export function scoreLibraryAccuracy(
       label: 'Themed shelves',
       earned: round1(shelfPoints),
       max: ACCURACY_WEIGHTS.shelves,
-      detail: `${topical} of ${plural(bookShelves.length, 'shelf', 'shelves')} named by theme`,
+      detail: `${topical} of ${plural(bookShelves.length, 'shelf', 'shelves')} named by their theme`,
       next: nextOf(shelfGain, 'Name one more shelf by its theme'),
     },
   ];

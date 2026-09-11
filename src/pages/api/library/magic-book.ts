@@ -23,7 +23,10 @@ import { ownerOfLibrary } from '@lib/library/owner';
  * POST /api/library/magic-book
  *
  * The owner's magic books: one per book shelf, made by the engine when the
- * owner asks and kept until the shelf changes or the owner rolls again.
+ * owner asks and kept until the owner rolls again. Editing the shelf does
+ * not unseat the pick: a book that stands there is the owner's to keep
+ * until they roll it away (Wolf, 2026-09-11), so no engine work is ever
+ * spent on a shelf nobody asked about.
  * Nothing is made unasked (Wolf, 2026-09-10). Owner-only: the caller's
  * Strapi session is asked who it is, the library is read with that session,
  * and the library's owner must be that account. Nothing here is readable by
@@ -43,6 +46,7 @@ interface Body {
 
 const fromStore = (
   shelf: DigestShelf,
+  gone: (title: string) => boolean,
   stored?: StoredShelf,
 ): MagicShelfResult => {
   if (shelf.books.length === 0) {
@@ -52,17 +56,20 @@ const fromStore = (
       note: 'Put a book on this shelf and one will be recommended.',
     };
   }
-  // A pick made for a shelf that has since changed is not offered as if it
-  // were current: the owner rolls a fresh one.
-  if (!stored || stored.fingerprint !== shelf.fingerprint) {
-    return {
-      shelfId: shelf.id,
-      status: 'idle',
-      note: 'Roll to get a book for this shelf.',
-    };
+  const idle: MagicShelfResult = {
+    shelfId: shelf.id,
+    status: 'idle',
+    note: 'Roll to get a book for this shelf.',
+  };
+  if (!stored) return idle;
+  // The pick outlives every edit to the shelf. It gives up its place for two
+  // reasons only: the owner now has that book, or has banned it, and neither
+  // is something to go on recommending.
+  if (stored.pick) {
+    return gone(stored.pick.title)
+      ? idle
+      : { shelfId: shelf.id, status: 'ready', pick: stored.pick };
   }
-  if (stored.pick)
-    return { shelfId: shelf.id, status: 'ready', pick: stored.pick };
   return {
     shelfId: shelf.id,
     status: 'empty',
@@ -114,6 +121,14 @@ export default async function handler(
 
   const digest = digestLibrary(library);
   const stored = await readLibrary(libraryId);
+  // A standing pick the owner has since acquired or banned, the two things
+  // that take a book off the shelf without a roll.
+  const owned = new Set(digest.ownedTitles.map(normaliseTitle));
+  const bannedTitles = new Set(stored.banned.map(b => normaliseTitle(b.title)));
+  const gone = (title: string) => {
+    const key = normaliseTitle(title);
+    return owned.has(key) || bannedTitles.has(key);
+  };
   const results: MagicShelfResult[] = [];
   const toRun: DigestShelf[] = [];
   const exclusions = new Map<number, string[]>();
@@ -131,7 +146,7 @@ export default async function handler(
     toRun.push(shelf);
   } else {
     for (const shelf of digest.shelves) {
-      results.push(fromStore(shelf, stored.shelves[String(shelf.id)]));
+      results.push(fromStore(shelf, gone, stored.shelves[String(shelf.id)]));
     }
     res.status(200).json({ shelves: results, ratedBooks: digest.ratedBooks });
     return;
@@ -149,7 +164,7 @@ export default async function handler(
     for (const shelf of toRun) {
       const current = stored.shelves[String(shelf.id)];
       results.push(
-        current?.pick
+        current?.pick && !gone(current.pick.title)
           ? { shelfId: shelf.id, status: 'ready', pick: current.pick }
           : {
               shelfId: shelf.id,
@@ -192,7 +207,6 @@ export default async function handler(
       if (!shelf || run.failed.includes(shelf.id)) continue;
       const previous = shelves[String(shelf.id)];
       shelves[String(shelf.id)] = {
-        fingerprint: shelf.fingerprint,
         pick: result.pick ?? null,
         history: exclusions.get(shelf.id) ?? previous?.history ?? [],
         updatedAt: now,

@@ -92,18 +92,19 @@
   color: var(--black-rich);
 }
 
-// The ledger: one column, 400px, six quiet lines. Each line is a name, a
-// meter and a score; the counts behind a line are said on hover, not drawn,
-// so the eye reads six bars and one sentence.
+// The ledger: one column, 420px, six quiet blocks. Each block is a name, the
+// points it earns of the points it is worth, a meter, and the count those
+// points were read from, all drawn. Nothing a reader needs to trust the
+// number waits behind a hover.
 .modal {
-  width: 400px;
+  width: 420px;
   max-width: calc(100vw - 32px);
 }
 
 .body {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   padding: 20px 32px 28px;
 }
 
@@ -128,24 +129,32 @@
   color: var(--gray-darker);
 }
 
+// Said once above the rows, so no row has to say what a point is.
+.legend {
+  margin: -8px 0 0;
+  font-family: var(--font-source-serif);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--gray-darker);
+}
+
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 14px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-// Name, meter, score on one line. The columns are fixed so the meters line
-// up and a longer name never nudges its bar.
+// Name and points on the first line, the meter under them, the count under
+// that. The block's height is the same whether the count is one word or a
+// full line, so hovering never shifts the row below.
 .row {
-  display: grid;
-  grid-template-columns: 148px minmax(0, 1fr) 64px;
-  align-items: center;
-  gap: 16px;
-  height: 36px;
-  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px 8px;
   margin: 0 -8px;
   border-radius: var(--radius-control);
   transition: background 0.2s ease;
@@ -165,6 +174,13 @@
   }
 }
 
+.rowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .rowLabel {
   font-family: var(--font-source-serif);
   font-size: 14px;
@@ -173,6 +189,14 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+// The count behind the points, in the owner's own units.
+.rowDetail {
+  font-family: var(--font-source-serif);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--gray-darker);
 }
 
 .rowMeter {
@@ -197,15 +221,20 @@
 }
 
 .rowPoints {
+  flex-shrink: 0;
   text-align: right;
   font-family: var(--font-source-serif);
   font-size: 14px;
   line-height: 19px;
   font-variant-numeric: tabular-nums;
   color: var(--black-rich);
+  white-space: nowrap;
 }
 
+// "of 25 points" carries the unit on every row, so the figure to its left
+// can never be read as anything else.
 .rowMax {
+  font-size: 12px;
   color: var(--gray-darker);
 }
 
