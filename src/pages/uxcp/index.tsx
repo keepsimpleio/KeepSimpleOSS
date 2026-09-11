@@ -1,19 +1,19 @@
-import { GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
-import React, { FC, useMemo } from 'react';
-
-import type { QuestionType, StrapiBiasType, TagType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
 import { getStrapiBiases } from '@uxcore/api/biases';
 import { getUXCPSeo } from '@uxcore/api/mainPageSeo';
 import { getStrapiQuestions } from '@uxcore/api/questions';
 import { getTags } from '@uxcore/api/tags';
-
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import Spinner from '@uxcore/components/Spinner';
-
 import UXCPLayout from '@uxcore/layouts/UXCPLayout';
+import type {
+  QuestionType,
+  StrapiBiasType,
+  TagType,
+} from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
+import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
+import React, { FC, useMemo } from 'react';
 
 interface UXCPProps {
   questions: QuestionType[];
@@ -65,7 +65,8 @@ const Index: FC<UXCPProps> = ({ questions, strapiBiases, tags, seo }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const current = locale as 'en' | 'ru' | 'hy';
   const tags = getTags();
   const questions = await getStrapiQuestions();
   const strapiBiases = await getStrapiBiases();
@@ -74,8 +75,11 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      strapiBiases,
-      questions,
+      // The page and its layout read only the visitor's locale
+      // (`strapiBiases[locale]`, `allLangBiases[locale]`, `questions[locale]`);
+      // the other two locales were a megabyte of page data per view.
+      strapiBiases: { [current]: strapiBiases[current] ?? [] },
+      questions: { [current]: questions[current] ?? [] },
       tags,
       seo: mainSeo,
     },
