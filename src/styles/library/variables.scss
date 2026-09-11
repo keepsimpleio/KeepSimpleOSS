@@ -113,6 +113,18 @@
     rgba(35, 34, 28, 0.4) 0%,
     rgba(226, 220, 176, 0) 100%
   );
+  /* INK FOR A PRINTED FACE, and it does not turn at night.
+     The book mockup under every cover is a photograph: it stays paper in the
+     dark reading, so anything written on that paper keeps its daylight ink.
+     Tokens that DO turn (--black-rich, --gray-darkest) put light ink on light
+     paper there and the writing disappears. Never redefine these in
+     themes.scss, that is the whole point of them. */
+  --ink-on-cover: #23221c;
+  --ink-on-cover-soft: #494949;
+  --wash-on-cover: #fffcf7;
+  --accent-on-cover: #6b3fb3;
+  --rule-on-cover: rgba(35, 34, 28, 0.16);
+
   --gradient-cover-placeholder: linear-gradient(
     135deg,
     var(--cream) 0%,

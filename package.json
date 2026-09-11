@@ -91,6 +91,9 @@
     "zod": "^4.3.6"
   },
   "lint-staged": {
+    "*": [
+      "node scripts/guard/no-internal-data.mjs"
+    ],
     "**/*.{ts,tsx}": [
       "eslint --fix --cache"
     ],

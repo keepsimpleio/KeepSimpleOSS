@@ -145,3 +145,23 @@ request, leave it unmerged, and ask for the go in one line. The A-Z grant
 covers execution, never the decision. Every feature collects on the one
 batch branch and reaches production as one pull request; a go that says
 "everything on staging" covers the whole batch, CMS included.
+
+## This repository is public (Wolf, 2026-09-11)
+
+Every committed line on every pushed branch is world-readable, and a pushed
+commit stays fetchable by its SHA after a force-push. On 2026-09-10 an
+unstripped export from another project's tooling (source file names, line
+numbers, file hashes) was committed under `public/` and pushed. Wolf's
+order: never again.
+
+- Data that comes from another project or agent (exports, guides, catalogs,
+  journals) is stripped to the fields the page renders BEFORE it enters the
+  tree, and the strip is a script that runs on every refresh, not a manual pass.
+- Nothing describing private infrastructure goes into the tree: internal
+  paths, hostnames of private services, file fingerprints, tool inventories,
+  session or run records.
+- `scripts/guard/no-internal-data.mjs` runs from lint-staged on every commit
+  and refuses added lines that carry such data. It has no bypass; rewrite the
+  line. Its journal is `.internal-data-guard.log` (gitignored).
+- Public data must not sit under `public/` when the page can bundle it: a
+  standalone file is an endpoint anyone can pull.

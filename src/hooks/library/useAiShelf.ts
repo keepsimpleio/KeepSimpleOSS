@@ -25,7 +25,17 @@ import {
  * then shows, except the lock, which flips at once and is corrected if the
  * write fails: a lock is a small, reversible thing and waiting for it reads
  * as a dead button.
+ *
+ * A roll is not waited on. It takes longer than a gateway holds a request
+ * open, so the route starts it and answers "rolling"; this hook then asks
+ * again every few seconds until the board stands. The shelf shows its
+ * working state throughout, so the wait is visible rather than silent.
  */
+
+/** How often the shelf asks whether the board has landed. */
+const POLL_MS = 4000;
+/** Long enough for the slowest roll seen, then the shelf stops asking. */
+const POLL_LIMIT = 90;
 
 export interface AiShelf {
   state: RecommendedShelfState | null;
@@ -51,6 +61,7 @@ export function useAiShelf(
   const [error, setError] = useState<string | null>(null);
   const sequence = useRef(0);
   const inFlight = useRef(false);
+  const polls = useRef(0);
 
   useEffect(() => {
     if (!enabled || libraryId == null) {
@@ -76,6 +87,38 @@ export function useAiShelf(
         if (seq === sequence.current) setLoading(false);
       });
   }, [libraryId, enabled]);
+
+  // While the engine works the shelf asks again on a timer. The count is
+  // reset by every arrival of a state that is not a roll in progress, so a
+  // second roll gets its own full allowance.
+  useEffect(() => {
+    if (!enabled || libraryId == null) return;
+    if (state?.status !== 'rolling') {
+      polls.current = 0;
+      return;
+    }
+    // Out of polls: the roll is either still running past its allowance or
+    // it died in a way the server has not noticed. Say so instead of leaving
+    // the shelf saying "stocking" for the rest of the session.
+    if (polls.current >= POLL_LIMIT) {
+      setError(
+        'The shelf is still working. Reload the page to see where it got to.',
+      );
+      return;
+    }
+    const seq = sequence.current;
+    const timer = window.setTimeout(() => {
+      polls.current += 1;
+      getAiShelf(libraryId)
+        .then(next => {
+          if (seq === sequence.current) setState(next);
+        })
+        .catch(() => {
+          /* a missed poll is not an error; the next one asks again */
+        });
+    }, POLL_MS);
+    return () => window.clearTimeout(timer);
+  }, [state, enabled, libraryId]);
 
   /** One write at a time: the board is a single object on the server and
    * two writes racing would each answer with half the other's work. */
@@ -109,10 +152,10 @@ export function useAiShelf(
     [libraryId],
   );
 
-  const roll = useCallback(
-    () => write(id => rollAiShelf(id), { rolling: true }),
-    [write],
-  );
+  const roll = useCallback(() => {
+    polls.current = 0;
+    write(id => rollAiShelf(id), { rolling: true });
+  }, [write]);
 
   const choosePreference = useCallback(
     (preference: RecommendedPreference) => {
@@ -156,7 +199,7 @@ export function useAiShelf(
   return {
     state,
     loading,
-    rolling,
+    rolling: rolling || state?.status === 'rolling',
     busy,
     error,
     roll,

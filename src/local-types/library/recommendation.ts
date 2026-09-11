@@ -61,7 +61,8 @@ export interface BannedBook {
 }
 
 /**
- * locked: the library has not read enough for the shelf to open.
+ * locked:  the library has not read enough for the shelf to open.
+ * rolling: the engine is stocking the board; the shelf polls for it.
  * idle:   open, nothing rolled yet.
  * ready:  picks stand on the board.
  * empty:  a roll ran and nothing could be confirmed.
@@ -69,6 +70,7 @@ export interface BannedBook {
  */
 export type RecommendedStatus =
   | 'locked'
+  | 'rolling'
   | 'idle'
   | 'ready'
   | 'empty'

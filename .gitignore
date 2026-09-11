@@ -194,3 +194,6 @@ docker-compose.override.yml
 
 # Library data snapshots taken from production. Personal data, never committed.
 /backups/
+
+# journal of the internal-data guard (scripts/guard), one line per commit attempt
+.internal-data-guard.log

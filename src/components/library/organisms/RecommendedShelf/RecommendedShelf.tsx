@@ -37,6 +37,7 @@ import {
   SparkleIcon,
 } from '@icons/library/svg';
 
+import SpellSlot from '@components/library/atoms/SpellSlot';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import { Button, ButtonType } from '@components/library/molecules/Button';
@@ -214,6 +215,10 @@ export default function RecommendedShelf({
   // The board keeps its height in every state: what is not a pick yet is a
   // place held open for one.
   const ghosts = Math.max(0, RECOMMENDED_SHELF_SIZE - board.length);
+  // A roll now answers at once and works on in the background, so `busy` no
+  // longer covers it. Every control whose write the roll would overwrite when
+  // it lands (it replaces the board from the snapshot it started with) waits
+  // on `working` too.
   const working = shelf.loading || shelf.rolling;
 
   // One line, and only one: what is in the way, then what the engine said,
@@ -289,7 +294,7 @@ export default function RecommendedShelf({
                     [styles.preferenceOn]: preference === option.value,
                   })}
                   aria-pressed={preference === option.value}
-                  disabled={readOnly || shelf.busy}
+                  disabled={readOnly || shelf.busy || working}
                   onClick={() => shelf.choosePreference(option.value)}
                 >
                   {option.label}
@@ -394,7 +399,7 @@ export default function RecommendedShelf({
                   >
                     <RecommendedBookCard
                       book={book}
-                      readOnly={readOnly || shelf.busy}
+                      readOnly={readOnly || shelf.busy || working}
                       locked={locked.has(book.id)}
                       onToggleLock={pick => shelf.toggleLock(pick.id)}
                       onToggleBan={pick => shelf.ban(pick.id)}
@@ -402,10 +407,10 @@ export default function RecommendedShelf({
                   </div>
                 ))}
                 {Array.from({ length: ghosts }, (_, index) => (
-                  <div
-                    key={`ghost-${index}`}
-                    className={styles.ghost}
-                    aria-hidden="true"
+                  <SpellSlot
+                    key={`spell-${index}`}
+                    index={board.length + index}
+                    working={working}
                   />
                 ))}
               </div>
@@ -477,7 +482,7 @@ export default function RecommendedShelf({
                       <button
                         type="button"
                         className={styles.bannedUnban}
-                        disabled={shelf.busy || leaving}
+                        disabled={shelf.busy || working || leaving}
                         onClick={() => shelf.unban(book)}
                         aria-label={`Unban ${book.title}`}
                       >
