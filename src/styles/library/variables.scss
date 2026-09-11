@@ -119,6 +119,10 @@
      Tokens that DO turn (--black-rich, --gray-darkest) put light ink on light
      paper there and the writing disappears. Never redefine these in
      themes.scss, that is the whole point of them. */
+  /* The pigment a hand-drawn rule is painted in, as canvas takes it. */
+  --ink-line: 51, 41, 28;
+  /* The outline of a ghost control on paper. */
+  --ink-outline: rgba(51, 41, 28, 0.55);
   --ink-on-cover: #23221c;
   --ink-on-cover-soft: #494949;
   --wash-on-cover: #fffcf7;

@@ -322,3 +322,63 @@
     opacity: 0.1;
   }
 }
+
+// A roll in progress, said in a word over the slot. The cover behind it
+// gives way so the word reads, and comes back when the pick lands.
+.busy .faceShown,
+.busy .blankShown {
+  opacity: 0.5;
+}
+
+.rolling {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  transform: translate(-50%, -50%);
+  background: var(--wash-on-cover);
+  border: 1px solid var(--accent-on-cover);
+  border-radius: var(--radius-control);
+  color: var(--accent-on-cover);
+  font-family: var(--font-source-serif);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    animation: magic-rolling-spark 1.9s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    svg {
+      animation: none;
+    }
+  }
+}
+
+.rollingShown {
+  opacity: 1;
+}
+
+@keyframes magic-rolling-spark {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}

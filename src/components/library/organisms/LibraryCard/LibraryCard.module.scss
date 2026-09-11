@@ -197,7 +197,7 @@
           // label whole and lets narrow phones wrap it under the shelf.
           flex: 1 1 120px;
           background: transparent;
-          border: 1px solid rgba(51, 41, 28, 0.55);
+          border: 1px solid var(--ink-outline);
           border-radius: 0;
           color: var(--brown-100);
           cursor: pointer;
@@ -233,7 +233,7 @@
       // without present the same way in.
       height: 64px;
       background: transparent;
-      border: 1px solid rgba(51, 41, 28, 0.55);
+      border: 1px solid var(--ink-outline);
       box-shadow: none;
       color: var(--brown-100);
 

@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import React, { JSX, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, JSX, useMemo, useRef, useState } from 'react';
 
 import type { IObject } from '@local-types/library/object';
 
@@ -7,13 +7,15 @@ import { BanIcon, LockIcon, SparkleIcon } from '@icons/library/svg';
 
 import { Tooltip } from '@components/library/atoms/Tooltip';
 import { ObjectHoverCard } from '@components/library/molecules/ObjectHoverCard';
+import { RecommendedBookBrief } from '@components/library/molecules/RecommendedBookBrief';
 
 import type { RecommendedBookCardProps } from './RecommendedBookCard.types';
 
 import styles from './RecommendedBookCard.module.scss';
 
 // motion-passport: exempt — this file carries no animation of its own. The
-// card's hover lift, the action reveal and the banned dim live in
+// card's hover lift, the action reveal, the banned dim and the light a card
+// carries while it is being rolled again live in
 // RecommendedBookCard.module.scss; the dossier's fade in
 // ObjectHoverCard.module.scss. All hold the reduced-motion branch.
 
@@ -28,7 +30,9 @@ const asObject = (
     type: 'book',
     title: book.title,
     author: book.author,
-    description: book.reason,
+    // The dossier under the pointer says what the book is; why the owner is
+    // being given it, at its full length, is read in the brief.
+    description: book.about ?? book.reason,
     publicationDate: book.year ? `${book.year}-01-01` : undefined,
     createdAt: '',
     updatedAt: '',
@@ -41,7 +45,12 @@ let dossierSerial = 0;
  * One pick standing on the AI shelf: a book whose cover is set in the
  * library's own type when no art came with it, its match score at the foot,
  * and on hover the two verdicts the owner can give it: lock it in, or ban it.
- * The dossier beside it says why it is here.
+ * The dossier beside it says what the book is, in short.
+ *
+ * The card opens. A click, Enter or Space raises the brief, where the whole
+ * of what the engine wrote is read: what the book is, why this owner is
+ * being given it, the rubric behind the percent (Wolf, 2026-09-11: the
+ * dossier ended in an ellipsis and the rest was unreachable).
  */
 export function RecommendedBookCard({
   book,
@@ -49,11 +58,14 @@ export function RecommendedBookCard({
   readOnly = false,
   locked = false,
   banned = false,
+  working = false,
+  slotIndex = 0,
   onToggleLock,
   onToggleBan,
 }: RecommendedBookCardProps): JSX.Element {
   const cardRef = useRef<HTMLDivElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(false);
   const serial = useMemo(() => {
     dossierSerial += 1;
     return dossierSerial;
@@ -97,10 +109,22 @@ export function RecommendedBookCard({
         className={cn(styles.card, {
           [styles.locked]: locked,
           [styles.banned]: banned,
+          [styles.working]: working,
         })}
+        style={{ '--slot': slotIndex } as CSSProperties}
+        role="button"
         tabIndex={0}
-        aria-label={`${book.title}, recommended${stateLabel ? `, ${stateLabel}` : ''}`}
+        aria-busy={working || undefined}
+        aria-haspopup="dialog"
+        aria-label={`${book.title}, recommended${stateLabel ? `, ${stateLabel}` : ''}. Open the brief`}
         aria-describedby={dossierId}
+        onClick={() => setBriefOpen(true)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setBriefOpen(true);
+          }
+        }}
         onMouseEnter={() => setPreviewOpen(true)}
         onMouseLeave={() => setPreviewOpen(false)}
         // Only a keyboard focus opens the dossier. Focus also lands here when a
@@ -168,6 +192,17 @@ export function RecommendedBookCard({
                 : 'Locked'}
           </span>
 
+          {/* The engine at work on this place, over the pick it is about to
+              replace. Held in the DOM and revealed by class, so a roll never
+              resizes the card. */}
+          <span
+            className={cn(styles.rolling, { [styles.rollingShown]: working })}
+            aria-hidden="true"
+          >
+            <SparkleIcon />
+            Rolling
+          </span>
+
           {!readOnly && (
             <div className={styles.actions}>
               {!banned && (
@@ -182,7 +217,10 @@ export function RecommendedBookCard({
                   <button
                     type="button"
                     className={styles.action}
-                    onClick={() => onToggleLock?.(book)}
+                    onClick={e => {
+                      e.stopPropagation();
+                      onToggleLock?.(book);
+                    }}
                     aria-label={
                       locked
                         ? `Unlock ${book.title}`
@@ -205,7 +243,10 @@ export function RecommendedBookCard({
                 <button
                   type="button"
                   className={styles.action}
-                  onClick={() => onToggleBan?.(book)}
+                  onClick={e => {
+                    e.stopPropagation();
+                    onToggleBan?.(book);
+                  }}
                   aria-label={
                     banned
                       ? `Unban ${book.title}`
@@ -225,7 +266,7 @@ export function RecommendedBookCard({
         id={dossierId}
         object={object}
         anchorRef={cardRef}
-        open={previewOpen}
+        open={previewOpen && !briefOpen}
         kindLabel={
           state === 'banned'
             ? 'Banned'
@@ -238,6 +279,18 @@ export function RecommendedBookCard({
         rows={rows}
         showReview={false}
       />
+
+      {briefOpen && (
+        <RecommendedBookBrief
+          book={book}
+          locked={locked}
+          banned={banned}
+          readOnly={readOnly}
+          onToggleLock={onToggleLock}
+          onToggleBan={onToggleBan}
+          onClose={() => setBriefOpen(false)}
+        />
+      )}
     </div>
   );
 }

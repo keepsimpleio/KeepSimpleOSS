@@ -34,9 +34,10 @@ const RUBRIC_LABELS: Record<keyof MagicRubric, string> = {
 
 /**
  * The magic book opened: cover, title, author and year, the chance you like
- * it with the rubric that made the number, the engine's reason in your own
- * terms, the source that confirmed the book, and Re-roll. A roll from here
- * swaps the brief in place once the engine answers.
+ * it with the rubric that made the number, what the book is, why you are
+ * being given it, the source that confirmed the book, and Re-roll. The two
+ * passages stand apart under their own words, so neither is read as the
+ * other. A roll from here swaps the brief in place once the engine answers.
  */
 export function MagicBookBrief({
   slot,
@@ -122,7 +123,17 @@ export function MagicBookBrief({
                 </ul>
               )}
 
-              <p className={styles.reason}>{pick.reason}</p>
+              {pick.about && (
+                <section className={styles.part}>
+                  <h4 className={styles.partLabel}>What it is</h4>
+                  <p className={styles.reason}>{pick.about}</p>
+                </section>
+              )}
+
+              <section className={styles.part}>
+                <h4 className={styles.partLabel}>Why you</h4>
+                <p className={styles.reason}>{pick.reason}</p>
+              </section>
 
               <span className={styles.source}>
                 Confirmed by{' '}

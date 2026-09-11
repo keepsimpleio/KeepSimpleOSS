@@ -45,6 +45,12 @@ body.darkTheme .library {
   --brown-200: #e7b98a;
   --brown-border: rgba(201, 138, 82, 0.32);
 
+  /* A rule drawn on night paper is drawn in light, not in ink: the same hand,
+     the pigment inverted, or the divider disappears into the sheet. */
+  --ink-line: 226, 214, 198;
+  /* A ghost control needs its outline lifted with it. */
+  --ink-outline: rgba(220, 164, 111, 0.55);
+
   --figure-wood-light: #4a4238;
   --figure-wood-mid: #3a332b;
   --figure-wood-dark: #2f2925;

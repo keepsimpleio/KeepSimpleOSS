@@ -154,7 +154,7 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 53.0, top: 19.01 },
     },
-    'alinamarg',
+    undefined,
     {
       // The panorama art sits 0.33% lower here, matching the highlight offset.
       hit: { top: 20.35 },
@@ -213,6 +213,8 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { right: 36.26, top: 14 },
     },
-    undefined,
+    // Wolf, 2026-09-11: this library stands on the lantern now, not on the
+    // house above the water.
+    'alinamarg',
   ),
 ];

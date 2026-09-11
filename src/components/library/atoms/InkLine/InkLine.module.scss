@@ -3,7 +3,13 @@
   width: 100%;
   height: 8px;
   pointer-events: none;
+  // Dark ink sinks into paper; light ink has to sit on night paper, and
+  // multiply would take it straight back out.
   mix-blend-mode: multiply;
+
+  :global(body.darkTheme) & {
+    mix-blend-mode: screen;
+  }
   opacity: 0;
   // The line dries in once painted, instead of popping.
   transition: opacity 0.7s ease;

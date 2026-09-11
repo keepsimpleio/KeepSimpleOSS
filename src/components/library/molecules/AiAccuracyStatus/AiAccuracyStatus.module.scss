@@ -248,3 +248,15 @@
   line-height: 19px;
   color: var(--purple-100);
 }
+
+// "Your best win:" carries the line, so the move reads as an answer rather
+// than as a note at the bottom of a table.
+.footLabel {
+  font-weight: 600;
+  color: var(--black-rich);
+}
+
+.footGain {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}

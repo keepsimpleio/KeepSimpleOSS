@@ -40,8 +40,8 @@ export interface AccuracyReport {
   /** 0..100, rounded to a whole number. */
   total: number;
   components: AccuracyComponent[];
-  /** The step across every component that buys the most per book touched. */
-  best?: { action: string; gain: number };
+  /** The move that buys the most per book touched, with what it costs. */
+  best?: { action: string; gain: number; cost: number };
   /** How many books the score was read from. */
   books: number;
 }
@@ -252,65 +252,106 @@ export function scoreLibraryAccuracy(
       ? 0
       : ACCURACY_WEIGHTS.shelves * (topical / bookShelves.length);
 
-  // The cheapest step per component: as many books as it takes to move the
-  // total by one whole percent, never more than are missing. In a library of
-  // 166 books four notes buy under a point, so a fixed handful read as
-  // "Full" on a row that stood at 20 of 25.
-  const step = (missing: number, weight: number) =>
-    missing <= 0
-      ? 0
-      : Math.min(missing, Math.max(1, Math.ceil(total / weight)));
+  // What each signal still has on the table, and what it costs to take it.
+  // The whole of the missing work, not a token step: a step sized to move the
+  // total by a single percent answered "write notes on 7 more books, +1%" to
+  // an owner with thirty-three books carrying none, which reads as a shrug
+  // where the real answer was five points (Wolf, 2026-09-11).
+  //
+  // A move is a pair: the points it is worth, and how many things the owner
+  // must touch to earn them. The best win is the one that pays most per book,
+  // because that is the fastest way up, and among equals the one that pays
+  // most in total.
+  interface Move {
+    key: AccuracyComponentKey;
+    action: string;
+    /** Points the move is worth in full. */
+    gain: number;
+    /** Books, tags or shelves the owner must touch. */
+    cost: number;
+  }
+  const moves: Move[] = [];
+  const add = (move: Move) => {
+    if (move.cost > 0 && move.gain > 0) moves.push(move);
+  };
 
   const notesMissing = total - withNote;
-  const notesStep = step(notesMissing, ACCURACY_WEIGHTS.notes);
-  const notesGain =
-    notesStep === 0
-      ? 0
-      : ACCURACY_WEIGHTS.notes * share(withNote + notesStep) - notesPoints;
+  add({
+    key: 'notes',
+    action: `Write notes on ${plural(notesMissing, 'more book', 'more books')}`,
+    gain: ACCURACY_WEIGHTS.notes - notesPoints,
+    cost: notesMissing,
+  });
 
+  // Rating a book pays twice: the coverage half of the rating signal, and
+  // whatever the volume curve still has left at that count.
   const ratedMissing = total - rated;
-  const ratedStep = step(ratedMissing, RATING_COVERAGE_POINTS);
-  const ratedGain =
-    ratedStep === 0
-      ? 0
-      : RATING_COVERAGE_POINTS * share(rated + ratedStep) -
-        RATING_COVERAGE_POINTS * share(rated) +
-        ACCURACY_WEIGHTS.volume * volumeShare(rated + ratedStep) -
-        volumePoints;
+  add({
+    key: 'rating',
+    action: `Rate ${plural(ratedMissing, 'more book', 'more books')}`,
+    gain:
+      RATING_COVERAGE_POINTS * (1 - share(rated)) +
+      ACCURACY_WEIGHTS.volume * (volumeShare(total) - volumeShare(rated)),
+    cost: ratedMissing,
+  });
+
   const lowMissing = Math.max(0, ACCURACY_LOW_RATED_FULL - lowRated);
-  const lowGain =
-    lowMissing === 0
-      ? 0
-      : (ACCURACY_WEIGHTS.rating - RATING_COVERAGE_POINTS) *
-        (1 - clamp01(lowRated / ACCURACY_LOW_RATED_FULL));
+  add({
+    key: 'rating',
+    action: `Rate ${plural(lowMissing, 'book', 'books')} you did not like`,
+    gain:
+      (ACCURACY_WEIGHTS.rating - RATING_COVERAGE_POINTS) *
+      (1 - clamp01(lowRated / ACCURACY_LOW_RATED_FULL)),
+    cost: lowMissing,
+  });
 
   const tagMissing = total - tagged;
-  const tagStep = step(tagMissing, TAG_COVERAGE_POINTS);
-  const tagGain =
-    tagStep === 0
-      ? 0
-      : TAG_COVERAGE_POINTS * share(tagged + tagStep) -
-        TAG_COVERAGE_POINTS * share(tagged);
+  add({
+    key: 'tags',
+    action: `Tag ${plural(tagMissing, 'more book', 'more books')}`,
+    gain: TAG_COVERAGE_POINTS * (1 - share(tagged)),
+    cost: tagMissing,
+  });
+
+  const tagsAlone = distinctTags - reusedTags;
+  add({
+    key: 'tags',
+    action: `Put ${plural(tagsAlone, 'tag', 'tags')} on a second book`,
+    gain:
+      distinctTags === 0
+        ? 0
+        : (ACCURACY_WEIGHTS.tags - TAG_COVERAGE_POINTS) *
+          (1 - reusedTags / distinctTags),
+    cost: tagsAlone,
+  });
 
   const difficultyMissing = total - withDifficulty;
-  const difficultyStep = step(difficultyMissing, ACCURACY_WEIGHTS.difficulty);
-  const difficultyGain =
-    difficultyStep === 0
-      ? 0
-      : ACCURACY_WEIGHTS.difficulty * share(withDifficulty + difficultyStep) -
-        difficultyPoints;
+  add({
+    key: 'difficulty',
+    action: `Set difficulty on ${plural(difficultyMissing, 'more book', 'more books')}`,
+    gain: ACCURACY_WEIGHTS.difficulty - difficultyPoints,
+    cost: difficultyMissing,
+  });
 
   const shelfMissing = bookShelves.length - topical;
-  const shelfGain =
-    shelfMissing === 0 || bookShelves.length === 0
-      ? 0
-      : ACCURACY_WEIGHTS.shelves / bookShelves.length;
+  add({
+    key: 'shelves',
+    action: `Name ${plural(shelfMissing, 'shelf', 'shelves')} by its theme`,
+    gain: ACCURACY_WEIGHTS.shelves - shelfPoints,
+    cost: shelfMissing,
+  });
 
-  const nextOf = (
-    gain: number,
-    action: string,
-  ): AccuracyComponent['next'] | undefined =>
-    gain >= 0.5 ? { action, gain: Math.round(gain) } : undefined;
+  // Most percent per thing touched first; a tie goes to the bigger total.
+  const ranked = [...moves].sort(
+    (a, b) => b.gain / b.cost - a.gain / a.cost || b.gain - a.gain,
+  );
+  const bestOf = (key: AccuracyComponentKey) =>
+    ranked.find(move => move.key === key);
+
+  const nextOf = (move?: Move): AccuracyComponent['next'] | undefined =>
+    move && move.gain >= 0.5
+      ? { action: move.action, gain: Math.round(move.gain) }
+      : undefined;
 
   const components: AccuracyComponent[] = [
     {
@@ -319,10 +360,7 @@ export function scoreLibraryAccuracy(
       earned: round1(notesPoints),
       max: ACCURACY_WEIGHTS.notes,
       detail: `Notes of ${ACCURACY_NOTE_WORDS}+ words on ${withNote} of ${plural(total, 'book', 'books')}`,
-      next: nextOf(
-        notesGain,
-        `Write notes on ${plural(notesStep, 'more book', 'more books')}`,
-      ),
+      next: nextOf(bestOf('notes')),
     },
     {
       key: 'rating',
@@ -330,16 +368,7 @@ export function scoreLibraryAccuracy(
       earned: round1(ratingPoints),
       max: ACCURACY_WEIGHTS.rating,
       detail: `${rated} of ${total} rated, ${lowRated} of them 1 or 2`,
-      next:
-        ratedStep > 0 && ratedGain >= lowGain
-          ? nextOf(
-              ratedGain,
-              `Rate ${plural(ratedStep, 'more book', 'more books')}`,
-            )
-          : nextOf(
-              lowGain,
-              `Rate ${plural(lowMissing, 'book', 'books')} you did not like`,
-            ),
+      next: nextOf(bestOf('rating')),
     },
     {
       key: 'volume',
@@ -347,14 +376,9 @@ export function scoreLibraryAccuracy(
       earned: round1(volumePoints),
       max: ACCURACY_WEIGHTS.volume,
       detail: `${plural(rated, 'rated book', 'rated books')} to read you by, full at ${ACCURACY_VOLUME_FULL}`,
-      next:
-        ratedStep > 0
-          ? nextOf(
-              ACCURACY_WEIGHTS.volume * volumeShare(rated + ratedStep) -
-                volumePoints,
-              `Rate ${plural(ratedStep, 'more book', 'more books')}`,
-            )
-          : undefined,
+      // Volume is not filled on its own: rating books fills it, and that move
+      // is counted once, on the rating row.
+      next: undefined,
     },
     {
       key: 'tags',
@@ -362,10 +386,7 @@ export function scoreLibraryAccuracy(
       earned: round1(tagPoints),
       max: ACCURACY_WEIGHTS.tags,
       detail: `${tagged} of ${total} tagged, ${reusedTags} of ${plural(distinctTags, 'tag', 'tags')} on more than one book`,
-      next: nextOf(
-        tagGain,
-        `Tag ${plural(tagStep, 'more book', 'more books')}`,
-      ),
+      next: nextOf(bestOf('tags')),
     },
     {
       key: 'difficulty',
@@ -373,10 +394,7 @@ export function scoreLibraryAccuracy(
       earned: round1(difficultyPoints),
       max: ACCURACY_WEIGHTS.difficulty,
       detail: `Difficulty set on ${withDifficulty} of ${total} books`,
-      next: nextOf(
-        difficultyGain,
-        `Set difficulty on ${plural(difficultyStep, 'more book', 'more books')}`,
-      ),
+      next: nextOf(bestOf('difficulty')),
     },
     {
       key: 'shelves',
@@ -384,67 +402,23 @@ export function scoreLibraryAccuracy(
       earned: round1(shelfPoints),
       max: ACCURACY_WEIGHTS.shelves,
       detail: `${topical} of ${plural(bookShelves.length, 'shelf', 'shelves')} named by their theme`,
-      next: nextOf(shelfGain, 'Name one more shelf by its theme'),
+      next: nextOf(bestOf('shelves')),
     },
   ];
 
   const sum = components.reduce((acc, c) => acc + c.earned, 0);
 
-  // The best step is the one that buys the most percent per book touched:
-  // the rating step also fills volume, so its gain is counted together.
-  const candidates: { action: string; gain: number; cost: number }[] = [];
-  if (notesStep > 0) {
-    candidates.push({
-      action: components[0].next?.action ?? '',
-      gain: notesGain,
-      cost: notesStep,
-    });
-  }
-  if (ratedStep > 0) {
-    candidates.push({
-      action: `Rate ${plural(ratedStep, 'more book', 'more books')}`,
-      gain: ratedGain,
-      cost: ratedStep,
-    });
-  }
-  if (lowMissing > 0 && ratedStep === 0) {
-    candidates.push({
-      action: `Rate ${plural(lowMissing, 'book', 'books')} you did not like`,
-      gain: lowGain,
-      cost: lowMissing,
-    });
-  }
-  if (tagStep > 0) {
-    candidates.push({
-      action: components[3].next?.action ?? '',
-      gain: tagGain,
-      cost: tagStep,
-    });
-  }
-  if (difficultyStep > 0) {
-    candidates.push({
-      action: components[4].next?.action ?? '',
-      gain: difficultyGain,
-      cost: difficultyStep,
-    });
-  }
-  if (shelfGain > 0) {
-    candidates.push({
-      action: 'Name one more shelf by its theme',
-      gain: shelfGain,
-      cost: 1,
-    });
-  }
-  const best = candidates
-    .filter(c => c.action && Math.round(c.gain) >= 1)
-    .sort((a, b) => b.gain / b.cost - a.gain / a.cost)[0];
+  // The best win: the move that pays most per book touched, of those worth a
+  // whole percent. Its cost travels with it, because "+5%" is only an answer
+  // when the owner can see what it costs.
+  const winner = ranked.find(move => Math.round(move.gain) >= 1);
+  const best = winner
+    ? {
+        action: winner.action,
+        gain: Math.round(winner.gain),
+        cost: winner.cost,
+      }
+    : undefined;
 
-  return {
-    total: Math.round(sum),
-    components,
-    best: best
-      ? { action: best.action, gain: Math.round(best.gain) }
-      : undefined,
-    books: total,
-  };
+  return { total: Math.round(sum), components, best, books: total };
 }

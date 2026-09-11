@@ -84,6 +84,7 @@ const STRETCH_WEIGHTS: Record<keyof MagicRubric, number> = {
 interface ModelCandidate {
   title: string;
   author?: string;
+  about: string;
   reason: string;
   newGround?: string;
   rubric: MagicRubric;
@@ -121,11 +122,16 @@ const schemaFor = (kind: RecommendedKind, count: number) => {
           type: 'object',
           additionalProperties: false,
           required: stretch
-            ? ['title', 'author', 'reason', 'newGround', 'rubric']
-            : ['title', 'author', 'reason', 'rubric'],
+            ? ['title', 'author', 'about', 'reason', 'newGround', 'rubric']
+            : ['title', 'author', 'about', 'reason', 'rubric'],
           properties: {
             title: { type: 'string' },
             author: { type: 'string' },
+            about: {
+              type: 'string',
+              description:
+                'What the book is: subject, argument and shape, in two or three sentences, for a reader who has never heard of it. Third person, no second person, no marketing.',
+            },
             reason: {
               type: 'string',
               description: stretch
@@ -185,7 +191,7 @@ How to read the signals, in order of weight:
 const COMMON_RULES = `- Real, published books with their real author. No invented titles, no invented editions.
 - Never propose a book the library already holds, nor another edition of one, nor anything on the exclusion lists below.
 - No two candidates by the same author, and no more than two on the same narrow subject.
-- The reason is addressed to the owner, plain, grounded in their own notes and ratings. No adjectives that cannot be checked, no dashes.`;
+- Two separate texts per candidate, and neither may do the other's work. \`about\` says what the book IS: subject, argument, shape, two or three sentences, third person, as an encyclopedia entry would, never addressed to the owner. \`reason\` says why THIS owner gets it: addressed to them, plain, grounded in their own notes and ratings. No adjectives that cannot be checked, no dashes.`;
 
 const systemFor = (
   kind: RecommendedKind,
@@ -504,6 +510,7 @@ export async function runBoard(
           title: result.book.title,
           author: result.book.author ?? candidate.author,
           year: result.book.year,
+          about: candidate.about,
           reason: candidate.reason,
           kind,
           rubric: candidate.rubric,

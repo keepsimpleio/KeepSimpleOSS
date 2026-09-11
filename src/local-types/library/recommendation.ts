@@ -22,6 +22,9 @@ export interface IRecommendedBook {
   author?: string;
   /** Four-digit year of first publication. */
   year?: number;
+  /** What the book is: its subject and its argument, for a reader who has
+   * never heard of it. Absent on picks made before the engine wrote one. */
+  about?: string;
   /** One line on why this book is on the owner's shelf. */
   reason?: string;
   /** How well the pick fits the owner, 0..100, as the engine scored it. */

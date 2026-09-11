@@ -25,6 +25,9 @@ export interface MagicBook {
   author?: string;
   /** Four-digit year of first publication, from the verifying source. */
   year?: number;
+  /** What the book is: its subject and its argument, for a reader who has
+   * never heard of it. Absent on picks made before the engine wrote one. */
+  about?: string;
   /** Why this book, in the owner's own terms. */
   reason: string;
   /** The chance the owner likes it, 0..100. Absent until the library holds
