@@ -2,14 +2,14 @@ import React, { JSX } from 'react';
 
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
-import { Button, ButtonSize,ButtonType } from '../Button';
+import { Button, ButtonSize, ButtonType } from '../Button';
 import { Modal, useModalClose } from '../Modal';
 import type { AboutLibraryModalProps } from './AboutLibraryModal.types';
 
 import styles from './AboutLibraryModal.module.scss';
 
 export function AboutLibraryModal(props: AboutLibraryModalProps): JSX.Element {
-  const { onClose } = props;
+  const { onClose, ownsLibrary = false, onLibraryAction } = props;
   const { closeRef, close } = useModalClose(onClose);
 
   return (
@@ -31,19 +31,23 @@ export function AboutLibraryModal(props: AboutLibraryModalProps): JSX.Element {
           The goal is to capture knowledge precisely: with descriptions,
           meaningful order, and clear labels. Want your own Library?
         </Text>
-        <Text className={styles.text} variant={TypographyVariant.TextRegular}>
-          Tell us who you are and what your intent is - email{' '}
-          <a href="mailto:greatest@gmail.com">greatest@gmail.com.</a>
-        </Text>
       </div>
       <div className={styles.footer}>
         <Button
           label="Close"
           onClick={close}
-          type={ButtonType.Primary}
+          type={ButtonType.Outlined}
           size={ButtonSize.Wide}
           ariaLabel="Close modal"
           className={styles.close}
+        />
+        <Button
+          label={ownsLibrary ? 'Open my library' : 'Create Library'}
+          onClick={onLibraryAction}
+          type={ButtonType.Primary}
+          size={ButtonSize.Wide}
+          ariaLabel={ownsLibrary ? 'Open my library' : 'Create library'}
+          className={styles.action}
         />
       </div>
     </Modal>

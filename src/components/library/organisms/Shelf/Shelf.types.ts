@@ -120,4 +120,9 @@ export interface ShelfProps {
    * last book. Owner-only, book shelves only; null or absent draws nothing.
    */
   magic?: MagicShelfSlot | null;
+  /**
+   * True once the whole library holds its 300 objects. The Add control
+   * disables with the library's message, whatever this shelf holds.
+   */
+  libraryFull?: boolean;
 }

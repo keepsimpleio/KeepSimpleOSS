@@ -80,7 +80,6 @@ export function Sidebar() {
     currentShelves,
     currentOwner,
     currentLibrary,
-    isCreateBlocked,
     isOwner,
   } = useGlobalState();
 
@@ -141,12 +140,9 @@ export function Sidebar() {
   useLockBodyScroll(isSidebarOpen);
 
   // An owner can edit their About panel before any library row exists — the
-  // row is created lazily on first save. So the editable affordance is gated on
-  // the `can-create-library` permission, not on a loaded library (the same flag
-  // LibraryTemplate uses to allow bootstrapping via the first shelf).
-  const canCreateLibrary =
-    accountData?.featureNames?.includes('can-create-library') ?? false;
-  const canEditLibrary = canEdit && (!!currentLibrary || canCreateLibrary);
+  // row is created lazily on first save. Any signed-in owner of this address
+  // may create one (since 2026-09-12), so editing needs no loaded library.
+  const canEditLibrary = canEdit;
 
   // The public owner profile supplies the same identity and photo to every visitor.
   const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
@@ -300,10 +296,6 @@ export function Sidebar() {
       return () => clearTimeout(timer);
     }
   }, [isCopied]);
-
-  // Hide the right panel entirely when the owner lacks permission to create a
-  // library — the page shows only the centered no-permission message.
-  if (isCreateBlocked) return null;
 
   return (
     <>
