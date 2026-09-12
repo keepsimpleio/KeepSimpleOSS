@@ -5,6 +5,7 @@ import { DEFAULT_SEO } from '@constants/library/seo.config';
 import type { StrapiLibraryEntry } from '@local-types/library/library';
 import type { IObject } from '@local-types/library/object';
 
+import { ownerDisplayName, ownerPerson } from './credit';
 import { libraryPath } from './libraryPath';
 import { objectSlug } from './objectSlug';
 
@@ -38,7 +39,7 @@ export function librarySeo(library?: StrapiLibraryEntry) {
   const attributes = library?.attributes;
   const username = attributes?.user?.data?.attributes.username;
   const isWolf = username?.toLowerCase() === 'wolf';
-  const displayName = isWolf ? 'Wolf Alexanyan' : username;
+  const displayName = ownerDisplayName(username);
   const title = displayName
     ? isWolf
       ? "Wolf Alexanyan's Library | Collected since 2007"
@@ -85,7 +86,12 @@ export function librarySeo(library?: StrapiLibraryEntry) {
       description,
       url,
       image,
-      ...(username ? { author: { '@type': 'Person', name: displayName } } : {}),
+      // The library is credited to its owner by name, the same name the page
+      // carries in its Author panel, so the signature a reader sees and the one
+      // a crawler reads are one statement.
+      ...(username
+        ? { author: ownerPerson(username), creator: ownerPerson(username) }
+        : {}),
       isPartOf: {
         '@type': 'WebSite',
         name: 'KeepSimple',
@@ -185,7 +191,10 @@ export function objectSeo(
         ? {
             review: {
               '@type': 'Review',
-              author: { '@type': 'Person', name: owner },
+              author: ownerPerson(base.username) ?? {
+                '@type': 'Person',
+                name: owner,
+              },
               ...(note ? { reviewBody: clamp(note, 5000) } : {}),
               ...(typeof rating === 'number'
                 ? {

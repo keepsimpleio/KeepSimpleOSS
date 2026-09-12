@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { JSX } from 'react';
 
+import { ownerDisplayName } from '@lib/library/credit';
 import { libraryPath } from '@lib/library/libraryPath';
 
 import LibraryMark from '@icons/navbar/library.svg';
@@ -93,7 +94,9 @@ export function LibraryCard(props: LibraryCardProps): JSX.Element {
           className={styles.title}
           variant={TypographyVariant.SubtitleSecondaryAlt}
         >
-          {username || libraryName}
+          {/* The owner's name where one is known, the address otherwise, so a
+              tile credits a library the way its own page does. */}
+          {ownerDisplayName(username) || libraryName}
         </Text>
       </div>
 

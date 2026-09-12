@@ -534,12 +534,32 @@ the owner's own view arrives without the shelves blinking out.
 - A dialog cannot be server-rendered: `Modal` returns null where there is no
   document, and the browser opens it on arrival. Any new portal follows that
   rule or it takes the whole response down at an object's address.
-- `/library-sitemap.xml` lists every public library and every object on a
-  public shelf. Strapi's own sitemap plugin does not know these URLs: on
-  2026-09-10 not one of them was in it. `public/robots.txt` names both
+- `/library-sitemap.xml` lists the libraries offered to search and every object
+  on a public shelf of one. Strapi's own sitemap plugin does not know these
+  URLs: on 2026-09-10 not one of them was in it. `public/robots.txt` names both
   sitemaps, but the file served on keepsimple.io is not this one (it carries a
   line the repo never had), so a robots change reaches production only through
   The Order.
+
+## Which library search is offered, and who a library is credited to
+
+Wolf's decision of 2026-09-12: his library is the one offered to search.
+`src/lib/library/credit.ts` holds that list and nothing else decides it.
+
+- A library named there is listed in `/library-sitemap.xml` and its pages carry
+  `index, follow`. Every other library is left out of the sitemap and answers
+  `noindex, nofollow` through `SeoGenerator`'s `noIndex`, which changes the
+  robots line and no other tag: the page a reader opens from a shared link is
+  unchanged. Offering one more library to search is one entry in that file.
+- The gate reads the address, not the library the server managed to load. A
+  failed CMS read must never make a library indexable by accident.
+- The same file names the owner: `/library/wolf` is signed Wolf Alexanyan on
+  the page (the panel's Author line, the library card on `/library`, the line
+  above a book's note) and in the schema.org `author` and `creator`, which
+  carry the name and the library's own URL. The signature a reader sees and the
+  credit search records are one statement, never hidden text for crawlers.
+- `yarn check:library:seo` covers all of it: the list, the display names, the
+  Person entry and both robots lines.
 
 ### Library object article design passport
 

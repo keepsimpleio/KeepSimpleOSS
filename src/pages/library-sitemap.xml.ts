@@ -3,6 +3,7 @@ import type { GetServerSideProps } from 'next';
 
 import type { StrapiLibrariesResponse } from '@local-types/library/library';
 
+import { isSearchableLibrary } from '@lib/library/credit';
 import { libraryPath } from '@lib/library/libraryPath';
 import { objectSlug } from '@lib/library/objectSlug';
 
@@ -17,6 +18,10 @@ import { objectSlug } from '@lib/library/objectSlug';
  *
  * Public only, and public in the same sense the pages are: a private shelf is
  * left out, and so is everything standing on it.
+ *
+ * Offered, not merely public: since 2026-09-12 only the libraries named in
+ * `isSearchableLibrary` are listed here, and the rest carry `noindex` on their
+ * own pages. A library left out is still open to anyone holding its link.
  */
 
 const ORIGIN = 'https://keepsimple.io';
@@ -65,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
       for (const library of data.data) {
         const username = library.attributes.user?.data?.attributes.username;
 
-        if (!username) continue;
+        if (!username || !isSearchableLibrary(username)) continue;
 
         const path = libraryPath(username);
         const shelves = (library.attributes.singleShelves?.data ?? []).filter(

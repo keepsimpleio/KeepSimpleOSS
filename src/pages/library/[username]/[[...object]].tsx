@@ -7,6 +7,7 @@ import type { StrapiLibraryEntry } from '@local-types/library/library';
 import type { IObject } from '@local-types/library/object';
 import type { LibraryTag } from '@local-types/library/tag';
 
+import { isSearchableLibrary } from '@lib/library/credit';
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 import { librarySeo, objectSeo } from '@lib/library/seo';
 import { readSidebarCollapsedForRequest } from '@lib/library/sidebarPanel';
@@ -41,6 +42,12 @@ type LibraryPageProps = {
   objectMeta: ReturnType<typeof objectSeo> | null;
   /** The shelf it stands on. */
   objectShelf: string | null;
+  /**
+   * Whether this library is offered to search. Only the libraries named in
+   * `isSearchableLibrary` are; the rest stay open to anyone with the link and
+   * tell a crawler to pass (Wolf, 2026-09-12).
+   */
+  searchable: boolean;
 };
 
 // Optional catch-all so the library and a single object share one page module:
@@ -60,6 +67,7 @@ const LibraryPage: NextPage<LibraryPageProps> = ({
   object,
   objectMeta,
   objectShelf,
+  searchable,
 }) => {
   // At a book's address the page is that book: its own title, its own
   // description, its own cover and its own schema.org entry. Without this all
@@ -78,6 +86,7 @@ const LibraryPage: NextPage<LibraryPageProps> = ({
           <ShareSelectionProvider>
             <SeoGenerator
               schemaOverride={meta.schema}
+              noIndex={!searchable}
               largeImage
               imageWidth={meta.imageWidth ?? undefined}
               imageHeight={meta.imageHeight ?? undefined}
@@ -182,6 +191,9 @@ export const getServerSideProps: GetServerSideProps<
       object: standing?.entry ?? null,
       objectShelf: standing?.shelf ?? null,
       objectMeta: standing ? objectSeo(standing.entry, seo) : null,
+      // The address decides it, not the library the server managed to read: a
+      // library that failed to load must not become indexable by accident.
+      searchable: isSearchableLibrary(seo.username ?? username),
     },
   };
 };
