@@ -17,6 +17,7 @@ import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import useLibraryEditing from '@hooks/library/useLibraryEditing';
 import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
+import { ownerDisplayName } from '@lib/library/credit';
 import { libraryPath } from '@lib/library/libraryPath';
 import { richTextLength } from '@lib/library/richText';
 
@@ -145,9 +146,15 @@ export function Sidebar() {
 
   // The public owner profile supplies the same identity and photo to every visitor.
   const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
-  const authorName = canEdit
-    ? accountData?.username || currentOwner?.username || 'Anonymous'
-    : currentOwner?.username || slugName || 'Anonymous';
+  // Signed with the owner's name, not their address: the panel, the page title
+  // and the schema.org author now read the same words, so the credit a visitor
+  // sees is the credit search records.
+  const authorName =
+    ownerDisplayName(
+      canEdit
+        ? accountData?.username || currentOwner?.username
+        : currentOwner?.username || slugName,
+    ) || 'Anonymous';
   const authorAvatarUrl =
     resolveStrapiUrl(currentOwner?.avatar) ??
     resolveStrapiUrl(currentOwner?.picture) ??
