@@ -1,10 +1,13 @@
 export const DEFAULT_SEO = {
-  title: 'KeepSimple Library',
+  title: 'KeepSimple Library | What people read, and why',
   description:
-    'This is where KeepSimple team members and friends share what they’ve read and watched - books, videos, and ideas worth spreading.',
+    'Libraries built by readers: books, videos and talks, each with the note that explains why it mattered. Open your own and give it a public address.',
   siteName: 'KeepSimple Library',
   url: 'https://keepsimple.io/library',
   image: 'https://keepsimple.io/keepsimple_/assets/library/library.png',
+  // The title reads as a search result, not as alt text; a shared card needs
+  // its own short line.
+  imageAlt: 'The KeepSimple Library',
   favicon: '/favicon.ico',
   type: 'website',
   locale: 'en_US',

@@ -24,12 +24,13 @@ export function AboutLibraryModal(props: AboutLibraryModalProps): JSX.Element {
           Welcome to the Library
         </Text>
         <Text className={styles.text} variant={TypographyVariant.TextRegular}>
-          This is where KeepSimple team members and friends share what they’ve
-          read and watched - books, videos, and ideas worth spreading.
+          This is where readers keep what they’ve read, watched and listened to:
+          books, videos, and ideas worth passing on.
         </Text>
         <Text className={styles.text} variant={TypographyVariant.TextRegular}>
           The goal is to capture knowledge precisely: with descriptions,
-          meaningful order, and clear labels. Want your own Library?
+          meaningful order, and clear labels. Anyone can open one, at an address
+          of their own. Want yours?
         </Text>
       </div>
       <div className={styles.footer}>

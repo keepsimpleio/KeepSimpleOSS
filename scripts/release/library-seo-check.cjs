@@ -29,6 +29,8 @@ function load(file, mocks = {}) {
           return load(`src/constants/${id.slice(11)}.ts`, mocks);
         if (id.startsWith('@lib/'))
           return load(`src/lib/${id.slice(5)}.ts`, mocks);
+        if (id.startsWith('@utils/'))
+          return load(`src/utils/${id.slice(7)}.ts`, mocks);
         if (id.startsWith('.'))
           return load(path.resolve(path.dirname(file), `${id}.ts`), mocks);
         return require(id);
@@ -78,7 +80,7 @@ async function main() {
   assert.equal(seo.title, "Reader's Library | KeepSimple");
   assert.equal(
     seo.description,
-    "Reader's personal library. Includes personal notes and precise recommendations.",
+    "Reader's library on KeepSimple: the books, videos and talks worth keeping, each with the note that explains why.",
   );
   assert.equal(seo.schema.description, seo.description);
   assert.equal(seo.schema.image, seo.image);
@@ -96,7 +98,7 @@ async function main() {
   assert.equal(wolf.title, "Wolf Alexanyan's Library | Collected since 2007");
   assert.equal(
     wolf.description,
-    "Wolf Alexanyan's personal library, collected since 2007. Includes personal notes and precise recommendations.",
+    "Wolf Alexanyan's library on KeepSimple, collected since 2007: the books, videos and talks worth keeping, each with the note that explains why.",
   );
   assert(wolf.image.endsWith('/wolf-library-v1.png'));
   const originalDomain = process.env.NEXT_PUBLIC_DOMAIN;
@@ -205,7 +207,9 @@ async function main() {
     },
   });
   assert.equal((await api.getPublicLibrarySeo('reader')).title, seo.title);
-  assert.equal(calls.length, 2);
+  // One read finds the id, one reads the library, one reads its tags: the
+  // metadata now rides on the same view the page itself is built from.
+  assert.equal(calls.length, 3);
   const Generator = load('src/components/SeoGenerator/SeoGenerator.tsx', {
     'next/head': ({ children }) =>
       React.createElement(React.Fragment, null, children),
