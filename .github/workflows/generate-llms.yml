@@ -48,7 +48,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add public/keepsimple_/
+          git add public/llms.txt public/llms-full.txt public/llms-full-pages/
           if ! git diff --cached --quiet; then
             git commit -m "chore: regenerate llms pages"
             git push

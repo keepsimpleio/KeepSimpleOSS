@@ -540,6 +540,14 @@ the owner's own view arrives without the shelves blinking out.
   sitemaps, but the file served on keepsimple.io is not this one (it carries a
   line the repo never had), so a robots change reaches production only through
   The Order.
+- `/llms.txt` and `/llms-full.txt` carry the Library the same way: the hub's
+  line, and one line per public library, expanded from the same anonymous
+  read the sitemap makes. Individual objects are left out on purpose. They
+  are a reader's own notes, they change daily, and the file is committed to a
+  public repository. Both files are written by `scripts/generate-llms.ts`,
+  which reads the live CMS and names production addresses regardless of the
+  env file the run picked up; `LLMS_STRAPI_URL` and `LLMS_BASE_URL` override
+  both when a run has to point elsewhere.
 
 ### Library object article design passport
 

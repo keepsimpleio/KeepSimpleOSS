@@ -8,18 +8,25 @@ dotenv.config({ path: path.join(process.cwd(), '.env'), override: true });
 dotenv.config({ path: path.join(process.cwd(), '.env.local'), override: true });
 
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
-const OUTPUT_DIR = path.join(
-  PUBLIC_DIR,
-  'keepsimple_',
-  'llms-full-pages',
-  'article',
-);
+// public/ was flattened when UXCoreOSS was folded in: the files a visitor and
+// a crawler reach at /llms-full-pages/... are the ones at the root of public/,
+// and `next.config.js` only rewrites /keepsimple_/:path* onto them. Writing
+// under public/keepsimple_/ produced a second copy nothing served, which is
+// why the published dump stood still from May.
+const OUTPUT_DIR = path.join(PUBLIC_DIR, 'llms-full-pages', 'article');
+// These files are published for machines that will visit the addresses they
+// name, so they name the live site and read the CMS that serves it.
+// NEXT_PUBLIC_DOMAIN and STRAPI_URL follow whichever env file the run picked
+// up: the committed dump carried staging URLs for months because of it.
 const SITE_BASE_URL = (
-  process.env.NEXT_PUBLIC_DOMAIN || 'https://keepsimple.io'
+  process.env.LLMS_BASE_URL || 'https://keepsimple.io'
 ).replace(/\/+$/, '');
 
 const STRAPI_BASE =
-  process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI || '';
+  process.env.LLMS_STRAPI_URL ||
+  process.env.STRAPI_URL ||
+  process.env.NEXT_PUBLIC_STRAPI ||
+  '';
 
 // ─────────────────────────────────────────────
 // Helpers

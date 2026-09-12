@@ -16,7 +16,7 @@
    Locale prefixes (/ru, /hy) are stripped before matching, so the
    identity is independent of the visitor's UI language.
 
-   Page descriptions come from `public/keepsimple_/llms.txt` whenever
+   Page descriptions come from `public/llms.txt` whenever
    that file has an entry for the path — same source the site already
    ships for AI crawlers and the same wording the team curates. The
    hand-coded blurbs in this file are the fallback for paths the
@@ -139,6 +139,19 @@ const EXACT_DEFS: Array<[string, ExactEntry]> = [
         'Pyramids — our modular management framework for remote-first software teams. Less Scrum theatre, more decisions and ownership.',
       blurbRu:
         'Pyramids — наш модульный фреймворк менеджмента для удалённых софтверных команд. Меньше скрам-театра, больше решений и владения.',
+    },
+  ],
+  [
+    '/library',
+    {
+      nameEn: 'KeepSimple Library',
+      nameRu: 'KeepSimple Library',
+      project: 'keepsimple',
+      kind: 'project-home',
+      blurbEn:
+        'The Library index — every public library on KeepSimple, each one a reader keeping books, videos and talks with their own note on each. Anyone with an account can open one.',
+      blurbRu:
+        'Индекс Библиотеки — все публичные библиотеки на KeepSimple. Каждая принадлежит читателю: книги, видео и записи с личной заметкой к каждой. Завести свою может любой с аккаунтом.',
     },
   ],
   [
@@ -316,7 +329,7 @@ const UXCAT_SUB_NAMES: Record<string, [string, string]> = {
 };
 
 /* Lazy-loaded URL → canonical description map sourced from
-   `public/keepsimple_/llms.txt`. Read once at first access, then
+   `public/llms.txt`. Read once at first access, then
    served from memory. File missing or unreadable → empty map (hand-
    coded blurbs below stay as the fallback). */
 let llmsDescriptions: Map<string, string> | null = null;
@@ -325,12 +338,10 @@ function loadLlmsDescriptions(): Map<string, string> {
   if (llmsDescriptions) return llmsDescriptions;
   const map = new Map<string, string>();
   try {
-    const filePath = path.join(
-      process.cwd(),
-      'public',
-      'keepsimple_',
-      'llms.txt',
-    );
+    // public/ was flattened when UXCoreOSS was folded in. The file under
+    // public/keepsimple_/ stopped existing then, so this map has been empty
+    // ever since and every page fell through to the hand-coded blurbs.
+    const filePath = path.join(process.cwd(), 'public', 'llms.txt');
     const raw = fs.readFileSync(filePath, 'utf-8');
     /* Each entry looks like:
          - [Title](https://keepsimple.io/path/here): one-line description
@@ -460,6 +471,40 @@ export function resolvePageIdentity(input?: string | null): PageIdentity {
         "A long-form keepsimple article on cognitive science, product, or project management. You do NOT know which article; refer to it as 'this article'.",
       blurbRu:
         "Длинный текст keepsimple про когнитивную науку, продукт или менеджмент. Какая именно статья — НЕИЗВЕСТНО; называйте 'эта статья'.",
+      known: true,
+    };
+  }
+
+  /* A reader's library: /library/<username>, one object inside it at
+     /library/<username>/<slug>, and a shared selection at
+     /library/<username>/share/<token>. The owner is in the address, so
+     the visitor's location is always nameable. llms.txt carries the
+     library's own line; an object's title is not derived here because
+     the slug ends in the object's id. */
+  if (/^\/library\/[^/]+/.test(canonicalPath)) {
+    const [, , username, second] = canonicalPath.split('/');
+    const owner = username === 'wolf' ? 'Wolf Alexanyan' : username;
+    const shared = second === 'share';
+    const object = !!second && !shared;
+
+    return {
+      canonicalPath,
+      locale,
+      nameEn: `${owner}'s Library`,
+      nameRu: `библиотека ${owner}`,
+      project: 'keepsimple',
+      kind: 'project-sub',
+      blurbEn: object
+        ? `One book, video or talk inside ${owner}'s Library, with ${owner}'s own note and rating on it. You do NOT know which one; refer to it as "this entry".`
+        : shared
+          ? `A selection ${owner} shared from their Library on KeepSimple.`
+          : (llmsDesc ??
+            `${owner}'s library on KeepSimple: what they read, watched and listened to, each entry carrying their own note.`),
+      blurbRu: object
+        ? `Одна книга, видео или запись в библиотеке ${owner}, с его заметкой и оценкой. Какая именно — НЕИЗВЕСТНО; называйте «эта запись».`
+        : shared
+          ? `Подборка, которой ${owner} поделился из своей библиотеки на KeepSimple.`
+          : `Библиотека ${owner} на KeepSimple: прочитанное, просмотренное и прослушанное, с личными заметками к каждой записи.`,
       known: true,
     };
   }
