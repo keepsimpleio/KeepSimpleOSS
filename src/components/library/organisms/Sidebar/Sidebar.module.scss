@@ -34,6 +34,8 @@
     // drawer's own top controls aren't hidden beneath it when open.
     z-index: 130;
     transform: translateX(100%);
+    // The host that clips it passes taps through; the panel itself takes them.
+    pointer-events: auto;
   }
 
   @media (max-width: 768px) {
@@ -210,6 +212,12 @@
   }
 }
 
+// Host for the panel. On desktop it is transparent to layout, so the panel
+// stays a flex item of the dashboard row exactly as before.
+.drawerHost {
+  display: contents;
+}
+
 // Edge tab that opens the drawer — mobile only. A half-pill anchored to the
 // right edge, vertically centered so it clears both the fixed header (top) and
 // the share-selection bar (bottom).
@@ -223,6 +231,25 @@
 }
 
 @media (max-width: 1024px) {
+  // The closed drawer parks itself one screen-width to the right. A fixed box
+  // sitting outside the right edge still counts towards the page's scrollable
+  // width in Safari, so every library page measured about two screens wide on a
+  // phone: blocks laid out at that width, text was cut off at the screen edge,
+  // and the page scrolled sideways. This host is fixed, viewport-sized and
+  // paint-contained, which makes it the containing block for the panel and
+  // clips it — the parked drawer no longer widens the page, and only the
+  // vertical scroll remains. It must not swallow taps meant for the page
+  // behind it, hence pointer-events.
+  .drawerHost {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 130;
+    overflow: hidden;
+    contain: paint;
+    pointer-events: none;
+  }
+
   .openTab {
     position: fixed;
     top: 50%;
@@ -261,5 +288,18 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+// Readers who ask the system for less motion get the panel and the copy
+// feedback as state changes, not as movement.
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar .copyButton {
+    transition: none;
+  }
+
+  .sidebar .copied {
+    animation: none;
   }
 }

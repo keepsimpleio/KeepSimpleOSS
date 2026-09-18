@@ -349,204 +349,209 @@ export function Sidebar() {
           aria-hidden="true"
         />
       )}
-      <aside
-        className={classNames(styles.sidebar, {
-          [styles.open]: isSidebarOpen,
-        })}
-      >
-        <div className={styles.close}>
-          <Button
-            onClick={toggleSidebar}
-            type={ButtonType.Text}
-            size={ButtonSize.Default}
-            ariaLabel="Close"
-            Icon={<CloseIcon />}
-          />
-        </div>
-
-        <div className={styles.dropdownWrapper}>
-          <Dropdown
-            options={dropdownOptions}
-            value={selectedLibraryId}
-            onChange={handleLibraryChange}
-            placeholder="Select library"
-            ariaLabel="Select library"
-            className={styles.dropdown}
-          />
-        </div>
-
-        <div className={styles.main}>
-          <div className={styles.about}>
-            <div className={styles.header}>
-              <Text className={styles.label}>About</Text>
-              {canEditLibrary && (
-                <Button
-                  label="Edit"
-                  onClick={() => setIsEditLibraryOpen(true)}
-                  type={ButtonType.Secondary}
-                  size={ButtonSize.Default}
-                  ariaLabel="Edit library"
-                  Icon={<EditIcon />}
-                  className={styles.button}
-                  labelClassName={styles.text}
-                />
-              )}
-            </div>
-
-            <div className={styles.content}>
-              <div>
-                <Text className={styles.label}>
-                  {currentLibrary?.attributes.libraryDetails?.aboutLibrary ??
-                    ''}
-                </Text>
-              </div>
-              {aboutLibraryText && <div className={styles.divider} />}
-
-              <div className={styles.totalObjects}>
-                <Text className={styles.label}>Total objects:</Text>
-                <div className={styles.objects}>
-                  <Object
-                    className={styles.count}
-                    type={ObjectType.Book}
-                    number={bookCount}
-                    noBorder
-                  />
-                  <Object
-                    className={styles.count}
-                    type={ObjectType.Video}
-                    number={videoCount}
-                    noBorder
-                  />
-                  <Object
-                    className={styles.count}
-                    type={ObjectType.Audio}
-                    number={songCount}
-                    noBorder
-                  />
-                </div>
-              </div>
-            </div>
+      {/* The host is `display: contents` on desktop and a clipping layer on the
+          drawer breakpoints, so the panel parked off the right edge stops
+          stretching the page sideways on a phone. */}
+      <div className={styles.drawerHost}>
+        <aside
+          className={classNames(styles.sidebar, {
+            [styles.open]: isSidebarOpen,
+          })}
+        >
+          <div className={styles.close}>
+            <Button
+              onClick={toggleSidebar}
+              type={ButtonType.Text}
+              size={ButtonSize.Default}
+              ariaLabel="Close"
+              Icon={<CloseIcon />}
+            />
           </div>
 
-          <div className={styles.about}>
-            <div className={styles.header}>
-              <Text className={styles.label}>Author</Text>
-            </div>
-
-            <div className={styles.content}>
-              <div className={styles.avatar}>
-                <Avatar
-                  url={authorAvatarUrl ?? avatarImage}
-                  className={styles.avatarImage}
-                />
-                <Text
-                  className={styles.name}
-                  variant={TypographyVariant.TextBaseBold}
-                >
-                  {authorName}
-                </Text>
-              </div>
-              <Text className={styles.text}>
-                {aboutAuthorText || 'No bio yet.'}
-              </Text>
-            </div>
+          <div className={styles.dropdownWrapper}>
+            <Dropdown
+              options={dropdownOptions}
+              value={selectedLibraryId}
+              onChange={handleLibraryChange}
+              placeholder="Select library"
+              ariaLabel="Select library"
+              className={styles.dropdown}
+            />
           </div>
 
-          <div className={styles.about}>
-            <div className={styles.header}>
-              <Text className={styles.label}>Tags</Text>
-              {canEdit && displayedTags.length > 0 && (
-                <Button
-                  label="Edit"
-                  ariaLabel="Edit"
-                  onClick={() => {
-                    setIsOpenTagModal('edit');
-                  }}
-                  type={ButtonType.Secondary}
-                  size={ButtonSize.Default}
-                  Icon={<EditIcon />}
-                  className={styles.button}
-                  labelClassName={styles.text}
-                />
-              )}
-            </div>
-            <div className={styles.content}>
-              <div
-                className={classNames(styles.tags, {
-                  [styles.tagsEmpty]: displayedTags.length === 0,
-                })}
-              >
-                {displayedTags.length === 0 && (
-                  <Text className={styles.emptyTags}>No tags yet.</Text>
-                )}
-                {displayedTags.map(tag => (
-                  <Tag key={tag.name} label={tag.name} color={tag.color} />
-                ))}
-                {canEdit && (
+          <div className={styles.main}>
+            <div className={styles.about}>
+              <div className={styles.header}>
+                <Text className={styles.label}>About</Text>
+                {canEditLibrary && (
                   <Button
-                    label="Create Tag"
-                    ariaLabel="Create Tag"
-                    onClick={() => setIsOpenTagModal('create')}
-                    type={ButtonType.Text}
+                    label="Edit"
+                    onClick={() => setIsEditLibraryOpen(true)}
+                    type={ButtonType.Secondary}
                     size={ButtonSize.Default}
-                    Icon={<PlusIcon />}
-                    iconPosition={IconPosition.Right}
+                    ariaLabel="Edit library"
+                    Icon={<EditIcon />}
                     className={styles.button}
                     labelClassName={styles.text}
                   />
                 )}
               </div>
-            </div>
-          </div>
 
-          <div className={styles.about}>
-            <div className={styles.header}>
-              <Text className={styles.label}>
-                Share (Including selected objects)
-              </Text>
+              <div className={styles.content}>
+                <div>
+                  <Text className={styles.label}>
+                    {currentLibrary?.attributes.libraryDetails?.aboutLibrary ??
+                      ''}
+                  </Text>
+                </div>
+                {aboutLibraryText && <div className={styles.divider} />}
+
+                <div className={styles.totalObjects}>
+                  <Text className={styles.label}>Total objects:</Text>
+                  <div className={styles.objects}>
+                    <Object
+                      className={styles.count}
+                      type={ObjectType.Book}
+                      number={bookCount}
+                      noBorder
+                    />
+                    <Object
+                      className={styles.count}
+                      type={ObjectType.Video}
+                      number={videoCount}
+                      noBorder
+                    />
+                    <Object
+                      className={styles.count}
+                      type={ObjectType.Audio}
+                      number={songCount}
+                      noBorder
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className={styles.content}>
-              <div className={styles.shareInputContainer}>
-                <Input
-                  type="text"
-                  value={shareUrl}
-                  placeholder=""
-                  onChange={() => {}}
-                  disabled
-                  wrapperClassName={styles.shareInputWrapper}
-                  className={styles.shareInput}
-                  ariaLabel="Share URL"
-                />
-                <Tooltip
-                  place="top"
-                  tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}
-                >
+
+            <div className={styles.about}>
+              <div className={styles.header}>
+                <Text className={styles.label}>Author</Text>
+              </div>
+
+              <div className={styles.content}>
+                <div className={styles.avatar}>
+                  <Avatar
+                    url={authorAvatarUrl ?? avatarImage}
+                    className={styles.avatarImage}
+                  />
+                  <Text
+                    className={styles.name}
+                    variant={TypographyVariant.TextBaseBold}
+                  >
+                    {authorName}
+                  </Text>
+                </div>
+                <Text className={styles.text}>
+                  {aboutAuthorText || 'No bio yet.'}
+                </Text>
+              </div>
+            </div>
+
+            <div className={styles.about}>
+              <div className={styles.header}>
+                <Text className={styles.label}>Tags</Text>
+                {canEdit && displayedTags.length > 0 && (
                   <Button
-                    label=""
-                    onClick={handleCopyUrl}
+                    label="Edit"
+                    ariaLabel="Edit"
+                    onClick={() => {
+                      setIsOpenTagModal('edit');
+                    }}
                     type={ButtonType.Secondary}
                     size={ButtonSize.Default}
-                    ariaLabel="Copy URL"
-                    Icon={<CopyIcon />}
-                    className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
+                    Icon={<EditIcon />}
+                    className={styles.button}
+                    labelClassName={styles.text}
                   />
-                </Tooltip>
+                )}
+              </div>
+              <div className={styles.content}>
+                <div
+                  className={classNames(styles.tags, {
+                    [styles.tagsEmpty]: displayedTags.length === 0,
+                  })}
+                >
+                  {displayedTags.length === 0 && (
+                    <Text className={styles.emptyTags}>No tags yet.</Text>
+                  )}
+                  {displayedTags.map(tag => (
+                    <Tag key={tag.name} label={tag.name} color={tag.color} />
+                  ))}
+                  {canEdit && (
+                    <Button
+                      label="Create Tag"
+                      ariaLabel="Create Tag"
+                      onClick={() => setIsOpenTagModal('create')}
+                      type={ButtonType.Text}
+                      size={ButtonSize.Default}
+                      Icon={<PlusIcon />}
+                      iconPosition={IconPosition.Right}
+                      className={styles.button}
+                      labelClassName={styles.text}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.about}>
+              <div className={styles.header}>
+                <Text className={styles.label}>
+                  Share (Including selected objects)
+                </Text>
+              </div>
+              <div className={styles.content}>
+                <div className={styles.shareInputContainer}>
+                  <Input
+                    type="text"
+                    value={shareUrl}
+                    placeholder=""
+                    onChange={() => {}}
+                    disabled
+                    wrapperClassName={styles.shareInputWrapper}
+                    className={styles.shareInput}
+                    ariaLabel="Share URL"
+                  />
+                  <Tooltip
+                    place="top"
+                    tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}
+                  >
+                    <Button
+                      label=""
+                      onClick={handleCopyUrl}
+                      type={ButtonType.Secondary}
+                      size={ButtonSize.Default}
+                      ariaLabel="Copy URL"
+                      Icon={<CopyIcon />}
+                      className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
+                    />
+                  </Tooltip>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {isMyLibrary && (
-          <div className={styles.footer}>
-            <Text className={styles.label}>Guest mode</Text>
-            <Toggle
-              checked={isGuestMode}
-              onChange={toggleGuestMode}
-              ariaLabel="Guest mode"
-            />
-          </div>
-        )}
-      </aside>
+          {isMyLibrary && (
+            <div className={styles.footer}>
+              <Text className={styles.label}>Guest mode</Text>
+              <Toggle
+                checked={isGuestMode}
+                onChange={toggleGuestMode}
+                ariaLabel="Guest mode"
+              />
+            </div>
+          )}
+        </aside>
+      </div>
       {isOpenTagModal && (
         <CreateTagModal
           isEdit={isOpenTagModal === 'edit'}
