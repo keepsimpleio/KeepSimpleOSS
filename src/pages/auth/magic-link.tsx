@@ -8,9 +8,9 @@ import { consumeMagicLink, storeJwtSession } from '@api/auth';
 
 import auth from '@data/auth';
 
+import AuthLoader from '@components/AuthLoader';
 import { GlobalContext } from '@components/Context/GlobalContext';
 import MagicLinkProfileForm from '@components/MagicLinkProfileForm';
-import Spinner from '@components/Spinner';
 
 import styles from './magic-link.module.scss';
 
@@ -125,7 +125,7 @@ const MagicLinkConsumePage: FC = () => {
   ]);
 
   if (state.kind === 'loading') {
-    return <Spinner visible />;
+    return <AuthLoader />;
   }
 
   if (state.kind === 'profile') {
