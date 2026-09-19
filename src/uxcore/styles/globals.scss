@@ -7,6 +7,9 @@ html {
 html {
   overflow-y: overlay;
   overflow-x: hidden;
+  // Keeps the body gradient below from tiling into grey bands on a short
+  // document — it is propagated to the canvas but sized against this box.
+  min-height: 100%;
   // Reserve the scrollbar gutter at all times so modals (which set
   // overflow-y: hidden on <html>) do not cause the page to jump sideways
   // when the scrollbar disappears.
@@ -41,7 +44,8 @@ html.scroll-style-articles::-webkit-scrollbar-thumb {
 }
 
 body {
-  background: linear-gradient(180deg, #f9fafb 0%, #e8e8e8 100%), #f9fafb;
+  background: linear-gradient(180deg, #f9fafb 0%, #e8e8e8 100%) no-repeat
+    #f9fafb;
   color: #252626;
 
   ol {
@@ -53,7 +57,8 @@ body {
 }
 
 body.darkTheme {
-  background: linear-gradient(180deg, #1b1e26 0%, #151a26 100%), #1b1e26;
+  background: linear-gradient(180deg, #1b1e26 0%, #151a26 100%) no-repeat
+    #1b1e26;
   color: #dadada;
 
   // Default divider on the dark site — used by modals (Our Projects etc.)

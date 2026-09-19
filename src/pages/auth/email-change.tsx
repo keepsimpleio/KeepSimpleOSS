@@ -6,8 +6,8 @@ import { getMyInfo } from '@api/strapi';
 
 import auth from '@data/auth';
 
+import AuthLoader from '@components/AuthLoader';
 import { GlobalContext } from '@components/Context/GlobalContext';
-import Spinner from '@components/Spinner';
 
 import styles from './magic-link.module.scss';
 
@@ -103,7 +103,7 @@ const EmailChangeConfirmPage: FC = () => {
   }, [router, router.isReady, router.query.token, setAccountData]);
 
   if (state.kind === 'loading') {
-    return <Spinner visible />;
+    return <AuthLoader />;
   }
 
   const view = (() => {

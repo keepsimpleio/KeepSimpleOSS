@@ -6,14 +6,13 @@ import { deleteRedirectCookie, getRedirectCookie } from '@lib/cookies';
 
 import { authenticate } from '@api/auth';
 
+import AuthLoader from '@components/AuthLoader';
 import { GlobalContext } from '@components/Context/GlobalContext';
-import Spinner from '@components/Spinner';
 
 const Auth: FC = () => {
   const { setAccountData, setToken } = useContext(GlobalContext);
   const { data, status } = useSession();
   const router = useRouter();
-  const isLoading = status === 'loading';
 
   useEffect(() => {
     if (router.query.provider) {
@@ -94,8 +93,10 @@ const Auth: FC = () => {
     }
   }, [router.query.provider]);
 
-  // Otherwise, show the spinner while authenticating
-  return isLoading || status === 'authenticated' ? <Spinner /> : null;
+  // This page exists only to bounce through the provider, so the cover stays up
+  // for every state it can be in — including `unauthenticated`, which fires
+  // signIn() and leaves the visitor here until the provider takes over.
+  return <AuthLoader />;
 };
 
 export default Auth;
