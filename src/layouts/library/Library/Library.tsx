@@ -1258,6 +1258,16 @@ export function LibraryTemplate({
       0,
     ) >= MAX_OBJECTS_PER_LIBRARY;
 
+  // A library with shelves but nothing on them leaves the owner staring at
+  // empty rows with no obvious next move, so every Add control pulses until
+  // the first object lands anywhere in the library (see `highlightAdd` on
+  // Shelf). Favorites is synthetic and holds nothing of its own, so it is not
+  // counted.
+  const isLibraryEmpty = useMemo(
+    () => shelves.every(s => (s.attributes.objects?.data?.length ?? 0) === 0),
+    [shelves],
+  );
+
   const renderShelf = (
     shelf: StrapiSingleShelfEntry,
     dragHandleProps?: ShelfDragHandleProps,
@@ -1285,6 +1295,7 @@ export function LibraryTemplate({
       dragHandleProps={dragHandleProps}
       isDragging={isDragging}
       magic={magicFor(shelf.id)}
+      highlightAdd={viewAsOwner && isLibraryEmpty}
     />
   );
 
@@ -1403,7 +1414,7 @@ export function LibraryTemplate({
               type={ButtonType.Primary}
               size={ButtonSize.Wide}
               ariaLabel="Add shelf"
-              className={styles.button}
+              className={classNames(styles.button, styles.pulse)}
             />
           )}
         </div>

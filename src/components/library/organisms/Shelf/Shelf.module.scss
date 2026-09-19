@@ -712,3 +712,28 @@
   cursor: grabbing;
   filter: drop-shadow(0 18px 24px rgba(60, 40, 24, 0.28));
 }
+
+// Fresh-library nudge: the header Add control breathes until the first object
+// lands anywhere in the library (Library passes `highlightAdd`). The control
+// has a transparent background, where a halo would paint a solid block behind
+// the label, so it breathes its opacity instead. It takes and gives up no space.
+.pulseText {
+  animation: add-pulse-fade 2.2s ease-in-out infinite;
+}
+
+@keyframes add-pulse-fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulseText {
+    animation: none;
+  }
+}

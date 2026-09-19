@@ -189,6 +189,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     visibleObjectIds = null,
     reorderLocked = false,
     onShelfVisibilityChanged,
+    highlightAdd = false,
     onObjectCreated,
     onObjectUpdated,
     onObjectDeleted,
@@ -305,6 +306,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // stops a doomed attempt and says which cap it hit.
   const shelfFull = objects.length >= MAX_OBJECTS_PER_SHELF;
   const atObjectLimit = shelfFull || libraryFull;
+
+  // Pulse the Add control only while it can actually be used: the viewer owns
+  // the library, the library is still empty, and the shelf has room.
+  const pulseAdd = isOwner && highlightAdd && !atObjectLimit;
   const fullMessage = shelfFull
     ? `${SHELF_FULL_MESSAGE} Delete an item to add a new one.`
     : LIBRARY_OBJECTS_FULL_MESSAGE;
@@ -1082,7 +1087,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 size={ButtonSize.Default}
                 Icon={<PlusIcon />}
                 iconPosition={IconPosition.Right}
-                className={styles.button}
+                className={classNames(styles.button, {
+                  [styles.pulseText]: pulseAdd,
+                })}
                 disabled={atObjectLimit}
               />
             </Tooltip>
