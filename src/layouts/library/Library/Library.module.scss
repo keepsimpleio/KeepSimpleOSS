@@ -235,3 +235,39 @@ $share-bar-height: 87px;
     transition: none;
   }
 }
+
+// The only Add control a brand-new library shows. It breathes a soft brown halo
+// so the single next step is impossible to miss; the ring grows outside the
+// button's own box, so nothing around it moves.
+.pulse {
+  animation: add-pulse 2.2s ease-in-out infinite;
+}
+
+// The button's own primary drop shadow repeats in every frame: an animated
+// box-shadow replaces the whole property, so leaving it out would flatten the
+// button for the length of the pulse.
+@keyframes add-pulse {
+  0% {
+    box-shadow:
+      0px 4px 6px 0px var(--black-transparent-100),
+      0 0 0 0 var(--brown);
+  }
+
+  60% {
+    box-shadow:
+      0px 4px 6px 0px var(--black-transparent-100),
+      0 0 0 12px transparent;
+  }
+
+  100% {
+    box-shadow:
+      0px 4px 6px 0px var(--black-transparent-100),
+      0 0 0 0 transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}
