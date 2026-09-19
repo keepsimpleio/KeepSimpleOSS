@@ -30,7 +30,10 @@ const ICON_VIEWBOX: Record<IconName, string> = {
   [IconName.Copy]: '0 0 16 16',
 };
 
-const SPRITE_URL = '/library/images/icons/all.svg';
+// The `v` query is a cache key: the sprite is a public static file the browser
+// caches hard, so a redrawn icon set never shows without a new URL. Bump it
+// whenever all.svg changes.
+const SPRITE_URL = '/library/images/icons/all.svg?v=2';
 const SPRITE_DOM_ID = 'library-icon-sprite';
 
 let spritePromise: Promise<void> | null = null;

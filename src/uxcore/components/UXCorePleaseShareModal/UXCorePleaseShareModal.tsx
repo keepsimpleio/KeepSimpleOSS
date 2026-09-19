@@ -1,17 +1,13 @@
+import Checkmark from '@uxcore/assets/icons/Checkmark';
+import CopyIcon from '@uxcore/assets/icons/CopyIcon';
+import sharePopupData from '@uxcore/data/sharePopupData';
+import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
-import { copyToClipboard, generateSocialLinks } from '@uxcore/lib/helpers';
-
-import sharePopupData from '@uxcore/data/sharePopupData';
-
-import Checkmark from '@uxcore/assets/icons/Checkmark';
-import CopyIcon from '@uxcore/assets/icons/CopyIcon';
 
 import styles from './UXCorePleaseShareModal.module.scss';
 
@@ -80,7 +76,7 @@ const UXCorePleaseShareModal: FC<UXCorePleaseShareModal> = ({ open }) => {
           <div className={styles.content}>
             <div className={styles.imageAndButton}>
               <Image
-                src="/assets/images/feedback/cat.svg"
+                src="/assets/images/feedback/cat-v2.webp"
                 alt="Cat's domeownation"
                 width={105}
                 height={113}

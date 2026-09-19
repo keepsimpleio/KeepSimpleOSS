@@ -1,4 +1,6 @@
 import classNames from 'classnames';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -7,6 +9,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+
+import type { HomeLibraryCardView } from '@local-types/library/library';
+
+import { libraryPath } from '@lib/library/libraryPath';
 
 import { LibraryInfoCard } from '@components/library/molecules/LibraryInfoCard';
 
@@ -34,6 +40,7 @@ function useMatchMedia(query: string) {
 
 interface HotspotProps {
   hotspot: CoverHotspot;
+  library?: HomeLibraryCardView;
   mode: HotspotMode;
   activeId: string | null;
   setActiveId: Dispatch<SetStateAction<string | null>>;
@@ -43,12 +50,14 @@ interface HotspotProps {
 
 function Hotspot({
   hotspot,
+  library,
   mode,
   activeId,
   setActiveId,
   isUltraWide,
   debug = false,
 }: HotspotProps) {
+  const router = useRouter();
   const { isActive, triggerProps } = useHotspotTrigger({
     id: hotspot.id,
     mode,
@@ -58,7 +67,11 @@ function Hotspot({
 
   // 768–1920px shows the wide artwork; 1920px+ swaps to the panorama, which
   // frames the buildings differently and so carries its own geometry.
-  const { library } = hotspot;
+  const label =
+    library?.libraryName ??
+    (hotspot.username
+      ? `${hotspot.username}'s library`
+      : 'Nothing but ghosts...');
   const { hit, highlight, card } = isUltraWide
     ? hotspot.ultraWide
     : hotspot.wide;
@@ -74,10 +87,15 @@ function Hotspot({
           width: `${hit.width}%`,
           height: hit.height ? `${hit.height}%` : undefined,
         }}
-        aria-label={library.libraryName}
+        aria-label={label}
         aria-pressed={mode === 'click' ? isActive : undefined}
         data-hotspot={debug ? hotspot.id : undefined}
         {...triggerProps}
+        onClick={
+          library && mode === 'hover'
+            ? () => router.push(libraryPath(library.username))
+            : triggerProps.onClick
+        }
       />
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -104,7 +122,31 @@ function Hotspot({
           top: `${card.top}%`,
         }}
       >
-        <LibraryInfoCard {...library} isActive={isActive} />
+        {library ? (
+          <Link
+            href={libraryPath(library.username)}
+            className={styles.libraryLink}
+            tabIndex={isActive ? 0 : -1}
+          >
+            <LibraryInfoCard
+              libraryName={label}
+              about={library?.description}
+              bookCount={library?.bookCount}
+              videoCount={library?.videoCount}
+              songCount={library?.songCount}
+              isActive={isActive}
+            />
+          </Link>
+        ) : (
+          <LibraryInfoCard
+            libraryName={label}
+            about={library?.description}
+            bookCount={library?.bookCount}
+            videoCount={library?.videoCount}
+            songCount={library?.songCount}
+            isActive={isActive}
+          />
+        )}
       </div>
     </>
   );
@@ -113,10 +155,13 @@ function Hotspot({
 export function InteractiveCover({
   src,
   wideSrc,
+  wideSrcSet,
   ultraWideSrc,
+  backgroundSrc,
   alt,
   mode = 'hover',
   className,
+  libraries = [],
 }: InteractiveCoverProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -170,11 +215,13 @@ export function InteractiveCover({
   return (
     <div ref={frameRef} className={classNames(styles.frame, className)}>
       {/* Blurred fill so the side gaps on viewports wider than the art read as
-          intentional. Decorative — the <picture> below carries the real alt. */}
+          intentional. Decorative — the <picture> below carries the real alt.
+          Uses the small backgroundSrc when given: the full art would otherwise
+          be fetched a second time only to be blurred. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className={styles.background}
-        src={ultraWideSrc ?? wideSrc ?? src}
+        src={backgroundSrc ?? src}
         alt=""
         aria-hidden
         draggable={false}
@@ -184,7 +231,13 @@ export function InteractiveCover({
         {ultraWideSrc && (
           <source media="(min-width: 1920px)" srcSet={ultraWideSrc} />
         )}
-        {wideSrc && <source media="(min-width: 768px)" srcSet={wideSrc} />}
+        {wideSrc && (
+          <source
+            media="(min-width: 768px)"
+            srcSet={wideSrcSet ?? wideSrc}
+            sizes={wideSrcSet ? 'min(100vw, 1920px)' : undefined}
+          />
+        )}
         <img
           className={styles.image}
           src={src}
@@ -206,6 +259,11 @@ export function InteractiveCover({
               <Hotspot
                 key={hotspot.id}
                 hotspot={hotspot}
+                library={libraries.find(
+                  library =>
+                    library.username?.toLowerCase() ===
+                    hotspot.username?.toLowerCase(),
+                )}
                 mode={mode}
                 activeId={activeId}
                 setActiveId={setActiveId}

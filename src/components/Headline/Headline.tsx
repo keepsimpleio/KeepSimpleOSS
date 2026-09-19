@@ -54,56 +54,101 @@ const Headline: FC<HeadlineProps> = ({ headline, darkTheme, russianView }) => {
   const desktopVideoDarkRef = useRef<HTMLVideoElement>(null);
   const mobileVideoDarkRef = useRef<HTMLVideoElement>(null);
 
+  // Each source is assigned to its <video> once per page life; the set keeps a
+  // theme flip or a viewport change from restarting a download.
+  const loadedVideos = useRef(new Set<string>());
+
   const loadVideo = useCallback(
     (
       ref: React.RefObject<HTMLVideoElement>,
       src: string,
       setReady: (v: boolean) => void,
+      onReady?: () => void,
     ) => {
       const video = ref.current;
-      if (!video) return;
+      if (!video || loadedVideos.current.has(src)) return;
+      loadedVideos.current.add(src);
       video.src = src;
       video.load();
       const onCanPlay = () => {
         setReady(true);
         video.removeEventListener('canplay', onCanPlay);
+        onReady?.();
       };
       video.addEventListener('canplay', onCanPlay);
     },
     [],
   );
 
+  // Only the video the visitor can see downloads first: the one matching the
+  // viewport (the 960px cut is the same one the stylesheet swaps containers
+  // at) and the current theme. Once it can play, the other theme for the same
+  // viewport follows in the background so a theme switch stays instant. The
+  // other viewport's videos never load unless the window crosses the cut.
+  // A visitor who prefers reduced motion gets no video at all: the still
+  // posters underneath are the hero, and nothing downloads.
+  // stability-passport: exempt the <video> elements are position: absolute
+  // inside containers sized by the stylesheet (inset: 0 on desktop, 100vw by
+  // 55vh on mobile) with the poster image holding the same box, so a video
+  // arriving late cannot move anything.
   useEffect(() => {
-    const handleLoad = () => {
-      loadVideo(
-        desktopVideoRef,
-        '/keepsimple_/assets/leaves.mp4',
-        setDesktopVideoReady,
-      );
-      loadVideo(
-        mobileVideoRef,
-        '/keepsimple_/assets/home-page/Mobile-Leaves-Compressed1.mp4',
-        setMobileVideoReady,
-      );
-      loadVideo(
-        desktopVideoDarkRef,
-        '/keepsimple_/assets/home-page/leaves-dark.mp4',
-        setDesktopVideoDarkReady,
-      );
-      loadVideo(
-        mobileVideoDarkRef,
-        '/keepsimple_/assets/home-page/leaves-mobile-dark.mp4',
-        setMobileVideoDarkReady,
-      );
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const slots = {
+      desktop: {
+        light: {
+          ref: desktopVideoRef,
+          src: '/keepsimple_/assets/leaves-v2.mp4',
+          setReady: setDesktopVideoReady,
+        },
+        dark: {
+          ref: desktopVideoDarkRef,
+          src: '/keepsimple_/assets/home-page/leaves-dark-v2.mp4',
+          setReady: setDesktopVideoDarkReady,
+        },
+      },
+      mobile: {
+        light: {
+          ref: mobileVideoRef,
+          src: '/keepsimple_/assets/home-page/Mobile-Leaves-Compressed1.mp4',
+          setReady: setMobileVideoReady,
+        },
+        dark: {
+          ref: mobileVideoDarkRef,
+          src: '/keepsimple_/assets/home-page/leaves-mobile-dark-v2.mp4',
+          setReady: setMobileVideoDarkReady,
+        },
+      },
+    };
+    const mobileQuery = window.matchMedia('(max-width: 960px)');
+
+    const loadForViewport = () => {
+      const viewport = mobileQuery.matches ? 'mobile' : 'desktop';
+      const visible = slots[viewport][darkTheme ? 'dark' : 'light'];
+      const hidden = slots[viewport][darkTheme ? 'light' : 'dark'];
+      const loadHidden = () =>
+        loadVideo(hidden.ref, hidden.src, hidden.setReady);
+
+      if (loadedVideos.current.has(visible.src)) {
+        loadHidden();
+      } else {
+        loadVideo(visible.ref, visible.src, visible.setReady, loadHidden);
+      }
     };
 
+    let loadListenerOn = false;
     if (document.readyState === 'complete') {
-      handleLoad();
+      loadForViewport();
     } else {
-      window.addEventListener('load', handleLoad);
-      return () => window.removeEventListener('load', handleLoad);
+      window.addEventListener('load', loadForViewport);
+      loadListenerOn = true;
     }
-  }, [loadVideo]);
+    mobileQuery.addEventListener('change', loadForViewport);
+
+    return () => {
+      if (loadListenerOn) window.removeEventListener('load', loadForViewport);
+      mobileQuery.removeEventListener('change', loadForViewport);
+    };
+  }, [darkTheme, loadVideo]);
 
   const serenityText = locale === 'ru' ? 'покой' : 'serenity mode';
   const exitSerenityText =

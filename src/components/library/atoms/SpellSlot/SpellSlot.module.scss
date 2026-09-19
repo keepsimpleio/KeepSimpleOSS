@@ -1,0 +1,157 @@
+// The empty place on the AI shelf. It is drawn in the accent alone, so it
+// reads the same way on paper and on night paper: strokes carry the lilac,
+// the face carries whatever sheet is under it.
+.slot {
+  position: relative;
+  flex: 0 0 auto;
+  width: 180px;
+  height: 208px;
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+// The sheet the seal is cut into.
+.face {
+  fill: var(--white-200);
+  opacity: 0.42;
+}
+
+.frame,
+.spine,
+.rules {
+  fill: none;
+  stroke: var(--purple-100);
+  stroke-linecap: round;
+}
+
+.frame {
+  stroke-width: 1;
+  opacity: 0.4;
+}
+
+.spine {
+  stroke-width: 1;
+  opacity: 0.24;
+}
+
+.rules {
+  stroke-width: 2;
+  opacity: 0.26;
+}
+
+.mark path {
+  fill: none;
+  stroke: var(--purple-100);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.star {
+  fill: var(--purple-100);
+  stroke: none;
+  opacity: 0.45;
+}
+
+// The light behind the seal. Idle it only breathes; each place breathes on
+// its own beat, so the row is never in step with itself.
+.glow {
+  position: absolute;
+  inset: 14% 10% 20% 18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    var(--purple-100) 0%,
+    transparent 68%
+  );
+  opacity: 0.09;
+  filter: blur(12px);
+  animation: spell-breathe 9s ease-in-out infinite;
+  animation-delay: calc(var(--slot, 0) * 0.42s);
+}
+
+// The engine at work: the light runs down the row, one place a beat after
+// the last, and the marks come up with it.
+.working {
+  .glow {
+    animation: spell-cast 1.9s ease-in-out infinite;
+    animation-delay: calc(var(--slot, 0) * 0.12s);
+  }
+
+  .mark path {
+    animation: spell-mark 1.9s ease-in-out infinite;
+    animation-delay: calc(var(--slot, 0) * 0.12s);
+  }
+
+  .star {
+    animation: spell-star 1.9s ease-in-out infinite;
+    animation-delay: calc(var(--slot, 0) * 0.12s);
+  }
+}
+
+@keyframes spell-breathe {
+  0%,
+  100% {
+    opacity: 0.06;
+  }
+  50% {
+    opacity: 0.16;
+  }
+}
+
+@keyframes spell-cast {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes spell-mark {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes spell-star {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: none;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow,
+  .working .glow,
+  .working .mark path,
+  .working .star {
+    animation: none;
+  }
+
+  .glow {
+    opacity: 0.12;
+  }
+
+  .mark path {
+    transition: none;
+  }
+}

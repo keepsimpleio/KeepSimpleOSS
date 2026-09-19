@@ -18,5 +18,12 @@ export const updateObject = async (
     },
   );
 
+  if (
+    payload.favorite !== undefined &&
+    data.data?.attributes.favorite !== payload.favorite
+  ) {
+    throw new Error('The server did not save the favorite setting.');
+  }
+
   return data;
 };

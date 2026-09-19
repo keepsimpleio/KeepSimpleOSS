@@ -11,6 +11,8 @@ export interface ConfirmationModalProps {
   icon?: IconName | ReactNode;
   title: string;
   text: string;
+  /** A failure from the last attempt, shown in red under the text. */
+  error?: string;
   actionButtonLabel?: string;
   actionButtonType?: ButtonType;
   onClose: () => void;

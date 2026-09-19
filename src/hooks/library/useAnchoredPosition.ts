@@ -1,4 +1,9 @@
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useLayoutEffect, useState } from 'react';
+
+// The first measurement has to land before paint, or a menu opens one frame
+// after the click that asked for it. The server has no layout to measure.
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export interface AnchoredPosition {
   top: number;
@@ -38,7 +43,7 @@ export const useAnchoredPosition = (
   const [position, setPosition] = useState<AnchoredPosition | null>(null);
   const openUpMaxWidth = options?.openUpMaxWidth;
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!enabled) return;
     let raf = 0;
     const update = () => {

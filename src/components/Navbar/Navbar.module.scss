@@ -21,7 +21,11 @@
     padding: 0;
     display: flex;
     height: 100%;
-    gap: 40px;
+    // Six links now share the row with the logo and the account block. Wide
+    // screens keep the designed 40px rhythm; below that the gap gives way
+    // first, so the labels never have to collide.
+    gap: clamp(18px, 2.4vw, 40px);
+    white-space: nowrap;
 
     .contributors {
       color: #000000d9;
@@ -94,6 +98,14 @@
       }
     }
 
+    // The library glyph is an outline with a brown stroke baked into the file
+    // (the Library product's own colour). In the nav it has to read as one of
+    // the black icons, so repaint it here; the dark header repaints it white.
+    .libraryIcon path {
+      fill: none;
+      stroke: #131313;
+    }
+
     .active {
       &:after {
         content: '';
@@ -125,10 +137,11 @@
       }
     }
 
-    // The library glyph ships with a baked-in brown fill (no dark asset like the
-    // other nav icons) — paint it white so it reads on the dark header.
+    // The library glyph is an outline in baked-in brown and has no dark asset
+    // like the other nav icons, so paint its stroke white for the dark header.
     .libraryIcon path {
-      fill: #fff;
+      fill: none;
+      stroke: #fff;
     }
 
     .url {
@@ -155,11 +168,14 @@
   }
 }
 
+// Laptop band. This rule used to enlarge the labels to 20px, which is where
+// the row ran out of width; one step down from 16px buys back the space the
+// sixth link costs, until the burger takes over at 1141px.
 @media (max-width: 1365px) {
   .aside {
     & .menu {
       .url {
-        font-size: 20px;
+        font-size: 15px;
       }
     }
   }

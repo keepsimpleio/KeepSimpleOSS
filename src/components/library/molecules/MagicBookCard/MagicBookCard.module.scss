@@ -1,0 +1,384 @@
+// The same cell a shelved book takes: the magic book stands where the next
+// book would, so the row is one card longer and never changes length while
+// the engine works.
+.row {
+  display: inline-flex;
+  width: 180px;
+  height: 208px;
+}
+
+.card {
+  position: relative;
+  width: 180px;
+  height: 208px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  outline: none;
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-6px);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-ring);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-within {
+      transform: none;
+    }
+  }
+}
+
+.placeholder {
+  position: absolute;
+  bottom: -7px;
+  left: -3px;
+  width: 180px;
+  height: 208px;
+  z-index: 0;
+  background: url('/assets/library/book-cover.webp') center / cover no-repeat;
+}
+
+.cover {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  width: 146px;
+  height: 206px;
+  overflow: hidden;
+  z-index: 1;
+  border-left: 1px solid var(--brown-border);
+  background: var(--gradient-cover-placeholder);
+}
+
+// The pick's face and the blank paper under it share the cover and
+// crossfade, so a roll never shows a half-drawn card.
+.face,
+.blank {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.faceShown,
+.blankShown {
+  opacity: 1;
+}
+
+.coverImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.front {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 36px 14px 40px;
+  background: var(--gradient-cover-placeholder);
+}
+
+.frontTitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--font-source-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--ink-on-cover);
+}
+
+.frontAuthor {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--ink-on-cover-soft);
+}
+
+.by {
+  display: block;
+}
+
+// Blank paper: the state of the slot, in words, when there is no pick on it.
+.blank {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 14px;
+  text-align: center;
+}
+
+.blankIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent-on-cover);
+}
+
+.blankText {
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--ink-on-cover-soft);
+}
+
+// Light passing over the cover while the engine works: the same light the
+// AI shelf's covers carry, running faster and only while busy.
+.shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 28%,
+    var(--purple-400) 44%,
+    var(--white-200) 50%,
+    var(--purple-400) 56%,
+    transparent 72%
+  );
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 0.2s ease;
+}
+
+.busy .shimmer {
+  opacity: 0.32;
+  animation: magic-shimmer 1.6s ease-in-out infinite;
+}
+
+.card:not(.busy):hover .shimmer,
+.card:not(.busy):focus-within .shimmer {
+  opacity: 0.18;
+  animation: magic-shimmer 12s ease-in-out infinite;
+}
+
+// The chance the owner likes it, on a slip at the foot of the cover. Held in
+// the DOM in every state so its arrival never moves the cover.
+.match {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 3;
+  padding: 3px 8px;
+  background: var(--wash-on-cover);
+  border: 1px solid var(--rule-on-cover);
+  border-radius: var(--radius-control);
+  font-family: var(--font-source-serif);
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--ink-on-cover-soft);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.matchShown {
+  opacity: 1;
+}
+
+// The card's standing, at the head of the cover, in the AI accent.
+.status {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-control);
+  background: var(--purple-100);
+  font-family: var(--font-source-sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
+  color: var(--white);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.statusShown {
+  opacity: 1;
+}
+
+// Roll, on the blank paper: the only control the slot carries. Present in
+// every state and revealed only when a roll is possible, so the paper keeps
+// its layout.
+.roll {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--purple-100);
+  border-radius: var(--radius-control);
+  background: var(--purple-100);
+  color: var(--white);
+  font-family: var(--font-source-sans);
+  font-size: 14px;
+  line-height: 19px;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: var(--purple-200);
+    border-color: var(--purple-200);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.rollShown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// A pick opens to its brief, so the whole card reads as a control.
+.openable {
+  cursor: pointer;
+}
+
+@keyframes magic-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .busy .shimmer,
+  .card:not(.busy):hover .shimmer,
+  .card:not(.busy):focus-within .shimmer {
+    animation: none;
+    transition: none;
+    transform: none;
+    opacity: 0.1;
+  }
+}
+
+// A roll in progress, said in a word over the slot. The cover behind it
+// gives way so the word reads, and comes back when the pick lands.
+.busy .faceShown,
+.busy .blankShown {
+  opacity: 0.5;
+}
+
+.rolling {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  transform: translate(-50%, -50%);
+  background: var(--wash-on-cover);
+  border: 1px solid var(--accent-on-cover);
+  border-radius: var(--radius-control);
+  color: var(--accent-on-cover);
+  font-family: var(--font-source-serif);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    animation: magic-rolling-spark 1.9s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    svg {
+      animation: none;
+    }
+  }
+}
+
+.rollingShown {
+  opacity: 1;
+}
+
+@keyframes magic-rolling-spark {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}

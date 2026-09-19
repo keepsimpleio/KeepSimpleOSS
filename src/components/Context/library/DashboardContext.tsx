@@ -1,16 +1,45 @@
 import {
   createContext,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
+  useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
-import { ITag } from '@local-types/library/tag';
+import type { ITag, LibraryTag } from '@local-types/library/tag';
+
+import { getLibraryTags } from '@api/library/tag/getLibraryTags';
+
+import { useAuth } from '@components/Context/library/AuthContext';
+import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 
 interface DashboardContextValue {
+  /**
+   * The tags of the library on screen, each carrying its own book sequence.
+   * A tag belongs to a library, so this list is fetched by library id and not
+   * by account: an owner keeping two libraries sees each one's own vocabulary.
+   */
+  libraryTags: LibraryTag[];
+  /**
+   * Stamps a tag's own sequence after a drag, so the gathered row keeps the
+   * order it was dropped into while the save is in flight.
+   */
+  setLibraryTags: Dispatch<SetStateAction<LibraryTag[]>>;
+  /** The same list in the Strapi entry shape the tag forms read. */
   tags: ITag[];
-  setTags: (tags: ITag[]) => void;
+  /** Re-reads the list after a tag is created, renamed, recoloured or deleted. */
+  refreshLibraryTags: () => Promise<void>;
+  /**
+   * The tag the library is filtered down to, or null. One at a time: choosing
+   * another replaces it, choosing the same one again clears the filter.
+   */
+  activeTagId: number | null;
+  setActiveTagId: (id: number | null) => void;
 }
 
 const DashboardContext = createContext<DashboardContextValue | undefined>(
@@ -19,21 +48,89 @@ const DashboardContext = createContext<DashboardContextValue | undefined>(
 
 interface DashboardProviderProps {
   children: ReactNode;
-  initialTags?: ITag[];
+  /**
+   * The tags as the server read them for this request, anonymously. Without
+   * them the panel's first HTML says `No tags yet` to a reader who runs no
+   * scripts, whatever the library actually holds.
+   */
+  initialTags?: LibraryTag[];
 }
 
 export function DashboardProvider({
   children,
   initialTags = [],
 }: DashboardProviderProps) {
-  const [tags, setTags] = useState<ITag[]>(initialTags);
+  const { token } = useAuth();
+  const { currentLibrary } = useGlobalState();
+  const libraryId = currentLibrary?.id ?? null;
+
+  const [libraryTags, setLibraryTags] = useState<LibraryTag[]>(initialTags);
+  const [activeTagId, setActiveTagId] = useState<number | null>(null);
+
+  const refreshLibraryTags = useCallback(async () => {
+    if (libraryId == null) {
+      setLibraryTags([]);
+      return;
+    }
+    setLibraryTags(await getLibraryTags(libraryId));
+  }, [libraryId]);
+
+  // The token matters as much as the library: signing in turns the visitor's
+  // answer (tags labelling a public book) into the owner's own palette.
+  useEffect(() => {
+    void refreshLibraryTags();
+  }, [refreshLibraryTags, token]);
+
+  // A different library is a different vocabulary, so nothing filters until
+  // its own tags arrive. Only a change from one library to another counts.
+  // The first arrival (null to an id) must not: the tags come with the page,
+  // so an address like `#deep-work` may already have set the filter by the
+  // time this runs, and a reset here would silently undo it.
+  const previousLibraryId = useRef<number | null>(null);
+  useEffect(() => {
+    const previous = previousLibraryId.current;
+    previousLibraryId.current = libraryId;
+    if (previous != null && previous !== libraryId) setActiveTagId(null);
+  }, [libraryId]);
+
+  // A tag that is gone (deleted, or no longer visible to this viewer) cannot
+  // stay the filter: the page would show a gathered shelf nothing names.
+  useEffect(() => {
+    setActiveTagId(current =>
+      current != null && !libraryTags.some(t => t.id === current)
+        ? null
+        : current,
+    );
+  }, [libraryTags]);
+
+  const tags = useMemo<ITag[]>(
+    () =>
+      libraryTags.map(tag => ({
+        id: tag.id,
+        attributes: {
+          id: tag.id,
+          name: tag.name,
+          color: tag.color,
+          description: tag.description ?? '',
+          slug: tag.slug,
+          createdAt: '',
+          updatedAt: '',
+          publishedAt: '',
+        },
+      })),
+    [libraryTags],
+  );
 
   const value = useMemo(
     () => ({
+      libraryTags,
+      setLibraryTags,
       tags,
-      setTags,
+      refreshLibraryTags,
+      activeTagId,
+      setActiveTagId,
     }),
-    [tags],
+    [libraryTags, tags, refreshLibraryTags, activeTagId],
   );
 
   return (

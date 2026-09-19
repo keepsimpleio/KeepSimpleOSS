@@ -6,6 +6,8 @@
 export const LIBRARY_CARD_POPULATE = {
   'populate[avatar]': true,
   'populate[user]': true,
-  'populate[singleShelves][populate][objects]': true,
+  // Objects come with their coverImage media so the home card can show a
+  // mini-shelf of real covers, not just counts.
+  'populate[singleShelves][populate][objects][populate][coverImage]': true,
   'populate[libraryDetails]': true,
 } as const;

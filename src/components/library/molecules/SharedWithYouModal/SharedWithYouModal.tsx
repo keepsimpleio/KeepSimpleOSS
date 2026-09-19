@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useRef } from 'react';
 
 import { ShareIcon } from '@icons/library/svg';
 
@@ -20,12 +20,27 @@ export function SharedWithYouModal({
   onViewSelection,
   onClose,
 }: SharedWithYouModalProps): JSX.Element {
-  const { closeRef } = useModalClose(onClose);
+  // Both ways out fade: the Modal's close lands in `finish`, which hands
+  // over to the selection when that is what was asked for.
+  const viewPending = useRef(false);
+  const finish = () => {
+    if (viewPending.current) {
+      viewPending.current = false;
+      onViewSelection();
+      return;
+    }
+    onClose();
+  };
+  const { closeRef, close } = useModalClose(finish);
+  const handleView = () => {
+    viewPending.current = true;
+    close();
+  };
 
   const itemLabel = itemCount === 1 ? 'item' : 'items';
 
   return (
-    <Modal className={styles.modal} onClose={onClose} closeRef={closeRef}>
+    <Modal className={styles.modal} onClose={finish} closeRef={closeRef}>
       <div className={styles.wrapper}>
         <div className={styles.icon}>
           <ShareIcon />
@@ -40,7 +55,7 @@ export function SharedWithYouModal({
         <Button
           label="View selection"
           ariaLabel="View shared selection"
-          onClick={onViewSelection}
+          onClick={handleView}
           type={ButtonType.Primary}
           size={ButtonSize.Wide}
           Icon={<ShareIcon />}

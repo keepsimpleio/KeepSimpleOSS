@@ -13,7 +13,7 @@
   gap: 8px;
   background: var(--white);
   border: 1px solid var(--brown-border);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   padding: 0 16px;
   cursor: pointer;
   color: var(--black);
@@ -44,14 +44,32 @@
 }
 
 .popover {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  z-index: 30;
+  // Fixed to the viewport and placed by useAnchoredPosition (see the .tsx).
+  position: fixed;
+  z-index: 1500;
   background: var(--white);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   box-shadow: var(--dropdown-shadow);
   padding: 12px;
+
+  // Reserve a separate row for navigation so it cannot cover either dropdown.
+  :global(.rdp-month) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :global(.rdp-nav) {
+    position: static;
+    justify-content: flex-end;
+  }
+
+  // The caption's two dropdowns sit on one row where the native selects used to.
+  :global(.rdp-dropdowns) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
 
   :global(.rdp-root) {
     --rdp-accent-color: var(--brown);
@@ -113,5 +131,81 @@
   :global(.rdp-day_button:hover:not([disabled]):not(.rdp-day_selected)) {
     background: var(--white-warm);
     color: var(--brown);
+  }
+}
+
+// Opens with a short fade and leaves the same way (usePresence keeps the node
+// for the exit). Opacity only: the placement transform is set inline and an
+// animated transform would override it.
+@keyframes popover-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popover-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.popover {
+  animation: popover-in 0.14s ease-out;
+}
+
+.popoverClosing {
+  animation: popover-out 0.12s ease-in forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover,
+  .popoverClosing {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: none;
+  }
+}
+
+// Month and year pickers in the calendar caption (see `CalendarDropdown`).
+.captionDropdown {
+  min-width: 0;
+  flex: 2;
+
+  &:first-child {
+    flex: 3;
+  }
+}
+
+.captionMenu {
+  // The year list runs from 1500, so it scrolls instead of growing a menu
+  // taller than the screen. `.menu` sets `overflow: visible` for submenus,
+  // which these dropdowns do not use.
+  max-height: 240px;
+  min-width: 132px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--taupe) var(--white-100);
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--white-100);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--taupe);
+    border-radius: 6px;
   }
 }

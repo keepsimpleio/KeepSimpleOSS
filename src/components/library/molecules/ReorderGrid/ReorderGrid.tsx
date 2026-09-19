@@ -118,7 +118,7 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
     onAddPlaceholder,
     itemShape = 'square',
     className,
-    emptyState = 'No objects yet — add one to test reordering.',
+    emptyState = 'No content yet, add an item to test reordering.',
   } = props;
 
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -194,8 +194,8 @@ export function ReorderGrid(props: ReorderGridProps): JSX.Element {
         <Button
           type={ButtonType.Outlined}
           size={ButtonSize.Default}
-          label="Add object"
-          ariaLabel="Add placeholder object for reorder testing"
+          label="Add item"
+          ariaLabel="Add placeholder item for reorder testing"
           Icon={<PlusIcon />}
           onClick={onAddPlaceholder}
           className={styles.addButton}

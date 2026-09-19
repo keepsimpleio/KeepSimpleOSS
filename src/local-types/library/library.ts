@@ -48,7 +48,7 @@ export interface LibraryOwner {
   id?: number;
   username?: string;
   name?: string;
-  /** Account OAuth photo from the populated `user` relation (auth role only). */
+  /** Account photo from the allowlisted public `user` relation. */
   picture?: string;
   /** The library's own uploaded avatar — readable by the public role, so this
    * is what a logged-out visitor sees. Raw Strapi URL; resolve before use. */
@@ -67,6 +67,8 @@ export interface StrapiShelfObjectsRelation {
 
 export interface StrapiSingleShelfAttributes {
   name: string;
+  /** What the owner wrote about the shelf; absent or null when unset. */
+  description?: string | null;
   visibility: string;
   type: string;
   order: number;
@@ -95,6 +97,20 @@ export interface StrapiLibraryAttributes {
   user?: StrapiUserRelation;
   libraryDetails: StrapiLibraryDetailsComponent | null;
   singleShelves: StrapiSingleShelvesRelation;
+  /**
+   * Whether visitors see the Favorites shelf. Absent (older backend) reads as
+   * private. Backend spec: docs/library-favorites-backend.md.
+   */
+  favoritesVisibility?: 'public' | 'private';
+  /** The Favorites shelf's hint, shown beside its name when set. */
+  favoritesDescription?: string | null;
+  /** Owner-only account preference. Missing legacy values mean expanded. */
+  aiShelfCollapsed?: boolean;
+  /**
+   * Set by an operator to take the library off the public surface. Only the
+   * owner's own reads carry it; everyone else gets a 404.
+   */
+  hidden?: boolean;
 }
 
 export interface StrapiLibraryEntry {
@@ -124,6 +140,10 @@ export interface IUpdateLibraryPayload {
   aboutMe?: string;
   libraryDetails?: { aboutLibrary: string };
   avatar?: number | null;
+  favoritesVisibility?: 'public' | 'private';
+  /** An empty string clears the Favorites hint. */
+  favoritesDescription?: string;
+  aiShelfCollapsed?: boolean;
 }
 
 /** Mapped row for `LibraryCard` on the home page */
@@ -136,4 +156,7 @@ export interface HomeLibraryCardView {
   videoCount: number;
   songCount: number;
   avatar?: string;
+  /** Resolved cover URLs of the first few objects that have one; the card's
+   * mini-shelf. Empty when the library holds no covers at all. */
+  coverUrls: string[];
 }

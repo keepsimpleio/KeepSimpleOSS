@@ -22,6 +22,7 @@ import Layout from '@layouts/Layout';
 
 import { LongevityProvider, useLongevity } from '../context/LongevityContext';
 
+import 'react-tooltip/dist/react-tooltip.css';
 import '../styles/globals.scss';
 import '../styles/vibesuite.scss';
 import '../styles/ai-atlas.css';

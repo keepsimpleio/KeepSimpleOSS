@@ -1,8 +1,15 @@
+import classNames from 'classnames';
 import React, { JSX, useEffect, useId, useRef, useState } from 'react';
 
 import type { IAutofillSuggestion } from '@local-types/library/autofill';
 
+import { usePresence } from '@hooks/library/usePresence';
+
+import { autofillCoverUrl } from '@lib/library/autofillCoverUrl';
+import { possessive } from '@lib/library/notesLabel';
+
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import { Input } from '@components/library/molecules/Input';
 
 import type { TitleAutocompleteProps } from './TitleAutocomplete.types';
@@ -15,6 +22,14 @@ const MIN_QUERY_LENGTH = 3;
 function suggestionMeta(s: IAutofillSuggestion): string {
   const year = s.publicationDate?.slice(0, 4);
   return [s.author, year].filter(Boolean).join(' · ');
+}
+
+// "From Wolf’s library": said on hover, and read out with the row for anyone
+// who cannot see the ring around it.
+function memberOrigin(s: IAutofillSuggestion): string | null {
+  return s.memberLibrary
+    ? `From ${possessive(s.memberLibrary.username)} library`
+    : null;
 }
 
 export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
@@ -32,6 +47,7 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'empty' | 'error'>('idle');
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [failedCovers, setFailedCovers] = useState<Set<string>>(new Set());
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<number | null>(null);
@@ -39,6 +55,9 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
   // Title applied via a suggestion click — don't reopen the menu for it.
   const suppressQueryRef = useRef<string | null>(null);
   const listboxId = useId();
+
+  // The list stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const close = () => {
     setIsOpen(false);
@@ -88,6 +107,7 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
         const results = await fetchSuggestions(trimmed);
         if (requestId !== requestIdRef.current) return;
         setSuggestions(results);
+        setFailedCovers(new Set());
         setStatus(results.length === 0 ? 'empty' : 'idle');
       } catch {
         // Keep the menu open with an error line instead of silently closing,
@@ -167,8 +187,14 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
-      {isOpen && (
-        <ul className={styles.menu} role="listbox" id={listboxId}>
+      {menuMounted && (
+        <ul
+          className={classNames(styles.menu, {
+            [styles.menuClosing]: !menuShown,
+          })}
+          role="listbox"
+          id={listboxId}
+        >
           {isLoading && suggestions.length === 0 && (
             <li className={styles.status}>
               <Text variant={TypographyVariant.TextSmall}>Searching…</Text>
@@ -191,59 +217,78 @@ export function TitleAutocomplete(props: TitleAutocompleteProps): JSX.Element {
           )}
           {suggestions.map((suggestion, index) => {
             const meta = suggestionMeta(suggestion);
+            const coverSrc = suggestion.coverUrl
+              ? autofillCoverUrl(
+                  suggestion.coverUrl,
+                  suggestion.fallbackCoverUrl,
+                )
+              : undefined;
+            const origin = memberOrigin(suggestion);
+            const option = (
+              <button
+                type="button"
+                className={classNames(styles.option, {
+                  [styles.active]: index === activeIndex,
+                  [styles.optionMember]: !!origin,
+                })}
+                onPointerDown={event => {
+                  // Select on pointerdown so the input's blur (and the
+                  // outside-press close above) can't swallow the click.
+                  event.preventDefault();
+                  select(suggestion);
+                }}
+              >
+                {coverSrc && !failedCovers.has(coverSrc) ? (
+                  // Provider CDNs block direct browser hotlinking, so the
+                  // thumbnail loads through the same allowlisted proxy as the
+                  // autofilled cover (which also warms its 24h cache).
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={coverSrc}
+                    onError={() =>
+                      setFailedCovers(previous =>
+                        new Set(previous).add(coverSrc),
+                      )
+                    }
+                    alt=""
+                    className={styles.thumb}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className={styles.thumbPlaceholder} />
+                )}
+                <span className={styles.optionText}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.optionTitle}
+                  >
+                    {suggestion.title}
+                  </Text>
+                  {meta && (
+                    <Text
+                      variant={TypographyVariant.TextTiny}
+                      className={styles.optionMeta}
+                    >
+                      {meta}
+                    </Text>
+                  )}
+                  {origin && <span className={styles.srOnly}>{origin}</span>}
+                </span>
+              </button>
+            );
             return (
               <li
-                key={`${suggestion.title}-${suggestion.sourceUrl ?? index}`}
+                key={`${suggestion.title}-${suggestion.sourceUrl ?? suggestion.memberLibrary?.objectId ?? index}`}
                 role="option"
                 aria-selected={index === activeIndex}
               >
-                <button
-                  type="button"
-                  className={
-                    index === activeIndex
-                      ? `${styles.option} ${styles.active}`
-                      : styles.option
-                  }
-                  onPointerDown={event => {
-                    // Select on pointerdown so the input's blur (and the
-                    // outside-press close above) can't swallow the click.
-                    event.preventDefault();
-                    select(suggestion);
-                  }}
-                >
-                  {suggestion.coverUrl ? (
-                    // Provider CDNs block direct browser hotlinking, so the
-                    // thumbnail loads through the same allowlisted proxy as the
-                    // autofilled cover (which also warms its 24h cache).
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={`/api/library/autofill/cover?url=${encodeURIComponent(
-                        suggestion.coverUrl,
-                      )}`}
-                      alt=""
-                      className={styles.thumb}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className={styles.thumbPlaceholder} />
-                  )}
-                  <span className={styles.optionText}>
-                    <Text
-                      variant={TypographyVariant.TextSmall}
-                      className={styles.optionTitle}
-                    >
-                      {suggestion.title}
-                    </Text>
-                    {meta && (
-                      <Text
-                        variant={TypographyVariant.TextTiny}
-                        className={styles.optionMeta}
-                      >
-                        {meta}
-                      </Text>
-                    )}
-                  </span>
-                </button>
+                {origin ? (
+                  <Tooltip asChild place="top" tooltipContent={origin}>
+                    {option}
+                  </Tooltip>
+                ) : (
+                  option
+                )}
               </li>
             );
           })}

@@ -1,46 +1,96 @@
 .wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   z-index: 100;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   background: var(--white-transparent-400);
+  animation: appear 240ms ease-out both;
 }
 
-.loader {
-  width: 48px;
-  height: 48px;
-  border: 3px solid var(--brown);
-  border-radius: 50%;
-  display: inline-block;
+.status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.constellation {
   position: relative;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: center;
+  gap: 12px;
+  width: min(480px, calc(100% - 48px));
 
-  &::after {
+  &::before {
     content: '';
-    box-sizing: border-box;
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 3px solid;
-    border-color: var(--black) transparent;
+    inset: 50% 0 auto;
+    height: 1px;
+    background: var(--brown-100);
+    opacity: 0.2;
   }
 }
 
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
+.rune {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  animation: settle 4.8s ease-in-out infinite both;
+
+  > span {
+    flex-basis: auto;
+    width: 100%;
+    max-width: 48px;
+    height: auto;
+    aspect-ratio: 1;
   }
+
+  &:nth-child(3),
+  &:nth-child(5) {
+    animation-delay: 160ms;
+  }
+  &:nth-child(2),
+  &:nth-child(6) {
+    animation-delay: 320ms;
+  }
+  &:nth-child(1),
+  &:nth-child(7) {
+    animation-delay: 480ms;
+  }
+}
+
+@keyframes settle {
+  0%,
   100% {
-    transform: rotate(360deg);
+    opacity: 0.3;
+    transform: translateY(8px);
+  }
+  35%,
+  65% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper,
+  .rune {
+    animation: none;
   }
 }

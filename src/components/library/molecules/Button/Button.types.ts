@@ -18,7 +18,7 @@ export enum IconPosition {
 export interface ButtonProps {
   size?: ButtonSize;
   type?: ButtonType;
-  label?: string;
+  label?: React.ReactNode;
   Icon?: React.ReactNode;
   disabled?: boolean;
   ariaLabel: string;

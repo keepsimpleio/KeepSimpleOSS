@@ -1,3 +1,4 @@
+// Guest preview motion follows the Library passport in CLAUDE.md.
 import { useSession } from 'next-auth/react';
 import {
   createContext,
@@ -9,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 
 import type {
   ILibrary,
@@ -18,10 +20,12 @@ import type {
 } from '@local-types/library/library';
 import type { IUser } from '@local-types/library/user';
 
-import { getAccessToken } from '@lib/library/cookie';
+import {
+  readSidebarCollapsed,
+  writeSidebarCollapsed,
+} from '@lib/library/sidebarPanel';
 
 import { getLibrariesList } from '@api/library/getLibrariesList';
-import { getUserInfo } from '@api/library/user/getUserInfo';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 
@@ -29,10 +33,26 @@ interface GlobalStateContextValue {
   isGuestMode: boolean;
   isSidebarOpen: boolean;
   toggleGuestMode: () => void;
+  /** Leave guest mode outright — used when the viewed library changes. */
+  setGuestMode: (value: boolean) => void;
   toggleSidebar: () => void;
+  /** Close the mobile drawer (a toggle would reopen it from a closed state). */
+  closeSidebar: () => void;
+  /**
+   * Desktop only: the info panel folded to its spine so the shelves take the
+   * width. Remembered per account across every library and across refreshes
+   * (see `@lib/library/sidebarPanel`); the mobile drawer ignores it.
+   */
+  isSidebarCollapsed: boolean;
+  toggleSidebarCollapsed: () => void;
+  /**
+   * Whether the viewer owns the library on screen. Decided once, by
+   * `LibraryTemplate`, and published here so the Sidebar and the shelves can
+   * never disagree about who is looking.
+   */
+  isOwner: boolean;
+  setIsOwner: (value: boolean) => void;
   user: IUser | null;
-  isUserLoading: boolean;
-  refetchUser: () => Promise<void>;
   libraries: StrapiLibrariesResponse | null;
   isLibrariesLoading: boolean;
   refetchLibraries: () => Promise<void>;
@@ -57,47 +77,78 @@ interface GlobalStateContextValue {
    */
   currentLibrary: ILibrary | null;
   setCurrentLibrary: (library: ILibrary | null) => void;
-  /**
-   * True when the owner is on their own library with no library yet and lacks
-   * the `can-create-library` feature flag. Published by `LibraryTemplate` so the
-   * Sidebar (right panel) can hide itself alongside the no-permission screen.
-   */
-  isCreateBlocked: boolean;
-  setIsCreateBlocked: (value: boolean) => void;
 }
 
 const GlobalStateContext = createContext<GlobalStateContextValue | undefined>(
   undefined,
 );
 
-export function GlobalStateProvider({ children }: { children: ReactNode }) {
+interface GlobalStateProviderProps {
+  children: ReactNode;
+  /**
+   * The collapsed choice as read from the request cookie by the page's
+   * `getServerSideProps`, so the server paints the panel at its final width
+   * and a refresh never shows it open for a frame before folding.
+   */
+  initialSidebarCollapsed?: boolean;
+  /**
+   * The library as the server read it, anonymously, for this request. The
+   * panel's About, counts and Author are published here by `LibraryTemplate`
+   * after it loads, which is a paint too late for a reader who runs no
+   * scripts: seeded here, the first HTML already carries them.
+   */
+  initialLibrary?: ILibrary | null;
+}
+
+/** The panel's reading of the owner, from the same fields the template uses. */
+const ownerOf = (library: ILibrary | null): LibraryOwner | null => {
+  if (!library) return null;
+
+  const owner = library.attributes.user?.data;
+
+  return {
+    id: owner?.id,
+    username: owner?.attributes.username,
+    name: owner?.attributes.name,
+    picture: owner?.attributes.picture,
+    avatar: library.attributes.avatar?.data?.attributes?.url,
+    aboutMe: library.attributes.aboutMe,
+  };
+};
+
+/** Shelves in their saved sequence, as the page draws them. */
+const shelvesOf = (library: ILibrary | null): StrapiSingleShelfEntry[] =>
+  [...(library?.attributes.singleShelves?.data ?? [])].sort(
+    (a, b) => (a.attributes.order ?? 0) - (b.attributes.order ?? 0),
+  );
+
+export function GlobalStateProvider({
+  children,
+  initialSidebarCollapsed = false,
+  initialLibrary = null,
+}: GlobalStateProviderProps) {
   const { data: session } = useSession();
-  const { accountData, setAccountData, token } = useAuth();
+  const { accountData, token } = useAuth();
 
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isUserLoading, setIsUserLoading] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
+    initialSidebarCollapsed,
+  );
   const [libraries, setLibraries] = useState<StrapiLibrariesResponse | null>(
     null,
   );
   const [isLibrariesLoading, setIsLibrariesLoading] = useState(false);
   const [currentShelves, setCurrentShelves] = useState<
     StrapiSingleShelfEntry[]
-  >([]);
-  const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(null);
-  const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(null);
-  const [isCreateBlocked, setIsCreateBlocked] = useState(false);
-  const didAttemptUserLoad = useRef(false);
-
-  const refetchUser = useCallback(async () => {
-    setIsUserLoading(true);
-    try {
-      const data = await getUserInfo();
-      setAccountData(data);
-    } finally {
-      setIsUserLoading(false);
-    }
-  }, [setAccountData]);
+  >(() => shelvesOf(initialLibrary));
+  const [currentOwner, setCurrentOwner] = useState<LibraryOwner | null>(() =>
+    ownerOf(initialLibrary),
+  );
+  const [currentLibrary, setCurrentLibrary] = useState<ILibrary | null>(
+    initialLibrary,
+  );
+  const [isOwner, setIsOwner] = useState(false);
 
   const refetchLibraries = useCallback(async () => {
     setIsLibrariesLoading(true);
@@ -109,18 +160,21 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // The server read the cookie for whichever account the request carried.
+  // Once the account is actually known here (it can arrive later: a token in
+  // localStorage before the host account finishes loading), re-read
+  // that account's own choice so it wins over the anonymous default.
+  const accountId = accountData?.id;
   useEffect(() => {
-    const hasToken = Boolean(getAccessToken());
-    if (!hasToken) {
-      didAttemptUserLoad.current = false;
-      return;
-    }
-    if (accountData || didAttemptUserLoad.current) {
-      return;
-    }
-    didAttemptUserLoad.current = true;
-    void refetchUser();
-  }, [accountData, session, refetchUser]);
+    if (!accountId) return;
+    setIsSidebarCollapsed(readSidebarCollapsed(accountId));
+  }, [accountId]);
+
+  const toggleSidebarCollapsed = useCallback(() => {
+    const next = !isSidebarCollapsed;
+    writeSidebarCollapsed(accountId, next);
+    setIsSidebarCollapsed(next);
+  }, [accountId, isSidebarCollapsed]);
 
   useEffect(() => {
     // `/api/libraries` is publicly readable, so the right-panel library
@@ -130,15 +184,77 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     void refetchLibraries();
   }, [token, session, refetchLibraries]);
 
+  const modeTransition = useRef<{ skipTransition: () => void } | null>(null);
+  useEffect(() => () => modeTransition.current?.skipTransition(), []);
+
+  const toggleGuestMode = useCallback(() => {
+    const update = () => flushSync(() => setIsGuestMode(prev => !prev));
+    modeTransition.current?.skipTransition();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      update();
+      return;
+    }
+
+    const page = document as Document & {
+      startViewTransition?: (callback: () => void) => {
+        ready: Promise<void>;
+        finished: Promise<void>;
+        skipTransition: () => void;
+      };
+    };
+    if (page.startViewTransition) {
+      const transition = page.startViewTransition(update);
+      modeTransition.current = transition;
+      void transition.ready
+        .then(() => {
+          for (const [state, opacity] of [
+            ['old', [1, 0]],
+            ['new', [0, 1]],
+          ] as const) {
+            document.documentElement.animate(
+              { opacity: [...opacity] },
+              {
+                duration: 200,
+                easing: 'ease',
+                fill: 'both',
+                pseudoElement: `::view-transition-${state}(root)`,
+              },
+            );
+          }
+        })
+        .catch(() => {});
+      void transition.finished
+        .finally(() => {
+          if (modeTransition.current === transition)
+            modeTransition.current = null;
+        })
+        .catch(() => {});
+    } else {
+      update();
+      document
+        .querySelectorAll('[data-library-mode-surface]')
+        .forEach(surface => {
+          surface.animate?.(
+            { opacity: [0, 1] },
+            { duration: 200, easing: 'ease' },
+          );
+        });
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       isGuestMode,
       isSidebarOpen,
-      toggleGuestMode: () => setIsGuestMode(prev => !prev),
+      toggleGuestMode,
+      setGuestMode: setIsGuestMode,
       toggleSidebar: () => setIsSidebarOpen(prev => !prev),
+      closeSidebar: () => setIsSidebarOpen(false),
+      isSidebarCollapsed,
+      toggleSidebarCollapsed,
+      isOwner,
+      setIsOwner,
       user: accountData,
-      isUserLoading,
-      refetchUser,
       libraries,
       isLibrariesLoading,
       refetchLibraries,
@@ -148,15 +264,15 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       setCurrentOwner,
       currentLibrary,
       setCurrentLibrary,
-      isCreateBlocked,
-      setIsCreateBlocked,
     }),
     [
+      isOwner,
       isGuestMode,
+      toggleGuestMode,
       isSidebarOpen,
+      isSidebarCollapsed,
+      toggleSidebarCollapsed,
       accountData,
-      isUserLoading,
-      refetchUser,
       libraries,
       isLibrariesLoading,
       refetchLibraries,
@@ -166,8 +282,6 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       setCurrentOwner,
       currentLibrary,
       setCurrentLibrary,
-      isCreateBlocked,
-      setIsCreateBlocked,
     ],
   );
 

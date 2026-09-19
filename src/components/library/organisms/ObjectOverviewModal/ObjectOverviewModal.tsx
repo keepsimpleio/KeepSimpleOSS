@@ -1,8 +1,19 @@
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
-import React, { JSX, useCallback, useMemo, useState } from 'react';
+import React, {
+  JSX,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-import { KEEPSIMPLE_URL, SHELF_FULL_MESSAGE } from '@constants/library/common';
+import {
+  KEEPSIMPLE_URL,
+  MAX_TAGS_PER_OBJECT,
+  SHELF_FULL_MESSAGE,
+} from '@constants/library/common';
 
 import type {
   Difficulty,
@@ -10,11 +21,20 @@ import type {
   OverallRating,
 } from '@local-types/library/object';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
+import { canBeFavorite } from '@lib/library/favorites';
+import { libraryPath } from '@lib/library/libraryPath';
+import { notesLabel } from '@lib/library/notesLabel';
+import {
+  formatObjectDate,
+  formatObjectDuration,
+} from '@lib/library/objectMeta';
 import { objectSlug } from '@lib/library/objectSlug';
+import { toEditorHtml } from '@lib/library/richText';
 import { isShelfFullError } from '@lib/library/shelfFull';
-import { sanitizeHtml } from '@lib/sanitizeHtml';
 
 import { deleteObject } from '@api/library/object/deleteObject';
 import { updateObject } from '@api/library/object/updateObject';
@@ -28,8 +48,11 @@ import {
   ShareIcon,
 } from '@icons/library/svg';
 
+import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
+import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
 import { IconName } from '@components/library/atoms/Icon';
+import { InkLine } from '@components/library/atoms/InkLine';
 import {
   TagType,
   Text,
@@ -43,9 +66,12 @@ import {
 } from '@components/library/molecules/Button';
 import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Dropdown } from '@components/library/molecules/Dropdown';
+import { FavoriteToggle } from '@components/library/molecules/FavoriteToggle';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
 import { RatingBox } from '@components/library/molecules/RatingBox';
 import { Tag } from '@components/library/molecules/Tag';
+import { TagMultiSelect } from '@components/library/molecules/TagMultiSelect';
+import type { TagOption } from '@components/library/molecules/TagMultiSelect/TagMultiSelect.types';
 import { AddObjectModal } from '@components/library/organisms/AddObjectModal';
 
 import { overviewConfigByType } from './ObjectOverviewModal.config';
@@ -56,25 +82,6 @@ import styles from './ObjectOverviewModal.module.scss';
 // Canonical public host for shareable links — env-driven in staging/prod,
 // falling back to the production domain (mirrors ShareSelectionPanel).
 const SHARE_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
-
-function formatDate(iso?: string): string | null {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
-
-function formatDuration(seconds?: number): string {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds))
-    return '—';
-  const total = Math.max(0, Math.floor(seconds));
-  const mm = String(Math.floor(total / 60)).padStart(2, '0');
-  const ss = String(total % 60).padStart(2, '0');
-  return `${mm}:${ss}`;
-}
 
 export function ObjectOverviewModal(
   props: ObjectOverviewModalProps,
@@ -100,19 +107,34 @@ export function ObjectOverviewModal(
       : null;
 
   const [menuOpen, setMenuOpen] = useState(false);
+  // motion-passport: exempt — every motion on this surface is declared
+  // elsewhere and already answers prefers-reduced-motion: the menu and popup
+  // fades in ObjectOverviewModal.module.scss, and the tag row's arrivals and
+  // departures in useAnimatedList, which cuts them under reduced motion.
+  // The owner menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(menuOpen, 120);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
-  const [overallRating, setOverallRating] = useState<OverallRating | undefined>(
-    attributes.overall,
-  );
-  const [difficulty, setDifficulty] = useState<Difficulty | undefined>(
+  const [overallRating, setOverallRating] = useState<
+    OverallRating | null | undefined
+  >(attributes.overall);
+  const [difficulty, setDifficulty] = useState<Difficulty | null | undefined>(
     attributes.difficulty,
   );
   const [ratingError, setRatingError] = useState<string | null>(null);
+
+  // The star follows the object it was opened with; a press flips it at once
+  // and the save catches up, falling back with a message if it cannot.
+  const [favorite, setFavorite] = useState(attributes.favorite === true);
+  useEffect(() => {
+    setFavorite(attributes.favorite === true);
+  }, [attributes.favorite]);
+  const [favoriteBusy, setFavoriteBusy] = useState(false);
+  const [favoriteError, setFavoriteError] = useState<string | null>(null);
 
   const [moveToShelfId, setMoveToShelfId] = useState<string | undefined>();
   const [moveLoading, setMoveLoading] = useState(false);
@@ -121,22 +143,61 @@ export function ObjectOverviewModal(
   const [shareCopied, setShareCopied] = useState(false);
 
   const { currentShelves } = useGlobalState();
+  const { libraryTags, refreshLibraryTags } = useDashboard();
+
+  // The palette this book can be labelled from is the library's own vocabulary.
+  const tagOptions = useMemo<TagOption[]>(
+    () =>
+      libraryTags.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color,
+        description: tag.description,
+      })),
+    [libraryTags],
+  );
+  // A tag says what its owner wrote about it wherever it stands, and a book's
+  // own tag relation carries only a name and a colour: the sentence is looked
+  // up in the library's list, which the panel reads from too.
+  const tagDescriptions = useMemo(
+    () => new Map(libraryTags.map(tag => [tag.id, tag.description])),
+    [libraryTags],
+  );
+  // What the object arrived carrying, in the picker's shape.
+  const objectTags = useMemo<TagOption[]>(
+    () =>
+      (attributes.tags?.data ?? []).map(t => ({
+        id: t.id,
+        name: t.attributes.name,
+        color: t.attributes.color,
+      })),
+    [attributes.tags],
+  );
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const menuRef = useClickOutside(closeMenu);
 
   // TODO: add dedicated route for shareable object URLs (e.g. /library/[username]/objects/[id]).
   // For now this modal is opened imperatively from a card click — no URL state.
+  // Edit lets the overview fade out first: the Modal's close lands here, and
+  // this flag turns it into the swap to the editor instead of leaving.
+  const editPending = useRef(false);
   const guardedOnClose = useCallback(() => {
-    if (deleteLoading) return;
+    if (editPending.current) {
+      editPending.current = false;
+      setEditing(true);
+      return;
+    }
+    if (deleteLoading || deleting) return;
     onClose();
-  }, [deleteLoading, onClose]);
+  }, [deleteLoading, deleting, onClose]);
 
   const { closeRef, close } = useModalClose(guardedOnClose);
 
   const handleEdit = () => {
     setMenuOpen(false);
-    setEditing(true);
+    editPending.current = true;
+    close();
   };
 
   const handleDelete = () => {
@@ -151,8 +212,10 @@ export function ObjectOverviewModal(
     try {
       await deleteObject(id);
       setDeleting(false);
+      // The parent is told when the success card closes: telling it now
+      // unmounted this modal (the object leaves the shelf) before the card
+      // could show.
       setDeleteSuccess(true);
-      onDeleted?.(id);
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Failed to delete. Please try again.';
@@ -162,8 +225,39 @@ export function ObjectOverviewModal(
     }
   };
 
+  const handleFavoriteToggle = async () => {
+    if (favoriteBusy) return;
+    const next = !favorite;
+    setFavorite(next);
+    setFavoriteError(null);
+    setFavoriteBusy(true);
+    try {
+      const response = await updateObject(id, { favorite: next });
+      // The saved object carries `favoritedAt`, which the Favorites shelf
+      // sorts by; hand the whole thing back so the shelf sees it.
+      onUpdated?.({
+        ...object,
+        attributes: {
+          ...attributes,
+          ...response.data.attributes,
+          favorite: next,
+        },
+      });
+    } catch (e) {
+      console.error('[ObjectOverviewModal] favorite save failed', e);
+      setFavorite(!next);
+      setFavoriteError(
+        next
+          ? 'Could not add this book to favorites. Please try again.'
+          : 'Could not remove this book from favorites. Please try again.',
+      );
+    } finally {
+      setFavoriteBusy(false);
+    }
+  };
+
   const handleShare = async () => {
-    const url = `${SHARE_BASE_URL}/library/${ownerUsername}/${objectSlug(object)}`;
+    const url = `${SHARE_BASE_URL}${libraryPath(ownerUsername)}/${objectSlug(object)}`;
     try {
       await navigator.clipboard.writeText(url);
     } catch {
@@ -225,30 +319,111 @@ export function ObjectOverviewModal(
     },
   });
 
+  // The tags this object carries, held here rather than read from the prop:
+  // the picker writes them one click at a time and the row below must follow
+  // the click, not the round trip.
+  const [tags, setTags] = useState<TagOption[]>(objectTags);
+  const [tagsError, setTagsError] = useState<string | null>(null);
+  // The last set the server accepted, and the one waiting to be sent. A save
+  // in flight is never raced: the newest choice is queued behind it, so a run
+  // of quick clicks ends with the server holding exactly what is on screen.
+  const savedTags = useRef(objectTags);
+  const pendingTags = useRef<TagOption[] | null>(null);
+  const tagSaveInFlight = useRef(false);
+  // A different object in the same modal instance starts from its own tags.
+  const seededFor = useRef(id);
+  useEffect(() => {
+    if (seededFor.current === id) return;
+    seededFor.current = id;
+    setTags(objectTags);
+    savedTags.current = objectTags;
+    pendingTags.current = null;
+    setTagsError(null);
+  }, [id, objectTags]);
+
+  const flushTagSave = async () => {
+    if (tagSaveInFlight.current) return;
+    const next = pendingTags.current;
+    if (!next) return;
+    pendingTags.current = null;
+    tagSaveInFlight.current = true;
+    try {
+      const res = await updateObject(id, { tags: next.map(t => t.id) });
+      savedTags.current = next;
+      const withRelations = preserveRelations(res.data);
+      onUpdated?.({
+        ...withRelations,
+        attributes: {
+          ...withRelations.attributes,
+          // A PUT answers without the relation it just wrote, and a cleared
+          // set has nothing to carry forward, so the saved list is written in
+          // here for the card and the hover dossier to read.
+          tags: {
+            data: next.map(t => ({
+              id: t.id,
+              attributes: { name: t.name, color: t.color },
+            })),
+          },
+        },
+      });
+      // The panel counts the books behind each tag and the gathered row is
+      // drawn from the same list, so both are re-read once the tag lands.
+      await refreshLibraryTags();
+    } catch (e) {
+      console.error('[ObjectOverviewModal] tag save failed', e);
+      // A click made while this save was in flight is newer than the set it
+      // failed on: it stays queued, `finally` sends it, and its own outcome
+      // has the say. Only a failure with nothing behind it returns the row to
+      // the last set the server accepted.
+      if (!pendingTags.current) {
+        setTags(savedTags.current);
+        setTagsError('Could not save these tags. Please try again.');
+      }
+    } finally {
+      tagSaveInFlight.current = false;
+      if (pendingTags.current) void flushTagSave();
+    }
+  };
+
+  const handleTagsChange = (next: TagOption[]) => {
+    setTags(next);
+    setTagsError(null);
+    pendingTags.current = next;
+    void flushTagSave();
+  };
+
+  // The last values the server accepted, so a failed save falls back to
+  // them and not to whatever the modal opened with.
+  const savedRating = useRef({
+    overall: attributes.overall,
+    difficulty: attributes.difficulty,
+  });
+
   const persistRating = async (next: {
-    overall?: OverallRating;
-    difficulty?: Difficulty;
+    overall?: OverallRating | null;
+    difficulty?: Difficulty | null;
   }) => {
     setRatingError(null);
     try {
       const res = await updateObject(id, next);
+      savedRating.current = { ...savedRating.current, ...next };
       onUpdated?.(preserveRelations(res.data));
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Could not save your rating.';
       setRatingError(message);
       // Revert optimistic state on failure.
-      setOverallRating(attributes.overall);
-      setDifficulty(attributes.difficulty);
+      setOverallRating(savedRating.current.overall);
+      setDifficulty(savedRating.current.difficulty);
     }
   };
 
-  const handleOverallChange = (value: OverallRating) => {
+  const handleOverallChange = (value: OverallRating | null) => {
     setOverallRating(value);
     persistRating({ overall: value });
   };
 
-  const handleDifficultyChange = (value: Difficulty) => {
+  const handleDifficultyChange = (value: Difficulty | null) => {
     setDifficulty(value);
     persistRating({ difficulty: value });
   };
@@ -288,13 +463,13 @@ export function ObjectOverviewModal(
       };
       onUpdated?.(moved);
     } catch (e) {
-      // The target shelf may already hold 21 objects — the backend rejects the
-      // move with a 400. Surface the dedicated full-shelf copy.
+      // The target shelf may already hold its 50 objects, in which case the
+      // backend rejects the move with a 400. Surface the full-shelf copy.
       const message = isShelfFullError(e)
         ? SHELF_FULL_MESSAGE
         : e instanceof Error
           ? e.message
-          : 'Could not move object.';
+          : 'Could not move this item.';
       setMoveError(message);
       setMoveToShelfId(undefined);
     } finally {
@@ -305,7 +480,16 @@ export function ObjectOverviewModal(
   const coverUrl = resolveStrapiUrl(
     attributes.coverImage?.data?.attributes.url,
   );
-  const tagsList = attributes.tags?.data ?? [];
+  // Only a book carries tags, and only its owner may set them; a visitor sees
+  // the row when there is something on it.
+  const showTags = isOwner && objectType === 'book';
+  // A tag that arrives rises into the row, one that is taken off fades where
+  // it stood and the rest slide over.
+  const { ref: tagsRef, entries: tagEntries } = useAnimatedList(
+    tags,
+    tag => String(tag.id),
+    { collapse: 'width' },
+  );
   const shelfData = attributes.shelf?.data;
   // Prefer the live shelf from GlobalState (matched by id) so a rename reflects
   // instantly — the object's embedded `shelf.data` is frozen at fetch time.
@@ -320,14 +504,19 @@ export function ObjectOverviewModal(
   // (contiguous 1..N even when persisted `order` values have gaps). Fall back to
   // the object's raw `order` when siblings weren't passed.
   const positionIndex = shelfObjects?.findIndex(o => o.id === id) ?? -1;
-  const objectPosition = positionIndex >= 0 ? positionIndex : attributes.order;
-  const publishedFormatted = formatDate(attributes.publicationDate);
+  // Without siblings there is no rank to show: the raw persisted `order`
+  // has gaps and would name a different position than the shelf does.
+  const objectPosition = positionIndex >= 0 ? positionIndex : undefined;
+  const publishedFormatted = formatObjectDate(attributes.publicationDate);
   const sourceLabel =
     attributes.source && attributes.source.length > 0 ? attributes.source : '—';
-  const durationLabel = formatDuration(attributes.duration);
+  const durationLabel = formatObjectDuration(attributes.duration);
+  // The description is the owner's own writing, so it is signed with their name
+  // on every surface that shows it.
+  const ownerNotesLabel = notesLabel(ownerUsername);
 
   // Edit mode swaps the modal entirely; AddObjectModal manages its own success popup.
-  if (editing) {
+  if (editing && isOwner) {
     return (
       <AddObjectModal
         objectType={objectType}
@@ -339,6 +528,7 @@ export function ObjectOverviewModal(
           setEditing(false);
           onClose();
         }}
+        onCancel={() => setEditing(false)}
         onCreated={updated => {
           onUpdated?.(updated);
         }}
@@ -369,60 +559,14 @@ export function ObjectOverviewModal(
             aria-label="Close"
             onClick={close}
           >
-            <CloseIcon width={16} height={16} />
+            <CloseIcon width={24} height={24} />
           </button>
         </div>
+        {/* Same drawn rule as the sidebar sections, in place of the boxed
+            1px header border. */}
+        <InkLine seed={4} className={styles.headerRule} />
 
         <div className={styles.body}>
-          <div className={styles.actions}>
-            <Button
-              type={ButtonType.Primary}
-              size={ButtonSize.Default}
-              className={styles.shareButton}
-              label={shareCopied ? 'Copied' : 'Share'}
-              ariaLabel={shareCopied ? 'Link copied' : 'Share'}
-              Icon={<ShareIcon />}
-              iconPosition={IconPosition.Right}
-              onClick={handleShare}
-            />
-            {isOwner && (
-              <div ref={menuRef} className={styles.menuWrapper}>
-                <button
-                  type="button"
-                  className={styles.iconButton}
-                  aria-label="More actions"
-                  aria-haspopup="menu"
-                  aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen(prev => !prev)}
-                >
-                  <DotsVerticalIcon />
-                </button>
-                {menuOpen && (
-                  <div role="menu" className={styles.menu}>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className={styles.menuItem}
-                      onClick={handleEdit}
-                    >
-                      <EditIcon />
-                      <Text variant={TypographyVariant.TextBase}>Edit</Text>
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className={classNames(styles.menuItem, styles.danger)}
-                      onClick={handleDelete}
-                    >
-                      <DeleteIcon />
-                      <Text variant={TypographyVariant.TextBase}>Delete</Text>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
           <div className={styles.left}>
             <div
               className={classNames(styles.cover, styles[config.coverShape])}
@@ -499,20 +643,158 @@ export function ObjectOverviewModal(
               </Text>
             )}
 
-            {attributes.author && (
+            {/* Author sits beside the actions so the copy button costs no
+                row of its own above the cover. */}
+            <div className={styles.identityRow}>
+              {attributes.author && (
+                <div className={styles.row}>
+                  <Text
+                    variant={TypographyVariant.TextSmall}
+                    className={styles.rowLabel}
+                  >
+                    Author
+                  </Text>
+                  <Text
+                    variant={TypographyVariant.TextBase}
+                    className={styles.rowValue}
+                  >
+                    {attributes.author}
+                  </Text>
+                </div>
+              )}
+              <div className={styles.actions}>
+                <Button
+                  type={ButtonType.Secondary}
+                  size={ButtonSize.Default}
+                  className={styles.shareButton}
+                  label={
+                    <CopyButtonLabel copied={shareCopied} label="Copy URL" />
+                  }
+                  ariaLabel={shareCopied ? 'Link copied' : 'Copy URL'}
+                  Icon={<ShareIcon />}
+                  iconPosition={IconPosition.Right}
+                  onClick={handleShare}
+                />
+                {canBeFavorite(object) && (isOwner || favorite) && (
+                  <FavoriteToggle
+                    favorite={favorite}
+                    onToggle={isOwner ? handleFavoriteToggle : undefined}
+                    busy={favoriteBusy}
+                    title={attributes.title}
+                    className={styles.favoriteButton}
+                  />
+                )}
+                {/* A tag labels a book, so the picker stands with the other
+                    controls of the book itself. Each click is saved on its
+                    own; the row below carries the answer. */}
+                {isOwner && objectType === 'book' && (
+                  <TagMultiSelect
+                    variant="compact"
+                    options={tagOptions}
+                    value={tags}
+                    onChange={handleTagsChange}
+                    maxItems={MAX_TAGS_PER_OBJECT}
+                    emptyState="No tags yet. Create one from the Tags panel."
+                    ariaLabel="Tags"
+                    hint="Tags"
+                    portal
+                  />
+                )}
+                {isOwner && (
+                  <div ref={menuRef} className={styles.menuWrapper}>
+                    <button
+                      type="button"
+                      className={styles.iconButton}
+                      aria-label="More actions"
+                      aria-haspopup="menu"
+                      aria-expanded={menuOpen}
+                      onClick={() => setMenuOpen(prev => !prev)}
+                    >
+                      <DotsVerticalIcon />
+                    </button>
+                    {menuMounted && (
+                      <div
+                        role="menu"
+                        className={classNames(styles.menu, {
+                          [styles.menuClosing]: !menuShown,
+                        })}
+                      >
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={styles.menuItem}
+                          onClick={handleEdit}
+                        >
+                          <EditIcon />
+                          <Text variant={TypographyVariant.TextBase}>Edit</Text>
+                        </button>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={classNames(styles.menuItem, styles.danger)}
+                          onClick={handleDelete}
+                        >
+                          <DeleteIcon />
+                          <Text variant={TypographyVariant.TextBase}>
+                            Delete
+                          </Text>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            {favoriteError && <p className={styles.error}>{favoriteError}</p>}
+            {tagsError && <p className={styles.error}>{tagsError}</p>}
+
+            {/* The tags sit with the controls that set them, under the author
+                and above the object's own facts. The owner keeps this row from
+                the start, empty or not: it is where the picker's answer lands,
+                and a row appearing on the first tag would shift everything
+                under it. */}
+            {(showTags || tags.length > 0) && (
               <div className={styles.row}>
                 <Text
                   variant={TypographyVariant.TextSmall}
                   className={styles.rowLabel}
                 >
-                  Author
+                  Tags
                 </Text>
-                <Text
-                  variant={TypographyVariant.TextBase}
-                  className={styles.rowValue}
+                <div
+                  ref={tagsRef}
+                  className={classNames(styles.tags, {
+                    [styles.tagsEmpty]: tags.length === 0,
+                  })}
                 >
-                  {attributes.author}
-                </Text>
+                  {tags.length === 0 && (
+                    <Text
+                      variant={TypographyVariant.TextBase}
+                      className={styles.rowValue}
+                    >
+                      No tags yet
+                    </Text>
+                  )}
+                  {/* One pill per slot: the slot is what the list motion
+                      measures and moves. */}
+                  {tagEntries.map(({ item: tag, leaving }) => (
+                    <span
+                      key={tag.id}
+                      data-flip-id={String(tag.id)}
+                      data-flip-leaving={leaving ? 'true' : undefined}
+                      aria-hidden={leaving || undefined}
+                      className={classNames(styles.tagSlot, {
+                        [styles.tagLeaving]: leaving,
+                      })}
+                    >
+                      <Tag
+                        label={tag.name}
+                        color={tag.color}
+                        description={tagDescriptions.get(tag.id)}
+                      />
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -538,13 +820,13 @@ export function ObjectOverviewModal(
                 variant={TypographyVariant.TextSmall}
                 className={styles.rowLabel}
               >
-                {config.descriptionLabel}
+                {ownerNotesLabel}
               </Text>
               {attributes.description ? (
                 <div
                   className={styles.description}
                   dangerouslySetInnerHTML={{
-                    __html: sanitizeHtml(attributes.description),
+                    __html: toEditorHtml(attributes.description),
                   }}
                 />
               ) : (
@@ -552,30 +834,10 @@ export function ObjectOverviewModal(
                   variant={TypographyVariant.TextBase}
                   className={styles.rowValue}
                 >
-                  {config.descriptionEmpty}
+                  {config.notesEmpty}
                 </Text>
               )}
             </div>
-
-            {tagsList.length > 0 && (
-              <div className={styles.row}>
-                <Text
-                  variant={TypographyVariant.TextSmall}
-                  className={styles.rowLabel}
-                >
-                  Tags
-                </Text>
-                <div className={styles.tags}>
-                  {tagsList.map(t => (
-                    <Tag
-                      key={t.id}
-                      label={t.attributes.name}
-                      color={t.attributes.color}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div className={styles.row}>
               <Text
@@ -629,6 +891,7 @@ export function ObjectOverviewModal(
               <>
                 <RatingBox
                   username={ownerUsername}
+                  itemLabel={objectType}
                   overallRating={overallRating}
                   difficulty={difficulty}
                   onOverallChange={handleOverallChange}
@@ -642,11 +905,12 @@ export function ObjectOverviewModal(
         </div>
       </Modal>
 
-      {deleting && (
+      {isOwner && deleting && (
         <ConfirmationModal
           variant="delete"
           title={`Are you sure you want to delete the object "${attributes.title}"?`}
-          text={deleteError ?? 'This action is irreversible.'}
+          text="This action is irreversible."
+          error={deleteError ?? undefined}
           actionButtonLabel={deleteLoading ? 'Deleting…' : 'Delete'}
           actionButtonType={ButtonType.Warning}
           isLoading={deleteLoading}
@@ -669,10 +933,12 @@ export function ObjectOverviewModal(
           actionButtonType={ButtonType.Secondary}
           onClose={() => {
             setDeleteSuccess(false);
+            onDeleted?.(id);
             onClose();
           }}
           onConfirm={() => {
             setDeleteSuccess(false);
+            onDeleted?.(id);
             onClose();
           }}
         />

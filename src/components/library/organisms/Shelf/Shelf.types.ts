@@ -1,5 +1,18 @@
+import type { HTMLAttributes } from 'react';
+
 import type { StrapiSingleShelfEntry } from '@local-types/library';
 import type { IObject, IReorderObjectEntry } from '@local-types/library/object';
+import type { ShelfVisibility } from '@local-types/library/shelf';
+
+import type { MagicShelfSlot } from '@hooks/library/useMagicBooks';
+
+/**
+ * dnd-kit's activator wiring, handed down so the grip rendered inside the
+ * shelf header is what starts a drag. Absent when the viewer can't reorder.
+ */
+export interface ShelfDragHandleProps extends HTMLAttributes<HTMLElement> {
+  ref?: (element: HTMLElement | null) => void;
+}
 
 export interface ShelfProps {
   className?: string;
@@ -10,11 +23,21 @@ export interface ShelfProps {
   /** True when the current viewer owns this library. */
   isOwner?: boolean;
   /**
-   * True while the whole library still holds no objects. Pulses this shelf's Add
-   * control so a fresh library points at its own next step; the library turns it
-   * off the moment the first object lands anywhere.
+   * Ids of the objects a search matched on this shelf. Null means no search:
+   * every object is drawn. The shelf's own object list is never narrowed, so
+   * counts, caps and reorder payloads always describe the real shelf.
    */
-  highlightAdd?: boolean;
+  visibleObjectIds?: Set<number> | null;
+  /**
+   * True when the owner could reorder shelves but a search is active. The
+   * grip stays in its slot, disabled, so the header does not reflow.
+   */
+  reorderLocked?: boolean;
+  /** Fired after the privacy switch saved, so the library tree carries it. */
+  onShelfVisibilityChanged?: (
+    shelfId: number,
+    visibility: ShelfVisibility,
+  ) => void;
   /** Fired after a successful object create — used for surgical re-render. */
   onObjectCreated?: (shelfId: number, object: IObject) => void;
   /** Fired after a successful object update — used for surgical re-render. */
@@ -23,8 +46,11 @@ export interface ShelfProps {
   onObjectDeleted?: (shelfId: number, objectId: number) => void;
   /** Fired after the shelf itself is deleted — used to drop it from the library list. */
   onShelfDeleted?: (shelfId: number) => void;
-  /** Fired after the shelf is renamed — lets the library (and toolbar jump-to nav) update in the same render. */
-  onShelfRenamed?: (shelfId: number, name: string) => void;
+  /**
+   * Fired after the shelf form saved its name and description — lets the
+   * library (and toolbar jump-to nav) update in the same render.
+   */
+  onShelfRenamed?: (shelfId: number, name: string, description: string) => void;
   /**
    * Fired when an object on this shelf is moved to another shelf (PUT shelf: id).
    * Lets the library remove the object from the source shelf and add it to the
@@ -43,4 +69,60 @@ export interface ShelfProps {
     shelfId: number,
     ordered: IReorderObjectEntry[],
   ) => void;
+  /**
+   * The library's Favorites shelf: every starred book, gathered from the
+   * shelves on screen, on a synthetic entry (id FAVORITES_SHELF_ID). It
+   * cannot be renamed, deleted or added to; its privacy is the library's own
+   * `favoritesVisibility`; a drag saves `favoriteOrder` instead of `order`.
+   * Opening a book from it opens the overview on the book's real shelf, which
+   * is the one that knows the shelf the book lives on.
+   */
+  favorites?: boolean;
+  /**
+   * Favorites only: saves the library's `favoritesVisibility`. Rejects when
+   * the save fails, so the menu can fall back.
+   */
+  onFavoritesVisibilityChange?: (visibility: ShelfVisibility) => Promise<void>;
+  /**
+   * Favorites only: saves the library's `favoritesDescription`, the hint the
+   * shelf shows beside its name. Rejects when the save fails.
+   */
+  onFavoritesDescriptionChange?: (description: string) => Promise<void>;
+  /**
+   * The library filtered down to one tag: every book that tag labels, gathered
+   * off the shelves they stand on, in the tag's own order (id TAG_SHELF_ID).
+   * The row cannot be renamed, deleted, added to or made private, being a
+   * view of a tag rather than a shelf, and a drag on it saves the tag's own
+   * sequence through `saveOrder`.
+   */
+  tagFilter?: boolean;
+  /**
+   * Books whose own shelf is private. Marked on the board, since a gathered
+   * row otherwise says nothing about where each book came from. Owner-only:
+   * a visitor's tag sequence never names them.
+   */
+  hiddenObjectIds?: Set<number> | null;
+  /**
+   * Where a drag on this board is persisted, when it is not this shelf's own
+   * order. Rejects on failure, so the row can fall back and say so.
+   */
+  saveOrder?: (ordered: IReorderObjectEntry[]) => Promise<unknown>;
+  /** Gathered rows only: the shelf a book actually stands on. */
+  shelfOfObject?: (objectId: number) => number | undefined;
+  /** Gathered rows only: everything standing on that shelf. */
+  objectsOfShelf?: (shelfId: number) => IObject[];
+  /** Grip wiring for reordering shelves; owner-only, absent while searching. */
+  dragHandleProps?: ShelfDragHandleProps;
+  /** True while this shelf is the one being dragged. */
+  isDragging?: boolean;
+  /**
+   * The magic book for this shelf: the engine's one pick, standing after the
+   * last book. Owner-only, book shelves only; null or absent draws nothing.
+   */
+  magic?: MagicShelfSlot | null;
+  /**
+   * True once the whole library holds its 300 objects. The Add control
+   * disables with the library's message, whatever this shelf holds.
+   */
+  libraryFull?: boolean;
 }

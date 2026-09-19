@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -7,13 +6,16 @@ import React, {
   useState,
 } from 'react';
 
+import { adaptGuide, copy } from '@lib/aiAtlas/adapter';
+import guide from '@lib/aiAtlas/guide.json';
+import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
+
 import SeoGenerator from '@components/SeoGenerator';
 
 const VIEW = 1500;
 const HALF = VIEW / 2;
 const TOP_PAD = 20;
 const BOT_PAD = -20;
-const POLL_MS = 30000;
 const RAD = (deg: number) => (deg * Math.PI) / 180;
 const POL = (r: number, theta: number) => ({
   x: Math.cos(RAD(theta)) * r * HALF,
@@ -41,12 +43,9 @@ function useHasHover() {
   return hasHover;
 }
 
-type Lang = 'en' | 'ru';
-const pickLang = (locale: string | undefined): Lang =>
-  locale === 'ru' ? 'ru' : 'en';
-const dataUrlFor = (lang: Lang) =>
-  lang === 'ru' ? '/ai-atlas/data-ru.json' : '/ai-atlas/data.json';
-const METRICS_URL = 'https://metrics.administration.ae/metrics.json';
+/* The Atlas content is bundled into the page and rendered on the server.
+   It is never served as a standalone file: the guide describes the private
+   Terminal and only what the page draws may leave this host. */
 
 /* ============================================================
    Locale strings — every user-facing piece of text in EN + RU.
@@ -61,455 +60,7 @@ type SecurityLayer = {
   why: string;
 };
 
-const STRINGS = {
-  en: {
-    seoTitle: 'AI Atlas — KeepSimple',
-    seoDescription:
-      "An orbital map of KeepSimple's people, AI agents, and products — founders, dev environment, core projects and territories — visualized live.",
-    seoKeywords:
-      'AI Atlas, KeepSimple, AI agents, dev environment, organizational map, orbital diagram, knowledge map, Wolf Alexanyan',
-    ogImageAlt: 'AI Atlas — orbital map of KeepSimple operations',
-    loading: 'Loading…',
-    failedToLoad: 'Failed to load data — ',
-    welcomeBanner: "The heart of KeepSimple Team's operations",
-    day: 'DAY',
-    daySinceTail: 'since the beginning of our movement',
-    apexFounderFallback: 'founder',
-    redactedPlaceholder: 'REDACTED',
-    engLeadLabel: 'Eng. Lead',
-    publicInternetLabel: 'PUBLIC INTERNET',
-    telegramLabel: 'TELEGRAM',
-    claudeMdLabel: 'claude.md',
-    linesValue: (n: number) => `${n.toLocaleString()} lines`,
-    canvasStats: {
-      humans: 'humans',
-      agents: 'ai agents',
-      subAgents: 'ai sub-agents',
-      products: 'products',
-    },
-    introDossierTitle: 'THE ATLAS',
-    introDossierCjk: '地図帳',
-    introStoryBody:
-      'In March 2026 we decided to build the future of Agentic AI. We’ve built companies and products from scratch before, so we approached it the same way — learning every bit of vibecode data from the web and the available docs, then building on top of it with our own expertise. Every project we vibecoded brought us closer to the essence of Agentic AI and made our instructions sharper, more efficient, more striking.',
-    introStoryLink: 'Our journey, in guide form, is here.',
-    introQuestionsBefore: 'Got questions? Drop those to our',
-    introQuestionsLink: 'Telegram',
-    introQuestionsAfter: '.',
-    introDepthLabel: 'depth',
-    introDepthValue: '5 rings · 4 actor types',
-    introInhabitantsLabel: 'inhabitants',
-    introInhabitantsTpl: (h: number, a: number, s: number, p: number) =>
-      `${h} humans · ${a} ai agents · ${s} sub-agents · ${p} products`,
-    introPrincipleLabel: 'principle',
-    principles: [
-      'single host · single source · single owner',
-      'ship daily · fail loud · fix faster',
-      'discipline before tools',
-      'the atlas earns trust by being literally true',
-      'strengthen self · co-exist · co-prosper',
-    ],
-    legendTitle: 'Legend',
-    legendCjk: '凡例',
-    legendHumanLabel: 'human',
-    legendHumanDesc: 'direction · final judgment',
-    legendAgentLabel: 'ai agent',
-    legendAgentDesc: 'dedicated AI · custom memory · CLAUDE.md persona',
-    legendSubAgentLabel: 'ai sub-agent',
-    legendSubAgentDesc: 'scoped AI · serves a parent agent',
-    legendProductLabel: 'product',
-    legendProductDesc: 'products we build',
-    legendSolidLabel: '— solid',
-    legendSolidDesc: 'authority',
-    legendFilledLabel: 'filled tile',
-    legendFilledDesc: 'subsystem · scoped to a parent product',
-    legendArticleCta: 'Read why do you need this',
-    legendArticleUrl:
-      'https://keepsimple.io/articles/agent-orchestration-for-career',
-    toggleEnvironment: 'Environment',
-    toggleSecurity: 'Security',
-    doctrineTitle: 'Doctrine',
-    doctrineCjk: '守則',
-    doctrineImageAlt: 'Doctrine — six-fold defense',
-    securityIntroTitle: 'THIS STACK',
-    securityIntroCjk: '此守り',
-    securityIntroDesc:
-      'A request reaches the data only after passing through six independent layers — each cheap on its own, expensive in combination.',
-    securityIntroRows: [
-      { k: 'depth', v: '6 layers · outside-in' },
-      { k: 'open ports', v: '0' },
-      { k: 'credentials', v: 'one process holds them all' },
-      { k: 'principle', v: 'defense in depth · rehearsed, not prayed about' },
-    ],
-    securityLayers: [
-      {
-        n: 1,
-        side: 'left',
-        label: 'cloudflare edge',
-        title: 'Cloudflare Edge',
-        what: 'TLS, DDoS, WAF, bot-management at every CDN POP.',
-        why: 'handled in someone else’s NIC, not ours.',
-      },
-      {
-        n: 2,
-        side: 'right',
-        label: 'cloudflare access',
-        title: 'Cloudflare Access',
-        what: 'Identity gate per app: email OTP for humans, service tokens for agents, allowlists per surface.',
-        why: 'SSO without running an SSO.',
-      },
-      {
-        n: 3,
-        side: 'left',
-        label: 'cloudflare tunnel',
-        title: 'Cloudflare Tunnel',
-        what: 'An outbound-only daemon dials home to Cloudflare. The tunnel carries every request inward.',
-        why: 'there is no inbound port. The host is unreachable from the internet at the IP layer.',
-      },
-      {
-        n: 4,
-        side: 'right',
-        label: 'network isolation',
-        title: 'Network isolation',
-        what: 'Host firewall denies all incoming except SSH; every web service binds the loopback interface.',
-        why: 'two redundant mechanisms hold the same line.',
-      },
-      {
-        n: 5,
-        side: 'left',
-        label: 'passkey gate',
-        title: 'Passkey Gate',
-        what: 'Each app re-prompts for a synced WebAuthn passkey — the iCloud-synced kind, used with Face ID.',
-        why: 'phishable creds simply do not exist in this stack.',
-      },
-      {
-        n: 6,
-        side: 'right',
-        label: 'authority gate',
-        title: 'Authority Gate',
-        what: 'Write actions route through a forced-command SSH gate with a six-verb allowlist.',
-        why: 'compromise the UI — you get six verbs, not root.',
-      },
-    ] as SecurityLayer[],
-    securityWhyWeLikeIt: 'Why we like it:',
-    securityCenterCore: 'CORE',
-    securityCenterKanji: '守',
-    statsHeading: 'By the numbers',
-    statsCjk: '数',
-    securityStats: [
-      { v: '0', k: 'open web ports' },
-      { v: '6', k: 'allowlisted write verbs' },
-      { v: '2', k: 'off-machine backup destinations' },
-      { v: '100%', k: 'services bound to loopback' },
-    ],
-    agentsHeading: 'Agents share the box',
-    agentsCjk: '共棲',
-    agentsSubtitle:
-      'Several AI workers run on this server. One holds every credential; the rest hold none and request access through The Order.',
-    authorityAgentRole: 'Authority Agent',
-    orderName: 'The Order',
-    orderCjk: '序',
-    orderCreds: [
-      'Source-host PAT',
-      'CDN + ingress token',
-      'Host SSH',
-      'Backup repository keys',
-    ],
-    securityAgents: [
-      {
-        name: 'Voice',
-        badge: '0 creds',
-        desc: 'Hands-free command surface. Cannot reach the host; speaks only through The Order.',
-      },
-      {
-        name: 'QA',
-        badge: 'service token',
-        desc: 'Probes deploys, fingerprints routes, files reports. One scoped token; nothing else.',
-      },
-      {
-        name: 'Researcher',
-        badge: '0 creds',
-        desc: 'Reads the field, drafts digests, posts results. Session cookies only, never tokens.',
-      },
-      {
-        name: 'DevOps',
-        badge: '0 creds',
-        desc: 'Container hygiene: builds, restarts, healthchecks. Touches images, never secrets.',
-      },
-    ],
-    agentsPunchline:
-      'Compromise a sibling — no privilege escalation. Add a sibling — no new credential ceremony. The blast radius for secrets is exactly one process, and we know which one.',
-    patternsHeading: 'Patterns we like',
-    patternsCjk: '型',
-    patternsSubtitle:
-      'Defense in depth gets the headline. These are the quieter ideas behind it.',
-    securityPatterns: [
-      {
-        title: 'Nested backups, rehearsed',
-        desc: 'Encrypted offsite repo at one provider, plus a daily mirror of the source-of-truth Git account. The mirror runs thirty minutes before the offsite snapshot — so the mirror lands inside the backup. We rehearse it; we don’t pray about it.',
-      },
-      {
-        title: 'CVE alerts that don’t cry wolf',
-        desc: 'Vulnerability scans run nightly across every running image, but the inbox only sees deltas above an accepted baseline. Yesterday’s known set stays silent. Tomorrow’s new entries page out.',
-      },
-      {
-        title: 'Local agent memory',
-        desc: 'Long-lived agent context lives on disk, file-backed, project-segmented, exposed over MCP. No cloud round-trip to remember what we decided last Tuesday.',
-      },
-      {
-        title: 'Three-call ingress',
-        desc: 'Adding a public hostname is exactly three idempotent API calls: DNS, tunnel route, access policy. No console clicks, no hand-edited config, replayable from a script.',
-      },
-      {
-        title: 'Source-of-truth on the box',
-        desc: 'Source lives on the server, bind-mounted into containers; the laptop is a sync target, not a deploy trigger. Edits go live on refresh. Rebuilds only when dependencies change.',
-      },
-      {
-        title: 'Read-only Docker socket',
-        desc: 'The dashboard reads container state through a tightly scoped read-only proxy. Anything mutating routes through the Authority Gate’s verb list. Two paths in. One of them can change the world.',
-      },
-      {
-        title: 'Per-container egress',
-        desc: 'Workloads that need a controlled exit point share one isolated tunnel sidecar — a single WireGuard hop into a different jurisdiction. Members opt in via registry; no host-network changes, no leakage between projects.',
-      },
-      {
-        title: 'Self-modification, handled',
-        desc: 'The dashboard can’t escalate to host root. The terminal can’t auto-restart while you’re still typing in it. The passkey gate mounts before the auth gate, not after.',
-      },
-    ],
-    footerEnd: 'END · ATLAS',
-    hankoSelfTitle: 'self-strengthening without rest',
-    hankoCoTitle: 'co-exist, co-prosper',
-  },
-  ru: {
-    seoTitle: 'ИИ Атлас — KeepSimple',
-    seoDescription:
-      'Орбитальная карта людей, ИИ-агентов и продуктов KeepSimple — основатели, среда разработки, ключевые проекты и территории — в реальном времени.',
-    seoKeywords:
-      'ИИ Атлас, KeepSimple, ИИ-агенты, среда разработки, организационная карта, орбитальная диаграмма, карта знаний, Wolf Alexanyan',
-    ogImageAlt: 'ИИ Атлас — орбитальная карта операций KeepSimple',
-    loading: 'Загрузка…',
-    failedToLoad: 'Ошибка загрузки данных — ',
-    welcomeBanner: 'Сердце операций команды KeepSimple',
-    day: 'ДЕНЬ',
-    daySinceTail: 'с начала нашего движения',
-    apexFounderFallback: 'основатель',
-    redactedPlaceholder: 'СКРЫТО',
-    engLeadLabel: 'Тех. Лид',
-    publicInternetLabel: 'ПУБЛИЧНЫЙ ИНТЕРНЕТ',
-    telegramLabel: 'TELEGRAM',
-    claudeMdLabel: 'claude.md',
-    linesValue: (n: number) => {
-      const m10 = n % 10;
-      const m100 = n % 100;
-      let unit = 'строк';
-      if (m10 === 1 && m100 !== 11) unit = 'строка';
-      else if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14))
-        unit = 'строки';
-      return `${n.toLocaleString('ru-RU')} ${unit}`;
-    },
-    canvasStats: {
-      humans: 'людей',
-      agents: 'ИИ-агентов',
-      subAgents: 'ИИ-субагентов',
-      products: 'продуктов',
-    },
-    introDossierTitle: 'АТЛАС',
-    introDossierCjk: '地図帳',
-    introStoryBody:
-      'В марте 2026 мы решили строить будущее агентного ИИ. Мы и раньше строили компании и продукты с нуля, поэтому подошли так же — изучили все данные о вайбкоде из сети и доступных доков, а затем надстроили поверх собственную экспертизу. Каждый вайбкод-проект приближал нас к сути агентного ИИ и делал наши инструкции точнее, эффективнее, острее.',
-    introStoryLink: 'Наш путь — в формате гайда — здесь.',
-    introQuestionsBefore: 'Есть вопросы? Пишите нам в',
-    introQuestionsLink: 'Telegram',
-    introQuestionsAfter: '.',
-    introDepthLabel: 'глубина',
-    introDepthValue: '5 колец · 4 типа сущностей',
-    introInhabitantsLabel: 'обитатели',
-    introInhabitantsTpl: (h: number, a: number, s: number, p: number) =>
-      `${h} людей · ${a} ИИ-агентов · ${s} субагентов · ${p} продуктов`,
-    introPrincipleLabel: 'принцип',
-    principles: [
-      'один хост · один источник · один владелец',
-      'релизы каждый день · фейлим громко · чиним быстрее',
-      'дисциплина важнее инструментов',
-      'атлас заслуживает доверия, потому что он буквально правдив',
-      'усиливай себя · сосуществуй · процветай вместе',
-    ],
-    legendTitle: 'Легенда',
-    legendCjk: '凡例',
-    legendHumanLabel: 'человек',
-    legendHumanDesc: 'направление · финальное решение',
-    legendAgentLabel: 'ИИ-агент',
-    legendAgentDesc: 'выделенный ИИ · своя память · персона CLAUDE.md',
-    legendSubAgentLabel: 'ИИ-субагент',
-    legendSubAgentDesc: 'узкий ИИ · служит родительскому агенту',
-    legendProductLabel: 'продукт',
-    legendProductDesc: 'продукты, которые мы строим',
-    legendSolidLabel: '— сплошная',
-    legendSolidDesc: 'полномочия',
-    legendFilledLabel: 'залитый блок',
-    legendFilledDesc: 'подсистема · в рамках родительского продукта',
-    legendArticleCta: 'Прочитайте, зачем это нужно',
-    legendArticleUrl:
-      'https://keepsimple.io/ru/articles/agent-orchestration-for-career',
-    toggleEnvironment: 'Среда',
-    toggleSecurity: 'Защита',
-    doctrineTitle: 'Доктрина',
-    doctrineCjk: '守則',
-    doctrineImageAlt: 'Доктрина — шестислойная защита',
-    securityIntroTitle: 'ЭТОТ СТЕК',
-    securityIntroCjk: '此守り',
-    securityIntroDesc:
-      'Запрос достигает ядра, только пройдя шесть независимых слоёв — каждый дёшев по отдельности, дорог в комбинации.',
-    securityIntroRows: [
-      { k: 'глубина', v: '6 слоёв · снаружи внутрь' },
-      { k: 'открытых портов', v: '0' },
-      { k: 'учётки', v: 'хранит один процесс' },
-      {
-        k: 'принцип',
-        v: 'эшелонированная защита · отрепетирована, не выпрошена',
-      },
-    ],
-    securityLayers: [
-      {
-        n: 1,
-        side: 'left',
-        label: 'cloudflare edge',
-        title: 'Cloudflare Edge',
-        what: 'TLS, DDoS, WAF и bot-management на каждой CDN POP.',
-        why: 'обрабатывается на чужой сетевой карте, не на нашей.',
-      },
-      {
-        n: 2,
-        side: 'right',
-        label: 'cloudflare access',
-        title: 'Cloudflare Access',
-        what: 'Гейт идентификации на каждое приложение: email OTP для людей, сервис-токены для агентов, allow-листы по поверхности.',
-        why: 'SSO без поднятия собственного SSO.',
-      },
-      {
-        n: 3,
-        side: 'left',
-        label: 'cloudflare tunnel',
-        title: 'Cloudflare Tunnel',
-        what: 'Демон с исходящим соединением сам звонит в Cloudflare. Туннель несёт каждый запрос внутрь.',
-        why: 'входящего порта нет. Хост недоступен из интернета на IP-уровне.',
-      },
-      {
-        n: 4,
-        side: 'right',
-        label: 'network isolation',
-        title: 'Сетевая изоляция',
-        what: 'Хост-фаервол блокирует всё входящее, кроме SSH; каждый веб-сервис слушает только loopback.',
-        why: 'два независимых механизма держат одну и ту же линию.',
-      },
-      {
-        n: 5,
-        side: 'left',
-        label: 'passkey gate',
-        title: 'Passkey Gate',
-        what: 'Каждое приложение требует синхронизированный WebAuthn passkey — iCloud-вариант, через Face ID.',
-        why: 'уязвимых для фишинга креденшалов в этом стеке просто нет.',
-      },
-      {
-        n: 6,
-        side: 'right',
-        label: 'authority gate',
-        title: 'Гейт полномочий',
-        what: 'Записи проходят через forced-command SSH-гейт с allow-листом из шести команд.',
-        why: 'скомпрометировал UI — получил шесть команд, не root.',
-      },
-    ] as SecurityLayer[],
-    securityWhyWeLikeIt: 'Почему нам нравится:',
-    securityCenterCore: 'ЯДРО',
-    securityCenterKanji: '守',
-    statsHeading: 'В цифрах',
-    statsCjk: '数',
-    securityStats: [
-      { v: '0', k: 'открытых портов' },
-      { v: '6', k: 'разрешённых команд записи' },
-      { v: '2', k: 'внешних точек резервного копирования' },
-      { v: '100%', k: 'сервисов слушают только loopback' },
-    ],
-    agentsHeading: 'Агенты делят коробку',
-    agentsCjk: '共棲',
-    agentsSubtitle:
-      'На этом сервере живут несколько ИИ-работников. Один держит все учётки; остальные не держат ничего и запрашивают доступ через Орден.',
-    authorityAgentRole: 'Агент полномочий',
-    orderName: 'Орден',
-    orderCjk: '序',
-    orderCreds: [
-      'Source-host PAT',
-      'CDN + ingress токен',
-      'SSH к хосту',
-      'Ключи репозиториев бэкапов',
-    ],
-    securityAgents: [
-      {
-        name: 'Голос',
-        badge: '0 учёток',
-        desc: 'Голосовая поверхность управления. До хоста не дотягивается; говорит только через Орден.',
-      },
-      {
-        name: 'QA',
-        badge: 'сервис-токен',
-        desc: 'Прощупывает деплои, снимает фингерпринты с маршрутов, шлёт отчёты. Один scoped-токен и больше ничего.',
-      },
-      {
-        name: 'Исследователь',
-        badge: '0 учёток',
-        desc: 'Читает поле, готовит сводки, постит результаты. Только сессионные куки, никаких токенов.',
-      },
-      {
-        name: 'DevOps',
-        badge: '0 учёток',
-        desc: 'Гигиена контейнеров: сборки, рестарты, healthcheck. Трогает образы, не секреты.',
-      },
-    ],
-    agentsPunchline:
-      'Скомпрометируй одного из них — никаких эскалаций привилегий. Добавь нового — никакой церемонии с креденшалами. Радиус поражения секретов — ровно один процесс, и мы знаем какой.',
-    patternsHeading: 'Паттерны, которые нам нравятся',
-    patternsCjk: '型',
-    patternsSubtitle:
-      'Эшелонированная защита берёт заголовок. А вот тихие идеи, на которых держится всё остальное.',
-    securityPatterns: [
-      {
-        title: 'Вложенные бэкапы, отрепетированные',
-        desc: 'Зашифрованный оффсайт-репозиторий у одного провайдера плюс ежедневное зеркало source-of-truth Git-аккаунта. Зеркало срабатывает за тридцать минут до оффсайт-снапшота — так что зеркало попадает внутрь бэкапа. Мы это репетируем; мы не молимся об этом.',
-      },
-      {
-        title: 'CVE-алерты, которые не кричат «волки»',
-        desc: 'Сканы уязвимостей бегут ночью по каждому запущенному образу, но в инбокс попадают только дельты выше принятого baseline. Вчерашний известный набор молчит. Завтрашние новые записи будят оперативку.',
-      },
-      {
-        title: 'Локальная память агентов',
-        desc: 'Долгоживущий контекст агентов лежит на диске, по файлам, по проектам, доступ через MCP. Никаких облачных round-trip’ов, чтобы вспомнить, что мы решили в прошлый вторник.',
-      },
-      {
-        title: 'Ingress в три вызова',
-        desc: 'Добавление публичного хостнейма — ровно три идемпотентных API-вызова: DNS, маршрут туннеля, политика доступа. Никаких кликов в консоли, никаких правок конфигов руками, всё повторяемо из скрипта.',
-      },
-      {
-        title: 'Source-of-truth на самой машине',
-        desc: 'Исходники живут на сервере, монтируются в контейнеры; ноутбук — точка синхронизации, не триггер деплоя. Правки идут в продакшен по обновлению. Пересборка — только когда меняются зависимости.',
-      },
-      {
-        title: 'Read-only Docker-сокет',
-        desc: 'Дашборд читает состояние контейнеров через жёстко ограниченный read-only прокси. Всё, что меняет — идёт через allow-лист команд Гейта полномочий. Два пути внутрь. Только один из них может изменить мир.',
-      },
-      {
-        title: 'Egress на контейнер',
-        desc: 'Воркоуды, которым нужна управляемая точка выхода, делят один изолированный туннельный сайдкар — один WireGuard-хоп в другую юрисдикцию. Подключение — opt-in через реестр; никаких изменений host-сети, никаких утечек между проектами.',
-      },
-      {
-        title: 'Самомодификация, под контролем',
-        desc: 'Дашборд не может эскалироваться до root на хосте. Терминал не может авто-рестартануться, пока ты в нём ещё печатаешь. Passkey-гейт встаёт перед auth-гейтом, не после.',
-      },
-    ],
-    footerEnd: 'КОНЕЦ · АТЛАС',
-    hankoSelfTitle: 'непрерывное самоусиление',
-    hankoCoTitle: 'сосуществование и совместное процветание',
-  },
-};
+const STRINGS = { en: copy };
 
 type T = (typeof STRINGS)['en'];
 
@@ -686,11 +237,24 @@ function NodeBody({
       <div className="node-wrap">
         <div
           className={klass}
+          role="button"
+          tabIndex={0}
+          aria-label={node.label}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect(node.id);
+            }
+          }}
           onClick={() => onSelect(node.id)}
           onMouseEnter={() => onSelect(node.id, 'hover')}
           onMouseLeave={() => onSelect(null, 'hover')}
         >
-          {node.diamond && <Diamond kind={node.diamond} />}
+          {node.diamonds
+            ? node.diamonds.map((kind: string) => (
+                <Diamond key={kind} kind={kind} />
+              ))
+            : node.diamond && <Diamond kind={node.diamond} />}
           <span className="node__label">
             <span>
               {node.redacted ? (
@@ -762,7 +326,7 @@ function StatusDot({ status }: { status: string }) {
   return <span className={cls} aria-label={`status: ${status}`} />;
 }
 
-function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
+function Spoke({ from, to, kind = 'auth', dim, glow, cls }: any) {
   if (!from || !to) return null;
   const stroke = glow
     ? 'var(--red)'
@@ -783,7 +347,7 @@ function Spoke({ from, to, kind = 'auth', dim, glow }: any) {
       stroke={stroke}
       strokeWidth={glow ? 1.4 : kind === 'auth' ? 0.9 : 0.7}
       strokeDasharray={dash}
-      className={'wire ' + (dim ? 'is-dim' : '')}
+      className={'wire ' + (cls ? cls + ' ' : '') + (dim ? 'is-dim' : '')}
     />
   );
 }
@@ -966,27 +530,218 @@ function renderDossierValue(v: string) {
   return <>{parts}</>;
 }
 
-function Dossier({ data, onSelect, dossiers }: any) {
+/* A card's prose is one or more paragraphs separated by a blank line. */
+function DossierDesc({ desc }: { desc: string }) {
+  if (!desc) return null;
+  const paragraphs = String(desc)
+    .split(/\n{2,}/)
+    .filter(Boolean);
+  return (
+    <div className="dossier__desc">
+      {paragraphs.map((para, i) => (
+        <p key={i}>{renderDossierValue(para)}</p>
+      ))}
+    </div>
+  );
+}
+
+function DossierRows({ rows, onSelect, dossiers }: any) {
   const validIds = useMemo(
     () => new Set(Object.keys(dossiers || {})),
     [dossiers],
   );
-  const titleRef = useRef<HTMLSpanElement | null>(null);
-  const [titleH, setTitleH] = useState(20);
-  useLayoutEffect(() => {
-    if (titleRef.current) setTitleH(titleRef.current.offsetHeight);
-  }, [data.title]);
-  const padTop = Math.max(28, titleH + 14);
   return (
-    <div className="panel panel--dossier" style={{ paddingTop: padTop + 'px' }}>
+    <ul className="kv">
+      {rows.map((r: any, i: number) => {
+        const isUrl = r.k === 'url';
+        const href = isUrl
+          ? /^https?:\/\//i.test(r.v)
+            ? r.v
+            : 'https://' + r.v
+          : null;
+        const refId = (() => {
+          if (isUrl || !onSelect) return null;
+          if (r.ref && validIds.has(r.ref)) return r.ref;
+          if (DOSSIER_REF_KEYS.has(r.k))
+            return resolveDossierRef(r.v, validIds as Set<string>);
+          return null;
+        })();
+        const refHandlers = refId
+          ? {
+              onMouseEnter: () => onSelect(refId, 'link-hover'),
+              onMouseLeave: () => onSelect(null, 'link-hover'),
+              onClick: () => onSelect(refId),
+            }
+          : null;
+        return (
+          <li key={i}>
+            <span className="k">{r.k}</span>
+            <span
+              className={'v ' + (r.cls || '') + (refId ? ' v--ref' : '')}
+              {...(refHandlers || {})}
+              role={refId ? 'button' : undefined}
+              tabIndex={refId ? 0 : undefined}
+              onKeyDown={e => {
+                if (refId && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault();
+                  onSelect(refId);
+                }
+              }}
+            >
+              {r.cls === 'red' && <Diamond kind="red" />}
+              {r.cls === 'blue' && <Diamond kind="blue" />}
+              {r.cls === 'gold' && <Diamond kind="gold" />}
+              {r.cls === 'subagent' && <Diamond kind="subagent" />}
+              {isUrl ? (
+                <a
+                  href={href as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dossier__link"
+                >
+                  {r.v}
+                </a>
+              ) : (
+                renderDossierValue(r.v)
+              )}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/* The card that opens on click. It stays mounted through its exit so the
+   fade out plays; the id it holds survives a focus change so the content
+   crossfades in place when a topic inside it is chosen. */
+const MODAL_EXIT_MS = 240;
+function FeatureModal({ id, dossiers, onSelect, onClose, t }: any) {
+  const [held, setHeld] = useState<string | null>(id);
+  const [closing, setClosing] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (id && dossiers && dossiers[id]) {
+      setHeld(id);
+      setClosing(false);
+      return;
+    }
+    if (!held) return;
+    setClosing(true);
+    const timer = setTimeout(() => {
+      setHeld(null);
+      setClosing(false);
+    }, MODAL_EXIT_MS);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, dossiers]);
+  useEffect(() => {
+    if (!held || closing) return;
+    cardRef.current?.focus({ preventScroll: true });
+    /* Tab stays inside the dialog: without this a keyboard user walks
+       straight past the close button onto the map behind the scrim. */
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const card = cardRef.current;
+      if (!card) return;
+      const stops = Array.from(
+        card.querySelectorAll<HTMLElement>(
+          'button, [href], select, textarea, input, [tabindex]:not([tabindex="-1"]), [role="button"]',
+        ),
+      ).filter(el => el.offsetParent !== null || el === card);
+      const first = stops[0] || card;
+      const last = stops[stops.length - 1] || card;
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === card)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (active && !card.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [held, closing, onClose]);
+  if (!held || !dossiers || !dossiers[held]) return null;
+  const data = dossiers[held];
+  return (
+    <div
+      className={'feature-modal' + (closing ? ' is-closing' : '')}
+      role="presentation"
+    >
+      <div className="feature-modal__scrim" onClick={onClose} />
+      <div
+        className="feature-modal__card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feature-modal-title"
+        tabIndex={-1}
+        ref={cardRef}
+      >
+        <span className="panel__title" id="feature-modal-title" key={held}>
+          {data.title} {data.cjk && <span className="cjk">{data.cjk}</span>}
+        </span>
+        <button
+          type="button"
+          className="feature-modal__close"
+          aria-label={t.modalCloseLabel}
+          onClick={onClose}
+        >
+          ×
+        </button>
+        <div className="feature-modal__body" key={'b-' + held}>
+          <DossierDesc desc={data.desc} />
+          <DossierRows
+            rows={data.rows || []}
+            onSelect={onSelect}
+            dossiers={dossiers}
+          />
+        </div>
+        <div className="feature-modal__hint">{t.modalHint}</div>
+      </div>
+    </div>
+  );
+}
+
+/* The hover card in the rail. It is as tall as the space the map leaves
+   it and never scrolls: the card follows the pointer, so its scrollbar
+   could never be reached. When the text does not fit, a fade and a hint
+   say that the click opens the rest. Measured, not guessed. */
+function Dossier({ data, onSelect, dossiers, readMoreHint }: any) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const [clipped, setClipped] = useState(false);
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const measure = () =>
+      setClipped(panel.scrollHeight > panel.clientHeight + 1);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(panel);
+    const body = panel.querySelector('.dossier__body');
+    if (body) observer.observe(body);
+    return () => observer.disconnect();
+  }, [data.title, data.desc]);
+  return (
+    <div
+      className={'panel panel--dossier' + (clipped ? ' is-clipped' : '')}
+      ref={panelRef}
+    >
       <span className="panel__corner-mark">印</span>
-      <span ref={titleRef} className="panel__title" key={'t-' + data.title}>
+      <span className="panel__title" key={'t-' + data.title}>
         {data.title} <span className="cjk">{data.cjk}</span>
       </span>
       <div className="dossier__body" key={data.title}>
-        {data.desc && (
-          <div className="dossier__desc">{renderDossierValue(data.desc)}</div>
-        )}
+        <DossierDesc desc={data.desc} />
         {data.link && (
           <div className="dossier__desc">
             <a
@@ -999,152 +754,28 @@ function Dossier({ data, onSelect, dossiers }: any) {
             </a>
           </div>
         )}
-        <ul className="kv">
-          {data.rows.map((r: any, i: number) => {
-            const isUrl = r.k === 'url';
-            const href = isUrl
-              ? /^https?:\/\//i.test(r.v)
-                ? r.v
-                : 'https://' + r.v
-              : null;
-            const refId = (() => {
-              if (isUrl || !onSelect) return null;
-              if (r.ref && validIds.has(r.ref)) return r.ref;
-              if (DOSSIER_REF_KEYS.has(r.k))
-                return resolveDossierRef(r.v, validIds as Set<string>);
-              return null;
-            })();
-            const refHandlers = refId
-              ? {
-                  onMouseEnter: () => onSelect(refId, 'link-hover'),
-                  onMouseLeave: () => onSelect(null, 'link-hover'),
-                  onClick: () => onSelect(refId),
-                }
-              : null;
-            return (
-              <li key={i}>
-                <span className="k">{r.k}</span>
-                <span
-                  className={'v ' + (r.cls || '') + (refId ? ' v--ref' : '')}
-                  {...(refHandlers || {})}
-                >
-                  {r.cls === 'red' && <Diamond kind="red" />}
-                  {r.cls === 'blue' && <Diamond kind="blue" />}
-                  {r.cls === 'gold' && <Diamond kind="gold" />}
-                  {r.cls === 'subagent' && <Diamond kind="subagent" />}
-                  {isUrl ? (
-                    <a
-                      href={href as string}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="dossier__link"
-                    >
-                      {r.v}
-                    </a>
-                  ) : (
-                    renderDossierValue(r.v)
-                  )}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+        <DossierRows rows={data.rows} onSelect={onSelect} dossiers={dossiers} />
+      </div>
+      <div className="dossier__more" aria-hidden={!clipped}>
+        {readMoreHint}
       </div>
     </div>
   );
 }
 
-function buildIntroDossier(data: any, now: Date, t: T) {
-  const { humans, agents, subAgents, products } = tallyDiamonds(data);
-  const idx = Math.floor(now.getTime() / 60000) % t.principles.length;
+function buildIntroDossier(data: any, _now: Date, t: T) {
   return {
     title: t.introDossierTitle,
     cjk: t.introDossierCjk,
-    desc: (
-      <>
-        {t.introStoryBody}{' '}
-        <a
-          className="dossier__link"
-          href="https://keepsimple.io/articles/vibecoding-ladder-llm-agents"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t.introStoryLink}
-        </a>
-        <br />
-        <br />
-        {t.introQuestionsBefore}{' '}
-        <a
-          className="dossier__link"
-          href="https://t.me/vibecodearmenia"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t.introQuestionsLink}
-        </a>
-        {t.introQuestionsAfter}
-      </>
-    ),
+    desc: t.introStoryBody,
     rows: [
-      { k: t.introDepthLabel, v: t.introDepthValue },
       {
-        k: t.introInhabitantsLabel,
-        v: t.introInhabitantsTpl(humans, agents, subAgents, products),
+        k: 'reading',
+        v: 'START at Project. Arrows run clockwise to Result. Selecting a stage reveals its supporting mechanisms.',
       },
-      { k: t.introPrincipleLabel, v: t.principles[idx] },
+      { k: 'evidence', v: t.principles[0] },
     ],
   };
-}
-
-function tallyDiamonds(data: any) {
-  let humans = 0,
-    agents = 0,
-    subAgents = 0,
-    products = 0;
-  const tally = (d: string | undefined) => {
-    if (d === 'gold') humans++;
-    else if (d === 'blue') agents++;
-    else if (d === 'subagent') subAgents++;
-    else if (d === 'red') products++;
-  };
-  if (data.apex) tally(data.apex.diamond);
-  if (data.order && data.order.member) tally(data.order.member.diamond);
-  if (data.reception && data.reception.member)
-    tally(data.reception.member.diamond);
-  ((data.devEnv && data.devEnv.members) || []).forEach((n: any) =>
-    tally(n.diamond),
-  );
-  ((data.projects && data.projects.members) || []).forEach((p: any) => {
-    tally(p.diamond);
-    if (p.leadDiamond) tally(p.leadDiamond);
-    if (p.leadDiamond2) tally(p.leadDiamond2);
-    (p.children || []).forEach((c: any) => tally(c.diamond));
-  });
-  return { humans, agents, subAgents, products };
-}
-
-function CanvasStats({ data, t }: { data: any; t: T }) {
-  const { humans, agents, subAgents, products } = tallyDiamonds(data);
-  return (
-    <div className="canvas-stats" aria-hidden="true">
-      <div className="canvas-stats__row">
-        <span className="k">{t.canvasStats.humans}</span>
-        <span className="v">{humans}</span>
-      </div>
-      <div className="canvas-stats__row">
-        <span className="k">{t.canvasStats.agents}</span>
-        <span className="v">{agents}</span>
-      </div>
-      <div className="canvas-stats__row">
-        <span className="k">{t.canvasStats.subAgents}</span>
-        <span className="v">{subAgents}</span>
-      </div>
-      <div className="canvas-stats__row">
-        <span className="k">{t.canvasStats.products}</span>
-        <span className="v">{products}+</span>
-      </div>
-    </div>
-  );
 }
 
 function Legend({ t }: { t: T }) {
@@ -1230,11 +861,10 @@ function DoctrinePanel({ t }: { t: T }) {
       <span className="panel__title">
         {t.doctrineTitle} <span className="cjk">{t.doctrineCjk}</span>
       </span>
-      <img
-        className="doctrine-image"
-        src="/ai-atlas/doctrine.webp"
-        alt={t.doctrineImageAlt}
-      />
+      <div className="terminal-doctrine" aria-hidden="true">
+        <span>守</span>
+        <small>AUTHORITY &amp; EVIDENCE</small>
+      </div>
     </div>
   );
 }
@@ -1248,6 +878,21 @@ function ViewToggle({
   setMode: (m: ViewMode) => void;
   t: T;
 }) {
+  const pending = useRef(false);
+  const change = (next: ViewMode) => {
+    if (next === mode || pending.current) return;
+    pending.current = true;
+    const stage = document.querySelector('.view-stage');
+    stage?.classList.add('is-leaving');
+    setTimeout(
+      () => {
+        setMode(next);
+        stage?.classList.remove('is-leaving');
+        pending.current = false;
+      },
+      matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 240,
+    );
+  };
   return (
     <div
       className="view-toggle"
@@ -1262,7 +907,7 @@ function ViewToggle({
         className={
           'view-toggle__btn ' + (mode === 'environment' ? 'is-active' : '')
         }
-        onClick={() => setMode('environment')}
+        onClick={() => change('environment')}
       >
         {t.toggleEnvironment}
       </button>
@@ -1273,7 +918,7 @@ function ViewToggle({
         className={
           'view-toggle__btn ' + (mode === 'security' ? 'is-active' : '')
         }
-        onClick={() => setMode('security')}
+        onClick={() => change('security')}
       >
         {t.toggleSecurity}
       </button>
@@ -1305,11 +950,46 @@ function SecurityRings({
   const VS = 1500;
   const CX = 0;
   const CY = 0;
-  const ringRs = [0.95, 0.8, 0.65, 0.5, 0.36, 0.22];
+  const ringRs = securityRadii;
+  const passageRef = useRef<SVGSVGElement | null>(null);
+  useEffect(() => {
+    const svg = passageRef.current;
+    if (!svg) return;
+    const dot = svg.querySelector('.security-pulse');
+    const rings = svg.querySelectorAll<SVGCircleElement>('.ring__circle');
+    const media = matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0,
+      start = 0;
+    const paint = (now: number) => {
+      const state = securityPassage(now - start);
+      dot?.setAttribute('cy', String(state.cy));
+      dot?.setAttribute('opacity', String(state.opacity));
+      rings.forEach((ring, i) =>
+        ring.style.setProperty('--security-passage', String(state.rings[i])),
+      );
+      frame = requestAnimationFrame(paint);
+    };
+    const reset = () => {
+      cancelAnimationFrame(frame);
+      rings.forEach(ring => ring.style.setProperty('--security-passage', '0'));
+      dot?.setAttribute('opacity', '0');
+      if (!media.matches) {
+        start = performance.now();
+        frame = requestAnimationFrame(paint);
+      }
+    };
+    reset();
+    media.addEventListener('change', reset);
+    return () => {
+      cancelAnimationFrame(frame);
+      media.removeEventListener('change', reset);
+    };
+  }, []);
   const radius = (r: number) => (r * VS) / 2;
   const layers = t.securityLayers;
   return (
     <svg
+      ref={passageRef}
       viewBox={`${-VS / 2} ${-VS / 2 - TOP_PAD} ${VS} ${VS + TOP_PAD + BOT_PAD}`}
       className="orbital-svg"
       preserveAspectRatio="xMidYMid meet"
@@ -1409,25 +1089,14 @@ function SecurityRings({
         </text>
       </g>
 
-      {/* traveling pulse: outside → center */}
-      <circle r="6" fill="var(--red)" className="security-pulse">
-        <animate
-          attributeName="cy"
-          values={`${-radius(0.95)}; 0`}
-          dur="6.5s"
-          repeatCount="indefinite"
-          keyTimes="0; 1"
-          calcMode="spline"
-          keySplines="0.4 0 0.6 1"
-        />
-        <animate
-          attributeName="opacity"
-          values="0; 1; 1; 0"
-          dur="6.5s"
-          repeatCount="indefinite"
-          keyTimes="0; 0.08; 0.92; 1"
-        />
-      </circle>
+      {/* Dot and ring illumination share one trajectory clock. */}
+      <circle
+        r="6"
+        cy="-712.5"
+        opacity="0"
+        fill="var(--red)"
+        className="security-pulse"
+      />
     </svg>
   );
 }
@@ -1448,6 +1117,7 @@ function SecurityCallout({
   return (
     <div
       className={'sec-callout' + (isHovered ? ' is-glow' : '')}
+      data-layer={layer.n}
       style={position}
       onMouseEnter={() => onHover(layer.n)}
       onMouseLeave={() => onHover(null)}
@@ -1573,18 +1243,20 @@ function SecurityView({ t, hasHover }: { t: T; hasHover: boolean }) {
   );
 }
 
-function AiAtlasApp() {
-  const router = useRouter();
-  const lang: Lang = pickLang(router.locale);
-  const t = STRINGS[lang];
-
-  const [data, setData] = useState<any>(null);
-  const [fetchError, setFetchError] = useState<string | null>(null);
-  const [now, setNow] = useState<Date>(() => new Date());
-  const [focusedNode, setFocusedNode] = useState<string | null>(null);
+export function AiAtlasApp({
+  initialGuide = null,
+  initialView = 'environment',
+  initialFocus = null,
+}: any = {}) {
+  const [data] = useState<any>(() =>
+    initialGuide ? adaptGuide(initialGuide) : null,
+  );
+  const t = data?.copy || copy;
+  const [now] = useState<Date>(() => new Date());
+  const [focusedNode, setFocusedNode] = useState<string | null>(initialFocus);
   const [hoverNode, setHoverNode] = useState<string | null>(null);
   const [linkHoverNode, setLinkHoverNode] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('environment');
+  const [viewMode, setViewMode] = useState<ViewMode>(initialView);
   const hasHover = useHasHover();
 
   /* mark <body> while AI Atlas is mounted so the global navbar can
@@ -1648,51 +1320,7 @@ function AiAtlasApp() {
     }
   }, [viewMode, focusedNode]);
 
-  useEffect(() => {
-    let cancelled = false;
-    const url = dataUrlFor(lang);
-    setData(null);
-    const load = () => {
-      fetch(url, { cache: 'no-store' })
-        .then(r => {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        })
-        .then(d => {
-          if (!cancelled) {
-            setData(d);
-            setFetchError(null);
-          }
-        })
-        .catch(e => {
-          if (!cancelled) setFetchError(String(e.message || e));
-        });
-    };
-    load();
-    const id = setInterval(load, POLL_MS);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [lang]);
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60000);
-    return () => clearInterval(id);
-  }, []);
-
-  const [metrics, setMetrics] = useState<any>(null);
-  useEffect(() => {
-    const load = () =>
-      fetch(METRICS_URL, { cache: 'no-store' })
-        .then(r => (r.ok ? r.json() : null))
-        .then(d => setMetrics(d))
-        .catch(() => {});
-    load();
-    const id = setInterval(load, 5 * 60 * 1000);
-    return () => clearInterval(id);
-  }, []);
-
+  const metrics = null;
   useEffect(() => {
     const els = document.querySelectorAll(
       '.node.is-glow, .center-mark.is-glow circle',
@@ -1805,25 +1433,38 @@ function AiAtlasApp() {
     return m;
   }, [data, t.engLeadLabel]);
 
+  /* Undirected neighbour map over every line the map draws: the declared
+     relations plus each stage's support lines. */
+  const relatedTo = useMemo(() => {
+    const m = new Map<string, Set<string>>();
+    if (!data) return m;
+    const link = (a: string, b: string) => {
+      if (!m.has(a)) m.set(a, new Set());
+      if (!m.has(b)) m.set(b, new Set());
+      m.get(a)!.add(b);
+      m.get(b)!.add(a);
+    };
+    for (const [a, b] of data.relations || []) link(a, b);
+    for (const p of data.projects.members)
+      for (const id of p.support) link(id, p.id);
+    return m;
+  }, [data]);
+
   if (!data) {
     return (
       <div className="sheet">
-        <div className="atlas-loading">
-          {fetchError ? (
-            <>
-              {t.failedToLoad}
-              <code>{fetchError}</code>
-            </>
-          ) : (
-            t.loading
-          )}
-        </div>
+        <div className="atlas-loading">{t.loading}</div>
       </div>
     );
   }
 
   const focusId = hoverNode || focusedNode;
-  const focusedDossier = focusId && data.dossiers[focusId];
+  /* A click opens the modal, and the modal owns the clicked card. The rail
+     behind the scrim must not show the same text twice, so it falls back to
+     the intro until the pointer picks something else. */
+  const modalOpen = viewMode === 'environment' && !!focusedNode;
+  const railFocusId = hoverNode || (modalOpen ? null : focusedNode);
+  const focusedDossier = railFocusId && data.dossiers[railFocusId];
   let dossier =
     viewMode === 'security'
       ? buildSecurityIntroDossier(t)
@@ -1834,8 +1475,8 @@ function AiAtlasApp() {
      `claudeMdLines` on the dossier itself when the metrics endpoint
      doesn't (yet) know about the entity — keeps the row format uniform. */
   const metricsLines =
-    focusId && metrics?.claudeMdLines?.[focusId] != null
-      ? metrics.claudeMdLines[focusId]
+    railFocusId && metrics?.claudeMdLines?.[railFocusId] != null
+      ? metrics.claudeMdLines[railFocusId]
       : null;
   const staticLines =
     focusedDossier && typeof (focusedDossier as any).claudeMdLines === 'number'
@@ -1852,10 +1493,6 @@ function AiAtlasApp() {
     };
   }
   const highlightId = linkHoverNode || focusId;
-  /* On touch devices there is no hover, so a tap should reveal the same
-     entity-plus-connections highlight that hovering shows on desktop.
-     Solo-pin only applies when real hover is available. */
-  const pinnedSolo = hasHover && !!focusedNode && !hoverNode && !linkHoverNode;
 
   const onSelect = (id: string | null, mode?: string) => {
     if (mode === 'hover') {
@@ -1868,92 +1505,33 @@ function AiAtlasApp() {
     }
   };
 
-  const highlight = (() => {
-    const set = new Set<string>();
-    if (!highlightId) return set;
-    set.add(highlightId);
-    if (highlightId.startsWith('ring:')) {
-      const ringKey = highlightId.slice(5);
-      if (ringKey === 'order' && data.order && data.order.member)
-        set.add(data.order.member.id);
-      if (ringKey === 'devEnv')
-        (data.devEnv.members || []).forEach((n: any) => set.add(n.id));
-      if (ringKey === 'projects')
-        data.projects.members.forEach((p: any) => {
-          set.add(p.id);
-          set.add(`lead-${p.id}`);
-          if (p.leadDiamond2) set.add(`lead2-${p.id}`);
-        });
-      if (ringKey === 'territories')
-        data.projects.members.forEach((p: any) =>
-          (p.children || []).forEach((c: any) => set.add(c.id)),
-        );
-      return set;
-    }
-    if (pinnedSolo) return set;
-    const fp = points[highlightId];
-    if (!fp) return set;
-    if (highlightId.startsWith('lead2-') || highlightId.startsWith('lead-')) {
-      const projId = highlightId.startsWith('lead2-')
-        ? highlightId.slice(6)
-        : highlightId.slice(5);
-      set.add(projId);
-      const proj = data.projects.members.find((p: any) => p.id === projId);
-      if (proj) proj.children.forEach((c: any) => set.add(c.id));
-    } else {
-      set.add(`lead-${highlightId}`);
-      const focusProj = data.projects.members.find(
-        (p: any) => p.id === highlightId,
-      );
-      if (focusProj && focusProj.leadDiamond2) set.add(`lead2-${highlightId}`);
-    }
-    if (highlightId === 'terminal') {
-      if (data.order.member.diamond === 'blue') set.add(data.order.member.id);
-      if (data.reception) set.add('reception');
-      data.devEnv.members.forEach((n: any) => {
-        if (n.diamond === 'blue' || n.diamond === 'subagent') set.add(n.id);
-      });
-      data.projects.members.forEach((p: any) => {
-        if (p.leadDiamond === 'blue') set.add(`lead-${p.id}`);
-      });
-    }
-    const proj = data.projects.members.find((p: any) => p.id === highlightId);
-    if (proj) proj.children.forEach((c: any) => set.add(c.id));
-    if (fp.parent) {
-      set.add(fp.parent);
-      set.add(`lead-${fp.parent}`);
-      const parent = data.projects.members.find((p: any) => p.id === fp.parent);
-      if (parent) {
-        if (parent.leadDiamond2) set.add(`lead2-${fp.parent}`);
-        parent.children.forEach((c: any) => set.add(c.id));
-      }
-    }
-    if (highlightId === 'wolf') {
-      set.add('order');
-      set.add('terminal');
-      set.add('lead-terminal');
-      if (data.reception) set.add('reception');
-    }
-    if (highlightId === 'reception') {
-      set.add('wolf');
-    }
-    if (highlightId === 'order') {
-      set.add('wolf');
-      data.devEnv.members.forEach((n: any) => set.add(n.id));
-      data.projects.members.forEach((p: any) => {
-        set.add(p.id);
-        set.add(`lead-${p.id}`);
-        if (p.leadDiamond2) set.add(`lead2-${p.id}`);
-      });
-    }
-    if (fp.ring === 'dev') set.add('order');
-    return set;
-  })();
+  const closeModal = () => {
+    setLinkHoverNode(null);
+    setFocusedNode(null);
+  };
+
+  const selectedStage = data.projects.members.find(
+    (p: any) =>
+      p.id === highlightId || p.id === data.topicToStage[highlightId || ''],
+  );
+  const highlight = new Set<string>(highlightId ? [highlightId] : []);
+  if (selectedStage) {
+    highlight.add(selectedStage.id);
+    for (const node of selectedStage.children) highlight.add(node.id);
+    for (const id of selectedStage.support) highlight.add(id);
+    highlight.add('ring:projects');
+    highlight.add('ring:territories');
+  }
+  /* Every drawn line is a relation, and a hovered node lights up its
+     neighbours: Wolf lights The Order, The Order lights the resources, a
+     resource lights the stages it supports and the tiles that use it. */
+  if (highlightId) {
+    relatedTo.get(highlightId)?.forEach(id => highlight.add(id));
+  }
 
   const isDim = (id: string) => !!highlightId && !highlight.has(id);
-  const noSpokeGlow = highlightId === 'wolf' || highlightId === 'terminal';
   const spokeGlow = (a: string, b: string) =>
-    !noSpokeGlow && !!highlightId && highlight.has(a) && highlight.has(b);
+    !!highlightId && highlight.has(a) && highlight.has(b);
 
   const brand = data.brand || { title: 'AI Atlas', kanji: '天' };
   const ringLbls = data.ringLabels || {};
@@ -1978,24 +1556,7 @@ function AiAtlasApp() {
           <span className="meta-intro">{t.welcomeBanner}</span>
         </div>
         <div className="meta">
-          <span className="meta-group">
-            <span className="meta-label">{t.day}</span>
-            <b>
-              {(() => {
-                const start = Date.UTC(2019, 5, 29);
-                const today = Date.UTC(
-                  now.getUTCFullYear(),
-                  now.getUTCMonth(),
-                  now.getUTCDate(),
-                );
-                return Math.max(
-                  1,
-                  Math.floor((today - start) / 86400000) + 1,
-                ).toLocaleString();
-              })()}
-            </b>
-            <span className="meta-tail">{t.daySinceTail}</span>
-          </span>
+          <span className="meta-label">TERMINAL DOCUMENTATION</span>
         </div>
       </header>
 
@@ -2007,7 +1568,7 @@ function AiAtlasApp() {
               onMouseLeave={() => setHoverNode(null)}
             >
               {consuming && <InkConsume />}
-              <CanvasStats data={data} t={t} />
+
               <svg
                 viewBox={`${-HALF} ${-HALF - TOP_PAD} ${VIEW} ${VIEW + TOP_PAD + BOT_PAD}`}
                 xmlns="http://www.w3.org/2000/svg"
@@ -2064,14 +1625,6 @@ function AiAtlasApp() {
                   />
                 ))}
 
-                <Spoke
-                  from={points['wolf']}
-                  to={points['order']}
-                  kind="auth"
-                  dim={isDim('wolf') || isDim('order')}
-                  glow={spokeGlow('wolf', 'order')}
-                />
-
                 {data.reception && (
                   <>
                     <Spoke
@@ -2091,38 +1644,101 @@ function AiAtlasApp() {
                   </>
                 )}
 
-                {data.devEnv.members.map((n: any) => (
-                  <Spoke
-                    key={'o-' + n.id}
-                    from={points['order']}
-                    to={points[n.id]}
-                    kind="auth"
-                    dim={isDim('order') || isDim(n.id)}
-                    glow={spokeGlow('order', n.id)}
-                  />
+                <defs>
+                  <marker
+                    id="task-arrow"
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="10"
+                    markerHeight="10"
+                    orient="auto"
+                    markerUnits="userSpaceOnUse"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--red)" />
+                  </marker>
+                </defs>
+                <g
+                  className="task-route"
+                  aria-label="Project to Result, clockwise"
+                >
+                  {data.projects.members
+                    .slice(0, -1)
+                    .map((p: any, i: number) => {
+                      const r = data.projects.r * HALF,
+                        start = p.theta + 16,
+                        end = p.theta + 44;
+                      const a = POL(data.projects.r, start),
+                        b = POL(data.projects.r, end);
+                      const active =
+                        selectedStage?.id === p.id ||
+                        (i === 4 &&
+                          selectedStage?.id === data.projects.members[5].id);
+                      return (
+                        <path
+                          key={p.id}
+                          data-route-from={p.id}
+                          data-route-to={data.projects.members[i + 1].id}
+                          className={
+                            'task-route-segment' + (active ? ' is-current' : '')
+                          }
+                          d={`M ${a.x} ${a.y} A ${r} ${r} 0 0 1 ${b.x} ${b.y}`}
+                          markerEnd="url(#task-arrow)"
+                        />
+                      );
+                    })}
+                </g>
+                {data.projects.members.flatMap((p: any) =>
+                  p.support.map((id: string) => (
+                    <g
+                      key={'support-' + p.id + '-' + id}
+                      className={
+                        'stage-support' +
+                        (spokeGlow(id, p.id) ? ' is-current' : '')
+                      }
+                      aria-hidden="true"
+                    >
+                      <Spoke
+                        from={points[id]}
+                        to={points[p.id]}
+                        kind="advisory"
+                        glow={true}
+                        dim={false}
+                      />
+                    </g>
+                  )),
+                )}
+
+                {(data.relations || []).map(([a, b]: string[]) => (
+                  <g
+                    key={'relation-' + a + '-' + b}
+                    className={
+                      'stage-support' + (spokeGlow(a, b) ? ' is-current' : '')
+                    }
+                    aria-hidden="true"
+                  >
+                    <Spoke
+                      from={points[a]}
+                      to={points[b]}
+                      kind="advisory"
+                      glow={true}
+                      dim={false}
+                    />
+                  </g>
                 ))}
 
-                {data.projects.members.map((p: any) => (
-                  <Spoke
-                    key={'op-' + p.id}
-                    from={points['order']}
-                    to={points[p.id]}
-                    kind="auth"
-                    dim={isDim('order') || isDim(p.id)}
-                    glow={spokeGlow('order', p.id)}
-                  />
-                ))}
-
-                {data.projects.members.map((p: any) => (
-                  <Spoke
-                    key={'lp-' + p.id}
-                    from={points[p.id]}
-                    to={points[`lead-${p.id}`]}
-                    kind="lead"
-                    dim={isDim(p.id) || isDim(`lead-${p.id}`)}
-                    glow={spokeGlow(p.id, `lead-${p.id}`)}
-                  />
-                ))}
+                {data.projects.members
+                  .filter((p: any) => p.leadDiamond)
+                  .map((p: any) => (
+                    <Spoke
+                      key={'lp-' + p.id}
+                      from={points[p.id]}
+                      to={points[`lead-${p.id}`]}
+                      kind="lead"
+                      dim={isDim(p.id) || isDim(`lead-${p.id}`)}
+                      glow={spokeGlow(p.id, `lead-${p.id}`)}
+                    />
+                  ))}
 
                 {data.projects.members
                   .filter((p: any) => p.leadDiamond2)
@@ -2146,7 +1762,8 @@ function AiAtlasApp() {
                         from={points[p.id]}
                         to={points[c.id]}
                         kind={c.external ? 'advisory' : 'deploy'}
-                        dim={isDim(p.id) || isDim(c.id)}
+                        cls="wire--mechanism"
+                        dim={!selectedStage || selectedStage.id !== p.id}
                         glow={spokeGlow(p.id, c.id)}
                       />
                     )),
@@ -2293,24 +1910,26 @@ function AiAtlasApp() {
                     />
                   ))}
 
-                {data.projects.members.map((p: any) => {
-                  const id = `lead-${p.id}`;
-                  return (
-                    <NodeBody
-                      key={id}
-                      node={points[id].node}
-                      x={points[id].x}
-                      y={points[id].y}
-                      active={focusId === id}
-                      dimmed={isDim(id)}
-                      highlighted={!!highlightId && highlight.has(id)}
-                      hovered={hoverNode === id}
-                      onSelect={onSelect}
-                      w={140}
-                      h={38}
-                    />
-                  );
-                })}
+                {data.projects.members
+                  .filter((p: any) => p.leadDiamond)
+                  .map((p: any) => {
+                    const id = `lead-${p.id}`;
+                    return (
+                      <NodeBody
+                        key={id}
+                        node={points[id].node}
+                        x={points[id].x}
+                        y={points[id].y}
+                        active={focusId === id}
+                        dimmed={isDim(id)}
+                        highlighted={!!highlightId && highlight.has(id)}
+                        hovered={hoverNode === id}
+                        onSelect={onSelect}
+                        w={140}
+                        h={38}
+                      />
+                    );
+                  })}
 
                 {data.projects.members
                   .filter((p: any) => p.id === 'terminal')
@@ -2441,13 +2060,39 @@ function AiAtlasApp() {
         <aside className="rail">
           {viewMode === 'security' ? <DoctrinePanel t={t} /> : <Legend t={t} />}
           <ViewToggle mode={viewMode} setMode={setViewMode} t={t} />
+          <label className="topic-picker">
+            Topics
+            <select
+              value={focusedNode || ''}
+              onChange={e => {
+                setViewMode('environment');
+                setFocusedNode(e.target.value || null);
+              }}
+            >
+              <option value="">The Atlas</option>
+              {Object.entries(data.dossiers).map(([id, d]: any) => (
+                <option key={id} value={id}>
+                  {d.title}
+                </option>
+              ))}
+            </select>
+          </label>
           <Dossier
             data={dossier}
             onSelect={onSelect}
             dossiers={data.dossiers}
+            readMoreHint={t.readMoreHint}
           />
         </aside>
       </div>
+
+      <FeatureModal
+        id={viewMode === 'environment' ? focusedNode : null}
+        dossiers={data.dossiers}
+        onSelect={onSelect}
+        onClose={closeModal}
+        t={t}
+      />
 
       <footer className="doc-footer">
         <span className="hanko-row">
@@ -2465,25 +2110,22 @@ function AiAtlasApp() {
 }
 
 export default function AiAtlasPage() {
-  const router = useRouter();
-  const lang: Lang = pickLang(router.locale);
-  const t = STRINGS[lang];
   return (
     <>
       <SeoGenerator
         strapiSEO={{
-          title: t.seoTitle,
-          pageTitle: t.seoTitle,
-          seoTitle: t.seoTitle,
-          description: t.seoDescription,
-          keywords: t.seoKeywords,
+          title: copy.seoTitle,
+          pageTitle: copy.seoTitle,
+          seoTitle: copy.seoTitle,
+          description: copy.seoDescription,
+          keywords: copy.seoKeywords,
         }}
         type="WebPage"
         ogTags={{
-          ogTitle: t.seoTitle,
-          ogDescription: t.seoDescription,
+          ogTitle: copy.seoTitle,
+          ogDescription: copy.seoDescription,
           ogType: 'website',
-          ogImageAlt: t.ogImageAlt,
+          ogImageAlt: copy.ogImageAlt,
           ogImage: {
             data: {
               attributes: {
@@ -2495,7 +2137,7 @@ export default function AiAtlasPage() {
         }}
       />
       <div className="ai-atlas-root">
-        <AiAtlasApp />
+        <AiAtlasApp initialGuide={guide} />
       </div>
     </>
   );

@@ -1,12 +1,14 @@
-import classNames from 'classnames';
-import React, { JSX, useCallback, useRef, useState } from 'react';
+import cn from 'classnames';
+import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useAnchoredPosition } from '@hooks/library/useAnchoredPosition';
 import { useClickOutside } from '@hooks/library/useClickOutside';
+import { usePresence } from '@hooks/library/usePresence';
 
 import { ArrowIcon, CheckIcon } from '@icons/library/svg';
 
+import LibraryRune from '@components/library/atoms/LibraryRune';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { DropdownProps } from './Dropdown.types';
@@ -16,6 +18,8 @@ import styles from './Dropdown.module.scss';
 export function Dropdown(props: DropdownProps): JSX.Element {
   const {
     value,
+    variant = 'default',
+    ownershipLabel = 'My library',
     options,
     onChange,
     className,
@@ -24,6 +28,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
     triggerClassName,
     placeholder = 'Select...',
     disabled = false,
+    scrollToSelected = false,
     portal = false,
     ariaLabel = 'Select option',
   } = props;
@@ -38,13 +43,39 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   const dropdownRef = useClickOutside(handleClose);
   const triggerRef = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const selectedRef = useRef<HTMLDivElement>(null);
 
   // When portaled the menu is detached from the trigger's box, so its position
   // is tracked against the trigger and recomputed on scroll/resize. It flips
   // above the trigger when it would overflow the bottom of the viewport.
   const menuPos = useAnchoredPosition(triggerRef, portal && isOpen, menuRef);
+  // The menu stays mounted for its fade-out.
+  const { mounted: menuMounted, shown: menuShown } = usePresence(isOpen, 120);
 
   const selectedOption = options.find(opt => opt.value === value);
+
+  useEffect(() => {
+    const menu = menuRef.current;
+    const selected = selectedRef.current;
+    if (!scrollToSelected || !isOpen || !menuMounted || !menu || !selected)
+      return;
+    menu.scrollTop +=
+      selected.getBoundingClientRect().top -
+      menu.getBoundingClientRect().top -
+      menu.clientTop -
+      (menu.clientHeight - selected.offsetHeight) / 2;
+  }, [isOpen, menuMounted, scrollToSelected, value]);
+
+  // The option rows are divs, so they get no keyboard behaviour for free.
+  // Enter and Space are what a button would answer to, and Space must not also
+  // scroll the menu underneath.
+  const activateOnKey =
+    (activate: () => void) => (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        activate();
+      }
+    };
 
   const handleSelect = (optionValue: string, hasSubOptions: boolean) => {
     if (hasSubOptions) {
@@ -71,8 +102,10 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   const menuContent = (
     <div
       ref={menuRef}
-      className={classNames(styles.menu, menuClassName, {
+      className={cn(styles.menu, menuClassName, {
+        [styles.libraryMenu]: variant === 'library',
         [styles.menuPortal]: portal && menuPos,
+        [styles.menuClosing]: !menuShown,
       })}
       style={
         portal && menuPos
@@ -100,24 +133,52 @@ export function Dropdown(props: DropdownProps): JSX.Element {
           <div key={option.value} className={styles.optionWrapper}>
             <div
               role="button"
-              className={classNames(styles.option, {
+              ref={isSelectedParent ? selectedRef : undefined}
+              className={cn(styles.option, {
                 [styles.selected]: isSelectedParent,
+                [styles.ownLibrary]:
+                  variant === 'library' && option.isOwnLibrary,
                 [styles.hasSubMenu]: hasSubOptions,
               })}
+              tabIndex={0}
               onClick={() => handleSelect(option.value, hasSubOptions)}
-              aria-label={`Select ${option.label}`}
+              onKeyDown={activateOnKey(() =>
+                handleSelect(option.value, hasSubOptions),
+              )}
+              aria-label={`Select ${option.label}${option.isOwnLibrary ? `, ${ownershipLabel}` : ''}`}
+              aria-current={
+                variant === 'library' && isSelectedParent ? 'page' : undefined
+              }
               aria-expanded={hasSubOptions ? isSubOpen : undefined}
             >
-              <Text variant={TypographyVariant.TextBase}>{option.label}</Text>
+              {variant === 'library' ? (
+                <>
+                  <LibraryRune
+                    initial={option.ownerInitial ?? ''}
+                    isOwner={option.isOwnLibrary}
+                  />
+                  <div className={styles.libraryIdentity}>
+                    <Text variant={TypographyVariant.TextBase}>
+                      {option.label}
+                    </Text>
+                    <span className={styles.ownershipLabel}>
+                      {option.isOwnLibrary ? ownershipLabel : '\u00a0'}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <Text variant={TypographyVariant.TextBase}>{option.label}</Text>
+              )}
               {hasSubOptions ? (
                 <ArrowIcon
                   width={14}
                   height={14}
-                  className={classNames(styles.subArrow, {
+                  className={cn(styles.subArrow, {
                     [styles.rotated]: isSubOpen,
                   })}
                 />
               ) : (
+                variant !== 'library' &&
                 value === option.value && (
                   <CheckIcon width={14} height={14} className={styles.check} />
                 )
@@ -129,10 +190,12 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                   <div
                     key={sub.value}
                     role="button"
-                    className={classNames(styles.option, {
+                    className={cn(styles.option, {
                       [styles.selected]: value === sub.value,
                     })}
+                    tabIndex={0}
                     onClick={() => handleSubSelect(sub.value)}
+                    onKeyDown={activateOnKey(() => handleSubSelect(sub.value))}
                     aria-label={`Select ${sub.label}`}
                   >
                     <Text variant={TypographyVariant.TextBase}>
@@ -156,13 +219,13 @@ export function Dropdown(props: DropdownProps): JSX.Element {
   );
 
   return (
-    <div ref={dropdownRef} className={classNames(className, styles.dropdown)}>
+    <div ref={dropdownRef} className={cn(className, styles.dropdown)}>
       {customHeader ? (
         <div
           ref={el => {
             triggerRef.current = el;
           }}
-          className={classNames(styles.trigger, triggerClassName, {
+          className={cn(styles.trigger, triggerClassName, {
             [styles.open]: isOpen,
             [styles.disabled]: disabled,
           })}
@@ -180,7 +243,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
             triggerRef.current = el;
           }}
           type="button"
-          className={classNames(styles.trigger, triggerClassName, {
+          className={cn(styles.trigger, triggerClassName, {
             [styles.open]: isOpen,
             [styles.disabled]: disabled,
           })}
@@ -196,12 +259,12 @@ export function Dropdown(props: DropdownProps): JSX.Element {
             <ArrowIcon
               width={16}
               height={16}
-              className={classNames(styles.icon, { [styles.rotated]: isOpen })}
+              className={cn(styles.icon, { [styles.rotated]: isOpen })}
             />
           </div>
         </button>
       )}
-      {isOpen &&
+      {menuMounted &&
         (portal && typeof document !== 'undefined' && menuPos
           ? createPortal(
               <div className="library">{menuContent}</div>,

@@ -46,6 +46,11 @@ jobs:
           # Live progress checklist comment on the PR while reviewing.
           track_progress: true
 
+          # Repo is public; the diff is not secret. Without this, a stalled
+          # run (permission denials, API errors) is undiagnosable from the
+          # job log.
+          show_full_output: true
+
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
@@ -88,10 +93,23 @@ jobs:
             comment summary. Be concise and actionable; skip nitpicks that a
             linter would catch.
 
+            Review in a single pass. Do not split the work into sub-reviews
+            or wait on anything: read the diff, post inline comments as you
+            find issues, then write the summary. If a tool call is denied,
+            continue without it and note the gap in the summary rather than
+            stopping. Always finish by updating the tracking comment with
+            the final summary.
+
           # Only the PR/commit-scoped inline-comment tool is granted. We
           # deliberately do NOT grant raw `gh pr comment/view/diff`: those are
           # unscoped, and since the review reads untrusted PR content (diff,
           # description) a prompt-injection payload could steer them at other
           # PRs/issues. PR context + diff are already injected via track_progress.
+          #
+          # Read-only git is allowed so large PRs can be diffed locally, and
+          # Agent so the model can fan out on 100+ file PRs instead of
+          # hitting permission denials and giving up (see PR #185 run).
+          # --max-turns caps a big review so it finishes the summary.
           claude_args: |
-            --allowedTools "mcp__github_inline_comment__create_inline_comment"
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Agent,Bash(git diff:*),Bash(git log:*),Bash(git show:*)"
+            --max-turns 120

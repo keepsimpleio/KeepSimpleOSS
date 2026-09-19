@@ -1,11 +1,10 @@
+import type { TRouter } from '@uxcore/local-types/global';
 import cn from 'classnames';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FC, useEffect, useState } from 'react';
 import ReactGA from 'react-ga4';
-
-import type { TRouter } from '@uxcore/local-types/global';
 
 import styles from './UXCoreHelpToHelpModal.module.scss';
 
@@ -86,7 +85,7 @@ const UXCoreHelpToHelpModal: FC<UXCoreHelpToHelpModal> = ({ open }) => {
           <div className={styles.content}>
             <div className={styles.imageAndButton}>
               <Image
-                src="/assets/images/helpToHelp/cat.svg"
+                src="/assets/images/helpToHelp/cat-v2.webp"
                 alt="Cats help"
                 width={105}
                 height={113}

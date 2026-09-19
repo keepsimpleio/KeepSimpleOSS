@@ -10,7 +10,8 @@ export interface ObjectOverviewModalProps {
    */
   isOwner: boolean;
   /**
-   * Library owner's username — shown in the rating-box header ("X rated this book:").
+   * Library owner's username — shown in the rating-box header ("X rated this
+   * book:", or "X didn’t rate this book" when nothing has been rated).
    * Pass the *library owner*, not the viewer.
    */
   ownerUsername: string;

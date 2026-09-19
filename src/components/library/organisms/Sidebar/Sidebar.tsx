@@ -1,7 +1,4 @@
-import {
-  countObjectsByType,
-  mapStrapiLibrariesResponseToCards,
-} from '@utils/library/mapStrapiLibraries';
+import { countObjectsByType } from '@utils/library/mapStrapiLibraries';
 import { resolveStrapiUrl } from '@utils/library/resolveStrapiUrl';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
@@ -10,21 +7,29 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   KEEPSIMPLE_URL,
   LIBRARY_SHELVES_REFETCH_EVENT,
+  MAX_TAGS_PER_LIBRARY,
+  TAG_LIMIT_MESSAGE,
 } from '@constants/library/common';
 
 import { ITagAttributes } from '@local-types/library/tag';
 
+import { useAnimatedList } from '@hooks/library/useAnimatedList';
+import useLibraryEditing from '@hooks/library/useLibraryEditing';
+import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
+
+import { libraryPath } from '@lib/library/libraryPath';
+import { richTextLength } from '@lib/library/richText';
+
 import { createTag, CreateTagRequest } from '@api/library/tag/createTag';
 import { deleteTag } from '@api/library/tag/deleteTag';
-import { getTagsList } from '@api/library/tag/getTagsList';
 import { updateTag, UpdateTagRequest } from '@api/library/tag/updateTag';
 
 import avatarImage from '@icons/library/images/avatar.png';
 import {
   CloseIcon,
-  CopyIcon,
   EditIcon,
-  InfoIcon,
+  LinkIcon,
+  PanelIcon,
   PlusIcon,
 } from '@icons/library/svg';
 
@@ -32,6 +37,9 @@ import { useAuth } from '@components/Context/library/AuthContext';
 import { useDashboard } from '@components/Context/library/DashboardContext';
 import { useGlobalState } from '@components/Context/library/GlobalStateContext';
 import { Avatar } from '@components/library/atoms/Avatar';
+import CopyButtonLabel from '@components/library/atoms/CopyButtonLabel';
+import ExpandableText from '@components/library/atoms/ExpandableText';
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 import { Toggle } from '@components/library/atoms/Toggle';
 import { Tooltip } from '@components/library/atoms/Tooltip';
@@ -39,43 +47,40 @@ import {
   Button,
   ButtonSize,
   ButtonType,
-  IconPosition,
 } from '@components/library/molecules/Button';
 import {
   CreateTagFormData,
   CreateTagModal,
 } from '@components/library/molecules/CreateTagModal';
-import { Dropdown } from '@components/library/molecules/Dropdown';
-import { Input } from '@components/library/molecules/Input';
 import { Object, ObjectType } from '@components/library/molecules/Object';
 import { Tag } from '@components/library/molecules/Tag';
 import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal';
 
 import styles from './Sidebar.module.scss';
 
-// aboutMe / aboutLibrary come back as CKEditor rich-text HTML; strip tags for
-// the sidebar display until a styled rich-text renderer is in place.
-const stripHtml = (s?: string | null) =>
-  s
-    ?.replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .trim() ?? '';
+// aboutMe / aboutLibrary hold rich text: the owner's line breaks and marks are
+// part of what they wrote, so the panel renders the stored markup instead of
+// flattening it. Emptiness is judged on the text alone, never on the tags.
+const hasText = (value?: string | null) => richTextLength(value) > 0;
+
+const tagKey = <T extends { name: string }>(tag: T) => tag.name;
 
 export function Sidebar() {
   const router = useRouter();
 
   const { accountData } = useAuth();
-  const { tags, setTags } = useDashboard();
+  const { libraryTags, tags, refreshLibraryTags, activeTagId, setActiveTagId } =
+    useDashboard();
   const {
     isSidebarOpen,
+    isSidebarCollapsed,
     isGuestMode,
     toggleSidebar,
     toggleGuestMode,
-    libraries,
     currentShelves,
     currentOwner,
     currentLibrary,
-    isCreateBlocked,
+    isOwner,
   } = useGlobalState();
 
   // The library being viewed is always the `[username]` route segment — read it
@@ -86,25 +91,12 @@ export function Sidebar() {
   const currentLibraryId =
     (Array.isArray(usernameParam) ? usernameParam[0] : usernameParam) ?? '';
 
-  // Share the link to the library being viewed (`/library/[username]`) on the
-  // current environment's host (NEXT_PUBLIC_DOMAIN — localhost in dev, the real
-  // domain in prod) rather than a hardcoded URL. Falls back to keepsimple.io if
-  // the env var is unset, and to the bare host when there's no library slug.
-  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN ?? KEEPSIMPLE_URL;
-  const shareUrl = currentLibraryId
-    ? `${baseUrl}/library/${currentLibraryId}`
-    : baseUrl;
-
-  const libraryCards = useMemo(() => {
-    if (!libraries || !Array.isArray(libraries.data)) {
-      return [];
-    }
-
-    return mapStrapiLibrariesResponseToCards(
-      libraries,
-      process.env.NEXT_PUBLIC_STRAPI,
-    );
-  }, [libraries]);
+  // A copied library link is always the public version, even when the owner is
+  // editing it on the private review host.
+  const linkUsername = /^\d+$/.test(currentLibraryId)
+    ? currentOwner?.username
+    : currentLibraryId;
+  const shareUrl = `${KEEPSIMPLE_URL}${libraryPath(linkUsername)}`;
 
   const [isOpenTagModal, setIsOpenTagModal] = useState<
     null | 'create' | 'edit'
@@ -112,18 +104,20 @@ export function Sidebar() {
   const [selectedTag, setSelectedTag] = useState<ITagAttributes | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isEditLibraryOpen, setIsEditLibraryOpen] = useState(false);
-  const [selectedLibraryId, setSelectedLibraryId] = useState(
-    currentLibraryId ||
-      (libraryCards[0]
-        ? (libraryCards[0].username ?? String(libraryCards[0].id))
-        : ''),
-  );
+
+  useEffect(() => {
+    if (!isCopied) return;
+    const resetCopied = window.setTimeout(() => setIsCopied(false), 2000);
+    return () => window.clearTimeout(resetCopied);
+  }, [isCopied]);
 
   // Object totals always come from the live shelves of the library on screen
   // (`currentShelves`, published by LibraryTemplate) — never from the viewer's
   // own library list, which would show the wrong counts on someone else's page.
+  // Those shelves are already the ones the viewer may see (private ones are
+  // filtered out for visitors and in guest mode), so count all of them.
   const { bookCount, videoCount, songCount } = useMemo(
-    () => countObjectsByType(currentShelves),
+    () => countObjectsByType(currentShelves, { includePrivate: true }),
     [currentShelves],
   );
 
@@ -132,111 +126,124 @@ export function Sidebar() {
   // library, or logged out) → read-only, showing the viewed library's public
   // data. Guest mode lets an owner preview that read-only view.
   //
-  // Ownership matches the loaded owner against my account by any reliable
-  // signal: account id (most specific, but `/api/users/me` and the library's
-  // `user` relation don't always share an id space), then username, then the
-  // URL slug for the window before the owner relation resolves. Matching on
-  // `currentOwner` is safe from cross-page bleed because LibraryTemplate nulls
-  // the previous library on navigation, so this never reflects a prior owner.
-  const viewerUsername = accountData?.username?.toLowerCase() ?? null;
-  const viewerId = accountData?.id != null ? String(accountData.id) : null;
-  const isMyLibrary =
-    (!!viewerId || !!viewerUsername) &&
-    ((!!viewerId &&
-      currentOwner?.id != null &&
-      String(currentOwner.id) === viewerId) ||
-      (!!viewerUsername &&
-        (currentOwner?.username?.toLowerCase() === viewerUsername ||
-          currentLibraryId.toLowerCase() === viewerUsername)));
-  const canEdit = isMyLibrary && !isGuestMode;
+  // The answer is not computed here. LibraryTemplate decides ownership once
+  // and publishes it, so this panel and the shelves can never disagree about
+  // who is looking (they used to, on a numeric `/library/123` address).
+  const isMyLibrary = isOwner;
+  // Phones are read-only: no Edit library, no tag editing (the same rule the
+  // shelves follow through LibraryTemplate's canEditHere).
+  const supportsEditing = useLibraryEditing();
+  const canEdit = isMyLibrary && !isGuestMode && supportsEditing;
 
-  // An owner can edit their About panel before any library row exists — the
-  // row is created lazily on first save. So the editable affordance is gated on
-  // the `can-create-library` permission, not on a loaded library (the same flag
-  // LibraryTemplate uses to allow bootstrapping via the first shelf).
-  const canCreateLibrary =
-    accountData?.featureNames?.includes('can-create-library') ?? false;
-  const canEditLibrary = canEdit && (!!currentLibrary || canCreateLibrary);
+  // The drawer is an overlay on phones and tablets: while it is open the page
+  // under it must not move under a swipe, same as every modal.
+  useLockBodyScroll(isSidebarOpen);
 
-  // Identity, bio and avatar all read from the viewed library's public data
-  // (`currentOwner` + `currentLibrary.avatar`). For my own library that *is* my
-  // data; for a visitor the populated `user` relation is hidden from the public
-  // role, so fall back to the URL slug for the name (`/library/[username]`) and
-  // to my account name/photo when it's mine.
+  // An owner can edit their About panel before any library row exists: the
+  // row is created lazily on first save, and any signed-in owner of this
+  // address may create one (since 2026-09-12), so `canEdit` is the whole gate.
+
+  // The public owner profile supplies the same identity and photo to every visitor.
   const slugName = /^\d+$/.test(currentLibraryId) ? '' : currentLibraryId;
-  const authorName = isMyLibrary
+  const authorName = canEdit
     ? accountData?.username || currentOwner?.username || 'Anonymous'
     : currentOwner?.username || slugName || 'Anonymous';
   const authorAvatarUrl =
     resolveStrapiUrl(currentOwner?.avatar) ??
-    (isMyLibrary ? accountData?.picture : undefined);
-  const aboutAuthorText = stripHtml(currentOwner?.aboutMe);
-  const aboutLibraryText = stripHtml(
-    currentLibrary?.attributes.libraryDetails?.aboutLibrary,
-  );
+    resolveStrapiUrl(currentOwner?.picture) ??
+    (canEdit ? accountData?.picture : undefined);
+  const aboutAuthorText = currentOwner?.aboutMe ?? '';
+  const aboutLibraryText =
+    currentLibrary?.attributes.libraryDetails?.aboutLibrary ?? '';
 
-  // Owner sees their full tag palette; a true visitor sees only the tags
-  // actually used on this library's objects — no cross-account tag fetch.
-  const libraryTags = useMemo(() => {
-    const byName = new Map<string, { name: string; color: string }>();
+  // Everything the viewer can open right now. A tag's row is drawn from it,
+  // so an owner previewing as a guest sees the same tags a visitor does.
+  const visibleObjectIds = useMemo(() => {
+    const ids = new Set<number>();
     for (const shelf of currentShelves) {
-      for (const obj of shelf.attributes.objects?.data ?? []) {
-        for (const tag of obj.attributes.tags?.data ?? []) {
-          byName.set(tag.attributes.name, tag.attributes);
-        }
-      }
+      for (const obj of shelf.attributes.objects?.data ?? []) ids.add(obj.id);
     }
-    return Array.from(byName.values());
+    return ids;
   }, [currentShelves]);
 
-  // Show the owner's palette whenever it's their own library — including guest
-  // mode (only an owner can toggle that, so we always have their tags loaded).
-  // Editing stays gated on `canEdit`, so guest preview shows them read-only.
-  const displayedTags = isMyLibrary
-    ? tags.map(t => ({ name: t.attributes.name, color: t.attributes.color }))
-    : libraryTags;
+  // The library's own tags, each with the number of books it labels here. The
+  // owner keeps their whole palette on screen, empty tags included, because it
+  // is the vocabulary they write with; a visitor is shown only the tags that
+  // lead somewhere. A tag labelling nothing is not a filter, so it does not
+  // answer a click.
+  const displayedTags = useMemo(
+    () =>
+      libraryTags
+        .map(tag => ({
+          ...tag,
+          count: tag.objects.filter(id => visibleObjectIds.has(id)).length,
+        }))
+        .filter(tag => canEdit || tag.count > 0),
+    [libraryTags, visibleObjectIds, canEdit],
+  );
 
-  const dropdownOptions = libraryCards.map(lib => ({
-    // Navigate by the URL slug (username) — the route is /library/[username].
-    // Fall back to the numeric id only when a library has no linked username.
-    value: lib.username ?? String(lib.id),
-    label: lib.libraryName,
-  }));
+  const atTagLimit = libraryTags.length >= MAX_TAGS_PER_LIBRARY;
 
-  const handleLibraryChange = (libraryId: string) => {
-    setSelectedLibraryId(libraryId);
-    toggleSidebar();
-    router.push(`/library/${libraryId}`);
-  };
+  // A created tag rises into the row, a deleted one fades where it stood and
+  // the rest slide over, instead of the whole row re-wrapping in one frame.
+  const { ref: tagsRef, entries: tagEntries } = useAnimatedList(
+    displayedTags,
+    tagKey,
+    { collapse: 'width' },
+  );
 
+  const [copyError, setCopyError] = useState<string | null>(null);
   const handleCopyUrl = async () => {
+    setCopyError(null);
     try {
       await navigator.clipboard.writeText(shareUrl);
       setIsCopied(true);
-    } catch (err) {
-      console.error('Failed to copy URL:', err);
+    } catch {
+      // Clipboard API is unavailable on insecure origins / older browsers —
+      // fall back to a throwaway textarea + execCommand, as the overview's
+      // Share button does; failing that, say so instead of a silent click.
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareUrl;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (!ok) throw new Error('execCommand failed');
+        setIsCopied(true);
+      } catch {
+        setCopyError('Could not copy the library URL.');
+      }
     }
+  };
+
+  // Tags live on shelf cards and in the search index as well as in this
+  // panel, so a rename, recolour or delete reloads the library too.
+  const refetchLibrary = () => {
+    window.dispatchEvent(new CustomEvent(LIBRARY_SHELVES_REFETCH_EVENT));
   };
 
   const handleCreateTag = async (formData: CreateTagFormData) => {
     try {
-      if (!accountData?.id) return;
+      // Throw rather than return: the modal reads a quiet resolve as a saved
+      // tag and shows the success card, so a silent bail claimed a tag that
+      // was never created.
+      if (!accountData?.id || !currentLibrary?.id) {
+        throw new Error('No library to create this tag in');
+      }
 
-      // Strapi enforces unique slugs; a timestamp suffix keeps two tags whose
-      // names normalize to the same string from colliding on write.
-      const slug = `${formData.name.toLowerCase()}-${Date.now()}`;
       const body: CreateTagRequest = {
         name: formData.name,
         description: formData.description,
         color: formData.color,
         user: accountData?.id,
-        slug,
+        library: currentLibrary.id,
       };
 
       await createTag(body);
-      const { data } = await getTagsList(accountData?.id);
-
-      setTags(data);
+      await refreshLibraryTags();
     } catch (error) {
       console.error('Failed to create or refresh tags:', error);
       throw error;
@@ -247,19 +254,16 @@ export function Sidebar() {
     try {
       if (!selectedTag || !accountData?.id) return;
 
-      const slug = `${formData.name.toLowerCase()}-${Date.now()}`;
       const body: UpdateTagRequest = {
         name: formData.name,
         description: formData.description,
         color: formData.color,
         user: accountData?.id,
-        slug,
       };
 
       await updateTag(selectedTag.id, body);
-      const { data } = await getTagsList(accountData?.id);
-
-      setTags(data);
+      await refreshLibraryTags();
+      refetchLibrary();
       setIsOpenTagModal(null);
       setSelectedTag(null);
     } catch (error) {
@@ -269,13 +273,12 @@ export function Sidebar() {
   };
 
   const handleDeleteTag = async () => {
-    if (!selectedTag) return;
+    if (!selectedTag || !accountData?.id) return;
 
     try {
       await deleteTag(selectedTag.id);
-      const { data } = await getTagsList(accountData?.id);
-
-      setTags(data);
+      await refreshLibraryTags();
+      refetchLibrary();
       setIsOpenTagModal(null);
       setSelectedTag(null);
     } catch (error) {
@@ -283,22 +286,6 @@ export function Sidebar() {
       throw error;
     }
   };
-
-  useEffect(() => {
-    if (currentLibraryId) {
-      setSelectedLibraryId(currentLibraryId);
-    }
-  }, [currentLibraryId]);
-
-  useEffect(() => {
-    if (selectedLibraryId || libraryCards.length === 0) {
-      return;
-    }
-
-    setSelectedLibraryId(
-      libraryCards[0].username ?? String(libraryCards[0].id),
-    );
-  }, [libraryCards, selectedLibraryId]);
 
   useEffect(() => {
     if (isCopied) {
@@ -309,37 +296,26 @@ export function Sidebar() {
     }
   }, [isCopied]);
 
-  // Load the tag list on mount. `setTags` is otherwise only called after a
-  // create/edit/delete, so without this the Tags panel renders empty on every
-  // fresh page load until the user mutates a tag.
-  useEffect(() => {
-    let cancelled = false;
-    getTagsList(accountData?.id).then(({ data }) => {
-      if (!cancelled) setTags(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [setTags, accountData?.id]);
-
-  // Hide the right panel entirely when the owner lacks permission to create a
-  // library — the page shows only the centered no-permission message.
-  if (isCreateBlocked) return null;
-
   return (
     <>
-      {/* Mobile-only: the panel is a fixed off-screen drawer at ≤1024px, so it
-          needs its own opener (the Header burger drives a different, global
-          nav). The edge tab pulls it in; the backdrop taps it closed. Both are
-          hidden on desktop, where the panel is a static sticky column. */}
-      {!isSidebarOpen && (
+      {/* Mobile-only fallback opener. The toolbar carries the About button
+          beside the library name, but the toolbar only exists once the library
+          has shelves — an empty library would otherwise have no way in. The
+          backdrop taps the drawer closed. Both are hidden on desktop, where the
+          panel is a static sticky column.
+
+          Gated on `currentLibrary` because "still loading" and "loaded and
+          empty" both read as zero shelves: LibraryTemplate nulls the library
+          for the duration of a load, so without this the tab floated over the
+          loading spinner on every mobile page load. */}
+      {!isSidebarOpen && currentLibrary && currentShelves.length === 0 && (
         <button
           type="button"
           className={styles.openTab}
           onClick={toggleSidebar}
           aria-label="Open library info panel"
         >
-          <InfoIcon />
+          <PanelIcon />
         </button>
       )}
       {isSidebarOpen && (
@@ -349,210 +325,270 @@ export function Sidebar() {
           aria-hidden="true"
         />
       )}
-      {/* The host is `display: contents` on desktop and a clipping layer on the
-          drawer breakpoints, so the panel parked off the right edge stops
-          stretching the page sideways on a phone. */}
-      <div className={styles.drawerHost}>
-        <aside
-          className={classNames(styles.sidebar, {
-            [styles.open]: isSidebarOpen,
-          })}
-        >
-          <div className={styles.close}>
-            <Button
-              onClick={toggleSidebar}
-              type={ButtonType.Text}
-              size={ButtonSize.Default}
-              ariaLabel="Close"
-              Icon={<CloseIcon />}
-            />
-          </div>
+      {/* Desktop: the column folds away on the toolbar's panel toggle and
+          unfolds from it; the choice is per account and survives a refresh
+          (GlobalState). The drawer states above are phone/tablet only, and
+          the CSS scopes each to its own breakpoint. */}
+      <aside
+        id="library-info-panel"
+        data-library-mode-surface
+        className={classNames(styles.sidebar, {
+          [styles.open]: isSidebarOpen,
+          [styles.collapsed]: isSidebarCollapsed,
+        })}
+      >
+        <div className={styles.close}>
+          <Button
+            onClick={toggleSidebar}
+            type={ButtonType.Text}
+            size={ButtonSize.Default}
+            ariaLabel="Close"
+            Icon={<CloseIcon />}
+          />
+        </div>
 
-          <div className={styles.dropdownWrapper}>
-            <Dropdown
-              options={dropdownOptions}
-              value={selectedLibraryId}
-              onChange={handleLibraryChange}
-              placeholder="Select library"
-              ariaLabel="Select library"
-              className={styles.dropdown}
-            />
-          </div>
+        <div className={styles.main}>
+          <div className={styles.about}>
+            <div className={styles.header}>
+              <Text className={styles.label}>About</Text>
+              {canEdit && (
+                <Button
+                  label="Edit"
+                  onClick={() => setIsEditLibraryOpen(true)}
+                  type={ButtonType.Secondary}
+                  size={ButtonSize.Default}
+                  ariaLabel="Edit library"
+                  Icon={<EditIcon />}
+                  className={styles.button}
+                  labelClassName={styles.text}
+                />
+              )}
+            </div>
 
-          <div className={styles.main}>
-            <div className={styles.about}>
-              <div className={styles.header}>
-                <Text className={styles.label}>About</Text>
-                {canEditLibrary && (
-                  <Button
-                    label="Edit"
-                    onClick={() => setIsEditLibraryOpen(true)}
-                    type={ButtonType.Secondary}
-                    size={ButtonSize.Default}
-                    ariaLabel="Edit library"
-                    Icon={<EditIcon />}
-                    className={styles.button}
-                    labelClassName={styles.text}
+            <div className={styles.content}>
+              <div>
+                {/* Plain text: the field is CKEditor markup server-side, and
+                    printing it raw showed the tags. Empty gets a line of its
+                    own, like Author and Tags do. A written description folds
+                    so it cannot push Content, Author and Tags off the sheet. */}
+                {hasText(aboutLibraryText) ? (
+                  <ExpandableText
+                    value={aboutLibraryText}
+                    title="About"
+                    className={styles.label}
+                    subject="library description"
                   />
+                ) : (
+                  <Text className={classNames(styles.label, styles.emptyTags)}>
+                    {canEdit
+                      ? 'No description yet. Add one with Edit'
+                      : 'No description yet'}
+                  </Text>
                 )}
               </div>
+              <InkLine seed={7} className={styles.innerRule} />
 
-              <div className={styles.content}>
-                <div>
-                  <Text className={styles.label}>
-                    {currentLibrary?.attributes.libraryDetails?.aboutLibrary ??
-                      ''}
-                  </Text>
-                </div>
-                {aboutLibraryText && <div className={styles.divider} />}
-
+              {/* A kind the library does not hold is not written as a zero:
+                  neither its icon nor its number stands here (Wolf,
+                  2026-09-10). A library with no books at all keeps the
+                  Content heading off the panel too. */}
+              {(bookCount > 0 || videoCount > 0 || songCount > 0) && (
                 <div className={styles.totalObjects}>
-                  <Text className={styles.label}>Total objects:</Text>
+                  <Text className={styles.subLabel}>Content</Text>
                   <div className={styles.objects}>
-                    <Object
-                      className={styles.count}
-                      type={ObjectType.Book}
-                      number={bookCount}
-                      noBorder
-                    />
-                    <Object
-                      className={styles.count}
-                      type={ObjectType.Video}
-                      number={videoCount}
-                      noBorder
-                    />
-                    <Object
-                      className={styles.count}
-                      type={ObjectType.Audio}
-                      number={songCount}
-                      noBorder
-                    />
+                    {bookCount > 0 && (
+                      <Object
+                        className={styles.count}
+                        type={ObjectType.Book}
+                        number={bookCount}
+                        noBorder
+                      />
+                    )}
+                    {videoCount > 0 && (
+                      <Object
+                        className={styles.count}
+                        type={ObjectType.Video}
+                        number={videoCount}
+                        noBorder
+                      />
+                    )}
+                    {songCount > 0 && (
+                      <Object
+                        className={styles.count}
+                        type={ObjectType.Audio}
+                        number={songCount}
+                        noBorder
+                      />
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
+            </div>
+            <InkLine seed={1} className={styles.sectionRule} />
+          </div>
+
+          <div className={styles.about}>
+            <div className={styles.header}>
+              <Text className={styles.label}>Author</Text>
             </div>
 
-            <div className={styles.about}>
-              <div className={styles.header}>
-                <Text className={styles.label}>Author</Text>
-              </div>
-
-              <div className={styles.content}>
-                <div className={styles.avatar}>
-                  <Avatar
-                    url={authorAvatarUrl ?? avatarImage}
-                    className={styles.avatarImage}
-                    sizes="86px"
-                  />
-                  <Text
-                    className={styles.name}
-                    variant={TypographyVariant.TextBaseBold}
-                  >
-                    {authorName}
-                  </Text>
-                </div>
-                <Text className={styles.text}>
-                  {aboutAuthorText || 'No bio yet.'}
+            <div className={styles.content}>
+              <div className={styles.avatar}>
+                <Avatar
+                  url={authorAvatarUrl ?? avatarImage}
+                  className={styles.avatarImage}
+                />
+                <Text
+                  className={styles.name}
+                  variant={TypographyVariant.TextBaseBold}
+                >
+                  {authorName}
                 </Text>
               </div>
+              <ExpandableText
+                value={aboutAuthorText}
+                title="Author"
+                className={styles.text}
+                subject="author biography"
+              />
             </div>
+            <InkLine seed={2} className={styles.sectionRule} />
+          </div>
 
-            <div className={styles.about}>
-              <div className={styles.header}>
-                <Text className={styles.label}>Tags</Text>
-                {canEdit && displayedTags.length > 0 && (
-                  <Button
-                    label="Edit"
-                    ariaLabel="Edit"
-                    onClick={() => {
-                      setIsOpenTagModal('edit');
-                    }}
-                    type={ButtonType.Secondary}
-                    size={ButtonSize.Default}
-                    Icon={<EditIcon />}
-                    className={styles.button}
-                    labelClassName={styles.text}
-                  />
-                )}
-              </div>
-              <div className={styles.content}>
-                <div
-                  className={classNames(styles.tags, {
-                    [styles.tagsEmpty]: displayedTags.length === 0,
-                  })}
-                >
-                  {displayedTags.length === 0 && (
-                    <Text className={styles.emptyTags}>No tags yet.</Text>
-                  )}
-                  {displayedTags.map(tag => (
-                    <Tag key={tag.name} label={tag.name} color={tag.color} />
-                  ))}
-                  {canEdit && (
+          <div className={styles.about}>
+            <div className={styles.header}>
+              <Text className={styles.label}>Tags</Text>
+              {/* Both tag controls sit in the header: a chip inside the
+                  wrapping tag flow drifted every time a tag was added. */}
+              {canEdit && (
+                <span className={styles.headerActions}>
+                  {displayedTags.length > 0 && (
                     <Button
-                      label="Create Tag"
-                      ariaLabel="Create Tag"
-                      onClick={() => setIsOpenTagModal('create')}
-                      type={ButtonType.Text}
+                      label="Edit"
+                      ariaLabel="Edit tags"
+                      onClick={() => {
+                        setIsOpenTagModal('edit');
+                      }}
+                      type={ButtonType.Secondary}
                       size={ButtonSize.Default}
-                      Icon={<PlusIcon />}
-                      iconPosition={IconPosition.Right}
+                      Icon={<EditIcon />}
                       className={styles.button}
                       labelClassName={styles.text}
                     />
                   )}
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.about}>
-              <div className={styles.header}>
-                <Text className={styles.label}>
-                  Share (Including selected objects)
-                </Text>
-              </div>
-              <div className={styles.content}>
-                <div className={styles.shareInputContainer}>
-                  <Input
-                    type="text"
-                    value={shareUrl}
-                    placeholder=""
-                    onChange={() => {}}
-                    disabled
-                    wrapperClassName={styles.shareInputWrapper}
-                    className={styles.shareInput}
-                    ariaLabel="Share URL"
-                  />
                   <Tooltip
-                    place="top"
-                    tooltipContent={isCopied ? 'Copied!' : 'Click to copy'}
+                    place="bottom"
+                    tooltipContent={atTagLimit ? TAG_LIMIT_MESSAGE : ''}
+                    wrapperClassName={classNames({
+                      [styles.tooltipOff]: !atTagLimit,
+                    })}
                   >
                     <Button
-                      label=""
-                      onClick={handleCopyUrl}
+                      label="Create"
+                      ariaLabel="Create tag"
+                      onClick={() => setIsOpenTagModal('create')}
                       type={ButtonType.Secondary}
                       size={ButtonSize.Default}
-                      ariaLabel="Copy URL"
-                      Icon={<CopyIcon />}
-                      className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
+                      Icon={<PlusIcon />}
+                      className={styles.button}
+                      labelClassName={styles.text}
+                      disabled={atTagLimit}
                     />
                   </Tooltip>
-                </div>
+                </span>
+              )}
+            </div>
+            <div className={styles.content}>
+              <div
+                ref={tagsRef}
+                className={classNames(styles.tags, {
+                  [styles.tagsEmpty]: displayedTags.length === 0,
+                })}
+              >
+                {displayedTags.length === 0 && (
+                  <Text className={styles.emptyTags}>No tags yet</Text>
+                )}
+                {tagEntries.map(({ item: tag, leaving }) => (
+                  <span
+                    key={tag.name}
+                    className={classNames(styles.tagSlot, {
+                      [styles.tagLeaving]: leaving,
+                    })}
+                    data-flip-id={tag.name}
+                    data-flip-leaving={leaving ? 'true' : undefined}
+                    aria-hidden={leaving || undefined}
+                  >
+                    {/* This row is the only place a tag is a control. On the
+                        cards, in the dossier and in the object overview a tag
+                        stays a label. */}
+                    <Tag
+                      label={tag.name}
+                      color={tag.color}
+                      active={activeTagId === tag.id}
+                      description={tag.description}
+                      // A tag on no book has no row to open, so it says what
+                      // it is instead of sitting there as a dead control.
+                      hint={tag.count === 0 ? 'Tag not used' : undefined}
+                      onClick={
+                        tag.count > 0 && !leaving
+                          ? () =>
+                              setActiveTagId(
+                                activeTagId === tag.id ? null : tag.id,
+                              )
+                          : undefined
+                      }
+                    />
+                  </span>
+                ))}
               </div>
             </div>
+            <InkLine seed={3} className={styles.sectionRule} />
           </div>
 
-          {isMyLibrary && (
-            <div className={styles.footer}>
-              <Text className={styles.label}>Guest mode</Text>
-              <Toggle
-                checked={isGuestMode}
-                onChange={toggleGuestMode}
-                ariaLabel="Guest mode"
+          <div className={styles.about}>
+            <div className={styles.content}>
+              <Button
+                onClick={handleCopyUrl}
+                type={ButtonType.Secondary}
+                size={ButtonSize.Wide}
+                label={
+                  <CopyButtonLabel copied={isCopied} label="Library URL" />
+                }
+                ariaLabel={isCopied ? 'Library URL copied' : 'Copy library URL'}
+                Icon={<LinkIcon />}
+                className={styles.copyButton}
               />
+              <Text
+                variant={TypographyVariant.TextSmall}
+                className={classNames(styles.copyStatus, {
+                  [styles.copyStatusError]: !!copyError,
+                })}
+                aria-live="polite"
+              >
+                {copyError ?? ''}
+              </Text>
             </div>
-          )}
-        </aside>
-      </div>
+          </div>
+        </div>
+
+        {isMyLibrary && supportsEditing && (
+          <div
+            className={classNames(styles.footer, {
+              [styles.footerActive]: isGuestMode,
+            })}
+          >
+            {/* One line: the name and the switch. The explanation was two
+                lines of the panel's height spent on a control whose state the
+                page itself shows the moment it is flipped. */}
+            <Text className={styles.label}>Guest mode</Text>
+            <Toggle
+              checked={isGuestMode}
+              onChange={toggleGuestMode}
+              ariaLabel="Guest mode"
+            />
+          </div>
+        )}
+      </aside>
       {isOpenTagModal && (
         <CreateTagModal
           isEdit={isOpenTagModal === 'edit'}
@@ -569,7 +605,7 @@ export function Sidebar() {
           }
         />
       )}
-      {isEditLibraryOpen && canEditLibrary && (
+      {isEditLibraryOpen && canEdit && (
         <EditLibraryModal
           library={currentLibrary}
           onClose={() => setIsEditLibraryOpen(false)}

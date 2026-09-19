@@ -4,12 +4,12 @@ import { NextRouter, useRouter } from 'next/router';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
-import { isLibraryEnabled } from '@constants/library/common';
+import { libraryPath } from '@lib/library/libraryPath';
 
 import { logout } from '@api/auth';
 
-import LibraryIcon from '@icons/library/svg/library.svg';
 import PlusIcon from '@icons/library/svg/plus.svg';
+import LibraryIcon from '@icons/navbar/library.svg';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './UserProfile.module.scss';
@@ -21,7 +21,6 @@ type UserProfileProps = {
   isDarkTheme?: boolean;
   hideDropdown?: boolean;
   hideUsername?: boolean;
-  canCreateLibrary?: boolean;
   hasLibrary?: boolean;
   setAccountData?: (updater: (prev: boolean) => boolean) => void;
   setOpenLoginModal?: (openModal: boolean) => void;
@@ -56,7 +55,6 @@ const UserProfile: FC<UserProfileProps> = ({
   isDarkTheme,
   hideDropdown,
   hideUsername,
-  canCreateLibrary,
   hasLibrary,
   setAccountData,
   setOpenLoginModal,
@@ -86,25 +84,13 @@ const UserProfile: FC<UserProfileProps> = ({
     handleOpenSettings?.();
   }, [handleOpenSettings]);
 
-  // With neither an existing library nor create permission, the user has no
-  // library page to open, so the item is inert.
-  const myLibraryDisabled = !hasLibrary && !canCreateLibrary;
-
-  const handleMyLibrary = useCallback(() => {
-    if (myLibraryDisabled) return;
+  // Every signed-in account has a library page: the one it owns, or its own
+  // address, where the first shelf creates one. Both items lead there; the
+  // page decides what it shows.
+  const openMyLibrary = useCallback(() => {
     setIsDropdownOpen(false);
-    router.push(`/library/${username}`);
-  }, [router, username, myLibraryDisabled]);
-
-  // A library has no standalone create step — it's bootstrapped on the owner's
-  // own page once they add content (gated server-side by the same feature
-  // flag). So "Create library" just routes there; the flag drives whether the
-  // item is actionable at all.
-  const handleCreateLibrary = useCallback(() => {
-    if (!canCreateLibrary) return;
-    setIsDropdownOpen(false);
-    router.push(`/library/${username}`);
-  }, [router, username, canCreateLibrary]);
+    router.push(libraryPath(username));
+  }, [router, username]);
 
   useEffect(() => {
     if (hideDropdown) setIsDropdownOpen(false);
@@ -180,36 +166,29 @@ const UserProfile: FC<UserProfileProps> = ({
         )}
         {isDropdownOpen && isAccessTokenExist && (
           <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
-            {isLibraryEnabled() && username && (
-              <div
-                className={cn(styles.menuItem, {
-                  [styles.disabled]: myLibraryDisabled,
-                })}
-                onClick={handleMyLibrary}
-                aria-disabled={myLibraryDisabled}
-              >
+            {username && (
+              <div className={styles.menuItem} onClick={openMyLibrary}>
                 <LibraryIcon
                   width={20}
                   height={11}
-                  className={cn(styles.menuIcon, {
+                  className={cn(styles.menuIcon, styles.menuIconLibrary, {
                     [styles.menuIconDark]: isDarkTheme,
                   })}
                 />
                 <span>{t.myLibrary}</span>
               </div>
             )}
-            {isLibraryEnabled() && (
+            {/* One library per user: once they own one, "My Library" above is
+                the only honest entry and this item would just repeat it. */}
+            {!hasLibrary && (
               <div
-                className={cn(styles.menuItem, {
-                  [styles.disabled]: !canCreateLibrary,
-                })}
-                onClick={handleCreateLibrary}
-                aria-disabled={!canCreateLibrary}
+                className={cn(styles.menuItem, styles.highlighted)}
+                onClick={openMyLibrary}
               >
                 <PlusIcon
                   width={14}
                   height={14}
-                  className={cn(styles.menuIcon, {
+                  className={cn(styles.menuIcon, styles.menuIconPlus, {
                     [styles.menuIconDark]: isDarkTheme,
                   })}
                 />

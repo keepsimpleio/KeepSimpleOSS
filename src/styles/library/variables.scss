@@ -57,6 +57,8 @@
   --gray-light: #c4c4c4;
   --gray-darkest: #494949;
   --gray-darker: #515151;
+  --gray-300: #868686;
+  --gray-400: #aaaaaa;
 
   --brown: #af6a34;
   --brown-100: #7b4a24;
@@ -73,8 +75,26 @@
   --white-300: #fffcf5;
   --off-white: #f9f4eb;
   --white-warm: #fffbf4;
+  /* The lifted sheet under a selected pill or an open menu row. */
+  --white-400: #fefdf9;
+  /* Sand: the paper's own darker fibres, for the brush texture, a dashed
+     drop slot and the home card's mini shelf. */
+  --sand-100: #e8d9b8;
+  --sand-200: #cebda1;
+  --sand-300: #f2e9d6;
+
+  /* Empty-shelf figure — the wooden mannequin that stands on a shelf holding
+     nothing yet. Its tones are the shelf board's own (see
+     --gradient-shelf-color) so it reads as turned from the same wood; no new
+     hue enters the palette. */
+  --figure-wood-light: #ece2cd;
+  --figure-wood-mid: #d2c6af;
+  --figure-wood-dark: var(--taupe);
+  --figure-wood-deep: #b0a184;
+  --figure-wood-edge: var(--brown-100);
 
   --white-transparent-400: rgba(248, 241, 229, 0.4);
+  --white-transparent-600: rgba(248, 241, 229, 0.78);
   --white-overlay: rgba(255, 255, 255, 0.18);
   --surface-overlay: rgba(229, 229, 229, 0.03);
 
@@ -93,22 +113,71 @@
     rgba(35, 34, 28, 0.4) 0%,
     rgba(226, 220, 176, 0) 100%
   );
+  /* INK FOR A PRINTED FACE, and it does not turn at night.
+     The book mockup under every cover is a photograph: it stays paper in the
+     dark reading, so anything written on that paper keeps its daylight ink.
+     Tokens that DO turn (--black-rich, --gray-darkest) put light ink on light
+     paper there and the writing disappears. Never redefine these in
+     themes.scss, that is the whole point of them. */
+  /* The pigment a hand-drawn rule is painted in, as canvas takes it. */
+  --ink-line: 51, 41, 28;
+  /* The outline of a ghost control on paper. */
+  --ink-outline: rgba(51, 41, 28, 0.55);
+  --ink-on-cover: #23221c;
+  --ink-on-cover-soft: #494949;
+  --wash-on-cover: #fffcf7;
+  --accent-on-cover: #6b3fb3;
+  --rule-on-cover: rgba(35, 34, 28, 0.16);
+
   --gradient-cover-placeholder: linear-gradient(
     135deg,
     var(--cream) 0%,
     var(--beige) 100%
   );
+  /* The info panel's tab: laid lines the width of a book's cased spine,
+     drawn in the sheet's own brown at a few percent, over a light that falls
+     from the page side toward the panel. Ruling, not decoration. */
+  --pattern-panel-tab:
+    repeating-linear-gradient(
+      to right,
+      rgba(135, 108, 66, 0.07) 0px,
+      rgba(135, 108, 66, 0.07) 1px,
+      rgba(135, 108, 66, 0) 1px,
+      rgba(135, 108, 66, 0) 5px
+    ),
+    linear-gradient(
+      to right,
+      rgba(135, 108, 66, 0.06) 0%,
+      rgba(135, 108, 66, 0) 45%
+    );
+
   --gradient-book-placeholder: linear-gradient(
     135deg,
     #d4cfb4 0%,
     #b5ad8a 100%
   );
 
+  /* Radius — the one corner for every interactive control and floating
+     surface (buttons, inputs, dropdowns, modals). Fully sharp, matching the
+     keepsimple.io/tools tiles; only circles (dots, spinner, switch) keep
+     their shape. */
+  --radius-control: 0;
+  /* Tags are the one exception to the sharp corner: a solid block of colour
+     reads better as a fully rounded pill. */
+  --radius-tag: 100px;
+  /* The shelf-header type icon chip sits next to the square shelf controls, so
+     it stays sharp like the rest of the surface. */
+  --radius-icon-chip: 0;
+
   /* Box Shadow */
   --tooltip-shadow: 0px 0px 22px 0px #00000033;
   --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   --sidebar-shadow: -18px 31px 19.2px 0px #533a3a08;
-  --card-shadow: 0px 4px 12px 0px #00000014;
+  /* The info panel's tab in the toolbar: the same warm ink as the sheet's own
+     shadow, cast leftward onto the page so the tab reads as the panel's
+     leading edge rather than a patch of paint. */
+  --panel-tab-shadow: -10px 0 16px -8px #533a3a2e;
+  --panel-tab-shadow-hover: -14px 0 20px -8px #533a3a3d;
 
   /* Fonts — the upstream library injected these via next/font on <body>;
      here we declare them directly with web-safe fallbacks. */

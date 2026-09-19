@@ -5,6 +5,8 @@ export interface ImageDropzoneProps {
   existingPreviewUrl?: string;
   /** Fires when user clicks × while the existing-remote preview is shown (no File yet). */
   onClearExisting?: () => void;
+  /** An image is being fetched for this slot (e.g. a cover pulled by autofill). */
+  loading?: boolean;
   accept?: string[];
   maxSize?: number;
   disabled?: boolean;

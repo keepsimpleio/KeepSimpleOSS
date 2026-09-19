@@ -12,6 +12,7 @@ export function SelectToggle({
   onToggle,
   className,
   disabled = false,
+  reason,
 }: SelectToggleProps): JSX.Element {
   // The toggle sits on top of a card that is itself a button, so keep the
   // click/press/drag from bubbling up and opening the object overview.
@@ -21,6 +22,12 @@ export function SelectToggle({
     e.stopPropagation();
     onToggle();
   };
+
+  // A chip that cannot be used says what is in the way instead of offering an
+  // action that does nothing. The strip is a fixed width over the artwork, so
+  // the longer wording costs no layout. It is a label, not a tooltip: a tooltip
+  // rendered here would be cut off by the shelf's own scroll clipping.
+  const label = disabled && reason ? reason : selected ? 'Remove' : 'Select';
 
   return (
     <button
@@ -34,11 +41,9 @@ export function SelectToggle({
       onKeyDown={stop}
       disabled={disabled}
       aria-pressed={selected}
-      aria-label={selected ? 'Remove from selection' : 'Select'}
+      aria-label={selected ? 'Remove from selection' : label}
     >
-      <Text variant={TypographyVariant.TextSmall}>
-        {selected ? 'Remove' : 'Select'}
-      </Text>
+      <Text variant={TypographyVariant.TextSmall}>{label}</Text>
     </button>
   );
 }

@@ -13,6 +13,7 @@ import { useLockBodyScroll } from '@hooks/library/useLockBodyScroll';
 
 import { CloseIcon } from '@icons/library/svg';
 
+import { InkLine } from '@components/library/atoms/InkLine';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
 
 import type { ModalProps } from './Modal.types';
@@ -22,12 +23,23 @@ import styles from './Modal.module.scss';
 // Keep in sync with the fade-out duration in Modal.module.scss.
 const CLOSE_ANIMATION_MS = 180;
 
+// Modals stack (a confirmation over an overview, a success card over a form),
+// and every layer used to listen for Escape on its own: one keypress tore the
+// whole stack down. The stack records mount order so only the topmost layer
+// answers Escape; the ones beneath wait their turn.
+const modalStack: symbol[] = [];
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function Modal(props: ModalProps): JSX.Element {
   const { className, title, wrapperClassName, onClose, closeRef, children } =
     props;
   const titleId = useId();
 
   const [isClosing, setIsClosing] = useState(false);
+  const layerId = useRef<symbol>(Symbol('modal'));
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Close only when a click both starts and ends on the backdrop itself
   // (`target === currentTarget`). Tracking the pointerdown target avoids a
@@ -94,17 +106,80 @@ export function Modal(props: ModalProps): JSX.Element {
   };
 
   useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
+    const id = layerId.current;
+    modalStack.push(id);
+    return () => {
+      const index = modalStack.lastIndexOf(id);
+      if (index !== -1) modalStack.splice(index, 1);
+    };
+  }, []);
+
+  useEffect(() => {
+    const isTopmost = () =>
+      modalStack[modalStack.length - 1] === layerId.current;
+
+    const handleKey = (event: KeyboardEvent) => {
+      if (!isTopmost()) return;
       if (event.key === 'Escape') {
         requestClose();
+        return;
+      }
+      // Keep Tab inside the dialog: the page underneath is inert while a modal
+      // is up, so focus must never wander into it.
+      if (event.key === 'Tab' && contentRef.current) {
+        const focusable = Array.from(
+          contentRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+        ).filter(
+          el => el.offsetParent !== null || el === document.activeElement,
+        );
+        if (focusable.length === 0) {
+          event.preventDefault();
+          contentRef.current.focus();
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement as HTMLElement | null;
+        const inside = !!active && contentRef.current.contains(active);
+        if (event.shiftKey && (!inside || active === first)) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (!inside || active === last)) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
-    window.addEventListener('keydown', handleEsc);
+    window.addEventListener('keydown', handleKey);
 
-    return () => window.removeEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleKey);
   }, [requestClose]);
 
+  // Focus lands inside the dialog on open and returns to the control that
+  // opened it on close, so a keyboard user is never left on a hidden page.
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const content = contentRef.current;
+    if (content) {
+      const first = content.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+      (first ?? content).focus({ preventScroll: true });
+    }
+    return () => {
+      if (previous && typeof previous.focus === 'function') {
+        previous.focus({ preventScroll: true });
+      }
+    };
+  }, []);
+
   useLockBodyScroll(true);
+
+  // A dialog is drawn into the document body, and on the server there is no
+  // body to draw into: since the library began arriving server-rendered, an
+  // address naming an object opened its overview while the page was still
+  // being written and took the whole response down with it. The page renders
+  // without the dialog and the browser opens it on arrival, which is what it
+  // did before the shelves came with the response.
+  if (typeof document === 'undefined') return null;
 
   return createPortal(
     <div className="library">
@@ -118,25 +193,34 @@ export function Modal(props: ModalProps): JSX.Element {
         onPointerDown={handleBackdropPointerDown}
         onClick={handleBackdropClick}
       >
-        <div className={classNames(styles.content, className)}>
+        <div
+          ref={contentRef}
+          tabIndex={-1}
+          className={classNames(styles.content, className)}
+        >
           {title && (
-            <div className={styles.header}>
-              <Text
-                id={titleId}
-                className={styles.title}
-                variant={TypographyVariant.SubtitleSecondaryAlt}
-              >
-                {title}
-              </Text>
-              <button
-                type="button"
-                className={styles.close}
-                aria-label="Close"
-                onClick={requestClose}
-              >
-                <CloseIcon width={16} height={16} />
-              </button>
-            </div>
+            <>
+              <div className={styles.header}>
+                <Text
+                  id={titleId}
+                  className={styles.title}
+                  variant={TypographyVariant.SubtitleSecondaryAlt}
+                >
+                  {title}
+                </Text>
+                <button
+                  type="button"
+                  className={styles.close}
+                  aria-label="Close"
+                  onClick={requestClose}
+                >
+                  <CloseIcon width={24} height={24} />
+                </button>
+              </div>
+              {/* Same drawn rule as the sidebar sections, in place of the boxed
+                  1px header border; the wobble varies with the title. */}
+              <InkLine seed={title.length} className={styles.headerRule} />
+            </>
           )}
           {children}
         </div>

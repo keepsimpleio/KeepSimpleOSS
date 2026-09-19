@@ -1,0 +1,262 @@
+// The status stands where the Librarian opener stood: the width of the
+// search field, on the pills row, in the same border language. The meter
+// inside it fills in the AI accent.
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 300px;
+  max-width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--beige);
+  border-radius: var(--radius-control);
+  background: var(--white);
+  color: var(--brown);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--purple-100);
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brown-border);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.label {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+// The meter takes what is left between the label and the number; the fill
+// is scaled, not resized, so the bar's box never changes.
+.meter {
+  flex: 1;
+  min-width: 40px;
+  height: 6px;
+  background: var(--off-white);
+  border: 1px solid var(--beige);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--purple-100);
+  transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.2, 0, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Sized for its widest reading, 100%, so the meter never moves with the score.
+.value {
+  flex-shrink: 0;
+  min-width: 44px;
+  text-align: right;
+  font-family: var(--font-source-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--black-rich);
+}
+
+// The ledger: one column, 420px, six quiet blocks. Each block is a name, the
+// points it earns of the points it is worth, a meter, and the count those
+// points were read from, all drawn. Nothing a reader needs to trust the
+// number waits behind a hover.
+.modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 32px 28px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.total {
+  flex-shrink: 0;
+  min-width: 72px;
+  font-family: var(--font-source-serif);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--black-rich);
+}
+
+.lede {
+  color: var(--gray-darker);
+}
+
+// Said once above the rows, so no row has to say what a point is.
+.legend {
+  margin: -8px 0 0;
+  font-family: var(--font-source-serif);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--gray-darker);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Name and points on the first line, the meter under them, the count under
+// that. The block's height is the same whether the count is one word or a
+// full line, so hovering never shifts the row below.
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px 8px;
+  margin: 0 -8px;
+  border-radius: var(--radius-control);
+  transition: background 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--off-white);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.rowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rowLabel {
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--black-rich);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// The count behind the points, in the owner's own units.
+.rowDetail {
+  font-family: var(--font-source-serif);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--gray-darker);
+}
+
+.rowMeter {
+  display: block;
+  height: 4px;
+  background: var(--off-white);
+  border: 1px solid var(--beige);
+  overflow: hidden;
+}
+
+.rowFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--purple-100);
+  transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.2, 0, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.rowPoints {
+  flex-shrink: 0;
+  text-align: right;
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  font-variant-numeric: tabular-nums;
+  color: var(--black-rich);
+  white-space: nowrap;
+}
+
+// "of 25 points" carries the unit on every row, so the figure to its left
+// can never be read as anything else.
+.rowMax {
+  font-size: 12px;
+  color: var(--gray-darker);
+}
+
+// The one step that buys the most, as a sentence in the accent.
+.foot {
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--beige);
+  font-family: var(--font-source-serif);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--purple-100);
+}
+
+// "Your best win:" carries the line, so the move reads as an answer rather
+// than as a note at the bottom of a table.
+.footLabel {
+  font-weight: 600;
+  color: var(--black-rich);
+}
+
+.footGain {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}

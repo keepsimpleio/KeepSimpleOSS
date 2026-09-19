@@ -1,18 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  ABOUT_AUTHOR_MAX,
+  ABOUT_LIBRARY_MAX,
   AVATAR_ACCEPT_MIME,
   AVATAR_MAX_BYTES,
   AVATAR_MIN_BYTES,
+  createEditLibrarySchema,
   type EditLibraryFormData,
-  editLibrarySchema,
 } from '@utils/library/schema/editLibrarySchema';
 import axios from 'axios';
 import classNames from 'classnames';
 import React, { JSX, useMemo, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import type { IUpdateLibraryPayload } from '@local-types/library/library';
 import type { IUpdateMeErrorBody } from '@local-types/library/user';
+
+import { richTextLength, toEditorHtml } from '@lib/library/richText';
 
 import { createLibrary } from '@api/library/createLibrary';
 import { updateLibrary } from '@api/library/updateLibrary';
@@ -22,15 +26,18 @@ import { updateMe } from '@api/library/user/updateMe';
 
 import { useAuth } from '@components/Context/library/AuthContext';
 import { Avatar } from '@components/library/atoms/Avatar';
+import { CharCount } from '@components/library/atoms/CharCount';
 import { Text, TypographyVariant } from '@components/library/atoms/Text';
+import { Tooltip } from '@components/library/atoms/Tooltip';
 import {
   Button,
   ButtonSize,
   ButtonType,
 } from '@components/library/molecules/Button';
+import { ConfirmationModal } from '@components/library/molecules/ConfirmationModal';
 import { Input } from '@components/library/molecules/Input';
 import { Modal, useModalClose } from '@components/library/molecules/Modal';
-import { Textarea } from '@components/library/molecules/Textarea';
+import { RichTextField } from '@components/library/molecules/RichTextField';
 
 import type { EditLibraryModalProps } from './EditLibraryModal.types';
 
@@ -53,25 +60,20 @@ function readUsernameError(
   return body.message.username ?? body.message.error;
 }
 
-// aboutMe / aboutLibrary are CKEditor rich-text fields server-side; until we
-// swap the plain Textarea for a rich-text editor, strip tags on display and
-// send plain text back. CKEditor will wrap on its own when edited via admin.
-const stripHtml = (s?: string | null) =>
-  s
-    ?.replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .trim() ?? '';
+// aboutMe / aboutLibrary are rich-text fields server-side. The editor and the
+// info panel both work in the small dialect from lib/library/richText, so the
+// marks an owner applies are what visitors read. Normalizing the stored value
+// on the way in gives the dirty check a baseline the editor can match exactly.
 
 export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const { className, library, onClose, onSaved } = props;
   const { accountData, setAccountData } = useAuth();
-  const { closeRef, close } = useModalClose(onClose);
 
   const currentAvatarUrl = absoluteUrl(
     library?.attributes.avatar?.data?.attributes.url,
   );
-  const currentAboutMe = stripHtml(library?.attributes.aboutMe);
-  const currentAboutLibrary = stripHtml(
+  const currentAboutMe = toEditorHtml(library?.attributes.aboutMe);
+  const currentAboutLibrary = toEditorHtml(
     library?.attributes.libraryDetails?.aboutLibrary,
   );
   const currentUsername = accountData?.username ?? '';
@@ -83,21 +85,48 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [topError, setTopError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  // Synchronous twin of `isSaving`: a second click fired before the
+  // re-render that disables the button must not start a second save.
+  const saveInFlightRef = useRef(false);
+  const [discardPrompt, setDiscardPrompt] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Resolve exactly the way the Sidebar's Author block does: the library's own
+  // upload wins, and the owner's account photo stands in until they upload one.
+  // Without the fallback the modal showed the empty placeholder while the panel
+  // behind it showed the account photo, so the owner was told they had no
+  // picture while looking at one.
   const previewUrl = useMemo(() => {
     if (avatarFile) return URL.createObjectURL(avatarFile);
-    if (avatarRemoved) return undefined;
-    return currentAvatarUrl;
-  }, [avatarFile, avatarRemoved, currentAvatarUrl]);
+    if (!avatarRemoved && currentAvatarUrl) return currentAvatarUrl;
+    return accountData?.picture;
+  }, [avatarFile, avatarRemoved, currentAvatarUrl, accountData?.picture]);
+
+  // The account photo is a stand-in this modal does not own, so it is not
+  // something "Remove picture" can act on — only a real library avatar (or a
+  // file picked in this session) is removable.
+  const canRemovePicture =
+    avatarFile !== null || (!avatarRemoved && Boolean(currentAvatarUrl));
+
+  // Built from what the form opened with: a passage the owner does not touch
+  // keeps whatever length it was saved with.
+  const editLibraryResolverSchema = useMemo(
+    () =>
+      createEditLibrarySchema({
+        aboutMe: currentAboutMe,
+        aboutLibrary: currentAboutLibrary,
+      }),
+    [currentAboutMe, currentAboutLibrary],
+  );
 
   const {
+    control,
     register,
     handleSubmit,
     watch,
     formState: { errors, isDirty: formDirty },
   } = useForm<EditLibraryFormData>({
-    resolver: zodResolver(editLibrarySchema),
+    resolver: zodResolver(editLibraryResolverSchema),
     defaultValues: {
       username: currentUsername,
       aboutMe: currentAboutMe,
@@ -108,7 +137,27 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const aboutMeValue = watch('aboutMe') ?? '';
   const aboutLibraryValue = watch('aboutLibrary') ?? '';
   const avatarDirty = avatarFile !== null || avatarRemoved;
-  const canSave = !isSaving && (formDirty || avatarDirty);
+  const hasChanges = formDirty || avatarDirty;
+  const canSave = !isSaving && hasChanges;
+
+  // Closing with edits pending asks first.
+  // A finished save leaves through the same fade as Cancel: the flag lets
+  // the close past the unsaved-changes guard, which is still true until the
+  // parent unmounts us with fresh data.
+  const savedPending = useRef(false);
+  const requestClose = () => {
+    if (savedPending.current) {
+      onClose();
+      return;
+    }
+    if (isSaving) return;
+    if (hasChanges) {
+      setDiscardPrompt(true);
+      return;
+    }
+    onClose();
+  };
+  const { closeRef, close } = useModalClose(requestClose);
 
   const handlePickFile = () => fileInputRef.current?.click();
 
@@ -141,6 +190,8 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   };
 
   const onSubmit = async (data: EditLibraryFormData) => {
+    if (saveInFlightRef.current) return;
+    saveInFlightRef.current = true;
     setTopError(null);
     setUsernameError(null);
     setIsSaving(true);
@@ -235,145 +286,186 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
       const freshUser = await getUserInfo();
       if (freshUser) setAccountData(freshUser);
       if (libraryId != null) onSaved?.(libraryId);
-      onClose();
+      savedPending.current = true;
+      close();
     } catch (error) {
       console.error('EditLibraryModal save failed:', error);
       setTopError('Something went wrong. Please try again.');
     } finally {
+      saveInFlightRef.current = false;
       setIsSaving(false);
     }
   };
 
   return (
-    <Modal
-      title="Edit library"
-      className={classNames(styles.modal, className)}
-      onClose={onClose}
-      closeRef={closeRef}
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <div className={styles.avatarSection}>
-          <div className={styles.avatarPreview}>
-            <Avatar
-              url={previewUrl}
-              className={styles.avatarImage}
-              sizes="270px"
-            />
+    <>
+      <Modal
+        title="Edit library"
+        className={classNames(styles.modal, className)}
+        onClose={requestClose}
+        closeRef={closeRef}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+          <div className={styles.avatarSection}>
+            <div className={styles.avatarPreview}>
+              <Avatar url={previewUrl} className={styles.avatarImage} />
+            </div>
+            <div className={styles.avatarButtons}>
+              <Tooltip
+                place="top"
+                tooltipContent={
+                  canRemovePicture ? '' : 'There is no picture to remove yet.'
+                }
+                wrapperClassName={classNames({
+                  [styles.tooltipOff]: canRemovePicture,
+                })}
+              >
+                <Button
+                  label="Remove picture"
+                  ariaLabel="Remove picture"
+                  onClick={handleRemovePicture}
+                  type={ButtonType.Secondary}
+                  size={ButtonSize.Default}
+                  disabled={!canRemovePicture}
+                />
+              </Tooltip>
+              <Button
+                label="Upload picture"
+                ariaLabel="Upload picture"
+                onClick={handlePickFile}
+                type={ButtonType.Primary}
+                size={ButtonSize.Default}
+              />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={AVATAR_ACCEPT_MIME.join(',')}
+                onChange={handleFileChange}
+                className={styles.hiddenFile}
+                tabIndex={-1}
+                aria-label="Choose a picture"
+              />
+            </div>
+            {/* The limits are stated before they bite, not only as an error. */}
+            <p
+              className={classNames(styles.error, {
+                [styles.hint]: !avatarError,
+              })}
+            >
+              {avatarError ?? 'JPG, PNG or WebP, between 10 KB and 5 MB.'}
+            </p>
           </div>
-          <div className={styles.avatarButtons}>
+
+          <div className={styles.field}>
+            <Text
+              variant={TypographyVariant.TextSmall}
+              className={styles.label}
+            >
+              Username
+            </Text>
+            <Input
+              type="text"
+              ariaLabel="Username"
+              placeholder="Enter your username"
+              placeholderColor="#9E9E9E"
+              {...register('username')}
+            />
+            <p className={styles.error}>
+              {errors.username?.message ?? usernameError ?? ' '}
+            </p>
+          </div>
+
+          <div className={styles.field}>
+            <Controller
+              control={control}
+              name="aboutLibrary"
+              render={({ field }) => (
+                <RichTextField
+                  label="About library"
+                  ariaLabel="About library"
+                  placeholder="What is this library about?"
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className={styles.counterRow}>
+              <CharCount
+                current={richTextLength(aboutLibraryValue)}
+                max={ABOUT_LIBRARY_MAX}
+              />
+            </div>
+            <p className={styles.error}>
+              {errors.aboutLibrary?.message ?? ' '}
+            </p>
+          </div>
+
+          <div className={styles.field}>
+            <Controller
+              control={control}
+              name="aboutMe"
+              render={({ field }) => (
+                <RichTextField
+                  label="About author"
+                  ariaLabel="About author"
+                  placeholder="Tell visitors about yourself"
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className={styles.counterRow}>
+              <CharCount
+                current={richTextLength(aboutMeValue)}
+                max={ABOUT_AUTHOR_MAX}
+              />
+            </div>
+            <p className={styles.error}>{errors.aboutMe?.message ?? ' '}</p>
+          </div>
+
+          <p className={styles.error}>{topError ?? ' '}</p>
+
+          <div className={styles.actions}>
             <Button
-              label="Remove picture"
-              ariaLabel="Remove picture"
-              onClick={handleRemovePicture}
+              label="Cancel"
+              onClick={close}
               type={ButtonType.Secondary}
               size={ButtonSize.Default}
-              disabled={!previewUrl}
+              ariaLabel="Cancel"
+              disabled={isSaving}
             />
-            <Button
-              label="Upload picture"
-              ariaLabel="Upload picture"
-              onClick={handlePickFile}
-              type={ButtonType.Primary}
-              size={ButtonSize.Default}
-            />
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={AVATAR_ACCEPT_MIME.join(',')}
-              onChange={handleFileChange}
-              className={styles.hiddenFile}
-              aria-hidden="true"
-            />
+            <Tooltip
+              place="top"
+              tooltipContent={hasChanges ? '' : 'Nothing has changed yet.'}
+              wrapperClassName={classNames({ [styles.tooltipOff]: hasChanges })}
+            >
+              <Button
+                label={isSaving ? 'Saving…' : 'Save'}
+                buttonType="submit"
+                type={ButtonType.Primary}
+                size={ButtonSize.Default}
+                ariaLabel="Save library"
+                disabled={!canSave}
+              />
+            </Tooltip>
           </div>
-          <p className={styles.error}>{avatarError ?? ' '}</p>
-        </div>
+        </form>
+      </Modal>
 
-        <div className={styles.field}>
-          <Text variant={TypographyVariant.TextSmall} className={styles.label}>
-            Username
-          </Text>
-          <Input
-            type="text"
-            ariaLabel="Username"
-            placeholder="Enter your username"
-            placeholderColor="#9E9E9E"
-            {...register('username')}
-          />
-          <p className={styles.error}>
-            {errors.username?.message ?? usernameError ?? ' '}
-          </p>
-        </div>
-
-        <div className={styles.field}>
-          <div className={styles.labelRow}>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.label}
-            >
-              About library
-            </Text>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.counter}
-            >
-              {aboutLibraryValue.length} / 4000
-            </Text>
-          </div>
-          <Textarea
-            ariaLabel="About library"
-            placeholder="What is this library about?"
-            rows={4}
-            className={styles.textarea}
-            {...register('aboutLibrary')}
-          />
-          <p className={styles.error}>{errors.aboutLibrary?.message ?? ' '}</p>
-        </div>
-
-        <div className={styles.field}>
-          <div className={styles.labelRow}>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.label}
-            >
-              About author
-            </Text>
-            <Text
-              variant={TypographyVariant.TextSmall}
-              className={styles.counter}
-            >
-              {aboutMeValue.length} / 2000
-            </Text>
-          </div>
-          <Textarea
-            ariaLabel="About author"
-            placeholder="Tell visitors about yourself"
-            rows={4}
-            className={styles.textarea}
-            {...register('aboutMe')}
-          />
-          <p className={styles.error}>{errors.aboutMe?.message ?? ' '}</p>
-        </div>
-
-        <p className={styles.error}>{topError ?? ' '}</p>
-
-        <div className={styles.actions}>
-          <Button
-            label="Cancel"
-            onClick={close}
-            type={ButtonType.Secondary}
-            size={ButtonSize.Default}
-            ariaLabel="Cancel"
-          />
-          <Button
-            label={isSaving ? 'Saving…' : 'Save'}
-            onClick={handleSubmit(onSubmit)}
-            type={ButtonType.Primary}
-            size={ButtonSize.Default}
-            ariaLabel="Save library"
-            disabled={!canSave}
-          />
-        </div>
-      </form>
-    </Modal>
+      {discardPrompt && (
+        <ConfirmationModal
+          variant="delete"
+          title="Discard these changes?"
+          text="Your edits to the library will be lost."
+          actionButtonLabel="Discard"
+          actionButtonType={ButtonType.Warning}
+          onClose={() => setDiscardPrompt(false)}
+          onConfirm={() => {
+            setDiscardPrompt(false);
+            onClose();
+          }}
+        />
+      )}
+    </>
   );
 }
