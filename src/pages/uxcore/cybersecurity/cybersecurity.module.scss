@@ -1,0 +1,117 @@
+// Cybersecurity hub + case pages. Palette follows the Offsec layer:
+// crimson accent (#c8412a) on a warm off-white, so the standalone pages
+// read as the same surface as the in-modal OffsecBiasView.
+
+$accent: #c8412a;
+$ink: #241b1a;
+$muted: #6b615f;
+$paper: #fffaf8;
+$line: #eaddd8;
+
+.hub,
+.casePage {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 24px 76px;
+  background: $paper;
+  color: $ink;
+}
+
+.title,
+.caseTitle {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 16px;
+}
+
+.title::before,
+.caseTitle::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: $accent;
+  margin-bottom: 16px;
+}
+
+.intro {
+  font-size: 18px;
+  line-height: 1.5;
+  color: $muted;
+  margin: 0 0 32px;
+  max-width: 640px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.item {
+  margin: 0;
+}
+
+.link {
+  display: block;
+  padding: 16px 18px;
+  border: 1px solid $line;
+  border-radius: 12px;
+  text-decoration: none;
+  color: $ink;
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover {
+    border-color: $accent;
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.name {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tell {
+  display: block;
+  font-size: 14px;
+  line-height: 1.45;
+  color: $muted;
+}
+
+.caseNav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.backLink,
+.biasLink {
+  font-size: 14px;
+  color: $accent;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.biasLink {
+  color: $muted;
+}

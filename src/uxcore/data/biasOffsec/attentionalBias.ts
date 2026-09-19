@@ -9,8 +9,9 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'A loud alarm can be there to cover a quiet request arriving in the same minute. When something screams for your attention, look at what else just landed before you act on either.',
   scenario:
-    'Two pings hit you inside the same minute, one a phone push, the other an email. One is loud and demands you act right now. The other is quiet and looks routine. Your attention has a budget, and the attacker chose where you spend it.',
+    'Two pings hit you inside the same minute. A phone push screams about an unauthorized sign-in and demands you act right now. A quiet supplier email asks to slip an invoice into today’s payment run. Your attention has a budget, and the attacker chose where you spend it.',
   visualLabel: 'Scenario',
   visual: {
     before: {

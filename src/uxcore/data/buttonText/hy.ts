@@ -1,5 +1,5 @@
 const hy = {
-  showMore: 'Show more',
-  showLess: 'Show less',
+  showMore: 'Ցույց տալ ավելին',
+  showLess: 'Ցույց տալ ավելի քիչ',
 };
 export default hy;

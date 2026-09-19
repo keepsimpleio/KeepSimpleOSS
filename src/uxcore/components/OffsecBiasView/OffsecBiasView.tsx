@@ -1,5 +1,9 @@
 import { OffsecBiasCard, OffsecBiasContent } from '@uxcore/data/biasOffsec';
+import { getOffsecChrome } from '@uxcore/data/biasOffsec/chrome';
+import type { OffsecInteractive } from '@uxcore/data/biasOffsec/types';
 import cn from 'classnames';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 
 import KemmioCredit from './KemmioCredit';
 
@@ -9,7 +13,13 @@ interface OffsecBiasViewProps {
   content: OffsecBiasContent;
 }
 
-const CardBody = ({ card }: { card: OffsecBiasCard }) => {
+const CardBody = ({
+  card,
+  chrome,
+}: {
+  card: OffsecBiasCard;
+  chrome: ReturnType<typeof getOffsecChrome>;
+}) => {
   // Chat renders its own priorContext after the sender header; every
   // other surface shows it as a soft lead-in line at the top.
   const prior =
@@ -36,7 +46,7 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
               <path d="M1.6 2.2 L10 9 L18.4 2.2" />
             </svg>
           </span>
-          <span className={styles.emailFromLabel}>From</span>
+          <span className={styles.emailFromLabel}>{chrome.from}</span>
           <span className={styles.cardSender}>{card.sender}</span>
           {card.timestamp && (
             <span className={styles.cardTimestamp}>{card.timestamp}</span>
@@ -142,7 +152,7 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
             </svg>
           </span>
           <div className={styles.callIdentity}>
-            <span className={styles.callKicker}>Incoming call</span>
+            <span className={styles.callKicker}>{chrome.incomingCall}</span>
             <span className={styles.callName}>{card.callerName}</span>
             {card.callerLabel && (
               <span className={styles.callSub}>{card.callerLabel}</span>
@@ -251,6 +261,432 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
     );
   }
 
+  if (card.kind === 'diff') {
+    return (
+      <>
+        {prior}
+        <div className={styles.diffLabel}>{card.label}</div>
+        <div className={styles.diffRows}>
+          {card.rows.map((row, i) => (
+            <div
+              key={i}
+              className={cn(styles.diffRow, {
+                [styles.diffRowChanged]: row.changed,
+              })}
+            >
+              <span className={styles.diffField}>{row.field}</span>
+              <span className={styles.diffValue}>
+                {row.was && (
+                  <>
+                    <span className={styles.diffWas}>{row.was}</span>
+                    <span className={styles.diffArrow} aria-hidden="true">
+                      →
+                    </span>
+                  </>
+                )}
+                <span
+                  className={cn({ [styles.diffNew]: row.changed && row.was })}
+                >
+                  {row.value}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+        {card.note && <div className={styles.diffNote}>{card.note}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'permission') {
+    return (
+      <>
+        {prior}
+        <div className={styles.permHeader}>
+          <span className={styles.permGlyph} aria-hidden="true">
+            {card.appGlyph || card.appName.charAt(0)}
+          </span>
+          <div className={styles.permIdentity}>
+            <span className={styles.permAppName}>{card.appName}</span>
+            {card.subtitle && (
+              <span className={styles.permSubtitle}>{card.subtitle}</span>
+            )}
+          </div>
+        </div>
+        <div className={styles.permScopeLabel}>{chrome.wantsAccessTo}</div>
+        <ul className={styles.permScopes}>
+          {card.scopes.map((scope, i) => (
+            <li
+              key={i}
+              className={cn(styles.permScope, {
+                [styles.permScopeRisky]: scope.risky,
+              })}
+            >
+              <span className={styles.permScopeTick} aria-hidden="true">
+                {scope.risky ? '!' : '✓'}
+              </span>
+              {scope.label}
+            </li>
+          ))}
+        </ul>
+        {card.cta && <div className={styles.permCta}>{card.cta}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'profile') {
+    if (card.group) {
+      return (
+        <>
+          {prior}
+          <div className={styles.profileGroup}>
+            {card.group.map((member, i) => (
+              <div key={i} className={styles.profileGroupItem}>
+                <span className={styles.profileGroupAvatar} aria-hidden="true">
+                  {member.initial}
+                </span>
+                {member.label && (
+                  <span className={styles.profileGroupLabel}>
+                    {member.label}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+          {card.note && <div className={styles.profileNote}>{card.note}</div>}
+        </>
+      );
+    }
+    return (
+      <>
+        {prior}
+        <div className={styles.profileHeader}>
+          <span className={styles.profileAvatar} aria-hidden="true">
+            {card.initial}
+          </span>
+          <div className={styles.profileIdentity}>
+            <span className={styles.profileName}>
+              {card.name}
+              {card.verified && (
+                <span className={styles.profileVerified} aria-hidden="true">
+                  ✓
+                </span>
+              )}
+            </span>
+            {card.handle && (
+              <span className={styles.profileHandle}>{card.handle}</span>
+            )}
+            {card.title && (
+              <span className={styles.profileTitle}>{card.title}</span>
+            )}
+          </div>
+        </div>
+        {card.badges && card.badges.length > 0 && (
+          <div className={styles.profileBadges}>
+            {card.badges.map((badge, i) => (
+              <span key={i} className={styles.profileBadge}>
+                {badge}
+              </span>
+            ))}
+          </div>
+        )}
+        {card.note && <div className={styles.profileNote}>{card.note}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'stats') {
+    return (
+      <>
+        {prior}
+        {card.title && <div className={styles.statsTitle}>{card.title}</div>}
+        <div className={styles.statsGrid}>
+          {card.tiles.map((tile, i) => (
+            <div
+              key={i}
+              className={cn(styles.statTile, {
+                [styles.statTileMuted]: tile.muted,
+                [styles.statTileFlagged]: tile.flagged,
+              })}
+            >
+              <span className={styles.statValue}>
+                {tile.value}
+                {tile.trend && (
+                  <span
+                    className={cn(
+                      styles.statTrend,
+                      styles[`trend_${tile.trend}`],
+                    )}
+                    aria-hidden="true"
+                  >
+                    {tile.trend === 'up'
+                      ? '▲'
+                      : tile.trend === 'down'
+                        ? '▼'
+                        : '▬'}
+                  </span>
+                )}
+              </span>
+              <span className={styles.statLabel}>{tile.label}</span>
+            </div>
+          ))}
+        </div>
+        {card.note && <div className={styles.statsNote}>{card.note}</div>}
+      </>
+    );
+  }
+
+  if (card.kind === 'chart') {
+    const max = Math.max(...card.bars.map(b => Math.abs(b.value)), 1);
+    return (
+      <>
+        {prior}
+        {card.title && <div className={styles.chartTitle}>{card.title}</div>}
+        <div className={styles.chartBars}>
+          {card.bars.map((bar, i) => (
+            <div
+              key={i}
+              className={cn(styles.chartRow, {
+                [styles.chartRowGhost]: bar.ghost,
+                [styles.chartRowFlagged]: bar.flagged,
+                // Colour is semantic, never a highlight: gains read green,
+                // losses read crimson. A flagged bar is emphasised with an
+                // outline instead, so a positive number is never painted in
+                // the loss colour just because it is the one being sold.
+                [styles.chartRowLoss]: bar.value < 0,
+              })}
+            >
+              <span className={styles.chartBarLabel}>{bar.label}</span>
+              <span className={styles.chartTrack}>
+                <span
+                  className={styles.chartFill}
+                  style={{
+                    width: `${Math.max(4, (Math.abs(bar.value) / max) * 100)}%`,
+                  }}
+                />
+              </span>
+              <span className={styles.chartValue}>
+                {bar.display ?? String(bar.value)}
+              </span>
+            </div>
+          ))}
+        </div>
+        {card.caption && (
+          <div className={styles.chartCaption}>{card.caption}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'checklist') {
+    return (
+      <>
+        {prior}
+        {card.title && (
+          <div className={styles.checklistTitle}>{card.title}</div>
+        )}
+        <ul className={styles.checklist}>
+          {card.items.map((item, i) => (
+            <li
+              key={i}
+              className={cn(styles.checkItem, styles[`check_${item.state}`], {
+                [styles.checkItemFlagged]: item.flagged,
+              })}
+            >
+              <span className={styles.checkGlyph} aria-hidden="true">
+                {item.state === 'ok' ? '✓' : item.state === 'warn' ? '!' : '·'}
+              </span>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+        {card.footer && (
+          <div className={styles.checklistFooter}>{card.footer}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'progress') {
+    return (
+      <>
+        {prior}
+        {card.title && <div className={styles.progressTitle}>{card.title}</div>}
+        <ol className={styles.progressSteps}>
+          {card.steps.map((step, i) => (
+            <li
+              key={i}
+              className={cn(styles.progressStep, styles[`step_${step.state}`])}
+            >
+              <span className={styles.progressDot} aria-hidden="true">
+                {step.state === 'done' ? '✓' : ''}
+              </span>
+              <span className={styles.progressStepLabel}>{step.label}</span>
+            </li>
+          ))}
+        </ol>
+        {typeof card.percent === 'number' && (
+          <span className={styles.progressTrack}>
+            <span
+              className={styles.progressFill}
+              style={{ width: `${Math.min(100, Math.max(0, card.percent))}%` }}
+            />
+          </span>
+        )}
+        {card.caption && (
+          <div className={styles.progressCaption}>{card.caption}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'quiz') {
+    return (
+      <>
+        {prior}
+        <div className={styles.quizPrompt}>{card.prompt}</div>
+        {card.options && (
+          <div className={styles.quizOptions}>
+            {card.options.map((opt, i) => (
+              <span
+                key={i}
+                className={cn(styles.quizOption, {
+                  [styles.quizOptionChosen]: opt.chosen,
+                })}
+              >
+                {opt.label}
+              </span>
+            ))}
+          </div>
+        )}
+        {typeof card.confidence === 'number' && (
+          <div className={styles.quizConfidence}>
+            <div className={styles.quizConfidenceHead}>
+              <span>{card.confidenceLabel || chrome.confidenceDefault}</span>
+              <span className={styles.quizConfidencePct}>
+                {Math.round(card.confidence)}%
+              </span>
+            </div>
+            <span className={styles.quizMeter}>
+              <span
+                className={styles.quizMeterFill}
+                style={{
+                  width: `${Math.min(100, Math.max(0, card.confidence))}%`,
+                }}
+              />
+            </span>
+          </div>
+        )}
+        {card.verdict && (
+          <div className={styles.quizVerdict}>{card.verdict}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'playbook') {
+    return (
+      <>
+        {prior}
+        <div className={styles.playbookHeader}>
+          <span className={styles.playbookMark} aria-hidden="true">
+            ▤
+          </span>
+          <span className={styles.playbookTitle}>{card.docTitle}</span>
+        </div>
+        <ol className={styles.playbookSteps}>
+          {card.steps.map((step, i) => (
+            <li
+              key={i}
+              className={cn(styles.playbookStep, {
+                [styles.playbookStepActive]: step.active,
+              })}
+            >
+              <span className={styles.playbookStepNum} aria-hidden="true">
+                {i + 1}
+              </span>
+              <span className={styles.playbookStepBody}>
+                <span className={styles.playbookStepLabel}>{step.label}</span>
+                {step.note && (
+                  <span className={styles.playbookStepNote}>{step.note}</span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ol>
+        {card.footer && (
+          <div className={styles.playbookFooter}>{card.footer}</div>
+        )}
+      </>
+    );
+  }
+
+  if (card.kind === 'live') {
+    if (card.variant === 'counter') {
+      const from = card.meterFrom ?? 100;
+      const to = card.meterTo ?? 0;
+      return (
+        <>
+          {prior}
+          <div className={styles.liveCounter}>
+            <span className={styles.liveCounterValue}>{card.counterValue}</span>
+            {card.counterLabel && (
+              <span className={styles.liveCounterLabel}>
+                {card.counterLabel}
+              </span>
+            )}
+          </div>
+          {card.meterLabel && (
+            <div className={styles.liveMeterBlock}>
+              <span className={styles.liveMeterLabel}>{card.meterLabel}</span>
+              <span className={styles.liveMeterTrack}>
+                <span
+                  className={styles.liveMeterFill}
+                  style={
+                    {
+                      '--ks-from': `${Math.min(100, Math.max(0, from))}%`,
+                      '--ks-to': `${Math.min(100, Math.max(0, to))}%`,
+                    } as React.CSSProperties
+                  }
+                />
+              </span>
+            </div>
+          )}
+          {card.caption && (
+            <div className={styles.liveCaption}>{card.caption}</div>
+          )}
+        </>
+      );
+    }
+    return (
+      <>
+        {prior}
+        <div className={styles.liveCascade}>
+          {(card.items || []).map((item, i) => (
+            <div
+              key={i}
+              className={cn(styles.liveItem, {
+                [styles.liveItemFlagged]: item.flaggedItem,
+              })}
+              style={{ animationDelay: `${i * 0.55}s` } as React.CSSProperties}
+            >
+              <span className={styles.liveItemDot} aria-hidden="true" />
+              <span className={styles.liveItemBody}>
+                <span className={styles.liveItemTitle}>{item.title}</span>
+                {item.body && (
+                  <span className={styles.liveItemText}>{item.body}</span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+        {card.caption && (
+          <div className={styles.liveCaption}>{card.caption}</div>
+        )}
+      </>
+    );
+  }
+
   // kind === 'chat'
   return (
     <>
@@ -285,42 +721,121 @@ const CardBody = ({ card }: { card: OffsecBiasCard }) => {
   );
 };
 
-const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
-  const { before, after } = content.visual;
+// Interactive "play the victim" widget. The reader picks an option; their
+// choice reveals its outcome inline. Local state only, no side effects, so it
+// stays contained inside the shared modal.
+const InteractiveWidget = ({
+  data,
+  chrome,
+}: {
+  data: OffsecInteractive;
+  chrome: ReturnType<typeof getOffsecChrome>;
+}) => {
+  const [picked, setPicked] = useState<number | null>(null);
+  const chosen = picked === null ? null : data.options[picked];
 
   return (
-    <div className={styles.root}>
+    <div className={styles.interactive}>
+      <div className={cn(styles.card, styles[`card_${data.surface.kind}`])}>
+        <CardBody card={data.surface} chrome={chrome} />
+      </div>
+
+      <div className={styles.choiceQuestion}>{data.question}</div>
+
+      <div className={styles.choiceOptions}>
+        {data.options.map((opt, i) => (
+          <button
+            key={i}
+            type="button"
+            className={cn(styles.choiceButton, {
+              [styles.choiceButtonPicked]: picked === i,
+              [styles.choiceButtonTrap]: picked === i && opt.trap,
+              [styles.choiceButtonSafe]: picked === i && opt.safe,
+              [styles.choiceButtonLoss]: picked === i && !opt.trap && !opt.safe,
+              [styles.choiceButtonMuted]: picked !== null && picked !== i,
+            })}
+            onClick={() => setPicked(i)}
+            aria-pressed={picked === i}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {chosen && (
+        <div
+          className={cn(styles.choiceOutcome, {
+            [styles.choiceOutcomeTrap]: chosen.trap,
+            [styles.choiceOutcomeSafe]: chosen.safe,
+            [styles.choiceOutcomeLoss]: !chosen.trap && !chosen.safe,
+          })}
+        >
+          <span className={styles.choiceOutcomeLabel}>
+            {data.resolvedLabel || 'What happens next'}
+          </span>
+          <p className={styles.choiceOutcomeText}>{chosen.outcome}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const OffsecBiasView = ({ content }: OffsecBiasViewProps) => {
+  const { locale } = useRouter();
+  const chrome = getOffsecChrome(locale);
+  const { before, after } = content.visual ?? {};
+
+  return (
+    // The global ks-offsec class opts this subtree out of the modal's
+    // dark-theme span neutralizer (see UXCoreModal.module.scss), so the
+    // card icons and badges keep their own backgrounds and colors.
+    <div className={cn(styles.root, 'ks-offsec')}>
       <div className={styles.visualBlock}>
+        {content.tell && (
+          <div className={styles.tell}>
+            <span className={styles.tellKey}>{chrome.tellKey}</span>
+            <span className={styles.tellText}>{content.tell}</span>
+          </div>
+        )}
         <span className={styles.eyebrow}>{content.visualLabel}</span>
         <p className={styles.scenario}>{content.scenario}</p>
 
-        <div className={styles.cards}>
-          <div className={styles.cardWrap}>
-            <span className={styles.cardCaption}>{before.tag}</span>
-            <div className={cn(styles.card, styles[`card_${before.kind}`])}>
-              <CardBody card={before} />
-            </div>
-          </div>
+        {content.interactive ? (
+          <InteractiveWidget data={content.interactive} chrome={chrome} />
+        ) : (
+          before &&
+          after && (
+            <div className={styles.cards}>
+              <div className={styles.cardWrap}>
+                <span className={styles.cardCaption}>{before.tag}</span>
+                <div className={cn(styles.card, styles[`card_${before.kind}`])}>
+                  <CardBody card={before} chrome={chrome} />
+                </div>
+              </div>
 
-          <div className={styles.cardDivider}>
-            <span className={styles.cardArrow}>→</span>
-          </div>
+              <div className={styles.cardDivider}>
+                <span className={styles.cardArrow}>→</span>
+              </div>
 
-          <div className={styles.cardWrap}>
-            <span className={cn(styles.cardCaption, styles.cardCaptionFlagged)}>
-              {after.tag}
-            </span>
-            <div
-              className={cn(
-                styles.card,
-                styles[`card_${after.kind}`],
-                styles.cardFlagged,
-              )}
-            >
-              <CardBody card={after} />
+              <div className={styles.cardWrap}>
+                <span
+                  className={cn(styles.cardCaption, styles.cardCaptionFlagged)}
+                >
+                  {after.tag}
+                </span>
+                <div
+                  className={cn(
+                    styles.card,
+                    styles[`card_${after.kind}`],
+                    styles.cardFlagged,
+                  )}
+                >
+                  <CardBody card={after} chrome={chrome} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )
+        )}
       </div>
 
       <div className={`${styles.proseBlock} ${styles.whyBlock}`}>

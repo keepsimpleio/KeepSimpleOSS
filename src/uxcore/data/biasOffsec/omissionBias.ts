@@ -8,6 +8,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'Closing the dialog feels like nothing happened, and that quiet is exactly what the attacker is buying. After a bad click, silence is the expensive move and the report is the cheap one.',
   scenario:
     'You clicked something you should not have. A prompt offers one honest minute: report it. Reporting feels like an action, visible and attributable, maybe embarrassing. Closing the dialog feels like nothing at all. That "nothing" is the most consequential choice in the whole incident.',
   visualLabel: 'Scenario',
@@ -24,11 +25,11 @@ const content: OffsecBiasContent = {
       kind: 'notification',
       tag: 'The inaction that feels safe',
       appName: 'Security Center',
-      timestamp: 'later',
+      timestamp: '3 weeks later',
       priorContext:
-        'Dialog closed. No report sent. On your screen, the incident is over.',
-      title: 'No report was filed',
-      body: 'Nothing visible happened, and that is the problem. Whatever left with that click is still valid, still in use, and working on time nobody is counting.',
+        'The report dialog was closed three weeks ago. No report was filed.',
+      title: 'Security bulletin: credential misuse under investigation',
+      body: 'Unauthorized access to internal systems has been detected. The point of entry has not been identified. The activity dates back at least three weeks. If you noticed anything unusual in that period, contact the security team.',
       flagged: true,
     },
   },

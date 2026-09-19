@@ -653,7 +653,10 @@ ol {
   }
 
   // Body text (description + usage). Strapi inline HTML can carry
-  // raw backgrounds and colors — neutralize all descendants.
+  // raw backgrounds and colors — neutralize all descendants. The OffSec
+  // view (.ks-offsec) is excluded: its cards draw icons and badges with
+  // span backgrounds and carry their own dark palette in
+  // OffsecBiasView.module.scss, which this blanket rule was wiping out.
   .ModalBodyContent,
   .ModalBodyContent p,
   .ModalBodyContent p *,
@@ -663,7 +666,7 @@ ol {
   .ModalBodyContent ol,
   .ModalBodyContent strong,
   .ModalBodyContent em,
-  .ModalBodyContent span:not(.switcherItemText),
+  .ModalBodyContent span:not(.switcherItemText):not(:global(.ks-offsec) span),
   .ModalBodyContent mark,
   .ModalBodyContent u {
     background: transparent !important;

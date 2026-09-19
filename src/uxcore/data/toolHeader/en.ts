@@ -8,6 +8,8 @@ const en = {
   findSolutions: 'Find solutions for your problems',
   learnAboutUXCore: 'Learn human thinking patterns',
   podcast: 'Podcast',
+  arcOfSelf: 'Arc of Self',
+  arcOfSelfTooltip: 'A recursive theory of identity',
   done: 'Done',
   usefulLinks: [
     {

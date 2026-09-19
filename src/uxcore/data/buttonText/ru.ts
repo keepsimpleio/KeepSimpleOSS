@@ -1,5 +1,5 @@
 const ru = {
-  showMore: 'Show more',
-  showLess: 'Show less',
+  showMore: 'Показать ещё',
+  showLess: 'Свернуть',
 };
 export default ru;

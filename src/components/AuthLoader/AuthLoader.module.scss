@@ -1,0 +1,112 @@
+// Covers the whole viewport for the length of the login handshake. Sits above
+// the header so the auth pages read as one deliberate surface rather than a
+// half-built page.
+.screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  background-image: url('/keepsimple_/assets/landingPage/landing-bg.webp');
+  background-size: 560px 420px;
+  background-repeat: repeat;
+  animation: auth-screen-in 0.25s ease-out both;
+}
+
+.brain {
+  position: relative;
+  display: inline-block;
+  width: 72px;
+  height: 72px;
+
+  & > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 72px;
+    height: 72px;
+    // The house loader art is white, drawn for the dark route-change scrim.
+    // Inverted here so it reads as line art on the paper surface.
+    filter: invert(1);
+    opacity: 0.85;
+
+    &:nth-child(2) {
+      animation: auth-brain-reverse 3s linear infinite;
+    }
+
+    &:nth-child(3) {
+      animation: auth-brain-spin 3s linear infinite;
+    }
+  }
+}
+
+:global(body.darkTheme) .screen {
+  background-color: #1b1e26;
+  background-image: none;
+}
+
+:global(body.darkTheme) .brain > img {
+  filter: none;
+  opacity: 1;
+}
+
+@keyframes auth-screen-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes auth-brain-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes auth-brain-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+// Rotation is the only motion here, so reduced motion keeps the loader alive
+// with a slow breath instead of freezing it into a still image.
+@keyframes auth-brain-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen {
+    animation: none;
+  }
+
+  .brain > img {
+    &:nth-child(2),
+    &:nth-child(3) {
+      animation: auth-brain-breathe 2.4s ease-in-out infinite;
+    }
+  }
+}

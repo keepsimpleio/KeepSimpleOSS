@@ -9,6 +9,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'The message that fits your current stress perfectly is the one to check hardest. Attackers send during outages and crises because the moment does the convincing for them.',
   scenario:
     'On a quiet morning, a "restore your VPN access" text is an obvious scam and you delete it without thinking. During a real outage, with the status page red and Slack on fire, the identical text feels like exactly the message you were waiting for.',
   visualLabel: 'Scenario',

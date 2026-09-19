@@ -1,13 +1,15 @@
 const hy = {
   ourProjects: 'Մեր նախագծերը',
-  usernameIsTaken: 'Username is already taken. Please try another one.',
+  usernameIsTaken: 'Օգտանունն արդեն զբաղված է։ Փորձեք մեկ ուրիշը։',
   settingsTxt: 'Կարգավորումներ',
   myProfileTxt: ' Իմ պրոֆիլը',
   bobName: 'Bob - AI Assistant',
-  awarenessTest: 'Awareness Test',
+  awarenessTest: 'Ուշադրության խաղ',
   findSolutions: 'Գտեք ձեր խնդիրների լուծումները',
   learnAboutUXCore: 'Սովորել մարդու մտածողության օրինաչափությունները',
   podcast: 'Պոդկաստ',
+  arcOfSelf: 'Arc of Self',
+  arcOfSelfTooltip: 'Ինքնության ռեկուրսիվ տեսություն',
   done: 'Done',
   usefulLinks: [
     {

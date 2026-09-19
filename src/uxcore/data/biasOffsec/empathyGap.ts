@@ -7,6 +7,7 @@
 import type { OffsecBiasContent } from './types';
 
 const content: OffsecBiasContent = {
+  tell: 'The rule you wrote calmly gets tested on the worst evening of your quarter, by a version of you who did not write it. Make the check mechanical so it survives a state you cannot imagine while calm.',
   scenario:
     'On a calm Tuesday you sign the rule: every payment change gets a callback, no exceptions, including management. On Friday at 6:52 PM a voice that sounds exactly like your CEO is boarding a plane, the deal "dies tonight", and the person deciding whether the rule still applies is not the person who signed it.',
   visualLabel: 'Scenario',
@@ -18,14 +19,13 @@ const content: OffsecBiasContent = {
       title: 'Payment release: verification rule',
       meta: 'Finance operations · acknowledged and signed by you',
       body: 'Any change to payment instructions (amount, account, or urgency) is confirmed by a callback to the number on file before release. This applies to all requests without exception, including those from senior management.',
-      footer:
-        'Signed on a quiet morning, certain you would never need reminding.',
+      footer: 'Signed and acknowledged. Review annually.',
     },
     after: {
       kind: 'call',
       tag: 'The same rule at 6:52 PM Friday',
-      callerName: 'Your CEO, or a voice wearing him',
-      callerLabel: 'Mobile · caller ID says his name',
+      callerName: 'Daniel Reyes, CEO',
+      callerLabel: 'Mobile · caller ID matches his contact',
       timestamp: 'Fri, 6:52 PM',
       transcript:
         'I am boarding, I have thirty seconds. The escrow on the acquisition closes tonight. Wire the retainer now and I will sign everything when I land. I picked you because you get things done. Do not let this die in paperwork.',
