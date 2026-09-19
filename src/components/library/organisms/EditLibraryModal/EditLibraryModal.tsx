@@ -254,7 +254,11 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <div className={styles.avatarSection}>
           <div className={styles.avatarPreview}>
-            <Avatar url={previewUrl} className={styles.avatarImage} />
+            <Avatar
+              url={previewUrl}
+              className={styles.avatarImage}
+              sizes="270px"
+            />
           </div>
           <div className={styles.avatarButtons}>
             <Button

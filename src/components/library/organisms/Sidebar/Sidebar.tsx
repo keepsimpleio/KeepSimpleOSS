@@ -442,6 +442,7 @@ export function Sidebar() {
                   <Avatar
                     url={authorAvatarUrl ?? avatarImage}
                     className={styles.avatarImage}
+                    sizes="86px"
                   />
                   <Text
                     className={styles.name}
