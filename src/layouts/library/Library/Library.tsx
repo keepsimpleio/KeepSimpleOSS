@@ -16,6 +16,7 @@ import type {
 import type { IObject, ObjectType } from '@local-types/library/object';
 
 import { createLibrary } from '@api/library/createLibrary';
+import { getLibraryByUsername } from '@api/library/getLibraryByUsername';
 import { getLibraryIdByUsername } from '@api/library/getLibraryIdByUsername';
 import { getSingleLibrary } from '@api/library/getSingleLibrary';
 import { createShelf } from '@api/library/shelf/createShelf';
@@ -41,6 +42,12 @@ import { Shelf } from '@components/library/organisms/Shelf';
 import type { LibraryTemplateProps } from './Library.types';
 
 import styles from './Library.module.scss';
+
+// Bumped by every library load so a response that lands out of order is
+// dropped instead of writing a stale library over a newer one. Module scope:
+// one library page is mounted at a time, and the counter must survive the
+// callback identity changing with the slug.
+let loadSequence = 0;
 
 const modalTypeToApi: Record<ShelfType, ObjectType> = {
   books: 'book',
@@ -101,15 +108,20 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
   const showNoCreatePermission =
     isOwner && library === null && !canCreateLibrary;
 
-  // URL param is `/library/[username]` — accept either a numeric id or a username slug.
+  // URL param is `/library/[username]` — accept either a numeric id or a
+  // username slug. The Sidebar dropdown and LibraryCard fall back to the id
+  // when a library has no linked username.
+  const numericLibraryId = useCallback((): number | null => {
+    const trimmed = libraryId?.trim();
+    if (!trimmed) return null;
+    const numeric = Number(trimmed);
+    return Number.isFinite(numeric) ? numeric : null;
+  }, [libraryId]);
+
   const resolveLibraryId = useCallback(async (): Promise<number | null> => {
     if (!libraryId?.trim()) return null;
-    const numeric = Number(libraryId);
-    if (Number.isFinite(numeric)) {
-      return numeric;
-    }
-    return getLibraryIdByUsername(libraryId);
-  }, [libraryId]);
+    return numericLibraryId() ?? getLibraryIdByUsername(libraryId);
+  }, [libraryId, numericLibraryId]);
 
   const loadLibrary = useCallback(
     async (options?: { silent?: boolean; libraryId?: number }) => {
@@ -129,22 +141,44 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
         setIsLoading(true);
         setLibrary(null);
       }
-      // Prefer an explicitly supplied id over re-resolving the slug. Right after
+      // Prefer an explicitly supplied id over the slug. Right after
       // bootstrapping a brand-new library, the username lookup is a filtered
       // read-after-write that can still return null (publish/replication lag) —
       // a direct GET by the id we just created is reliable.
-      const resolvedId = options?.libraryId ?? (await resolveLibraryId());
-      if (resolvedId == null) {
-        setLibrary(null);
-        setIsLoading(false);
-        return;
-      }
-      const result = await getSingleLibrary(resolvedId);
+      const directId = options?.libraryId ?? numericLibraryId();
+
+      // Two loads can overlap (a fast dropdown switch, a save landing mid
+      // navigation). Only the newest one is allowed to write state, so a slow
+      // earlier response can't drop the previous library back on screen.
+      const seq = ++loadSequence;
+
+      // A username slug is fetched in ONE filtered request rather than
+      // resolving the id first and then fetching it: the pair held the loader
+      // on screen for two sequential round trips on every single visit.
+      const result =
+        directId != null
+          ? await getSingleLibrary(directId)
+          : await getLibraryByUsername(libraryId.trim());
+      if (seq !== loadSequence) return;
+
       setLibrary(result?.data ?? null);
       setIsLoading(false);
     },
-    [libraryId, resolveLibraryId],
+    [libraryId, numericLibraryId],
   );
+
+  // The slug changes without remounting this component (Sidebar dropdown, any
+  // in-app /library/[username] link). Clearing the previous library from an
+  // effect would let React paint its shelves under the new URL for a frame
+  // first, so the visit read as "books, then a loader, then books". Adjusting
+  // the state during render keeps that frame off the screen: the loader is the
+  // only thing a new library ever shows before its own content.
+  const [renderedFor, setRenderedFor] = useState(libraryId);
+  if (renderedFor !== libraryId) {
+    setRenderedFor(libraryId);
+    setLibrary(null);
+    setIsLoading(true);
+  }
 
   useEffect(() => {
     void loadLibrary();
