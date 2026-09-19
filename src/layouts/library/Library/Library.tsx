@@ -254,6 +254,14 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
     );
   }, [library, viewAsOwner]);
 
+  // A library with shelves but nothing on them leaves the owner staring at empty
+  // rows with no obvious next move, so every Add control pulses until the first
+  // object lands anywhere in the library (see `highlightAdd` on Shelf).
+  const isLibraryEmpty = useMemo(
+    () => shelves.every(s => (s.attributes.objects?.data?.length ?? 0) === 0),
+    [shelves],
+  );
+
   // Search filters the in-memory object tree — the whole library is already
   // client-side, so no API round-trip. Match title + author + tag names (the
   // fields people search by); description is intentionally excluded to keep
@@ -555,7 +563,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
               type={ButtonType.Primary}
               size={ButtonSize.Wide}
               ariaLabel="Add shelf"
-              className={styles.button}
+              className={classNames(styles.button, styles.pulse)}
             />
           )}
         </div>
@@ -581,6 +589,7 @@ export function LibraryTemplate({ libraryId }: LibraryTemplateProps) {
               shelf={shelf}
               ownerUsername={libraryId}
               isOwner={viewAsOwner}
+              highlightAdd={viewAsOwner && isLibraryEmpty}
               onObjectCreated={handleObjectCreated}
               onObjectUpdated={handleObjectUpdated}
               onObjectDeleted={handleObjectDeleted}

@@ -9,6 +9,12 @@ export interface ShelfProps {
   ownerUsername?: string;
   /** True when the current viewer owns this library. */
   isOwner?: boolean;
+  /**
+   * True while the whole library still holds no objects. Pulses this shelf's Add
+   * control so a fresh library points at its own next step; the library turns it
+   * off the moment the first object lands anywhere.
+   */
+  highlightAdd?: boolean;
   /** Fired after a successful object create — used for surgical re-render. */
   onObjectCreated?: (shelfId: number, object: IObject) => void;
   /** Fired after a successful object update — used for surgical re-render. */

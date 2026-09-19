@@ -391,3 +391,57 @@
     animation: none;
   }
 }
+
+// Fresh-library nudge: both Add controls breathe until the first object lands
+// anywhere in the library (Library passes `highlightAdd`). The round control
+// grows a brown halo outside its own box; the header control has a transparent
+// background, where a halo would paint a solid block behind the label, so it
+// breathes its opacity instead. Neither takes or gives up any space.
+.pulseRound {
+  animation: add-pulse-ring 2.2s ease-in-out infinite;
+}
+
+.pulseText {
+  animation: add-pulse-fade 2.2s ease-in-out infinite;
+}
+
+// The round control's own drop shadow repeats in every frame: an animated
+// box-shadow replaces the whole property, so dropping it here would flatten the
+// button for the length of the pulse.
+@keyframes add-pulse-ring {
+  0% {
+    box-shadow:
+      0px 4px 4px 0px var(--black-transparent-200),
+      0 0 0 0 var(--brown);
+  }
+
+  60% {
+    box-shadow:
+      0px 4px 4px 0px var(--black-transparent-200),
+      0 0 0 14px transparent;
+  }
+
+  100% {
+    box-shadow:
+      0px 4px 4px 0px var(--black-transparent-200),
+      0 0 0 0 transparent;
+  }
+}
+
+@keyframes add-pulse-fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulseRound,
+  .pulseText {
+    animation: none;
+  }
+}

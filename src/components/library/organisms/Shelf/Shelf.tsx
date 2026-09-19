@@ -140,6 +140,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     shelf,
     ownerUsername = '',
     isOwner = false,
+    highlightAdd = false,
     onObjectCreated,
     onObjectUpdated,
     onObjectDeleted,
@@ -167,6 +168,10 @@ export function Shelf(props: ShelfProps): JSX.Element {
   // Add control once the shelf is full — the backend stays the source of truth
   // (AddObjectModal still surfaces the 400), this just stops a doomed attempt.
   const atObjectLimit = objects.length >= MAX_OBJECTS_PER_SHELF;
+
+  // Pulse the Add control only while it can actually be used: the viewer owns
+  // the library, the library is still empty, and the shelf has room.
+  const pulseAdd = isOwner && highlightAdd && !atObjectLimit;
 
   const router = useRouter();
   // The opened object is addressed by the URL, not local state: the last path
@@ -491,7 +496,9 @@ export function Shelf(props: ShelfProps): JSX.Element {
                 size={ButtonSize.Default}
                 Icon={<PlusIcon />}
                 iconPosition={IconPosition.Right}
-                className={styles.button}
+                className={classNames(styles.button, {
+                  [styles.pulseText]: pulseAdd,
+                })}
                 disabled={atObjectLimit}
               />
             </span>
@@ -543,6 +550,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
                   Icon={<PlusIcon />}
                   ariaLabel={`Add ${typeLabel}`}
                   disabled={atObjectLimit}
+                  className={classNames({ [styles.pulseRound]: pulseAdd })}
                 />
               )}
             </div>
