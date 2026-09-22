@@ -144,6 +144,7 @@ async function callClaudeJsonStream(
           },
         ],
         tool_choice: { type: 'tool', name: toolName },
+        thinking: { type: 'disabled' },
       }),
     });
     if (!r.ok || !r.body) return null;
@@ -256,6 +257,7 @@ async function callClaudeJson(
           },
         ],
         tool_choice: { type: 'tool', name: toolName },
+        thinking: { type: 'disabled' },
       }),
     });
     if (!r.ok) return null;
@@ -1220,7 +1222,7 @@ async function synthesise(
           userBlock,
           'submit_reply',
           decisionSchema,
-          600,
+          800,
           onText,
         )
       : await callClaudeJson(
@@ -1228,7 +1230,7 @@ async function synthesise(
           userBlock,
           'submit_reply',
           decisionSchema,
-          600,
+          800,
         );
   if (raw == null) {
     raw = await callOpenAIJson(system, userBlock, 400);

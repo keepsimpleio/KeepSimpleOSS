@@ -10,7 +10,10 @@
 export const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 export const OPENAI_KEY = process.env.OPENAI_API_KEY;
 
-export const CLAUDE_MODEL = 'claude-sonnet-4-6';
+/* Sonnet 5 runs adaptive thinking when `thinking` is omitted and counts
+   about 30% more tokens than Sonnet 4.6, so every call below disables
+   thinking and leaves max_tokens headroom for the forced tool reply. */
+export const CLAUDE_MODEL = 'claude-sonnet-5';
 export const OPENAI_MODEL = 'gpt-4.1';
 
 export const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';

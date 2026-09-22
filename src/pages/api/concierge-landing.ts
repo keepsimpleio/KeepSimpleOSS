@@ -83,7 +83,7 @@ async function callClaude(
       headers: anthropicHeaders(),
       body: JSON.stringify({
         model: CLAUDE_MODEL,
-        max_tokens: 360,
+        max_tokens: 480,
         system: [
           { type: 'text', text: system, cache_control: { type: 'ephemeral' } },
         ],
@@ -106,6 +106,7 @@ async function callClaude(
           },
         ],
         tool_choice: { type: 'tool', name: 'submit_landing_line' },
+        thinking: { type: 'disabled' },
       }),
     });
     if (!r.ok) return null;
