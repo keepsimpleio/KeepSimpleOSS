@@ -14,18 +14,13 @@ import {
   relayConfigured,
 } from '@lib/library/magic/relay';
 
-export const OPENAI_KEY = process.env.OPENAI_API_KEY;
-
 export const CLAUDE_MODEL = 'claude-sonnet-5';
-export const OPENAI_MODEL = 'gpt-4.1';
-
-export const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 
 export const claudeConfigured = relayConfigured;
 
 /** One Claude turn through the relay, answered as JSON matching `schema`.
  * Null when the relay is not wired, every track failed, or the reply did
- * not parse, so the caller can fall back. */
+ * not parse; the caller then stays quiet. */
 export async function askClaudeJson<T>(
   system: string,
   user: string,
@@ -50,14 +45,4 @@ export async function askClaudeJson<T>(
     );
     return null;
   }
-}
-
-export function openAIHeaders(): Record<string, string> {
-  if (!OPENAI_KEY) {
-    throw new Error('OPENAI_API_KEY is not set');
-  }
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${OPENAI_KEY}`,
-  };
 }
