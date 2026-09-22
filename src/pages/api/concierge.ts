@@ -14,14 +14,7 @@ import {
   scrubPii,
 } from '@lib/copilotSafety';
 import { inSameFamily, isMetaTurn } from '@lib/widget/conciergeHelpers';
-import {
-  askClaudeJson,
-  claudeConfigured,
-  OPENAI_KEY,
-  OPENAI_MODEL,
-  OPENAI_URL,
-  openAIHeaders,
-} from '@lib/widget/llmClient';
+import { askClaudeJson, claudeConfigured } from '@lib/widget/llmClient';
 import {
   formatPageIdentity,
   type PageIdentity,
@@ -88,10 +81,10 @@ const RAG_BASE = process.env.UXCORE_RAG_BASE_URL;
 const CF_ID = process.env.CF_ACCESS_CLIENT_ID;
 const CF_SECRET = process.env.CF_ACCESS_CLIENT_SECRET;
 
-/* Provider selection — Claude wins when the subscription relay is wired
-   (better voice fidelity for the keepsimple-team peer voice; gpt-4o/4.1
-   drift to marketing-default sludge). Falls back to OpenAI when it isn't.
-   Shared with /api/concierge-landing via src/lib/widget/llmClient.ts. */
+/* Claude through the subscription relay is the only model (Wolf,
+   2026-09-22): no paid fallback, so when every track is spent the
+   reply is null and the widget stays quiet. Shared with
+   /api/concierge-landing via src/lib/widget/llmClient.ts. */
 
 type JsonValue =
   | string
@@ -100,37 +93,6 @@ type JsonValue =
   | null
   | JsonValue[]
   | { [k: string]: JsonValue };
-
-async function callOpenAIJson(
-  system: string,
-  userBlock: string,
-  maxTokens: number,
-): Promise<JsonValue | null> {
-  if (!OPENAI_KEY) return null;
-  try {
-    const r = await fetch(OPENAI_URL, {
-      method: 'POST',
-      headers: openAIHeaders(),
-      body: JSON.stringify({
-        model: OPENAI_MODEL,
-        temperature: 0.7,
-        max_tokens: maxTokens,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: userBlock },
-        ],
-      }),
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    const content = data?.choices?.[0]?.message?.content;
-    if (typeof content !== 'string') return null;
-    return JSON.parse(content) as JsonValue;
-  } catch {
-    return null;
-  }
-}
 
 const COOKIE_NAME = 'aux_sid';
 const WINDOW_MS = 10 * 60 * 1000;
@@ -917,7 +879,7 @@ async function synthesise(
   lastPick: { url: string; title: string; tier: 'high' | 'mid' | 'low' } | null,
   onText?: (currentText: string) => void,
 ): Promise<Decision | null> {
-  if (!claudeConfigured() && !OPENAI_KEY) return null;
+  if (!claudeConfigured()) return null;
 
   const baseSystem = lang === 'ru' ? SYSTEM_RU : SYSTEM_EN;
   const forceNote =
@@ -1037,12 +999,9 @@ async function synthesise(
     required: ['kind', 'text'],
   };
 
-  /* Try Claude first through the subscription relay; fall back to
-     OpenAI if every track fails or the relay isn't wired. Both return
-     the same shape, so validation below is provider-agnostic. The relay
-     answers in one piece, so a streaming caller gets the whole reply
-     text at once. */
-  let raw = await askClaudeJson<JsonValue>(
+  /* The relay answers in one piece, so a streaming caller gets the
+     whole reply text at once. */
+  const raw = await askClaudeJson<JsonValue>(
     system,
     userBlock,
     decisionSchema,
@@ -1056,9 +1015,6 @@ async function synthesise(
     typeof raw.text === 'string'
   ) {
     onText(raw.text);
-  }
-  if (raw == null) {
-    raw = await callOpenAIJson(system, userBlock, 400);
   }
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
     return null;
