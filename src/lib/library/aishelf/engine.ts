@@ -36,8 +36,8 @@ import { verifyBook } from '@lib/library/magic/verify';
  * hard constraint on the call, not a filter after it.
  */
 
-export const AI_SHELF_MODEL = 'claude-opus-5';
-/** Wolf's setting for the Library's picks: Opus 5 at high effort. */
+export const AI_SHELF_MODEL = 'claude-opus-5-5';
+/** Wolf's setting for the Library's picks: Opus 5.5 at high effort. */
 export const AI_SHELF_EFFORT = 'high' as const;
 
 /** Books the library must hold before the shelf opens (Wolf, 2026-09-10). */
@@ -64,7 +64,7 @@ const STRETCH_SLOTS = [3, 7, 11];
  * high effort took 107 and 117. Latency here is mostly what the model
  * writes, so the ask is cut to what the board actually needs plus a little,
  * and the second pass covers a candidate no source could confirm. Nothing
- * about the picks themselves is lowered: still opus 5, still high effort.
+ * about the picks themselves is lowered: still opus 5.5, still high effort.
  */
 const ASK: Record<RecommendedKind, number> = { fit: 12, stretch: 5 };
 /** Book sources queried at once. */
