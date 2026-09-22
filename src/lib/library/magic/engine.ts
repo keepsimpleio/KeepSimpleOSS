@@ -18,8 +18,8 @@ import { verifyBook } from './verify';
  * Every candidate is verified against a book source before it is shown.
  */
 
-export const MAGIC_MODEL = 'claude-opus-5';
-/** Wolf's setting for the Library's picks: Opus 5 at high effort. */
+export const MAGIC_MODEL = 'claude-opus-5-5';
+/** Wolf's setting for the Library's picks: Opus 5.5 at high effort. */
 export const MAGIC_EFFORT = 'high' as const;
 
 /** Which subscription track and model answered a run. */
