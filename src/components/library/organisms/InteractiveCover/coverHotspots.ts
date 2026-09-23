@@ -39,7 +39,13 @@ export interface CoverHotspot {
    * Derived from `wide` (see `toUltraWide`), with optional per-hotspot tweaks.
    */
   ultraWide: HotspotGeometry;
-  username?: string;
+  /**
+   * Account id of the library's owner. Bound by id, not username: owners rename
+   * themselves (Mary13 became Mary, alinamarg became Alina) and a username
+   * binding then silently drops the library's data from the card. Staging's
+   * database is a copy of production's, so the ids hold on both.
+   */
+  ownerId?: number;
 }
 
 // At the 1920px breakpoint the full-bleed cover frame is 1920px wide and the
@@ -109,13 +115,13 @@ const applyOverride = (
 const makeHotspot = (
   id: string,
   wide: HotspotGeometry,
-  username?: string,
+  ownerId?: number,
   ultraWideOverride?: GeometryOverride,
 ): CoverHotspot => ({
   id,
   wide,
   ultraWide: applyOverride(toUltraWide(wide), ultraWideOverride),
-  username,
+  ownerId,
 });
 
 // Hit boxes are sized to the glow silhouette each hotspot lights up, so the
@@ -139,7 +145,8 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 53.0, top: 19.01 },
     },
-    'Wolf',
+    // Wolf
+    7,
   ),
   makeHotspot(
     'house-1',
@@ -193,7 +200,8 @@ export const coverHotspots: CoverHotspot[] = [
       },
       card: { left: 30.62, top: 26.4 },
     },
-    'Mary13',
+    // Mary
+    10,
     {
       hit: { top: 60.83 },
       highlight: { left: 35.552, top: 28 },
@@ -215,6 +223,7 @@ export const coverHotspots: CoverHotspot[] = [
     },
     // Wolf, 2026-09-11: this library stands on the lantern now, not on the
     // house above the water.
-    'alinamarg',
+    // Alina
+    538,
   ),
 ];
