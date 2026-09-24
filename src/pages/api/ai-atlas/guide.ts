@@ -41,12 +41,12 @@ export default async function handler(
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'POST only' });
   }
+  /* Requests without the key are not the Terminal's pushes and leave no
+     journal line, so traffic from strangers cannot grow the journal. */
   if (!process.env.AI_ATLAS_PUSH_KEY) {
-    await journalPush({ verdict: 'refused', reason: 'key not configured' });
     return res.status(503).json({ error: 'push key not configured' });
   }
   if (!authorised(req.headers.authorization)) {
-    await journalPush({ verdict: 'refused', reason: 'bad key' });
     return res.status(401).json({ error: 'unauthorised' });
   }
 
@@ -57,7 +57,13 @@ export default async function handler(
   }
 
   const { guide } = result;
-  await writeStoredGuide(guide);
+  try {
+    await writeStoredGuide(guide);
+  } catch (e) {
+    const error = `store failed: ${(e as Error).message}`;
+    await journalPush({ verdict: 'failed', reason: error });
+    return res.status(500).json({ error });
+  }
 
   const failed: string[] = [];
   for (const page of PAGES) {
