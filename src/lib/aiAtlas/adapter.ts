@@ -86,11 +86,14 @@ export function adaptGuide(guide: any) {
       territoryArc: chosen[index].length > 2 ? 54 : 36,
       childrenArc: chosen[index].length > 2 ? 46 : 22,
       territoryLabel: '',
-      children: chosen[index].map(child => ({
-        id: child,
-        label: (entries.get(child) as any).title,
-        kind: 'filled',
-      })),
+      /* A tile the Terminal has since removed is left off the map. */
+      children: chosen[index]
+        .filter(child => entries.has(child))
+        .map(child => ({
+          id: child,
+          label: (entries.get(child) as any).title,
+          kind: 'filled',
+        })),
     };
   });
   /* What lights up together on hover, beyond a stage and its own tiles.
