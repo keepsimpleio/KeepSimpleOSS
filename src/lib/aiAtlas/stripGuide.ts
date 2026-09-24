@@ -5,7 +5,13 @@
    of it is kept. The same cut as scripts/ai-atlas/strip-guide.mjs, which
    refreshes the bundled fallback; the two keep the same field lists. */
 
-import { adaptGuide, MAX_TILES_PER_STAGE, PAGE_TEXT_KEYS } from './adapter';
+import {
+  adaptGuide,
+  MAX_TILES_PER_STAGE,
+  PAGE_TEXT_KEYS,
+  SHORT_LABEL_KEYS,
+  SHORT_LABEL_MAX,
+} from './adapter';
 
 const pick = (obj: any, keys: string[]) =>
   Object.fromEntries(
@@ -31,7 +37,9 @@ const isCards = (value: unknown) =>
         /^[a-z0-9-]+$/.test(id) &&
         Array.isArray(paragraphs) &&
         paragraphs.length > 0 &&
-        paragraphs.every(p => typeof p === 'string' && p.length <= 4000),
+        paragraphs.every(
+          p => typeof p === 'string' && p.length > 0 && p.length <= 4000,
+        ),
     ));
 
 /* Page words, pushed by the Terminal: a copy key to its new text. Only
@@ -45,7 +53,8 @@ const isCopy = (value: unknown) =>
       ([key, words]) =>
         PAGE_TEXT_KEYS.has(key) &&
         typeof words === 'string' &&
-        words.length <= 4000,
+        words.length > 0 &&
+        words.length <= (SHORT_LABEL_KEYS.has(key) ? SHORT_LABEL_MAX : 4000),
     ));
 
 /* The map, pushed by the Terminal: per stage, in step order, an optional
@@ -92,7 +101,9 @@ export function stripGuide(input: any): StripResult {
   if (!isCards(input.cards))
     return { error: 'cards must map a card id to a list of paragraphs' };
   if (!isCopy(input.copy))
-    return { error: 'copy must map a known page text key to text' };
+    return {
+      error: `copy must map a known page text key to non-empty text, labels up to ${SHORT_LABEL_MAX} characters`,
+    };
   const stages = stagesError(
     input.stages,
     input.steps.length,
