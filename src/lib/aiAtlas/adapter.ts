@@ -43,6 +43,7 @@ export const PAGE_TEXT_KEYS = new Set([
 /* Labels drawn inside map nodes and rings: short, or they spill over the
    map. A push keeps them to SHORT_LABEL_MAX characters. */
 export const SHORT_LABEL_KEYS = new Set([
+  'brandTitle',
   'apexLabel',
   'apexSub',
   'orderLabel',
