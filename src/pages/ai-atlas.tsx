@@ -1,3 +1,4 @@
+import type { GetStaticProps } from 'next';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -7,7 +8,7 @@ import React, {
 } from 'react';
 
 import { adaptGuide, copy } from '@lib/aiAtlas/adapter';
-import guide from '@lib/aiAtlas/guide.json';
+import bundledGuide from '@lib/aiAtlas/guide.json';
 import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
 
 import SeoGenerator from '@components/SeoGenerator';
@@ -43,8 +44,11 @@ function useHasHover() {
   return hasHover;
 }
 
-/* The Atlas content is bundled into the page and rendered on the server.
-   It is never served as a standalone file: the guide describes the private
+/* The Atlas content is rendered on the server. The Terminal pushes its
+   guide to /api/ai-atlas/guide on every Atlas deploy; the stripped copy on
+   the container's persistent mount is what the page renders, and the
+   bundled guide.json is the fallback until the first push lands. It is
+   never served as a standalone file: the guide describes the private
    Terminal and only what the page draws may leave this host. */
 
 /* ============================================================
@@ -2109,7 +2113,7 @@ export function AiAtlasApp({
   );
 }
 
-export default function AiAtlasPage() {
+export default function AiAtlasPage({ guide }: { guide: any }) {
   return (
     <>
       <SeoGenerator
@@ -2142,3 +2146,15 @@ export default function AiAtlasPage() {
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const { readStoredGuide } = await import('@lib/aiAtlas/store');
+  const { stripGuide } = await import('@lib/aiAtlas/stripGuide');
+  /* A stored guide is checked again against the adapter this build
+     ships; one it can no longer draw falls back to the bundled guide. */
+  const stored = stripGuide(await readStoredGuide());
+  const guide = 'guide' in stored ? stored.guide : bundledGuide;
+  /* The push regenerates the page at once; the timer only covers a
+     redeploy, whose build carries the bundled guide until it rolls. */
+  return { props: { guide }, revalidate: 300 };
+};
