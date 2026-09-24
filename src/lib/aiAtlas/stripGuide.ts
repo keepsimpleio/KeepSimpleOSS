@@ -19,6 +19,21 @@ const isRecordList = (value: unknown) =>
       item && typeof item === 'object' && typeof (item as any).id === 'string',
   );
 
+/* Wolf's card texts, pushed by the Terminal: card id to paragraphs. Only
+   plain strings pass; a card listed here replaces its copy in features.ts. */
+const isCards = (value: unknown) =>
+  value === undefined ||
+  (!!value &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    Object.entries(value).every(
+      ([id, paragraphs]) =>
+        /^[a-z0-9-]+$/.test(id) &&
+        Array.isArray(paragraphs) &&
+        paragraphs.length > 0 &&
+        paragraphs.every(p => typeof p === 'string' && p.length <= 4000),
+    ));
+
 export type StripResult = { guide: any } | { error: string };
 
 export function stripGuide(input: any): StripResult {
@@ -34,8 +49,10 @@ export function stripGuide(input: any): StripResult {
     return { error: 'system.nodes missing or malformed' };
   if (input.steps.some((s: any) => !Array.isArray(s.children)))
     return { error: 'a step has no children list' };
+  if (!isCards(input.cards))
+    return { error: 'cards must map a card id to a list of paragraphs' };
 
-  const guide = {
+  const guide: any = {
     generatedAt: input.generatedAt,
     steps: input.steps.map((s: any) =>
       pick(s, ['id', 'title', 'location', 'text', 'children']),
@@ -49,6 +66,7 @@ export function stripGuide(input: any): StripResult {
       ),
     },
   };
+  if (input.cards) guide.cards = input.cards;
   /* The page must be able to draw what is stored; a guide it cannot draw
      is refused and the page keeps the last one that worked. */
   try {

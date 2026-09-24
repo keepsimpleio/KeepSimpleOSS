@@ -6,11 +6,12 @@ export const copy: any = {
   linesValue: (n: number) => String(n),
   introInhabitantsTpl: () => '',
 };
-/* Wolf's prose for a card, or the guide's own text when he has none. */
-const describe = (id: string, fallback: string[]) =>
-  features[id] || fallback.filter(Boolean);
-
 export function adaptGuide(guide: any) {
+  /* Wolf's prose for a card: pushed with the guide as `cards` when the
+     Terminal sends it, else the copy in features.ts, else the guide's own
+     text. */
+  const describe = (id: string, fallback: string[]) =>
+    guide.cards?.[id] || features[id] || fallback.filter(Boolean);
   const dossiers: any = {};
   const entries = new Map(guide.entries.map((entry: any) => [entry.id, entry]));
   for (const entry of [...guide.entries, ...guide.system.nodes]) {
