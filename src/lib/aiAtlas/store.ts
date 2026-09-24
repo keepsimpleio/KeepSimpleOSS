@@ -31,7 +31,7 @@ export async function writeStoredGuide(guide: any): Promise<void> {
   await fs.rename(tmp, GUIDE);
 }
 
-/** One line per push, UTC, success or refusal alike. */
+/** One line per push that carries the key, UTC: stored, refused or failed. */
 export async function journalPush(entry: Record<string, unknown>) {
   try {
     await fs.mkdir(ROOT, { recursive: true });

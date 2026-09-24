@@ -30,7 +30,7 @@ export function stripGuide(input: any): StripResult {
     return { error: 'steps missing or malformed' };
   if (!isRecordList(input.entries) || input.entries.length === 0)
     return { error: 'entries missing or malformed' };
-  if (!isRecordList(input.system?.nodes))
+  if (!isRecordList(input.system?.nodes) || input.system.nodes.length === 0)
     return { error: 'system.nodes missing or malformed' };
   if (input.steps.some((s: any) => !Array.isArray(s.children)))
     return { error: 'a step has no children list' };

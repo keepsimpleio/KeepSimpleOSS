@@ -2149,7 +2149,11 @@ export default function AiAtlasPage({ guide }: { guide: any }) {
 
 export const getStaticProps: GetStaticProps = async () => {
   const { readStoredGuide } = await import('@lib/aiAtlas/store');
-  const guide = (await readStoredGuide()) ?? bundledGuide;
+  const { stripGuide } = await import('@lib/aiAtlas/stripGuide');
+  /* A stored guide is checked again against the adapter this build
+     ships; one it can no longer draw falls back to the bundled guide. */
+  const stored = stripGuide(await readStoredGuide());
+  const guide = 'guide' in stored ? stored.guide : bundledGuide;
   /* The push regenerates the page at once; the timer only covers a
      redeploy, whose build carries the bundled guide until it rolls. */
   return { props: { guide }, revalidate: 300 };
