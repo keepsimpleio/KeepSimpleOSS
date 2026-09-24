@@ -40,6 +40,25 @@ export const PAGE_TEXT_KEYS = new Set([
   ...Object.keys(PAGE_TEXT_DEFAULTS),
 ]);
 
+/* Labels drawn inside map nodes and rings: short, or they spill over the
+   map. A push keeps them to SHORT_LABEL_MAX characters. */
+export const SHORT_LABEL_KEYS = new Set([
+  'apexLabel',
+  'apexSub',
+  'orderLabel',
+  'resourceAgents',
+  'resourceMemory',
+  'resourceTools',
+  'resourceModels',
+  'ringOrderLabel',
+  'ringDevEnvLabel',
+  'ringProjectsLabel',
+  'ringTerritoriesLabel',
+  'metaLabel',
+  'topicsPlaceholder',
+]);
+export const SHORT_LABEL_MAX = 40;
+
 /* How many tiles one stage can carry before its arc runs into the next. */
 export const MAX_TILES_PER_STAGE = 3;
 

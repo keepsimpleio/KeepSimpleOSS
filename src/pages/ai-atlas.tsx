@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 
-import { adaptGuide, copy } from '@lib/aiAtlas/adapter';
+import { adaptGuide, copy, PAGE_TEXT_DEFAULTS } from '@lib/aiAtlas/adapter';
 import bundledGuide from '@lib/aiAtlas/guide.json';
 import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
 
@@ -2112,7 +2112,7 @@ export function AiAtlasApp({
 
 export default function AiAtlasPage({ guide }: { guide: any }) {
   /* Words pushed with the guide replace the built-in ones, SEO included. */
-  const words = { ...copy, ...(guide?.copy || {}) };
+  const words = { ...copy, ...PAGE_TEXT_DEFAULTS, ...(guide?.copy || {}) };
   return (
     <>
       <SeoGenerator
