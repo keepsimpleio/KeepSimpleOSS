@@ -6,11 +6,72 @@ export const copy: any = {
   linesValue: (n: number) => String(n),
   introInhabitantsTpl: () => '',
 };
-/* Wolf's prose for a card, or the guide's own text when he has none. */
-const describe = (id: string, fallback: string[]) =>
-  features[id] || fallback.filter(Boolean);
+/* Page words the Terminal may replace with a push, beyond copy.json. */
+export const PAGE_TEXT_DEFAULTS: Record<string, string> = {
+  brandTitle: 'Wolf’s Terminal',
+  apexLabel: 'WOLF',
+  apexSub: 'direction',
+  orderLabel: 'The Order',
+  resourceAgents: 'Colleagues',
+  resourceMemory: 'Memory',
+  resourceTools: 'Tools',
+  resourceModels: 'Models',
+  ringOrderLabel: 'I · Ownership',
+  ringDevEnvLabel: 'II · Resources',
+  ringProjectsLabel: 'III · Task lifecycle',
+  ringTerritoriesLabel: 'IV · Mechanisms',
+  ringOrderTitle: 'Ownership',
+  ringDevEnvTitle: 'Resources',
+  ringDevEnvDesc:
+    'What every stage of a task draws on: colleagues, memory, tools, models.',
+  ringProjectsTitle: 'Task lifecycle',
+  ringProjectsDesc:
+    'The rings are the stages of one task, clockwise from Project to Result.',
+  ringTerritoriesTitle: 'Mechanisms',
+  ringTerritoriesDesc: 'Every topic opens its own card.',
+  metaLabel: 'TERMINAL DOCUMENTATION',
+  topicsPlaceholder: 'The Atlas',
+  stagesAria: 'Project to Result, clockwise',
+};
+
+/* Keys of copy.json a push may replace: the plain strings. */
+export const PAGE_TEXT_KEYS = new Set([
+  ...Object.keys(base).filter(key => typeof (base as any)[key] === 'string'),
+  ...Object.keys(PAGE_TEXT_DEFAULTS),
+]);
+
+/* Labels drawn inside map nodes and rings: short, or they spill over the
+   map. A push keeps them to SHORT_LABEL_MAX characters. */
+export const SHORT_LABEL_KEYS = new Set([
+  'brandTitle',
+  'apexLabel',
+  'apexSub',
+  'orderLabel',
+  'resourceAgents',
+  'resourceMemory',
+  'resourceTools',
+  'resourceModels',
+  'ringOrderLabel',
+  'ringDevEnvLabel',
+  'ringProjectsLabel',
+  'ringTerritoriesLabel',
+  'metaLabel',
+  'topicsPlaceholder',
+]);
+export const SHORT_LABEL_MAX = 40;
+
+/* How many tiles one stage can carry before its arc runs into the next. */
+export const MAX_TILES_PER_STAGE = 3;
 
 export function adaptGuide(guide: any) {
+  /* Words pushed with the guide as `copy` win over the built-in ones. */
+  const text = (key: string) =>
+    guide.copy?.[key] ?? PAGE_TEXT_DEFAULTS[key] ?? (copy as any)[key];
+  /* Wolf's prose for a card: pushed with the guide as `cards` when the
+     Terminal sends it, else the copy in features.ts, else the guide's own
+     text. */
+  const describe = (id: string, fallback: string[]) =>
+    guide.cards?.[id] || features[id] || fallback.filter(Boolean);
   const dossiers: any = {};
   const entries = new Map(guide.entries.map((entry: any) => [entry.id, entry]));
   for (const entry of [...guide.entries, ...guide.system.nodes]) {
@@ -36,7 +97,16 @@ export function adaptGuide(guide: any) {
      voice; they are not drawn. */
   const systemRef = (id: string) =>
     dossiers['system-' + id] ? 'system-' + id : id;
-  const labels = ['Project', 'Task', 'Dispatch', 'Prepare', 'Work', 'Result'];
+  /* A push may set each stage's label and the tiles drawn on it as
+     `stages`; otherwise the map keeps the selection below. */
+  const labels = [
+    'Project',
+    'Task',
+    'Dispatch',
+    'Prepare',
+    'Work',
+    'Result',
+  ].map((label, i) => guide.stages?.[i]?.label ?? label);
   const angles = [210, 270, 330, 30, 90, 150];
   const chosen = [
     ['keys', 'backlog'],
@@ -45,7 +115,7 @@ export function adaptGuide(guide: any) {
     ['global', 'local', 'session-resume'],
     ['work-checks', 'sendto', 'human-collab'],
     ['history', 'decisions', 'discipline'],
-  ];
+  ].map((tiles, i) => guide.stages?.[i]?.tiles ?? tiles);
   const topicToStage: any = {};
   const support = [
     ['order'],
@@ -139,6 +209,8 @@ export function adaptGuide(guide: any) {
   ];
   const t: any = {
     ...copy,
+    ...PAGE_TEXT_DEFAULTS,
+    ...(guide.copy || {}),
     securityLayers: layerIds.map((id, index) => ({
       n: index + 1,
       side: index % 2 ? 'right' : 'left',
@@ -164,13 +236,13 @@ export function adaptGuide(guide: any) {
     ),
   };
   dossiers['ring:order'] = {
-    title: 'Ownership',
+    title: text('ringOrderTitle'),
     desc: nodeDesc('order'),
     rows: [],
   };
   dossiers['ring:devEnv'] = {
-    title: 'Resources',
-    desc: 'What every stage of a task draws on: colleagues, memory, tools, models.',
+    title: text('ringDevEnvTitle'),
+    desc: text('ringDevEnvDesc'),
     rows: ['agents', 'memory', 'tools', 'models'].map(id => ({
       k: 'resource',
       v: node(id).title,
@@ -178,13 +250,13 @@ export function adaptGuide(guide: any) {
     })),
   };
   dossiers['ring:projects'] = {
-    title: 'Task lifecycle',
-    desc: 'The rings are the stages of one task, clockwise from Project to Result.',
+    title: text('ringProjectsTitle'),
+    desc: text('ringProjectsDesc'),
     rows: projects.map((p: any) => ({ k: 'stage', v: p.label, ref: p.id })),
   };
   dossiers['ring:territories'] = {
-    title: 'Mechanisms',
-    desc: 'Every topic opens its own card.',
+    title: text('ringTerritoriesTitle'),
+    desc: text('ringTerritoriesDesc'),
     rows: guide.entries.map((e: any) => ({
       k: 'mechanism',
       v: e.title,
@@ -195,31 +267,40 @@ export function adaptGuide(guide: any) {
     topicToStage,
     relations,
     copy: t,
-    brand: { title: 'Wolf’s Terminal', kanji: '天' },
+    brand: { title: text('brandTitle'), kanji: '天' },
     ringLabels: {
-      order: { label: 'I · Ownership', theta: 270, offset: 0.09 },
-      devEnv: { label: 'II · Resources', theta: 270 },
-      projects: { label: 'III · Task lifecycle', theta: 270, offset: 0.08 },
-      territories: { label: 'IV · Mechanisms', theta: 270 },
+      order: { label: text('ringOrderLabel'), theta: 270, offset: 0.09 },
+      devEnv: { label: text('ringDevEnvLabel'), theta: 270 },
+      projects: {
+        label: text('ringProjectsLabel'),
+        theta: 270,
+        offset: 0.08,
+      },
+      territories: { label: text('ringTerritoriesLabel'), theta: 270 },
     },
     apex: {
       id: 'wolf',
-      label: 'WOLF',
+      label: text('apexLabel'),
       cjk: '天',
-      sub: 'direction',
+      sub: text('apexSub'),
       diamond: 'gold',
     },
     order: {
       r: 0.2,
-      member: { id: 'order', label: 'The Order', diamond: 'blue', theta: 270 },
+      member: {
+        id: 'order',
+        label: text('orderLabel'),
+        diamond: 'blue',
+        theta: 270,
+      },
     },
     devEnv: {
       r: 0.39,
       members: [
-        ['agents', 'Colleagues'],
-        ['memory', 'Memory'],
-        ['tools', 'Tools'],
-        ['models', 'Models'],
+        ['agents', text('resourceAgents')],
+        ['memory', text('resourceMemory')],
+        ['tools', text('resourceTools')],
+        ['models', text('resourceModels')],
       ].map(([id, label], i) => ({
         id: dossiers['system-' + id] ? 'system-' + id : id,
         label,
