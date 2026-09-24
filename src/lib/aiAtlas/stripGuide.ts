@@ -5,7 +5,7 @@
    of it is kept. The same cut as scripts/ai-atlas/strip-guide.mjs, which
    refreshes the bundled fallback; the two keep the same field lists. */
 
-import { adaptGuide } from './adapter';
+import { adaptGuide, MAX_TILES_PER_STAGE, PAGE_TEXT_KEYS } from './adapter';
 
 const pick = (obj: any, keys: string[]) =>
   Object.fromEntries(
@@ -34,6 +34,46 @@ const isCards = (value: unknown) =>
         paragraphs.every(p => typeof p === 'string' && p.length <= 4000),
     ));
 
+/* Page words, pushed by the Terminal: a copy key to its new text. Only
+   keys the page already has pass. */
+const isCopy = (value: unknown) =>
+  value === undefined ||
+  (!!value &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    Object.entries(value).every(
+      ([key, words]) =>
+        PAGE_TEXT_KEYS.has(key) &&
+        typeof words === 'string' &&
+        words.length <= 4000,
+    ));
+
+/* The map, pushed by the Terminal: per stage, in step order, an optional
+   label and the tiles drawn on it. Every tile must be an entry. */
+const stagesError = (value: unknown, steps: number, ids: Set<string>) => {
+  if (value === undefined) return null;
+  if (!Array.isArray(value) || value.length !== steps)
+    return `stages must list all ${steps} stages in step order`;
+  for (const stage of value) {
+    if (!stage || typeof stage !== 'object') return 'a stage is not an object';
+    if (
+      stage.label !== undefined &&
+      (typeof stage.label !== 'string' || stage.label.length > 40)
+    )
+      return 'a stage label must be text up to 40 characters';
+    if (stage.tiles === undefined) continue;
+    if (
+      !Array.isArray(stage.tiles) ||
+      stage.tiles.length === 0 ||
+      stage.tiles.length > MAX_TILES_PER_STAGE
+    )
+      return `a stage draws 1 to ${MAX_TILES_PER_STAGE} tiles`;
+    const missing = stage.tiles.find((id: unknown) => !ids.has(id as string));
+    if (missing !== undefined) return `tile ${missing} is not an entry`;
+  }
+  return null;
+};
+
 export type StripResult = { guide: any } | { error: string };
 
 export function stripGuide(input: any): StripResult {
@@ -51,6 +91,14 @@ export function stripGuide(input: any): StripResult {
     return { error: 'a step has no children list' };
   if (!isCards(input.cards))
     return { error: 'cards must map a card id to a list of paragraphs' };
+  if (!isCopy(input.copy))
+    return { error: 'copy must map a known page text key to text' };
+  const stages = stagesError(
+    input.stages,
+    input.steps.length,
+    new Set(input.entries.map((e: any) => e.id)),
+  );
+  if (stages) return { error: stages };
 
   const guide: any = {
     generatedAt: input.generatedAt,
@@ -67,6 +115,9 @@ export function stripGuide(input: any): StripResult {
     },
   };
   if (input.cards) guide.cards = input.cards;
+  if (input.copy) guide.copy = input.copy;
+  if (input.stages)
+    guide.stages = input.stages.map((s: any) => pick(s, ['label', 'tiles']));
   /* The page must be able to draw what is stored; a guide it cannot draw
      is refused and the page keeps the last one that worked. */
   try {

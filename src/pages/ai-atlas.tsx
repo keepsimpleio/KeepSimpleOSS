@@ -1560,7 +1560,7 @@ export function AiAtlasApp({
           <span className="meta-intro">{t.welcomeBanner}</span>
         </div>
         <div className="meta">
-          <span className="meta-label">TERMINAL DOCUMENTATION</span>
+          <span className="meta-label">{t.metaLabel}</span>
         </div>
       </header>
 
@@ -1662,10 +1662,7 @@ export function AiAtlasApp({
                     <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--red)" />
                   </marker>
                 </defs>
-                <g
-                  className="task-route"
-                  aria-label="Project to Result, clockwise"
-                >
+                <g className="task-route" aria-label={t.stagesAria}>
                   {data.projects.members
                     .slice(0, -1)
                     .map((p: any, i: number) => {
@@ -2073,7 +2070,7 @@ export function AiAtlasApp({
                 setFocusedNode(e.target.value || null);
               }}
             >
-              <option value="">The Atlas</option>
+              <option value="">{t.topicsPlaceholder}</option>
               {Object.entries(data.dossiers).map(([id, d]: any) => (
                 <option key={id} value={id}>
                   {d.title}
@@ -2114,22 +2111,24 @@ export function AiAtlasApp({
 }
 
 export default function AiAtlasPage({ guide }: { guide: any }) {
+  /* Words pushed with the guide replace the built-in ones, SEO included. */
+  const words = { ...copy, ...(guide?.copy || {}) };
   return (
     <>
       <SeoGenerator
         strapiSEO={{
-          title: copy.seoTitle,
-          pageTitle: copy.seoTitle,
-          seoTitle: copy.seoTitle,
-          description: copy.seoDescription,
-          keywords: copy.seoKeywords,
+          title: words.seoTitle,
+          pageTitle: words.seoTitle,
+          seoTitle: words.seoTitle,
+          description: words.seoDescription,
+          keywords: words.seoKeywords,
         }}
         type="WebPage"
         ogTags={{
-          ogTitle: copy.seoTitle,
-          ogDescription: copy.seoDescription,
+          ogTitle: words.seoTitle,
+          ogDescription: words.seoDescription,
           ogType: 'website',
-          ogImageAlt: copy.ogImageAlt,
+          ogImageAlt: words.ogImageAlt,
           ogImage: {
             data: {
               attributes: {
