@@ -1,38 +1,48 @@
 /**
  * Shared LLM-client constants for the concierge API routes.
  *
- * Both /api/concierge and /api/concierge-landing duplicate the same
- * URL + header + env-key handling for Anthropic and OpenAI. This
- * module centralises those bits so route files only own their own
- * prompts and response-parsing logic.
+ * Claude is reached only through the subscription relay (Wolf,
+ * 2026-09-22): the Terminal's tracks t1, t2 and t3, switched on a rate
+ * limit, never a paid API key. See src/lib/library/magic/relay.ts. The
+ * relay runs one CLI turn without tools, so the reply schema is asked
+ * for in the prompt and the JSON is read out of the text.
  */
 
-export const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
-export const OPENAI_KEY = process.env.OPENAI_API_KEY;
+import {
+  askRelay,
+  parseJsonReply,
+  relayConfigured,
+} from '@lib/library/magic/relay';
 
-export const CLAUDE_MODEL = 'claude-sonnet-4-6';
-export const OPENAI_MODEL = 'gpt-4.1';
+export const CLAUDE_MODEL = 'claude-sonnet-5';
 
-export const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-export const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+export const claudeConfigured = relayConfigured;
 
-export function anthropicHeaders(): Record<string, string> {
-  if (!ANTHROPIC_KEY) {
-    throw new Error('ANTHROPIC_API_KEY is not set');
+/** One Claude turn through the relay, answered as JSON matching `schema`.
+ * Null when the relay is not wired, every track failed, or the reply did
+ * not parse; the caller then stays quiet. */
+export async function askClaudeJson<T>(
+  system: string,
+  user: string,
+  schema: object,
+  maxTokens: number,
+): Promise<T | null> {
+  if (!relayConfigured()) return null;
+  try {
+    const reply = await askRelay({
+      model: CLAUDE_MODEL,
+      system,
+      prompt:
+        `${user}\n\nReply with one JSON object and nothing else. ` +
+        `It must match this JSON Schema:\n${JSON.stringify(schema)}`,
+      maxTokens,
+      effort: 'low',
+    });
+    return parseJsonReply<T>(reply.text);
+  } catch (error) {
+    console.warn(
+      `[widget] claude relay: ${error instanceof Error ? error.message : 'failed'}`,
+    );
+    return null;
   }
-  return {
-    'Content-Type': 'application/json',
-    'x-api-key': ANTHROPIC_KEY,
-    'anthropic-version': '2023-06-01',
-  };
-}
-
-export function openAIHeaders(): Record<string, string> {
-  if (!OPENAI_KEY) {
-    throw new Error('OPENAI_API_KEY is not set');
-  }
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${OPENAI_KEY}`,
-  };
 }

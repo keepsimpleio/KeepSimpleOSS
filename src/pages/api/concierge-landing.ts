@@ -1,15 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import {
-  ANTHROPIC_KEY,
-  ANTHROPIC_URL,
-  anthropicHeaders,
-  CLAUDE_MODEL,
-  OPENAI_KEY,
-  OPENAI_MODEL,
-  OPENAI_URL,
-  openAIHeaders,
-} from '../../lib/widget/llmClient';
+import { askClaudeJson, claudeConfigured } from '../../lib/widget/llmClient';
 import {
   formatPageIdentity,
   resolvePageIdentity,
@@ -76,108 +67,34 @@ async function callClaude(
   system: string,
   user: string,
 ): Promise<LandingPayload | null> {
-  if (!ANTHROPIC_KEY) return null;
-  try {
-    const r = await fetch(ANTHROPIC_URL, {
-      method: 'POST',
-      headers: anthropicHeaders(),
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 360,
-        system: [
-          { type: 'text', text: system, cache_control: { type: 'ephemeral' } },
-        ],
-        messages: [{ role: 'user', content: user }],
-        tools: [
-          {
-            name: 'submit_landing_line',
-            description: 'Submit the landing-page reaction.',
-            input_schema: {
-              type: 'object',
-              properties: {
-                text: { type: 'string' },
-                suggestions: {
-                  type: 'array',
-                  items: { type: 'string' },
-                },
-              },
-              required: ['text'],
-            },
-          },
-        ],
-        tool_choice: { type: 'tool', name: 'submit_landing_line' },
-      }),
-    });
-    if (!r.ok) return null;
-    const data = (await r.json()) as {
-      content?: Array<{
-        type?: string;
-        name?: string;
-        input?: { text?: string; suggestions?: unknown };
-      }>;
-    };
-    const tool = (data?.content ?? []).find(
-      b => b?.type === 'tool_use' && b?.name === 'submit_landing_line',
-    );
-    const txt = tool?.input?.text;
-    if (typeof txt !== 'string') return null;
-    const sugRaw = tool?.input?.suggestions;
-    const suggestions = Array.isArray(sugRaw)
-      ? (sugRaw as unknown[])
-          .filter(
-            (s): s is string => typeof s === 'string' && s.trim().length > 0,
-          )
-          .map(s => s.replace(/\s+/g, ' ').trim().slice(0, 60))
-          .slice(0, 4)
-      : [];
-    return { text: txt, suggestions };
-  } catch {
-    return null;
-  }
-}
-
-async function callOpenAI(
-  system: string,
-  user: string,
-): Promise<LandingPayload | null> {
-  if (!OPENAI_KEY) return null;
-  try {
-    const r = await fetch(OPENAI_URL, {
-      method: 'POST',
-      headers: openAIHeaders(),
-      body: JSON.stringify({
-        model: OPENAI_MODEL,
-        temperature: 0.85,
-        max_tokens: 320,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: user },
-        ],
-      }),
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    const content = data?.choices?.[0]?.message?.content;
-    if (typeof content !== 'string') return null;
-    const parsed = JSON.parse(content) as {
-      text?: string;
-      suggestions?: unknown;
-    };
-    if (typeof parsed.text !== 'string') return null;
-    const sugRaw = parsed.suggestions;
-    const suggestions = Array.isArray(sugRaw)
-      ? (sugRaw as unknown[])
-          .filter(
-            (s): s is string => typeof s === 'string' && s.trim().length > 0,
-          )
-          .map(s => s.replace(/\s+/g, ' ').trim().slice(0, 60))
-          .slice(0, 4)
-      : [];
-    return { text: parsed.text, suggestions };
-  } catch {
-    return null;
-  }
+  const input = await askClaudeJson<{ text?: unknown; suggestions?: unknown }>(
+    system,
+    user,
+    {
+      type: 'object',
+      properties: {
+        text: { type: 'string' },
+        suggestions: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+      },
+      required: ['text'],
+    },
+    480,
+  );
+  const txt = input?.text;
+  if (typeof txt !== 'string') return null;
+  const sugRaw = input?.suggestions;
+  const suggestions = Array.isArray(sugRaw)
+    ? (sugRaw as unknown[])
+        .filter(
+          (s): s is string => typeof s === 'string' && s.trim().length > 0,
+        )
+        .map(s => s.replace(/\s+/g, ' ').trim().slice(0, 60))
+        .slice(0, 4)
+    : [];
+  return { text: txt, suggestions };
 }
 
 const SYSTEM_EN = `You ARE the keepsimple team — speak as us, first-person plural ("we", "our"). The user just opened a card from our chat and landed on a page on our site. Walk up to their desk and drop a short note in TWO beats:
@@ -319,7 +236,7 @@ export default async function handler(
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
-  if (!OPENAI_KEY && !ANTHROPIC_KEY) {
+  if (!claudeConfigured()) {
     return res.status(200).json({ text: '' });
   }
 
@@ -377,8 +294,7 @@ export default async function handler(
     `Prior bot answer: ${safePrevAnswer || '—'}`,
   ].join('\n');
 
-  let result = await callClaude(system, userMsg);
-  if (result == null) result = await callOpenAI(system, userMsg);
+  const result = await callClaude(system, userMsg);
   const text = (result?.text ?? '').trim();
   const suggestions = (result?.suggestions ?? []).filter(s => s.length > 0);
   return res.status(200).json({ text, suggestions });

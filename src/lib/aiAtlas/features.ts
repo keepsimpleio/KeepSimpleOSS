@@ -91,7 +91,7 @@ const features: Record<string, string[]> = {
   /* ---------- dispatch ---------- */
   // card: Engine
   project: [
-    'Every project tile runs on Claude or on OpenAI’s Codex. I choose the engine per project, and Terminal runs the agent inside that project’s folder with that engine.',
+    'Every project tile runs on Claude or on OpenAI’s Codex. I choose the engine per project, and Terminal runs the agent inside that project’s folder with that engine. Grok is the third one. xAI’s model runs on the same tiles, on one login, and Terminal keeps every Grok turn in its own archive, so nothing that lane produces can be lost.',
   ],
   // card: Engine switch
   'engine-switch': [
@@ -258,7 +258,7 @@ const features: Record<string, string[]> = {
   /* ---------- the result ---------- */
   // card: Delivered work
   'delivered-work': [
-    'The agent reports what changed and what it checked. The work itself stays in the project as files, commits and deployments. I read the report against that evidence, not on its own.',
+    'The agent reports what changed and what it checked. The work itself stays in the project as files, commits and deployments. I read the report against that evidence, not on its own. Done is not the agent’s word either. Before the report reaches me, a reviewer on a different vendor’s model reads the task in my own words and a snapshot of the project. It has none of the author’s context, so it cannot share the author’s blind spots. GPT does that review, Grok steps in when GPT is down, and it is never a Claude checking a Claude.',
   ],
   // card: Review result
   'review-result': [
@@ -328,7 +328,7 @@ const features: Record<string, string[]> = {
   ],
   // card: Models (resource ring)
   models: [
-    'The thinking happens at the provider. Today that is Claude and OpenAI’s Codex, several subscriptions of each, and the tools stay on my server whichever one is thinking.',
+    'The thinking happens at the provider. Today that is Claude and OpenAI’s Codex, several subscriptions of each, and the tools stay on my server whichever one is thinking. xAI’s Grok is the third provider on the same terms.',
     'The switch between them is my own code, so a third engine is a slot on it and not a rewrite. The groundwork for local models is in place: the box is chosen, the model is picked and the plan is written. It is not running yet, and the atlas says so.',
   ],
   // card: Terminal

@@ -67,11 +67,7 @@ function Hotspot({
 
   // 768–1920px shows the wide artwork; 1920px+ swaps to the panorama, which
   // frames the buildings differently and so carries its own geometry.
-  const label =
-    library?.libraryName ??
-    (hotspot.username
-      ? `${hotspot.username}'s library`
-      : 'Nothing but ghosts...');
+  const label = library?.libraryName ?? 'Nothing but ghosts...';
   const { hit, highlight, card } = isUltraWide
     ? hotspot.ultraWide
     : hotspot.wide;
@@ -259,11 +255,13 @@ export function InteractiveCover({
               <Hotspot
                 key={hotspot.id}
                 hotspot={hotspot}
-                library={libraries.find(
-                  library =>
-                    library.username?.toLowerCase() ===
-                    hotspot.username?.toLowerCase(),
-                )}
+                library={
+                  hotspot.ownerId === undefined
+                    ? undefined
+                    : libraries.find(
+                        library => library.userId === hotspot.ownerId,
+                      )
+                }
                 mode={mode}
                 activeId={activeId}
                 setActiveId={setActiveId}

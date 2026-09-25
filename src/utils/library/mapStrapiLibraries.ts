@@ -180,6 +180,7 @@ export function mapStrapiLibraryEntryToCard(
 
   return {
     id,
+    userId: attributes.user?.data?.id,
     username,
     libraryName,
     description,

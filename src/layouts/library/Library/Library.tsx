@@ -27,7 +27,6 @@ import React, {
 } from 'react';
 
 import {
-  LIBRARY_AI_FLAG,
   LIBRARY_FULL_MESSAGE,
   LIBRARY_SHELVES_REFETCH_EVENT,
   MAX_OBJECTS_PER_LIBRARY,
@@ -61,7 +60,7 @@ import {
   keepFavoriteFields,
   sortFavorites,
 } from '@lib/library/favorites';
-import { holdsFlag } from '@lib/library/flags';
+import { opensLibraryAi } from '@lib/library/flags';
 import { libraryPath } from '@lib/library/libraryPath';
 import { objectIdFromSlug } from '@lib/library/objectSlug';
 import {
@@ -268,12 +267,13 @@ export function LibraryTemplate({
   // and on first paint, so the markup hydrates identically everywhere.
   const canEditHere = viewAsOwner && supportsEditing;
 
-  // The AI shelf and the magic books are behind the `library-ai` account
-  // flag from GET /api/users/me; the routes behind them check the same flag,
-  // so this decides what is drawn, not what is allowed. Creating a library
+  // The AI shelf and the magic books open with the `library-ai` account flag
+  // or with more than LIBRARY_AI_BOOKS_OVER books in this library; the routes
+  // behind them run the same check, so this decides what is drawn, not what
+  // is allowed. Creating a library
   // needs no flag: any signed-in owner of this address bootstraps one from
   // their first shelf.
-  const hasLibraryAi = holdsFlag(accountData, LIBRARY_AI_FLAG);
+  const hasLibraryAi = opensLibraryAi(accountData, library);
 
   // The magic books are read once the owner is known to be editing here:
   // desktop, own library, not previewing as a guest, and flagged. The

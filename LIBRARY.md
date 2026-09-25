@@ -57,17 +57,25 @@ owner's address. Phones and tablets stay read-only, so a signed-in owner
 without a library reads "Use a desktop to create your library" there. A
 visitor at an address no library answers to reads "No such library".
 
-The AI shelf and the magic books are behind the `library-ai` account flag,
-read from `GET /api/users/me` as `featureNames` (LIBRARY_AI_FLAG). The page
-draws neither surface without it, and `/api/library/ai-shelf` and
-`/api/library/magic-book` answer 403 without it through `ownerOfLibrary`, so
-the hidden shelf is not the gate. Both surfaces are the owner's alone on
-every account: a visitor never sees them. An operator hands the flag out in
+The AI shelf and the magic books open to an owner who holds the `library-ai`
+account flag, read from `GET /api/users/me` as `featureNames`
+(LIBRARY_AI_FLAG), or whose library holds more than 15 books
+(LIBRARY_AI_BOOKS_OVER, Wolf, 2026-09-25). Only objects of type book count,
+on every shelf, private ones included; the count is read from the library on
+every check, so the AI arrives with the sixteenth book and leaves if the
+library drops back to fifteen, while the flag holds regardless. One check,
+`opensLibraryAi` in `src/lib/library/flags.ts`, decides for the page and the
+routes: the page draws neither surface without it, and
+`/api/library/ai-shelf` and `/api/library/magic-book` answer 403 without it
+through `ownerOfLibrary`, so the hidden shelf is not the gate. The AI shelf
+itself stays locked until 30 books (AI_SHELF_MIN_BOOKS). Both surfaces are
+the owner's alone on every account: a visitor never sees them. An operator hands the flag out in
 the CMS admin panel (the user's Feature Flags relation) or ahead of signup
 through the Mail Permission List; it takes effect on the account's next page
 load, no new sign-in. Wolf names the accounts, one at a time, to the agent;
-on 2026-09-12 they are Alina, Mary, Lemongrass and Wolf. Cover, video and
-audio autofill stay open to everyone: they cost no model call.
+on 2026-09-12 they are Alina, Mary, Lemongrass and Wolf. On 2026-09-25
+Lilith and Maksim got it for holding more than 15 books, before the rule
+above shipped. Cover, video and audio autofill stay open to everyone: they cost no model call.
 
 A library carries `hidden`, set only in the CMS admin panel (the content API
 refuses it on update). Hidden, it leaves the home list and

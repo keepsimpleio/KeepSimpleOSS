@@ -149,6 +149,8 @@ export interface IUpdateLibraryPayload {
 /** Mapped row for `LibraryCard` on the home page */
 export interface HomeLibraryCardView {
   id: number;
+  /** Owner's account id. Stable across username changes, unlike `username`. */
+  userId?: number;
   username?: string;
   libraryName: string;
   description: string;
