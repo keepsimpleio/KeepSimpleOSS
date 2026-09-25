@@ -83,6 +83,31 @@ const stagesError = (value: unknown, steps: number, ids: Set<string>) => {
   return null;
 };
 
+/* Every kept field has one shape, checked here rather than trusted to the
+   adapter: a title that is not text would pass adaptGuide and break the page
+   only when a visitor opens that dossier. */
+const TEXT_FIELDS = ['title', 'location', 'text', 'role', 'basis'];
+const LIST_FIELDS = ['detail', 'children'];
+const FIELD_MAX = 4000;
+const isText = (v: unknown) => typeof v === 'string' && v.length <= FIELD_MAX;
+
+const fieldsError = (list: any[], name: string) => {
+  for (const item of list) {
+    const bad =
+      TEXT_FIELDS.find(k => item[k] !== undefined && !isText(item[k])) ??
+      LIST_FIELDS.find(
+        k =>
+          item[k] !== undefined &&
+          !(Array.isArray(item[k]) && item[k].every(isText)),
+      );
+    if (bad)
+      return `${name} ${item.id}: ${bad} must be ${
+        LIST_FIELDS.includes(bad) ? 'a list of texts' : 'text'
+      } up to ${FIELD_MAX} characters`;
+  }
+  return null;
+};
+
 export type StripResult = { guide: any } | { error: string };
 
 export function stripGuide(input: any): StripResult {
@@ -98,6 +123,11 @@ export function stripGuide(input: any): StripResult {
     return { error: 'system.nodes missing or malformed' };
   if (input.steps.some((s: any) => !Array.isArray(s.children)))
     return { error: 'a step has no children list' };
+  const fields =
+    fieldsError(input.steps, 'step') ??
+    fieldsError(input.entries, 'entry') ??
+    fieldsError(input.system.nodes, 'node');
+  if (fields) return { error: fields };
   if (!isCards(input.cards))
     return { error: 'cards must map a card id to a list of paragraphs' };
   if (!isCopy(input.copy))
