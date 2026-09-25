@@ -97,6 +97,10 @@ export const LIBRARY_OBJECTS_FULL_MESSAGE =
 // library needs no flag since 2026-09-12.
 export const LIBRARY_AI_FLAG = 'library-ai';
 
+// A library holding more books than this opens the AI to its owner without the
+// flag (Wolf, 2026-09-25). Only objects of type book count.
+export const LIBRARY_AI_BOOKS_OVER = 15;
+
 export const SHELF_FULL_MESSAGE = 'This shelf is full.';
 
 // The library-level twin, worded the same way so the two limits read as one
