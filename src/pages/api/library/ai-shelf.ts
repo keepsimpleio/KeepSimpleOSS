@@ -1,8 +1,6 @@
 // motion-passport: exempt — a server route; nothing here is drawn.
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { LIBRARY_AI_FLAG } from '@constants/library/common';
-
 import type {
   BannedBook,
   RecommendedPick,
@@ -178,7 +176,7 @@ export default async function handler(
     req,
     libraryId,
     { locked: 'The AI shelf is not open to your account.' },
-    { flag: LIBRARY_AI_FLAG },
+    { libraryAi: true },
   );
   if (owner.status !== 200 || !owner.library) {
     if (owner.status === 403)
