@@ -3,6 +3,11 @@
 // the keepsimple site. The wrapper element carries the `.library` class.
 .library {
   max-width: 100vw;
+  // Safari inflates the type inside any block it reads as wider than the
+  // phone — the shelf rails are wider by design, so a note next to them came
+  // back a third larger than the size it was set in. Sizes stay as written.
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   color: var(--black);
   background: var(--white-warm);
   font-family: var(--font-source-serif);
