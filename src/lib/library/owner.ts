@@ -2,7 +2,7 @@ import type { NextApiRequest } from 'next';
 
 import type { StrapiLibraryEntry } from '@local-types/library/library';
 
-import { holdsFlag } from '@lib/library/flags';
+import { opensLibraryAi } from '@lib/library/flags';
 
 /**
  * Who is asking, and do they own the library they are asking about. Every
@@ -45,14 +45,15 @@ export interface OwnerWording {
   signIn?: string;
   /** A session, but not the owner of this library. */
   forbidden?: string;
-  /** The owner, but without the account flag this surface needs. */
+  /** The owner, but the surface is not open to their account. */
   locked?: string;
 }
 
 /** What the surface needs of the account beyond owning the library. */
 export interface OwnerRequires {
-  /** A `featureNames` entry from /api/users/me, e.g. LIBRARY_AI_FLAG. */
-  flag?: string;
+  /** The AI shelf and the magic books: the `library-ai` flag, or more than
+   * LIBRARY_AI_BOOKS_OVER books in this library (opensLibraryAi). */
+  libraryAi?: boolean;
 }
 
 export interface OwnerCheck {
@@ -99,9 +100,9 @@ export async function ownerOfLibrary(
       userId: me.id,
     };
 
-  // The owner, but the surface is behind an account flag they do not hold:
-  // the page does not draw it, and this is what stops a direct call.
-  if (requires.flag && !holdsFlag(me, requires.flag))
+  // The owner, but the surface is not open to their account: the page does
+  // not draw it, and this is what stops a direct call.
+  if (requires.libraryAi && !opensLibraryAi(me, library))
     return {
       status: 403,
       error: wording.locked ?? 'This surface is not open to your account.',

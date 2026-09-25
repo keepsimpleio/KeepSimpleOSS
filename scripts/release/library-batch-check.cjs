@@ -3,6 +3,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const ts = require('typescript');
+
 process.chdir(path.resolve(__dirname, '../..'));
 function load(file, mocks = {}) {
   const exports = {};
@@ -279,27 +280,61 @@ function check() {
   // LIBRARY ACCESS. Creation needs no flag; the AI does, and the routes
   // behind it check the same flag the page draws by, so a direct call is
   // stopped where the shelf is not drawn.
-  const { holdsFlag } = load('src/lib/library/flags.ts');
+  const flags = load('src/lib/library/flags.ts', {
+    '@constants/library/common': {
+      LIBRARY_AI_FLAG: 'library-ai',
+      LIBRARY_AI_BOOKS_OVER: 15,
+    },
+  });
+  const { holdsFlag, countBooks, opensLibraryAi } = flags;
   assert(holdsFlag({ featureNames: ['library-ai'] }, 'library-ai'));
   assert(!holdsFlag({ featureNames: ['can-create-library'] }, 'library-ai'));
   assert(!holdsFlag({ featureNames: 'library-ai' }, 'library-ai'));
   assert(!holdsFlag({}, 'library-ai'));
   assert(!holdsFlag(null, 'library-ai'));
+  // More than 15 books opens the AI without the flag (Wolf, 2026-09-25);
+  // only books count, on every shelf.
+  const shelf = (...types) => ({
+    attributes: {
+      objects: { data: types.map(type => ({ attributes: { type } })) },
+    },
+  });
+  const libraryOf = (...shelves) => ({
+    attributes: { singleShelves: { data: shelves } },
+  });
+  const fifteen = libraryOf(
+    shelf(...Array(10).fill('book'), 'audio', 'video'),
+    shelf(...Array(5).fill('book'), 'audio'),
+  );
+  const sixteen = libraryOf(
+    shelf(...Array(10).fill('book')),
+    shelf(...Array(6).fill('book')),
+  );
+  assert.equal(countBooks(fifteen), 15);
+  assert.equal(countBooks(sixteen), 16);
+  assert.equal(countBooks(null), 0);
+  assert(!opensLibraryAi({}, fifteen));
+  assert(opensLibraryAi({}, sixteen));
+  assert(opensLibraryAi({ featureNames: ['library-ai'] }, fifteen));
+  assert(!opensLibraryAi(null, null));
   // The constants file carries icon components for its sample cards; the
   // icons are not what is checked here.
   const common = load('src/constants/library/common.ts', {
     '@icons/library/svg': new Proxy({}, { get: () => () => null }),
   });
   assert.equal(common.LIBRARY_AI_FLAG, 'library-ai');
+  assert.equal(common.LIBRARY_AI_BOOKS_OVER, 15);
   assert.equal(common.MAX_OBJECTS_PER_LIBRARY, 300);
   for (const route of [
     'src/pages/api/library/ai-shelf.ts',
     'src/pages/api/library/magic-book.ts',
   ])
-    assert(
-      fs.readFileSync(route, 'utf8').includes('flag: LIBRARY_AI_FLAG'),
-      route,
-    );
+    assert(fs.readFileSync(route, 'utf8').includes('libraryAi: true'), route);
+  assert(
+    fs
+      .readFileSync('src/layouts/library/Library/Library.tsx', 'utf8')
+      .includes('opensLibraryAi(accountData, library)'),
+  );
   for (const file of [
     'src/layouts/library/Library/Library.tsx',
     'src/layouts/library/Home/Home.tsx',
