@@ -233,6 +233,15 @@ $headerHeight: 46px;
     }
   }
 
+  // Keyboard focus shows it too; the link carries its own name when the
+  // label is hidden below 1160px.
+  .ArcMenuItem:focus-visible .ArcTooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+    transition-delay: 0s;
+  }
+
   .Disabled {
     opacity: 50%;
     pointer-events: none;
