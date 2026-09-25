@@ -14,16 +14,7 @@ import {
   scrubPii,
 } from '@lib/copilotSafety';
 import { inSameFamily, isMetaTurn } from '@lib/widget/conciergeHelpers';
-import {
-  ANTHROPIC_KEY,
-  ANTHROPIC_URL,
-  anthropicHeaders,
-  CLAUDE_MODEL,
-  OPENAI_KEY,
-  OPENAI_MODEL,
-  OPENAI_URL,
-  openAIHeaders,
-} from '@lib/widget/llmClient';
+import { askClaudeJson, claudeConfigured } from '@lib/widget/llmClient';
 import {
   formatPageIdentity,
   type PageIdentity,
@@ -90,12 +81,10 @@ const RAG_BASE = process.env.UXCORE_RAG_BASE_URL;
 const CF_ID = process.env.CF_ACCESS_CLIENT_ID;
 const CF_SECRET = process.env.CF_ACCESS_CLIENT_SECRET;
 
-/* Provider selection — Anthropic wins when its key is present (better
-   voice fidelity for the keepsimple-team peer voice; gpt-4o/4.1 drift
-   to marketing-default sludge). Falls back to OpenAI when the key
-   isn't there so the widget stays alive during the credential drop.
-   Constants + headers shared with /api/concierge-landing via
-   src/lib/widget/llmClient.ts. */
+/* Claude through the subscription relay is the only model (Wolf,
+   2026-09-22): no paid fallback, so when every track is spent the
+   reply is null and the widget stays quiet. Shared with
+   /api/concierge-landing via src/lib/widget/llmClient.ts. */
 
 type JsonValue =
   | string
@@ -104,204 +93,6 @@ type JsonValue =
   | null
   | JsonValue[]
   | { [k: string]: JsonValue };
-
-/* Streaming variant: same call as callClaudeJson but uses
-   Anthropic's SSE stream. Each time the `text` field inside the
-   tool's input JSON grows, onText is invoked with the new full
-   string. Returns the final parsed JSON value (or null on error).
-   The text-extraction regex is tolerant of mid-construction strings —
-   we only fire onText when the captured prefix actually grew. */
-async function callClaudeJsonStream(
-  system: string,
-  userBlock: string,
-  toolName: string,
-  toolSchema: object,
-  maxTokens: number,
-  onText: (currentText: string) => void,
-): Promise<JsonValue | null> {
-  if (!ANTHROPIC_KEY) return null;
-  try {
-    const r = await fetch(ANTHROPIC_URL, {
-      method: 'POST',
-      headers: anthropicHeaders(),
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: maxTokens,
-        stream: true,
-        system: [
-          {
-            type: 'text',
-            text: system,
-            cache_control: { type: 'ephemeral' },
-          },
-        ],
-        messages: [{ role: 'user', content: userBlock }],
-        tools: [
-          {
-            name: toolName,
-            description: 'Submit the structured reply.',
-            input_schema: toolSchema,
-          },
-        ],
-        tool_choice: { type: 'tool', name: toolName },
-      }),
-    });
-    if (!r.ok || !r.body) return null;
-    const reader = r.body.getReader();
-    const decoder = new TextDecoder();
-    let buf = '';
-    let partialJson = '';
-    let lastEmitted = '';
-    const tryEmitText = () => {
-      const m = partialJson.match(/"text"\s*:\s*"((?:\\.|[^"\\])*)/);
-      if (!m) return;
-      const captured = m[1];
-      /* Decode JSON escapes safely; on a mid-escape tail (\\), trim
-         the trailing backslash so JSON.parse won't throw. */
-      const safe = captured.endsWith('\\') ? captured.slice(0, -1) : captured;
-      let decoded: string;
-      try {
-        decoded = JSON.parse('"' + safe + '"');
-      } catch {
-        decoded = safe;
-      }
-      if (decoded.length > lastEmitted.length) {
-        lastEmitted = decoded;
-        onText(decoded);
-      }
-    };
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buf += decoder.decode(value, { stream: true });
-      let nl: number;
-      while ((nl = buf.indexOf('\n')) !== -1) {
-        const line = buf.slice(0, nl);
-        buf = buf.slice(nl + 1);
-        if (!line.startsWith('data:')) continue;
-        const payload = line.slice(5).trim();
-        if (!payload || payload === '[DONE]') continue;
-        try {
-          const evt = JSON.parse(payload) as {
-            type?: string;
-            delta?: {
-              type?: string;
-              partial_json?: string;
-            };
-          };
-          if (
-            evt.type === 'content_block_delta' &&
-            evt.delta?.type === 'input_json_delta' &&
-            typeof evt.delta.partial_json === 'string'
-          ) {
-            partialJson += evt.delta.partial_json;
-            tryEmitText();
-          }
-        } catch {
-          /* malformed event line — skip */
-        }
-      }
-    }
-    /* Parse the fully accumulated JSON. If the model truncated, salvage
-       the text we have so far. */
-    try {
-      return JSON.parse(partialJson) as JsonValue;
-    } catch {
-      const m = partialJson.match(/"text"\s*:\s*"((?:\\.|[^"\\])*)"/);
-      if (m) {
-        try {
-          const text = JSON.parse('"' + m[1] + '"');
-          return { kind: 'answer', text } as JsonValue;
-        } catch {
-          return null;
-        }
-      }
-      return null;
-    }
-  } catch {
-    return null;
-  }
-}
-
-async function callClaudeJson(
-  system: string,
-  userBlock: string,
-  toolName: string,
-  toolSchema: object,
-  maxTokens: number,
-): Promise<JsonValue | null> {
-  if (!ANTHROPIC_KEY) return null;
-  try {
-    const r = await fetch(ANTHROPIC_URL, {
-      method: 'POST',
-      headers: anthropicHeaders(),
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: maxTokens,
-        /* Cache the (large, static-per-locale) system prompt across
-           calls. 5-min TTL is plenty for an interactive session. */
-        system: [
-          {
-            type: 'text',
-            text: system,
-            cache_control: { type: 'ephemeral' },
-          },
-        ],
-        messages: [{ role: 'user', content: userBlock }],
-        tools: [
-          {
-            name: toolName,
-            description: 'Submit the structured reply.',
-            input_schema: toolSchema,
-          },
-        ],
-        tool_choice: { type: 'tool', name: toolName },
-      }),
-    });
-    if (!r.ok) return null;
-    const data = (await r.json()) as {
-      content?: Array<{ type?: string; name?: string; input?: JsonValue }>;
-    };
-    const blocks = Array.isArray(data?.content) ? data.content : [];
-    const tool = blocks.find(
-      b => b?.type === 'tool_use' && b?.name === toolName,
-    );
-    return tool?.input ?? null;
-  } catch {
-    return null;
-  }
-}
-
-async function callOpenAIJson(
-  system: string,
-  userBlock: string,
-  maxTokens: number,
-): Promise<JsonValue | null> {
-  if (!OPENAI_KEY) return null;
-  try {
-    const r = await fetch(OPENAI_URL, {
-      method: 'POST',
-      headers: openAIHeaders(),
-      body: JSON.stringify({
-        model: OPENAI_MODEL,
-        temperature: 0.7,
-        max_tokens: maxTokens,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: userBlock },
-        ],
-      }),
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    const content = data?.choices?.[0]?.message?.content;
-    if (typeof content !== 'string') return null;
-    return JSON.parse(content) as JsonValue;
-  } catch {
-    return null;
-  }
-}
 
 const COOKIE_NAME = 'aux_sid';
 const WINDOW_MS = 10 * 60 * 1000;
@@ -1088,7 +879,7 @@ async function synthesise(
   lastPick: { url: string; title: string; tier: 'high' | 'mid' | 'low' } | null,
   onText?: (currentText: string) => void,
 ): Promise<Decision | null> {
-  if (!ANTHROPIC_KEY && !OPENAI_KEY) return null;
+  if (!claudeConfigured()) return null;
 
   const baseSystem = lang === 'ru' ? SYSTEM_RU : SYSTEM_EN;
   const forceNote =
@@ -1208,30 +999,22 @@ async function synthesise(
     required: ['kind', 'text'],
   };
 
-  /* Try Anthropic first when its key is configured; fall back to
-     OpenAI if Claude errors out or the key isn't there. Both return
-     the same shape, so validation below is provider-agnostic.
-     When `onText` is provided we use the streaming Anthropic path
-     so the caller can forward tokens to the visitor live. */
-  let raw =
-    onText !== undefined
-      ? await callClaudeJsonStream(
-          system,
-          userBlock,
-          'submit_reply',
-          decisionSchema,
-          600,
-          onText,
-        )
-      : await callClaudeJson(
-          system,
-          userBlock,
-          'submit_reply',
-          decisionSchema,
-          600,
-        );
-  if (raw == null) {
-    raw = await callOpenAIJson(system, userBlock, 400);
+  /* The relay answers in one piece, so a streaming caller gets the
+     whole reply text at once. */
+  const raw = await askClaudeJson<JsonValue>(
+    system,
+    userBlock,
+    decisionSchema,
+    800,
+  );
+  if (
+    onText &&
+    raw &&
+    typeof raw === 'object' &&
+    !Array.isArray(raw) &&
+    typeof raw.text === 'string'
+  ) {
+    onText(raw.text);
   }
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
     return null;

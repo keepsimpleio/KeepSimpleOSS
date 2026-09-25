@@ -33,6 +33,12 @@ export interface ShelfProps {
    * grip stays in its slot, disabled, so the header does not reflow.
    */
   reorderLocked?: boolean;
+  /**
+   * True while the whole library still holds no objects. Pulses this shelf's
+   * Add control so a fresh library points at its own next step; the library
+   * turns it off the moment the first object lands anywhere.
+   */
+  highlightAdd?: boolean;
   /** Fired after the privacy switch saved, so the library tree carries it. */
   onShelfVisibilityChanged?: (
     shelfId: number,

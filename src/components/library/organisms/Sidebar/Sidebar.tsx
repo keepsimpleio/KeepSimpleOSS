@@ -58,6 +58,11 @@ import { EditLibraryModal } from '@components/library/organisms/EditLibraryModal
 
 import styles from './Sidebar.module.scss';
 
+// motion-passport: exempt. The drawer host added below is layout only
+// (display: contents on desktop, a fixed clipping layer on the drawer
+// breakpoints) and animates nothing. The panel-slide transition and its
+// prefers-reduced-motion branch live in Sidebar.module.scss.
+
 // aboutMe / aboutLibrary hold rich text: the owner's line breaks and marks are
 // part of what they wrote, so the panel renders the stored markup instead of
 // flattening it. Emptiness is judged on the text alone, never on the tags.
@@ -328,267 +333,281 @@ export function Sidebar() {
       {/* Desktop: the column folds away on the toolbar's panel toggle and
           unfolds from it; the choice is per account and survives a refresh
           (GlobalState). The drawer states above are phone/tablet only, and
-          the CSS scopes each to its own breakpoint. */}
-      <aside
-        id="library-info-panel"
-        data-library-mode-surface
-        className={classNames(styles.sidebar, {
-          [styles.open]: isSidebarOpen,
-          [styles.collapsed]: isSidebarCollapsed,
-        })}
-      >
-        <div className={styles.close}>
-          <Button
-            onClick={toggleSidebar}
-            type={ButtonType.Text}
-            size={ButtonSize.Default}
-            ariaLabel="Close"
-            Icon={<CloseIcon />}
-          />
-        </div>
+          the CSS scopes each to its own breakpoint.
 
-        <div className={styles.main}>
-          <div className={styles.about}>
-            <div className={styles.header}>
-              <Text className={styles.label}>About</Text>
-              {canEdit && (
-                <Button
-                  label="Edit"
-                  onClick={() => setIsEditLibraryOpen(true)}
-                  type={ButtonType.Secondary}
-                  size={ButtonSize.Default}
-                  ariaLabel="Edit library"
-                  Icon={<EditIcon />}
-                  className={styles.button}
-                  labelClassName={styles.text}
-                />
-              )}
-            </div>
+          The host is `display: contents` on desktop, so the panel stays a flex
+          item of the dashboard row; at the drawer breakpoints it becomes a
+          fixed, paint-contained layer that clips the panel parked off the right
+          edge. Without it Safari counts that parked box towards the page's
+          scrollable width and every library page measures about two screens
+          wide on a phone. */}
+      <div className={styles.drawerHost}>
+        <aside
+          id="library-info-panel"
+          data-library-mode-surface
+          className={classNames(styles.sidebar, {
+            [styles.open]: isSidebarOpen,
+            [styles.collapsed]: isSidebarCollapsed,
+          })}
+        >
+          <div className={styles.close}>
+            <Button
+              onClick={toggleSidebar}
+              type={ButtonType.Text}
+              size={ButtonSize.Default}
+              ariaLabel="Close"
+              Icon={<CloseIcon />}
+            />
+          </div>
 
-            <div className={styles.content}>
-              <div>
-                {/* Plain text: the field is CKEditor markup server-side, and
+          <div className={styles.main}>
+            <div className={styles.about}>
+              <div className={styles.header}>
+                <Text className={styles.label}>About</Text>
+                {canEdit && (
+                  <Button
+                    label="Edit"
+                    onClick={() => setIsEditLibraryOpen(true)}
+                    type={ButtonType.Secondary}
+                    size={ButtonSize.Default}
+                    ariaLabel="Edit library"
+                    Icon={<EditIcon />}
+                    className={styles.button}
+                    labelClassName={styles.text}
+                  />
+                )}
+              </div>
+
+              <div className={styles.content}>
+                <div>
+                  {/* Plain text: the field is CKEditor markup server-side, and
                     printing it raw showed the tags. Empty gets a line of its
                     own, like Author and Tags do. A written description folds
                     so it cannot push Content, Author and Tags off the sheet. */}
-                {hasText(aboutLibraryText) ? (
-                  <ExpandableText
-                    value={aboutLibraryText}
-                    title="About"
-                    className={styles.label}
-                    subject="library description"
-                  />
-                ) : (
-                  <Text className={classNames(styles.label, styles.emptyTags)}>
-                    {canEdit
-                      ? 'No description yet. Add one with Edit'
-                      : 'No description yet'}
-                  </Text>
-                )}
-              </div>
-              <InkLine seed={7} className={styles.innerRule} />
+                  {hasText(aboutLibraryText) ? (
+                    <ExpandableText
+                      value={aboutLibraryText}
+                      title="About"
+                      className={styles.label}
+                      subject="library description"
+                    />
+                  ) : (
+                    <Text
+                      className={classNames(styles.label, styles.emptyTags)}
+                    >
+                      {canEdit
+                        ? 'No description yet. Add one with Edit'
+                        : 'No description yet'}
+                    </Text>
+                  )}
+                </div>
+                <InkLine seed={7} className={styles.innerRule} />
 
-              {/* A kind the library does not hold is not written as a zero:
+                {/* A kind the library does not hold is not written as a zero:
                   neither its icon nor its number stands here (Wolf,
                   2026-09-10). A library with no books at all keeps the
                   Content heading off the panel too. */}
-              {(bookCount > 0 || videoCount > 0 || songCount > 0) && (
-                <div className={styles.totalObjects}>
-                  <Text className={styles.subLabel}>Content</Text>
-                  <div className={styles.objects}>
-                    {bookCount > 0 && (
-                      <Object
-                        className={styles.count}
-                        type={ObjectType.Book}
-                        number={bookCount}
-                        noBorder
-                      />
-                    )}
-                    {videoCount > 0 && (
-                      <Object
-                        className={styles.count}
-                        type={ObjectType.Video}
-                        number={videoCount}
-                        noBorder
-                      />
-                    )}
-                    {songCount > 0 && (
-                      <Object
-                        className={styles.count}
-                        type={ObjectType.Audio}
-                        number={songCount}
-                        noBorder
-                      />
-                    )}
+                {(bookCount > 0 || videoCount > 0 || songCount > 0) && (
+                  <div className={styles.totalObjects}>
+                    <Text className={styles.subLabel}>Content</Text>
+                    <div className={styles.objects}>
+                      {bookCount > 0 && (
+                        <Object
+                          className={styles.count}
+                          type={ObjectType.Book}
+                          number={bookCount}
+                          noBorder
+                        />
+                      )}
+                      {videoCount > 0 && (
+                        <Object
+                          className={styles.count}
+                          type={ObjectType.Video}
+                          number={videoCount}
+                          noBorder
+                        />
+                      )}
+                      {songCount > 0 && (
+                        <Object
+                          className={styles.count}
+                          type={ObjectType.Audio}
+                          number={songCount}
+                          noBorder
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-            <InkLine seed={1} className={styles.sectionRule} />
-          </div>
-
-          <div className={styles.about}>
-            <div className={styles.header}>
-              <Text className={styles.label}>Author</Text>
-            </div>
-
-            <div className={styles.content}>
-              <div className={styles.avatar}>
-                <Avatar
-                  url={authorAvatarUrl ?? avatarImage}
-                  className={styles.avatarImage}
-                />
-                <Text
-                  className={styles.name}
-                  variant={TypographyVariant.TextBaseBold}
-                >
-                  {authorName}
-                </Text>
-              </div>
-              <ExpandableText
-                value={aboutAuthorText}
-                title="Author"
-                className={styles.text}
-                subject="author biography"
-              />
-            </div>
-            <InkLine seed={2} className={styles.sectionRule} />
-          </div>
-
-          <div className={styles.about}>
-            <div className={styles.header}>
-              <Text className={styles.label}>Tags</Text>
-              {/* Both tag controls sit in the header: a chip inside the
-                  wrapping tag flow drifted every time a tag was added. */}
-              {canEdit && (
-                <span className={styles.headerActions}>
-                  {displayedTags.length > 0 && (
-                    <Button
-                      label="Edit"
-                      ariaLabel="Edit tags"
-                      onClick={() => {
-                        setIsOpenTagModal('edit');
-                      }}
-                      type={ButtonType.Secondary}
-                      size={ButtonSize.Default}
-                      Icon={<EditIcon />}
-                      className={styles.button}
-                      labelClassName={styles.text}
-                    />
-                  )}
-                  <Tooltip
-                    place="bottom"
-                    tooltipContent={atTagLimit ? TAG_LIMIT_MESSAGE : ''}
-                    wrapperClassName={classNames({
-                      [styles.tooltipOff]: !atTagLimit,
-                    })}
-                  >
-                    <Button
-                      label="Create"
-                      ariaLabel="Create tag"
-                      onClick={() => setIsOpenTagModal('create')}
-                      type={ButtonType.Secondary}
-                      size={ButtonSize.Default}
-                      Icon={<PlusIcon />}
-                      className={styles.button}
-                      labelClassName={styles.text}
-                      disabled={atTagLimit}
-                    />
-                  </Tooltip>
-                </span>
-              )}
-            </div>
-            <div className={styles.content}>
-              <div
-                ref={tagsRef}
-                className={classNames(styles.tags, {
-                  [styles.tagsEmpty]: displayedTags.length === 0,
-                })}
-              >
-                {displayedTags.length === 0 && (
-                  <Text className={styles.emptyTags}>No tags yet</Text>
                 )}
-                {tagEntries.map(({ item: tag, leaving }) => (
-                  <span
-                    key={tag.name}
-                    className={classNames(styles.tagSlot, {
-                      [styles.tagLeaving]: leaving,
-                    })}
-                    data-flip-id={tag.name}
-                    data-flip-leaving={leaving ? 'true' : undefined}
-                    aria-hidden={leaving || undefined}
+              </div>
+              <InkLine seed={1} className={styles.sectionRule} />
+            </div>
+
+            <div className={styles.about}>
+              <div className={styles.header}>
+                <Text className={styles.label}>Author</Text>
+              </div>
+
+              <div className={styles.content}>
+                <div className={styles.avatar}>
+                  <Avatar
+                    url={authorAvatarUrl ?? avatarImage}
+                    className={styles.avatarImage}
+                    sizes="86px"
+                  />
+                  <Text
+                    className={styles.name}
+                    variant={TypographyVariant.TextBaseBold}
                   >
-                    {/* This row is the only place a tag is a control. On the
+                    {authorName}
+                  </Text>
+                </div>
+                <ExpandableText
+                  value={aboutAuthorText}
+                  title="Author"
+                  className={styles.text}
+                  subject="author biography"
+                />
+              </div>
+              <InkLine seed={2} className={styles.sectionRule} />
+            </div>
+
+            <div className={styles.about}>
+              <div className={styles.header}>
+                <Text className={styles.label}>Tags</Text>
+                {/* Both tag controls sit in the header: a chip inside the
+                  wrapping tag flow drifted every time a tag was added. */}
+                {canEdit && (
+                  <span className={styles.headerActions}>
+                    {displayedTags.length > 0 && (
+                      <Button
+                        label="Edit"
+                        ariaLabel="Edit tags"
+                        onClick={() => {
+                          setIsOpenTagModal('edit');
+                        }}
+                        type={ButtonType.Secondary}
+                        size={ButtonSize.Default}
+                        Icon={<EditIcon />}
+                        className={styles.button}
+                        labelClassName={styles.text}
+                      />
+                    )}
+                    <Tooltip
+                      place="bottom"
+                      tooltipContent={atTagLimit ? TAG_LIMIT_MESSAGE : ''}
+                      wrapperClassName={classNames({
+                        [styles.tooltipOff]: !atTagLimit,
+                      })}
+                    >
+                      <Button
+                        label="Create"
+                        ariaLabel="Create tag"
+                        onClick={() => setIsOpenTagModal('create')}
+                        type={ButtonType.Secondary}
+                        size={ButtonSize.Default}
+                        Icon={<PlusIcon />}
+                        className={styles.button}
+                        labelClassName={styles.text}
+                        disabled={atTagLimit}
+                      />
+                    </Tooltip>
+                  </span>
+                )}
+              </div>
+              <div className={styles.content}>
+                <div
+                  ref={tagsRef}
+                  className={classNames(styles.tags, {
+                    [styles.tagsEmpty]: displayedTags.length === 0,
+                  })}
+                >
+                  {displayedTags.length === 0 && (
+                    <Text className={styles.emptyTags}>No tags yet</Text>
+                  )}
+                  {tagEntries.map(({ item: tag, leaving }) => (
+                    <span
+                      key={tag.name}
+                      className={classNames(styles.tagSlot, {
+                        [styles.tagLeaving]: leaving,
+                      })}
+                      data-flip-id={tag.name}
+                      data-flip-leaving={leaving ? 'true' : undefined}
+                      aria-hidden={leaving || undefined}
+                    >
+                      {/* This row is the only place a tag is a control. On the
                         cards, in the dossier and in the object overview a tag
                         stays a label. */}
-                    <Tag
-                      label={tag.name}
-                      color={tag.color}
-                      active={activeTagId === tag.id}
-                      description={tag.description}
-                      // A tag on no book has no row to open, so it says what
-                      // it is instead of sitting there as a dead control.
-                      hint={tag.count === 0 ? 'Tag not used' : undefined}
-                      onClick={
-                        tag.count > 0 && !leaving
-                          ? () =>
-                              setActiveTagId(
-                                activeTagId === tag.id ? null : tag.id,
-                              )
-                          : undefined
-                      }
-                    />
-                  </span>
-                ))}
+                      <Tag
+                        label={tag.name}
+                        color={tag.color}
+                        active={activeTagId === tag.id}
+                        description={tag.description}
+                        // A tag on no book has no row to open, so it says what
+                        // it is instead of sitting there as a dead control.
+                        hint={tag.count === 0 ? 'Tag not used' : undefined}
+                        onClick={
+                          tag.count > 0 && !leaving
+                            ? () =>
+                                setActiveTagId(
+                                  activeTagId === tag.id ? null : tag.id,
+                                )
+                            : undefined
+                        }
+                      />
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <InkLine seed={3} className={styles.sectionRule} />
+            </div>
+
+            <div className={styles.about}>
+              <div className={styles.content}>
+                <Button
+                  onClick={handleCopyUrl}
+                  type={ButtonType.Secondary}
+                  size={ButtonSize.Wide}
+                  label={
+                    <CopyButtonLabel copied={isCopied} label="Library URL" />
+                  }
+                  ariaLabel={
+                    isCopied ? 'Library URL copied' : 'Copy library URL'
+                  }
+                  Icon={<LinkIcon />}
+                  className={styles.copyButton}
+                />
+                <Text
+                  variant={TypographyVariant.TextSmall}
+                  className={classNames(styles.copyStatus, {
+                    [styles.copyStatusError]: !!copyError,
+                  })}
+                  aria-live="polite"
+                >
+                  {copyError ?? ''}
+                </Text>
               </div>
             </div>
-            <InkLine seed={3} className={styles.sectionRule} />
           </div>
 
-          <div className={styles.about}>
-            <div className={styles.content}>
-              <Button
-                onClick={handleCopyUrl}
-                type={ButtonType.Secondary}
-                size={ButtonSize.Wide}
-                label={
-                  <CopyButtonLabel copied={isCopied} label="Library URL" />
-                }
-                ariaLabel={isCopied ? 'Library URL copied' : 'Copy library URL'}
-                Icon={<LinkIcon />}
-                className={styles.copyButton}
-              />
-              <Text
-                variant={TypographyVariant.TextSmall}
-                className={classNames(styles.copyStatus, {
-                  [styles.copyStatusError]: !!copyError,
-                })}
-                aria-live="polite"
-              >
-                {copyError ?? ''}
-              </Text>
-            </div>
-          </div>
-        </div>
-
-        {isMyLibrary && supportsEditing && (
-          <div
-            className={classNames(styles.footer, {
-              [styles.footerActive]: isGuestMode,
-            })}
-          >
-            {/* One line: the name and the switch. The explanation was two
+          {isMyLibrary && supportsEditing && (
+            <div
+              className={classNames(styles.footer, {
+                [styles.footerActive]: isGuestMode,
+              })}
+            >
+              {/* One line: the name and the switch. The explanation was two
                 lines of the panel's height spent on a control whose state the
                 page itself shows the moment it is flipped. */}
-            <Text className={styles.label}>Guest mode</Text>
-            <Toggle
-              checked={isGuestMode}
-              onChange={toggleGuestMode}
-              ariaLabel="Guest mode"
-            />
-          </div>
-        )}
-      </aside>
+              <Text className={styles.label}>Guest mode</Text>
+              <Toggle
+                checked={isGuestMode}
+                onChange={toggleGuestMode}
+                ariaLabel="Guest mode"
+              />
+            </div>
+          )}
+        </aside>
+      </div>
       {isOpenTagModal && (
         <CreateTagModal
           isEdit={isOpenTagModal === 'edit'}

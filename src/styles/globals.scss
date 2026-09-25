@@ -10,6 +10,12 @@ html {
 html {
   overflow-y: overlay;
   overflow-x: hidden;
+  // The body gradient below is propagated to the canvas, but it is still sized
+  // against the root box. On a short document (the auth hand-off pages hold
+  // almost no markup) that box is a few dozen pixels tall, so the gradient used
+  // to tile down the viewport as grey bands. Holding the root at viewport
+  // height makes one gradient span the screen.
+  min-height: 100%;
   // Reserve the scrollbar gutter at all times. Modals lock body scroll by
   // setting overflow-y: hidden on <html>; without a stable gutter, the
   // scrollbar disappears and content jumps ~15px sideways on every modal
@@ -63,7 +69,12 @@ html.hide-body-move {
 }
 
 body {
-  background: linear-gradient(180deg, #f9fafb 0%, #e8e8e8 100%), #f9fafb;
+  // `no-repeat` belongs in the shorthand: a later `background-repeat` line
+  // would be overridden by any rule that re-declares the shorthand. Together
+  // with the root's min-height it stops the gradient from banding on short
+  // pages, and the colour fills anything the single gradient does not cover.
+  background: linear-gradient(180deg, #f9fafb 0%, #e8e8e8 100%) no-repeat
+    #f9fafb;
   color: #252626;
   transition: 0.3s;
 

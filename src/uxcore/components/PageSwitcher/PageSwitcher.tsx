@@ -1,16 +1,14 @@
-import cn from 'classnames';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { FC, useCallback, useEffect } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
+import ArcOfSelfIcon from '@uxcore/assets/icons/ArcOfSelfIcon';
 import UXCatIcon from '@uxcore/assets/icons/UXCatIcon';
 import UXCGIcon from '@uxcore/assets/icons/UXCGIcon';
 import UXCoreIcon from '@uxcore/assets/icons/UXCoreIcon';
 import UXCPIcon from '@uxcore/assets/icons/UXCPIcon';
-
 import Link from '@uxcore/components/NextLink';
+import type { TRouter } from '@uxcore/local-types/global';
+import cn from 'classnames';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { FC, useCallback, useEffect } from 'react';
 
 import styles from './PageSwitcher.module.scss';
 
@@ -23,6 +21,7 @@ const PageSwitcher: FC<TPageSwitcher> = ({ page }) => {
   const { locale } = router as TRouter;
   const bobUrl =
     'https://chatgpt.com/g/g-BtuSiGF18-bob-bias-trickery-and-deception-by-uxcore-io/';
+  const arcUrl = 'https://arc-of-self.com/?uxcore';
 
   const handleKeyPress = useCallback(
     (e: { shiftKey: any; ctrlKey: any; keyCode: number }) => {
@@ -114,6 +113,16 @@ const PageSwitcher: FC<TPageSwitcher> = ({ page }) => {
             <span className={styles.Description}>
               {locale === 'ru' ? 'Боб - ИИ Ассистент' : 'Bob - AI Assistant'}
             </span>
+          </a>
+        </Link>
+        <Link href={arcUrl} legacyBehavior>
+          <a
+            target={'_blank'}
+            rel={'noopener noreferrer'}
+            className={styles.Button}
+          >
+            <ArcOfSelfIcon />
+            <span className={styles.Description}>Arc of Self</span>
           </a>
         </Link>
       </div>
