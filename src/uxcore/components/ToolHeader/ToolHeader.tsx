@@ -354,6 +354,7 @@ const ToolHeader: FC<TToolHeader> = ({
                         })}
                         target={external ? '_blank' : '_self'}
                         rel={external ? 'noopener noreferrer' : undefined}
+                        aria-label={isArc ? itemLabel : undefined}
                         onClick={() => {
                           toggleUxcoreHeaderTooltip(false);
                           toggleUxcgHeaderTooltip(false);
