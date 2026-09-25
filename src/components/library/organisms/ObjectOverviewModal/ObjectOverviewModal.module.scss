@@ -363,6 +363,9 @@
 // the Shelf settings-trigger override). Compact pill, not a full-width field.
 .moveToTrigger {
   width: fit-content !important;
+  // The pill hugs its label, so a long shelf name would push it past the
+  // modal's edge; cap it and let the trigger's own ellipsis do the rest.
+  max-width: 100%;
   padding: 7px 12px !important;
   background: var(--white) !important;
   border: 1px solid var(--beige) !important;

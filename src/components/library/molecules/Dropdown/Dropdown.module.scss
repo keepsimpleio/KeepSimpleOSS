@@ -42,6 +42,12 @@
 
     .text {
       flex: 1;
+      // The trigger is a fixed-height row, so a long selected label has to
+      // truncate — wrapping would spill out of the bottom of the control.
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       text-align: left;
     }
 
@@ -98,6 +104,12 @@
   position: fixed;
   right: auto;
   z-index: 1500;
+  // `.menu` is `width: 100%`, which under `position: fixed` resolves against
+  // the viewport. Size to the longest option instead; the inline min-width
+  // keeps the menu at least as wide as the trigger (compact pill triggers
+  // would otherwise crush option labels into a one-word-per-line column) and
+  // the inline max-width keeps it inside the viewport.
+  width: max-content;
 }
 
 .optionWrapper {
@@ -136,6 +148,14 @@
   &.hasSubMenu {
     gap: 8px;
   }
+}
+
+// Shelf and library names can be a single long token ("Crime/Detective"), and
+// the menu is `overflow: visible` so an unbroken one paints over whatever sits
+// behind the dropdown. Break it instead.
+.optionLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .subArrow {
