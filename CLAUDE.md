@@ -184,3 +184,10 @@ order: never again.
   line. Its journal is `.internal-data-guard.log` (gitignored).
 - Public data must not sit under `public/` when the page can bundle it: a
   standalone file is an endpoint anyone can pull.
+- Nothing Wolf said goes to GitHub: no quoted chat, no `--go` words, no
+  private voice in a PR body, commit message, issue or review. Write
+  "authorized by Wolf on <date>" and stop. His words live in the
+  keepsimple-ctl journal and the private release journal only. On
+  2026-09-12 a PR body on this repository carried his verbatim message;
+  Wolf's order: never again. Edit history of a PR body stays public, so a
+  leaked revision must also be deleted from the history by an admin.
