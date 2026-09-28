@@ -345,6 +345,12 @@
   justify-self: end;
   max-width: 100%;
 
+  // On desktop the search summary hangs out of flow in the row gap, directly
+  // above this control. Keep 10px clear between that line and the meter.
+  @media (min-width: 769px) {
+    margin-top: 10px;
+  }
+
   @media (max-width: 768px) {
     justify-self: stretch;
   }
