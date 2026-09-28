@@ -540,17 +540,22 @@ export function Shelf(props: ShelfProps): JSX.Element {
       { shallow: true, scroll: false },
     );
   };
+  // Returns the navigation so the overview stays faded out until the route
+  // settles and unmounts it.
   const closeObject = () => {
     if (onShareRoute) {
       const rest = { ...router.query };
       delete rest.o;
-      void router.push({ pathname: router.pathname, query: rest }, undefined, {
-        shallow: true,
-        scroll: false,
-      });
-      return;
+      return router.push(
+        { pathname: router.pathname, query: rest },
+        undefined,
+        {
+          shallow: true,
+          scroll: false,
+        },
+      );
     }
-    void router.push(libraryPath(ownerUsername || urlUsername), undefined, {
+    return router.push(libraryPath(ownerUsername || urlUsername), undefined, {
       shallow: true,
       scroll: false,
     });
@@ -944,7 +949,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
     // close the overview so the user sees the move take effect.
     if (newShelfId != null && newShelfId !== from) {
       onObjectMoved?.(from, newShelfId, updated);
-      closeObject();
+      void closeObject();
       return;
     }
     // No need to track the object locally — it flows back through `objects` and
@@ -954,7 +959,7 @@ export function Shelf(props: ShelfProps): JSX.Element {
 
   const handleDeleted = (id: number) => {
     onObjectDeleted?.(homeShelfId(id), id);
-    closeObject();
+    void closeObject();
   };
 
   return (

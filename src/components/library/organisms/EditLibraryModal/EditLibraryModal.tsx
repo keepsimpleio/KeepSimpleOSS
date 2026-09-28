@@ -10,12 +10,14 @@ import {
 } from '@utils/library/schema/editLibrarySchema';
 import axios from 'axios';
 import classNames from 'classnames';
+import { useRouter } from 'next/router';
 import React, { JSX, useMemo, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import type { IUpdateLibraryPayload } from '@local-types/library/library';
 import type { IUpdateMeErrorBody } from '@local-types/library/user';
 
+import { libraryPath } from '@lib/library/libraryPath';
 import { richTextLength, toEditorHtml } from '@lib/library/richText';
 
 import { createLibrary } from '@api/library/createLibrary';
@@ -68,6 +70,7 @@ function readUsernameError(
 export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
   const { className, library, onClose, onSaved } = props;
   const { accountData, setAccountData } = useAuth();
+  const router = useRouter();
 
   const currentAvatarUrl = absoluteUrl(
     library?.attributes.avatar?.data?.attributes.url,
@@ -189,6 +192,36 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
     setAvatarError(null);
   };
 
+  // The library's address is the owner's username. After a rename the page
+  // moves to the new address, and the account takes the new name in the same
+  // beat the page takes it: an empty library has no row yet, so the address
+  // is the only thing proving it is mine, and a render where the name and the
+  // address disagree read as "No such library".
+  const followRenamedLibrary = async (
+    freshUser: NonNullable<typeof accountData>,
+  ) => {
+    let swapped = false;
+    const swap = () => {
+      if (swapped) return;
+      swapped = true;
+      setAccountData(freshUser);
+    };
+    const onLibraryPage = router.pathname.startsWith('/library/[username]');
+    if (onLibraryPage && freshUser.username) {
+      router.events.on('beforeHistoryChange', swap);
+      try {
+        await router.replace(libraryPath(freshUser.username), undefined, {
+          scroll: false,
+        });
+      } catch (error) {
+        console.error('EditLibraryModal could not follow the rename:', error);
+      } finally {
+        router.events.off('beforeHistoryChange', swap);
+      }
+    }
+    swap();
+  };
+
   const onSubmit = async (data: EditLibraryFormData) => {
     if (saveInFlightRef.current) return;
     saveInFlightRef.current = true;
@@ -284,7 +317,11 @@ export function EditLibraryModal(props: EditLibraryModalProps): JSX.Element {
       // reloaded by the caller via the resolved id — a direct GET by id, which
       // (unlike the owner relation-filter) reliably resolves a just-created row.
       const freshUser = await getUserInfo();
-      if (freshUser) setAccountData(freshUser);
+      if (freshUser && usernameChanged) {
+        await followRenamedLibrary(freshUser);
+      } else if (freshUser) {
+        setAccountData(freshUser);
+      }
       if (libraryId != null) onSaved?.(libraryId);
       savedPending.current = true;
       close();

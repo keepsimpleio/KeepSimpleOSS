@@ -189,7 +189,7 @@ export function ObjectOverviewModal(
       return;
     }
     if (deleteLoading || deleting) return;
-    onClose();
+    return onClose();
   }, [deleteLoading, deleting, onClose]);
 
   const { closeRef, close } = useModalClose(guardedOnClose);

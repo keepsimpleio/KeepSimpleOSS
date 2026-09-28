@@ -15,7 +15,7 @@ export interface ObjectOverviewModalProps {
    * Pass the *library owner*, not the viewer.
    */
   ownerUsername: string;
-  onClose: () => void;
+  onClose: () => void | Promise<unknown>;
   /**
    * Sibling objects on the same shelf — passed straight to the edit modal so
    * the reorder grid in step 2 can render the shelf's real contents.
