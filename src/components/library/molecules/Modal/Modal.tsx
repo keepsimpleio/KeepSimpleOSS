@@ -70,9 +70,20 @@ export function Modal(props: ModalProps): JSX.Element {
     // Fire the real close, then drop back to the open state. If onClose
     // unmounts us (the usual case) this re-render is discarded; if onClose was
     // a guarded no-op (e.g. a confirm dialog is open on top), we revert instead
-    // of getting stuck faded-out-but-mounted.
+    // of getting stuck faded-out-but-mounted. A close that navigates (the
+    // object overview leaves by URL) unmounts us only once the route settles,
+    // so it hands back its promise and we stay faded out until then: reverting
+    // at once drew the dialog again for a beat before it went.
+    let cancelled = false;
     const finish = () => {
-      onClose();
+      const pending = onClose();
+      if (pending && typeof pending.then === 'function') {
+        const revert = () => {
+          if (!cancelled) setIsClosing(false);
+        };
+        pending.then(revert, revert);
+        return;
+      }
       setIsClosing(false);
     };
 
@@ -85,11 +96,16 @@ export function Modal(props: ModalProps): JSX.Element {
 
     if (prefersReducedMotion) {
       finish();
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
 
     const timer = window.setTimeout(finish, CLOSE_ANIMATION_MS);
-    return () => window.clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, [isClosing, onClose]);
 
   const handleBackdropPointerDown = (
