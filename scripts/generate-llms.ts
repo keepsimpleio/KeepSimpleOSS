@@ -5,6 +5,8 @@ import * as https from 'https';
 import * as path from 'path';
 
 import { getLlmsMeta } from '../src/api/llmsMeta';
+import { DEFAULT_SEO } from '../src/constants/library/seo.config';
+import { libraryPath } from '../src/lib/library/libraryPath';
 
 dotenv.config({ path: path.join(process.cwd(), '.env'), override: true });
 dotenv.config({ path: path.join(process.cwd(), '.env.local'), override: true });
@@ -15,8 +17,15 @@ const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
 const DEFAULT_TITLE = 'KeepSimple';
 const DEFAULT_DESCRIPTION = 'Practical resources and articles from KeepSimple.';
 
+// The published file names live addresses, so it is read from the CMS that
+// serves them. `.env` follows whichever environment the working tree is
+// pointed at, and a run against staging writes staging's content under
+// production URLs; LLMS_STRAPI_URL is set above the env file for that reason.
 const STRAPI_BASE =
-  process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI || '';
+  process.env.LLMS_STRAPI_URL ||
+  process.env.STRAPI_URL ||
+  process.env.NEXT_PUBLIC_STRAPI ||
+  '';
 
 const seoDescriptions: Record<string, string> = {
   '/': 'KeepSimple home page.',
@@ -24,16 +33,20 @@ const seoDescriptions: Record<string, string> = {
   '/contributors': 'Meet the KeepSimple contributors.',
   '/company-management': 'Explore company management resources.',
   '/auth': 'Authentication page for KeepSimple.',
+  '/library': DEFAULT_SEO.description,
 };
 
+// public/ was flattened when UXCoreOSS was folded in. /llms.txt and
+// /llms-full.txt are served from the root of public/; a file under
+// public/keepsimple_/ is a second copy nothing reads.
 const MODE_CONFIG: Record<string, any> = {
   curated: {
-    outputFile: path.join(PUBLIC_DIR, 'keepsimple_', 'llms.txt'),
+    outputFile: path.join(PUBLIC_DIR, 'llms.txt'),
     slugLimit: 10,
     modeLabel: 'curated',
   },
   full: {
-    outputFile: path.join(PUBLIC_DIR, 'keepsimple_', 'llms-full.txt'),
+    outputFile: path.join(PUBLIC_DIR, 'llms-full.txt'),
     slugLimit: Infinity,
     modeLabel: 'full',
   },
@@ -165,7 +178,10 @@ const shouldSkipEntry = (entryName: string): boolean =>
 
 const isRouteFile = (fileName: string): boolean =>
   /\.(tsx|ts|jsx|js)$/.test(fileName) &&
-  !/^(404|500)\.(tsx|ts|jsx|js)$/.test(fileName);
+  !/^(404|500)\.(tsx|ts|jsx|js)$/.test(fileName) &&
+  // A sitemap is written for a crawler, not offered to a reader:
+  // library-sitemap.xml.ts is a page file that answers XML.
+  !/\.xml\.(tsx|ts|jsx|js)$/.test(fileName);
 
 const routeFromFilePath = (filePath: string): string | null => {
   const rel = path.relative(PAGES_DIR, filePath).replace(/\\/g, '/');
@@ -291,6 +307,125 @@ const applyDynamicExpansions = async ({ routes, modeConfig }: any) => {
   };
 };
 
+/**
+ * The libraries, offered to the machines that read llms.txt.
+ *
+ * A library is a page this script cannot see: `/library/[username]` is one
+ * route file standing for every reader who opens one. The sitemap lists them
+ * by asking Strapi, and so does this. The read is anonymous, which is what
+ * keeps a private library out: the endpoint answers a stranger with the
+ * public ones only.
+ */
+const fetchLibraryEntries = async (limit: number) => {
+  if (!STRAPI_BASE) return [];
+
+  try {
+    const data = await strapiGet(
+      'libraries?pagination[pageSize]=100&sort[0]=id:asc&populate[user]=true',
+    );
+    const rows = Array.isArray(data?.data) ? data.data : [];
+    const entries = rows
+      .map((row: any) => {
+        const attributes = row?.attributes ?? row ?? {};
+        const username = String(
+          attributes?.user?.data?.attributes?.username ?? '',
+        ).trim();
+
+        if (!username) return null;
+
+        // The site names Wolf's library after him; these lines say the same
+        // thing the page's own title does.
+        const isWolf = username.toLowerCase() === 'wolf';
+        const owner = isWolf ? 'Wolf Alexanyan' : username;
+
+        return {
+          route: libraryPath(username),
+          name: `${owner}'s Library`,
+          description: `${owner}'s library on KeepSimple${isWolf ? ', collected since 2007' : ''}: the books, videos and talks worth keeping, each with the note that explains why.`,
+        };
+      })
+      .filter(Boolean) as {
+      route: string;
+      name: string;
+      description: string;
+    }[];
+
+    console.log(`[expand] found ${entries.length} public libraries`);
+
+    return Number.isFinite(limit) ? entries.slice(0, limit) : entries;
+  } catch (err) {
+    console.log(`[expand] libraries skipped: ${(err as Error).message}`);
+    return [];
+  }
+};
+
+/**
+ * What the last run published, read back.
+ *
+ * Parts of this file are older than this script and it cannot rebuild them:
+ * the individual cognitive-bias and UXCG addresses were expanded by
+ * UXCoreOSS's own generator before the two repos merged. Without this, a run
+ * would quietly delete a hundred lines that still answer. Anything the run
+ * can describe wins; the rest is carried forward as it stands.
+ */
+const readPublishedEntries = async (
+  outputFile: string,
+  baseUrl: string,
+): Promise<Record<string, { name: string; description: string }>> => {
+  const origin = String(baseUrl || 'https://keepsimple.io').replace(/\/+$/, '');
+  const published: Record<string, { name: string; description: string }> = {};
+
+  try {
+    const raw = await fs.readFile(outputFile, 'utf8');
+
+    for (const line of raw.split('\n')) {
+      const match = line.match(/^- \[([^\]]*)\]\(([^)]+)\)(?::\s*(.*))?$/);
+
+      if (!match) continue;
+
+      const [, name, url, description] = match;
+
+      if (!url.startsWith(origin)) continue;
+
+      published[url.slice(origin.length) || '/'] = {
+        name,
+        description: (description || '').trim(),
+      };
+    }
+  } catch (error: any) {
+    console.log(`[carry] no previous output read: ${error?.message || error}`);
+  }
+
+  return published;
+};
+
+/**
+ * The heading of the last published file.
+ *
+ * `llms-meta` answers a token holder; an anonymous run falls back to a
+ * generic line, and writing that over the site's own positioning is a loss
+ * no one would notice until a model quoted it.
+ */
+const readPublishedHeading = async (
+  outputFile: string,
+): Promise<{ title: string; description: string } | null> => {
+  try {
+    const lines = (await fs.readFile(outputFile, 'utf8')).split('\n');
+    const title = lines
+      .find(line => line.startsWith('# '))
+      ?.slice(2)
+      .trim();
+    const description = lines
+      .find(line => line.startsWith('> '))
+      ?.slice(2)
+      .trim();
+
+    return title ? { title, description: description || '' } : null;
+  } catch {
+    return null;
+  }
+};
+
 // ─────────────────────────────────────────────
 // Build output
 // ─────────────────────────────────────────────
@@ -298,9 +433,12 @@ const applyDynamicExpansions = async ({ routes, modeConfig }: any) => {
 const routeToDescription = (
   route: string,
   dynamicLookup: Record<string, string>,
+  published: Record<string, { name: string; description: string }> = {},
 ): string => {
   if (seoDescriptions[route]) return stripHtml(seoDescriptions[route]);
   if (dynamicLookup[route]) return stripHtml(dynamicLookup[route]);
+  if (published[route]?.description)
+    return stripHtml(published[route].description);
   return 'No description available.';
 };
 
@@ -311,6 +449,8 @@ const buildContent = ({
   baseUrl,
   dynamicLookup,
   customEntries = [],
+  published = {},
+  nameLookup = {},
 }: any): string => {
   const lines: string[] = [];
   lines.push(`# ${title}`);
@@ -318,9 +458,9 @@ const buildContent = ({
   lines.push('## Pages & Resources');
 
   routes.forEach((route: string) => {
-    const name = formatPageName(route);
+    const name = nameLookup[route] || formatPageName(route);
     const absoluteUrl = toAbsoluteUrl(baseUrl, route);
-    const seoDescription = routeToDescription(route, dynamicLookup);
+    const seoDescription = routeToDescription(route, dynamicLookup, published);
     lines.push(`- [${name}](${absoluteUrl}): ${seoDescription}`);
   });
 
@@ -339,7 +479,11 @@ const buildContent = ({
 
 const run = async () => {
   const modeConfig = MODE_CONFIG[appConfig.mode];
-  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN || 'https://keepsimple.io';
+  // llms.txt is published for machines that will visit the addresses it
+  // names, so it always names the live site. NEXT_PUBLIC_DOMAIN follows
+  // whichever env file the run picked up, and a dev domain committed here
+  // sends every crawler to a preview host.
+  const baseUrl = process.env.LLMS_BASE_URL || 'https://keepsimple.io';
 
   if (!STRAPI_BASE) {
     console.log(
@@ -348,11 +492,24 @@ const run = async () => {
   }
 
   // Ensure NEXT_PUBLIC_STRAPI is set for getLlmsMeta
+  // getLlmsMeta reads NEXT_PUBLIC_STRAPI; it follows the same CMS the rest of
+  // the run does, or the site title comes from one place and the pages from
+  // another.
   process.env.NEXT_PUBLIC_STRAPI =
-    process.env.NEXT_PUBLIC_STRAPI || STRAPI_BASE;
+    STRAPI_BASE || process.env.NEXT_PUBLIC_STRAPI;
 
   console.log('[step 1] Fetching site meta...');
-  const { title, description } = await fetchSiteMeta();
+  const fetched = await fetchSiteMeta();
+  const publishedHeading =
+    fetched.title === DEFAULT_TITLE
+      ? await readPublishedHeading(modeConfig.outputFile)
+      : null;
+
+  if (publishedHeading) {
+    console.log('[meta] kept the published heading over the default');
+  }
+
+  const { title, description } = publishedHeading ?? fetched;
   console.log(`         title: "${title}"`);
 
   console.log('[step 2] Scanning src/pages...');
@@ -379,13 +536,49 @@ const run = async () => {
     dynamicLookup[entry.route] = entry.seoDescription;
   });
 
+  console.log('[step 4] Expanding libraries...');
+  const libraryEntries = await fetchLibraryEntries(modeConfig.slugLimit);
+  const nameLookup: Record<string, string> = {};
+  libraryEntries.forEach(entry => {
+    if (!expandedRoutes.includes(entry.route)) expandedRoutes.push(entry.route);
+    dynamicLookup[entry.route] = entry.description;
+    nameLookup[entry.route] = entry.name;
+  });
+
+  // `/library/[username]` is the route file behind every one of them; the
+  // expanded addresses replace it.
+  const withoutLibraryPlaceholder = expandedRoutes.filter(
+    (route: string) => !route.startsWith('/library/['),
+  );
+
+  const published = await readPublishedEntries(modeConfig.outputFile, baseUrl);
+  // Articles and libraries are rebuilt from Strapi on every run and obey the
+  // mode's cap; carrying an older selection forward would grow the file
+  // without end. What is carried is only what this run has no source for.
+  const carried = Object.entries(published)
+    .filter(([route]) => !withoutLibraryPlaceholder.includes(route))
+    .filter(
+      ([route]) =>
+        !route.startsWith('/library/') && !route.startsWith('/articles/'),
+    )
+    .map(([route, entry]) => ({ route, ...entry }));
+
+  if (carried.length) {
+    console.log(`[carry] kept ${carried.length} entries this run cannot build`);
+  }
+
   const content = buildContent({
     title,
     description,
-    routes: expandedRoutes.sort((a: string, b: string) => a.localeCompare(b)),
+    routes: withoutLibraryPlaceholder.sort((a: string, b: string) =>
+      a.localeCompare(b),
+    ),
     baseUrl,
     dynamicLookup,
+    published,
+    nameLookup,
     customEntries: [
+      ...carried,
       {
         name: 'See All Articles',
         route: '/articles',
@@ -393,6 +586,11 @@ const run = async () => {
           seoDescriptions['/articles'] ||
             'Browse all KeepSimple articles and categories.',
         ),
+      },
+      {
+        name: 'See All Libraries',
+        route: '/library',
+        description: stripHtml(DEFAULT_SEO.description),
       },
     ],
   });
