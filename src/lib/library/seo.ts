@@ -45,7 +45,7 @@ export function librarySeo(library?: StrapiLibraryEntry) {
       : `${displayName}'s Library | KeepSimple`
     : DEFAULT_SEO.title;
   const description = displayName
-    ? `${displayName}'s personal library${isWolf ? ', collected since 2007' : ''}. Includes personal notes and precise recommendations.`
+    ? `${displayName}'s library on KeepSimple${isWolf ? ', collected since 2007' : ''}: the books, videos and talks worth keeping, each with the note that explains why.`
     : DEFAULT_SEO.description;
   const imageOrigin =
     process.env.NEXT_PUBLIC_DOMAIN === 'https://staging.keepsimple.io'
@@ -59,8 +59,8 @@ export function librarySeo(library?: StrapiLibraryEntry) {
   const imageWidth = isWolf ? 1731 : username ? 1200 : 1920;
   const imageHeight = isWolf ? 909 : username ? 630 : 1280;
   const imageAlt = displayName
-    ? `${displayName}'s Library. Includes personal notes and precise recommendations.`
-    : DEFAULT_SEO.title;
+    ? `${displayName}'s Library on KeepSimple, with a note behind every entry.`
+    : DEFAULT_SEO.imageAlt;
   const url = `https://keepsimple.io${libraryPath(username)}`;
   const objects =
     attributes?.singleShelves?.data

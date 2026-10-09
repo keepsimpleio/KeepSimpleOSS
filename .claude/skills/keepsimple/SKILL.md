@@ -92,7 +92,7 @@ Use path aliases for cross-folder imports. Relative imports only within the same
 
 1. `forceConsistentCasingInFileNames: false` — wrong casing works locally, breaks in CI.
 2. `.env.example` has no docs — ask before assuming env values.
-3. `public/keepsimple_/llms-full-pages/` is generated — don't hand-edit.
+3. `public/llms-full-pages/` is generated — don't hand-edit.
 4. Some `index.ts` barrels are empty (0 bytes) — that's a bug, not a pattern.
 5. `_variables.scss` contains reusable class snippets, not SCSS variables despite the name.
 6. Production uses `assetPrefix: '/keepsimple_next'` — this only affects `_next/` assets, not `public/` paths.

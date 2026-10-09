@@ -1,23 +1,33 @@
 # Keep Simple | Cognitive Science & UX Leadership
 > Elevate your leadership with applied cognitive science. Explore behavioral psychology and cognitive frameworks designed for modern managers.
-
 ## Pages & Resources
 - [Home](https://keepsimple.io/): KeepSimple home page.
 - [Slug](https://keepsimple.io/[page]): No description available.
+- [Admin Copilot Sessions](https://keepsimple.io/admin/copilot-sessions): No description available.
+- [Admin Copilot Sessions Slug](https://keepsimple.io/admin/copilot-sessions/[sid]): No description available.
+- [Ai Atlas](https://keepsimple.io/ai-atlas): No description available.
 - [Articles](https://keepsimple.io/articles): Browse all KeepSimple articles and categories.
-- [Articles All About User Stories Brand New](https://keepsimple.io/articles/all-about-user-stories-brand-new): This article describes how to write user stories. The author uses real-world example based on the real feature developed for a major online platform.
+- [Articles Agent Orchestration For Career](https://keepsimple.io/articles/agent-orchestration-for-career): Stop using AI as a tool and start managing it as an agent. Learn why orchestrating multiple LLM agents is the essential career skill for 2026.
+- [Articles All About User Stories](https://keepsimple.io/articles/all-about-user-stories): This article describes how to write user stories. The author uses real-world example based on the real feature developed for a major online platform.
 - [Articles Career Path Of A Manager And A Few Universal Tips](https://keepsimple.io/articles/career-path-of-a-manager-and-a-few-universal-tips): The article summarizes what was described in all previous articles and what are the possible ways of a project manager's career development.
+- [Articles Friendship Explained](https://keepsimple.io/articles/friendship-explained): Learn how to quantify your relationships with the Friendship Index. A practical framework to measure loyalty, balance, and sacrifice in friendships.
 - [Articles Overengineering And Demo Readiness](https://keepsimple.io/articles/overengineering_and_demo_readiness): How to solve overengineering issues in engineering teams, and how to always be ready for important DEMOs and milestones.
-- [Articles Philosophies Methodologies And Frameworks](https://keepsimple.io/articles/philosophies-methodologies-and-frameworks): The article describes the fundamental differences between project management philosophies, methodologies, and frameworks.
+- [Articles Philosophies Methodologies And Frameworks](https://keepsimple.io/articles/philosophies-methodologies-and-frameworks): Learn the difference between a philosophy, a methodology, and a framework — and get a plain-English guide to choosing the right one for your project or team.
 - [Articles Scrum Framework Artifacts Rituals And Roles](https://keepsimple.io/articles/scrum-framework-artifacts-rituals-and-roles): This article describes all SCRUM Framework artifacts, rituals, and roles, including nuanced details such as the definition of Done, Increment, and others.
 - [Articles Software Development Life Cycles](https://keepsimple.io/articles/software-development-life-cycles): The article describes all actual software development life cycles (SDLCs), in particular Predictive, Iterative, Incremental, and Agile.
 - [Articles Summarize Like Your Job Depends On It](https://keepsimple.io/articles/summarize-like-your-job-depends-on-it): The article describes the importance of summarization, making quality executive summaries and its impact on career.
-- [Articles Technical Components Of The Project](https://keepsimple.io/articles/technical-components-of-the-project): A brief introduction of the main technical components and terms used in the infrastructure of any software project
-- [Articles What Is A Project](https://keepsimple.io/articles/what-is-a-project): The article describes what can be considered as a project.
 - [Articles Why Study Management](https://keepsimple.io/articles/why-study-management): This article describes the importance of management and why everyone should study management basics regardless of their specialty and interests.
 - [Auth](https://keepsimple.io/auth): Authentication page for KeepSimple.
+- [Auth Email Change](https://keepsimple.io/auth/email-change): No description available.
+- [Auth Magic Link](https://keepsimple.io/auth/magic-link): No description available.
 - [Company Management](https://keepsimple.io/company-management): Explore company management resources.
 - [Contributors](https://keepsimple.io/contributors): Meet the KeepSimple contributors.
+- [Library](https://keepsimple.io/library): Libraries built by readers: books, videos and talks, each with the note that explains why it mattered. Open your own and give it a public address.
+- [alinamarg's Library](https://keepsimple.io/library/alinamarg): alinamarg's library on KeepSimple: the books, videos and talks worth keeping, each with the note that explains why.
+- [itslikeimsleepwalking's Library](https://keepsimple.io/library/itslikeimsleepwalking): itslikeimsleepwalking's library on KeepSimple: the books, videos and talks worth keeping, each with the note that explains why.
+- [lemongrass's Library](https://keepsimple.io/library/lemongrass): lemongrass's library on KeepSimple: the books, videos and talks worth keeping, each with the note that explains why.
+- [Mary38's Library](https://keepsimple.io/library/mary38): Mary38's library on KeepSimple: the books, videos and talks worth keeping, each with the note that explains why.
+- [Wolf Alexanyan's Library](https://keepsimple.io/library/wolf): Wolf Alexanyan's library on KeepSimple, collected since 2007: the books, videos and talks worth keeping, each with the note that explains why.
 - [Tools](https://keepsimple.io/tools): No description available.
 - [Tools Longevity Protocol About Project](https://keepsimple.io/tools/longevity-protocol/about-project): No description available.
 - [Tools Longevity Protocol Environment](https://keepsimple.io/tools/longevity-protocol/environment): No description available.
@@ -28,14 +38,22 @@
 - [Tools Longevity Protocol Habits Supplements](https://keepsimple.io/tools/longevity-protocol/habits/supplements): No description available.
 - [Tools Longevity Protocol Habits Workout](https://keepsimple.io/tools/longevity-protocol/habits/workout): No description available.
 - [Tools Longevity Protocol Results](https://keepsimple.io/tools/longevity-protocol/results): No description available.
-- [See All Articles](https://keepsimple.io/articles): Browse all KeepSimple articles and categories.
-- [Auth](https://keepsimple.io/auth)
-- [Certificate](https://keepsimple.io/user/[userId]/certificate)
-- [User Profile](https://keepsimple.io/user/username)
+- [Tools Vibesuite](https://keepsimple.io/tools/vibesuite): No description available.
+- [User Slug](https://keepsimple.io/user/[userId]): No description available.
+- [User Slug Slug](https://keepsimple.io/user/[userId]/[personaId]): No description available.
+- [User Slug Certificate](https://keepsimple.io/user/[userId]/certificate): No description available.
 - [Uxcat](https://keepsimple.io/uxcat): First of its kind online test to measure and increase self-awareness
-- [Ongoing](https://keepsimple.io/uxcat/ongoing): First of its kind online test to measure and increase self-awareness
-- [Start Test](https://keepsimple.io/uxcat/start-test): First of its kind online test to measure and increase self-awareness
-- [Test Result](https://keepsimple.io/uxcat/test-result): First of its kind online test to measure and increase self-awareness
+- [Uxcat Ongoing](https://keepsimple.io/uxcat/ongoing): First of its kind online test to measure and increase self-awareness
+- [Uxcat Start Test](https://keepsimple.io/uxcat/start-test): First of its kind online test to measure and increase self-awareness
+- [Uxcat Test Result](https://keepsimple.io/uxcat/test-result): First of its kind online test to measure and increase self-awareness
+- [Uxcg](https://keepsimple.io/uxcg): An extensive knowledge base containing over 1,000 practical examples of applying cognitive biases in business - from idea generation to product launch
+- [Uxcg Slug](https://keepsimple.io/uxcg/[slug]): No description available.
+- [Uxcore](https://keepsimple.io/uxcore): Apply UX cognitive biases and behavioral patterns to improve product management and team leadership.
+- [Uxcore Api](https://keepsimple.io/uxcore-api): Here is the list of all available API details, including the ability to fetch data about all cognitive biases on the project.
+- [Uxcore Slug](https://keepsimple.io/uxcore/[slug]): No description available.
+- [Uxcp](https://keepsimple.io/uxcp): This tool helps to create a Persona using cognitive biases for sales, marketing, other business teams, and educational purposes.
+- [Uxcp Slug Slug Slug](https://keepsimple.io/uxcp/[name]/[hash]/[isTeamMember]): No description available.
+- [User Profile](https://keepsimple.io/user/username): 
 - [Why our company has reputation issue?](https://keepsimple.io/uxcg/why-our-company-is-having-reputation-issue): The following 7 cognitive biases can address this issue. Find the reason and learn how to secure your team's and company's future. Free and only at UX Core.
 - [Why users aren't happy with product quality?](https://keepsimple.io/uxcg/why-our-users-are-not-happy-with-product): The following 12 cognitive biases can address this issue. Find the reason and learn how to secure your team's and company's future. Free and only at UX Core.
 - [Why users don't use requested features?](https://keepsimple.io/uxcg/why-users-do-not-use-requested-features): The following 13 cognitive biases can address this issue. Find the reason and learn how to secure your team's and company's future. Free and only at UX Core.
@@ -46,7 +64,6 @@
 - [Why are users so sensitive to product changes?](https://keepsimple.io/uxcg/why-users-so-sensitive-to-product-changes): The following 10 cognitive biases can address this issue. Find the reason and learn how to secure your team's and company's future. Free and only at UX Core.
 - [Why do our users find our communication overwhelming?](https://keepsimple.io/uxcg/users-find-our-communication-overwhelming): The following 6 cognitive biases can address this issue. Find the reason and learn how to secure your team's and company's future. Free and only at UX Core.
 - [Why do users complain about the quality of our support?](https://keepsimple.io/uxcg/users-do-not-like-our-customer-support): The following 7 cognitive biases can address this issue. Find the reason and learn how to secure your team's and company's future. Free and only at UX Core.
-- [See All UXCG](https://keepsimple.io/uxcg): An extensive knowledge base containing over 1,000 practical examples of applying cognitive biases in business - from idea generation to product launch
 - [Availability heuristics](https://keepsimple.io/uxcore/1-availability-heuristics): Explore Availability Heuristics Bias in our UX Core project. Learn how this cognitive bias influences decision-making in product management and HR for free.
 - [Attentional bias](https://keepsimple.io/uxcore/2-attentional-bias): Discover attentional bias – a cognitive quirk shaping human focus. Learn how to leverage it in UX and HR for better decision-making. Explore at UX Core.
 - [Illusory truth effect](https://keepsimple.io/uxcore/3-illusory-truth-effect): "Elevate your management skills with an understanding of the illusory truth effect! Explore practical applications in HR and product management at UX Core."
@@ -57,6 +74,5 @@
 - [Frequency illusion](https://keepsimple.io/uxcore/8-frequency-illusion): Master Frequency Illusion Bias: Elevate UX and HR techniques through strategic utilization of cognitive biases. Learn practical applications at UX Core for free
 - [Empathy gap](https://keepsimple.io/uxcore/9-empathy-gap): Discover how the empathy gap can be used when developing a product or working in HR team. Harness cognitive bias for improved decision-making. Free at UX Core.
 - [Omission bias](https://keepsimple.io/uxcore/10-omission-bias): Explore omission bias: a cognitive inclination to favor inaction over action. Learn how to address it in product management and HR strategies. #UXCore
-- [See All UXCore](https://keepsimple.io/uxcore): Apply UX cognitive biases and behavioral patterns to improve product management and team leadership.
-- [Uxcore Api](https://keepsimple.io/uxcore-api): Here is the list of all available API details, including the ability to fetch data about all cognitive biases on the project.
-- [Uxcp](https://keepsimple.io/uxcp): This tool helps to create a Persona using cognitive biases for sales, marketing, other business teams, and educational purposes.
+- [See All Articles](https://keepsimple.io/articles): Browse all KeepSimple articles and categories.
+- [See All Libraries](https://keepsimple.io/library): Libraries built by readers: books, videos and talks, each with the note that explains why it mattered. Open your own and give it a public address.
