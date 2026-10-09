@@ -29,6 +29,10 @@ function load(file, mocks = {}) {
           return load(`src/constants/${id.slice(11)}.ts`, mocks);
         if (id.startsWith('@lib/'))
           return load(`src/lib/${id.slice(5)}.ts`, mocks);
+        // seo.ts reaches into @utils for the media URL resolver; without this
+        // the whole check died on its first import and the gate could not run.
+        if (id.startsWith('@utils/'))
+          return load(`src/utils/${id.slice(7)}.ts`, mocks);
         if (id.startsWith('.'))
           return load(path.resolve(path.dirname(file), `${id}.ts`), mocks);
         return require(id);
@@ -99,6 +103,26 @@ async function main() {
     "Wolf Alexanyan's personal library, collected since 2007. Includes personal notes and precise recommendations.",
   );
   assert(wolf.image.endsWith('/wolf-library-v1.png'));
+  // Credit and search, the rule Wolf set on 2026-09-12: his library is the one
+  // offered to search, and every library is signed with its owner's name in the
+  // same words the page shows.
+  const { isSearchableLibrary, ownerDisplayName } = load(
+    'src/lib/library/credit.ts',
+  );
+  assert(isSearchableLibrary('wolf'));
+  assert(isSearchableLibrary(' WOLF '));
+  for (const name of ['mary38', 'lemongrass', 'alinamarg', '', null])
+    assert(!isSearchableLibrary(name));
+  assert.equal(ownerDisplayName('wolf'), 'Wolf Alexanyan');
+  assert.equal(ownerDisplayName('mary38'), 'mary38');
+  assert.equal(ownerDisplayName(null), null);
+  // Field by field: objects built inside the vm carry that realm's prototype,
+  // so a strict deep comparison against a literal here never matches.
+  assert.equal(wolf.schema.author['@type'], 'Person');
+  assert.equal(wolf.schema.author.name, 'Wolf Alexanyan');
+  assert.equal(wolf.schema.author.url, 'https://keepsimple.io/library/wolf');
+  assert.equal(wolf.schema.creator.name, 'Wolf Alexanyan');
+  assert.equal(seo.schema.author.name, 'Reader');
   const originalDomain = process.env.NEXT_PUBLIC_DOMAIN;
   process.env.NEXT_PUBLIC_DOMAIN = 'https://staging.keepsimple.io';
   assert(librarySeo(entry).image.startsWith('https://staging.keepsimple.io/'));
@@ -205,7 +229,9 @@ async function main() {
     },
   });
   assert.equal((await api.getPublicLibrarySeo('reader')).title, seo.title);
-  assert.equal(calls.length, 2);
+  // The library list, the library itself, then its tags: the tag read joined
+  // the view when the page began server-rendering its right panel.
+  assert.deepEqual(calls, ['/api/libraries', '/api/libraries/2', '/api/tags']);
   const Generator = load('src/components/SeoGenerator/SeoGenerator.tsx', {
     'next/head': ({ children }) =>
       React.createElement(React.Fragment, null, children),
@@ -242,6 +268,34 @@ async function main() {
   assert(html.includes(seo.image));
   assert(!html.includes('Alexanyan'));
   assert(!html.includes('SECRET'));
+  assert(html.includes('content="index, follow"'));
+  // A library that is not offered to search keeps every other tag it had: the
+  // page is unchanged for a reader holding the link, and only the robots line
+  // turns it away.
+  const unlisted = renderToStaticMarkup(
+    React.createElement(Generator, {
+      strapiSEO: {
+        title: seo.title,
+        pageTitle: seo.title,
+        description: seo.description,
+      },
+      schemaOverride: seo.schema,
+      noIndex: true,
+      largeImage: true,
+      omitDefaultAuthor: true,
+      ogTags: {
+        ogTitle: seo.title,
+        ogDescription: seo.description,
+        ogType: 'website',
+        ogImage: {
+          data: { attributes: { url: '', staticUrl: seo.image } },
+        },
+      },
+    }),
+  );
+  assert(unlisted.includes('content="noindex, nofollow"'));
+  assert(unlisted.includes('rel="canonical"'));
+  assert(unlisted.includes(seo.image));
   const legacy = renderToStaticMarkup(
     React.createElement(Generator, {
       strapiSEO: {

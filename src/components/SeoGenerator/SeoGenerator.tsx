@@ -21,6 +21,12 @@ interface SeoGeneratorProps {
   createdDate?: string;
   isLongevityPage?: boolean;
   type?: string;
+  /**
+   * Keep this page out of search while it keeps every other tag it would
+   * normally carry. `forceNoIndex` below replaces the whole head with a
+   * robots line and a canonical; this one only decides the robots line.
+   */
+  noIndex?: boolean;
   forceNoIndex?: boolean;
   canonicalOverride?: string;
   preloadImages?: string[];
@@ -56,6 +62,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
   localizedSlug,
   isLongevityPage,
   type,
+  noIndex,
   forceNoIndex,
   canonicalOverride,
   preloadImages,
@@ -209,7 +216,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         ))}
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
         <meta name="theme-color" content="#1e2023" />
-        {pathname.includes('/user') ? (
+        {noIndex || pathname.includes('/user') ? (
           <meta name="robots" content={'noindex, nofollow'} />
         ) : (
           <meta
