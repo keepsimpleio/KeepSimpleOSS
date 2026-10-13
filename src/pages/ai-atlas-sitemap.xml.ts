@@ -20,11 +20,13 @@ const LOCALES = [
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const guide = await readStoredGuide();
-  const lastmod =
-    typeof guide?.generatedAt === 'string'
-      ? `<lastmod>${new Date(guide.generatedAt).toISOString()}</lastmod>`
-      : '';
+  /* generatedAt is pushed content: a value that is not a date only drops
+     lastmod, it never turns the sitemap into an error. */
+  const guide = await readStoredGuide().catch(() => null);
+  const modified = new Date(guide?.generatedAt ?? NaN);
+  const lastmod = Number.isNaN(modified.getTime())
+    ? ''
+    : `<lastmod>${modified.toISOString()}</lastmod>`;
   const alternates = (path: string) =>
     [
       ...LOCALES.map(
