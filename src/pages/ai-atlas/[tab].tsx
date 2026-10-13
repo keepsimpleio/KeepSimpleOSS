@@ -5,7 +5,7 @@ import AiAtlasPage, {
   TAB_SLUGS,
 } from '../ai-atlas';
 
-/* /ai-atlas/story and /ai-atlas/ladder: the Atlas page opened on one of its
+/* /ai-atlas/thesis and /ai-atlas/ladder: the Atlas page opened on one of its
    readings. Same guide, same words, its own address. */
 const TAB_BY_SLUG: Record<string, string> = Object.fromEntries(
   Object.entries(TAB_SLUGS).map(([tab, slug]) => [slug, tab]),

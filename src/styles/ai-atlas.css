@@ -2223,8 +2223,8 @@ body.darkTheme .ai-atlas-root .feature-modal__body::-webkit-scrollbar-thumb {
    ENVIRONMENT / SECURITY toggle, the ink fill sliding to the selected tab
    over 420ms. Each tab carries a line icon (a currentColor mask), and
    momiji leaves fall behind the unselected ones; they pause on hover, fade
-   out on the selected tab and are removed under reduced motion. The STORY
-   legend sits in the frame's top padding so no line of the story moves.
+   out on the selected tab and are removed under reduced motion. The THESIS
+   legend sits in the frame's top padding so no line of the thesis moves.
    Accepted by Wolf on docs-terminal on 2026-10-13. */
 .ai-atlas-root .atlas-tab {
   margin: 0;

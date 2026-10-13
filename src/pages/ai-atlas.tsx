@@ -869,10 +869,10 @@ type ViewMode = 'environment' | 'security';
 /* The header tabs: the map, and the two readings that sit beside it. */
 type Tab = 'atlas' | 'article' | 'ladder';
 const READING_TABS: Tab[] = ['article', 'ladder'];
-/* Each reading has its own address on keepsimple.io: /ai-atlas/story and
+/* Each reading has its own address on keepsimple.io: /ai-atlas/thesis and
    /ai-atlas/ladder. The map stays at /ai-atlas. */
 export const TAB_SLUGS: Record<string, string> = {
-  article: 'story',
+  article: 'thesis',
   ladder: 'ladder',
 };
 export const tabPath = (tab: Tab) =>
@@ -1272,7 +1272,7 @@ export function AiAtlasApp({
   initialView = 'environment',
   initialFocus = null,
   initialTab = 'atlas',
-  /* Story and Ladder words for this locale; English when not given. */
+  /* Thesis and Ladder words for this locale; English when not given. */
   readings = bundledReadings,
   /* On keepsimple.io a tab is its own page and this navigates to it. Without
      it (the Terminal's frame) the tabs switch in place and the hash holds

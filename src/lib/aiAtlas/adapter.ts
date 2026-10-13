@@ -31,7 +31,7 @@ export const PAGE_TEXT_DEFAULTS: Record<string, string> = {
   ringTerritoriesDesc: 'Every topic opens its own card.',
   metaLabel: 'TERMINAL DOCUMENTATION',
   tabAtlas: 'Atlas',
-  tabArticle: 'Story',
+  tabArticle: 'Thesis',
   tabLadder: 'Ladder',
   legendKey: 'Key thesis',
   legendSee: 'Product & business',

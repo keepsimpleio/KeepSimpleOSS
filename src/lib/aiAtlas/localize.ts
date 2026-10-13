@@ -5,7 +5,7 @@
    later shows up at once instead of disappearing.
 
    Translations: ru.json (map words, stage and system cards, mechanisms,
-   Wolf's card prose) and readings.ru.json (Story and Ladder). */
+   Wolf's card prose) and readings.ru.json (Thesis and Ladder). */
 
 type Fields = Record<string, unknown>;
 export type AtlasTranslation = {

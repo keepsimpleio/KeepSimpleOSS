@@ -23,10 +23,10 @@ import { stripGuide } from '@lib/aiAtlas/stripGuide';
 
 export const config = { api: { bodyParser: { sizeLimit: '1mb' } } };
 
-/* The map and its two readings (/ai-atlas/story, /ai-atlas/ladder), in
+/* The map and its two readings (/ai-atlas/thesis, /ai-atlas/ladder), in
    every locale: they share the pushed words. */
 const PAGES = ['', '/ru', '/hy'].flatMap(prefix =>
-  ['/ai-atlas', '/ai-atlas/story', '/ai-atlas/ladder'].map(
+  ['/ai-atlas', '/ai-atlas/thesis', '/ai-atlas/ladder'].map(
     path => prefix + path,
   ),
 );
