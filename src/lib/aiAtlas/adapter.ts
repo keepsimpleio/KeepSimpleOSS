@@ -35,6 +35,14 @@ export const PAGE_TEXT_DEFAULTS: Record<string, string> = {
   tabLadder: 'Ladder',
   legendKey: 'Key thesis',
   legendSee: 'Product & business',
+  rowInside: 'inside',
+  rowMechanism: 'mechanism',
+  rowResource: 'resource',
+  rowStage: 'stage',
+  stageStart: 'START',
+  stageEnd: 'END',
+  topicsLabel: 'Topics',
+  doctrineCaption: 'AUTHORITY & EVIDENCE',
   topicsPlaceholder: 'The Atlas',
   stagesAria: 'Project to Result, clockwise',
 };
@@ -93,7 +101,7 @@ export function adaptGuide(guide: any) {
       desc: describe(id, entry.detail || [entry.text]).join('\n\n'),
       rows: [
         ...(entry.children || []).map((child: string) => ({
-          k: 'inside',
+          k: text('rowInside'),
           v: (entries.get(child) as any)?.title || child,
           ref: child,
         })),
@@ -145,7 +153,7 @@ export function adaptGuide(guide: any) {
       title: step.title,
       desc: describe(id, [step.text]).join('\n\n'),
       rows: step.children.map((child: string) => ({
-        k: 'mechanism',
+        k: text('rowMechanism'),
         v: (entries.get(child) as any)?.title || child,
         ref: child,
       })),
@@ -155,7 +163,11 @@ export function adaptGuide(guide: any) {
       label: labels[index],
       sub:
         String(index + 1).padStart(2, '0') +
-        (index === 0 ? ' · START' : index === 5 ? ' · END' : ''),
+        (index === 0
+          ? ' · ' + text('stageStart')
+          : index === 5
+            ? ' · ' + text('stageEnd')
+            : ''),
       support: support[index].map(systemRef),
       diamond: 'red',
       theta: angles[index],
@@ -252,7 +264,7 @@ export function adaptGuide(guide: any) {
     title: text('ringDevEnvTitle'),
     desc: text('ringDevEnvDesc'),
     rows: ['agents', 'memory', 'tools', 'models'].map(id => ({
-      k: 'resource',
+      k: text('rowResource'),
       v: node(id).title,
       ref: dossiers['system-' + id] ? 'system-' + id : id,
     })),
@@ -260,13 +272,17 @@ export function adaptGuide(guide: any) {
   dossiers['ring:projects'] = {
     title: text('ringProjectsTitle'),
     desc: text('ringProjectsDesc'),
-    rows: projects.map((p: any) => ({ k: 'stage', v: p.label, ref: p.id })),
+    rows: projects.map((p: any) => ({
+      k: text('rowStage'),
+      v: p.label,
+      ref: p.id,
+    })),
   };
   dossiers['ring:territories'] = {
     title: text('ringTerritoriesTitle'),
     desc: text('ringTerritoriesDesc'),
     rows: guide.entries.map((e: any) => ({
-      k: 'mechanism',
+      k: text('rowMechanism'),
       v: e.title,
       ref: e.id,
     })),

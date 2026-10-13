@@ -877,7 +877,7 @@ export const TAB_SLUGS: Record<string, string> = {
 };
 export const tabPath = (tab: Tab) =>
   tab === 'atlas' ? '/ai-atlas' : '/ai-atlas/' + TAB_SLUGS[tab];
-const readings = readingsData as Readings;
+const bundledReadings = readingsData as Readings;
 
 function DoctrinePanel({ t }: { t: T }) {
   return (
@@ -887,7 +887,7 @@ function DoctrinePanel({ t }: { t: T }) {
       </span>
       <div className="terminal-doctrine" aria-hidden="true">
         <span>守</span>
-        <small>AUTHORITY &amp; EVIDENCE</small>
+        <small>{t.doctrineCaption}</small>
       </div>
     </div>
   );
@@ -1272,6 +1272,8 @@ export function AiAtlasApp({
   initialView = 'environment',
   initialFocus = null,
   initialTab = 'atlas',
+  /* Story and Ladder words for this locale; English when not given. */
+  readings = bundledReadings,
   /* On keepsimple.io a tab is its own page and this navigates to it. Without
      it (the Terminal's frame) the tabs switch in place and the hash holds
      the tab. */
@@ -2159,7 +2161,7 @@ export function AiAtlasApp({
             )}
             <ViewToggle mode={viewMode} setMode={setViewMode} t={t} />
             <label className="topic-picker">
-              Topics
+              {t.topicsLabel}
               <select
                 value={focusedNode || ''}
                 onChange={e => {
@@ -2210,9 +2212,11 @@ export function AiAtlasApp({
 
 export default function AiAtlasPage({
   guide,
+  readings: localReadings = null,
   tab = 'atlas',
 }: {
   guide: any;
+  readings?: Readings | null;
   tab?: Tab;
 }) {
   const router = useRouter();
@@ -2251,6 +2255,7 @@ export default function AiAtlasPage({
           key={tab}
           initialGuide={guide}
           initialTab={tab}
+          readings={localReadings || undefined}
           onTabChange={goTo}
         />
       </div>
@@ -2258,13 +2263,28 @@ export default function AiAtlasPage({
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const { readStoredGuide } = await import('@lib/aiAtlas/store');
   const { stripGuide } = await import('@lib/aiAtlas/stripGuide');
   /* A stored guide is checked again against the adapter this build
      ships; one it can no longer draw falls back to the bundled guide. */
   const stored = stripGuide(await readStoredGuide());
-  const guide = 'guide' in stored ? stored.guide : bundledGuide;
+  const english = 'guide' in stored ? stored.guide : bundledGuide;
+  /* Russian replaces the words and keeps the structure; Armenian reads the
+     English Atlas. */
+  if (locale === 'ru') {
+    const { localizeGuide } = await import('@lib/aiAtlas/localize');
+    const ru = (await import('@lib/aiAtlas/ru.json')).default;
+    const ruReadings = (await import('@lib/aiAtlas/readings.ru.json')).default;
+    return {
+      props: {
+        guide: localizeGuide(english, ru as any),
+        readings: ruReadings,
+      },
+      revalidate: 300,
+    };
+  }
+  const guide = english;
   /* The push regenerates the page at once; the timer only covers a
      redeploy, whose build carries the bundled guide until it rolls. */
   return { props: { guide }, revalidate: 300 };

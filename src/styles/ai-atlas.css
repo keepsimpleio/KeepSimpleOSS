@@ -3600,3 +3600,12 @@ body.darkTheme .ai-atlas-root .rd .d-tile.mem text {
 body.darkTheme .ai-atlas-root .rd .d-tile rect {
   filter: none;
 }
+
+/* At 400px and below a Russian label (ЛЕСТНИЦА) is wider than its third of
+   the switch at the phone spacing; the tighter tracking keeps it whole. */
+@media (max-width: 400px) {
+  .ai-atlas-root .atlas-tabs .atlas-tab {
+    padding: 12px 4px;
+    letter-spacing: 0.08em;
+  }
+}
