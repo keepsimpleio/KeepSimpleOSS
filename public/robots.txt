@@ -21,6 +21,8 @@ Disallow: /hy/all-about-user-stories/
 Disallow: /hy/client-dev-company-workflow-birds-eye-view/
 Disallow: /hy/career-path-of-a-manager-and-a-few-universal-tips/
 Disallow: /hy/overengineering_and_demo_readiness/
+Disallow: /hy/ai-atlas
+Disallow: /hy/ai-atlas/
 Disallow: /articles/[page]
 Disallow: /uxcore_next/
 

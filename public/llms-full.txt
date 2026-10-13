@@ -51,7 +51,7 @@ Where you stand with AI agents and what to learn next: 16 rungs from chat to Cla
 
 #### 0. Chat
 
-*You ask, it answers. It talks, you act.*
+_You ask, it answers. It talks, you act._
 
 - Wrong perspective: It knows the answer.
 - Right perspective: It predicts a likely answer, and a likely answer can be wrong.
@@ -64,11 +64,12 @@ An LLM is a compressed statistical model of language. It predicts the next piece
 Most LLM users are here. This is important to understand, because these are the people LLM companies actually build their features for.
 
 Tools:
+
 - ChatGPT, Claude or Gemini, in the browser or on the phone
 
 #### 1. Agent
 
-*You let it run commands on its own.*
+_You let it run commands on its own._
 
 - Wrong perspective: AI is something I ask for advice.
 - Right perspective: AI is something I hand work to.
@@ -85,13 +86,14 @@ From here two things grow in parallel. One is its mind: memory, context, judgmen
 Connect it to your calendar through an MCP server, and it books the meeting itself instead of telling you how.
 
 Tools:
+
 - Claude Code, Codex or another vendor’s command-line agent
 - A terminal with permission to act
 - Git
 
 #### 2. Standing instructions
 
-*The file it reads every time.*
+_The file it reads every time._
 
 - Wrong perspective: It remembers what I told it last time.
 - Right perspective: It knows only what is written down for it.
@@ -102,12 +104,13 @@ You find CLAUDE.md, the instruction file the agent reads every time you start it
 Later you learn there are two of them. The global one says who the agent always is, and the project one says what this project needs.
 
 Tools:
+
 - CLAUDE.md for Claude Code
 - AGENTS.md for Codex
 
 #### 3. Context rot
 
-*You keep adding to the file and the model gets dumber.*
+_You keep adding to the file and the model gets dumber._
 
 - Wrong perspective: The more I give it, the smarter it gets.
 - Right perspective: Past a point, more context makes it dumber.
@@ -121,7 +124,7 @@ An agent is only as honest as its context, so you learn to keep the file tight, 
 
 #### 4. The question
 
-*One goal per request, with everything that goal needs.*
+_One goal per request, with everything that goal needs._
 
 - Wrong perspective: A bad answer means a weak model.
 - Right perspective: A bad answer usually means a bad question.
@@ -133,7 +136,7 @@ An LLM works with meaning the way a person does, so how you frame the question c
 
 #### 5. Evals
 
-*You stop guessing and start measuring.*
+_You stop guessing and start measuring._
 
 - Wrong perspective: It looks right, so it works.
 - Right perspective: Nothing works until a test says so.
@@ -146,13 +149,14 @@ Almost everyone skips this step, and this is where you start measuring instead o
 Here you also bring in a Judge agent, a second model whose job is to check the first one. It can be your QA agent, or in my case, The Order. The idea is to automate your evaluation.
 
 Tools:
+
 - The test runners you already use
 - A Judge agent
 - Scripts that read the output and say pass or fail
 
 #### 6. Benchmarks
 
-*The same task on another model, another vendor.*
+_The same task on another model, another vendor._
 
 - Wrong perspective: I found my model.
 - Right perspective: The best model for my task changes every few months.
@@ -163,6 +167,7 @@ You run your own task on models from different vendors and compare speed, cost a
 Picking the wrong model can be a costly mistake, and from inside one chat you will never see it.
 
 Tools:
+
 - A subscription or an API key per vendor
 - One script that sends the same prompt to each
 - Your evals from LVL 5 as the score
@@ -171,7 +176,7 @@ Tools:
 
 #### 7. Decomposition
 
-*One context window runs out, so you split the work into several runs.*
+_One context window runs out, so you split the work into several runs._
 
 - Wrong perspective: One smart agent can do the whole thing.
 - Right perspective: A big problem is a chain of small runs.
@@ -182,13 +187,14 @@ The task no longer fits into one context window, so you cut it into subtasks. Ea
 You feel the cost right away: handoffs between agents, and drift away from the goal. Over time you learn to split only when the work does not fit one context window.
 
 Tools:
+
 - Subagents, which are agents your agent starts for one piece of the work
 - Task queues
 - Plain files passed from one run to the next
 
 #### 8. Context routing
 
-*Who gets which part of the context, and who never sees it.*
+_Who gets which part of the context, and who never sees it._
 
 - Wrong perspective: Give every agent everything, just in case.
 - Right perspective: What a run does not see cannot mislead it.
@@ -199,13 +205,14 @@ Each run gets what its step needs: the task description, the previous output, th
 Up to LVL 11 you are the one who decides this for every step, so the orchestrator is you. At LVL 12 a program takes over that role.
 
 Tools:
+
 - A list per step of what the run receives
 - Inputs it can read but not change
 - A rule for what a run may write and where
 
 #### 9. Evals at every step
 
-*And one on the whole chain.*
+_And one on the whole chain._
 
 - Wrong perspective: I check the result at the end.
 - Right perspective: Every step needs its own check, or the first mistake spreads through the chain.
@@ -216,11 +223,12 @@ A mistake in the first run becomes a fact for every run after it. So each step g
 Orchestration without evals at each step is a delusion at scale. A step that fails its eval does not pass its output on.
 
 Tools:
+
 - The same evals from LVL 5, now placed between runs
 
 #### 10. Code over model
 
-*You tear down half of what you built.*
+_You tear down half of what you built._
 
 - Wrong perspective: More AI makes the system better.
 - Right perspective: Wherever a step is predictable, code does it better than a model.
@@ -233,6 +241,7 @@ Code is cheaper and gives the same output every time, and you test it like any o
 A lean core is easier to manage and, importantly, to trust.
 
 Tools:
+
 - Ordinary functions
 - Schedulers
 - Validation scripts
@@ -240,7 +249,7 @@ Tools:
 
 #### 11. Memory
 
-*What survives a session and is shared between runs.*
+_What survives a session and is shared between runs._
 
 - Wrong perspective: Each session is a fresh start.
 - Right perspective: What the system learned has to outlive the session, if it passed an eval.
@@ -251,13 +260,14 @@ You find MEMORY.md, memory that outlives one context window and is shared betwee
 Only what passed an eval goes into memory, and a failure is stored as a failure. Work accumulates, and smart-in-the-moment turns into smart-over-time.
 
 Tools:
+
 - A memory file per agent
 - A shared store every run can search
 - Full-text search over past sessions
 
 #### 12. Agents call each other
 
-*An orchestrator picks who wakes, hands off, collects.*
+_An orchestrator picks who wakes, hands off, collects._
 
 - Wrong perspective: I have to drive every step myself.
 - Right perspective: My job is the decisions, and the agents handle the handoffs.
@@ -268,13 +278,14 @@ You write an onboarding protocol that tells a new agent who it is and how it joi
 One drafts, the Judge pushes back, the first one revises, and it all settles against your evals. You step in only for the real decisions.
 
 Tools:
+
 - A list of agents and how to reach each
 - A message format they all use
 - An orchestrator with a cap on how many times a task can bounce between agents
 
 #### 13. Autonomy
 
-*Your agents run on their own.*
+_Your agents run on their own._
 
 - Wrong perspective: My work is doing the task.
 - Right perspective: My work is shaping tasks the system can deliver without me.
@@ -287,13 +298,14 @@ Most of your own time goes into shaping a task that fits your system, so it deli
 Without you, no agent spends money, deletes anything or publishes anything.
 
 Tools:
+
 - Schedules
 - Watchers that alert you
 - Logs, so every mechanism leaves a trail you can read in the morning
 
 #### 14. Departments
 
-*Teams of agents, each with its own discipline.*
+_Teams of agents, each with its own discipline._
 
 - Wrong perspective: I run a set of agents.
 - Right perspective: I run something closer to a company.
@@ -307,7 +319,7 @@ Next you bring in a product manager agent that builds whole projects overnight u
 
 #### 15. ???
 
-*One day.*
+_One day._
 
 At that point you have stopped renting a model to talk to and started owning the system around it.
 

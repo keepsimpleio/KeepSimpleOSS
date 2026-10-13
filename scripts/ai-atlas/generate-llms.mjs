@@ -44,8 +44,7 @@ const LANGS = {
     mapName: 'Карта',
   },
 };
-const runs = rs =>
-  rs.map(r => (r.m === 'key' ? `**${r.t}**` : r.t)).join('');
+const runs = rs => rs.map(r => (r.m === 'key' ? `**${r.t}**` : r.t)).join('');
 const plain = rs => rs.map(r => r.t).join('');
 
 const pageUrl = (lang, p) => `${ORIGIN}${LANGS[lang].prefix}${p}`;
@@ -83,14 +82,14 @@ function ladderMd(lang) {
   for (const stage of stages) {
     out.push(`## ${stage.label}`, '');
     for (const r of rungs.filter(x => x.stage === stage.id)) {
-      out.push(`### ${r.n}. ${r.title}`, '', `*${r.sub}*`, '');
+      out.push(`### ${r.n}. ${r.title}`, '', `_${r.sub}_`, '');
       if (r.was) out.push(`- ${perspective.was}: ${r.was}`);
       if (r.think) out.push(`- ${perspective.think}: ${r.think}`);
       if (r.skill) out.push(`- ${tracks.skill}: ${r.skill}`);
       if (r.was || r.think || r.skill) out.push('');
       for (const t of r.text || []) out.push(t, '');
       if (r.tools?.length)
-        out.push(`${toolsLabel}:`, ...r.tools.map(t => `- ${t}`), '');
+        out.push(`${toolsLabel}:`, '', ...r.tools.map(t => `- ${t}`), '');
     }
   }
   out.push(closing, '');
@@ -143,10 +142,7 @@ const targets = [
   [path.join(pagesDir, 'ladder.md'), () => ladderMd('en')],
   [path.join(pagesDir, 'ru', 'thesis.md'), () => thesisMd('ru')],
   [path.join(pagesDir, 'ru', 'ladder.md'), () => ladderMd('ru')],
-  [
-    path.join(ROOT, 'public', 'llms.txt'),
-    old => withBlock(old, indexBlock()),
-  ],
+  [path.join(ROOT, 'public', 'llms.txt'), old => withBlock(old, indexBlock())],
   [
     path.join(ROOT, 'public', 'llms-full.txt'),
     old => withBlock(old, fullBlock()),
