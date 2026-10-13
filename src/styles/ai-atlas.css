@@ -2219,45 +2219,264 @@ body.darkTheme .ai-atlas-root .feature-modal__body::-webkit-scrollbar-thumb {
    so the dark theme follows: one red, Atlas blue for the product
    side, gold for the human side, EB Garamond and JetBrains Mono.
    ============================================================ */
-.ai-atlas-root .atlas-tabs {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 22px;
-}
+/* Header tabs: an ink-framed switch in the language of the rail's
+   ENVIRONMENT / SECURITY toggle, the ink fill sliding to the selected tab
+   over 420ms. Each tab carries a line icon (a currentColor mask), and
+   momiji leaves fall behind the unselected ones; they pause on hover, fade
+   out on the selected tab and are removed under reduced motion. The STORY
+   legend sits in the frame's top padding so no line of the story moves.
+   Accepted by Wolf on docs-terminal on 2026-10-13. */
 .ai-atlas-root .atlas-tab {
   margin: 0;
-  padding: 0;
   border: 0;
   background: none;
-  font: inherit;
-  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--ink-3);
   cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 6px;
-  transition:
-    color 240ms cubic-bezier(0.4, 0, 0.2, 1),
-    text-decoration-color 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-.ai-atlas-root .atlas-tab:hover {
-  color: var(--ink);
+
+.ai-atlas-root .doc-header .header-left {
+  align-items: center;
 }
-.ai-atlas-root .atlas-tab[aria-pressed='true'] {
-  color: var(--ink);
+.ai-atlas-root .atlas-tabs {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0;
+  margin-left: 16px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  isolation: isolate;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.ai-atlas-root .atlas-tabs::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / 3);
+  height: 100%;
+  background: var(--ink-fill, var(--ink));
+  z-index: 0;
+  transition: transform 420ms cubic-bezier(0.5, 0.05, 0.2, 1);
+}
+.ai-atlas-root
+  .atlas-tabs:has(.atlas-tab:nth-child(2)[aria-pressed='true'])::before {
+  transform: translateX(100%);
+}
+.ai-atlas-root
+  .atlas-tabs:has(.atlas-tab:nth-child(3)[aria-pressed='true'])::before {
+  transform: translateX(200%);
+}
+.ai-atlas-root .atlas-tabs .atlas-tab {
+  position: relative;
+  z-index: 1;
+  padding: 12px 32px;
+  font-family: var(--mono);
+  font-size: 16px;
   font-weight: 600;
-  text-decoration-color: var(--red);
+  line-height: 24px;
+  letter-spacing: 0.22em;
+  text-align: center;
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    color 320ms ease,
+    background-color 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-.ai-atlas-root .atlas-tab:focus-visible {
+.ai-atlas-root .atlas-tabs .atlas-tab + .atlas-tab {
+  border-left: 1px solid var(--ink);
+}
+.ai-atlas-root .atlas-tabs .atlas-tab:hover {
+  background: var(--paper-2, rgba(42, 42, 42, 0.08));
+}
+.ai-atlas-root .atlas-tabs .atlas-tab[aria-pressed='true'] {
+  color: var(--paper);
+  background: transparent;
+}
+.ai-atlas-root .atlas-tabs .atlas-tab:focus-visible {
   outline: 2px solid var(--red);
-  outline-offset: 4px;
-  border-radius: var(--r);
+  outline-offset: -4px;
+}
+@media (max-width: 640px) {
+  .ai-atlas-root .atlas-tabs {
+    display: grid;
+    width: 100%;
+    margin: 16px 0 0;
+  }
+  .ai-atlas-root .atlas-tabs .atlas-tab {
+    padding: 12px 8px;
+    letter-spacing: 0.14em;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ai-atlas-root .atlas-tab {
+  .ai-atlas-root .atlas-tabs::before,
+  .ai-atlas-root .atlas-tabs .atlas-tab {
     transition: none;
+  }
+}
+
+.ai-atlas-root .atlas-tabs .atlas-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.ai-atlas-root .atlas-tabs .atlas-tab::before {
+  content: '';
+  flex: none;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask: var(--tab-ico) center/contain no-repeat;
+  mask: var(--tab-ico) center/contain no-repeat;
+  transform-origin: 50% 100%;
+}
+.ai-atlas-root .atlas-tabs .atlas-tab:nth-child(1) {
+  --tab-ico: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22square%22%20stroke-linejoin%3D%22miter%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%224.5%22%2F%3E%3Cpath%20d%3D%22M12%201.5v4M12%2018.5v4M1.5%2012h4M18.5%2012h4%22%2F%3E%3C%2Fsvg%3E');
+}
+.ai-atlas-root .atlas-tabs .atlas-tab:nth-child(2) {
+  --tab-ico: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22square%22%20stroke-linejoin%3D%22miter%22%3E%3Cpath%20d%3D%22M5%202.5h10l4%204v15H5z%22%2F%3E%3Cpath%20d%3D%22M15%202.5v4h4M8.5%2011h7M8.5%2014.5h7M8.5%2018h4.5%22%2F%3E%3C%2Fsvg%3E');
+}
+.ai-atlas-root .atlas-tabs .atlas-tab:nth-child(3) {
+  --tab-ico: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22square%22%20stroke-linejoin%3D%22miter%22%3E%3Cpath%20d%3D%22M7%202v20M17%202v20M7%206h10M7%2010.5h10M7%2015h10M7%2019.5h10%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.ai-atlas-root .atlas-tabs .atlas-tab {
+  overflow: hidden;
+}
+.ai-atlas-root .atlas-tabs .tab-leaves {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ai-atlas-root .atlas-tabs .atlas-tab[aria-pressed='true'] .tab-leaves {
+  opacity: 0;
+}
+.ai-atlas-root .atlas-tabs .tab-leaf {
+  position: absolute;
+  top: 0;
+  display: block;
+  animation-name: atlas-leaf-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.ai-atlas-root .atlas-tabs .tab-leaf i {
+  display: block;
+  -webkit-mask: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%201l1.6%204.6%203.1-2.1-.6%204.4%204.6-1.2-2.5%203.8%204.3%201.6-4.3%201.9%202%203.4-4.2-.9-.5%203.8-2.7-2.7-.3%206.3h-1l-.3-6.3-2.7%202.7-.5-3.8-4.2.9%202-3.4-4.3-1.9%204.3-1.6-2.5-3.8%204.6%201.2-.6-4.4%203.1%202.1z%22%2F%3E%3C%2Fsvg%3E')
+    center/contain no-repeat;
+  mask: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%201l1.6%204.6%203.1-2.1-.6%204.4%204.6-1.2-2.5%203.8%204.3%201.6-4.3%201.9%202%203.4-4.2-.9-.5%203.8-2.7-2.7-.3%206.3h-1l-.3-6.3-2.7%202.7-.5-3.8-4.2.9%202-3.4-4.3-1.9%204.3-1.6-2.5-3.8%204.6%201.2-.6-4.4%203.1%202.1z%22%2F%3E%3C%2Fsvg%3E')
+    center/contain no-repeat;
+  animation-name: atlas-leaf-sway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+.ai-atlas-root .atlas-tabs .atlas-tab:hover .tab-leaf,
+.ai-atlas-root .atlas-tabs .atlas-tab:hover .tab-leaf i {
+  animation-play-state: paused;
+}
+@keyframes atlas-leaf-fall {
+  0% {
+    transform: translate(0, -16px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--leaf-drift), 64px);
+    opacity: 0;
+  }
+}
+@keyframes atlas-leaf-sway {
+  0% {
+    transform: translateX(-6px) rotate(calc(var(--leaf-spin) * -1));
+  }
+  100% {
+    transform: translateX(6px) rotate(var(--leaf-spin));
+  }
+}
+@media (max-width: 640px) {
+  .ai-atlas-root .atlas-tabs .atlas-tab {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .ai-atlas-root .atlas-tabs .atlas-tab::before {
+    width: 16px;
+    height: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-atlas-root .atlas-tabs .tab-leaves {
+    display: none;
+  }
+}
+
+.ai-atlas-root .rd .rd-legend {
+  position: absolute;
+  top: 16px;
+  right: 48px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  pointer-events: none;
+  animation: rd-legend-in 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.ai-atlas-root .rd .rd-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.ai-atlas-root .rd .rd-legend-item::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  background: var(--key);
+}
+.ai-atlas-root .rd .rd-legend-see::before {
+  background: var(--see);
+}
+@keyframes rd-legend-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 640px) {
+  .ai-atlas-root .rd .rd-thesis {
+    padding-top: 56px;
+  }
+  .ai-atlas-root .rd .rd-legend {
+    top: 20px;
+    left: 16px;
+    right: 16px;
+    gap: 16px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-atlas-root .rd .rd-legend {
+    animation: none;
   }
 }
 
@@ -2342,7 +2561,7 @@ body.darkTheme .ai-atlas-root .feature-modal__body::-webkit-scrollbar-thumb {
 }
 @media (max-width: 640px) {
   .ai-atlas-root .rd .rd-thesis {
-    padding: var(--sp-3) var(--sp-2);
+    padding: 56px var(--sp-2) var(--sp-3);
   }
   .ai-atlas-root .rd .lead {
     font-size: var(--fs-para);
@@ -2948,7 +3167,7 @@ html:has(.ai-atlas-root .rd .l-modal[open]) {
 }
 @media (max-width: 480px) {
   .ai-atlas-root .rd .rd-thesis {
-    padding: var(--sp-2);
+    padding: 56px var(--sp-2) var(--sp-2);
   }
 }
 .ai-atlas-root .rd .decomp {
