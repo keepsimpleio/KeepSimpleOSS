@@ -9,6 +9,8 @@ import React, {
 
 import { adaptGuide, copy, PAGE_TEXT_DEFAULTS } from '@lib/aiAtlas/adapter';
 import bundledGuide from '@lib/aiAtlas/guide.json';
+import { ArticleView, LadderView, Readings } from '@lib/aiAtlas/readings';
+import readingsData from '@lib/aiAtlas/readings.json';
 import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
 
 import SeoGenerator from '@components/SeoGenerator';
@@ -858,6 +860,10 @@ function InkConsume() {
 }
 
 type ViewMode = 'environment' | 'security';
+/* The header tabs: the map, and the two readings that sit beside it. */
+type Tab = 'atlas' | 'article' | 'ladder';
+const READING_TABS: Tab[] = ['article', 'ladder'];
+const readings = readingsData as Readings;
 
 function DoctrinePanel({ t }: { t: T }) {
   return (
@@ -1261,6 +1267,24 @@ export function AiAtlasApp({
   const [hoverNode, setHoverNode] = useState<string | null>(null);
   const [linkHoverNode, setLinkHoverNode] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>(initialView);
+  const [tab, setTab] = useState<Tab>('atlas');
+  const tabPending = useRef(false);
+  const changeTab = (next: Tab) => {
+    if (next === tab || tabPending.current) return;
+    tabPending.current = true;
+    const stage = document.querySelector('.view-stage');
+    stage?.classList.add('is-leaving');
+    setTimeout(
+      () => {
+        setTab(next);
+        setFocusedNode(null);
+        stage?.classList.remove('is-leaving');
+        tabPending.current = false;
+        window.scrollTo({ top: 0 });
+      },
+      matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 240,
+    );
+  };
   const hasHover = useHasHover();
 
   /* mark <body> while AI Atlas is mounted so the global navbar can
@@ -1291,6 +1315,12 @@ export function AiAtlasApp({
     if (typeof window === 'undefined') return;
     const sync = () => {
       const hash = window.location.hash.replace(/^#/, '').toLowerCase();
+      if ((READING_TABS as string[]).includes(hash)) {
+        setTab(hash as Tab);
+        setFocusedNode(null);
+        return;
+      }
+      setTab('atlas');
       if (hash === 'security') {
         setViewMode('security');
         setFocusedNode(null);
@@ -1315,14 +1345,15 @@ export function AiAtlasApp({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let desired = '';
-    if (viewMode === 'security') desired = '#security';
+    if (tab !== 'atlas') desired = '#' + tab;
+    else if (viewMode === 'security') desired = '#security';
     else if (focusedNode) desired = '#' + focusedNode;
     const current = window.location.hash;
     if (current !== desired) {
       const url = window.location.pathname + window.location.search + desired;
       window.history.replaceState(null, '', url);
     }
-  }, [viewMode, focusedNode]);
+  }, [tab, viewMode, focusedNode]);
 
   const metrics = null;
   useEffect(() => {
@@ -1557,538 +1588,570 @@ export function AiAtlasApp({
               </>
             )}
           </div>
-          <span className="meta-intro">{t.welcomeBanner}</span>
-        </div>
-        <div className="meta">
-          <span className="meta-label">{t.metaLabel}</span>
+          <nav className="atlas-tabs" aria-label="Atlas">
+            {(['atlas', ...READING_TABS] as Tab[]).map(k => (
+              <button
+                key={k}
+                type="button"
+                className="atlas-tab"
+                aria-pressed={tab === k}
+                onClick={() => changeTab(k)}
+              >
+                {t['tab' + k[0].toUpperCase() + k.slice(1)]}
+              </button>
+            ))}
+          </nav>
         </div>
       </header>
 
-      <div className="workspace--v4">
-        <div className="view-stage" key={viewMode}>
-          {viewMode === 'environment' && (
-            <div
-              className="canvas--orbital"
-              onMouseLeave={() => setHoverNode(null)}
-            >
-              {consuming && <InkConsume />}
+      {tab !== 'atlas' && (
+        <div className="view-stage rd" key={tab}>
+          {tab === 'article' ? (
+            <ArticleView article={readings.article} />
+          ) : (
+            <LadderView ladder={readings.ladder} />
+          )}
+        </div>
+      )}
 
-              <svg
-                viewBox={`${-HALF} ${-HALF - TOP_PAD} ${VIEW} ${VIEW + TOP_PAD + BOT_PAD}`}
-                xmlns="http://www.w3.org/2000/svg"
-                className="orbital-svg"
-                preserveAspectRatio="xMidYMid meet"
+      {tab === 'atlas' && (
+        <div className="workspace--v4">
+          <div className="view-stage" key={viewMode}>
+            {viewMode === 'environment' && (
+              <div
+                className="canvas--orbital"
+                onMouseLeave={() => setHoverNode(null)}
               >
-                {data.projects.members.map((p: any) => (
-                  <TerritoryArc
-                    key={'arc-' + p.id}
-                    project={p}
-                    R={data.territoryR}
-                  />
-                ))}
+                {consuming && <InkConsume />}
 
-                {(() => {
-                  const ringMeta = [
-                    { key: 'order', r: data.order.r, defaultTheta: 90 },
-                    { key: 'devEnv', r: data.devEnv.r, defaultTheta: 270 },
-                    { key: 'projects', r: data.projects.r, defaultTheta: 270 },
-                    {
-                      key: 'territories',
-                      r: data.territoryR,
-                      defaultTheta: 270,
-                    },
-                  ];
-                  return ringMeta.map(rm => {
-                    const cfg = rL(rm.key);
-                    const ringHL = `ring:${rm.key}`;
-                    return (
-                      <Ring
-                        key={rm.key}
-                        r={rm.r}
-                        label={cfg && cfg.label}
-                        theta={(cfg && cfg.theta) || rm.defaultTheta}
-                        offset={cfg && cfg.offset}
-                        ringId={rm.key}
-                        onSelect={onSelect}
-                        hovered={highlightId === ringHL}
-                        dimmed={
-                          !!highlightId &&
-                          highlightId !== ringHL &&
-                          !highlight.has(ringHL)
-                        }
-                      />
-                    );
-                  });
-                })()}
-
-                {data.projects.members.map((p: any) => (
-                  <TerritoryLabel
-                    key={'tl-' + p.id}
-                    project={p}
-                    R={data.territoryR}
-                  />
-                ))}
-
-                {data.reception && (
-                  <>
-                    <Spoke
-                      from={points['globe']}
-                      to={points['reception']}
-                      kind="advisory"
-                      dim={isDim('reception')}
-                      glow={spokeGlow('reception', 'wolf')}
+                <svg
+                  viewBox={`${-HALF} ${-HALF - TOP_PAD} ${VIEW} ${VIEW + TOP_PAD + BOT_PAD}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="orbital-svg"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  {data.projects.members.map((p: any) => (
+                    <TerritoryArc
+                      key={'arc-' + p.id}
+                      project={p}
+                      R={data.territoryR}
                     />
-                    <Spoke
-                      from={points['reception']}
-                      to={points['wolf']}
-                      kind="auth"
-                      dim={isDim('reception') || isDim('wolf')}
-                      glow={spokeGlow('reception', 'wolf')}
-                    />
-                  </>
-                )}
+                  ))}
 
-                <defs>
-                  <marker
-                    id="task-arrow"
-                    viewBox="0 0 10 10"
-                    refX="9"
-                    refY="5"
-                    markerWidth="10"
-                    markerHeight="10"
-                    orient="auto"
-                    markerUnits="userSpaceOnUse"
-                  >
-                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--red)" />
-                  </marker>
-                </defs>
-                <g className="task-route" aria-label={t.stagesAria}>
-                  {data.projects.members
-                    .slice(0, -1)
-                    .map((p: any, i: number) => {
-                      const r = data.projects.r * HALF,
-                        start = p.theta + 16,
-                        end = p.theta + 44;
-                      const a = POL(data.projects.r, start),
-                        b = POL(data.projects.r, end);
-                      const active =
-                        selectedStage?.id === p.id ||
-                        (i === 4 &&
-                          selectedStage?.id === data.projects.members[5].id);
+                  {(() => {
+                    const ringMeta = [
+                      { key: 'order', r: data.order.r, defaultTheta: 90 },
+                      { key: 'devEnv', r: data.devEnv.r, defaultTheta: 270 },
+                      {
+                        key: 'projects',
+                        r: data.projects.r,
+                        defaultTheta: 270,
+                      },
+                      {
+                        key: 'territories',
+                        r: data.territoryR,
+                        defaultTheta: 270,
+                      },
+                    ];
+                    return ringMeta.map(rm => {
+                      const cfg = rL(rm.key);
+                      const ringHL = `ring:${rm.key}`;
                       return (
-                        <path
-                          key={p.id}
-                          data-route-from={p.id}
-                          data-route-to={data.projects.members[i + 1].id}
-                          className={
-                            'task-route-segment' + (active ? ' is-current' : '')
+                        <Ring
+                          key={rm.key}
+                          r={rm.r}
+                          label={cfg && cfg.label}
+                          theta={(cfg && cfg.theta) || rm.defaultTheta}
+                          offset={cfg && cfg.offset}
+                          ringId={rm.key}
+                          onSelect={onSelect}
+                          hovered={highlightId === ringHL}
+                          dimmed={
+                            !!highlightId &&
+                            highlightId !== ringHL &&
+                            !highlight.has(ringHL)
                           }
-                          d={`M ${a.x} ${a.y} A ${r} ${r} 0 0 1 ${b.x} ${b.y}`}
-                          markerEnd="url(#task-arrow)"
                         />
                       );
-                    })}
-                </g>
-                {data.projects.members.flatMap((p: any) =>
-                  p.support.map((id: string) => (
+                    });
+                  })()}
+
+                  {data.projects.members.map((p: any) => (
+                    <TerritoryLabel
+                      key={'tl-' + p.id}
+                      project={p}
+                      R={data.territoryR}
+                    />
+                  ))}
+
+                  {data.reception && (
+                    <>
+                      <Spoke
+                        from={points['globe']}
+                        to={points['reception']}
+                        kind="advisory"
+                        dim={isDim('reception')}
+                        glow={spokeGlow('reception', 'wolf')}
+                      />
+                      <Spoke
+                        from={points['reception']}
+                        to={points['wolf']}
+                        kind="auth"
+                        dim={isDim('reception') || isDim('wolf')}
+                        glow={spokeGlow('reception', 'wolf')}
+                      />
+                    </>
+                  )}
+
+                  <defs>
+                    <marker
+                      id="task-arrow"
+                      viewBox="0 0 10 10"
+                      refX="9"
+                      refY="5"
+                      markerWidth="10"
+                      markerHeight="10"
+                      orient="auto"
+                      markerUnits="userSpaceOnUse"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--red)" />
+                    </marker>
+                  </defs>
+                  <g className="task-route" aria-label={t.stagesAria}>
+                    {data.projects.members
+                      .slice(0, -1)
+                      .map((p: any, i: number) => {
+                        const r = data.projects.r * HALF,
+                          start = p.theta + 16,
+                          end = p.theta + 44;
+                        const a = POL(data.projects.r, start),
+                          b = POL(data.projects.r, end);
+                        const active =
+                          selectedStage?.id === p.id ||
+                          (i === 4 &&
+                            selectedStage?.id === data.projects.members[5].id);
+                        return (
+                          <path
+                            key={p.id}
+                            data-route-from={p.id}
+                            data-route-to={data.projects.members[i + 1].id}
+                            className={
+                              'task-route-segment' +
+                              (active ? ' is-current' : '')
+                            }
+                            d={`M ${a.x} ${a.y} A ${r} ${r} 0 0 1 ${b.x} ${b.y}`}
+                            markerEnd="url(#task-arrow)"
+                          />
+                        );
+                      })}
+                  </g>
+                  {data.projects.members.flatMap((p: any) =>
+                    p.support.map((id: string) => (
+                      <g
+                        key={'support-' + p.id + '-' + id}
+                        className={
+                          'stage-support' +
+                          (spokeGlow(id, p.id) ? ' is-current' : '')
+                        }
+                        aria-hidden="true"
+                      >
+                        <Spoke
+                          from={points[id]}
+                          to={points[p.id]}
+                          kind="advisory"
+                          glow={true}
+                          dim={false}
+                        />
+                      </g>
+                    )),
+                  )}
+
+                  {(data.relations || []).map(([a, b]: string[]) => (
                     <g
-                      key={'support-' + p.id + '-' + id}
+                      key={'relation-' + a + '-' + b}
                       className={
-                        'stage-support' +
-                        (spokeGlow(id, p.id) ? ' is-current' : '')
+                        'stage-support' + (spokeGlow(a, b) ? ' is-current' : '')
                       }
                       aria-hidden="true"
                     >
                       <Spoke
-                        from={points[id]}
-                        to={points[p.id]}
+                        from={points[a]}
+                        to={points[b]}
                         kind="advisory"
                         glow={true}
                         dim={false}
                       />
                     </g>
-                  )),
-                )}
-
-                {(data.relations || []).map(([a, b]: string[]) => (
-                  <g
-                    key={'relation-' + a + '-' + b}
-                    className={
-                      'stage-support' + (spokeGlow(a, b) ? ' is-current' : '')
-                    }
-                    aria-hidden="true"
-                  >
-                    <Spoke
-                      from={points[a]}
-                      to={points[b]}
-                      kind="advisory"
-                      glow={true}
-                      dim={false}
-                    />
-                  </g>
-                ))}
-
-                {data.projects.members
-                  .filter((p: any) => p.leadDiamond)
-                  .map((p: any) => (
-                    <Spoke
-                      key={'lp-' + p.id}
-                      from={points[p.id]}
-                      to={points[`lead-${p.id}`]}
-                      kind="lead"
-                      dim={isDim(p.id) || isDim(`lead-${p.id}`)}
-                      glow={spokeGlow(p.id, `lead-${p.id}`)}
-                    />
                   ))}
 
-                {data.projects.members
-                  .filter((p: any) => p.leadDiamond2)
-                  .map((p: any) => (
-                    <Spoke
-                      key={'lp2-' + p.id}
-                      from={points[p.id]}
-                      to={points[`lead2-${p.id}`]}
-                      kind="lead"
-                      dim={isDim(p.id) || isDim(`lead2-${p.id}`)}
-                      glow={spokeGlow(p.id, `lead2-${p.id}`)}
-                    />
-                  ))}
-
-                {data.projects.members.flatMap((p: any) =>
-                  p.children
-                    .filter((c: any) => !c.noSpoke)
-                    .map((c: any) => (
+                  {data.projects.members
+                    .filter((p: any) => p.leadDiamond)
+                    .map((p: any) => (
                       <Spoke
-                        key={'sc-' + c.id}
+                        key={'lp-' + p.id}
                         from={points[p.id]}
-                        to={points[c.id]}
-                        kind={c.external ? 'advisory' : 'deploy'}
-                        cls="wire--mechanism"
-                        dim={!selectedStage || selectedStage.id !== p.id}
-                        glow={spokeGlow(p.id, c.id)}
+                        to={points[`lead-${p.id}`]}
+                        kind="lead"
+                        dim={isDim(p.id) || isDim(`lead-${p.id}`)}
+                        glow={spokeGlow(p.id, `lead-${p.id}`)}
                       />
-                    )),
-                )}
+                    ))}
 
-                <g
-                  className={
-                    'center-mark ' +
-                    (isDim('wolf') ? 'is-dim' : '') +
-                    (focusId === 'wolf' ? ' is-active' : '') +
-                    (!!highlightId && highlight.has('wolf') ? ' is-glow' : '')
-                  }
-                  onClick={() => onSelect('wolf')}
-                  onMouseEnter={() => onSelect('wolf', 'hover')}
-                  onMouseLeave={() => onSelect(null, 'hover')}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <circle
-                    cx="0"
-                    cy="0"
-                    r="86"
-                    fill="var(--paper)"
-                    stroke="var(--red)"
-                    strokeWidth="1.4"
-                  />
-                  <circle
-                    cx="0"
-                    cy="0"
-                    r="76"
-                    fill="none"
-                    stroke="var(--rule-soft)"
-                    strokeWidth="0.6"
-                  />
-                  <circle
-                    cx="0"
-                    cy="0"
-                    r="68"
-                    fill="none"
-                    stroke="var(--rule-faint)"
-                    strokeWidth="0.5"
-                    strokeDasharray="2 4"
-                  />
-                  <text
-                    x="0"
-                    y="-12"
-                    textAnchor="middle"
-                    fontFamily="var(--serif)"
-                    fontSize="40"
-                    fill="var(--red)"
+                  {data.projects.members
+                    .filter((p: any) => p.leadDiamond2)
+                    .map((p: any) => (
+                      <Spoke
+                        key={'lp2-' + p.id}
+                        from={points[p.id]}
+                        to={points[`lead2-${p.id}`]}
+                        kind="lead"
+                        dim={isDim(p.id) || isDim(`lead2-${p.id}`)}
+                        glow={spokeGlow(p.id, `lead2-${p.id}`)}
+                      />
+                    ))}
+
+                  {data.projects.members.flatMap((p: any) =>
+                    p.children
+                      .filter((c: any) => !c.noSpoke)
+                      .map((c: any) => (
+                        <Spoke
+                          key={'sc-' + c.id}
+                          from={points[p.id]}
+                          to={points[c.id]}
+                          kind={c.external ? 'advisory' : 'deploy'}
+                          cls="wire--mechanism"
+                          dim={!selectedStage || selectedStage.id !== p.id}
+                          glow={spokeGlow(p.id, c.id)}
+                        />
+                      )),
+                  )}
+
+                  <g
+                    className={
+                      'center-mark ' +
+                      (isDim('wolf') ? 'is-dim' : '') +
+                      (focusId === 'wolf' ? ' is-active' : '') +
+                      (!!highlightId && highlight.has('wolf') ? ' is-glow' : '')
+                    }
+                    onClick={() => onSelect('wolf')}
+                    onMouseEnter={() => onSelect('wolf', 'hover')}
+                    onMouseLeave={() => onSelect(null, 'hover')}
+                    style={{ cursor: 'pointer' }}
                   >
-                    天
-                  </text>
-                  <text
-                    x="0"
-                    y="22"
-                    textAnchor="middle"
-                    className="center-mark__label"
-                  >
-                    WOLF
-                  </text>
-                  <text
-                    x="0"
-                    y="42"
-                    textAnchor="middle"
-                    className="center-mark__sub"
-                  >
-                    {(data.apex && data.apex.sub) || t.apexFounderFallback}
-                  </text>
-                </g>
-
-                <NodeBody
-                  node={data.order.member}
-                  x={points['order'].x}
-                  y={points['order'].y}
-                  active={focusId === 'order'}
-                  dimmed={isDim('order')}
-                  highlighted={!!highlightId && highlight.has('order')}
-                  hovered={hoverNode === 'order'}
-                  onSelect={onSelect}
-                  w={170}
-                  h={50}
-                />
-
-                {data.reception && (
-                  <>
-                    <GlobeMark
-                      x={points['globe'].x}
-                      y={points['globe'].y}
-                      label={t.publicInternetLabel}
-                      dim={isDim('reception')}
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="86"
+                      fill="var(--paper)"
+                      stroke="var(--red)"
+                      strokeWidth="1.4"
                     />
-                    <TelegramMark
-                      x={points['tg-relay'].x}
-                      y={points['tg-relay'].y}
-                      label={t.telegramLabel}
-                      dim={isDim('reception')}
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="76"
+                      fill="none"
+                      stroke="var(--rule-soft)"
+                      strokeWidth="0.6"
                     />
-                    <NodeBody
-                      node={data.reception.member}
-                      x={points['reception'].x}
-                      y={points['reception'].y}
-                      active={focusId === 'reception'}
-                      dimmed={isDim('reception')}
-                      highlighted={!!highlightId && highlight.has('reception')}
-                      hovered={hoverNode === 'reception'}
-                      onSelect={onSelect}
-                      w={165}
-                      h={42}
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="68"
+                      fill="none"
+                      stroke="var(--rule-faint)"
+                      strokeWidth="0.5"
+                      strokeDasharray="2 4"
                     />
-                  </>
-                )}
+                    <text
+                      x="0"
+                      y="-12"
+                      textAnchor="middle"
+                      fontFamily="var(--serif)"
+                      fontSize="40"
+                      fill="var(--red)"
+                    >
+                      天
+                    </text>
+                    <text
+                      x="0"
+                      y="22"
+                      textAnchor="middle"
+                      className="center-mark__label"
+                    >
+                      WOLF
+                    </text>
+                    <text
+                      x="0"
+                      y="42"
+                      textAnchor="middle"
+                      className="center-mark__sub"
+                    >
+                      {(data.apex && data.apex.sub) || t.apexFounderFallback}
+                    </text>
+                  </g>
 
-                {data.devEnv.members.map((n: any) => (
                   <NodeBody
-                    key={n.id}
-                    node={n}
-                    x={points[n.id].x}
-                    y={points[n.id].y}
-                    active={focusId === n.id}
-                    dimmed={isDim(n.id)}
-                    highlighted={!!highlightId && highlight.has(n.id)}
-                    hovered={hoverNode === n.id}
+                    node={data.order.member}
+                    x={points['order'].x}
+                    y={points['order'].y}
+                    active={focusId === 'order'}
+                    dimmed={isDim('order')}
+                    highlighted={!!highlightId && highlight.has('order')}
+                    hovered={hoverNode === 'order'}
                     onSelect={onSelect}
-                    w={n.id === 'tools' ? 200 : 170}
-                    h={n.sub ? 66 : 48}
+                    w={170}
+                    h={50}
                   />
-                ))}
 
-                {data.projects.members
-                  .filter((p: any) => p.id !== 'terminal')
-                  .map((p: any) => (
-                    <NodeBody
-                      key={p.id}
-                      node={p}
-                      x={points[p.id].x}
-                      y={points[p.id].y}
-                      active={focusId === p.id}
-                      dimmed={isDim(p.id)}
-                      highlighted={!!highlightId && highlight.has(p.id)}
-                      hovered={hoverNode === p.id}
-                      onSelect={onSelect}
-                      w={210}
-                      h={p.sub ? 72 : 52}
-                    />
-                  ))}
-
-                {data.projects.members
-                  .filter((p: any) => p.leadDiamond)
-                  .map((p: any) => {
-                    const id = `lead-${p.id}`;
-                    return (
-                      <NodeBody
-                        key={id}
-                        node={points[id].node}
-                        x={points[id].x}
-                        y={points[id].y}
-                        active={focusId === id}
-                        dimmed={isDim(id)}
-                        highlighted={!!highlightId && highlight.has(id)}
-                        hovered={hoverNode === id}
-                        onSelect={onSelect}
-                        w={140}
-                        h={38}
+                  {data.reception && (
+                    <>
+                      <GlobeMark
+                        x={points['globe'].x}
+                        y={points['globe'].y}
+                        label={t.publicInternetLabel}
+                        dim={isDim('reception')}
                       />
-                    );
-                  })}
-
-                {data.projects.members
-                  .filter((p: any) => p.id === 'terminal')
-                  .map((p: any) => (
-                    <NodeBody
-                      key={p.id}
-                      node={p}
-                      x={points[p.id].x}
-                      y={points[p.id].y}
-                      active={focusId === p.id}
-                      dimmed={isDim(p.id)}
-                      highlighted={!!highlightId && highlight.has(p.id)}
-                      hovered={hoverNode === p.id}
-                      onSelect={onSelect}
-                      w={210}
-                      h={p.sub ? 72 : 52}
-                    />
-                  ))}
-
-                {data.projects.members
-                  .filter((p: any) => p.leadDiamond2)
-                  .map((p: any) => {
-                    const id = `lead2-${p.id}`;
-                    return (
-                      <NodeBody
-                        key={id}
-                        node={points[id].node}
-                        x={points[id].x}
-                        y={points[id].y}
-                        active={focusId === id}
-                        dimmed={isDim(id)}
-                        highlighted={!!highlightId && highlight.has(id)}
-                        hovered={hoverNode === id}
-                        onSelect={onSelect}
-                        w={140}
-                        h={38}
+                      <TelegramMark
+                        x={points['tg-relay'].x}
+                        y={points['tg-relay'].y}
+                        label={t.telegramLabel}
+                        dim={isDim('reception')}
                       />
-                    );
-                  })}
-
-                {data.projects.members.flatMap((p: any) =>
-                  p.children.map((c: any) => {
-                    const labelForWidth = c.redacted
-                      ? t.redactedPlaceholder
-                      : c.label;
-                    return (
                       <NodeBody
-                        key={c.id}
-                        node={c}
-                        x={points[c.id].x}
-                        y={points[c.id].y}
-                        active={focusId === c.id}
-                        dimmed={isDim(c.id)}
-                        highlighted={!!highlightId && highlight.has(c.id)}
-                        hovered={hoverNode === c.id}
+                        node={data.reception.member}
+                        x={points['reception'].x}
+                        y={points['reception'].y}
+                        active={focusId === 'reception'}
+                        dimmed={isDim('reception')}
+                        highlighted={
+                          !!highlightId && highlight.has('reception')
+                        }
+                        hovered={hoverNode === 'reception'}
                         onSelect={onSelect}
-                        w={labelForWidth.length > 12 ? 190 : 165}
+                        w={165}
                         h={42}
+                      />
+                    </>
+                  )}
+
+                  {data.devEnv.members.map((n: any) => (
+                    <NodeBody
+                      key={n.id}
+                      node={n}
+                      x={points[n.id].x}
+                      y={points[n.id].y}
+                      active={focusId === n.id}
+                      dimmed={isDim(n.id)}
+                      highlighted={!!highlightId && highlight.has(n.id)}
+                      hovered={hoverNode === n.id}
+                      onSelect={onSelect}
+                      w={n.id === 'tools' ? 200 : 170}
+                      h={n.sub ? 66 : 48}
+                    />
+                  ))}
+
+                  {data.projects.members
+                    .filter((p: any) => p.id !== 'terminal')
+                    .map((p: any) => (
+                      <NodeBody
+                        key={p.id}
+                        node={p}
+                        x={points[p.id].x}
+                        y={points[p.id].y}
+                        active={focusId === p.id}
+                        dimmed={isDim(p.id)}
+                        highlighted={!!highlightId && highlight.has(p.id)}
+                        hovered={hoverNode === p.id}
+                        onSelect={onSelect}
+                        w={210}
+                        h={p.sub ? 72 : 52}
+                      />
+                    ))}
+
+                  {data.projects.members
+                    .filter((p: any) => p.leadDiamond)
+                    .map((p: any) => {
+                      const id = `lead-${p.id}`;
+                      return (
+                        <NodeBody
+                          key={id}
+                          node={points[id].node}
+                          x={points[id].x}
+                          y={points[id].y}
+                          active={focusId === id}
+                          dimmed={isDim(id)}
+                          highlighted={!!highlightId && highlight.has(id)}
+                          hovered={hoverNode === id}
+                          onSelect={onSelect}
+                          w={140}
+                          h={38}
+                        />
+                      );
+                    })}
+
+                  {data.projects.members
+                    .filter((p: any) => p.id === 'terminal')
+                    .map((p: any) => (
+                      <NodeBody
+                        key={p.id}
+                        node={p}
+                        x={points[p.id].x}
+                        y={points[p.id].y}
+                        active={focusId === p.id}
+                        dimmed={isDim(p.id)}
+                        highlighted={!!highlightId && highlight.has(p.id)}
+                        hovered={hoverNode === p.id}
+                        onSelect={onSelect}
+                        w={210}
+                        h={p.sub ? 72 : 52}
+                      />
+                    ))}
+
+                  {data.projects.members
+                    .filter((p: any) => p.leadDiamond2)
+                    .map((p: any) => {
+                      const id = `lead2-${p.id}`;
+                      return (
+                        <NodeBody
+                          key={id}
+                          node={points[id].node}
+                          x={points[id].x}
+                          y={points[id].y}
+                          active={focusId === id}
+                          dimmed={isDim(id)}
+                          highlighted={!!highlightId && highlight.has(id)}
+                          hovered={hoverNode === id}
+                          onSelect={onSelect}
+                          w={140}
+                          h={38}
+                        />
+                      );
+                    })}
+
+                  {data.projects.members.flatMap((p: any) =>
+                    p.children.map((c: any) => {
+                      const labelForWidth = c.redacted
+                        ? t.redactedPlaceholder
+                        : c.label;
+                      return (
+                        <NodeBody
+                          key={c.id}
+                          node={c}
+                          x={points[c.id].x}
+                          y={points[c.id].y}
+                          active={focusId === c.id}
+                          dimmed={isDim(c.id)}
+                          highlighted={!!highlightId && highlight.has(c.id)}
+                          hovered={hoverNode === c.id}
+                          onSelect={onSelect}
+                          w={labelForWidth.length > 12 ? 190 : 165}
+                          h={42}
+                          redactedPlaceholder={t.redactedPlaceholder}
+                        />
+                      );
+                    }),
+                  )}
+
+                  {(() => {
+                    if (
+                      !focusId ||
+                      focusId.startsWith('ring:') ||
+                      !points[focusId]
+                    )
+                      return null;
+                    const node = points[focusId].node;
+                    if (!node) return null;
+                    let w: number, h: number;
+                    if (focusId === 'order') {
+                      w = 170;
+                      h = 50;
+                    } else if (focusId.startsWith('lead-')) {
+                      w = 140;
+                      h = 38;
+                    } else if (
+                      data.devEnv.members.some((n: any) => n.id === focusId)
+                    ) {
+                      w = focusId === 'tools' ? 200 : 170;
+                      h = node.sub ? 66 : 48;
+                    } else if (
+                      data.projects.members.some((p: any) => p.id === focusId)
+                    ) {
+                      w = 210;
+                      h = node.sub ? 72 : 52;
+                    } else {
+                      const lw = node.redacted
+                        ? t.redactedPlaceholder
+                        : node.label;
+                      w = lw.length > 12 ? 190 : 165;
+                      h = 42;
+                    }
+                    return (
+                      <NodeBody
+                        node={node}
+                        x={points[focusId].x}
+                        y={points[focusId].y}
+                        active={focusedNode === focusId}
+                        dimmed={false}
+                        highlighted={!!highlightId && highlight.has(focusId)}
+                        hovered={hoverNode === focusId}
+                        onSelect={onSelect}
+                        w={w}
+                        h={h}
                         redactedPlaceholder={t.redactedPlaceholder}
                       />
                     );
-                  }),
-                )}
+                  })()}
+                </svg>
 
-                {(() => {
-                  if (
-                    !focusId ||
-                    focusId.startsWith('ring:') ||
-                    !points[focusId]
-                  )
-                    return null;
-                  const node = points[focusId].node;
-                  if (!node) return null;
-                  let w: number, h: number;
-                  if (focusId === 'order') {
-                    w = 170;
-                    h = 50;
-                  } else if (focusId.startsWith('lead-')) {
-                    w = 140;
-                    h = 38;
-                  } else if (
-                    data.devEnv.members.some((n: any) => n.id === focusId)
-                  ) {
-                    w = focusId === 'tools' ? 200 : 170;
-                    h = node.sub ? 66 : 48;
-                  } else if (
-                    data.projects.members.some((p: any) => p.id === focusId)
-                  ) {
-                    w = 210;
-                    h = node.sub ? 72 : 52;
-                  } else {
-                    const lw = node.redacted
-                      ? t.redactedPlaceholder
-                      : node.label;
-                    w = lw.length > 12 ? 190 : 165;
-                    h = 42;
-                  }
-                  return (
-                    <NodeBody
-                      node={node}
-                      x={points[focusId].x}
-                      y={points[focusId].y}
-                      active={focusedNode === focusId}
-                      dimmed={false}
-                      highlighted={!!highlightId && highlight.has(focusId)}
-                      hovered={hoverNode === focusId}
-                      onSelect={onSelect}
-                      w={w}
-                      h={h}
-                      redactedPlaceholder={t.redactedPlaceholder}
-                    />
-                  );
-                })()}
-              </svg>
+                <span className="corner corner--tl" />
+                <span className="corner corner--tr" />
+                <span className="corner corner--bl" />
+                <span className="corner corner--br" />
+              </div>
+            )}
 
-              <span className="corner corner--tl" />
-              <span className="corner corner--tr" />
-              <span className="corner corner--bl" />
-              <span className="corner corner--br" />
-            </div>
-          )}
+            {viewMode === 'security' && (
+              <SecurityView t={t} hasHover={hasHover} />
+            )}
+          </div>
 
-          {viewMode === 'security' && (
-            <SecurityView t={t} hasHover={hasHover} />
-          )}
+          <aside className="rail">
+            {viewMode === 'security' ? (
+              <DoctrinePanel t={t} />
+            ) : (
+              <Legend t={t} />
+            )}
+            <ViewToggle mode={viewMode} setMode={setViewMode} t={t} />
+            <label className="topic-picker">
+              Topics
+              <select
+                value={focusedNode || ''}
+                onChange={e => {
+                  setViewMode('environment');
+                  setFocusedNode(e.target.value || null);
+                }}
+              >
+                <option value="">{t.topicsPlaceholder}</option>
+                {Object.entries(data.dossiers).map(([id, d]: any) => (
+                  <option key={id} value={id}>
+                    {d.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Dossier
+              data={dossier}
+              onSelect={onSelect}
+              dossiers={data.dossiers}
+              readMoreHint={t.readMoreHint}
+            />
+          </aside>
         </div>
-
-        <aside className="rail">
-          {viewMode === 'security' ? <DoctrinePanel t={t} /> : <Legend t={t} />}
-          <ViewToggle mode={viewMode} setMode={setViewMode} t={t} />
-          <label className="topic-picker">
-            Topics
-            <select
-              value={focusedNode || ''}
-              onChange={e => {
-                setViewMode('environment');
-                setFocusedNode(e.target.value || null);
-              }}
-            >
-              <option value="">{t.topicsPlaceholder}</option>
-              {Object.entries(data.dossiers).map(([id, d]: any) => (
-                <option key={id} value={id}>
-                  {d.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Dossier
-            data={dossier}
-            onSelect={onSelect}
-            dossiers={data.dossiers}
-            readMoreHint={t.readMoreHint}
-          />
-        </aside>
-      </div>
+      )}
 
       <FeatureModal
-        id={viewMode === 'environment' ? focusedNode : null}
+        id={tab === 'atlas' && viewMode === 'environment' ? focusedNode : null}
         dossiers={data.dossiers}
         onSelect={onSelect}
         onClose={closeModal}
