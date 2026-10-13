@@ -9,7 +9,12 @@ import React, {
 
 import { adaptGuide, copy, PAGE_TEXT_DEFAULTS } from '@lib/aiAtlas/adapter';
 import bundledGuide from '@lib/aiAtlas/guide.json';
-import { ArticleView, LadderView, Readings } from '@lib/aiAtlas/readings';
+import {
+  ArticleView,
+  LadderView,
+  Readings,
+  TabLeaves,
+} from '@lib/aiAtlas/readings';
 import readingsData from '@lib/aiAtlas/readings.json';
 import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
 
@@ -1598,6 +1603,7 @@ export function AiAtlasApp({
                 onClick={() => changeTab(k)}
               >
                 {t['tab' + k[0].toUpperCase() + k.slice(1)]}
+                <TabLeaves />
               </button>
             ))}
           </nav>
@@ -1607,7 +1613,10 @@ export function AiAtlasApp({
       {tab !== 'atlas' && (
         <div className="view-stage rd" key={tab}>
           {tab === 'article' ? (
-            <ArticleView article={readings.article} />
+            <ArticleView
+              article={readings.article}
+              legend={{ key: t.legendKey, see: t.legendSee }}
+            />
           ) : (
             <LadderView ladder={readings.ladder} />
           )}

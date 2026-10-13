@@ -57,9 +57,69 @@ const runs = (list: Run[]) =>
     ),
   );
 
-export function ArticleView({ article }: { article: Readings['article'] }) {
+/* Momiji leaves behind a header tab: six per tab, each falling at its own
+   pace from a random point of its fall, so they never drop at once. Seeded
+   after mount, so the server and the first client render agree. */
+const LEAF_TONES = [
+  'var(--red, #b3392b)',
+  'var(--gold, #c08a2c)',
+  '#c4573a',
+  '#a8642a',
+];
+export function TabLeaves() {
+  const [leaves, setLeaves] = useState<React.CSSProperties[][]>([]);
+  useEffect(() => {
+    const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+    setLeaves(
+      Array.from({ length: 6 }, (_, i) => {
+        const dur = rnd(5200, 8600);
+        const size = rnd(8, 13).toFixed(1) + 'px';
+        return [
+          {
+            left: rnd(4, 92).toFixed(1) + '%',
+            animationDuration: dur.toFixed(0) + 'ms',
+            animationDelay: (-rnd(0, dur)).toFixed(0) + 'ms',
+            ['--leaf-drift' as any]: rnd(-28, 28).toFixed(0) + 'px',
+          },
+          {
+            width: size,
+            height: size,
+            background: LEAF_TONES[i % LEAF_TONES.length],
+            animationDuration: rnd(1800, 3000).toFixed(0) + 'ms',
+            animationDelay: (-rnd(0, 3000)).toFixed(0) + 'ms',
+            ['--leaf-spin' as any]:
+              (Math.random() < 0.5 ? -1 : 1) * rnd(24, 48) + 'deg',
+            opacity: Number(rnd(0.35, 0.7).toFixed(2)),
+          },
+        ];
+      }),
+    );
+  }, []);
+  return (
+    <span className="tab-leaves" aria-hidden="true">
+      {leaves.map(([fall, leaf], i) => (
+        <span key={i} className="tab-leaf" style={fall}>
+          <i style={leaf} />
+        </span>
+      ))}
+    </span>
+  );
+}
+
+export function ArticleView({
+  article,
+  legend,
+}: {
+  article: Readings['article'];
+  legend: { key: string; see: string };
+}) {
   return (
     <section className="rd-thesis">
+      {/* What the red and blue marks mean, in the frame's top padding. */}
+      <div className="rd-legend" role="note" aria-label="Legend">
+        <span className="rd-legend-item rd-legend-key">{legend.key}</span>
+        <span className="rd-legend-item rd-legend-see">{legend.see}</span>
+      </div>
       <p className="lead">{runs(article.lead)}</p>
       {article.paras.map((p, i) => (
         <p className="para" key={i}>
