@@ -2210,64 +2210,16 @@ export function AiAtlasApp({
   );
 }
 
-/* TEMPORARY, DEV only: the switch between Russian wordings, remembered
-   across the three tabs. Goes away with src/lib/aiAtlas/ruVariants.ts. */
-const RU_VARIANT_KEY = 'aiAtlasRuVariant';
-
-function RuVariantToggle({
-  names,
-  active,
-  onChange,
-}: {
-  names: string[];
-  active: string;
-  onChange: (name: string) => void;
-}) {
-  return (
-    <div className="ru-variant-toggle" role="tablist" aria-label="Variant">
-      {names.map(name => (
-        <button
-          key={name}
-          type="button"
-          role="tab"
-          aria-selected={active === name}
-          className={'view-toggle__btn ' + (active === name ? 'is-active' : '')}
-          onClick={() => onChange(name)}
-        >
-          {name}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export default function AiAtlasPage({
-  guide: currentGuide,
-  readings: currentReadings = null,
-  ruVariants = null,
+  guide,
+  readings: localReadings = null,
   tab = 'atlas',
 }: {
   guide: any;
   readings?: Readings | null;
-  ruVariants?: Record<string, { guide: any; readings: Readings }> | null;
   tab?: Tab;
 }) {
   const router = useRouter();
-  const variantNames = ruVariants
-    ? ['current', ...Object.keys(ruVariants)]
-    : [];
-  const [variant, setVariant] = useState('current');
-  useEffect(() => {
-    const saved = localStorage.getItem(RU_VARIANT_KEY);
-    if (saved && ruVariants?.[saved]) setVariant(saved);
-  }, [ruVariants]);
-  const chooseVariant = (name: string) => {
-    localStorage.setItem(RU_VARIANT_KEY, name);
-    setVariant(name);
-  };
-  const picked = ruVariants?.[variant];
-  const guide = picked ? picked.guide : currentGuide;
-  const localReadings = picked ? picked.readings : currentReadings;
   const goTo = (next: Tab, replace?: boolean) =>
     replace ? router.replace(tabPath(next)) : router.push(tabPath(next));
   /* Words pushed with the guide replace the built-in ones, SEO included. */
@@ -2299,15 +2251,8 @@ export default function AiAtlasPage({
         }}
       />
       <div className="ai-atlas-root">
-        {variantNames.length > 0 && (
-          <RuVariantToggle
-            names={variantNames}
-            active={variant}
-            onChange={chooseVariant}
-          />
-        )}
         <AiAtlasApp
-          key={tab + variant}
+          key={tab}
           initialGuide={guide}
           initialTab={tab}
           readings={localReadings || undefined}
@@ -2331,12 +2276,10 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     const { localizeGuide } = await import('@lib/aiAtlas/localize');
     const ru = (await import('@lib/aiAtlas/ru.json')).default;
     const ruReadings = (await import('@lib/aiAtlas/readings.ru.json')).default;
-    const { readRuVariants } = await import('@lib/aiAtlas/ruVariants');
     return {
       props: {
         guide: localizeGuide(english, ru as any),
         readings: ruReadings,
-        ruVariants: await readRuVariants(english),
       },
       revalidate: 300,
     };

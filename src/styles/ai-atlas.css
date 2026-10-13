@@ -3614,32 +3614,3 @@ body.darkTheme .ai-atlas-root .rd .d-tile rect {
     letter-spacing: 0.08em;
   }
 }
-
-/* TEMPORARY, DEV only: the switch between Russian wordings
-   (src/lib/aiAtlas/ruVariants.ts). Remove with it. */
-.ru-variant-toggle {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  z-index: 50;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  border: var(--hairline) solid var(--rule);
-  background: var(--paper);
-}
-.ru-variant-toggle .view-toggle__btn {
-  min-width: 88px;
-  min-height: 44px;
-  transition:
-    color 0.32s ease,
-    background-color 0.32s ease;
-}
-.ru-variant-toggle .view-toggle__btn.is-active {
-  background: var(--ink-fill);
-}
-@media (prefers-reduced-motion: reduce) {
-  .ru-variant-toggle .view-toggle__btn {
-    transition: none;
-  }
-}
