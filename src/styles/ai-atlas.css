@@ -3336,6 +3336,7 @@ html:has(.ai-atlas-root .rd .l-modal[open]) {
   background: none;
   border: 0;
   padding: 10px 0;
+  min-width: 44px;
   font: inherit;
   font-size: var(--fs-body);
   font-weight: 500;
