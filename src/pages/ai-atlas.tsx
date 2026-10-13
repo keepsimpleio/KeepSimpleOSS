@@ -18,6 +18,7 @@ import {
 } from '@lib/aiAtlas/readings';
 import readingsData from '@lib/aiAtlas/readings.json';
 import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
+import { atlasSeo } from '@lib/aiAtlas/seo';
 
 import SeoGenerator from '@components/SeoGenerator';
 
@@ -2224,27 +2225,40 @@ export default function AiAtlasPage({
     replace ? router.replace(tabPath(next)) : router.push(tabPath(next));
   /* Words pushed with the guide replace the built-in ones, SEO included. */
   const words = { ...copy, ...PAGE_TEXT_DEFAULTS, ...(guide?.copy || {}) };
+  const seo = atlasSeo({
+    tab,
+    locale: router.locale || 'en',
+    words,
+    readings: localReadings || bundledReadings,
+    domain: process.env.NEXT_PUBLIC_DOMAIN || 'https://keepsimple.io',
+    path: tabPath(tab),
+    atlasPath: tabPath('atlas'),
+    modified: guide?.generatedAt,
+  });
   return (
     <>
       <SeoGenerator
         strapiSEO={{
-          title: words.seoTitle,
-          pageTitle: words.seoTitle,
-          seoTitle: words.seoTitle,
-          description: words.seoDescription,
-          keywords: words.seoKeywords,
+          title: seo.title,
+          pageTitle: seo.title,
+          seoTitle: seo.title,
+          description: seo.description,
+          keywords: seo.keywords,
         }}
-        type="WebPage"
+        schemaOverride={seo.schema}
+        largeImage
+        imageWidth={1200}
+        imageHeight={630}
         ogTags={{
-          ogTitle: words.seoTitle,
-          ogDescription: words.seoDescription,
-          ogType: 'website',
-          ogImageAlt: words.ogImageAlt,
+          ogTitle: seo.title,
+          ogDescription: seo.description,
+          ogType: seo.ogType,
+          ogImageAlt: seo.imageAlt,
           ogImage: {
             data: {
               attributes: {
                 url: '',
-                staticUrl: `${process.env.NEXT_PUBLIC_DOMAIN}/ai-atlas/og.png`,
+                staticUrl: seo.image,
               },
             },
           },
