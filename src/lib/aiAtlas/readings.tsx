@@ -29,7 +29,12 @@ export type Readings = {
   article: {
     lead: Run[];
     paras: Run[][];
-    board: { steps: string[]; tips: Record<string, string> };
+    board: {
+      steps: string[];
+      tips: Record<string, string>;
+      /* English tile label -> label drawn, for a translated board. */
+      labels?: Record<string, string>;
+    };
   };
   ladder: {
     stages: { id: string; label: string }[];
@@ -173,6 +178,8 @@ function drawBoard(
   };
   const STEPS = board.steps;
   const TIPS = board.tips;
+  /* Tiles are keyed by their English label; a translation draws its own. */
+  const say = (text: string) => board.labels?.[text] || text;
   const LAST = STEPS.length;
   const TH = 44,
     Y = 236,
@@ -243,23 +250,28 @@ function drawBoard(
   const tipFor = (label: string, g: SVGElement) => {
     if (g.classList.contains('src')) {
       return g.classList.contains('is-off')
-        ? 'The selected run never sees this. That is the point of routing.'
-        : 'A piece of context. Routing decides which runs get it and which never see it.';
+        ? TIPS['@srcOff'] ||
+            'The selected run never sees this. That is the point of routing.'
+        : TIPS['@srcOn'] ||
+            'A piece of context. Routing decides which runs get it and which never see it.';
     }
     if (g.classList.contains('chip')) {
       return /^Output of/.test(label)
-        ? label.replace('Output of ', 'The result of Run ') +
-            ', routed in as this run’s input.'
-        : 'Routed into this window. The run sees this and nothing else.';
+        ? TIPS['@chipOut' + label.slice(-1)] ||
+            label.replace('Output of ', 'The result of Run ') +
+              ', routed in as this run’s input.'
+        : TIPS['@chipIn'] ||
+            'Routed into this window. The run sees this and nothing else.';
     }
     if (label === 'Output')
       return current === 1
-        ? 'The window is too full, so the result gets worse. That is context rot.'
-        : 'The finished result of the whole chain.';
+        ? TIPS['@outRot'] ||
+            'The window is too full, so the result gets worse. That is context rot.'
+        : TIPS['@outFinal'] || 'The finished result of the whole chain.';
     if (label === 'You')
       return g.dataset.bottom
-        ? 'You step in only for the real decisions.'
-        : 'You decide which run goes next and what it sees.';
+        ? TIPS['@youBottom'] || 'You step in only for the real decisions.'
+        : TIPS['@you'] || 'You decide which run goes next and what it sees.';
     return TIPS[label] || '';
   };
   /* One-line tips on hover, focus or tap, ordered for this board on
@@ -322,7 +334,7 @@ function drawBoard(
       },
       g,
     );
-    t.textContent = label;
+    t.textContent = say(label);
     withTip(g, label);
     return span(g, from, until);
   };
@@ -346,7 +358,7 @@ function drawBoard(
     until?: number,
   ) => {
     const t = span(el('text', { x, y, class: 'd-label' }, gBack), from, until);
-    t.textContent = text;
+    t.textContent = say(text);
     return t;
   };
   const line = (x1: number, x2: number, from: number, until?: number) =>
