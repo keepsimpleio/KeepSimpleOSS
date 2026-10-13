@@ -30,6 +30,11 @@ export const PAGE_TEXT_DEFAULTS: Record<string, string> = {
   ringTerritoriesTitle: 'Mechanisms',
   ringTerritoriesDesc: 'Every topic opens its own card.',
   metaLabel: 'TERMINAL DOCUMENTATION',
+  tabAtlas: 'Atlas',
+  tabArticle: 'Story',
+  tabLadder: 'Ladder',
+  legendKey: 'Key thesis',
+  legendSee: 'Product & business',
   topicsPlaceholder: 'The Atlas',
   stagesAria: 'Project to Result, clockwise',
 };
@@ -56,6 +61,9 @@ export const SHORT_LABEL_KEYS = new Set([
   'ringProjectsLabel',
   'ringTerritoriesLabel',
   'metaLabel',
+  'tabAtlas',
+  'tabArticle',
+  'tabLadder',
   'topicsPlaceholder',
 ]);
 export const SHORT_LABEL_MAX = 40;

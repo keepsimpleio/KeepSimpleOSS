@@ -14,7 +14,7 @@ import {
   relayConfigured,
 } from '@lib/library/magic/relay';
 
-export const CLAUDE_MODEL = 'claude-sonnet-5';
+export const CLAUDE_MODEL = 'claude-sonnet-5-5';
 
 export const claudeConfigured = relayConfigured;
 
