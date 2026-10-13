@@ -1,4 +1,5 @@
 import type { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -17,6 +18,7 @@ import {
 } from '@lib/aiAtlas/readings';
 import readingsData from '@lib/aiAtlas/readings.json';
 import { securityPassage, securityRadii } from '@lib/aiAtlas/securityPassage';
+import { atlasSeo } from '@lib/aiAtlas/seo';
 
 import SeoGenerator from '@components/SeoGenerator';
 
@@ -868,7 +870,15 @@ type ViewMode = 'environment' | 'security';
 /* The header tabs: the map, and the two readings that sit beside it. */
 type Tab = 'atlas' | 'article' | 'ladder';
 const READING_TABS: Tab[] = ['article', 'ladder'];
-const readings = readingsData as Readings;
+/* Each reading has its own address on keepsimple.io: /ai-atlas/thesis and
+   /ai-atlas/ladder. The map stays at /ai-atlas. */
+export const TAB_SLUGS: Record<string, string> = {
+  article: 'thesis',
+  ladder: 'ladder',
+};
+export const tabPath = (tab: Tab) =>
+  tab === 'atlas' ? '/ai-atlas' : '/ai-atlas/' + TAB_SLUGS[tab];
+const bundledReadings = readingsData as Readings;
 
 function DoctrinePanel({ t }: { t: T }) {
   return (
@@ -878,7 +888,7 @@ function DoctrinePanel({ t }: { t: T }) {
       </span>
       <div className="terminal-doctrine" aria-hidden="true">
         <span>守</span>
-        <small>AUTHORITY &amp; EVIDENCE</small>
+        <small>{t.doctrineCaption}</small>
       </div>
     </div>
   );
@@ -1262,6 +1272,13 @@ export function AiAtlasApp({
   initialGuide = null,
   initialView = 'environment',
   initialFocus = null,
+  initialTab = 'atlas',
+  /* Thesis and Ladder words for this locale; English when not given. */
+  readings = bundledReadings,
+  /* On keepsimple.io a tab is its own page and this navigates to it. Without
+     it (the Terminal's frame) the tabs switch in place and the hash holds
+     the tab. */
+  onTabChange = null,
 }: any = {}) {
   const [data] = useState<any>(() =>
     initialGuide ? adaptGuide(initialGuide) : null,
@@ -1272,7 +1289,7 @@ export function AiAtlasApp({
   const [hoverNode, setHoverNode] = useState<string | null>(null);
   const [linkHoverNode, setLinkHoverNode] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>(initialView);
-  const [tab, setTab] = useState<Tab>('atlas');
+  const [tab, setTab] = useState<Tab>(initialTab);
   const tabPending = useRef(false);
   const changeTab = (next: Tab) => {
     if (next === tab || tabPending.current) return;
@@ -1281,6 +1298,10 @@ export function AiAtlasApp({
     stage?.classList.add('is-leaving');
     setTimeout(
       () => {
+        if (onTabChange) {
+          onTabChange(next);
+          return;
+        }
         setTab(next);
         setFocusedNode(null);
         stage?.classList.remove('is-leaving');
@@ -1321,10 +1342,16 @@ export function AiAtlasApp({
     const sync = () => {
       const hash = window.location.hash.replace(/^#/, '').toLowerCase();
       if ((READING_TABS as string[]).includes(hash)) {
-        setTab(hash as Tab);
-        setFocusedNode(null);
+        /* An old #article / #ladder link opens the reading's own page. */
+        if (onTabChange) onTabChange(hash as Tab, true);
+        else {
+          setTab(hash as Tab);
+          setFocusedNode(null);
+        }
         return;
       }
+      /* A reading page has no map state to restore from the hash. */
+      if (onTabChange && initialTab !== 'atlas') return;
       setTab('atlas');
       if (hash === 'security') {
         setViewMode('security');
@@ -1350,13 +1377,15 @@ export function AiAtlasApp({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let desired = '';
-    if (tab !== 'atlas') desired = '#' + tab;
+    if (tab !== 'atlas') desired = onTabChange ? '' : '#' + tab;
     else if (viewMode === 'security') desired = '#security';
     else if (focusedNode) desired = '#' + focusedNode;
     const current = window.location.hash;
     if (current !== desired) {
       const url = window.location.pathname + window.location.search + desired;
-      window.history.replaceState(null, '', url);
+      /* Keep the router's own entry state, so Back between the tab pages
+         still navigates. */
+      window.history.replaceState(window.history.state, '', url);
     }
   }, [tab, viewMode, focusedNode]);
 
@@ -2133,7 +2162,7 @@ export function AiAtlasApp({
             )}
             <ViewToggle mode={viewMode} setMode={setViewMode} t={t} />
             <label className="topic-picker">
-              Topics
+              {t.topicsLabel}
               <select
                 value={focusedNode || ''}
                 onChange={e => {
@@ -2182,49 +2211,94 @@ export function AiAtlasApp({
   );
 }
 
-export default function AiAtlasPage({ guide }: { guide: any }) {
+export default function AiAtlasPage({
+  guide,
+  readings: localReadings = null,
+  tab = 'atlas',
+}: {
+  guide: any;
+  readings?: Readings | null;
+  tab?: Tab;
+}) {
+  const router = useRouter();
+  const goTo = (next: Tab, replace?: boolean) =>
+    replace ? router.replace(tabPath(next)) : router.push(tabPath(next));
   /* Words pushed with the guide replace the built-in ones, SEO included. */
   const words = { ...copy, ...PAGE_TEXT_DEFAULTS, ...(guide?.copy || {}) };
+  const seo = atlasSeo({
+    tab,
+    locale: router.locale || 'en',
+    words,
+    readings: localReadings || bundledReadings,
+    domain: process.env.NEXT_PUBLIC_DOMAIN || 'https://keepsimple.io',
+    path: tabPath(tab),
+    atlasPath: tabPath('atlas'),
+    modified: guide?.generatedAt,
+  });
   return (
     <>
       <SeoGenerator
         strapiSEO={{
-          title: words.seoTitle,
-          pageTitle: words.seoTitle,
-          seoTitle: words.seoTitle,
-          description: words.seoDescription,
-          keywords: words.seoKeywords,
+          title: seo.title,
+          pageTitle: seo.title,
+          seoTitle: seo.title,
+          description: seo.description,
+          keywords: seo.keywords,
         }}
-        type="WebPage"
+        schemaOverride={seo.schema}
+        largeImage
+        imageWidth={1200}
+        imageHeight={630}
         ogTags={{
-          ogTitle: words.seoTitle,
-          ogDescription: words.seoDescription,
-          ogType: 'website',
-          ogImageAlt: words.ogImageAlt,
+          ogTitle: seo.title,
+          ogDescription: seo.description,
+          ogType: seo.ogType,
+          ogImageAlt: seo.imageAlt,
           ogImage: {
             data: {
               attributes: {
                 url: '',
-                staticUrl: `${process.env.NEXT_PUBLIC_DOMAIN}/ai-atlas/og.png`,
+                staticUrl: seo.image,
               },
             },
           },
         }}
       />
       <div className="ai-atlas-root">
-        <AiAtlasApp initialGuide={guide} />
+        <AiAtlasApp
+          key={tab}
+          initialGuide={guide}
+          initialTab={tab}
+          readings={localReadings || undefined}
+          onTabChange={goTo}
+        />
       </div>
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const { readStoredGuide } = await import('@lib/aiAtlas/store');
   const { stripGuide } = await import('@lib/aiAtlas/stripGuide');
   /* A stored guide is checked again against the adapter this build
      ships; one it can no longer draw falls back to the bundled guide. */
   const stored = stripGuide(await readStoredGuide());
-  const guide = 'guide' in stored ? stored.guide : bundledGuide;
+  const english = 'guide' in stored ? stored.guide : bundledGuide;
+  /* Russian replaces the words and keeps the structure; Armenian reads the
+     English Atlas. */
+  if (locale === 'ru') {
+    const { localizeGuide } = await import('@lib/aiAtlas/localize');
+    const ru = (await import('@lib/aiAtlas/ru.json')).default;
+    const ruReadings = (await import('@lib/aiAtlas/readings.ru.json')).default;
+    return {
+      props: {
+        guide: localizeGuide(english, ru as any),
+        readings: ruReadings,
+      },
+      revalidate: 300,
+    };
+  }
+  const guide = english;
   /* The push regenerates the page at once; the timer only covers a
      redeploy, whose build carries the bundled guide until it rolls. */
   return { props: { guide }, revalidate: 300 };

@@ -2223,8 +2223,8 @@ body.darkTheme .ai-atlas-root .feature-modal__body::-webkit-scrollbar-thumb {
    ENVIRONMENT / SECURITY toggle, the ink fill sliding to the selected tab
    over 420ms. Each tab carries a line icon (a currentColor mask), and
    momiji leaves fall behind the unselected ones; they pause on hover, fade
-   out on the selected tab and are removed under reduced motion. The STORY
-   legend sits in the frame's top padding so no line of the story moves.
+   out on the selected tab and are removed under reduced motion. The THESIS
+   legend sits in the frame's top padding so no line of the thesis moves.
    Accepted by Wolf on docs-terminal on 2026-10-13. */
 .ai-atlas-root .atlas-tab {
   margin: 0;
@@ -2661,14 +2661,15 @@ html:has(.ai-atlas-root .rd .l-modal[open]) {
     opacity: 0;
   }
 }
+/* 44px touch target; the cross keeps its place 32px from the corner. */
 .ai-atlas-root .rd .l-m-close {
   position: sticky;
-  top: var(--sp-2);
+  top: 10px;
   z-index: 1;
   display: block;
-  width: 32px;
-  height: 32px;
-  margin: var(--sp-2) var(--sp-2) -48px auto;
+  width: 44px;
+  height: 44px;
+  margin: 10px 10px -54px auto;
   padding: 0;
   border: 0;
   border-radius: var(--r);
@@ -2681,8 +2682,8 @@ html:has(.ai-atlas-root .rd .l-modal[open]) {
 .ai-atlas-root .rd .l-m-close::after {
   content: '';
   position: absolute;
-  left: 7px;
-  top: 15px;
+  left: 13px;
+  top: 21px;
   width: 18px;
   height: 2px;
   background: currentColor;
@@ -3106,6 +3107,7 @@ html:has(.ai-atlas-root .rd .l-modal[open]) {
   }
   .ai-atlas-root .rd .c-spine {
     order: -1;
+    min-height: 44px;
     flex-direction: row;
     gap: var(--sp-2);
     text-align: left;
@@ -3326,12 +3328,15 @@ html:has(.ai-atlas-root .rd .l-modal[open]) {
   display: flex;
   gap: var(--sp-2);
   min-width: 1000px;
-  padding: 0 0 var(--sp-2) var(--sp-1);
+  padding: 0 0 6px var(--sp-1);
 }
+/* 44px touch targets. The extra height is padding; the row's bottom
+   padding shrinks by the same 10px. */
 .ai-atlas-root .rd .d-step {
   background: none;
   border: 0;
-  padding: 0;
+  padding: 10px 0;
+  min-width: 44px;
   font: inherit;
   font-size: var(--fs-body);
   font-weight: 500;
@@ -3599,4 +3604,13 @@ body.darkTheme .ai-atlas-root .rd .d-tile.mem text {
 }
 body.darkTheme .ai-atlas-root .rd .d-tile rect {
   filter: none;
+}
+
+/* At 400px and below a Russian label (ЛЕСТНИЦА) is wider than its third of
+   the switch at the phone spacing; the tighter tracking keeps it whole. */
+@media (max-width: 400px) {
+  .ai-atlas-root .atlas-tabs .atlas-tab {
+    padding: 12px 4px;
+    letter-spacing: 0.08em;
+  }
 }

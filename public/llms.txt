@@ -1,6 +1,17 @@
 # Keep Simple | Cognitive Science & UX Leadership
 > Elevate your leadership with applied cognitive science. Explore behavioral psychology and cognitive frameworks designed for modern managers.
 
+<!-- ai-atlas:start -->
+## AI Atlas: learning to work with AI agents
+
+- [AI Atlas: how one person runs a team of AI agents](https://keepsimple.io/ai-atlas): The map of how I run a team of AI agents, one task from my message to the result. Next to it are a Thesis and a 16-rung ladder for learning to work with agents.
+- [Thesis: the edge now is solving hard problems with AI agents](https://keepsimple.io/ai-atlas/thesis): Vibe coding narrowed the gap between engineers and everyone else. What comes next: asking well, context windows, orchestration, evals and memory. Markdown: https://keepsimple.io/llms-full-pages/ai-atlas/thesis.md
+- [The AI agent ladder: 16 rungs from chat to a system of agents](https://keepsimple.io/ai-atlas/ladder): Where you stand with AI agents and what to learn next: 16 rungs from chat to Claude Code, evals, orchestration and memory, each with the skill for the next step. Markdown: https://keepsimple.io/llms-full-pages/ai-atlas/ladder.md
+- [AI Атлас: как один человек руководит командой ИИ-агентов](https://keepsimple.io/ru/ai-atlas): Карта того, как я работаю с командой ИИ-агентов: одна задача от моего сообщения до результата. Рядом Тезис и Лестница из 16 ступеней, чтобы этому научиться.
+- [Тезис: преимущество у того, кто решает сложные задачи с ИИ](https://keepsimple.io/ru/ai-atlas/thesis): Вайбкодинг сократил разрыв между инженерами и остальными. Что дальше: умение спрашивать, контекстное окно, оркестрация, эвалы и память. Markdown: https://keepsimple.io/llms-full-pages/ai-atlas/ru/thesis.md
+- [Лестница ИИ-агентов: 16 ступеней от чата до системы агентов](https://keepsimple.io/ru/ai-atlas/ladder): Где ты сейчас в работе с ИИ-агентами и чему учиться дальше: 16 ступеней от чата до Claude Code, эвалов, оркестрации и памяти, на каждой навык для следующего шага. Markdown: https://keepsimple.io/llms-full-pages/ai-atlas/ru/ladder.md
+<!-- ai-atlas:end -->
+
 ## Pages & Resources
 - [Home](https://keepsimple.io/): KeepSimple home page.
 - [Slug](https://keepsimple.io/[page]): No description available.
