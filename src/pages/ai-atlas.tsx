@@ -1,4 +1,5 @@
 import type { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -868,6 +869,14 @@ type ViewMode = 'environment' | 'security';
 /* The header tabs: the map, and the two readings that sit beside it. */
 type Tab = 'atlas' | 'article' | 'ladder';
 const READING_TABS: Tab[] = ['article', 'ladder'];
+/* Each reading has its own address on keepsimple.io: /ai-atlas/story and
+   /ai-atlas/ladder. The map stays at /ai-atlas. */
+export const TAB_SLUGS: Record<string, string> = {
+  article: 'story',
+  ladder: 'ladder',
+};
+export const tabPath = (tab: Tab) =>
+  tab === 'atlas' ? '/ai-atlas' : '/ai-atlas/' + TAB_SLUGS[tab];
 const readings = readingsData as Readings;
 
 function DoctrinePanel({ t }: { t: T }) {
@@ -1262,6 +1271,11 @@ export function AiAtlasApp({
   initialGuide = null,
   initialView = 'environment',
   initialFocus = null,
+  initialTab = 'atlas',
+  /* On keepsimple.io a tab is its own page and this navigates to it. Without
+     it (the Terminal's frame) the tabs switch in place and the hash holds
+     the tab. */
+  onTabChange = null,
 }: any = {}) {
   const [data] = useState<any>(() =>
     initialGuide ? adaptGuide(initialGuide) : null,
@@ -1272,7 +1286,7 @@ export function AiAtlasApp({
   const [hoverNode, setHoverNode] = useState<string | null>(null);
   const [linkHoverNode, setLinkHoverNode] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>(initialView);
-  const [tab, setTab] = useState<Tab>('atlas');
+  const [tab, setTab] = useState<Tab>(initialTab);
   const tabPending = useRef(false);
   const changeTab = (next: Tab) => {
     if (next === tab || tabPending.current) return;
@@ -1281,6 +1295,10 @@ export function AiAtlasApp({
     stage?.classList.add('is-leaving');
     setTimeout(
       () => {
+        if (onTabChange) {
+          onTabChange(next);
+          return;
+        }
         setTab(next);
         setFocusedNode(null);
         stage?.classList.remove('is-leaving');
@@ -1321,10 +1339,16 @@ export function AiAtlasApp({
     const sync = () => {
       const hash = window.location.hash.replace(/^#/, '').toLowerCase();
       if ((READING_TABS as string[]).includes(hash)) {
-        setTab(hash as Tab);
-        setFocusedNode(null);
+        /* An old #article / #ladder link opens the reading's own page. */
+        if (onTabChange) onTabChange(hash as Tab, true);
+        else {
+          setTab(hash as Tab);
+          setFocusedNode(null);
+        }
         return;
       }
+      /* A reading page has no map state to restore from the hash. */
+      if (onTabChange && initialTab !== 'atlas') return;
       setTab('atlas');
       if (hash === 'security') {
         setViewMode('security');
@@ -1350,13 +1374,15 @@ export function AiAtlasApp({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let desired = '';
-    if (tab !== 'atlas') desired = '#' + tab;
+    if (tab !== 'atlas') desired = onTabChange ? '' : '#' + tab;
     else if (viewMode === 'security') desired = '#security';
     else if (focusedNode) desired = '#' + focusedNode;
     const current = window.location.hash;
     if (current !== desired) {
       const url = window.location.pathname + window.location.search + desired;
-      window.history.replaceState(null, '', url);
+      /* Keep the router's own entry state, so Back between the tab pages
+         still navigates. */
+      window.history.replaceState(window.history.state, '', url);
     }
   }, [tab, viewMode, focusedNode]);
 
@@ -2182,7 +2208,16 @@ export function AiAtlasApp({
   );
 }
 
-export default function AiAtlasPage({ guide }: { guide: any }) {
+export default function AiAtlasPage({
+  guide,
+  tab = 'atlas',
+}: {
+  guide: any;
+  tab?: Tab;
+}) {
+  const router = useRouter();
+  const goTo = (next: Tab, replace?: boolean) =>
+    replace ? router.replace(tabPath(next)) : router.push(tabPath(next));
   /* Words pushed with the guide replace the built-in ones, SEO included. */
   const words = { ...copy, ...PAGE_TEXT_DEFAULTS, ...(guide?.copy || {}) };
   return (
@@ -2212,7 +2247,12 @@ export default function AiAtlasPage({ guide }: { guide: any }) {
         }}
       />
       <div className="ai-atlas-root">
-        <AiAtlasApp initialGuide={guide} />
+        <AiAtlasApp
+          key={tab}
+          initialGuide={guide}
+          initialTab={tab}
+          onTabChange={goTo}
+        />
       </div>
     </>
   );
