@@ -112,7 +112,11 @@ export function Dropdown(props: DropdownProps): JSX.Element {
           ? {
               top: menuPos.top,
               left: menuPos.left,
-              width: menuPos.width,
+              // Never narrower than the trigger, never wider than the room
+              // left of the viewport's right edge, and capped so a long shelf
+              // name can't stretch the menu across the whole screen.
+              minWidth: menuPos.width,
+              maxWidth: `min(320px, calc(100vw - ${menuPos.left + 8}px))`,
               transform:
                 menuPos.placement === 'top' ? 'translateY(-100%)' : undefined,
             }
@@ -167,7 +171,12 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                   </div>
                 </>
               ) : (
-                <Text variant={TypographyVariant.TextBase}>{option.label}</Text>
+                <Text
+                  variant={TypographyVariant.TextBase}
+                  className={styles.optionLabel}
+                >
+                  {option.label}
+                </Text>
               )}
               {hasSubOptions ? (
                 <ArrowIcon
@@ -198,7 +207,10 @@ export function Dropdown(props: DropdownProps): JSX.Element {
                     onKeyDown={activateOnKey(() => handleSubSelect(sub.value))}
                     aria-label={`Select ${sub.label}`}
                   >
-                    <Text variant={TypographyVariant.TextBase}>
+                    <Text
+                      variant={TypographyVariant.TextBase}
+                      className={styles.optionLabel}
+                    >
                       {sub.label}
                     </Text>
                     {value === sub.value && (
