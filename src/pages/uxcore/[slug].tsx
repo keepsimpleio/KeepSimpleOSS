@@ -260,8 +260,12 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
       currentModalData: currentActiveBias,
       languageSwitchSlugs,
       currentActiveBias: currentActiveBiasWithLocale.attributes,
-      biases: strapiBiases,
-      uxcgLocalizedData: strapiQuestions,
+      // The page reads only the current locale; shipping all three tripled
+      // the page data.
+      biases: { [locale]: strapiBiases[locale as 'en' | 'ru' | 'hy'] ?? [] },
+      uxcgLocalizedData: {
+        [locale]: strapiQuestions[locale as 'en' | 'ru' | 'hy'] ?? [],
+      },
     },
     revalidate: 5,
   };
