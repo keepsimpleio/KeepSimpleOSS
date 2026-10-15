@@ -298,7 +298,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
       questionsLength: sortedQuestions?.length,
       allQuestions: slimUXCGQuestions(questions, locale),
       id: question?.attributes.number || null,
-      biases: { [locale]: biases[locale as 'en' | 'ru' | 'hy'] },
+      biases: { [locale]: biases[locale as 'en' | 'ru' | 'hy'] ?? [] },
     },
     revalidate: 5,
   };
