@@ -570,3 +570,24 @@ export const getAdjacentUXCGTitles = (locale, uxcgDats, activeQuestion) => {
     next: nextQuestion ? `${nextQuestion.slug}` : null,
   };
 };
+
+// UXCG pages ship every locale's questions so search can match aliases in any
+// language. Only the current locale is rendered; the others keep the fields
+// search reads, which cuts each page's data by several hundred KB.
+export const slimUXCGQuestions = (
+  questions: Record<'en' | 'ru' | 'hy', any[]>,
+  locale: string,
+) =>
+  Object.fromEntries(
+    Object.entries(questions).map(([key, list]) => [
+      key,
+      key === locale
+        ? list
+        : (list || []).map(({ attributes }) => ({
+            attributes: {
+              number: attributes?.number ?? null,
+              aliases: attributes?.aliases ?? null,
+            },
+          })),
+    ]),
+  );

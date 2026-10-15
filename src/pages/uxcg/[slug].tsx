@@ -11,6 +11,7 @@ import {
   generateQuestionsSeo,
   getAdjacentUXCGTitles,
   mergeQuestionsLocalization,
+  slimUXCGQuestions,
 } from '@uxcore/lib/helpers';
 import { getUXCGSlugPaths } from '@uxcore/lib/paths';
 import {
@@ -289,17 +290,15 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
       currentSlug: slug,
       languageSwitchSlugs,
       tags,
-      questionsTest: questions,
       questionsSeo,
       title: question?.attributes?.title || '',
       mainSeo,
       modalData: uxcgData || null,
       answerRelatedQuestions: answerRelatedQuestions || null,
       questionsLength: sortedQuestions?.length,
-      questions: sortedQuestions,
-      allQuestions: questions,
+      allQuestions: slimUXCGQuestions(questions, locale),
       id: question?.attributes.number || null,
-      biases,
+      biases: { [locale]: biases[locale as 'en' | 'ru' | 'hy'] },
     },
     revalidate: 5,
   };

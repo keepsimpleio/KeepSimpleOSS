@@ -1,25 +1,19 @@
-import { GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
-import React, { FC, useMemo, useState } from 'react';
-
-import { QuestionType, TagType } from '@uxcore/local-types/data';
-import { TRouter } from '@uxcore/local-types/global';
-
-import {
-  generateQuestionsSeo,
-  mergeBiasesLocalization,
-  mergeQuestionsLocalization,
-} from '@uxcore/lib/helpers';
-
-import { getStrapiBiases } from '@uxcore/api/biases';
 import { getUXCGSeo } from '@uxcore/api/mainPageSeo';
 import { getStrapiQuestions } from '@uxcore/api/questions';
 import { getTags } from '@uxcore/api/tags';
-
 import SeoGenerator from '@uxcore/components/SeoGenerator';
 import Spinner from '@uxcore/components/Spinner';
-
 import UXCGLayout from '@uxcore/layouts/UXCGLayout';
+import {
+  generateQuestionsSeo,
+  mergeQuestionsLocalization,
+  slimUXCGQuestions,
+} from '@uxcore/lib/helpers';
+import { QuestionType, TagType } from '@uxcore/local-types/data';
+import { TRouter } from '@uxcore/local-types/global';
+import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
+import React, { FC, useMemo, useState } from 'react';
 
 interface UxcgProps {
   tags: TagType[];
@@ -72,12 +66,6 @@ export default Index;
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const tags = getTags();
   const questions = await getStrapiQuestions();
-  const biases = await getStrapiBiases();
-  const sortedBiases = mergeBiasesLocalization(
-    biases.en,
-    biases.ru,
-    biases.hy,
-  ).sort((a, b) => a.number - b.number);
   // HYTranslation TODO
   const sortedQuestions = mergeQuestionsLocalization(
     questions.en,
@@ -91,11 +79,10 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   return {
     props: {
-      biases: sortedBiases,
       tags,
       questionsSeo,
       mainSeo,
-      allQuestions: questions,
+      allQuestions: slimUXCGQuestions(questions, locale),
     },
     revalidate: 5,
   };
