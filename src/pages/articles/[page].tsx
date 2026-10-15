@@ -163,8 +163,10 @@ export const getStaticProps: GetStaticProps = async ({
   const articles: TArticle[] = await getArticles(locale === 'ru' ? 'ru' : 'en');
   const article = page && getCurrentArticle(articles, page);
 
-  if (!article) {
-    return { notFound: true };
+  // getCurrentArticle returns {} on a miss, so an unknown slug must be caught
+  // by its keys: rendering it as a 200 page let crawlers loop on junk URLs.
+  if (!article || !Object.keys(article).length) {
+    return { notFound: true, revalidate: 10 };
   }
 
   const recommendedArticles = getRecommendedArticles(articles, page);
