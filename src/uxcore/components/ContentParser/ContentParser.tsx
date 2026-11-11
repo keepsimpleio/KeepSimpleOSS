@@ -9,7 +9,11 @@ import remarkBreaks from 'remark-breaks';
 // Persona text is saved by visitors and shown on public pages, so raw HTML is
 // filtered to the tags our content uses. Custom tags are the ones
 // useContentType renders.
-const SAFE_STYLE = /^(?!.*(position|url\s*\(|expression|@import)).*$/i;
+// A backslash is refused because CSS escapes spell a blocked word past the list.
+const SAFE_STYLE =
+  /^(?![\s\S]*(\\|position|url\s*\(|expression|@import))[\s\S]*$/i;
+// The accordion file is appended to the CMS address, so it must be a path on it.
+const CMS_PATH = /^\/(?![\/\\])/;
 const sanitizeSchema = {
   ...defaultSchema,
   tagNames: [
@@ -27,7 +31,7 @@ const sanitizeSchema = {
       'className',
       ['style', SAFE_STYLE],
     ],
-    accordion: ['title', 'file', 'open'],
+    accordion: ['title', ['file', CMS_PATH], 'open'],
     download: ['url'],
     trello: ['url'],
   },
