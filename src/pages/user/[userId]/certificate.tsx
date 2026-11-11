@@ -1,16 +1,11 @@
-import { useRouter } from 'next/router';
-import React, { useContext } from 'react';
-
-import type { TRouter } from '@uxcore/local-types/global';
-
 import { getCertificate } from '@uxcore/api/uxcat/certificate';
-
-import pageNotFoundData from '@uxcore/data/404';
-
 import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import Spinner from '@uxcore/components/Spinner';
-
+import pageNotFoundData from '@uxcore/data/404';
 import CertificateLayout from '@uxcore/layouts/CertificateLayout';
+import type { TRouter } from '@uxcore/local-types/global';
+import { useRouter } from 'next/router';
+import React, { useContext } from 'react';
 
 import NotFoundPage from '../../404';
 
@@ -20,7 +15,7 @@ const Certificate = ({ userId, certificate }) => {
   const { uxcatUserInfo } = useContext(GlobalContext);
 
   const name =
-    uxcatUserInfo.user.id === 1034
+    uxcatUserInfo?.user?.id === 1034
       ? 'Кузнецов Тимофей Юрьевич'
       : `${certificate?.name} ${certificate?.surname}`;
   const date = new Date(certificate?.certificatedAt);
@@ -53,6 +48,7 @@ export default Certificate;
 export async function getServerSideProps(context) {
   const userId = context.params.userId;
   const certificate = await getCertificate(userId);
+  if (!certificate) context.res.statusCode = 404;
   return {
     props: {
       certificate,
