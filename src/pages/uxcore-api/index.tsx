@@ -38,7 +38,9 @@ const API: FC<ApiProps> = ({ mainSeo }) => {
 };
 export const getStaticProps: GetStaticProps = async () => {
   const mainSeo = await getUXCoreApiSeo();
-  return { props: { mainSeo } };
+  // Without an interval the HTML ships a one-year shared cache header and a
+  // CDN keeps serving it across releases, pointing at assets that are gone.
+  return { props: { mainSeo }, revalidate: 60 };
 };
 
 export default API;
