@@ -16,6 +16,16 @@ const ALLOWED_HOSTS = [
   /^img\.youtube\.com$/,
 ];
 
+// Raster types only. An SVG can carry script, and this route answers from our
+// own origin, so anything else is refused.
+const RASTER_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+]);
+
 // The full-resolution Google scan (zoom=0) is the cover worth having, but it is
 // not always there: some volumes answer it with an error, some rate-limit the
 // image endpoint, and a large scan blows the 550 KB cap. When it fails, the
@@ -112,9 +122,12 @@ async function pull(
       return null;
     }
 
-    const contentType = upstream.headers.get('content-type') ?? '';
+    const contentType = (upstream.headers.get('content-type') ?? '')
+      .split(';')[0]
+      .trim()
+      .toLowerCase();
     if (
-      !contentType.startsWith('image/') ||
+      !RASTER_TYPES.has(contentType) ||
       Number(upstream.headers.get('content-length')) > COVER_MAX_BYTES
     ) {
       await upstream.body?.cancel();
@@ -167,6 +180,8 @@ export default async function handler(
     if (!image) continue;
 
     res.setHeader('Content-Type', image.contentType);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
     res.setHeader('Cache-Control', 'public, max-age=86400');
     console.info(
       JSON.stringify({
