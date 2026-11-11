@@ -48,6 +48,7 @@ export default Certificate;
 export async function getServerSideProps(context) {
   const userId = context.params.userId;
   const certificate = await getCertificate(userId);
+  if (!certificate) context.res.statusCode = 404;
   return {
     props: {
       certificate,

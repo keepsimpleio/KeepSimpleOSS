@@ -1,7 +1,3 @@
-import cn from 'classnames';
-import { useCallback, useMemo, useState } from 'react';
-import ReactDomServer from 'react-dom/server';
-
 import Accordion from '@uxcore/components/Accordion';
 import {
   Div,
@@ -12,6 +8,9 @@ import {
   Span,
 } from '@uxcore/components/ContentGenerator/elements';
 import ContentParser from '@uxcore/components/ContentParser';
+import cn from 'classnames';
+import { useCallback, useMemo, useState } from 'react';
+import ReactDomServer from 'react-dom/server';
 
 import useGlobals from './useGlobals';
 
@@ -93,6 +92,8 @@ const useContentType = (styles: any, usePTag: boolean) => {
     li: (props: any) => <li className={styles.li}>{props.children}</li>,
     ul: (props: any) => <ul className={styles.ul}>{props.children}</ul>,
     img: (props: any) => {
+      // The sanitiser drops a source it does not trust; nothing to draw then.
+      if (typeof props.src !== 'string' || !props.src) return null;
       return (
         <Image
           styles={styles}
