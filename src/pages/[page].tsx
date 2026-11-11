@@ -15,7 +15,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
   const map = await getArticleRedirects(locale ?? 'en');
 
   if (page.startsWith('articles/')) {
-    return { notFound: true };
+    return { notFound: true, revalidate: 60 };
   }
 
   const resolvedNewUrl = map[page];
@@ -26,10 +26,11 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
         destination: `/${resolvedNewUrl}`,
         permanent: true,
       },
+      revalidate: 60,
     };
   }
 
-  return { notFound: true };
+  return { notFound: true, revalidate: 60 };
 };
 
 export default function LegacyRedirectPage() {
