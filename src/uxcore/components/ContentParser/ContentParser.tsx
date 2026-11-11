@@ -1,10 +1,41 @@
+import useContentType from '@uxcore/hooks/useContentType';
 import unescape from 'lodash.unescape';
 import { FC, Fragment, memo, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkBreaks from 'remark-breaks';
 
-import useContentType from '@uxcore/hooks/useContentType';
+// Persona text is saved by visitors and shown on public pages, so raw HTML is
+// filtered to the tags our content uses. Custom tags are the ones
+// useContentType renders.
+const SAFE_STYLE = /^(?!.*(position|url\s*\(|expression|@import)).*$/i;
+const sanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [
+    ...(defaultSchema.tagNames ?? []),
+    'u',
+    'span',
+    'accordion',
+    'download',
+    'trello',
+  ],
+  attributes: {
+    ...defaultSchema.attributes,
+    '*': [
+      ...(defaultSchema.attributes?.['*'] ?? []),
+      'className',
+      ['style', SAFE_STYLE],
+    ],
+    accordion: ['title', 'file', 'open'],
+    download: ['url'],
+    trello: ['url'],
+  },
+  protocols: {
+    ...defaultSchema.protocols,
+    url: ['http', 'https'],
+  },
+};
 
 type ContentParserProps = {
   data: any;
@@ -31,7 +62,7 @@ const ContentParser: FC<ContentParserProps> = ({
         className={styles.content}
         components={componentList}
         remarkPlugins={[[remarkBreaks]]}
-        rehypePlugins={[rehypeRaw]}
+        rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
       >
         {modifiedData}
       </ReactMarkdown>
