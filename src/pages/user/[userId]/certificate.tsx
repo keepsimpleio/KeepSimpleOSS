@@ -1,21 +1,22 @@
 import { getCertificate } from '@uxcore/api/uxcat/certificate';
-import { GlobalContext } from '@uxcore/components/Context/GlobalContext';
 import Spinner from '@uxcore/components/Spinner';
 import pageNotFoundData from '@uxcore/data/404';
 import CertificateLayout from '@uxcore/layouts/CertificateLayout';
 import type { TRouter } from '@uxcore/local-types/global';
 import { useRouter } from 'next/router';
-import React, { useContext } from 'react';
+import React from 'react';
 
 import NotFoundPage from '../../404';
 
 const Certificate = ({ userId, certificate }) => {
   const router = useRouter();
   const { locale } = router as TRouter;
-  const { uxcatUserInfo } = useContext(GlobalContext);
 
+  // One holder asked for the full legal name on the certificate. It is tied to
+  // the certificate's own address, so every viewer reads the same name and no
+  // other certificate carries it.
   const name =
-    uxcatUserInfo?.user?.id === 1034
+    String(userId).toLowerCase() === 'tufuka48'
       ? 'Кузнецов Тимофей Юрьевич'
       : `${certificate?.name} ${certificate?.surname}`;
   const date = new Date(certificate?.certificatedAt);
