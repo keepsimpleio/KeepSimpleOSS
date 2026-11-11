@@ -1,7 +1,7 @@
 import { UxCatRoute } from '@uxcore/api/uxcat/configs';
 
 export const getCertificate = async username => {
-  const url = `${UxCatRoute}users/${username}/certificate`;
+  const url = `${UxCatRoute}users/${encodeURIComponent(username)}/certificate`;
 
   try {
     const headers = {
