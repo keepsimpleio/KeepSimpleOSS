@@ -125,6 +125,20 @@ const UserProfile: FC<UserProfileProps> = ({
     if (accessToken) {
       setIsAccessTokenExist(true);
     }
+    // A refused token is wiped by the API layer, which then fires
+    // auth:expired. Without this the header keeps the signed-in shell
+    // (skeleton name, account menu) for a session that no longer exists.
+    const syncExpired = () => {
+      if (localStorage.getItem('accessToken')) return;
+      setIsAccessTokenExist(false);
+      setIsDropdownOpen(false);
+    };
+    window.addEventListener('auth:expired', syncExpired);
+    window.addEventListener('storage', syncExpired);
+    return () => {
+      window.removeEventListener('auth:expired', syncExpired);
+      window.removeEventListener('storage', syncExpired);
+    };
   }, []);
 
   return (
