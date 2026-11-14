@@ -739,10 +739,13 @@ magic book's percent, not this one.
 
 ## Library MCP
 
-An agent keeps a library in order through `mcp/library`: five tools over one
+An agent keeps a library in order through `mcp/library`: six tools over one
 library, and nothing else. It lists books with their notes, creates and edits
 tags, puts a tag on a book or takes it off, sets the order the tag's books
-stand in, and writes a book's note, rating and difficulty. It deletes nothing:
+stand in, writes a book's note, rating and difficulty, and adds a book to a
+shelf by its title, with the author, year and cover the Add form's own search
+returns. Adding refuses a title the library holds and writes nothing while
+the title is ambiguous. It deletes nothing:
 removing a book, a shelf or a tag asks the owner first, in the Library.
 
 The key is not a second authority. Every Library controller decides who may
@@ -757,5 +760,6 @@ one target, because prod and staging number their libraries separately.
 Every call leaves a line in `logs/library-mcp.jsonl`: tool, arguments cut to
 120 characters, outcome, duration, UTC. Never the key, never the session.
 Before any release of this surface run `mcp/library/probe.mjs` against a
-library you may touch: it exercises all five tools and takes back every write.
+library you may touch: it exercises all six tools and takes back every write, leaving only the
+added book's cover file in the media store.
 Setup and wiring live in `mcp/library/README.md`.

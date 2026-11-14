@@ -1,6 +1,6 @@
 # Library MCP
 
-Five tools an agent can hold, on one library, through one key.
+Six tools an agent can hold, on one library, through one key.
 
 The Library backend already does everything this needs: a tag has a name, a
 description, a colour and its own order of books; a book has a note, a rating
@@ -9,18 +9,30 @@ that reads as tools. This is both.
 
 ## The tools
 
-| Tool                | What it does                                                                                                                             |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `library_books`     | Every book with its note, rating, shelf and tags. Narrow by title, tag or shelf. Everything else takes the titles and ids this returns.  |
-| `library_tag`       | Create a tag, or change its name, colour or description.                                                                                 |
-| `library_tag_books` | Put a tag on books, or take it off.                                                                                                      |
-| `library_tag_order` | Set the order the tag's books stand in. A partial list is enough: what is named takes the front, the rest keep their sequence behind it. |
-| `library_book`      | Change a book's note, rating or difficulty.                                                                                              |
+| Tool                | What it does                                                                                                                                                   |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `library_books`     | Every book with its note, rating, shelf and tags. Narrow by title, tag or shelf. Everything else takes the titles and ids this returns.                        |
+| `library_tag`       | Create a tag, or change its name, colour or description.                                                                                                       |
+| `library_tag_books` | Put a tag on books, or take it off.                                                                                                                            |
+| `library_tag_order` | Set the order the tag's books stand in. A partial list is enough: what is named takes the front, the rest keep their sequence behind it.                       |
+| `library_book`      | Change a book's note, rating or difficulty.                                                                                                                    |
+| `library_add_book`  | Add a book to a shelf by its title. The title is looked up in the same catalogues the Add form searches, and the book arrives with its author, year and cover. |
 
 Books and tags are named the way a person names them, by title or by word. A
 name that matches two books is refused with both candidates rather than
 guessed at. Nothing here deletes a book, a shelf or a tag: those ask the owner
 first, in the Library, and they stay there.
+
+`library_add_book` writes only when the answer is unambiguous. A title the
+library already holds is refused. When the catalogues return the title under
+more than one author, nothing is written and the candidates come back
+numbered; call again with `pick` or with the author. A book goes in with its
+cover or not at all, unless the call says `cover: "none"`, and a title no
+catalogue knows needs `unlisted: true`. The note stays empty unless the call
+carries one: it is the owner's own writing, so the catalogue's description is
+not copied into it. The shelf, library and tag limits of the Add form apply.
+After the write the library is read again, and the call fails unless the book
+stands on the shelf it was meant for.
 
 ## What the key is
 
@@ -66,6 +78,7 @@ Order, who sets it on the CMS the target names.
 | `KS_LIBRARY_AGENT_KEY_FILE` | Where the key is read from. Defaults to `/data/secrets/keepsimple-library-agent-key`.                                  |
 | `KS_LIBRARY_AGENT_KEY`      | The key itself, when a file is not wanted.                                                                             |
 | `KS_LIBRARY_STRAPI`         | A CMS address, overriding the target's own.                                                                            |
+| `KS_LIBRARY_SITE`           | The site whose book search `library_add_book` borrows. Defaults to production: the search reads public catalogues.     |
 | `KS_LIBRARY_JOURNAL`        | Where the trail is written. Defaults to `logs/library-mcp.jsonl` in this checkout.                                     |
 
 Every call leaves one line in the journal: who called (the client's own name
@@ -84,10 +97,12 @@ KS_LIBRARY_SESSION_JWT=<a session for the owner> KS_LIBRARY_ID=<library> \
 node mcp/library/probe.mjs
 ```
 
-The probe runs all five tools against a live library and takes back every
+The probe runs all six tools against a live library and takes back every
 write it makes: the tag it creates it deletes, the note it changes it
-restores, and it re-reads independently to prove each one landed. Point it at
-a library whose contents you are willing to have touched.
+restores, the book it adds it removes, and it re-reads independently to prove
+each one landed. One file stays behind: the cover of the added book, which
+the owner's session may upload but not delete. Point it at a library whose
+contents you are willing to have touched.
 
 `KS_LIBRARY_SESSION_JWT` with `KS_LIBRARY_ID` skips the key exchange and uses
 a session handed in. It grants nothing on its own, since the CMS still has to

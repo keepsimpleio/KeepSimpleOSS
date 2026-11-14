@@ -1,5 +1,5 @@
 /**
- * The five things an agent may do to a library, and nothing else.
+ * The six things an agent may do to a library, and nothing else.
  *
  * Each tool takes books and tags the way a person names them, a title or a
  * word, and turns that into the ids the CMS wants. A name that matches two
@@ -11,14 +11,18 @@ import path from 'node:path';
 
 import { record } from './journal.mjs';
 import {
+  createObject,
   createTag,
+  fetchCover,
   LibraryError,
   readLibrary,
   readTags,
   reorderTag,
   resolveBook,
   resolveTag,
+  searchBooks,
   updateTag,
+  uploadCover,
   writeObject,
 } from './library.mjs';
 
@@ -54,6 +58,11 @@ const MAX_TAG_DESCRIPTION_LENGTH = limit('MAX_TAG_DESCRIPTION_LENGTH', 180);
 const MAX_TAGS_PER_OBJECT = limit('MAX_TAGS_PER_OBJECT', 10);
 const MAX_TAGS_PER_LIBRARY = limit('MAX_TAGS_PER_LIBRARY', 13);
 const MAX_NOTE_LENGTH = 5000;
+const MAX_OBJECTS_PER_SHELF = limit('MAX_OBJECTS_PER_SHELF', 50);
+const MAX_OBJECTS_PER_LIBRARY = limit('MAX_OBJECTS_PER_LIBRARY', 300);
+// The Add form's own caps (OBJECT_FIELD_LIMITS), which the CMS enforces too.
+const MAX_BOOK_TITLE_LENGTH = 200;
+const MAX_AUTHOR_LENGTH = 100;
 
 /**
  * The palette the tag form offers, read from the constant the form itself
@@ -91,6 +100,87 @@ const bookLine = (book, notes) => ({
   favorite: book.favorite || undefined,
   note: shorten(book.note, notes),
 });
+
+/**
+ * Titles compared the way a reader compares them: case, punctuation and
+ * spacing do not make two books out of one.
+ */
+const foldTitle = value =>
+  String(value ?? '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+
+/** The catalogue's date as the calendar day the CMS stores, or nothing. */
+const calendarDate = raw => {
+  const [year, month, day] = String(raw ?? '')
+    .trim()
+    .split('T')[0]
+    .split('-')
+    .map(Number);
+
+  if (!year || Number.isNaN(year) || year < 1000) return undefined;
+
+  const pad = value => String(value).padStart(2, '0');
+
+  return `${year}-${pad(month || 1)}-${pad(day || 1)}`;
+};
+
+const candidateLine = (suggestion, index) => ({
+  pick: index + 1,
+  title: suggestion.title,
+  author: suggestion.author ?? undefined,
+  published: suggestion.publicationDate ?? undefined,
+  cover: suggestion.coverUrl ? true : undefined,
+  from: suggestion.memberLibrary?.username
+    ? `${suggestion.memberLibrary.username}'s library`
+    : undefined,
+});
+
+/**
+ * A shelf named the way a person names one, among the shelves that hold
+ * books. Two matches are refused with both, like a book that names two.
+ */
+const resolveShelf = (reference, shelves) => {
+  const names = shelves.map(shelf => shelf.name).join(', ');
+
+  if (reference === undefined || reference === null || reference === '') {
+    if (shelves.length === 1) return shelves[0];
+
+    throw new LibraryError(`Name the shelf. This library has: ${names}`);
+  }
+
+  if (/^\d+$/.test(String(reference).trim())) {
+    const byId = shelves.find(shelf => shelf.id === Number(reference));
+
+    if (!byId) throw new LibraryError(`No book shelf with id ${reference}`);
+
+    return byId;
+  }
+
+  const wanted = String(reference).trim().toLowerCase();
+  const exact = shelves.filter(shelf => shelf.name?.toLowerCase() === wanted);
+  const matches = exact.length
+    ? exact
+    : shelves.filter(shelf => shelf.name?.toLowerCase().includes(wanted));
+
+  if (matches.length === 0) {
+    throw new LibraryError(
+      `No book shelf is called "${reference}". This library has: ${names}`,
+    );
+  }
+
+  if (matches.length > 1) {
+    throw new LibraryError(
+      `"${reference}" names ${matches.length} shelves: ${matches
+        .map(shelf => shelf.name)
+        .join(', ')}. Name one exactly.`,
+    );
+  }
+
+  return matches[0];
+};
 
 const asText = value => ({
   content: [{ type: 'text', text: JSON.stringify(value, null, 1) }],
@@ -230,6 +320,60 @@ export const definitions = [
         },
       },
       required: ['book'],
+    },
+  },
+  {
+    name: 'library_add_book',
+    description:
+      "Add a book to a shelf. The title is looked up in the same search the Library's Add form uses, which supplies the author, the publication date and the cover. When the search cannot settle on one book it adds nothing and answers with numbered candidates: call again with pick. A title the library already holds is refused. The note is the owner's own writing and stays empty unless one is given.",
+    inputSchema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', description: 'The book, by title' },
+        author: {
+          type: 'string',
+          description:
+            'The author, to settle between books that share the title',
+        },
+        shelf: {
+          type: 'string',
+          description:
+            'The shelf, by name or id. May be left out only when the library has one book shelf.',
+        },
+        pick: {
+          type: 'number',
+          description: 'The number of a candidate from an earlier answer',
+        },
+        cover: {
+          type: 'string',
+          enum: ['auto', 'none'],
+          description:
+            'auto (default) takes the cover the search found and adds nothing when it cannot be fetched; none adds the book without a cover.',
+        },
+        unlisted: {
+          type: 'boolean',
+          description:
+            'Skip the search and add the title and author exactly as given, without a cover. For a book no catalogue knows.',
+        },
+        note: { type: 'string', description: "The owner's note on the book" },
+        rating: { type: 'number', description: '1 to 5' },
+        difficulty: {
+          type: 'string',
+          enum: DIFFICULTIES,
+          description: 'very_hard, hard, moderate or easy',
+        },
+        tags: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Tags to put on it, by name or id',
+        },
+        instruction: {
+          type: 'string',
+          description:
+            "The words this write was asked in, ideally the owner's own. Kept in the journal beside the write; a production change without them is a change nobody ordered.",
+        },
+      },
+      required: ['title'],
     },
   },
 ];
@@ -540,6 +684,226 @@ const handlers = {
         rating: after.overall ?? null,
         difficulty: after.difficulty ?? null,
       },
+    };
+  },
+
+  async library_add_book(args) {
+    const wantedTitle = String(args.title ?? '').trim();
+
+    if (!wantedTitle) throw new LibraryError('Name the book');
+
+    const library = await readLibrary();
+    const shelf = resolveShelf(
+      args.shelf,
+      library.shelves.filter(candidate => candidate.type === 'book'),
+    );
+
+    if (library.books.length >= MAX_OBJECTS_PER_LIBRARY) {
+      throw new LibraryError(
+        `A library keeps at most ${MAX_OBJECTS_PER_LIBRARY} items`,
+      );
+    }
+
+    if (shelf.objects.length >= MAX_OBJECTS_PER_SHELF) {
+      throw new LibraryError(
+        `"${shelf.name}" is full: a shelf keeps at most ${MAX_OBJECTS_PER_SHELF} items`,
+      );
+    }
+
+    const data = {};
+
+    if (args.note !== undefined && args.note !== null) {
+      if (String(args.note).length > MAX_NOTE_LENGTH) {
+        throw new LibraryError(
+          `A note is at most ${MAX_NOTE_LENGTH} characters`,
+        );
+      }
+
+      data.description = String(args.note);
+    }
+
+    if (args.rating !== undefined && args.rating !== null) {
+      const rating = Number(args.rating);
+
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        throw new LibraryError('A rating is a whole number from 1 to 5');
+      }
+
+      data.overall = rating;
+    }
+
+    if (args.difficulty !== undefined && args.difficulty !== null) {
+      if (!DIFFICULTIES.includes(args.difficulty)) {
+        throw new LibraryError(
+          `Difficulty is one of ${DIFFICULTIES.join(', ')}`,
+        );
+      }
+
+      data.difficulty = args.difficulty;
+    }
+
+    if (args.tags?.length) {
+      const tags = await readTags();
+      const ids = [...new Set(args.tags.map(ref => resolveTag(ref, tags).id))];
+
+      if (ids.length > MAX_TAGS_PER_OBJECT) {
+        throw new LibraryError(
+          `A book carries at most ${MAX_TAGS_PER_OBJECT} tags`,
+        );
+      }
+
+      data.tags = ids;
+    }
+
+    const held = title =>
+      library.books.find(
+        book =>
+          book.type === 'book' && foldTitle(book.title) === foldTitle(title),
+      );
+    const refuseHeld = title => {
+      const twin = held(title);
+
+      if (twin) {
+        throw new LibraryError(
+          `The library already holds "${twin.title}" (${twin.id}) on "${twin.shelf.name}"`,
+        );
+      }
+    };
+
+    refuseHeld(wantedTitle);
+
+    let chosen;
+
+    if (args.unlisted) {
+      chosen = { title: wantedTitle, author: args.author };
+    } else {
+      const candidates = await searchBooks(wantedTitle);
+      const listed = candidates.map(candidateLine);
+
+      if (candidates.length === 0) {
+        throw new LibraryError(
+          `The search knows no book called "${wantedTitle}". Check the title, or pass unlisted to add it as given, without a cover.`,
+        );
+      }
+
+      if (args.pick !== undefined && args.pick !== null) {
+        chosen = candidates[Number(args.pick) - 1];
+
+        if (!Number.isInteger(Number(args.pick)) || !chosen) {
+          return {
+            added: false,
+            reason: `pick is a number from 1 to ${candidates.length}`,
+            candidates: listed,
+          };
+        }
+      } else {
+        const wantedAuthor = foldTitle(args.author);
+        const matching = candidates.filter(
+          candidate =>
+            foldTitle(candidate.title) === foldTitle(wantedTitle) &&
+            (!wantedAuthor ||
+              foldTitle(candidate.author).includes(wantedAuthor)),
+        );
+        const authors = new Set(
+          matching.map(candidate => foldTitle(candidate.author)),
+        );
+
+        // Several editions of one book by one author are one book: the search
+        // lists its best first. Anything less certain is the caller's choice.
+        if (matching.length === 0 || authors.size > 1) {
+          return {
+            added: false,
+            reason:
+              matching.length === 0
+                ? 'No candidate carries exactly this title. Call again with pick.'
+                : 'Several books carry this title. Call again with pick, or name the author.',
+            candidates: listed,
+          };
+        }
+
+        [chosen] = matching;
+      }
+
+      refuseHeld(chosen.title);
+    }
+
+    const title = String(chosen.title).slice(0, MAX_BOOK_TITLE_LENGTH);
+    const author = chosen.author
+      ? String(chosen.author).slice(0, MAX_AUTHOR_LENGTH)
+      : undefined;
+
+    let coverId;
+
+    if (!args.unlisted && (args.cover ?? 'auto') !== 'none') {
+      const cover = await fetchCover(chosen.coverUrl, chosen.fallbackCoverUrl);
+
+      // Nothing is written before the cover is in hand: a book without one is
+      // the owner's decision, not a quiet outcome of a slow catalogue.
+      if (!cover) {
+        throw new LibraryError(
+          `No usable cover came back for "${title}". Nothing was added. Call again with cover: "none" to add it without one.`,
+        );
+      }
+
+      const fileName =
+        title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .slice(0, 60) || 'cover';
+
+      coverId = await uploadCover(cover, fileName);
+    }
+
+    const slugBase = title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    const created = await createObject({
+      type: 'book',
+      title,
+      slug: `${slugBase}-${Date.now()}`,
+      author,
+      publicationDate: calendarDate(chosen.publicationDate),
+      shelf: shelf.id,
+      ...(coverId ? { coverImage: coverId } : {}),
+      ...data,
+    });
+
+    const id = created?.data?.id;
+
+    // The answer to the create is not proof. A separate read has to find the
+    // book on the shelf it was sent to.
+    const after = await readLibrary();
+    const landed = after.books.find(book => book.id === id);
+
+    if (!id || !landed) {
+      throw new LibraryError('The server answered, but the book is not there');
+    }
+
+    if (landed.shelf.id !== shelf.id) {
+      throw new LibraryError(
+        `The book landed on "${landed.shelf.name}", not "${shelf.name}"`,
+      );
+    }
+
+    return {
+      added: {
+        id,
+        title: landed.title,
+        author: landed.author ?? undefined,
+        published: calendarDate(chosen.publicationDate),
+        shelf: landed.shelf.name,
+        cover: !!coverId,
+        tags: landed.tags.map(tag => tag.name),
+        rating: landed.rating ?? undefined,
+        difficulty: landed.difficulty ?? undefined,
+        note: landed.note ? true : undefined,
+      },
+      shelfHolds: after.shelves.find(entry => entry.id === shelf.id)?.objects
+        .length,
     };
   },
 };

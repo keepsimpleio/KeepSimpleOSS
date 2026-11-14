@@ -47,6 +47,16 @@ export const strapiUrl = (
   process.env.KS_LIBRARY_STRAPI || TARGETS[target]
 ).replace(/\/+$/, '');
 
+/**
+ * The site whose title search and cover proxy the add-book tool borrows. Both
+ * are the Library's own autofill, so a book added here is found the same way
+ * the Add form finds it. One address serves either target: the search reads
+ * public catalogues, never the target's database.
+ */
+export const siteUrl = (
+  process.env.KS_LIBRARY_SITE || 'https://keepsimple.io'
+).replace(/\/+$/, '');
+
 export const journalPath =
   process.env.KS_LIBRARY_JOURNAL ||
   path.join(repoRoot, 'logs', 'library-mcp.jsonl');

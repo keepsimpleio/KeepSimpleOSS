@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Library MCP — the five tools an agent sees, spoken over stdin and stdout as
+ * Library MCP — the six tools an agent sees, spoken over stdin and stdout as
  * line-delimited JSON-RPC. No dependencies: the protocol is small enough that
  * a package would be the larger thing to maintain.
  *
@@ -15,7 +15,7 @@ import { record, setCaller } from './journal.mjs';
 import { call, definitions } from './tools.mjs';
 
 const NAME = 'keepsimple-library';
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const FALLBACK_PROTOCOL = '2024-11-05';
 
 const send = message => {

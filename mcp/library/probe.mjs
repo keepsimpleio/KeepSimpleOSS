@@ -1,21 +1,33 @@
 #!/usr/bin/env node
 /**
- * Proof that the five tools reach a live library and come back with what they
+ * Proof that the six tools reach a live library and come back with what they
  * claim. Every write it makes it takes back: a tag it made it deletes, a note
- * it changed it restores, and it says so line by line.
+ * it changed it restores, a book it added it removes, and it says so line by
+ * line. One thing stays behind: the cover file of the added book, which the
+ * owner's session may upload but not delete.
  *
  *   KS_LIBRARY_TARGET=staging \
  *   KS_LIBRARY_SESSION_JWT=<a session for the owner> KS_LIBRARY_ID=<library> \
  *   node mcp/library/probe.mjs
  *
  * Never point it at a library whose contents matter without reading what it
- * touches: it writes to two books and puts one tag on them.
+ * touches: it writes to two books, puts one tag on them, and adds one book to
+ * the first book shelf for the length of a step.
  */
 
-import { deleteTag, readTags } from './library.mjs';
+import { deleteObject, deleteTag, readLibrary, readTags } from './library.mjs';
 import { call } from './tools.mjs';
 
 const TAG = 'MCP probe';
+
+// Well-known titles the search answers with a cover. The probe adds the first
+// one the library does not already hold.
+const ADDABLE = [
+  'The Old Man and the Sea',
+  'Flowers for Algernon',
+  'The Count of Monte Cristo',
+  'Moby Dick',
+];
 
 let failed = 0;
 
@@ -162,6 +174,64 @@ const main = async () => {
     if (left) throw new Error('the tag is still there');
 
     return 'cleared';
+  });
+
+  let added = null;
+
+  await step('refuse a book the library holds', async () => {
+    const answer = await call('library_add_book', {
+      title: first.title,
+      shelf: listed.shelves[0].name,
+    });
+
+    if (!answer.isError) throw new Error('a second copy was not refused');
+
+    return 'refused';
+  });
+
+  await step('add a book with its cover', async () => {
+    const held = new Set(listed.books.map(book => book.title.toLowerCase()));
+    const title = ADDABLE.find(name => !held.has(name.toLowerCase()));
+
+    if (!title) throw new Error('the library holds every title the probe adds');
+
+    const shelf = (await readLibrary()).shelves.find(
+      entry => entry.type === 'book' && entry.objects.length < 50,
+    );
+
+    if (!shelf) throw new Error('no book shelf has room');
+
+    const result = await tool('library_add_book', {
+      title,
+      shelf: String(shelf.id),
+      pick: 1,
+    });
+
+    if (!result.added) throw new Error(result.reason ?? 'nothing was added');
+
+    added = result.added;
+
+    if (!added.cover) throw new Error('it came without a cover');
+
+    const reread = await tool('library_books', { search: added.title });
+
+    if (!reread.books.some(book => book.id === added.id)) {
+      throw new Error('a separate read did not see the book');
+    }
+
+    return `${added.title}, ${added.author ?? 'no author'}, on ${added.shelf}`;
+  });
+
+  await step('take the added book back', async () => {
+    if (!added) throw new Error('there is no book to remove');
+
+    await deleteObject(added.id);
+
+    const left = (await readLibrary()).books.find(book => book.id === added.id);
+
+    if (left) throw new Error('the book is still there');
+
+    return 'removed';
   });
 
   process.stdout.write(failed ? `\n${failed} failed\n` : '\nall passed\n');

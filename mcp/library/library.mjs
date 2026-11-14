@@ -8,7 +8,7 @@
  * shelf.
  */
 
-import { agentKey, handedSession, strapiUrl } from './config.mjs';
+import { agentKey, handedSession, siteUrl, strapiUrl } from './config.mjs';
 
 // A session lasts two hours at the far end. Renew well before that rather
 // than discovering it expired mid-sequence.
@@ -270,8 +270,151 @@ export const updateTag = (id, data) =>
 export const reorderTag = (tagId, objects) =>
   authed('POST', '/api/tags/reorder', { body: { tagId, objects } });
 
+const SITE_TIMEOUT_MS = 30000;
+
+// What the Library's own upload accepts for a cover, and its size cap. The
+// figure is the frontend's COVER_MAX_BYTES; the CMS refuses anything larger.
+const COVER_TYPES = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
+const COVER_MAX_BYTES = 550 * 1024;
+
 /**
- * Deleting a tag is not one of the five things an agent may do: it takes a
+ * The title search the Add form runs: the catalogues it reads and the member
+ * libraries it offers first. Read through the site so the two cannot drift.
+ */
+export const searchBooks = async title => {
+  const url = new URL(`${siteUrl}/api/library/autofill/book`);
+  url.searchParams.set('q', title);
+
+  let response;
+
+  try {
+    response = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(SITE_TIMEOUT_MS),
+    });
+  } catch {
+    throw new LibraryError('The book search did not answer', 504);
+  }
+
+  if (!response.ok) {
+    throw new LibraryError(
+      `The book search failed (${response.status})`,
+      response.status,
+    );
+  }
+
+  const payload = await response.json().catch(() => null);
+
+  return Array.isArray(payload?.suggestions) ? payload.suggestions : [];
+};
+
+/**
+ * A cover through the site's allowlisted proxy, or null when there is none
+ * the Library would accept. Never a guess at another image.
+ */
+export const fetchCover = async (coverUrl, fallbackCoverUrl) => {
+  if (!coverUrl) return null;
+
+  const url = new URL(`${siteUrl}/api/library/autofill/cover`);
+  url.searchParams.set('url', coverUrl);
+  if (fallbackCoverUrl) url.searchParams.set('fallback', fallbackCoverUrl);
+
+  try {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(SITE_TIMEOUT_MS),
+    });
+
+    if (!response.ok) return null;
+
+    const blob = await response.blob();
+    const type = (blob.type || '').split(';')[0].trim();
+    const extension = COVER_TYPES[type];
+
+    if (!extension || blob.size === 0 || blob.size > COVER_MAX_BYTES) {
+      return null;
+    }
+
+    return { blob, type, extension };
+  } catch {
+    return null;
+  }
+};
+
+const sendUpload = async (cover, name, jwt) => {
+  const form = new FormData();
+
+  form.append(
+    'files',
+    new Blob([cover.blob], { type: cover.type }),
+    `${name}.${cover.extension}`,
+  );
+
+  const response = await fetch(`${strapiUrl}/api/upload`, {
+    method: 'POST',
+    headers: { Accept: 'application/json', Authorization: `Bearer ${jwt}` },
+    body: form,
+  });
+
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new LibraryError(
+      strapiMessage(payload, `The cover upload failed (${response.status})`),
+      response.status,
+    );
+  }
+
+  const id = Array.isArray(payload) ? payload[0]?.id : null;
+
+  if (!id) throw new LibraryError('The cover upload answered no file', 502);
+
+  return id;
+};
+
+/** Stores a cover as the owner would, and answers the media id. */
+export const uploadCover = async (cover, name) => {
+  const live = await session();
+
+  try {
+    return await sendUpload(cover, name, live.jwt);
+  } catch (error) {
+    if (error.status !== 401) throw error;
+
+    const renewed = await openSession();
+    return sendUpload(cover, name, renewed.jwt);
+  }
+};
+
+/**
+ * A new object the way the Add form sends one: published at once, and with
+ * no populate parameters, which the CMS refuses on this route.
+ */
+export const createObject = async data => {
+  const live = await session();
+
+  return authed('POST', '/api/objects', {
+    body: {
+      data: {
+        ...data,
+        owner: live.ownerId,
+        publishedAt: new Date().toISOString(),
+      },
+    },
+  });
+};
+
+/**
+ * Deleting a book is not something an agent may do: the Library asks the
+ * owner first. It exists here so the probe can take back the book it adds.
+ */
+export const deleteObject = id => authed('DELETE', `/api/objects/${id}`);
+
+/**
+ * Deleting a tag is not one of the things an agent may do: it takes a
  * label off every book that carries it and the Library asks before it does
  * that. It exists here so the probe can clear up after itself.
  */
