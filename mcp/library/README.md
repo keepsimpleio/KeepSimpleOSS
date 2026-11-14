@@ -31,6 +31,8 @@ cover or not at all, unless the call says `cover: "none"`, and a title no
 catalogue knows needs `unlisted: true`. The note stays empty unless the call
 carries one: it is the owner's own writing, so the catalogue's description is
 not copied into it. The shelf, library and tag limits of the Add form apply.
+A new book stands at the front of its shelf; `after` names the book it should
+stand right behind instead, and the other books keep their order.
 After the write the library is read again, and the call fails unless the book
 stands on the shelf it was meant for.
 

@@ -201,10 +201,13 @@ const main = async () => {
 
     if (!shelf) throw new Error('no book shelf has room');
 
+    // Behind the last book of the shelf, so the place is checked as well.
+    const last = shelf.objects[shelf.objects.length - 1];
     const result = await tool('library_add_book', {
       title,
       shelf: String(shelf.id),
       pick: 1,
+      ...(last ? { after: String(last.id) } : {}),
     });
 
     if (!result.added) throw new Error(result.reason ?? 'nothing was added');
@@ -212,6 +215,17 @@ const main = async () => {
     added = result.added;
 
     if (!added.cover) throw new Error('it came without a cover');
+
+    if (last) {
+      const order = (await readLibrary()).shelves.find(
+        entry => entry.id === shelf.id,
+      ).objects;
+      const expected = [...shelf.objects.map(book => book.id), added.id];
+
+      if (order.map(book => book.id).join() !== expected.join()) {
+        throw new Error('the shelf order is not the old one plus the book');
+      }
+    }
 
     const reread = await tool('library_books', { search: added.title });
 

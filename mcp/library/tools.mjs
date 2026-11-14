@@ -17,6 +17,7 @@ import {
   LibraryError,
   readLibrary,
   readTags,
+  reorderShelf,
   reorderTag,
   resolveBook,
   resolveTag,
@@ -37,7 +38,7 @@ const repoRoot = path.resolve(new URL('../..', import.meta.url).pathname);
  * cannot drift; the figures beside each name are what they were on
  * 2026-09-10, used only outside a checkout. Breaking a limit here costs a
  * round trip and gives a sentence the caller can act on. The note cap is the
- * CMS schema's own (`object.description`, 5000) and has no frontend constant.
+ * CMS limit for a note (5000), the same figure the Add form counts to.
  */
 const limit = (name, fallback) => {
   try {
@@ -339,6 +340,11 @@ export const definitions = [
           type: 'string',
           description:
             'The shelf, by name or id. May be left out only when the library has one book shelf.',
+        },
+        after: {
+          type: 'string',
+          description:
+            'A book on that shelf, by title or id, that the new one stands right after. Left out, the new book stands at the front.',
         },
         pick: {
           type: 'number',
@@ -710,6 +716,14 @@ const handlers = {
       );
     }
 
+    // The neighbour is settled before anything is written, so a wrong name
+    // costs nothing.
+    let neighbour;
+
+    if (args.after !== undefined && args.after !== null) {
+      neighbour = resolveBook(args.after, shelf.objects);
+    }
+
     const data = {};
 
     if (args.note !== undefined && args.note !== null) {
@@ -889,6 +903,27 @@ const handlers = {
       );
     }
 
+    let standsAfter;
+
+    if (neighbour) {
+      const ids = shelf.objects.map(entry => entry.id);
+
+      ids.splice(ids.indexOf(neighbour.id) + 1, 0, id);
+      await reorderShelf(shelf.id, ids);
+
+      const placed = (await readLibrary()).shelves
+        .find(entry => entry.id === shelf.id)
+        .objects.map(entry => entry.id);
+
+      if (placed[placed.indexOf(id) - 1] !== neighbour.id) {
+        throw new LibraryError(
+          `"${landed.title}" was added to "${shelf.name}", but it does not stand after "${neighbour.title}"`,
+        );
+      }
+
+      standsAfter = neighbour.title;
+    }
+
     return {
       added: {
         id,
@@ -896,6 +931,7 @@ const handlers = {
         author: landed.author ?? undefined,
         published: calendarDate(chosen.publicationDate),
         shelf: landed.shelf.name,
+        after: standsAfter,
         cover: !!coverId,
         tags: landed.tags.map(tag => tag.name),
         rating: landed.rating ?? undefined,

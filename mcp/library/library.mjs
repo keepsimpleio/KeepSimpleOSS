@@ -270,6 +270,12 @@ export const updateTag = (id, data) =>
 export const reorderTag = (tagId, objects) =>
   authed('POST', '/api/tags/reorder', { body: { tagId, objects } });
 
+// The order of a shelf, front to back. The endpoint takes a raw body.
+export const reorderShelf = (shelfId, ids) =>
+  authed('POST', '/api/objects/reorder', {
+    body: { shelfId, objects: ids.map((id, order) => ({ id, order })) },
+  });
+
 const SITE_TIMEOUT_MS = 30000;
 
 // What the Library's own upload accepts for a cover, and its size cap. The
