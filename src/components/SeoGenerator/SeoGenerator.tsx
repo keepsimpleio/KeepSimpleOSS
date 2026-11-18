@@ -61,6 +61,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
   preloadImages,
 }) => {
   const router = useRouter();
+  const isUserProfile = router.pathname.startsWith('/user/');
 
   if (forceNoIndex && canonicalOverride) {
     return (
@@ -114,7 +115,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         <meta
           name="robots"
           content={
-            process.env.NEXT_PUBLIC_INDEXING === 'off'
+            isUserProfile || process.env.NEXT_PUBLIC_INDEXING === 'off'
               ? 'noindex, nofollow'
               : 'index, follow'
           }
@@ -209,7 +210,7 @@ const SeoGenerator: FC<SeoGeneratorProps> = ({
         ))}
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
         <meta name="theme-color" content="#1e2023" />
-        {pathname.includes('/user') ? (
+        {isUserProfile ? (
           <meta name="robots" content={'noindex, nofollow'} />
         ) : (
           <meta
