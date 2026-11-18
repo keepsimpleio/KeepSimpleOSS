@@ -47,6 +47,7 @@ const Certificate = ({ userId, certificate }) => {
 export default Certificate;
 
 export async function getServerSideProps(context) {
+  context.res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   const userId = context.params.userId;
   const certificate = await getCertificate(userId);
   if (!certificate) context.res.statusCode = 404;
